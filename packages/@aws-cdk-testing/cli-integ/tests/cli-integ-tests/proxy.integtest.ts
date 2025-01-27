@@ -78,10 +78,10 @@ function isolatedDockerCommands(proxyPort: number, caBundlePath: string) {
     'echo Working...',
     'apt-get install -qqy curl net-tools iputils-ping dnsutils iptables > /dev/null',
     '',
-    // Looking up host.docker.internal is necessary on MacOS Finch, and the
+    // Looking up `host.docker.internal` is necessary on MacOS Finch, and the
     // magic IP address is necessary on GitHub Actions. I tried
-    // '--add-host=host.docker.internal:host-gateway' but it doesn't help on
-    // GHA.
+    // `--add-host=host.docker.internal:host-gateway` but it doesn't change anything
+    // on either GHA or CodeBuild.
     'gateway=$(dig +short host.docker.internal)',
     'if [[ -z "$gateway" ]]; then',
     '  gateway=172.17.0.1',
