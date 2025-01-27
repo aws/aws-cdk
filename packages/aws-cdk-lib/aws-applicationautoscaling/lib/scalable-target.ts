@@ -5,6 +5,7 @@ import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-p
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -100,19 +101,19 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
     withResolved(props.maxCapacity, max => {
       if (max < 0) {
-        throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);
+        throw new ValidationError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, min => {
       if (min < 0) {
-        throw new RangeError(`minCapacity cannot be negative, got: ${props.minCapacity}`);
+        throw new ValidationError(`minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
       if (max < min) {
-        throw new RangeError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`);
+        throw new ValidationError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
       }
     });
 
@@ -145,7 +146,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    */
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
+      throw new ValidationError(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule
