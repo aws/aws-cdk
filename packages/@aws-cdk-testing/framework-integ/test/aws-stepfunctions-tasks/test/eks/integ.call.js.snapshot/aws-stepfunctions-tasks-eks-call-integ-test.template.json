@@ -863,7 +863,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",

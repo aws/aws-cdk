@@ -767,7 +767,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
