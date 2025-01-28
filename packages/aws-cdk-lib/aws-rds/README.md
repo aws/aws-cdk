@@ -229,6 +229,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5,
   serverlessV2MaxCapacity: 2,
+  serverlessV2SecondsUntilAutoPause: 300,
   vpc,
 });
 ```
