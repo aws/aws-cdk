@@ -951,3 +951,6 @@ changed-type:aws-cdk-lib.cx_api.CloudFormationStackArtifact.notificationArns
 # See: https://github.com/cdklabs/cloud-assembly-schema/pull/121
 weakened:aws-cdk-lib.cloud_assembly_schema.MetadataEntry
 weakened:aws-cdk-lib.cx_api.MetadataEntryResult
+
+# Due to https://github.com/aws/aws-cdk/pull/33100, overall function is being reformatted to fit the scope of websocket Api's; Argument was removed.
+removed-argument:aws-cdk-lib.aws_apigatewayv2.WebSocketApi.arnForExecuteApi
