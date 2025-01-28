@@ -394,7 +394,6 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
   private ipv6ToNumber(ipv6Address: string): bigint {

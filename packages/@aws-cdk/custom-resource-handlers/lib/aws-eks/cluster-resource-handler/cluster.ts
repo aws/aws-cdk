@@ -208,14 +208,14 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
       if (updates.updateLogging) {
         config.logging = this.newProps.logging;
-      };
+      }
       if (updates.updateAccess) {
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
-      };
+      }
 
       if (updates.updateAuthMode) {
         // the update path must be
@@ -259,7 +259,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           throw e;
         }
         config.accessConfig = this.newProps.accessConfig;
-      };
+      }
 
       if (updates.updateVpc) {
         config.resourcesVpcConfig = {
@@ -481,7 +481,7 @@ function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: 
 
 function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
   const missingKeys: string[] = [];
-  //Get all tag keys to remove
+  // Get all tag keys to remove
   for (const key in oldTags) {
     if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
       missingKeys.push(key);
