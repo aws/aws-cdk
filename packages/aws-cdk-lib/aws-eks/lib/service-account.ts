@@ -215,7 +215,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         serviceAccount: this.serviceAccountName,
       });
 
-    };
+    }
 
     this.role = role;
 

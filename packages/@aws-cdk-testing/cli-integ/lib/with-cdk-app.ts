@@ -624,7 +624,10 @@ export class TestFixture extends ShellHelper {
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 
