@@ -162,7 +162,7 @@ describe('WebSocketApi', () => {
         { Ref: 'AWS::AccountId' },
         ':',
         stack.resolve(api.apiId),
-        '/stage/$route',
+        '/stage/route',
       ]],
     });
   });

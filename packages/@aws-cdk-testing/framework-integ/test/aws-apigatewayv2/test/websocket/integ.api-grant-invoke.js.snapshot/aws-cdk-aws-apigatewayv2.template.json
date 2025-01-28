@@ -84,7 +84,7 @@
              {
               "Ref": "webocketapiD5DB5DB0"
              },
-             "/prod/$connect"
+             "/prod/connect"
             ]
            ]
           }
