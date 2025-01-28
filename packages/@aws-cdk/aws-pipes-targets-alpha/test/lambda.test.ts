@@ -6,7 +6,6 @@ import { TestSource } from './test-classes';
 import { LambdaFunction } from '../lib/lambda';
 
 describe('lambda-function', () => {
-
   it('should have only target arn and default invocation type REQUEST_RESPONSE', () => {
     // ARRANGE
     const app = new App();
@@ -153,6 +152,5 @@ describe('lambda-function', () => {
         },
       },
     });
-
   });
 });

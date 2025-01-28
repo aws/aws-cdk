@@ -10,7 +10,6 @@ beforeEach(() => {
 });
 
 describe('MediaConvert Create Job', () => {
-
   test('REQUEST_RESPONSE Integration Pattern', () => {
     // WHEN
     const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {

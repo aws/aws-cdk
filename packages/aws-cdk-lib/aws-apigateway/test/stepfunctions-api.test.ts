@@ -185,7 +185,6 @@ describe('Step Functions api', () => {
       stateMachine: stateMachine,
       defaultIntegration: new apigw.HttpIntegration(httpURL),
     })).toThrow(/Cannot specify \"defaultIntegration\" since Step Functions integration is automatically defined/);
-
   });
 
   test('fails if State Machine is not of type EXPRESS', () => {

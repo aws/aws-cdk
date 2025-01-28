@@ -391,7 +391,6 @@ export class Stage extends StageBase {
       if (accessLogFormat !== undefined &&
         !Token.isUnresolved(accessLogFormat.toString()) &&
         !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-
         throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {

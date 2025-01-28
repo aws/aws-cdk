@@ -1129,7 +1129,6 @@ export class UserPool extends UserPoolBase {
       default:
         (this.triggers as any)[operation.operationName] = fn.functionArn;
     }
-
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {

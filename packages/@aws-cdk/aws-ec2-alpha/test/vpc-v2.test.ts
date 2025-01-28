@@ -69,7 +69,6 @@ describe('Vpc V2 with full control', () => {
         },
       },
     });
-
   });
 
   test('VPC throws error with incorrect cidr range (IPv4)', () => {
@@ -118,11 +117,9 @@ describe('Vpc V2 with full control', () => {
         },
       },
     });
-
   });
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
-
     const ipam = new Ipam(stack, 'TestIpam', {
       operatingRegions: ['us-west-1'],
     });

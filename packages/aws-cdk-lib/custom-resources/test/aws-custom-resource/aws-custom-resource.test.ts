@@ -795,7 +795,6 @@ test('getData', () => {
 });
 
 test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -813,11 +812,9 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseFieldReference('ShouldFail')).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -835,11 +832,9 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseField('ShouldFail')).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
-
   const stack = new cdk.Stack();
   expect(() => new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
     onUpdate: {
@@ -882,7 +877,6 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('getDataString', () => {

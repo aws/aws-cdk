@@ -43,7 +43,6 @@ describe('User Pool Client', () => {
   });
 
   describe('Client with secret', () => {
-
     test('generate secret', () => {
       // GIVEN
       const stack = new Stack();
@@ -1341,5 +1340,4 @@ describe('User Pool Client', () => {
     }),
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
-
 });

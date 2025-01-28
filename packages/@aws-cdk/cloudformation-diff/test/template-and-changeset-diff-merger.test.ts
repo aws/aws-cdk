@@ -560,13 +560,10 @@ describe('fullDiff tests that include changeset', () => {
     expect(differences.resources.differenceCount).toBe(1);
     expect(differences.resources.get('BucketResource')?.changeImpact === ResourceImpact.WILL_IMPORT);
   });
-
 });
 
 describe('method tests', () => {
-
   describe('TemplateAndChangeSetDiffMerger constructor', () => {
-
     test('InspectChangeSet correctly parses changeset', async () => {
     // WHEN
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSet });
@@ -654,7 +651,6 @@ describe('method tests', () => {
         propertyReplacementModes: {},
       });
     });
-
   });
 
   describe('determineChangeSetReplacementMode ', () => {
@@ -725,11 +721,9 @@ describe('method tests', () => {
       // THEN
       expect(replacementMode).toEqual('Always');
     });
-
   });
 
   describe('overrideDiffResourceChangeImpactWithChangeSetChangeImpact', () => {
-
     test('can handle blank change', async () => {
       // GIVEN
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
@@ -996,7 +990,5 @@ describe('method tests', () => {
       expect(queue.changeImpact).toBe('WILL_ORPHAN');
       expect(queue.isDifferent).toBe(true);
     });
-
   });
-
 });

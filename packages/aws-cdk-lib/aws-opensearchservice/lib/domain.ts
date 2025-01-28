@@ -1527,7 +1527,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
         ![

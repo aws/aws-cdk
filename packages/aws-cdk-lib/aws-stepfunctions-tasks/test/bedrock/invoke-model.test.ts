@@ -7,7 +7,6 @@ import { Guardrail } from '../../lib/bedrock/guardrail';
 import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });

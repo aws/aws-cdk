@@ -368,7 +368,6 @@ describe('event source mapping', () => {
       },
       KmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/<key-id>',
     });
-
   });
 
   test('adding filter criteria encryption without filter criteria', () => {

@@ -109,7 +109,6 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   public readonly routeCalculatorUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: RouteCalculatorProps) {
-
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }

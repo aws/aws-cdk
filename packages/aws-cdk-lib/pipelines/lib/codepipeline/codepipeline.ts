@@ -925,7 +925,6 @@ export class CodePipeline extends PipelineBase {
     account: string | undefined, arn: string | undefined): iam.IRole | undefined;
   private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
     account: string | undefined, arn: string | undefined): iam.IRole | undefined {
-
     if (!arn) { return undefined; }
 
     // Use placeholder arn as construct ID.

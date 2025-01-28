@@ -162,7 +162,6 @@ export class Subscription extends Resource {
       subscriptionRoleArn: props.subscriptionRoleArn,
       deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol): undefined,
     });
-
   }
 
   private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {

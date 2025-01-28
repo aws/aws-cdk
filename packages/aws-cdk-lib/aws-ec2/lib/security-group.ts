@@ -179,7 +179,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     connection: Port,
     fromTo: 'from' | 'to',
     remoteRule?: boolean): RuleScope {
-
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';

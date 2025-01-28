@@ -147,7 +147,6 @@ class CognitoEmail extends UserPoolEmail {
       replyToEmailAddress: encodeAndTest(this.replyTo),
       emailSendingAccount: 'COGNITO_DEFAULT',
     };
-
   }
 }
 

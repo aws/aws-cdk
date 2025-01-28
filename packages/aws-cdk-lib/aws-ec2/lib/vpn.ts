@@ -225,7 +225,6 @@ export class VpnConnection extends VpnConnectionBase {
    * Import a VPN connection by supplying all attributes directly
    */
   public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
-
     class Import extends VpnConnectionBase {
       public readonly vpnId: string = attrs.vpnId;
       public readonly customerGatewayId: string = attrs.customerGatewayId;
@@ -234,7 +233,6 @@ export class VpnConnection extends VpnConnectionBase {
     }
 
     return new Import(scope, id);
-
   }
 
   /**

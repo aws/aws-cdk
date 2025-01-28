@@ -1183,7 +1183,6 @@ describe('table', () => {
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
-
 });
 
 describe('replica tables', () => {
@@ -3173,5 +3172,4 @@ test('Warm Throughput test on-demand', () => {
       },
     ],
   });
-
 });

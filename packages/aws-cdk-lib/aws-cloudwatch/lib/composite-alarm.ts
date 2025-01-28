@@ -153,7 +153,6 @@ export class CompositeAlarm extends AlarmBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-
   }
 
   private generateUniqueId(): string {

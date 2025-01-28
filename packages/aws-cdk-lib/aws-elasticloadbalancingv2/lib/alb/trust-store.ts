@@ -107,7 +107,6 @@ export class TrustStore extends Resource implements ITrustStore {
     });
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
-
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
         throw new ValidationError(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
       }
@@ -115,7 +114,6 @@ export class TrustStore extends Resource implements ITrustStore {
       if (!validNameRegex.test(props.trustStoreName)) {
         throw new ValidationError(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
       }
-
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {

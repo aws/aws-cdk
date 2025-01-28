@@ -19,7 +19,6 @@ export function mergeEventPattern(dest: any, src: any) {
     }
 
     for (const field of Object.keys(srcObj)) {
-
       const srcValue = srcObj[field];
       const destValue = destObj[field];
 

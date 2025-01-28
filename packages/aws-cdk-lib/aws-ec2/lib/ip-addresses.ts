@@ -283,9 +283,7 @@ class AwsIpam implements IIpAddresses {
    * Allocates Subnets CIDRs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
-
     const cidrSplit = calculateCidrSplits(this.props.ipv4NetmaskLength, input.requestedSubnets.map((mask => {
-
       if ((mask.configuration.cidrMask === undefined) && (this.props.defaultSubnetIpv4NetmaskLength=== undefined) ) {
         throw new Error('If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
       }
@@ -308,7 +306,6 @@ class AwsIpam implements IIpAddresses {
     return {
       allocatedSubnets: allocatedSubnets,
     };
-
   }
 }
 
@@ -390,7 +387,6 @@ class Cidr implements IIpAddresses {
    * Allocates Subnets Cidrs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
-
     const allocatedSubnets: AllocatedSubnet[] = [];
     const subnetsWithoutDefinedCidr: IRequestedSubnetInstance[] = [];
     // default: Available IP space is evenly divided across subnets if no cidr is given.

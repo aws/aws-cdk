@@ -331,7 +331,6 @@ export class TestFixture extends ShellHelper {
     public readonly output: NodeJS.WritableStream,
     public readonly aws: AwsClients,
     public readonly randomString: string) {
-
     super(integTestDir, output);
 
     this.packages = packageSourceInSubprocess();
@@ -566,11 +565,9 @@ export class TestFixture extends ShellHelper {
    * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
-
     // when using the atmosphere service, it does resource cleanup on our behalf
     // so we don't have to wait for it.
     if (!atmosphereEnabled()) {
-
       const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
       this.sortBootstrapStacksToTheEnd(stacksToDelete);
@@ -603,7 +600,6 @@ export class TestFixture extends ShellHelper {
       for (const bucket of this.bucketsToDelete) {
         await this.aws.deleteBucket(bucket);
       }
-
     }
 
     // If the tests completed successfully, happily delete the fixture
@@ -644,7 +640,6 @@ export class TestFixture extends ShellHelper {
 
   private sortBootstrapStacksToTheEnd(stacks: Stack[]) {
     stacks.sort((a, b) => {
-
       if (!a.StackName || !b.StackName) {
         throw new Error('Stack names do not exists. These are required for sorting the bootstrap stacks.');
       }

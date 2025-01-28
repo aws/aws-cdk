@@ -19,7 +19,6 @@ beforeEach(() => {
 });
 
 describe('ExternalDockerCredential', () => {
-
   let secret: secretsmanager.ISecret;
 
   beforeEach(() => {
@@ -63,7 +62,6 @@ describe('ExternalDockerCredential', () => {
   });
 
   describe('grantRead', () => {
-
     test('grants read access to the secret', () => {
       const creds = cdkp.DockerCredential.customRegistry('example.com', secret);
 
@@ -128,13 +126,10 @@ describe('ExternalDockerCredential', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
-
   });
-
 });
 
 describe('EcrDockerCredential', () => {
-
   let repo: ecr.IRepository;
 
   beforeEach(() => {
@@ -185,7 +180,6 @@ describe('EcrDockerCredential', () => {
   });
 
   describe('grantRead', () => {
-
     test('grants pull access to the repo', () => {
       const creds = cdkp.DockerCredential.ecr([repo]);
 

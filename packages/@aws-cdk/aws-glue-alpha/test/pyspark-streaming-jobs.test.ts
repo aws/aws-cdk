@@ -21,7 +21,6 @@ describe('Job', () => {
   });
 
   describe('Create new PySpark Streaming Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'ImportedJob', { role, script });
     });
@@ -88,7 +87,6 @@ describe('Job', () => {
   });
 
   describe('Create new PySpark Streaming Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         jobName: 'PySparkStreamingJob',
@@ -122,11 +120,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new PySpark Streaming Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         jobName: 'PySparkStreamingJob',
@@ -147,11 +143,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create PySpark Streaming Job with G2 worker type with 2 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         role,
@@ -212,7 +206,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark Streaming Job with G4 worker type with 4 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         role,
@@ -263,7 +256,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark Streaming Job with G8 worker type and 8 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         role,
@@ -314,7 +306,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for PySpark Streaming Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
@@ -367,7 +358,6 @@ describe('Job', () => {
   });
 
   describe('Invalid overrides should cause errors', () => {
-
     test('Invalid SparkUI prefix should throw an error', () => {
       expect(() => {
         sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
@@ -385,11 +375,9 @@ describe('Job', () => {
         });
       }).toThrow('Invalid prefix format (value: prefix)');
     });
-
   });
 
   describe('Create PySpark Streaming Job with extraPythonFiles and extraFiles', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         role,
@@ -450,7 +438,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark Streaming Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         jobName: 'PySparkStreamingJobCustomName',
@@ -574,7 +561,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark Streaming Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         jobName: 'PySparkStreamingJobCustomName',

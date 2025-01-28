@@ -536,7 +536,6 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-
   }
 
   /**

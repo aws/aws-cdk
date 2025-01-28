@@ -587,7 +587,6 @@ export class Repository extends RepositoryBase {
    * @param options Trigger options to run actions
    */
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
-
     let evt = options && options.events;
     if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {
       evt = [RepositoryEventTrigger.ALL];

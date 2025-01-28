@@ -142,7 +142,6 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     });
 
     if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
-
       if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
         throw new Error(
           `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`,

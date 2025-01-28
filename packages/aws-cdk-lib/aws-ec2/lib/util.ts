@@ -60,7 +60,6 @@ export class ImportSubnetGroup {
     nameField: string,
     routeTableIdField: string,
     ipv4CidrBlockField: string) {
-
     this.subnetIds = subnetIds || [];
     this.routeTableIds = routeTableIds || [];
     this.ipv4CidrBlocks = ipv4CidrBlocks || [];

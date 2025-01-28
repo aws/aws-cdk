@@ -280,7 +280,6 @@ test('Bundling a function with poetry and assetExcludes', () => {
       ],
     }),
   }));
-
 });
 
 test('Bundling a function with poetry and no assetExcludes', () => {

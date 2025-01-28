@@ -56,7 +56,6 @@ export class ApiDestinationEnrichment implements IEnrichment {
   }
 
   bind(pipe: IPipe): EnrichmentParametersConfig {
-
     const httpParameters: CfnPipe.PipeEnrichmentHttpParametersProperty | undefined =
       this.headerParameters ??
         this.pathParameterValues ??

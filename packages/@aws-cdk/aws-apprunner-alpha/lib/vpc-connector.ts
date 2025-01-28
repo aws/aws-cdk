@@ -137,7 +137,6 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     });
 
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
-
       if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
         throw new Error(
           `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`,

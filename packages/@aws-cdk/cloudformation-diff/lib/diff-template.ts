@@ -51,7 +51,6 @@ export function fullDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
-
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
@@ -73,7 +72,6 @@ export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
-
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 

@@ -1785,7 +1785,6 @@ test('Create Cluster with autoTerminationPolicyIdleTimeout', () => {
 });
 
 test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set to %d seconds', (idletimeOutSeconds) => {
-
   expect(() => {
     new EmrCreateCluster(stack, 'Task', {
       instances: {},

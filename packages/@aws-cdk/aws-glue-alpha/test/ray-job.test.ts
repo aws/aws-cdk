@@ -21,7 +21,6 @@ describe('Job', () => {
   });
 
   describe('Create new Ray Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', { role, script });
     });
@@ -68,11 +67,9 @@ describe('Job', () => {
         JobRunQueuingEnabled: false,
       });
     });
-
   });
 
   describe('Create new Ray Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'RayJob', {
         jobName: 'RayJob',
@@ -105,11 +102,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Ray Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'RayJob', {
         jobName: 'RayJob',
@@ -129,11 +124,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create Ray Job with optional override parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', {
         role,
@@ -255,7 +248,6 @@ describe('Job', () => {
   });
 
   describe('Create Ray Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', {
         role,
@@ -384,7 +376,6 @@ describe('Job', () => {
   });
 
   describe('Invalid overrides should cause errors', () => {
-
     test('Create Ray Job overriding only workerType to cause an Error', () => {
       expect(() => {
         job = new glue.RayJob(stack, 'RayJob', {

@@ -620,7 +620,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
-
       this._latestDeployment = new Deployment(this, 'Deployment', {
         description: props.deployOptions?.description ?? props.description ?? 'Automatically created by the RestApi construct',
         api: this,

@@ -589,7 +589,6 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         }
       }
     }
-
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean, idleTimeout?: Duration): ApplicationLoadBalancer {

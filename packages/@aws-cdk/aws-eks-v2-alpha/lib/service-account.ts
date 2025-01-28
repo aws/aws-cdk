@@ -178,7 +178,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
       principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
-
     } else {
       /**
        * Identity type is POD_IDENTITY.
@@ -213,7 +212,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
       });
-
     }
 
     this.role = role;

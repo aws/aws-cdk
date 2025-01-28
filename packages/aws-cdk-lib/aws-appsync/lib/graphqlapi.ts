@@ -735,7 +735,6 @@ export class GraphqlApi extends GraphqlApiBase {
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
     }
-
   }
 
   private setupSourceApiAssociations() {

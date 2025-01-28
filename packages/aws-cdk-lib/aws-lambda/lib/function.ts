@@ -1329,7 +1329,6 @@ export class Function extends FunctionBase {
     description?: string,
     provisionedExecutions?: number,
     asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
-
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
@@ -1429,7 +1428,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * @param props properties for the ADOT instrumentation
    */
   private configureAdotInstrumentation(props: FunctionProps): void {
-
     if (props.adotInstrumentation === undefined) {
       return;
     }

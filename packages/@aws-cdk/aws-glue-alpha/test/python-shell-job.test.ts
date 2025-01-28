@@ -20,7 +20,6 @@ describe('Job', () => {
   });
 
   describe('Create new Python Shell Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'ImportedJob', { role, script });
     });
@@ -79,11 +78,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Python Shell Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJob',
@@ -117,11 +114,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Python Shell Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJob',
@@ -142,11 +137,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create Python Shell Job with overridden Python verion and max capacity', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         role,
@@ -181,11 +174,9 @@ describe('Job', () => {
         MaxCapacity: 1,
       });
     });
-
   });
 
   describe('Create Python Shell Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
@@ -305,7 +296,6 @@ describe('Job', () => {
   });
 
   describe('Create Python Shell Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',

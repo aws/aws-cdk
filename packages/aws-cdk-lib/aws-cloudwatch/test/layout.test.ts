@@ -11,7 +11,6 @@ describe('Layout', () => {
     // THEN
     expect(4).toEqual(row.height);
     expect(20).toEqual(row.width);
-
   });
 
   test('spacer has default height and width', () => {
@@ -21,7 +20,6 @@ describe('Layout', () => {
     // THEN
     expect(1).toEqual(spacer.height);
     expect(1).toEqual(spacer.width);
-
   });
 
   test('column has the width of the tallest element', () => {
@@ -34,7 +32,6 @@ describe('Layout', () => {
     // THEN
     expect(4).toEqual(col.width);
     expect(5).toEqual(col.height);
-
   });
 
   test('row wraps to width of 24, taking tallest widget into account while wrapping', () => {
@@ -67,7 +64,6 @@ describe('Layout', () => {
       assertWidgetPos(1014, 1000, widgets[2]);
       assertWidgetPos(1000, 1004, widgets[3]);
     }
-
   });
 
   test('row can fit exactly 3 8-wide widgets without wrapping', () => {
@@ -84,7 +80,6 @@ describe('Layout', () => {
       expect(24).toEqual(row.width);
       expect(4).toEqual(row.height);
     }
-
   });
 
   test('add a widget to the row', () => {
@@ -93,7 +88,6 @@ describe('Layout', () => {
 
     row.addWidget(new Spacer({ width: 3 }));
     expect(row.width).toEqual(4);
-
   });
 
   test('add a widget to the column', () => {
@@ -106,7 +100,6 @@ describe('Layout', () => {
     column.addWidget(new Spacer({ height: 2, width: 3 }));
     expect(column.height).toEqual(4);
     expect(column.width).toEqual(3);
-
   });
 
   test('row wraps when adding widgets', () => {
@@ -120,6 +113,5 @@ describe('Layout', () => {
     row.addWidget(new Spacer({ width: 5, height: 2 }));
     expect(row.width).toEqual(20);
     expect(row.height).toEqual(3);
-
   });
 });

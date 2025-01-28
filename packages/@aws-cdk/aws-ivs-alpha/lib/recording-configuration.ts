@@ -79,7 +79,6 @@ export class RecordingConfiguration extends Resource implements IRecordingConfig
    */
   public static fromRecordingConfigurationId(scope: Construct, id: string,
     recordingConfigurationId: string): IRecordingConfiguration {
-
     class Import extends Resource implements IRecordingConfiguration {
       public readonly recordingConfigurationId = recordingConfigurationId;
       public readonly recordingConfigurationArn = Stack.of(this).formatArn({

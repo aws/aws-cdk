@@ -130,7 +130,6 @@ export class InlineImportSource extends ImportSource {
    * @internal
    */
   public _bind(scope: Construct): CfnKeyValueStore.ImportSourceProperty {
-
     if (!this.asset) {
       // CfnKeyValueStore does not support native in-line, so we need to use a
       // temporary file to be uploaded with the S3 assets

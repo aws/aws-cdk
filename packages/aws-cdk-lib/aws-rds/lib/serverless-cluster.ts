@@ -540,7 +540,6 @@ export class ServerlessCluster extends ServerlessClusterNew {
   public static fromServerlessClusterAttributes(
     scope: Construct, id: string, attrs: ServerlessClusterAttributes,
   ): IServerlessCluster {
-
     return new ImportedServerlessCluster(scope, id, attrs);
   }
 

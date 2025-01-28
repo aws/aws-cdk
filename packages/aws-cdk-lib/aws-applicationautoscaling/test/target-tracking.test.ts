@@ -25,7 +25,6 @@ describe('target tracking', () => {
       },
 
     });
-
   });
 
   test('test setup target tracking on predefined metric for lambda', () => {
@@ -48,7 +47,6 @@ describe('target tracking', () => {
       },
 
     });
-
   });
 
   test('test setup target tracking on predefined metric for DYNAMODB_WRITE_CAPACITY_UTILIZATION', () => {
@@ -175,6 +173,5 @@ describe('target tracking', () => {
       },
 
     });
-
   });
 });

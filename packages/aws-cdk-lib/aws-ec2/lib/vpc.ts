@@ -593,7 +593,6 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (selection.subnetGroupName !== undefined) { // Select by name
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
-
     } else { // Or specify by type
       const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
       subnets = this.selectSubnetObjectsByType(type);
@@ -656,7 +655,6 @@ abstract class VpcBase extends Resource implements IVpc {
    * PUBLIC (in that order) that has any subnets.
    */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
@@ -1741,7 +1739,6 @@ export class Vpc extends VpcBase {
    * array or creates the `DEFAULT_SUBNETS` configuration
    */
   private createSubnets() {
-
     const requestedSubnets: RequestedSubnet[] = [];
 
     this.subnetConfiguration.forEach((configuration)=> (
@@ -1830,7 +1827,6 @@ export class Vpc extends VpcBase {
 
   private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[]) {
     allocatedSubnets.forEach((allocated, i) => {
-
       const { configuration: subnetConfig, subnetConstructId, availabilityZone } = requestedSubnets[i];
 
       if (subnetConfig.reserved === true) {

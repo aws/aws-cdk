@@ -241,7 +241,6 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
-
   }
 
   public bind(target: lambda.IFunction) {
