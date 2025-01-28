@@ -20,6 +20,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-amplifyuibuilder',
   'aws-apigatewayv2-authorizers',
   'aws-apigatewayv2-integrations',
+  'aws-appsync',
   'aws-cognito',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
