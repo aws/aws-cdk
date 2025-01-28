@@ -20,15 +20,19 @@ import { SNSClient } from '@aws-sdk/client-sns';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromIni } from '@aws-sdk/credential-providers';
-import type { AwsCredentialIdentityProvider } from '@smithy/types';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 interface ClientConfig {
-  readonly credentials?: AwsCredentialIdentityProvider;
+  readonly credentials?: AwsCredentialIdentityProvider | AwsCredentialIdentity;
   readonly region: string;
   readonly retryStrategy: ConfiguredRetryStrategy;
 }
 
 export class AwsClients {
+  public static async forIdentity(region: string, identity: AwsCredentialIdentity, output: NodeJS.WritableStream) {
+    return new AwsClients(region, output, identity);
+  }
+
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
     return new AwsClients(region, output);
   }
@@ -45,9 +49,12 @@ export class AwsClients {
   public readonly lambda: LambdaClient;
   public readonly sts: STSClient;
 
-  constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
+  constructor(
+    public readonly region: string,
+    private readonly output: NodeJS.WritableStream,
+    public readonly identity?: AwsCredentialIdentity) {
     this.config = {
-      credentials: chainableCredentials(this.region),
+      credentials: this.identity ?? chainableCredentials(this.region),
       region: this.region,
       retryStrategy: new ConfiguredRetryStrategy(9, (attempt: number) => attempt ** 500),
     };
@@ -245,7 +252,7 @@ export async function sleep(ms: number) {
 }
 
 function chainableCredentials(region: string): AwsCredentialIdentityProvider | undefined {
-  if (process.env.CODEBUILD_BUILD_ARN && process.env.AWS_PROFILE) {
+  if ((process.env.CODEBUILD_BUILD_ARN || process.env.GITHUB_RUN_ID) && process.env.AWS_PROFILE) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.

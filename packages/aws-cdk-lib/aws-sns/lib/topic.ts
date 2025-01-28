@@ -99,6 +99,34 @@ export interface TopicProps {
    * @default TracingConfig.PASS_THROUGH
    */
   readonly tracingConfig?: TracingConfig;
+
+  /**
+   * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
+   *
+   * You can only set this property when `fifo` is `true`.
+   *
+   * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
+   */
+  readonly fifoThroughputScope?: FifoThroughputScope;
+}
+
+/**
+ * The throughput quota and deduplication behavior to apply for the FIFO topic.
+ */
+export enum FifoThroughputScope {
+  /**
+   * Topic scope
+   * - Throughput: 3000 messages per second and a bandwidth of 20MB per second.
+   * - Deduplication: Message deduplication is verified on the entire FIFO topic.
+   */
+  TOPIC = 'Topic',
+
+  /**
+   * Message group scope
+   * - Throughput: Maximum regional limits.
+   * - Deduplication: Message deduplication is only verified within a message group.
+   */
+  MESSAGE_GROUP = 'MessageGroup',
 }
 
 /**
@@ -212,7 +240,7 @@ export class Topic extends TopicBase {
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     return Topic.fromTopicAttributes(scope, id, { topicArn });
-  };
+  }
 
   /**
    * Import an existing SNS topic provided a topic attributes
@@ -263,6 +291,9 @@ export class Topic extends TopicBase {
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
       throw new ValidationError('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
+    }
+    if (props.fifoThroughputScope && !props.fifo) {
+      throw new ValidationError('`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
     }
     if (
       props.messageRetentionPeriodInDays !== undefined
@@ -315,6 +346,7 @@ export class Topic extends TopicBase {
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
+      fifoThroughputScope: props.fifoThroughputScope,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

@@ -72,7 +72,11 @@ export class KubernetesPatch extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+
+    const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
+    if (!provider) {
+      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+    }
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -83,7 +87,6 @@ export class KubernetesPatch extends Construct {
         ApplyPatchJson: stack.toJsonString(props.applyPatch),
         RestorePatchJson: stack.toJsonString(props.restorePatch),
         ClusterName: props.cluster.clusterName,
-        RoleArn: provider.roleArn, // TODO: bake into provider's environment
         PatchType: props.patchType ?? PatchType.STRATEGIC,
       },
     });
