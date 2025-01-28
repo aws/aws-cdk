@@ -25,10 +25,6 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   writeToOutputs(`💻 ${command.join(' ')}\n`);
   const show = options.show ?? 'always';
 
-  if (process.env.VERBOSE) {
-    outputs.add(process.stdout);
-  }
-
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : process.env);
 
   const child = child_process.spawn(command[0], command.slice(1), {
@@ -81,7 +77,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
   /**
    * Properties to add to 'env'
    */
-  readonly modEnv?: Record<string, string>;
+  readonly modEnv?: Record<string, string | undefined>;
 
   /**
    * Don't fail when exiting with an error
@@ -138,22 +134,33 @@ export class ShellHelper {
 
 /**
  * rm -rf reimplementation, don't want to depend on an NPM package for this
+ *
+ * Returns `true` if everything got deleted, or `false` if some files could
+ * not be deleted due to permissions issues.
  */
-export function rimraf(fsPath: string) {
+export function rimraf(fsPath: string): boolean {
   try {
+    let success = true;
     const isDir = fs.lstatSync(fsPath).isDirectory();
 
     if (isDir) {
       for (const file of fs.readdirSync(fsPath)) {
-        rimraf(path.join(fsPath, file));
+        success &&= rimraf(path.join(fsPath, file));
       }
       fs.rmdirSync(fsPath);
     } else {
       fs.unlinkSync(fsPath);
     }
+    return success;
   } catch (e: any) {
-    // We will survive ENOENT
-    if (e.code !== 'ENOENT') { throw e; }
+    // Can happen if some files got generated inside a Docker container and are now inadvertently owned by `root`.
+    // We can't ever clean those up anymore, but since it only happens inside GitHub Actions containers we also don't care too much.
+    if (e.code === 'EACCES' || e.code === 'ENOTEMPTY') { return false; }
+
+    // Already gone
+    if (e.code === 'ENOENT') { return true; }
+
+    throw e;
   }
 }
 

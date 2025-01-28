@@ -513,6 +513,8 @@ export class TestFixture extends ShellHelper {
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        // CI must be unset, because we're trying to capture stdout in a bunch of tests
+        CI: 'false',
         ...awsCreds,
         ...options.modEnv,
       },
@@ -607,7 +609,10 @@ export class TestFixture extends ShellHelper {
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 

@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cdk_1 = require("../helpers/cdk");
 const test_helpers_1 = require("../helpers/test-helpers");
-const timeout = process.env.CODEBUILD_BUILD_ID ? // if the process is running in CodeBuild
+const timeout = (process.env.CODEBUILD_BUILD_ID ?? process.env.GITHUB_RUN_ID) ? // if the process is running in CodeBuild
     3600000 : // 1 hour
     600000; // 10 minutes
 jest.setTimeout(timeout);

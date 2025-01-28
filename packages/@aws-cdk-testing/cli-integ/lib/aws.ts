@@ -252,7 +252,7 @@ export async function sleep(ms: number) {
 }
 
 function chainableCredentials(region: string): AwsCredentialIdentityProvider | undefined {
-  if (process.env.CODEBUILD_BUILD_ARN && process.env.AWS_PROFILE) {
+  if ((process.env.CODEBUILD_BUILD_ARN || process.env.GITHUB_RUN_ID) && process.env.AWS_PROFILE) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.

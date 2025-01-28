@@ -748,7 +748,7 @@ class NotificationArnsStack extends cdk.Stack {
     const arnsFromEnv = process.env.INTEG_NOTIFICATION_ARNS;
     super(parent, id, {
       ...props,
-      // comma separated list of arns. 
+      // comma separated list of arns.
       // empty string means empty list.
       // undefined means undefined
       notificationArns: arnsFromEnv == '' ? [] : (arnsFromEnv ? arnsFromEnv.split(',') : undefined)
@@ -793,12 +793,12 @@ class MetadataStack extends cdk.Stack {
     const handle = new cdk.CfnWaitConditionHandle(this, 'WaitConditionHandle');
     handle.addMetadata('Key', process.env.INTEG_METADATA_VALUE ?? 'default')
 
-  }  
+  }
 }
 
 const app = new cdk.App({
   context: {
-    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
+    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID ?? process.env.GITHUB_RUN_ID, // Force all assets to be unique, but consistent in one build
   },
 });
 
