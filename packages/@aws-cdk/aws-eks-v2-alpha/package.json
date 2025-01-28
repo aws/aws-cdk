@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-v2-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::EKS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

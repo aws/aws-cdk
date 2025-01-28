@@ -49,7 +49,7 @@ class EksClusterStack extends Stack {
 
     const mainStack = this.cluster.stack.node.findChild('Cluster') as eks.Cluster;
 
-    const kubectlProvider = mainStack.node.findChild('@aws-cdk--aws-eks-v2.KubectlProvider') as eks.KubectlProvider;
+    const kubectlProvider = mainStack.node.findChild('KubectlProvider') as eks.KubectlProvider;
 
     const crProvider = kubectlProvider.node.tryFindChild('Provider') as cr.Provider;
 
