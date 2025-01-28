@@ -16,4 +16,6 @@ baseConfig.overrides.push({
 // ignoring new eslint rules until CLI refactor is complete
 baseConfig.rules["@stylistic/spaced-comment"] = "off";
 baseConfig.rules['@stylistic/no-extra-semi'] = "off";
+baseConfig.rules['@stylistic/padded-blocks'] = "off";
+
 module.exports = baseConfig;
