@@ -106,7 +106,7 @@ export class Deployment extends Resource {
    *
    * This should be called by constructs of the API Gateway model that want to
    * invalidate the deployment when their settings change. The component will
-   * be resolve()ed during synthesis so tokens are welcome.
+   * be resolved during synthesis so tokens are welcome.
    */
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
