@@ -67,7 +67,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_31,
       })).toThrow(/cannot select multiple subnet groups/);
     });
 
@@ -77,7 +77,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_31,
       });
 
       // THEN
