@@ -74,17 +74,26 @@ async function runInIsolatedContainer(fixture: TestFixture, pathsToMount: string
  * except by going through the proxy
  */
 function isolatedDockerCommands(proxyPort: number, caBundlePath: string) {
+  let defaultBridgeIp = '172.17.0.1';
+
+  // The host's default IP is different on CodeBuild than it is on other Docker systems.
+  if (process.env.CODEBUILD_BUILD_ARN) {
+    defaultBridgeIp = '172.18.0.1';
+  }
+
   return [
     'echo Working...',
     'apt-get install -qqy curl net-tools iputils-ping dnsutils iptables > /dev/null',
     '',
-    // Looking up `host.docker.internal` is necessary on MacOS Finch, and the
-    // magic IP address is necessary on GitHub Actions. I tried
-    // `--add-host=host.docker.internal:host-gateway` but it doesn't change anything
-    // on either GHA or CodeBuild.
+    // Looking up `host.docker.internal` is necessary on MacOS Finch and Docker Desktop
+    // on Mac. The magic IP address is necessary on CodeBuild and GitHub Actions.
+    //
+    // I tried `--add-host=host.docker.internal:host-gateway` on the Linuxes but
+    // it doesn't change anything on either GHA or CodeBuild, so we're left with this
+    // backup solution.
     'gateway=$(dig +short host.docker.internal)',
     'if [[ -z "$gateway" ]]; then',
-    '  gateway=172.17.0.1',
+    `  gateway=${defaultBridgeIp}`,
     'fi',
     '',
     '# Some iptables manipulation; there might be unnecessary commands in here, not an expert',
