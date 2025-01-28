@@ -3,7 +3,7 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
-
+import { ValidationError } from '../../../core/lib/errors';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
