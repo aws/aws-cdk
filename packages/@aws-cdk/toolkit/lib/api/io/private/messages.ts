@@ -22,11 +22,11 @@ export function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>, ca
  * Build a message code from level and category. The code must be valid for this function to pass.
  * Otherwise it returns a ToolkitError.
  */
-export function messageCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'TOOLKIT', number?: `${number}${number}${number}${number}`): VALID_CODE {
+export function defaultMessageCode(level: IoMessageLevel, category: IoMessageCodeCategory = 'TOOLKIT'): VALID_CODE {
   const levelIndicator = level === 'error' ? 'E' :
     level === 'warn' ? 'W' :
       'I';
-  return verifyValidCode(`CDK_${category}_${levelIndicator}${number ?? '0000'}`);
+  return `CDK_${category}_${levelIndicator}0000` as VALID_CODE;
 }
 
 /**
