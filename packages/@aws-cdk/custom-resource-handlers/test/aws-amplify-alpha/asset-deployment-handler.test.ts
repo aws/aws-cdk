@@ -93,7 +93,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsRequest).toBeCalled();
+    expect(listJobsRequest).toHaveBeenCalled();
     expect(mockGetSignedUrlResponse).toHaveBeenCalledWith(mockS3, {
       Bucket: 's3BucketNameValue',
       Key: 's3ObjectKeyValue',
@@ -103,7 +103,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       sourceUrl: 'signedUrlValue',
     });
-    expect(startDeploymentRequest).toBeCalled();
+    expect(startDeploymentRequest).toHaveBeenCalled();
   });
 
   it('onEvent CREATE pending job', async () => {
@@ -137,7 +137,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsRequest).toBeCalled();
+    expect(listJobsRequest).toHaveBeenCalled();
     expect(mockGetSignedUrlResponse).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
@@ -184,7 +184,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete CREATE pending', async () => {
@@ -224,7 +224,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete CREATE failed', async () => {
@@ -259,7 +259,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete CREATE cancelled', async () => {
@@ -295,7 +295,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete CREATE no JobId', async () => {
@@ -375,7 +375,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsRequest).toBeCalled();
+    expect(listJobsRequest).toHaveBeenCalled();
     expect(mockGetSignedUrlResponse).toHaveBeenCalledWith(mockS3, {
       Bucket: 's3BucketNameValue',
       Key: 's3ObjectKeyValue',
@@ -385,7 +385,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       sourceUrl: 'signedUrlValue',
     });
-    expect(startDeploymentRequest).toBeCalled();
+    expect(startDeploymentRequest).toHaveBeenCalled();
   });
 
   it('onEvent UPDATE pending job', async () => {
@@ -422,7 +422,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       maxResults: 1,
     });
-    expect(listJobsRequest).toBeCalled();
+    expect(listJobsRequest).toHaveBeenCalled();
     expect(mockGetSignedUrlResponse).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
     expect(startDeploymentRequest).not.toHaveBeenCalled();
@@ -471,7 +471,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete UPDATE pending', async () => {
@@ -513,7 +513,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete UPDATE failed', async () => {
@@ -550,7 +550,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete UPDATE cancelled', async () => {
@@ -588,7 +588,7 @@ describe('handler', () => {
       branchName: 'branchNameValue',
       jobId: 'amplifyJobIdValue',
     });
-    expect(getJobRequest).toBeCalled();
+    expect(getJobRequest).toHaveBeenCalled();
   });
 
   it('isComplete UPDATE no JobId', async () => {
