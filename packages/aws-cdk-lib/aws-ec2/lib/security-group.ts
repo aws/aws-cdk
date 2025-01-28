@@ -552,7 +552,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv4IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
       }
       return;
@@ -567,7 +567,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllIpv6Outbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv6IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllIpv6Outbound\' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup');
       }
       return;

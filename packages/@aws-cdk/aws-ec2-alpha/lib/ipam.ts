@@ -62,7 +62,7 @@ export interface IpamProps {
    *
    * @default - Stack.region if defined in the stack
    */
-  readonly operatingRegion?: string[];
+  readonly operatingRegions?: string[];
 
   /**
    * Name of IPAM that can be used for tagging resource
@@ -311,7 +311,6 @@ export interface IIpamScopeBase {
  * @internal
  */
 class IpamPool extends Resource implements IIpamPool {
-
   /**
    * Pool ID to be passed to the VPC construct
    * @attribute IpamPoolId
@@ -345,7 +344,7 @@ class IpamPool extends Resource implements IIpamPool {
       throw new Error('awsService is required when addressFamily is set to ipv6');
     }
 
-    //Add tags to the IPAM Pool if name is provided
+    // Add tags to the IPAM Pool if name is provided
     if (props.ipamPoolName) {
       Tags.of(this).add(NAME_TAG, props.ipamPoolName);
     }
@@ -388,7 +387,6 @@ class IpamPool extends Resource implements IIpamPool {
  * @resource AWS::EC2::IPAMScope
  */
 class IpamScope extends Resource implements IIpamScopeBase {
-
   /**
    * Stores the reference to newly created Resource
    */
@@ -434,7 +432,6 @@ class IpamScope extends Resource implements IIpamScopeBase {
   addPool(id: string, options: PoolOptions): IIpamPool {
     return createIpamPool(this.scope, id, this.props, options, this.scopeId);
   }
-
 }
 
 /**
@@ -514,11 +511,11 @@ export class Ipam extends Resource {
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }
-    if (!props?.operatingRegion && !Stack.of(this).region) {
+    if (props?.operatingRegions && (props.operatingRegions.length === 0)) {
       throw new Error('Please provide at least one operating region');
     }
 
-    this.operatingRegions = props?.operatingRegion ?? [Stack.of(this).region];
+    this.operatingRegions = props?.operatingRegions ?? [Stack.of(this).region];
     this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {

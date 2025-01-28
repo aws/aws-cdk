@@ -16,7 +16,6 @@ interface ICidr {
  * IPv4 or IPv6 CIDR range for the subnet
  */
 export class IpCidr implements ICidr {
-
   /**
  * IPv6 CIDR range for the subnet
  * Allowed only if IPv6 is enabled on VPc
@@ -129,7 +128,6 @@ export interface ISubnetV2 extends ISubnet {
  *
  */
 export class SubnetV2 extends Resource implements ISubnetV2 {
-
   /**
    * Import an existing subnet to the VPC
    */
@@ -139,7 +137,6 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     * @resource AWS::EC2::Subnet
     */
     class ImportedSubnetV2 extends Resource implements ISubnetV2 {
-
       /**
       * The IPv6 CIDR Block assigned to this subnet
       */
@@ -255,14 +252,14 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
       throw new Error('CIDR block should be within the range of VPC');
-    };
+    }
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
 
     overlap = validateOverlappingCidrRanges(props.vpc, props.ipv4CidrBlock.cidr);
 
-    //check whether VPC supports ipv6
+    // check whether VPC supports ipv6
     if (props.ipv6CidrBlock?.cidr) {
       validateSupportIpv6(props.vpc);
       overlapIpv6 = validateOverlappingCidrRangesipv6(props.vpc, props.ipv6CidrBlock?.cidr);
@@ -456,7 +453,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
 function validateSupportIpv6(vpc: IVpcV2) {
   if (vpc.secondaryCidrBlock) {
     if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-  secondaryAddress.ipv6IpamPoolId != undefined)) {
+  secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
       throw new Error('To use IPv6, the VPC must enable IPv6 support.');

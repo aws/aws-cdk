@@ -4,7 +4,7 @@ import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
 import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
-import { createTestSubnet } from './util';
+import { createTestSubnet } from './subnet-test-util';
 
 /**
  * Test suite for the SubnetV2 class.
@@ -169,7 +169,7 @@ describe('Subnet V2 with custom IP and routing', () => {
 
   test('Create Subnet with IPv6 if it is Ipam Ipv6 is enabled on VPC', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
@@ -221,9 +221,30 @@ describe('Subnet V2 with custom IP and routing', () => {
     });
   });
 
+  test('Create Subnet with IPv6 if VPC has IPv6 CIDR block enabled', () => {
+    const TestVPC = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool(
+        {
+          ipv6PoolId: 'test-byoip-pool',
+          ipv6CidrBlock: '2001:db8:1::/56',
+          cidrBlockName: 'secondaryIpv6Pool',
+        },
+      )],
+    });
+
+    new subnet.SubnetV2(stack, 'IpamSubnet', {
+      vpc: TestVPC,
+      ipv4CidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv6CidrBlock: new subnet.IpCidr('2001:db8:1::/64'),
+      availabilityZone: 'us-east-1a',
+      subnetType: SubnetType.PUBLIC,
+    });
+  });
+
   test('Should throw error if overlapping CIDR block(IPv6) for the subnet', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
     const pool = ipam.publicScope.addPool('PublicPool0', {
       addressFamily: AddressFamily.IP_V6,
@@ -300,5 +321,86 @@ describe('Subnet V2 with custom IP and routing', () => {
     testsubnet.associateNetworkAcl('TestAssociation', networkAcl);
 
     expect(Template.fromStack(stack).hasResource('AWS::EC2::SubnetNetworkAclAssociation', {}));
+  });
+
+  test('Subnet Creation throws error if assignIPv6 set to true with no IPv6 CIDR', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6(
+        { cidrBlockName: 'SecondaryAddress' })],
+    });
+
+    const subnetConfig = {
+      vpcV2: testVpc,
+      availabilityZone: 'us-east-1a',
+      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+      assignIpv6AddressOnCreation: true,
+    };
+    expect(() => createTestSubnet(stack, subnetConfig)).toThrow('IPv6 CIDR block is required when assigning IPv6 address on creation');
+  });
+
+  test('Subnet field assignIpv6AddressOnCreation is set to true with IPv6 CIDR as an input', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6(
+        { cidrBlockName: 'SecondaryAddress' })],
+    });
+
+    const subnetConfig = {
+      vpcV2: testVpc,
+      availabilityZone: 'us-east-1a',
+      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv6Cidr: new subnet.IpCidr('2001:db8:1::/64'),
+      subnetType: SubnetType.PUBLIC,
+      assignIpv6AddressOnCreation: true,
+    };
+    createTestSubnet(stack, subnetConfig);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      AssignIpv6AddressOnCreation: true,
+      Ipv6CidrBlock: '2001:db8:1::/64',
+    });
+  });
+
+  test('Subnet field assignIpv6AddressOnCreation is set to false by default with IPv6 CIDR as an input', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6(
+        { cidrBlockName: 'SecondaryAddress' })],
+    });
+
+    const subnetConfig = {
+      vpcV2: testVpc,
+      availabilityZone: 'us-east-1a',
+      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      ipv6Cidr: new subnet.IpCidr('2001:db8:1::/64'),
+      subnetType: SubnetType.PUBLIC,
+    };
+    createTestSubnet(stack, subnetConfig);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      AssignIpv6AddressOnCreation: false,
+      Ipv6CidrBlock: '2001:db8:1::/64',
+    });
+  });
+
+  test('Subnet creates custom route Table if not provided as an input', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+    });
+    // Subnet with no route Table as an input
+    const subnetConfig = {
+      vpcV2: testVpc,
+      availabilityZone: 'us-east-1a',
+      cidrBlock: new subnet.IpCidr('10.1.0.0/24'),
+      subnetType: SubnetType.PUBLIC,
+    };
+    createTestSubnet(stack, subnetConfig);
+    Template.fromStack(stack).hasResource('AWS::EC2::RouteTable', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SubnetRouteTableAssociation', {
+      SubnetId: {
+        Ref: 'TestSubnet2A4BE4CA',
+      },
+      RouteTableId: { 'Fn::GetAtt': ['TestSubnetRouteTable5AF4379E', 'RouteTableId'] },
+    });
   });
 });

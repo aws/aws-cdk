@@ -3,6 +3,7 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -16,7 +17,6 @@ export interface IWebSocketApi extends IApi {
  * Represents the currently available API Key Selection Expressions
  */
 export class WebSocketApiKeySelectionExpression {
-
   /**
    * The API will extract the key value from the `x-api-key` header in the user request.
    */
@@ -117,7 +117,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new Error('apiEndpoint is not configured on the imported WebSocketApi.');
+          throw new ValidationError('apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -201,7 +201,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    */
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new Error(`Path must start with '/': ${path}`);
+      throw new UnscopedValidationError(`Path must start with '/': ${path}`);
     }
 
     if (method && method.toUpperCase() === 'ANY') {

@@ -6,7 +6,7 @@ import { IUserPool } from '../user-pool';
 export class ProviderAttribute {
   /** The email attribute provided by Apple */
   public static readonly APPLE_EMAIL = new ProviderAttribute('email');
-  /** The email verified atribute provided by Apple */
+  /** The email verified attribute provided by Apple */
   public static readonly APPLE_EMAIL_VERIFIED = new ProviderAttribute('email_verified');
   /** The name attribute provided by Apple */
   public static readonly APPLE_NAME = new ProviderAttribute('name');
