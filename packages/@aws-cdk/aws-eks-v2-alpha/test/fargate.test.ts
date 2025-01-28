@@ -364,7 +364,7 @@ describe('fargate', () => {
       },
     });
 
-    //THEN
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
       Logging: {
         ClusterLogging: {

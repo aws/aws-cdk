@@ -931,7 +931,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1073,7 +1073,7 @@ export class Cluster extends ClusterBase {
   private readonly version: KubernetesVersion;
 
   // TODO: revisit logging format
-  private readonly logging?: { [key: string]: { [key:string]: any} };;
+  private readonly logging?: { [key: string]: { [key:string]: any} };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1107,7 +1107,6 @@ export class Cluster extends ClusterBase {
 
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
-
     this.version = props.version;
 
     this._kubectlProviderOptions = props.kubectlProviderOptions;
