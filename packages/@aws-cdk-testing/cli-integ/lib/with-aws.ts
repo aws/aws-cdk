@@ -37,7 +37,6 @@ export function withAws<A extends TestContext>(
   disableBootstrap: boolean = false,
 ): (context: A) => Promise<void> {
   return async (context: A) => {
-
     if (atmosphereEnabled()) {
       const atmosphere = new AtmosphereClient(atmosphereEndpoint());
       const allocation = await atmosphere.acquire({ pool: atmospherePool(), requester: context.name });
@@ -59,7 +58,6 @@ export function withAws<A extends TestContext>(
       } finally {
         await atmosphere.release(allocation.id, outcome);
       }
-
     } else {
       return regionPool().using(async (region) => {
         const aws = await AwsClients.forRegion(region, context.output);
@@ -68,7 +66,6 @@ export function withAws<A extends TestContext>(
         return block({ ...context, disableBootstrap, aws });
       });
     }
-
   };
 }
 

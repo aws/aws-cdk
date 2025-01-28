@@ -1435,5 +1435,4 @@ describe('attachWebAclId', () => {
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
     });
   });
-
 });

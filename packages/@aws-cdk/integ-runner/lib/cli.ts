@@ -199,7 +199,6 @@ export async function main(args: string[]) {
       throw new Error(`Some tests failed!\n${message}`);
     }
   }
-
 }
 
 function validateWatchArgs(args: {

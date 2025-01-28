@@ -965,7 +965,6 @@ describe('Distributed Map State', () => {
     });
 
     Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
-
   });
 });
 

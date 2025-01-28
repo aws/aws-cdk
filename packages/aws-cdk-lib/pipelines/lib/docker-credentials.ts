@@ -203,7 +203,6 @@ export function dockerCredentialsInstallCommands(
   usage: DockerCredentialUsage,
   registries?: DockerCredential[],
   osType?: ec2.OperatingSystemType | 'both'): string[] {
-
   const relevantRegistries = (registries ?? []).filter(reg => reg._applicableForUsage(usage));
   if (!relevantRegistries || relevantRegistries.length === 0) { return []; }
 
