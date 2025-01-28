@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AssetStaging, BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerImage, DockerVolume } from 'aws-cdk-lib/core';
-import { Packaging, DependenciesFile } from './packaging';
+import { Packaging } from './packaging';
 import { BundlingOptions, ICommandHooks } from './types';
 
 /**
@@ -118,18 +118,49 @@ export class Bundling implements CdkBundlingOptions {
     this.bundlingFileAccess = props.bundlingFileAccess;
   }
 
+  private createBuildersJson(options: BundlingCommandOptions): any {
+    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
+    return {
+      jsonrpc: '2.0',
+      method: 'LambdaBuilder.build',
+      id: 1,
+      params: {
+        __protocol_version: '0.3',
+        capability: {
+          language: 'python', // derive from runtime
+          dependency_manager: 'pip', // to be set on the basis of provided file
+          application_framework: '',
+        },
+        source_dir: options.inputDir,
+        artifacts_dir: options.outputDir,
+        scratch_dir: '/tmp/poetry-cache',
+        manifest_path: options.entry + packaging.dependenciesFile,
+        runtime: 'python3.8', // to be determined from the input architecture
+        optimizations: {},
+        options: {},
+      },
+    };
+  }
+
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
     let bundlingCommands: string[] = [];
+
+    const buildersJson = this.createBuildersJson(options);
+
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
     const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
     bundlingCommands.push([
       'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
     ].filter(item => item).join(' '));
-    bundlingCommands.push(`cd ${options.outputDir}`);
+    // bundlingCommands.push(`cd ${options.outputDir}`);
+    // bundlingCommands.push(`cd ${options.inputDir}`);
+    bundlingCommands.push(`echo '${JSON.stringify(buildersJson)}' > ${options.inputDir}/sample-manifest.json`);
+
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+      // bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+      bundlingCommands.push('cat sample-manifest.json | lambda-builders');
     }
     bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
     return bundlingCommands;
