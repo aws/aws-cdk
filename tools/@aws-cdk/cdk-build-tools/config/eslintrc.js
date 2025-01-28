@@ -18,6 +18,7 @@ module.exports = {
     '@cdklabs',
     '@stylistic',
     'jest',
+    "jsdoc",
   ],
   overrides: [],
   parser: '@typescript-eslint/parser',
@@ -75,6 +76,11 @@ module.exports = {
     'eol-last': ['error', 'always'], // require a newline a the end of files
     '@stylistic/spaced-comment': ['error', 'always', { 'exceptions': ['/', '*'], 'markers': ['/'] }], // require a whitespace at the beginninng of each comment
     '@stylistic/padded-blocks': ['error', { 'classes': 'never', 'blocks': 'never', 'switches': 'never'}],
+
+    // JSDoc
+    'jsdoc/require-param-description': ['error'],
+    'jsdoc/require-property-description': ['error'],
+    'jsdoc/require-returns-description': ['error'],
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [

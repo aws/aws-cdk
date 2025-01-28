@@ -283,7 +283,6 @@ export function cli(args: string[] = process.argv.slice(2)) {
 /**
  * Read CLI options from a config file if provided.
  *
- * @param fileName
  * @returns parsed CLI config options
  */
 function configFromFile(fileName?: string): Record<string, any> {
