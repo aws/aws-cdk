@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import type { IoMessageCodeCategory, IoMessageLevel } from '../io-message';
-import { isValidCode as verifyValidCode, type VALID_CODE } from './codes';
+import { type VALID_CODE } from './codes';
 import type { ActionLessMessage, ActionLessRequest, Optional, SimplifiedMessage } from './types';
 
 /**
@@ -12,7 +12,7 @@ export function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>, ca
   return {
     time: new Date(),
     level: msg.level,
-    code: msg.code ?? messageCode(msg.level, category),
+    code: msg.code ?? defaultMessageCode(msg.level, category),
     message: msg.message,
     data: msg.data,
   };

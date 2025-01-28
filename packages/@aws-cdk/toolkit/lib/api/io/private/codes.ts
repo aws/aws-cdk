@@ -1,4 +1,3 @@
-import { ToolkitError } from '../../errors';
 import { IoMessageCode } from '../io-message';
 
 export const CODES = {
@@ -42,13 +41,3 @@ export const CODES = {
 // this dynamically generated type will generalize to allow all IoMessageCodes.
 // Instead, we will validate that VALID_CODE must be IoMessageCode with the '&'.
 export type VALID_CODE = keyof typeof CODES & IoMessageCode;
-
-/**
- * Verifies that the input is a valid code, and returns a ToolkitError if not.
- */
-export function isValidCode(code: IoMessageCode): VALID_CODE {
-  if (code in CODES) {
-    return code as VALID_CODE;
-  }
-  throw new ToolkitError(`Invalid message code: ${code}`);
-}
