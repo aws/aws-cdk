@@ -216,7 +216,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     const result = key.addToResourcePolicy(oacKeyPolicyStatement);
     return result;
   }
-};
+}
 
 class S3BucketOriginWithOAI extends S3BucketOrigin {
   private readonly bucket: IBucket;
@@ -242,7 +242,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
-    };
+    }
     // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
     // Only GetObject is needed to retrieve objects for the distribution.
     // This also excludes KMS permissions; OAI only supports SSE-S3 for buckets.
@@ -266,4 +266,4 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
   }
-};
+}

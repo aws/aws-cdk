@@ -1034,7 +1034,7 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
       },
     ],
   });
-};
+}
 
 interface CreatePipelineStackOptions {
   readonly withFeatureFlag?: boolean;
@@ -1053,7 +1053,7 @@ function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack
     pipelineName: `Actual-Pipeline-${options.suffix}`.substring(0, 100),
     pipelineId: options.pipelineId,
   });
-};
+}
 
 // Adding 2 stages with actions so pipeline validation will pass
 function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {

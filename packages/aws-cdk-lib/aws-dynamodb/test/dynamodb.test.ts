@@ -846,14 +846,14 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for table with hash key only', () => {
+  test('get schema for table with hash key only', () => {
     expect(table.schema()).toEqual({
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: undefined,
     });
   });
 
-  test('get scheama for table with hash key + range key', () => {
+  test('get schema for table with hash key + range key', () => {
     table = new Table(stack, 'TableB', {
       tableName: TABLE_NAME,
       partitionKey: TABLE_PARTITION_KEY,
@@ -866,7 +866,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key', () => {
+  test('get schema for GSI with hash key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -878,7 +878,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key + range key', () => {
+  test('get schema for GSI with hash key + range key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -891,7 +891,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for LSI', () => {
+  test('get schema for LSI', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -903,7 +903,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for multiple secondary indexes', () => {
+  test('get schema for multiple secondary indexes', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -926,7 +926,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for unknown secondary index', () => {
+  test('get schema for unknown secondary index', () => {
     expect(() => table.schema(GSI_NAME))
       .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
   });
@@ -1324,7 +1324,7 @@ test('when adding a global secondary index without specifying read and write cap
   );
 });
 
-test.each([true, false])('when adding a global secondary index with contributoreIngishtsEnabled %s', (contributorInsightsEnabled: boolean) => {
+test.each([true, false])('when adding a global secondary index with contributorInsightsEnabled %s', (contributorInsightsEnabled: boolean) => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,

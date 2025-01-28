@@ -664,9 +664,9 @@ function getExtension(source: string): string {
   for ( const ext of ARCHIVE_EXTENSIONS ) {
     if (source.toLowerCase().endsWith(ext)) {
       return ext;
-    };
-  };
+    }
+  }
 
   return path.extname(source);
-};
+}
 

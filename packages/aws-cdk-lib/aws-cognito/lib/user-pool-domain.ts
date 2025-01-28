@@ -4,6 +4,7 @@ import { IUserPool } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -126,14 +127,14 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     super(scope, id);
 
     if (!!props.customDomain === !!props.cognitoDomain) {
-      throw new Error('One of, and only one of, cognitoDomain or customDomain must be specified');
+      throw new ValidationError('One of, and only one of, cognitoDomain or customDomain must be specified', this);
     }
 
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
 
-      throw new Error('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens');
+      throw new ValidationError('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -214,7 +215,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else if (client.oAuthFlows.implicitCodeGrant) {
       responseType = 'token';
     } else {
-      throw new Error('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled');
+      throw new ValidationError('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
     }
     const path = options.signInPath ?? '/login';
     return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;

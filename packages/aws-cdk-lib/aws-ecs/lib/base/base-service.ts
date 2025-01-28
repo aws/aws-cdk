@@ -942,7 +942,7 @@ export abstract class BaseService extends Resource
       namespace: namespace,
       services: services,
     };
-  };
+  }
 
   /**
    * Validate Service Connect Configuration
@@ -970,7 +970,7 @@ export abstract class BaseService extends Resource
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
-      };
+      }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
