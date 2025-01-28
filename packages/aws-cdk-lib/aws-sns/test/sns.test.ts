@@ -283,7 +283,38 @@ describe('Topic', () => {
         ],
       },
     });
+  });
 
+  test('give publishing permissions with masterKey', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'CustomKey');
+    const topic = new sns.Topic(stack, 'Topic', { masterKey: key });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    topic.grantPublish(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
+          },
+          {
+            'Action': ['kms:Decrypt', 'kms:GenerateDataKey*'],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'],
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('give subscribing permissions', () => {
@@ -530,6 +561,21 @@ describe('Topic', () => {
       topicArn: 'arn:aws:sns:*:123456789012:mytopic',
       contentBasedDeduplication: true,
     })).toThrow(/Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics./);
+  });
+
+  test('fromTopicAttributes keyArn', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab';
+
+    //WHEN
+    const imported = sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
+      keyArn,
+    });
+
+    // THEN
+    expect(imported.masterKey?.keyArn).toEqual(keyArn);
   });
 
   test('sets account for imported topic env', () => {
