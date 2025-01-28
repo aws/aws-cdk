@@ -109,8 +109,8 @@ enum Runtime {
 
 export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Default]: Runtime.NODE_20,
-  [Partition.Cn]: Runtime.NODE_18,
-  [Partition.UsGov]: Runtime.NODE_18,
+  [Partition.Cn]: Runtime.NODE_20,
+  [Partition.UsGov]: Runtime.NODE_20,
   [Partition.UsIso]: Runtime.NODE_18,
   [Partition.UsIsoB]: Runtime.NODE_18,
   [Partition.UsIsoF]: Runtime.NODE_18,
