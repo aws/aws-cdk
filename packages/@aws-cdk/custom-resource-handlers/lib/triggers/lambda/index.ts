@@ -5,7 +5,7 @@ import { Lambda, InvocationResponse, InvocationType } from '@aws-sdk/client-lamb
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 export type DecodedInvocationResponse = Omit<InvocationResponse, 'Payload'> & {
-  Payload?: string
+  Payload?: string;
 }
 
 export type InvokeFunction = (functionName: string, invocationType: InvocationType, timeout: number) => Promise<DecodedInvocationResponse>;
