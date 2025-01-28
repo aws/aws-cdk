@@ -313,7 +313,7 @@ function invokeAspectsV2(root: IConstruct) {
         throw new Error(
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
-      };
+      }
 
       aspectApplication.aspect.visit(construct);
 

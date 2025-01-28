@@ -645,13 +645,6 @@ export class JSIIProjectReferences extends ValidationRule {
     if (!isJSII(pkg)) {
       return;
     }
-
-    expectJSON(
-      this.name,
-      pkg,
-      'jsii.projectReferences',
-      pkg.json.name !== 'aws-cdk-lib',
-    );
   }
 }
 

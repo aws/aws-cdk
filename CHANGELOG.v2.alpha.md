@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## [2.177.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.176.0-alpha.0...v2.177.0-alpha.0) (2025-01-24)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Developers must refactor their existing Job
+instantiation method calls to choose the right job type and language,
+and use the new constants static values to define the associated Job
+configuration settings. See the RFC and/or new README for examples.
+
+### Description of how you validated changes
+
+Increased unit test coverage to > 90%, consulted with Glue service team
+on best practices and sane defaults, updated integration tests.
+
+### Features
+
+* **amplify-alpha:** throw `ValidationError` instead of untyped errors ([#33141](https://github.com/aws/aws-cdk/issues/33141)) ([a7cd9eb](https://github.com/aws/aws-cdk/commit/a7cd9ebc55f8fd70a469aea7dcf1c16919475982)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** do not allow unauthorized connection for iam OIDC connection (under feature flag) ([#32921](https://github.com/aws/aws-cdk/issues/32921)) ([3e4f377](https://github.com/aws/aws-cdk/commit/3e4f3773bfa48b75bf0adc7d53d46bbec7714a9e)), closes [#32920](https://github.com/aws/aws-cdk/issues/32920)
+
+
+### Code Refactoring
+
+* **glue-alpha:**  Refactored glue-alpha L2 CDK construct RFC 0497 ([#32521](https://github.com/aws/aws-cdk/issues/32521)) ([1a18dc9](https://github.com/aws/aws-cdk/commit/1a18dc951a3946430231b685bd3584f62055127c))
+
+## [2.176.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.1-alpha.0...v2.176.0-alpha.0) (2025-01-15)
+
+
+### Features
+
+* **scheduler-targets:** add support for universal target ([#32341](https://github.com/aws/aws-cdk/issues/32341)) ([021e6d6](https://github.com/aws/aws-cdk/commit/021e6d6ca6c01ecece485f7a51620fd42e632f0b)), closes [#32328](https://github.com/aws/aws-cdk/issues/32328)
+
+
+### Bug Fixes
+
+* **msk:** clusterName validation in Cluster class is incorrect ([#32792](https://github.com/aws/aws-cdk/issues/32792)) ([41ddd46](https://github.com/aws/aws-cdk/commit/41ddd46dc17e0afd551cce2737ecc11ed343de04)), closes [/github.com/aws/aws-cdk/pull/32505#discussion_r1891027876](https://github.com/aws//github.com/aws/aws-cdk/pull/32505/issues/discussion_r1891027876)
+
+## [2.175.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.175.0-alpha.0...v2.175.1-alpha.0) (2025-01-10)
+
 ## [2.175.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.174.1-alpha.0...v2.175.0-alpha.0) (2025-01-09)
 
 

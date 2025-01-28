@@ -80,7 +80,7 @@ export class SingletonFunction extends FunctionBase {
     this.runtime = this.lambdaFunction.runtime;
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
-    this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
+    this.canCreatePermissions = true; // Doesn't matter, addPermission is overridden anyway
   }
 
   /**
@@ -125,7 +125,7 @@ export class SingletonFunction extends FunctionBase {
 
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn, `${this.functionArn}:*`];
-  };
+  }
 
   /**
    * Adds an environment variable to this Lambda function.

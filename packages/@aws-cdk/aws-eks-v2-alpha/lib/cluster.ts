@@ -1,31 +1,28 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
-import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
-import { AwsAuth } from './aws-auth';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
 import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { IKubectlProvider, KubectlProvider } from './kubectl-provider';
+import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
 import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
 import { OpenIdConnectProvider } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, CfnTag, ArnComponents } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 
 // defaults are based on https://eksctl.io
@@ -104,50 +101,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly eksPodIdentityAgent?: IAddon;
 
   /**
-   * An IAM role that can perform kubectl operations against this cluster.
-   *
-   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
-   */
-  readonly kubectlRole?: iam.IRole;
-
-  /**
-   * Custom environment variables when running `kubectl` against this cluster.
-   */
-  readonly kubectlEnvironment?: { [key: string]: string };
-
-  /**
-   * A security group to use for `kubectl` execution.
-   *
-   * If this is undefined, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
-   * Subnets to host the `kubectl` compute resources.
-   *
-   * If this is undefined, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-
-  /**
-   * An IAM role that can perform kubectl operations against this cluster.
-   *
-   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
-   *
-   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
-   */
-  readonly kubectlLambdaRole?: iam.IRole;
-
-  /**
-   * An AWS Lambda layer that includes `kubectl` and `helm`
-   *
-   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
-   */
-  readonly kubectlLayer?: lambda.ILayerVersion;
-
-  /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
    * @default - IpFamily.IP_V4
@@ -156,11 +109,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly ipFamily?: IpFamily;
 
   /**
-   * An AWS Lambda layer that contains the `aws` CLI.
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * against the cluster. If defined, `kubectlLayer` is a required property.
    *
-   * If not defined, a default layer will be used containing the AWS CLI 1.x.
+   * If not defined, kubectl provider will not be created by default.
    */
-  readonly awscliLayer?: lambda.ILayerVersion;
+  readonly kubectlProviderOptions?: KubectlProviderOptions;
 
   /**
    * Kubectl Provider for issuing kubectl commands against it
@@ -170,30 +124,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlProvider?: IKubectlProvider;
 
   /**
-   * Amount of memory to allocate to the provider's lambda function.
-   */
-  readonly kubectlMemory?: Size;
-
-  /**
-   * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
-   *
-   * If not defined, a default layer will be used.
-   */
-  readonly onEventLayer?: lambda.ILayerVersion;
-
-  /**
    * Indicates whether Kubernetes resources can be automatically pruned. When
    * this is enabled (default), prune labels will be allocated and injected to
    * each resource. These labels will then be used when issuing the `kubectl
    * apply` operation with the `--prune` switch.
    */
   readonly prune: boolean;
-
-  /**
-   * The authentication mode for the cluster.
-   * @default AuthenticationMode.CONFIG_MAP
-   */
-  readonly authenticationMode?: AuthenticationMode;
 
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
@@ -313,84 +249,12 @@ export interface ClusterAttributes {
   readonly securityGroupIds?: string[];
 
   /**
-   * An IAM role with cluster administrator and "system:masters" permissions.
-   * @default - if not specified, it not be possible to issue `kubectl` commands
-   * against an imported cluster.
-   */
-  readonly kubectlRoleArn?: string;
-
-  /**
-   * An IAM role that can perform kubectl operations against this cluster.
-   *
-   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
-   *
-   * This role is directly passed to the lambda handler that sends Kube Ctl commands
-   * to the cluster.
-   * @default - if not specified, the default role created by a lambda function will
-   * be used.
-   */
-  readonly kubectlLambdaRole?: iam.IRole;
-
-  /**
-   * Environment variables to use when running `kubectl` against this cluster.
-   * @default - no additional variables
-   */
-  readonly kubectlEnvironment?: { [name: string]: string };
-
-  /**
-   * A security group to use for `kubectl` execution. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
-   */
-  readonly kubectlSecurityGroupId?: string;
-
-  /**
-   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
-   * endpoint is expected to be accessible publicly.
-   * @default - k8s endpoint is expected to be accessible publicly
-   */
-  readonly kubectlPrivateSubnetIds?: string[];
-
-  /**
    * An Open ID Connect provider for this cluster that can be used to configure service accounts.
    * You can either import an existing provider using `iam.OpenIdConnectProvider.fromProviderArn`,
    * or create a new provider using `new eks.OpenIdConnectProvider`
    * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
    */
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
-
-  /**
-   * An AWS Lambda Layer which includes `kubectl` and Helm.
-   *
-   * This layer is used by the kubectl handler to apply manifests and install
-   * helm charts. You must pick an appropriate releases of one of the
-   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
-   * Kubernetes you have chosen. If you don't supply this value `kubectl`
-   * 1.20 will be used, but that version is most likely too old.
-   *
-   * The handler expects the layer to include the following executables:
-   *
-   * ```
-   * /opt/helm/helm
-   * /opt/kubectl/kubectl
-   * ```
-   *
-   * @default - a default layer with Kubectl 1.20 and helm 3.8.
-   */
-  readonly kubectlLayer?: lambda.ILayerVersion;
-
-  /**
-   * An AWS Lambda layer that contains the `aws` CLI.
-   *
-   * The handler expects the layer to include the following executables:
-   *
-   * ```
-   * /opt/awscli/aws
-   * ```
-   *
-   * @default - a default layer with the AWS CLI 1.x
-   */
-  readonly awscliLayer?: lambda.ILayerVersion;
 
   /**
    * KubectlProvider for issuing kubectl commands.
@@ -400,23 +264,12 @@ export interface ClusterAttributes {
   readonly kubectlProvider?: IKubectlProvider;
 
   /**
-   * Amount of memory to allocate to the provider's lambda function.
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * against the cluster. If defined, `kubectlLayer` is a required property.
    *
-   * @default Size.gibibytes(1)
+   * If not defined, kubectl provider will not be created by default.
    */
-  readonly kubectlMemory?: Size;
-
-  /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the onEvent handler to route AWS SDK requests through a proxy.
-   *
-   * The handler expects the layer to include the following node_modules:
-   *
-   *    proxy-agent
-   *
-   * @default - a layer bundled with this module.
-   */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly kubectlProviderOptions?: KubectlProviderOptions;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -432,7 +285,7 @@ export interface ClusterAttributes {
 /**
  * Options for configuring an EKS cluster.
  */
-export interface CommonClusterOptions {
+export interface ClusterCommonOptions {
   /**
    * The VPC in which to create the Cluster.
    *
@@ -478,28 +331,6 @@ export interface CommonClusterOptions {
   readonly version: KubernetesVersion;
 
   /**
-   * Determines whether a CloudFormation output with the name of the cluster
-   * will be synthesized.
-   *
-   * @default false
-   */
-  readonly outputClusterName?: boolean;
-
-  /**
-   * Determines whether a CloudFormation output with the `aws eks
-   * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
-   *
-   * @default true
-   */
-  readonly outputConfigCommand?: boolean;
-}
-
-/**
- * Options for EKS clusters.
- */
-export interface ClusterOptions extends CommonClusterOptions {
-  /**
    * An IAM role that will be added to the `system:masters` Kubernetes RBAC
    * group.
    *
@@ -519,14 +350,6 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly coreDnsComputeType?: CoreDnsComputeType;
 
   /**
-   * Determines whether a CloudFormation output with the ARN of the "masters"
-   * IAM role will be synthesized (if `mastersRole` is specified).
-   *
-   * @default false
-   */
-  readonly outputMastersRoleArn?: boolean;
-
-  /**
    * Configure access to the Kubernetes API server endpoint..
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
@@ -534,74 +357,6 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default EndpointAccess.PUBLIC_AND_PRIVATE
    */
   readonly endpointAccess?: EndpointAccess;
-
-  /**
-   * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
-   *
-   * @default - No environment variables.
-   */
-  readonly kubectlEnvironment?: { [key: string]: string };
-
-  /**
-   * An AWS Lambda Layer which includes `kubectl` and Helm.
-   *
-   * This layer is used by the kubectl handler to apply manifests and install
-   * helm charts. You must pick an appropriate releases of one of the
-   * `@aws-cdk/layer-kubectl-vXX` packages, that works with the version of
-   * Kubernetes you have chosen. If you don't supply this value `kubectl`
-   * 1.20 will be used, but that version is most likely too old.
-   *
-   * The handler expects the layer to include the following executables:
-   *
-   * ```
-   * /opt/helm/helm
-   * /opt/kubectl/kubectl
-   * ```
-   *
-   * @default - a default layer with Kubectl 1.20.
-   */
-  readonly kubectlLayer?: lambda.ILayerVersion;
-
-  /**
-   * An AWS Lambda layer that contains the `aws` CLI.
-   *
-   * The handler expects the layer to include the following executables:
-   *
-   * ```
-   * /opt/awscli/aws
-   * ```
-   *
-   * @default - a default layer with the AWS CLI 1.x
-   */
-  readonly awscliLayer?: lambda.ILayerVersion;
-
-  /**
-   * Amount of memory to allocate to the provider's lambda function.
-   *
-   * @default Size.gibibytes(1)
-   */
-  readonly kubectlMemory?: Size;
-
-  /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the onEvent handler to route AWS SDK requests through a proxy.
-   *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-node-proxy-agent" SAR application which is available in all
-   * commercial regions.
-   *
-   * To deploy the layer locally define it in your app as follows:
-   *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
-   * });
-   * ```
-   *
-   * @default - a layer bundled with this module.
-   */
-  readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -647,6 +402,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+
   /**
    * The cluster log types which you want to enable.
    *
@@ -655,10 +411,19 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly clusterLogging?: ClusterLoggingTypes[];
 
   /**
-   * The desired authentication mode for the cluster.
-   * @default AuthenticationMode.CONFIG_MAP
+   * The tags assigned to the EKS cluster
+   *
+   * @default - none
    */
-  readonly authenticationMode?: AuthenticationMode;
+  readonly tags?: { [key: string]: string };
+
+  /**
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * against the cluster. If defined, `kubectlLayer` is a required property.
+   *
+   * If not defined, kubectl provider will not be created by default.
+   */
+  readonly kubectlProviderOptions?: KubectlProviderOptions;
 }
 
 /**
@@ -689,7 +454,6 @@ interface EndpointAccessConfig {
  * Endpoint access characteristics.
  */
 export class EndpointAccess {
-
   /**
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.
@@ -755,9 +519,9 @@ export class EndpointAccess {
 }
 
 /**
- * Common configuration props for EKS clusters.
+ * Properties for configuring a standard EKS cluster (non-Fargate)
  */
-export interface ClusterProps extends ClusterOptions {
+export interface ClusterProps extends ClusterCommonOptions {
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -787,13 +551,6 @@ export interface ClusterProps extends ClusterOptions {
   readonly defaultCapacityType?: DefaultCapacityType;
 
   /**
-   * The IAM role to pass to the Kubectl Lambda Handler.
-   *
-   * @default - Default Lambda IAM Execution Role
-   */
-  readonly kubectlLambdaRole?: iam.IRole;
-
-  /**
    * Whether or not IAM principal of the cluster creator was set as a cluster admin access entry
    * during cluster creation time.
    *
@@ -802,14 +559,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default true
    */
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
-
-  /**
-   * The tags assigned to the EKS cluster
-   * TODO: revisit the tag type
-   *
-   * @default - none
-   */
-  readonly tags?: CfnTag[];
 }
 
 /**
@@ -1010,24 +759,6 @@ export enum IpFamily {
   IP_V6 = 'ipv6',
 }
 
-/**
- * Represents the authentication mode for an Amazon EKS cluster.
- */
-export enum AuthenticationMode {
-  /**
-   * Authenticates using a Kubernetes ConfigMap.
-   */
-  CONFIG_MAP = 'CONFIG_MAP',
-  /**
-   * Authenticates using both the Kubernetes API server and a ConfigMap.
-   */
-  API_AND_CONFIG_MAP = 'API_AND_CONFIG_MAP',
-  /**
-   * Authenticates using the Kubernetes API server.
-   */
-  API = 'API',
-}
-
 abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
   public abstract readonly vpc: ec2.IVpc;
@@ -1039,24 +770,8 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly ipFamily?: IpFamily;
-  public abstract readonly kubectlRole?: iam.IRole;
-  public abstract readonly kubectlLambdaRole?: iam.IRole;
-  public abstract readonly kubectlEnvironment?: { [key: string]: string };
-  public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-  public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-  public abstract readonly kubectlMemory?: Size;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
-  public abstract readonly awsAuth: AwsAuth;
-
-  private _spotInterruptHandler?: HelmChart;
-
-  /**
-   * Manages the aws-auth config map.
-   *
-   * @internal
-   */
-  protected _awsAuth?: AwsAuth;
 
   /**
    * Defines a Kubernetes resource in this cluster.
@@ -1112,28 +827,6 @@ abstract class ClusterBase extends Resource implements ICluster {
       ...options,
       cluster: this,
     });
-  }
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added.
-   */
-  private addSpotInterruptHandler() {
-    if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.18.0',
-        repository: 'https://aws.github.io/eks-charts',
-        namespace: 'kube-system',
-        values: {
-          nodeSelector: {
-            lifecycle: LifecycleLabel.SPOT,
-          },
-        },
-      });
-    }
-
-    return this._spotInterruptHandler;
   }
 
   /**
@@ -1200,36 +893,11 @@ abstract class ClusterBase extends Resource implements ICluster {
       excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
-    // do not attempt to map the role if `kubectl` is not enabled for this
-    // cluster or if `mapRole` is set to false. By default this should happen.
-    let mapRole = options.mapRole ?? true;
-    if (mapRole && !(this instanceof Cluster)) {
-      // do the mapping...
-      Annotations.of(autoScalingGroup).addWarningV2('@aws-cdk/aws-eks:clusterUnsupportedAutoMappingAwsAutoRole', 'Auto-mapping aws-auth role for imported cluster is not supported, please map role manually');
-      mapRole = false;
-    }
-    if (mapRole) {
-      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.awsAuth.addRoleMapping(autoScalingGroup.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-    } else {
-      // since we are not mapping the instance role to RBAC, synthesize an
-      // output so it can be pasted into `aws-auth-cm.yaml`
-      new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-        value: autoScalingGroup.role.roleArn,
-      });
-    }
-
-    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
-    // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
-      this.addSpotInterruptHandler();
-    }
+    // since we are not mapping the instance role to RBAC, synthesize an
+    // output so it can be pasted into `aws-auth-cm.yaml`
+    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+      value: autoScalingGroup.role.roleArn,
+    });
 
     if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
@@ -1263,7 +931,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1360,58 +1028,12 @@ export class Cluster extends ClusterBase {
   public readonly defaultNodegroup?: Nodegroup;
 
   /**
-   * An IAM role that can perform kubectl operations against this cluster.
-   *
-   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
-   */
-  public readonly kubectlRole?: iam.IRole;
-
-  /**
-   * An IAM role that can perform kubectl operations against this cluster.
-   *
-   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
-   *
-   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
-   * @default - if not specified, the default role created by a lambda function will
-   * be used.
-   */
-
-  public readonly kubectlLambdaRole?: iam.IRole;
-
-  /**
-   * Custom environment variables when running `kubectl` against this cluster.
-   */
-  public readonly kubectlEnvironment?: { [key: string]: string };
-
-  /**
-   * A security group to use for `kubectl` execution.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
-   * Subnets to host the `kubectl` compute resources.
-   *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
-   * publicly.
-   */
-  public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-
-  /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
    * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   public readonly ipFamily?: IpFamily;
-
-  /**
-   * An IAM role with administrative permissions to create or update the
-   * cluster. This role also has `systems:master` permissions.
-   */
-  public readonly adminRole: iam.Role;
 
   /**
    * If the cluster has one (or more) FargateProfiles associated, this array
@@ -1430,31 +1052,6 @@ export class Cluster extends ClusterBase {
   private _eksPodIdentityAgent?: IAddon;
 
   /**
-   * An AWS Lambda layer that includes `kubectl` and `helm`
-   *
-   * If not defined, a default layer will be used containing Kubectl 1.20 and Helm 3.8
-   */
-  readonly kubectlLayer?: lambda.ILayerVersion;
-
-  /**
-   * An AWS Lambda layer that contains the `aws` CLI.
-   *
-   * If not defined, a default layer will be used containing the AWS CLI 1.x.
-   */
-  readonly awscliLayer?: lambda.ILayerVersion;
-
-  /**
-   * The amount of memory allocated to the kubectl provider's lambda function.
-   */
-  public readonly kubectlMemory?: Size;
-
-  /**
-   * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
-   * undefined, a SAR app that contains this layer will be used.
-   */
-  readonly onEventLayer?: lambda.ILayerVersion;
-
-  /**
    * Determines if Kubernetes resources can be pruned automatically.
    */
   public readonly prune: boolean;
@@ -1464,17 +1061,6 @@ export class Cluster extends ClusterBase {
    * Will be undefined if `albController` wasn't configured.
    */
   public readonly albController?: AlbController;
-
-  /**
-   * The authentication mode for the Amazon EKS cluster.
-   *
-   * The authentication mode determines how users and applications authenticate to the Kubernetes API server.
-   *
-   * @property {AuthenticationMode} [authenticationMode] - The authentication mode for the Amazon EKS cluster.
-   *
-   * @default CONFIG_MAP.
-   */
-  public readonly authenticationMode?: AuthenticationMode;
 
   private readonly _clusterResource: CfnCluster;
 
@@ -1487,7 +1073,7 @@ export class Cluster extends ClusterBase {
   private readonly version: KubernetesVersion;
 
   // TODO: revisit logging format
-  private readonly logging?: { [key: string]: { [key:string]: any} };;
+  private readonly logging?: { [key: string]: { [key:string]: any} };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1503,7 +1089,9 @@ export class Cluster extends ClusterBase {
    */
   private readonly _kubectlReadyBarrier: CfnResource;
 
-  private readonly _kubectlResourceProvider: KubectlProvider;
+  private readonly _kubectlProviderOptions?: KubectlProviderOptions;
+
+  private readonly _kubectlProvider?: IKubectlProvider;
 
   /**
    * Initiates an EKS Cluster with the supplied arguments
@@ -1517,24 +1105,11 @@ export class Cluster extends ClusterBase {
       physicalName: props.clusterName,
     });
 
-    const stack = Stack.of(this);
-
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
-
-    const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
-    if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
-    };
     this.version = props.version;
 
-    // since this lambda role needs to be added to the trust policy of the creation role,
-    // we must create it in this scope (instead of the KubectlProvider nested stack) to avoid
-    // a circular dependency.
-    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : new iam.Role(this, 'KubectlHandlerRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
-    });
+    this._kubectlProviderOptions = props.kubectlProviderOptions;
 
     this.tagSubnets();
 
@@ -1568,12 +1143,7 @@ export class Cluster extends ClusterBase {
     } : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
-    this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlLayer = props.kubectlLayer;
-    this.awscliLayer = props.awscliLayer;
-    this.kubectlMemory = props.kubectlMemory;
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
-    this.onEventLayer = props.onEventLayer;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1597,14 +1167,12 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
-    this.authenticationMode = props.authenticationMode;
-
     const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
       accessConfig: {
-        authenticationMode: props.authenticationMode,
+        authenticationMode: 'API',
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       resourcesVpcConfig: {
@@ -1626,9 +1194,11 @@ export class Cluster extends ClusterBase {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
       },
-      tags: props.tags,
+      tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
     });
+
+    let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
 
@@ -1640,7 +1210,7 @@ export class Cluster extends ClusterBase {
         throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
-      this.kubectlPrivateSubnets = privateSubnets;
+      kubectlSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
@@ -1674,58 +1244,33 @@ export class Cluster extends ClusterBase {
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
-    // we can use the cluster security group since its already attached to the cluster
-    // and configured to allow connections from itself.
-    this.kubectlSecurityGroup = this.clusterSecurityGroup;
+    if (props.kubectlProviderOptions) {
+      this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
+        cluster: this,
+        role: this._kubectlProviderOptions?.role,
+        awscliLayer: this._kubectlProviderOptions?.awscliLayer,
+        kubectlLayer: this._kubectlProviderOptions!.kubectlLayer,
+        environment: this._kubectlProviderOptions?.environment,
+        memory: this._kubectlProviderOptions?.memory,
+        privateSubnets: kubectlSubnets,
+      });
 
-    this.adminRole = new iam.Role(this, 'kubectlRole', {
-      assumedBy: this.kubectlLambdaRole,
-    });;
-
-    this.kubectlRole = this.adminRole;
-
-    this.grantAccess('ClusterAdminRoleAccess', this.kubectlRole.roleArn, [
-      AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
-        accessScopeType: AccessScopeType.CLUSTER,
-      }),
-    ]);
-
-    this._kubectlResourceProvider = this.defineKubectlProvider();
-
-    const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
-    const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [`--region ${stack.region}`];
-
-    if (props.outputClusterName) {
-      new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+      // give the handler role admin access to the cluster
+      // so it can deploy/query any resource.
+      this.grantAccess('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn, [
+        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        }),
+      ]);
     }
-
-    const supportAuthenticationApi = (this.authenticationMode === AuthenticationMode.API ||
-      this.authenticationMode === AuthenticationMode.API_AND_CONFIG_MAP) ? true : false;
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
-      const mastersRole = props.mastersRole;
-
-      // if we support authentication API we create an access entry for this mastersRole
-      // with cluster scope.
-      if (supportAuthenticationApi) {
-        this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
-          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
-            accessScopeType: AccessScopeType.CLUSTER,
-          }),
-        ]);
-      } else {
-        // if we don't support authentication API we should fallback to configmap
-        // this would avoid breaking changes as well if authenticationMode is undefined
-        this.awsAuth.addMastersRole(mastersRole);
-      }
-
-      if (props.outputMastersRoleArn) {
-        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
-      }
-
-      commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
+      this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
+        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        }),
+      ]);
     }
 
     if (props.albController) {
@@ -1743,15 +1288,7 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
-    if (outputConfigCommand) {
-      const postfix = commonCommandOptions.join(' ');
-      new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
-      new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
-    }
-
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
-
   }
 
   /**
@@ -1845,11 +1382,9 @@ export class Cluster extends ClusterBase {
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
-      mapRole: options.mapRole,
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
-      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
@@ -1886,17 +1421,6 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * Lazily creates the AwsAuth resource, which manages AWS authentication mapping.
-   */
-  public get awsAuth() {
-    if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
-    }
-
-    return this._awsAuth;
-  }
-
-  /**
    * If this cluster is kubectl-enabled, returns the OpenID Connect issuer url.
    * If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -1920,6 +1444,10 @@ export class Cluster extends ClusterBase {
     }
 
     return this._openIdConnectProvider;
+  }
+
+  public get kubectlProvider() {
+    return this._kubectlProvider;
   }
 
   /**
@@ -1974,22 +1502,6 @@ export class Cluster extends ClusterBase {
   }
 
   /**
-   * Adds a resource scope that requires `kubectl` to this cluster and returns
-   * the `KubectlProvider` which is the custom resource provider that should be
-   * used as the resource provider.
-   *
-   * Called from `HelmResource` and `KubernetesResource`
-   *
-   * @param resourceScope the construct scope in which kubectl resources are defined.
-   *
-   * @internal
-   */
-  public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
-    Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
-    return this._kubectlResourceProvider;
-  }
-
-  /**
    * Adds an access entry to the cluster's access entries map.
    *
    * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
@@ -2016,17 +1528,13 @@ export class Cluster extends ClusterBase {
     }
   }
 
-  private defineKubectlProvider() {
-    const uid = '@aws-cdk/aws-eks.KubectlProvider';
-
-    // since we can't have the provider connect to multiple networks, and we
-    // wanted to avoid resource tear down, we decided for now that we will only
-    // support a single EKS cluster per CFN stack.
-    if (this.stack.node.tryFindChild(uid)) {
-      throw new Error('Only a single EKS cluster can be defined within a CloudFormation stack');
-    }
-
-    return new KubectlProvider(this.stack, uid, { cluster: this });
+  /**
+   * Adds a resource scope that requires `kubectl` to this cluster and returns
+   *
+   * @internal
+   */
+  public _dependOnKubectlBarrier(resource: Construct) {
+    resource.node.addDependency(this._kubectlReadyBarrier);
   }
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
@@ -2150,16 +1658,6 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * Will automatically update the aws-auth ConfigMap to map the IAM instance
-   * role to RBAC.
-   *
-   * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
-   *
-   * @default - true if the cluster has kubectl enabled (which is the default).
-   */
-  readonly mapRole?: boolean;
-
-  /**
    * Configures the EC2 user-data script for instances in this autoscaling group
    * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
    * with the EKS cluster.
@@ -2184,14 +1682,6 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is used.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -2261,16 +1751,6 @@ export interface BootstrapOptions {
  */
 export interface AutoScalingGroupOptions {
   /**
-   * Will automatically update the aws-auth ConfigMap to map the IAM instance
-   * role to RBAC.
-   *
-   * This cannot be explicitly set to `true` if the cluster has kubectl disabled.
-   *
-   * @default - true if the cluster has kubectl enabled (which is the default).
-   */
-  readonly mapRole?: boolean;
-
-  /**
    * Configures the EC2 user-data script for instances in this autoscaling group
    * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
    * with the EKS cluster.
@@ -2294,14 +1774,6 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -2311,18 +1783,9 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
-  public readonly kubectlRole?: iam.IRole;
-  public readonly kubectlLambdaRole?: iam.IRole;
-  public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
-  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
-  public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
-  public readonly kubectlLayer?: lambda.ILayerVersion;
   public readonly ipFamily?: IpFamily;
-  public readonly awscliLayer?: lambda.ILayerVersion;
-  public readonly kubectlProvider?: IKubectlProvider;
-  public readonly onEventLayer?: lambda.ILayerVersion;
-  public readonly kubectlMemory?: Size;
   public readonly prune: boolean;
+  public readonly kubectlProvider?: IKubectlProvider;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
   // to null check on an instance of `Cluster`, which will always have this configured.
@@ -2333,17 +1796,8 @@ class ImportedCluster extends ClusterBase {
 
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
-    this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
-    this.kubectlLambdaRole = props.kubectlLambdaRole;
-    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
-    this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
-    this.kubectlLayer = props.kubectlLayer;
     this.ipFamily = props.ipFamily;
-    this.awscliLayer = props.awscliLayer;
-    this.kubectlMemory = props.kubectlMemory;
     this.kubectlProvider = props.kubectlProvider;
-    this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
 
     let i = 1;
@@ -2405,10 +1859,6 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
     }
     return this.props.openIdConnectProvider;
-  }
-
-  public get awsAuth(): AwsAuth {
-    throw new Error('"awsAuth" is not supported on imported clusters');
   }
 }
 

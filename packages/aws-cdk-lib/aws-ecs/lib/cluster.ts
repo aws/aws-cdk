@@ -83,8 +83,15 @@ export interface ClusterProps {
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluster.
+   * @deprecated See {@link containerInsightsV2}
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The CloudWatch Container Insights configuration for the cluster
+   *  @default {@link ContainerInsights.DISABLED} This may be overridden by ECS account level settings.
+   */
+  readonly containerInsightsV2?: ContainerInsights;
 
   /**
    * The execute command configuration for the cluster
@@ -136,12 +143,11 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
-
   /**
    * Return whether the given object is a Cluster
    */
-  public static isCluster(x: any) : x is Cluster {
-    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  public static isCluster(x: any): x is Cluster {
+    return x !== null && typeof (x) === 'object' && CLUSTER_SYMBOL in x;
   }
 
   /**
@@ -255,16 +261,25 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
+    if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
+      throw new Error('You cannot set both containerInsights and containerInsightsV2');
+    }
+
     /**
      * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
      * containerInsights settings on the account to apply.  See:
      * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
      */
-    let clusterSettings = undefined;
+    let clusterSettings: CfnCluster.ClusterSettingsProperty[] | undefined;
     if (props.containerInsights !== undefined) {
       clusterSettings = [{
         name: 'containerInsights',
         value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED,
+      }];
+    } else if (props.containerInsightsV2 !== undefined) {
+      clusterSettings = [{
+        name: 'containerInsights',
+        value: props.containerInsightsV2,
       }];
     }
 
@@ -862,7 +877,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * This method returns the specifed CloudWatch metric for this cluster.
+   * This method returns the specified CloudWatch metric for this cluster.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -1197,17 +1212,26 @@ export interface CloudMapNamespaceOptions {
 
 }
 
-enum ContainerInsights {
+/**
+ * The CloudWatch Container Insights setting
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html
+ */
+export enum ContainerInsights {
   /**
    * Enable CloudWatch Container Insights for the cluster
    */
-
   ENABLED = 'enabled',
 
   /**
    * Disable CloudWatch Container Insights for the cluster
    */
   DISABLED = 'disabled',
+
+  /**
+   * Enable CloudWatch Container Insights with enhanced observability for the cluster
+   */
+  ENHANCED = 'enhanced',
 }
 
 /**

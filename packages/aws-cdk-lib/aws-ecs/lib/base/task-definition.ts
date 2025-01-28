@@ -136,7 +136,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   readonly compatibility: Compatibility;
 
@@ -287,7 +287,6 @@ export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
-
   public abstract readonly compatibility: Compatibility;
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
@@ -320,7 +319,6 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
  * The base class for all task definitions.
  */
 export class TaskDefinition extends TaskDefinitionBase {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    *
@@ -843,7 +841,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       const pm = container.findPortMappingByName(name);
       if (pm) {
         portMapping = pm;
-      };
+      }
     });
 
     return portMapping;
@@ -913,7 +911,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     } else {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
     }
-  };
+  }
 }
 
 /**
