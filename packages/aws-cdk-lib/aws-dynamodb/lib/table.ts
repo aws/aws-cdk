@@ -946,7 +946,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   private createMetricsForOperations(metricName: string, operations: Operation[],
     props?: cloudwatch.MetricOptions, metricNameMapper?: (op: Operation) => string): Record<string, cloudwatch.IMetric> {
-
     const metrics: Record<string, cloudwatch.IMetric> = {};
 
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
@@ -956,7 +955,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
     }
 
     for (const operation of operations) {
-
       const metric = this.metric(metricName, {
         ...props,
         dimensionsMap: {
@@ -1085,7 +1083,6 @@ export class Table extends TableBase {
    * @param attrs A `TableAttributes` object.
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-
     class Import extends TableBase {
       public readonly tableName: string;
       public readonly tableArn: string;

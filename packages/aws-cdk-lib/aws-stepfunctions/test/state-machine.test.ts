@@ -103,7 +103,6 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
-
   }),
 
   test('Instantiate Standard State Machine With Comment', () => {
@@ -124,7 +123,6 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"Comment":"zorp"}',
     });
-
   }),
 
   test('Instantiate Express State Machine', () => {
@@ -144,7 +142,6 @@ describe('State Machine', () => {
       StateMachineType: 'EXPRESS',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
-
   }),
 
   test('Instantiate State Machine With Distributed Map State', () => {

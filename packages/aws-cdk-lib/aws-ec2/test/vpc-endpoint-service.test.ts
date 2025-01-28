@@ -46,7 +46,6 @@ describe('vpc endpoint service', () => {
         AllowedPrincipals: [],
       });
       expect(Object.keys(servicePermissions).length).toBe(0);
-
     });
     test('create endpoint service with a principal', () => {
       // GIVEN
@@ -72,7 +71,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
-
     });
 
     test('create endpoint service with a service principal (workaround)', () => {
@@ -99,7 +97,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['ec2.amazonaws.com'],
       });
-
     });
 
     test('with acceptance required', () => {
@@ -126,7 +123,6 @@ describe('vpc endpoint service', () => {
         },
         AllowedPrincipals: ['arn:aws:iam::123456789012:root'],
       });
-
     });
 
     test('with contributor insights enabled', () => {
@@ -148,7 +144,6 @@ describe('vpc endpoint service', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
         ContributorInsightsEnabled: true,
       });
-
     });
   });
 });

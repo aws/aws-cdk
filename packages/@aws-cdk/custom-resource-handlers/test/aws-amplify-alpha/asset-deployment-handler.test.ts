@@ -34,7 +34,6 @@ import {
 } from '../../lib/aws-amplify-alpha/asset-deployment-handler/index';
 
 describe('handler', () => {
-
   let oldConsoleLog: any;
 
   beforeAll(() => {

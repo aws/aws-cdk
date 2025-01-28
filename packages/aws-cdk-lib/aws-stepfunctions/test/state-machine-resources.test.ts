@@ -294,7 +294,6 @@ describe('State Machine Resources', () => {
         })]),
       },
     });
-
   }),
 
   test('Created state machine can grant start sync execution to a role', () => {
@@ -324,7 +323,6 @@ describe('State Machine Resources', () => {
         })]),
       },
     });
-
   }),
 
   test('Created state machine can grant read access to a role', () => {
@@ -410,7 +408,6 @@ describe('State Machine Resources', () => {
       },
     },
     );
-
   }),
 
   test('Created state machine can grant task response actions to the state machine', () => {
@@ -536,7 +533,6 @@ describe('State Machine Resources', () => {
         ],
       },
     });
-
   }),
 
   test('Imported state machine can grant start execution to a role', () => {
