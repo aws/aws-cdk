@@ -3,6 +3,7 @@ import * as path from 'path';
 import { testFixture } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
@@ -12,6 +13,9 @@ test.each(versions)('support AlbControllerVersion (%s)', (version) => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
   AlbController.create(stack, {
     cluster,
@@ -61,6 +65,9 @@ test('can configure a custom repository', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
@@ -94,6 +101,9 @@ test('throws when a policy is not defined for a custom version', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   expect(() => AlbController.create(stack, {
@@ -106,6 +116,9 @@ test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded pa
   const { stack } = testFixture(region);
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
@@ -122,6 +135,9 @@ test('correct helm chart version is set for selected alb controller version', ()
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
