@@ -109,7 +109,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly ipFamily?: IpFamily;
 
   /**
-   * Optionsl for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
    * If not defined, kubectl provider will not be created by default.
@@ -264,7 +264,7 @@ export interface ClusterAttributes {
   readonly kubectlProvider?: IKubectlProvider;
 
   /**
-   * Optionsl for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
    * If not defined, kubectl provider will not be created by default.
@@ -418,7 +418,7 @@ export interface ClusterCommonOptions {
   readonly tags?: { [key: string]: string };
 
   /**
-   * Optionsl for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
+   * Options for creating the kubectl provider - a lambda function that executes `kubectl` and `helm`
    * against the cluster. If defined, `kubectlLayer` is a required property.
    *
    * If not defined, kubectl provider will not be created by default.

@@ -51,6 +51,10 @@ export interface KubectlProviderOptions {
    */
   readonly kubectlLayer: lambda.ILayerVersion;
 
+  /**
+   * Subnets to host the `kubectl` compute resources. If not specified, the k8s
+   * endpoint is expected to be accessible publicly.
+   */
   readonly privateSubnets?: ec2.ISubnet[];
 }
 
@@ -213,7 +217,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
       vpc: props.cluster.vpc,
-      // vpcSubnets,
+      vpcSubnets: privateSubnets,
       securityGroups,
     });
 
