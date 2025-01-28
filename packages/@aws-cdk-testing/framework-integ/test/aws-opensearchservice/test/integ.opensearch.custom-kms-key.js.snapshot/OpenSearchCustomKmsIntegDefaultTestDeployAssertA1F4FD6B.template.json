@@ -35,7 +35,7 @@
      "DomainConfig.AccessPolicies.Options.Statement.0.Action",
      "DomainConfig.AccessPolicies.Options.Statement.0.Resource"
     ],
-    "salt": "1724977452110"
+    "salt": "1733074723690"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -97,7 +97,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "75aa2ef7bfc4e8dd2ed395b0951f67d000a50889f9984f51fad83d40087c84cd.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
