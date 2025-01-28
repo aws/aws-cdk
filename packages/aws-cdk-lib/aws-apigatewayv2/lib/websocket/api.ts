@@ -200,7 +200,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   public arnForExecuteApi(route?: string, stage?: string): string {
     if (route&&!route.startsWith('$')) {
       route = `$${route}`;
-    };
+    }
 
     return Stack.of(this).formatArn({
       service: 'execute-api',
