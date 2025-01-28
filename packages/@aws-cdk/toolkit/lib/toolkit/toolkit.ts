@@ -14,7 +14,7 @@ import { RollbackOptions } from '../actions/rollback';
 import { SynthOptions } from '../actions/synth';
 import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
 import { SdkOptions } from '../api/aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage } from '../api/aws-cdk';
+import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
@@ -455,15 +455,15 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
-        // @todo
-        // if (options.cloudWatchLogMonitor) {
-        //   const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
-        //   options.cloudWatchLogMonitor.addLogGroups(
-        //     foundLogGroupsResult.env,
-        //     foundLogGroupsResult.sdk,
-        //     foundLogGroupsResult.logGroupNames,
-        //   );
-        // }
+        if (options.cloudWatchLogMonitor) {
+          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
+          options.cloudWatchLogMonitor.addLogGroups(
+            foundLogGroupsResult.env,
+            foundLogGroupsResult.sdk,
+            foundLogGroupsResult.logGroupNames,
+          );
+          await ioHost.notify(info(`The following log groups are added: ${foundLogGroupsResult.logGroupNames}`, 'CDK_TOOLKIT_I3001'));
+        }
 
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
@@ -567,13 +567,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    // @todo
-    // const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
-      // cloudWatchLogMonitor?.deactivate();
+      cloudWatchLogMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(assembly, options);
+      await this.invokeDeployFromWatch(assembly, options, cloudWatchLogMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -582,10 +581,10 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         await ioHost.notify(info("Detected file changes during deployment. Invoking 'cdk deploy' again"));
-        await this.invokeDeployFromWatch(assembly, options);
+        await this.invokeDeployFromWatch(assembly, options, cloudWatchLogMonitor);
       }
       latch = 'open';
-      // cloudWatchLogMonitor?.activate();
+      cloudWatchLogMonitor?.activate();
     };
 
     chokidar
@@ -768,11 +767,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   private async invokeDeployFromWatch(
     assembly: StackAssembly,
     options: WatchOptions,
+    cloudWatchLogMonitor?: CloudWatchLogEventMonitor,
   ): Promise<void> {
     const deployOptions: ExtendedDeployOptions = {
       ...options,
       requireApproval: RequireApproval.NEVER,
-      // cloudWatchLogMonitor,
+      cloudWatchLogMonitor,
       hotswap: options.hotswap,
       extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
       concurrency: options.concurrency,

@@ -1,4 +1,5 @@
 import { RequireApproval, StackParameters } from '../../lib';
+import { CloudWatchLogEventMonitor } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
 
@@ -125,6 +126,22 @@ describe('deploy', () => {
       }));
 
       successfulDeployment();
+    });
+
+    test('cloudWatchLogMonitor can be passed in', async () => {
+      // WHEN
+      const cx = await builderFixture(toolkit, 'stack-with-role');
+      await toolkit.deploy(cx, {
+        cloudWatchLogMonitor: new CloudWatchLogEventMonitor(),
+      });
+
+      // THEN
+      expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+        action: 'deploy',
+        level: 'info',
+        code: 'CDK_TOOLKIT_I3001',
+        message: expect.stringContaining('The following log groups are added'),
+      }));
     });
 
     test('non sns notification arn results in error', async () => {

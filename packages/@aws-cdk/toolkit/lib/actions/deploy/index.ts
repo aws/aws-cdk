@@ -1,4 +1,4 @@
-import { StackActivityProgress } from '../../api/aws-cdk';
+import { CloudWatchLogEventMonitor, StackActivityProgress } from '../../api/aws-cdk';
 import type { StackSelector } from '../../api/cloud-assembly';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
@@ -260,4 +260,12 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * cloudWatchLogMonitor.setLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
