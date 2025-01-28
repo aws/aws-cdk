@@ -16,7 +16,7 @@ integTest(
 
     // Run a 'cdk deploy' inside the container
     const commands = [
-      `env ${renderEnv(fixture.cdkShellEnv())} ${cdkFullpath} ${fixture.cdkDeployCommandLine('test-2', { verbose: true }).join(' ')}`,
+      `env ${renderEnv(fixture.cdkShellEnv())} ${cdkFullpath} ${fixture.cdkDeployCommandLine('test-2').join(' ')} -v`,
     ];
 
     await runInIsolatedContainer(fixture, [cdkTop], commands);
