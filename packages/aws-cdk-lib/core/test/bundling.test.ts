@@ -578,7 +578,7 @@ describe('bundling', () => {
     } catch {
       // We expect this to fail as the test environment will not have the required docker setup for the command to exit successfully
       // nevertheless what we want to check here is that the command was built correctly and triggered
-    };
+    }
 
     expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',

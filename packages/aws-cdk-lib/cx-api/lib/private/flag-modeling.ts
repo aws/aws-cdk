@@ -25,7 +25,7 @@ export enum FlagType {
    * Use this type for flags that are to be removed on a set date
    */
   Temporary,
-};
+}
 
 export interface FlagInfoBase {
   /** Single-line description for the flag */
@@ -38,7 +38,7 @@ export interface FlagInfoBase {
   readonly defaults?: { v1?: any; v2?: any };
   /** Default in new projects */
   readonly recommendedValue: any;
-};
+}
 
 /** Flag information, adding required fields if present */
 export type FlagInfo = FlagInfoBase & (
