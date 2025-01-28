@@ -389,7 +389,6 @@ export class ClusterResourceHandler extends ResourceHandler {
 }
 
 function parseProps(props: any): EKS.CreateClusterCommandInput {
-
   const parsed = props?.Config ?? {};
 
   // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
@@ -408,7 +407,6 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
   }
 
   return parsed;
-
 }
 
 interface UpdateMap {

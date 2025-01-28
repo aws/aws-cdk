@@ -364,7 +364,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds VPNGAtewayV2 to this VPC
    */
   public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
-
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
@@ -427,7 +426,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
-
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
       egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
@@ -513,7 +511,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @internal
    */
   private addDefaultInternetRoute(subnet: ISubnetV2, igw: InternetGateway, options?: InternetGatewayOptions): void {
-
     // Add default route to IGW for IPv6
     if (subnet.ipv6CidrBlock) {
       new Route(this, `${subnet.node.id}-DefaultIPv6Route`, {
@@ -624,7 +621,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     if (selection.subnetGroupName !== undefined) { // Select by name
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
-
     } else { // Or specify by type
       const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
       subnets = this.selectSubnetObjectsByType(type);
@@ -688,7 +684,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   * PUBLIC (in that order) that has any subnets.
   */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
     if ('subnetName' in placement && placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
@@ -761,5 +756,4 @@ class CompositeDependable implements IDependable {
 function tap<T>(x: T, fn: (x: T) => void): T {
   fn(x);
   return x;
-
 }

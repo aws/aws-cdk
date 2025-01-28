@@ -443,7 +443,6 @@ describe('cluster', () => {
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
         new eks.HelmChart(this, `chart-${id}`, { cluster: props.cluster, chart: resource.ref });
-
       }
     }
 
@@ -1059,7 +1058,6 @@ describe('cluster', () => {
       });
 
       describe('spot instances', () => {
-
         test('nodes labeled an tainted accordingly', () => {
           // GIVEN
           const { app, stack } = testFixtureNoVpc();

@@ -65,7 +65,6 @@ describe('receipt rule', () => {
         },
       },
     });
-
   });
 
   test('import receipt rule', () => {
@@ -100,7 +99,6 @@ describe('receipt rule', () => {
         },
       },
     });
-
   });
 
   test('can add actions in rule props', () => {
@@ -137,7 +135,6 @@ describe('receipt rule', () => {
         'Ref': 'RuleSetE30C6C48',
       },
     });
-
   });
 
   test('can add action with addAction', () => {
@@ -171,6 +168,5 @@ describe('receipt rule', () => {
         'Ref': 'RuleSetE30C6C48',
       },
     });
-
   });
 });

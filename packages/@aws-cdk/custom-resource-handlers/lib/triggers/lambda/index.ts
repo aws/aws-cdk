@@ -110,7 +110,6 @@ function parseError(payload?: string): string {
   console.log(`Error payload: ${payload}`);
 
   try {
-
     const error = JSON.parse(payload);
     const concat = [error.errorMessage, error.trace].filter(x => x).join('\n');
     return concat.length > 0 ? concat : payload;
