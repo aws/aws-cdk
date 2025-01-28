@@ -740,24 +740,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -954,24 +936,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1157,24 +1121,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
          ]
         }
        ]
@@ -1516,24 +1462,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -1730,24 +1658,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1933,24 +1843,6 @@
            },
            ":*"
           ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "IsComplete544AE5AD",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OnEvent74718524",
-          "Arn"
          ]
         }
        ]
@@ -2260,10 +2152,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -2314,10 +2206,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

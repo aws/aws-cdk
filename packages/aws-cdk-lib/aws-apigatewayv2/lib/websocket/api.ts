@@ -3,6 +3,7 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
+
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -116,7 +117,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new Error('apiEndpoint is not configured on the imported WebSocketApi.');
+          throw new ValidationError('apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }
