@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "5b6da567a9d5b7fb32b586eb491a0b83e2f5e77370d17532486bd34d65be22fb": {
+      "source": {
+        "path": "VpcPeeringSameAccountIntegStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5b6da567a9d5b7fb32b586eb491a0b83e2f5e77370d17532486bd34d65be22fb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

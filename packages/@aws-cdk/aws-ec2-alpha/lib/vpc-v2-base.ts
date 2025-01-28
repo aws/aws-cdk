@@ -302,6 +302,12 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   protected _internetGatewayId = '';
 
   /**
+   * Mutable private field for the EgressOnlyInternetGatewayId
+   * @internal
+   */
+  protected _egressOnlyInternetGatewayId = '';
+
+  /**
   * Return information on the subnets appropriate for the given selection strategy
   *
   * Requires that at least one subnet is matched, throws a descriptive
@@ -432,6 +438,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       vpc: this,
       egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
     });
+    this._egressOnlyInternetGatewayId = egw.routerTargetId;
 
     let useIpv6;
     if (this.secondaryCidrBlock) {
@@ -608,6 +615,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   */
   public get internetGatewayId(): string | undefined {
     return this._internetGatewayId;
+  }
+
+  /**
+   * Returns the id of the Egress Only Internet Gateway (if enabled)
+   */
+  public get egressOnlyInternetGatewayId(): string | undefined {
+    return this._egressOnlyInternetGatewayId;
   }
 
   /**

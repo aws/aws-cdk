@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "2b2e7fcb5b1586ec4c6ed9da82d05de65ab47a5cbea18d779a1a3ccaf61064f2": {
+      "source": {
+        "path": "aws-cdk-ec2-alpha-gateways.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2b2e7fcb5b1586ec4c6ed9da82d05de65ab47a5cbea18d779a1a3ccaf61064f2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
