@@ -1,5 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib/core';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Cluster, FargateCluster, ClusterProps, KubernetesVersion } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_25;
@@ -39,6 +40,9 @@ export function testFixtureCluster(props: Omit<ClusterProps, 'version'> = {}, re
   const clusterProps = {
     version: CLUSTER_VERSION,
     prune: false, // mainly because this feature was added later and we wanted to avoid having to update all test expectations....
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
     ...props,
   };
   const cluster = options?.isFargate ? new FargateCluster(stack, 'Cluster', clusterProps) : new Cluster(stack, 'Cluster', clusterProps);
