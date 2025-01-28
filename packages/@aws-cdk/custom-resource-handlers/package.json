@@ -63,7 +63,6 @@
     "@aws-sdk/client-kms": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cloudwatch": "3.632.0",
-    "prettier": "^2.8.8",
     "p-limit": "^3.1.0"
   },
   "repository": {
