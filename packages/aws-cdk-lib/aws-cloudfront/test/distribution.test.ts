@@ -1,10 +1,12 @@
 import { defaultOrigin, defaultOriginGroup, defaultOriginWithOriginAccessControl } from './test-origin';
 import { Annotations, Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
+import { HttpOrigin, OriginGroup } from '../../aws-cloudfront-origins';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
+import { CfnChannelGroup } from '../../aws-mediapackagev2';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack } from '../../core';
 import {
@@ -18,6 +20,7 @@ import {
   HttpVersion,
   IOrigin,
   LambdaEdgeEventType,
+  OriginSelectionCriteria,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
