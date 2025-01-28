@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "origin-group-selection-criteria/DefaultTest": {
+      "stacks": [
+        "cloudfront-origin-group-selection-criteria"
+      ],
+      "assertionStack": "origin-group-selection-criteria/DefaultTest/DeployAssert",
+      "assertionStackName": "origingroupselectioncriteriaDefaultTestDeployAssert18CEDA1E"
+    }
+  }
+}
