@@ -701,6 +701,8 @@ Tags.of(vpc).add('Environment', 'Production');
 
 The AWS Transit Gateway construct library allows you to create and configure Transit Gateway resources using AWS CDK.
 
+See [AWS Transit Gateway Docs](docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html) for more info. 
+
 ### Overview
 
 The Transit Gateway construct (`TransitGateway`) is the main entry point for creating and managing your Transit Gateway infrastructure. It provides methods to create route tables, attach VPCs, and configure cross-account access.
@@ -749,6 +751,8 @@ const routeTable = transitGateway.addRouteTable('CustomRouteTable');
 ```
 
 ### Attaching VPCs to the Transit Gateway
+
+Currently only VPC to Transit Gateway attachments are supported.
 
 Create an attachment from a VPC to the Transit Gateway using the `attachVpc()` method:
 

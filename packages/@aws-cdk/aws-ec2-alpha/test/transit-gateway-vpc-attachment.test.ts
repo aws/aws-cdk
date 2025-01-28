@@ -46,7 +46,10 @@ describe('TransitGatewayVpcAttachment', () => {
         },
       ],
       TransitGatewayId: {
-        Ref: 'TransitGateway11B93D57',
+        'Fn::GetAtt': [
+          'TransitGateway11B93D57',
+          'Id',
+        ],
       },
       VpcId: {
         'Fn::GetAtt': [

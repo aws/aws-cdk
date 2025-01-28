@@ -4,6 +4,7 @@
       "from-method:@aws-cdk/aws-ec2-alpha.Route",
       "from-method:@aws-cdk/aws-ec2-alpha.TransitGateway",
       "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTableAssociation",
-      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTablePropagation"
+      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTablePropagation",
+      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayVpcAttachment"
     ]
 }

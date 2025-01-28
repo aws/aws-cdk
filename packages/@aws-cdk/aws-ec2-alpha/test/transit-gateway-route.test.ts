@@ -70,11 +70,17 @@ describe('Transit Gateway Route', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRoute', {
         Blackhole: false,
         DestinationCidrBlock: '10.1.0.0/16',
-        TransitGatewayRouteTableId: {
-          Ref: 'TransitGatewayRouteTableD2EDBDC1',
-        },
         TransitGatewayAttachmentId: {
-          Ref: 'TransitGatewayVpcAttachment0B27B76B',
+          'Fn::GetAtt': [
+            'TransitGatewayVpcAttachment0B27B76B',
+            'Id',
+          ],
+        },
+        TransitGatewayRouteTableId: {
+          'Fn::GetAtt': [
+            'TransitGatewayRouteTableD2EDBDC1',
+            'TransitGatewayRouteTableId',
+          ],
         },
       });
     });
@@ -93,7 +99,10 @@ describe('Transit Gateway Route', () => {
         Blackhole: true,
         DestinationCidrBlock: '10.2.0.0/16',
         TransitGatewayRouteTableId: {
-          Ref: 'TransitGatewayRouteTableD2EDBDC1',
+          'Fn::GetAtt': [
+            'TransitGatewayRouteTableD2EDBDC1',
+            'TransitGatewayRouteTableId',
+          ],
         },
       });
     });

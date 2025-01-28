@@ -202,7 +202,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTable",
                       "aws:cdk:cloudformation:props": {
                         "transitGatewayId": {
-                          "Ref": "TransitGateway11B93D57"
+                          "Fn::GetAtt": [
+                            "TransitGateway11B93D57",
+                            "Id"
+                          ]
                         }
                       }
                     },
@@ -224,10 +227,16 @@
                             "blackhole": false,
                             "destinationCidrBlock": "0.0.0.0/0",
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+                              "Fn::GetAtt": [
+                                "TransitGatewayDefaultRtbAttachment6E19DB55",
+                                "Id"
+                              ]
                             },
                             "transitGatewayRouteTableId": {
-                              "Ref": "TransitGatewayDefaultRouteTable608EC117"
+                              "Fn::GetAtt": [
+                                "TransitGatewayDefaultRouteTable608EC117",
+                                "TransitGatewayRouteTableId"
+                              ]
                             }
                           }
                         },
@@ -238,13 +247,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTable",
                   "version": "0.0.0"
                 }
               },
@@ -264,7 +273,10 @@
                           }
                         ],
                         "transitGatewayId": {
-                          "Ref": "TransitGateway11B93D57"
+                          "Fn::GetAtt": [
+                            "TransitGateway11B93D57",
+                            "Id"
+                          ]
                         },
                         "vpcId": {
                           "Fn::GetAtt": [
@@ -281,7 +293,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayVpcAttachment",
                   "version": "0.0.0"
                 }
               },
@@ -296,7 +308,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTable",
                       "aws:cdk:cloudformation:props": {
                         "transitGatewayId": {
-                          "Ref": "TransitGateway11B93D57"
+                          "Fn::GetAtt": [
+                            "TransitGateway11B93D57",
+                            "Id"
+                          ]
                         }
                       }
                     },
@@ -316,10 +331,16 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+                              "Fn::GetAtt": [
+                                "TransitGatewayDefaultRtbAttachment6E19DB55",
+                                "Id"
+                              ]
                             },
                             "transitGatewayRouteTableId": {
-                              "Ref": "TransitGatewayRouteTable2047E2A04"
+                              "Fn::GetAtt": [
+                                "TransitGatewayRouteTable2047E2A04",
+                                "TransitGatewayRouteTableId"
+                              ]
                             }
                           }
                         },
@@ -330,7 +351,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -345,10 +366,16 @@
                           "aws:cdk:cloudformation:type": "AWS::EC2::TransitGatewayRouteTablePropagation",
                           "aws:cdk:cloudformation:props": {
                             "transitGatewayAttachmentId": {
-                              "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+                              "Fn::GetAtt": [
+                                "TransitGatewayDefaultRtbAttachment6E19DB55",
+                                "Id"
+                              ]
                             },
                             "transitGatewayRouteTableId": {
-                              "Ref": "TransitGatewayRouteTable2047E2A04"
+                              "Fn::GetAtt": [
+                                "TransitGatewayRouteTable2047E2A04",
+                                "TransitGatewayRouteTableId"
+                              ]
                             }
                           }
                         },
@@ -359,19 +386,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTablePropagation",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTable",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-ec2-alpha.TransitGateway",
               "version": "0.0.0"
             }
           },

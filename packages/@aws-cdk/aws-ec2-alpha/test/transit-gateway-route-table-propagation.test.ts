@@ -54,7 +54,7 @@ describe('TransitGatewayRouteTablePropagation', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRouteTablePropagation', {
-      TransitGatewayAttachmentId: stack.resolve(attachment.transitGatewayVpcAttachmentId),
+      TransitGatewayAttachmentId: stack.resolve(attachment.transitGatewayAttachmentId),
       TransitGatewayRouteTableId: stack.resolve(routeTable.routeTableId),
     });
   });

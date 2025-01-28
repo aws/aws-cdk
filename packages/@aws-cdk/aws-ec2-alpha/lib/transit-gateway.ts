@@ -11,7 +11,7 @@ import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable } from '.
 /**
  * Represents a Transit Gateway.
  */
-export interface ITransitGateway extends cdk.IResource {
+export interface ITransitGateway extends cdk.IResource, IRouteTarget {
   /**
    * The unique identifier of the Transit Gateway.
    *
@@ -19,7 +19,7 @@ export interface ITransitGateway extends cdk.IResource {
    * and is used to reference it in various configurations and operations.
    * @attribute
    */
-  readonly transitGatewayId: string;                                                                                                                                                                      
+  readonly transitGatewayId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the Transit Gateway.
@@ -213,11 +213,15 @@ export class TransitGateway extends TransitGatewayBase {
   public readonly defaultRouteTable: ITransitGatewayRouteTable;
   public readonly defaultRouteTableAssociation: boolean;
   public readonly defaultRouteTablePropagation: boolean;
+  /**
+   * The AWS CloudFormation resource representing the Transit Gateway.
+   */
+  public readonly resource: CfnTransitGateway;
 
   constructor(scope: Construct, id: string, props: TransitGatewayProps = {}) {
     super(scope, id);
 
-    const resource = new CfnTransitGateway(this, id, {
+    this.resource = new CfnTransitGateway(this, id, {
       amazonSideAsn: props.amazonSideAsn ?? undefined,
       autoAcceptSharedAttachments: getFeatureStatusDefaultDisable(props.autoAcceptSharedAttachments),
       // Default Association/Propagation will always be false when creating the L1 to prevent EC2 from creating the default route table.
@@ -230,14 +234,12 @@ export class TransitGateway extends TransitGatewayBase {
       vpnEcmpSupport: getFeatureStatusDefaultEnable(props.vpnEcmpSupport),
     });
 
-    this.transitGatewayId = resource.ref;
-    this.routerTargetId = resource.ref;
+    this.node.defaultChild = this.resource;
+
+    this.transitGatewayId = this.resource.attrId;
+    this.routerTargetId = this.resource.attrId;
     this.routerType = RouterType.TRANSIT_GATEWAY;
-    this.transitGatewayArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'ec2',
-      resource: 'transit-gateway',
-      resourceName: this.physicalName,
-    });
+    this.transitGatewayArn = this.resource.attrTransitGatewayArn;
 
     this.defaultRouteTable = new TransitGatewayRouteTable(this, 'DefaultRouteTable', {
       transitGateway: this,

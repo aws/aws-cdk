@@ -96,7 +96,10 @@
    "Type": "AWS::EC2::TransitGatewayRouteTable",
    "Properties": {
     "TransitGatewayId": {
-     "Ref": "TransitGateway11B93D57"
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
     }
    }
   },
@@ -106,10 +109,16 @@
     "Blackhole": false,
     "DestinationCidrBlock": "0.0.0.0/0",
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
     },
     "TransitGatewayRouteTableId": {
-     "Ref": "TransitGatewayDefaultRouteTable608EC117"
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRouteTable608EC117",
+      "TransitGatewayRouteTableId"
+     ]
     }
    }
   },
@@ -122,7 +131,10 @@
      }
     ],
     "TransitGatewayId": {
-     "Ref": "TransitGateway11B93D57"
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
     },
     "VpcId": {
      "Fn::GetAtt": [
@@ -136,7 +148,10 @@
    "Type": "AWS::EC2::TransitGatewayRouteTable",
    "Properties": {
     "TransitGatewayId": {
-     "Ref": "TransitGateway11B93D57"
+     "Fn::GetAtt": [
+      "TransitGateway11B93D57",
+      "Id"
+     ]
     }
    }
   },
@@ -144,10 +159,16 @@
    "Type": "AWS::EC2::TransitGatewayRouteTableAssociation",
    "Properties": {
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
     },
     "TransitGatewayRouteTableId": {
-     "Ref": "TransitGatewayRouteTable2047E2A04"
+     "Fn::GetAtt": [
+      "TransitGatewayRouteTable2047E2A04",
+      "TransitGatewayRouteTableId"
+     ]
     }
    }
   },
@@ -155,10 +176,16 @@
    "Type": "AWS::EC2::TransitGatewayRouteTablePropagation",
    "Properties": {
     "TransitGatewayAttachmentId": {
-     "Ref": "TransitGatewayDefaultRtbAttachment6E19DB55"
+     "Fn::GetAtt": [
+      "TransitGatewayDefaultRtbAttachment6E19DB55",
+      "Id"
+     ]
     },
     "TransitGatewayRouteTableId": {
-     "Ref": "TransitGatewayRouteTable2047E2A04"
+     "Fn::GetAtt": [
+      "TransitGatewayRouteTable2047E2A04",
+      "TransitGatewayRouteTableId"
+     ]
     }
    }
   }

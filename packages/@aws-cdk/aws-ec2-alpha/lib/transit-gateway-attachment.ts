@@ -7,7 +7,7 @@ export interface ITransitGatewayAttachment extends IResource {
    * The ID of the transit gateway attachment.
    * @attribute
    */
-  readonly transitGatewayVpcAttachmentId: string;
+  readonly transitGatewayAttachmentId: string;
 }
 
 /**
@@ -15,5 +15,5 @@ export interface ITransitGatewayAttachment extends IResource {
  * @internal
  */
 export abstract class TransitGatewayAttachmentBase extends Resource implements ITransitGatewayAttachment {
-  public abstract readonly transitGatewayVpcAttachmentId: string;
+  public abstract readonly transitGatewayAttachmentId: string;
 }

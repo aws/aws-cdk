@@ -68,7 +68,10 @@ describe('Transit Gateway with default settings', () => {
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -96,7 +99,10 @@ describe('Transit Gateway with default settings', () => {
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -104,7 +110,10 @@ describe('Transit Gateway with default settings', () => {
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -126,7 +135,10 @@ describe('Transit Gateway with default settings', () => {
         },
       ],
       TransitGatewayId: {
-        Ref: 'TransitGateway11B93D57',
+        'Fn::GetAtt': [
+          'TransitGateway11B93D57',
+          'Id',
+        ],
       },
       VpcId: {
         'Fn::GetAtt': [
@@ -138,19 +150,31 @@ describe('Transit Gateway with default settings', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRouteTableAssociation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachment3EC29F61',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachment3EC29F61',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRouteTablePropagation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachment3EC29F61',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachment3EC29F61',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     });
   });
@@ -222,7 +246,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -250,7 +277,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -258,7 +288,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -280,7 +313,10 @@ describe('Transit Gateway with default route table association and propagation d
         },
       ],
       TransitGatewayId: {
-        Ref: 'TransitGateway11B93D57',
+        'Fn::GetAtt': [
+          'TransitGateway11B93D57',
+          'Id',
+        ],
       },
       VpcId: {
         'Fn::GetAtt': [
@@ -291,20 +327,32 @@ describe('Transit Gateway with default route table association and propagation d
     });
 
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::TransitGatewayRouteTableAssociation', {
-      TransitGatewayVpcAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+      TransitGatewayAttachmentId: {
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     }, 0);
 
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::TransitGatewayRouteTablePropagation', {
-      TransitGatewayVpcAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+      TransitGatewayAttachmentId: {
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     }, 0);
   });
@@ -376,7 +424,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -404,7 +455,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -412,7 +466,10 @@ describe('Transit Gateway with default route table association and propagation d
           Type: 'AWS::EC2::TransitGatewayRouteTable',
           Properties: {
             TransitGatewayId: {
-              Ref: 'TransitGateway11B93D57',
+              'Fn::GetAtt': [
+                'TransitGateway11B93D57',
+                'Id',
+              ],
             },
           },
         },
@@ -434,7 +491,10 @@ describe('Transit Gateway with default route table association and propagation d
         },
       ],
       TransitGatewayId: {
-        Ref: 'TransitGateway11B93D57',
+        'Fn::GetAtt': [
+          'TransitGateway11B93D57',
+          'Id',
+        ],
       },
       VpcId: {
         'Fn::GetAtt': [
@@ -446,19 +506,31 @@ describe('Transit Gateway with default route table association and propagation d
 
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::TransitGatewayRouteTableAssociation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     }, 0);
 
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::TransitGatewayRouteTablePropagation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachmentTransitGatewayAttachment963F391D',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     }, 0);
   });
@@ -479,7 +551,10 @@ describe('Transit Gateway with default route table association and propagation d
         },
       ],
       TransitGatewayId: {
-        Ref: 'TransitGateway11B93D57',
+        'Fn::GetAtt': [
+          'TransitGateway11B93D57',
+          'Id',
+        ],
       },
       VpcId: {
         'Fn::GetAtt': [
@@ -491,19 +566,31 @@ describe('Transit Gateway with default route table association and propagation d
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRouteTableAssociation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachment3EC29F61',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachment3EC29F61',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::TransitGatewayRouteTablePropagation', {
       TransitGatewayAttachmentId: {
-        Ref: 'TransitGatewayVpcAttachment3EC29F61',
+        'Fn::GetAtt': [
+          'TransitGatewayVpcAttachment3EC29F61',
+          'Id',
+        ],
       },
       TransitGatewayRouteTableId: {
-        Ref: 'TransitGatewayDefaultRouteTable608EC117',
+        'Fn::GetAtt': [
+          'TransitGatewayDefaultRouteTable608EC117',
+          'TransitGatewayRouteTableId',
+        ],
       },
     });
   });

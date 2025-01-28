@@ -77,17 +77,23 @@ export class TransitGatewayRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 
+  /**
+   * The AWS CloudFormation resource representing the Transit Gateway Route.
+   */
+  public readonly resource: CfnTransitGatewayRoute;
+
   constructor(scope: Construct, id: string, props: TransitGatewayRouteProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
+    this.resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
       blackhole: false,
       destinationCidrBlock: props.destinationCidrBlock,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
-      transitGatewayAttachmentId: props.transitGatewayAttachment?.transitGatewayVpcAttachmentId,
+      transitGatewayAttachmentId: props.transitGatewayAttachment?.transitGatewayAttachmentId,
     });
 
-    this.destinationCidrBlock = resource.destinationCidrBlock;
+    this.node.defaultChild = this.resource;
+    this.destinationCidrBlock = this.resource.destinationCidrBlock;
     this.routeTable = props.transitGatewayRouteTable;
   }
 }
@@ -101,16 +107,22 @@ export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 
+  /**
+   * The AWS CloudFormation resource representing the Transit Gateway Route.
+   */
+  public readonly resource: CfnTransitGatewayRoute;
+
   constructor(scope: Construct, id: string, props: TransitGatewayBlackholeRouteProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRoute(this, id, {
+    this.resource = new CfnTransitGatewayRoute(this, id, {
       blackhole: true,
       destinationCidrBlock: props.destinationCidrBlock,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
 
-    this.destinationCidrBlock = resource.destinationCidrBlock;
+    this.node.defaultChild = this.resource;
+    this.destinationCidrBlock = this.resource.destinationCidrBlock;
     this.routeTable = props.transitGatewayRouteTable;
   }
 }

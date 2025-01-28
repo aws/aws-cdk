@@ -59,14 +59,20 @@ export class TransitGatewayRouteTableAssociation extends TransitGatewayRouteTabl
    */
   public readonly transitGatewayRouteTableAssociationId: string;
 
+  /**
+   * The AWS CloudFormation resource representing the Transit Gateway Route Table Association.
+   */
+  public readonly resource: CfnTransitGatewayRouteTableAssociation;
+
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableAssociationProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRouteTableAssociation(this, id, {
-      transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayVpcAttachmentId,
+    this.resource = new CfnTransitGatewayRouteTableAssociation(this, id, {
+      transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayAttachmentId,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
+    this.node.defaultChild = this.resource;
 
-    this.transitGatewayRouteTableAssociationId = resource.ref;
+    this.transitGatewayRouteTableAssociationId = this.resource.ref;
   }
 }

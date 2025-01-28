@@ -113,14 +113,21 @@ export class TransitGatewayRouteTable extends TransitGatewayRouteTableBase {
    */
   public readonly transitGateway: ITransitGateway;
 
+  /**
+   * The AWS CloudFormation resource representing the Transit Gateway Route Table.
+   */
+  public readonly resource: CfnTransitGatewayRouteTable;
+
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableProps) {
     super(scope, id);
 
-    const resource = new CfnTransitGatewayRouteTable(this, id, {
+    this.resource = new CfnTransitGatewayRouteTable(this, id, {
       transitGatewayId: props.transitGateway.transitGatewayId,
     });
 
-    this.routeTableId = resource.ref;
+    this.node.defaultChild = this.resource;
+
+    this.routeTableId = this.resource.attrTransitGatewayRouteTableId;
     this.transitGateway = props.transitGateway;
   }
 }
