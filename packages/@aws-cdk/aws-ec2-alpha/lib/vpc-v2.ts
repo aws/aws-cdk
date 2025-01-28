@@ -532,7 +532,6 @@ export class VpcV2 extends VpcV2Base {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
         if (!secondaryVpcOptions.cidrBlockName) {
           throw new Error('Cidr Block Name is required to create secondary IP address');
@@ -662,7 +661,6 @@ class IpamIpv4 implements IIpAddresses {
   constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
-
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,

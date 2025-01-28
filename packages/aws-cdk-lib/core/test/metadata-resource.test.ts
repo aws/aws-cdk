@@ -174,7 +174,6 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
-
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {

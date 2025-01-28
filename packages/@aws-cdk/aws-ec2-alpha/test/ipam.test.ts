@@ -23,7 +23,6 @@ describe('IPAM Test', () => {
   });
 
   test('Creates IP Pool under Public Scope', () => {
-
     const pool = ipam.publicScope.addPool('Public', {
       addressFamily: AddressFamily.IP_V6,
       awsService: vpc.AwsServiceName.EC2,
@@ -52,7 +51,6 @@ describe('IPAM Test', () => {
   }); // End Test
 
   test('Creates IP Pool under Private Scope', () => {
-
     const pool = ipam.privateScope.addPool('Private', {
       addressFamily: vpc.AddressFamily.IP_V4,
       ipv4ProvisionedCidrs: ['10.2.0.0/16'],

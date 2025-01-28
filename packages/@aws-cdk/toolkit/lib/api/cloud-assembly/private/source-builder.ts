@@ -78,7 +78,6 @@ export abstract class CloudAssemblySourceBuilder {
           // @todo build
           await services.ioHost.notify(debug('--app points to a cloud assembly, so we bypass synth'));
           return assemblyFromDirectory(directory, services.ioHost);
-
         },
       },
       contextAssemblyProps,
