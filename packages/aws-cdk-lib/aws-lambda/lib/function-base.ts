@@ -666,7 +666,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
       return obj[key];
     }
-
   }
 
   private validateConditionCombinations(principal: iam.IPrincipal): {

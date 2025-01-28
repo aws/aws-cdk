@@ -40,5 +40,4 @@ describe('ValidationError', () => {
     expect(error.name).toBe('ValidationError');
     expect(error.stack).toContain('ValidationError: this is an error');
   });
-
 });

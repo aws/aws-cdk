@@ -375,8 +375,6 @@ export class AccessLogField {
    * The request header override.
    * If this parameter is defined, it contains the headers to be used instead of the HTTP Headers that are defined in the Integration Request pane.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
-   *
-   * @param headerName
    */
   public static contextRequestOverrideHeader(headerName: string) {
     return `$context.requestOverride.header.${headerName}`;
@@ -386,8 +384,6 @@ export class AccessLogField {
    * The request path override. If this parameter is defined,
    * it contains the request path to be used instead of the URL Path Parameters that are defined in the Integration Request pane.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
-   *
-   * @param pathName
    */
   public static contextRequestOverridePath(pathName: string) {
     return `$context.requestOverride.path.${pathName}`;
@@ -397,8 +393,6 @@ export class AccessLogField {
    * The request query string override.
    * If this parameter is defined, it contains the request query strings to be used instead
    * of the URL Query String Parameters that are defined in the Integration Request pane.
-   *
-   * @param querystringName
    */
   public static contextRequestOverrideQuerystring(querystringName: string) {
     return `$context.requestOverride.querystring.${querystringName}`;
@@ -409,8 +403,6 @@ export class AccessLogField {
    * If this parameter is defined, it contains the header to be returned instead of the Response header
    * that is defined as the Default mapping in the Integration Response pane.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-override-request-response-parameters.html
-   *
-   * @param headerName
    */
   public static contextResponseOverrideHeader(headerName: string) {
     return `$context.responseOverride.header.${headerName}`;
@@ -697,7 +689,6 @@ export class AccessLogFormat {
   /**
    * Custom log format.
    * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
-   * @param format
    * @example
    *
    *  apigateway.AccessLogFormat.custom(JSON.stringify({
