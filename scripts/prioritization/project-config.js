@@ -3,7 +3,9 @@ const LABELS = {
   MAINTAINER_REVIEW: 'pr/needs-maintainer-review',
   COMMUNITY_REVIEW: 'pr/needs-community-review',
   CLARIFICATION_REQUESTED: 'pr/reviewer-clarification-requested',
-  EXEMPTION_REQUESTED: 'pr-linter/exemption-requested'
+  EXEMPTION_REQUESTED: 'pr-linter/exemption-requested',
+  P1: 'p1',
+  BUG: 'bug'
 };
 
 const PRIORITIES = {
