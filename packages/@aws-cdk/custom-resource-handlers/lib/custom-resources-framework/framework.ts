@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import * as prettier from 'prettier';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
 import { ModuleImportOptions, ModuleImporter } from './module-importer';
@@ -9,9 +8,7 @@ import { ImportableModule } from './modules';
 import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {
-  private readonly renderer = new TypeScriptRenderer({
-    disabledEsLintRules: ['import/no-unresolved', 'import/no-extraneous-dependencies'],
-  });
+  private readonly renderer = new TypeScriptRenderer();
   private readonly importer = new ModuleImporter();
   private readonly _interfaces = new Map<string, InterfaceType>();
   private _hasComponents = false;
@@ -80,14 +77,7 @@ export class HandlerFrameworkModule extends Module {
    */
   public renderTo(file: string) {
     this.importer.importModulesInto(this);
-    const ts = this.renderer.render(this);
-    const res = prettier.format(ts, {
-      parser: 'typescript',
-      printWidth: 150,
-      singleQuote: true,
-      quoteProps: 'consistent',
-    });
-    fs.outputFileSync(file, res);
+    fs.outputFileSync(file, this.renderer.render(this));
   }
 
   /**

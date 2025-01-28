@@ -1,25 +1,23 @@
-/* eslint-disable import/no-unresolved, import/no-extraneous-dependencies */
-import * as path from 'path';
-import { Construct } from 'constructs';
-import * as lambda from '../../../aws-lambda';
+/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as path from "path";
+import { Construct } from "constructs";
+import * as lambda from "../../../aws-lambda";
+
 export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
   public constructor(scope: Construct, id: string, props: EvalNodejsSingletonFunctionProps) {
     super(scope, id, {
       ...props,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
-      handler: 'index.handler',
-      runtime: props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope),
+      "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
+      "handler": "index.handler",
+      "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope))
     });
     this.addMetadata('aws:cdk:is-custom-resource-handler-singleton', true);
     this.addMetadata('aws:cdk:is-custom-resource-handler-runtime-family', this.runtime.family);
-    if (props?.logGroup) {
-      this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true);
-    }
-    if (props?.logRetention) {
-      ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true);
-    }
+    if (props?.logGroup) { this.logGroup.node.addMetadata('aws:cdk:is-custom-resource-handler-logGroup', true) };
+    if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('aws:cdk:is-custom-resource-handler-logRetention', true) };
   }
 }
+
 /**
  * Initialization properties for EvalNodejsSingletonFunction
  */
@@ -31,6 +29,7 @@ export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions
    * We recommend generating a UUID per provider.
    */
   readonly uuid: string;
+
   /**
    * A descriptive name for the purpose of this Lambda.
    *
@@ -41,6 +40,7 @@ export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions
    * @default SingletonLambda
    */
   readonly lambdaPurpose?: string;
+
   /**
    * The runtime that this Lambda will use.
    *
