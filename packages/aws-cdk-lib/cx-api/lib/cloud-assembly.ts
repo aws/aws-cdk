@@ -325,7 +325,6 @@ export class CloudAssemblyBuilder {
   /**
    * Finalizes the cloud assembly into the output directory returns a
    * `CloudAssembly` object that can be used to inspect the assembly.
-   * @param options
    */
   public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
 

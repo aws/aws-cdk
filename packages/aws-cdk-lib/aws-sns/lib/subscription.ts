@@ -365,8 +365,6 @@ export enum FilterOrPolicyType {
 export abstract class FilterOrPolicy {
   /**
    * Filter of MessageBody
-   * @param filter
-   * @returns
    */
   public static filter(filter: SubscriptionFilter) {
     return new Filter(filter);
@@ -374,8 +372,6 @@ export abstract class FilterOrPolicy {
 
   /**
    * Policy of MessageBody
-   * @param policy
-   * @returns
    */
   public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
     return new Policy(policy);

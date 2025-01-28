@@ -108,8 +108,6 @@ export class VpcLink extends Resource implements IVpcLink {
 
   /**
    * Adds the provided subnets to the vpc link
-   *
-   * @param subnets
    */
   public addSubnets(...subnets: ec2.ISubnet[]) {
     this.subnets.push(...subnets);
@@ -117,8 +115,6 @@ export class VpcLink extends Resource implements IVpcLink {
 
   /**
    * Adds the provided security groups to the vpc link
-   *
-   * @param groups
    */
   public addSecurityGroups(...groups: ec2.ISecurityGroup[]) {
     this.securityGroups.push(...groups);

@@ -947,7 +947,6 @@ export abstract class ConfigurationSource {
    * Defines configuration content from AWS CodePipeline.
    *
    * @param pipeline The pipeline where the configuration is stored
-   * @returns
    */
   public static fromPipeline(pipeline: cp.IPipeline): ConfigurationSource {
     return {
