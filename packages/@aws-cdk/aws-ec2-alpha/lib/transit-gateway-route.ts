@@ -27,7 +27,10 @@ export interface ITransitGatewayRoute extends IResource {
  */
 export interface BaseTransitGatewayRouteProps {
   /**
-   * The CIDR block used for destination matches.
+   * The destination CIDR block for this route.
+   *
+   * Destination Cidr cannot overlap for static routes but is allowed for propagated routes.
+   * When overlapping occurs, static routes take precedence over propagated routes.
    */
   readonly destinationCidrBlock: string;
 
@@ -69,7 +72,7 @@ abstract class TransitGatewayRouteBase extends Resource implements ITransitGatew
 }
 
 /**
- * Create a Transit Gateway Active Route
+ * Create a Transit Gateway Active Route.
  *
  * @resource AWS::EC2::TransitGatewayRoute
  */
@@ -99,7 +102,7 @@ export class TransitGatewayRoute extends TransitGatewayRouteBase {
 }
 
 /**
- * Create a Transit Gateway Blackhole Route
+ * Create a Transit Gateway Blackhole Route.
  *
  * @resource AWS::EC2::TransitGatewayRoute
  */

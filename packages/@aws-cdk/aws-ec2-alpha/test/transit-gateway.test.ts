@@ -48,7 +48,7 @@ describe('Transit Gateway with default settings', () => {
       DefaultRouteTablePropagation: 'disable',
       DnsSupport: 'enable',
       MulticastSupport: 'disable',
-      VpnEcmpSupport: 'enable',
+      VpnEcmpSupport: 'disable',
     });
 
     Template.fromStack(stack).templateMatches({
@@ -61,7 +61,7 @@ describe('Transit Gateway with default settings', () => {
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {
@@ -92,7 +92,7 @@ describe('Transit Gateway with default settings', () => {
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {
@@ -226,7 +226,7 @@ describe('Transit Gateway with default route table association and propagation d
       DefaultRouteTablePropagation: 'disable',
       DnsSupport: 'enable',
       MulticastSupport: 'disable',
-      VpnEcmpSupport: 'enable',
+      VpnEcmpSupport: 'disable',
     });
 
     Template.fromStack(stack).templateMatches({
@@ -239,7 +239,7 @@ describe('Transit Gateway with default route table association and propagation d
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {
@@ -270,7 +270,7 @@ describe('Transit Gateway with default route table association and propagation d
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {
@@ -404,7 +404,7 @@ describe('Transit Gateway with default route table association and propagation d
       DefaultRouteTablePropagation: 'disable',
       DnsSupport: 'enable',
       MulticastSupport: 'disable',
-      VpnEcmpSupport: 'enable',
+      VpnEcmpSupport: 'disable',
     });
 
     Template.fromStack(stack).templateMatches({
@@ -417,7 +417,7 @@ describe('Transit Gateway with default route table association and propagation d
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {
@@ -448,7 +448,7 @@ describe('Transit Gateway with default route table association and propagation d
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {

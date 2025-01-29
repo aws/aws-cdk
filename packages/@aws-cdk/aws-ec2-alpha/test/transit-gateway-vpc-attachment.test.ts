@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib/core';
 import * as vpc from '../lib';
 import { TransitGateway } from '../lib/transit-gateway';
@@ -166,5 +166,63 @@ describe('TransitGatewayVpcAttachment', () => {
     expect(() => attachment.removeSubnets([nonExistentSubnet])).toThrow(
       `Subnet with ID ${nonExistentSubnet.subnetId} does not exist in the Attachment`,
     );
+  });
+
+  test('throws warning when options are enabled on attachment but not on the transit gateway', () => {
+    // GIVEN
+    const transitGateway2 = new TransitGateway(stack, 'TransitGateway2', {
+      dnsSupport: false,
+      securityGroupReferencingSupport: false,
+    })
+
+    // WHEN
+    const attachment = transitGateway2.attachVpc('VpcAttachment', {
+      vpc: myVpc,
+      subnets: [mySubnet],
+      vpcAttachmentOptions: {
+        dnsSupport: true,
+        securityGroupReferencingSupport: true,
+      }
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(2);
+
+    Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment',
+      {
+        'Fn::Join': [
+          '',
+          [
+            "'DnsSupport' is enabled for the VPC Attachment ",
+            {
+              "Fn::GetAtt": [ "TransitGateway2VpcAttachmentE9A375F9", "Id" ]
+            },
+            " but disabled on TransitGateway ",
+            {
+              "Fn::GetAtt": [ "TransitGateway2338EB7F2", "Id" ]
+            },
+            ". The feature will not work unless DnsSupport is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch]"
+          ]
+        ]
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment',
+        {
+          'Fn::Join': [
+            '',
+            [
+              "'SecurityGroupReferencingSupport' is enabled for the VPC Attachment ",
+              {
+                "Fn::GetAtt": [ "TransitGateway2VpcAttachmentE9A375F9", "Id" ]
+              },
+              " but disabled on TransitGateway ",
+              {
+                "Fn::GetAtt": [ "TransitGateway2338EB7F2", "Id" ]
+              },
+              ". The feature will not work unless SecurityGroupReferencingSupport is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch]"
+            ]
+          ]
+        })
   });
 });

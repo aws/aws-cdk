@@ -77,7 +77,7 @@ describe('Transit Gateway Route Table', () => {
             DefaultRouteTablePropagation: 'disable',
             DnsSupport: 'enable',
             MulticastSupport: 'disable',
-            VpnEcmpSupport: 'enable',
+            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {

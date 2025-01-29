@@ -5,7 +5,7 @@ import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 
 /**
- * Represents a Transit Gateway Route Table Propagation
+ * Represents a Transit Gateway Route Table Propagation.
  */
 export interface ITransitGatewayRouteTablePropagation extends IResource {
   /**
@@ -49,7 +49,7 @@ abstract class TransitGatewayRouteTablePropagationBase extends Resource implemen
 }
 
 /**
- * Create a Transit Gateway Route Table Propagation
+ * Create a Transit Gateway Route Table Propagation.
  *
  * @resource AWS::EC2::TransitGatewayRouteTablePropagation
  */

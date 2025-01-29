@@ -3,47 +3,47 @@ import { ITransitGateway } from './transit-gateway';
 import { Construct } from 'constructs';
 import { CfnTransitGatewayRouteTable, IRouteTable } from 'aws-cdk-lib/aws-ec2';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from './transit-gateway-route';
-import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
-import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import { TransitGatewayRoute, TransitGatewayBlackholeRoute, ITransitGatewayRoute } from './transit-gateway-route';
+import { ITransitGatewayRouteTableAssociation, TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import { ITransitGatewayRouteTablePropagation, TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
 /**
- * Represents a Transit Gateway Route Table
+ * Represents a Transit Gateway Route Table.
  */
 export interface ITransitGatewayRouteTable extends IResource {
   /**
-   * The ID of the transit gateway route table
+   * The ID of the transit gateway route table.
    * @attribute
    */
   readonly routeTableId: string;
 
   /**
-   * Add an active route to this route table
+   * Add an active route to this route table.
    *
-   * @returns TransitGatewayRoute
+   * @returns ITransitGatewayRoute
    */
-  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): TransitGatewayRoute;
+  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): ITransitGatewayRoute;
 
   /**
-   * Add a blackhole route to this route table
+   * Add a blackhole route to this route table.
    *
-   * @returns TransitGatewayBlackholeRoute
+   * @returns ITransitGatewayRoute
    */
-  addBlackholeRoute(id: string, destinationCidr: string): TransitGatewayBlackholeRoute;
+  addBlackholeRoute(id: string, destinationCidr: string): ITransitGatewayRoute;
 
   /**
-   * Add an Association to this route table
+   * Associate the provided Attachments with this route table.
    *
-   * @returns TransitGatewayRouteTableAssociation
+   * @returns ITransitGatewayRouteTableAssociation
    */
-  addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTableAssociation;
+  addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): ITransitGatewayRouteTableAssociation;
 
   /**
-   * Enable propagation from an Attachment
+   * Enable propagation from the provided Attachments to this route table.
    *
-   * @returns TransitGatewayRouteTablePropagation
+   * @returns ITransitGatewayRouteTablePropagation
    */
-  enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTablePropagation;
+  enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): ITransitGatewayRouteTablePropagation;
 }
 
 /**
@@ -71,7 +71,7 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
   public abstract readonly routeTableId: string;
   public abstract readonly transitGateway: ITransitGateway;
 
-  addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): TransitGatewayRoute {
+  public addRoute(id: string, transitGatewayAttachment: ITransitGatewayAttachment, destinationCidr: string): ITransitGatewayRoute {
     return new TransitGatewayRoute(this, id, {
       transitGatewayRouteTable: this,
       transitGatewayAttachment,
@@ -79,21 +79,21 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
     });
   };
 
-  addBlackholeRoute(id: string, destinationCidr: string): TransitGatewayBlackholeRoute {
+  public addBlackholeRoute(id: string, destinationCidr: string): ITransitGatewayRoute {
     return new TransitGatewayBlackholeRoute(this, id, {
       transitGatewayRouteTable: this,
       destinationCidrBlock: destinationCidr,
     });
   }
 
-  addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTableAssociation {
+  public addAssociation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): ITransitGatewayRouteTableAssociation {
     return new TransitGatewayRouteTableAssociation(this, id, {
       transitGatewayVpcAttachment: transitGatewayAttachment,
       transitGatewayRouteTable: this,
     });
   }
 
-  enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): TransitGatewayRouteTablePropagation {
+  public enablePropagation(id: string, transitGatewayAttachment: ITransitGatewayAttachment): ITransitGatewayRouteTablePropagation {
     return new TransitGatewayRouteTablePropagation(this, id, {
       transitGatewayVpcAttachment: transitGatewayAttachment,
       transitGatewayRouteTable: this,

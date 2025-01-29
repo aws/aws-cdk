@@ -6,9 +6,10 @@ import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-tab
 import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
 import { getFeatureStatusDefaultDisable } from './util';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import { Annotations } from 'aws-cdk-lib';
 
 /**
- * Options for Transit Gateway VPC Attachment
+ * Options for Transit Gateway VPC Attachment.
  */
 export interface ITransitGatewayVpcAttachmentOptions {
   /**
@@ -41,7 +42,7 @@ export interface ITransitGatewayVpcAttachmentOptions {
 }
 
 /**
- * Represents a Transit Gateway VPC Attachment
+ * Represents a Transit Gateway VPC Attachment.
  */
 export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment {
   /**
@@ -56,7 +57,7 @@ export interface ITransitGatewayVpcAttachment extends ITransitGatewayAttachment 
 }
 
 /**
- * Base class for Transit Gateway VPC Attachment
+ * Base class for Transit Gateway VPC Attachment.
  */
 interface BaseTransitGatewayVpcAttachmentProps {
   /**
@@ -96,7 +97,7 @@ export interface TransitGatewayVpcAttachmentProps extends BaseTransitGatewayVpcA
 }
 
 /**
- * Options for creating an Attachment via the attachVpc() method
+ * Options for creating an Attachment via the attachVpc() method.
  */
 export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
   /**
@@ -119,7 +120,7 @@ export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
  *
  * @resource AWS::EC2::TransitGatewayAttachment
  */
-export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
+export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase implements ITransitGatewayVpcAttachment {
   public readonly transitGatewayAttachmentId: string;
 
   /**
@@ -146,6 +147,14 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase {
 
     this.transitGatewayAttachmentId = this.resource.attrId;
     this.subnets = props.subnets;
+
+    if (props.vpcAttachmentOptions?.dnsSupport && !props.transitGateway.dnsSupport) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch', `\'DnsSupport\' is enabled for the VPC Attachment ${this.transitGatewayAttachmentId} but disabled on TransitGateway ${props.transitGateway.transitGatewayId}. The feature will not work unless DnsSupport is enabled on both.`);
+    }
+
+    if (props.vpcAttachmentOptions?.securityGroupReferencingSupport && !props.transitGateway.securityGroupReferencingSupport) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch', `\'SecurityGroupReferencingSupport\' is enabled for the VPC Attachment ${this.transitGatewayAttachmentId} but disabled on TransitGateway ${props.transitGateway.transitGatewayId}. The feature will not work unless SecurityGroupReferencingSupport is enabled on both.`);
+    }
 
     if (props.transitGateway.defaultRouteTableAssociation) {
       new TransitGatewayRouteTableAssociation(this, id + 'Association', {

@@ -21,7 +21,7 @@ export function subnetId(name: string, i: number) {
 /**
  * The status of a Transit Gateway feature.
  */
-enum TransitGatewayFeatureStatus {
+export enum TransitGatewayFeatureStatus {
   /**
    * The feature is enabled.
    */
@@ -34,7 +34,7 @@ enum TransitGatewayFeatureStatus {
 }
 
 export function getFeatureStatusDefaultEnable(status?: boolean): TransitGatewayFeatureStatus {
-  return (status ?? true)? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  return (status ?? true) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
 }
 
 export function getFeatureStatusDefaultDisable(status?: boolean): TransitGatewayFeatureStatus {

@@ -183,7 +183,7 @@
                     "defaultRouteTablePropagation": "disable",
                     "dnsSupport": "enable",
                     "multicastSupport": "disable",
-                    "vpnEcmpSupport": "enable"
+                    "vpnEcmpSupport": "disable"
                   }
                 },
                 "constructInfo": {

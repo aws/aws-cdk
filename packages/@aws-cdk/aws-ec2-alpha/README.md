@@ -711,7 +711,7 @@ The Transit Gateway construct library provides four main constructs:
 
 - `TransitGateway`: The central hub for your network connections
 - `TransitGatewayRouteTable`: Manages routing between attached networks  
-- `TransitGatewayAttachment`: Connects VPCs and on-premises networks
+- `TransitGatewayVpcAttachment`: Connects VPCs to the Transi Gateway
 - `TransitGatewayRoute`: Defines routing rules within your Transit Gateway
 
 ### Basic Usage

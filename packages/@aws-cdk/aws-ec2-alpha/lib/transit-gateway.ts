@@ -6,7 +6,7 @@ import { TransitGatewayVpcAttachment, AttachVpcOptions, ITransitGatewayVpcAttach
 import { IRouteTarget } from './route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
-import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable } from './util';
+import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable, TransitGatewayFeatureStatus } from './util';
 
 /**
  * Represents a Transit Gateway.
@@ -53,6 +53,16 @@ export interface ITransitGateway extends cdk.IResource, IRouteTarget {
    * to the default route table unless propagation is explicitly disabled.
    */
   readonly defaultRouteTablePropagation: boolean;
+
+  /**
+   * Enable or disable DNS support.
+   */
+  readonly dnsSupport: boolean;
+
+  /**
+   * Enable or disablesecurity group referencing support.
+   */
+  readonly securityGroupReferencingSupport: boolean;
 }
 
 /**
@@ -69,7 +79,7 @@ export interface TransitGatewayProps {
   /**
    * A private Autonomous System Number (ASN) for the Amazon side of a BGP session. The range is 64512 to 65534 for 16-bit ASNs.
    *
-   * @default - 64512, assigned by CloudFormation.
+   * @default - undefined, 64512 is assigned by CloudFormation.
    */
   readonly amazonSideAsn?: number;
 
@@ -102,21 +112,20 @@ export interface TransitGatewayProps {
   readonly description?: string;
 
   /**
-   * Enable or disable DNS support
+   * Enable or disable DNS support.
+   *
+   * If dnsSupport is enabled on a VPC Attachment, this also needs to be enabled for the feature to work.
+   * Otherwise the resources will still deploy but the feature will not work.
    *
    * @default - enable (true)
    */
   readonly dnsSupport?: boolean;
 
   /**
-   * Indicates whether multicast is enabled on the transit gateway
-   *
-   * @default - disable (false)
-   */
-  readonly multicastSupport?: boolean;
-
-  /**
    * Enable or disablesecurity group referencing support
+   *
+   * If securityGroupReferencingSupport is enabled on a VPC Attachment, this also needs to be enabled for the feature to work.
+   * Otherwise the resources will still deploy but the feature will not work.
    *
    * @default - disable (false)
    */
@@ -128,13 +137,6 @@ export interface TransitGatewayProps {
    * @default - none
    */
   readonly transitGatewayCidrBlocks?: string[];
-
-  /**
-   * Enable or disable Equal Cost Multipath Protocol support
-   *
-   * @default - enable (true)
-   */
-  readonly vpnEcmpSupport?: boolean;
 }
 
 /**
@@ -149,6 +151,8 @@ abstract class TransitGatewayBase extends cdk.Resource implements ITransitGatewa
   public abstract readonly defaultRouteTable: ITransitGatewayRouteTable;
   public abstract readonly defaultRouteTableAssociation: boolean;
   public abstract readonly defaultRouteTablePropagation: boolean;
+  public abstract readonly dnsSupport: boolean;
+  public abstract readonly securityGroupReferencingSupport: boolean;
 
   /**
    * Adds a new route table to the Transit Gateway.
@@ -213,6 +217,9 @@ export class TransitGateway extends TransitGatewayBase {
   public readonly defaultRouteTable: ITransitGatewayRouteTable;
   public readonly defaultRouteTableAssociation: boolean;
   public readonly defaultRouteTablePropagation: boolean;
+  public readonly dnsSupport: boolean;
+  public readonly securityGroupReferencingSupport: boolean;
+
   /**
    * The AWS CloudFormation resource representing the Transit Gateway.
    */
@@ -230,8 +237,9 @@ export class TransitGateway extends TransitGatewayBase {
       defaultRouteTablePropagation: getFeatureStatusDefaultDisable(props.defaultRouteTablePropagation),
       description: props.description,
       dnsSupport: getFeatureStatusDefaultEnable(props.dnsSupport),
-      multicastSupport: getFeatureStatusDefaultDisable(props.multicastSupport),
-      vpnEcmpSupport: getFeatureStatusDefaultEnable(props.vpnEcmpSupport),
+      // Currently only VPC to Transit Gateway attachments are supported so both of these are disabled.
+      multicastSupport: TransitGatewayFeatureStatus.DISABLE,
+      vpnEcmpSupport: TransitGatewayFeatureStatus.DISABLE,
     });
 
     this.node.defaultChild = this.resource;
@@ -240,6 +248,8 @@ export class TransitGateway extends TransitGatewayBase {
     this.routerTargetId = this.resource.attrId;
     this.routerType = RouterType.TRANSIT_GATEWAY;
     this.transitGatewayArn = this.resource.attrTransitGatewayArn;
+    this.dnsSupport = props.dnsSupport ?? true;
+    this.securityGroupReferencingSupport = props.securityGroupReferencingSupport ?? false;
 
     this.defaultRouteTable = new TransitGatewayRouteTable(this, 'DefaultRouteTable', {
       transitGateway: this,

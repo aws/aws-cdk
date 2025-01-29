@@ -5,7 +5,7 @@ import { CfnTransitGatewayRouteTableAssociation } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 /**
- * Represents a Transit Gateway Route Table Association
+ * Represents a Transit Gateway Route Table Association.
  */
 export interface ITransitGatewayRouteTableAssociation extends IResource {
   /**
@@ -49,7 +49,7 @@ abstract class TransitGatewayRouteTableAssociationBase extends Resource implemen
 }
 
 /**
- * Create a Transit Gateway Route Table Association
+ * Create a Transit Gateway Route Table Association.
  *
  * @resource AWS::EC2::TransitGatewayRouteTableAssociation
  */
