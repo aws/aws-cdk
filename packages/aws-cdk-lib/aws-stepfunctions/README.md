@@ -169,6 +169,9 @@ new sfn.StateMachine(this, 'StateMachine', {
 
 ### JSONPath (Legacy pattern) example
 
+Defining a workflow looks like this (for the [Step Functions Job Poller
+example](https://docs.aws.amazon.com/step-functions/latest/dg/sample-project-job-poller.html)):
+
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
