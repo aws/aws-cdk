@@ -82,7 +82,6 @@ describe('pipeline', () => {
         'Ref': 'AWS::StackName',
       },
     });
-
   });
 
   test('pipeline with GitHub source with poll trigger', () => {
@@ -140,7 +139,6 @@ describe('pipeline', () => {
         },
       ],
     });
-
   });
 
   test('pipeline with GitHub source without triggers', () => {
@@ -198,7 +196,6 @@ describe('pipeline', () => {
         },
       ],
     });
-
   });
 
   test('github action uses ThirdParty owner', () => {
@@ -416,7 +413,6 @@ describe('pipeline', () => {
             'ComputeType': 'BUILD_GENERAL1_SMALL',
           },
         });
-
       });
     });
   });
@@ -545,7 +541,6 @@ describe('pipeline', () => {
         },
       ],
     });
-
   });
 
   describe('cross-region Pipeline', () => {
@@ -667,7 +662,6 @@ describe('pipeline', () => {
       expect(usEast1Support.stack.region).toEqual('us-east-1');
       expect(usEast1Support.stack.account).toEqual(pipelineAccount);
       expect(usEast1Support.stack.node.id.indexOf('us-east-1')).not.toEqual(-1);
-
     });
 
     test('allows specifying only one of artifactBucket and crossRegionReplicationBuckets', () => {
@@ -681,7 +675,6 @@ describe('pipeline', () => {
           },
         });
       }).toThrow(/Only one of artifactBucket and crossRegionReplicationBuckets can be specified!/);
-
     });
 
     test('does not create a new artifact Bucket if one was provided in the cross-region Buckets for the Pipeline region', () => {
@@ -738,7 +731,6 @@ describe('pipeline', () => {
           },
         ],
       });
-
     });
 
     test('allows providing a resource-backed action from a different region directly', () => {
@@ -825,7 +817,6 @@ describe('pipeline', () => {
       Template.fromStack(replicationStack).hasResourceProperties('AWS::S3::Bucket', {
         'BucketName': 'replicationstackeplicationbucket2464cd5c33b386483b66',
       });
-
     });
   });
 
@@ -968,7 +959,6 @@ describe('pipeline', () => {
           ],
         },
       });
-
     });
 
     test('adds a dependency on the Stack containing a new action Role', () => {
@@ -1052,7 +1042,6 @@ describe('pipeline', () => {
       });
 
       expect(pipelineStack.dependencies.length).toEqual(1);
-
     });
 
     test('does not add a dependency on the Stack containing an imported action Role', () => {
@@ -1129,7 +1118,6 @@ describe('pipeline', () => {
       });
 
       expect(pipelineStack.dependencies.length).toEqual(0);
-
     });
   });
 });

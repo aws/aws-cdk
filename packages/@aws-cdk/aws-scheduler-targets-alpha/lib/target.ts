@@ -91,7 +91,6 @@ export abstract class ScheduleTargetBase {
 
   /**
    * Create a return a Schedule Target Configuration for the given schedule
-   * @param schedule
    * @returns a Schedule Target Configuration
    */
   bind(schedule: ISchedule): ScheduleTargetConfig {
