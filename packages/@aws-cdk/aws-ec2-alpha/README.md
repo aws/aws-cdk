@@ -41,6 +41,7 @@ new VpcV2(this, 'Vpc', {
 
 `SubnetV2` is a re-write of the [`ec2.Subnet`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Subnet.html) construct.
 This new construct can be used to add subnets to a `VpcV2` instance:
+Note: When defining a subnet with `SubnetV2`, CDK automatically creates a new route table, unless a route table is explicitly provided as an input to the construct.
 
 ```ts
 
@@ -66,11 +67,19 @@ By default `VpcV2` uses `10.0.0.0/16` as the primary CIDR if none is defined.
 Additional CIDRs can be adding to the VPC via the `secondaryAddressBlocks` prop.
 The following example illustrates the different options of defining the address blocks:
 
+Note: There’s currently an issue with IPAM pool deletion that may affect the `cdk --destroy` command. This is because IPAM takes time to detect when the IP address pool has been deallocated after the VPC is deleted. The current workaround is to wait until the IP address is fully deallocated from the pool before retrying the deletion. Below command can be used to check allocations for a pool using CLI 
+
+```shell
+aws ec2 get-ipam-pool-allocations --ipam-pool-id <ipam-pool-id>
+```
+
+Ref: https://docs.aws.amazon.com/cli/latest/reference/ec2/get-ipam-pool-allocations.html
+
 ```ts
 
 const stack = new Stack();
 const ipam = new Ipam(this, 'Ipam', {
-  operatingRegion: ['us-west-1']
+  operatingRegions: ['us-west-1']
 });
 const ipamPublicPool = ipam.publicScope.addPool('PublicPoolA', {
   addressFamily: AddressFamily.IP_V6,
@@ -527,6 +536,7 @@ For more information, see [Enable VPC internet access using internet gateways](h
 
 You can add an internet gateway to a VPC using `addInternetGateway` method. By default, this method creates a route in all Public Subnets with outbound destination set to `0.0.0.0` for IPv4 and `::0` for IPv6 enabled VPC. 
 Instead of using the default settings, you can configure a custom destination range by providing an optional input `destination` to the method.
+In addition to the custom IP range, you can also choose to filter subnets where default routes should be created.
 
 The code example below shows how to add an internet gateway with a custom outbound destination IP range:
 
@@ -543,6 +553,34 @@ const subnet = new SubnetV2(this, 'Subnet', {
 
 myVpc.addInternetGateway({
   ipv4Destination: '192.168.0.0/16',
+});
+```
+
+The following code examples demonstrates how to add an internet gateway with a custom outbound destination IP range for specific subnets:
+
+```ts
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc');
+
+const mySubnet = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC });
+
+myVpc.addInternetGateway({
+  ipv4Destination: '192.168.0.0/16',
+  subnets: [mySubnet],
+});
+```
+
+```ts
+const stack = new Stack();
+const myVpc = new VpcV2(this, 'Vpc');
+
+myVpc.addInternetGateway({
+  ipv4Destination: '192.168.0.0/16',
+  subnets: [{subnetType: SubnetType.PRIVATE_WITH_EGRESS}],
 });
 ```
 

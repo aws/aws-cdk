@@ -15,5 +15,10 @@ baseConfig.overrides.push({
 // TODO: turn these on
 // ignoring new eslint rules until CLI refactor is complete
 baseConfig.rules["@stylistic/spaced-comment"] = "off";
+baseConfig.rules['@stylistic/no-extra-semi'] = "off";
+baseConfig.rules['@stylistic/padded-blocks'] = "off";
+baseConfig.rules['jsdoc/require-param-description'] = "off";
+baseConfig.rules['jsdoc/require-property-description'] = "off";
+baseConfig.rules['jsdoc/require-returns-description'] = "off";
 
 module.exports = baseConfig;

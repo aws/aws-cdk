@@ -582,6 +582,5 @@ export class LustreFileSystem extends FileSystemBase {
     if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
       throw new Error('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
     }
-
   }
 }

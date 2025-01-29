@@ -89,7 +89,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
 
     it('should add filter criteria to the source parameters', () => {
@@ -124,7 +123,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
     it('should merge filter criteria and source parameters', () => {
       // GIVEN
@@ -168,7 +166,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
 
     test('grantPush is called for sources with an SNS topic DLQ', () => {
@@ -242,7 +239,6 @@ describe('Pipe', () => {
   });
 
   describe('target', () => {
-
     it('should grant push permissions to the target', () => {
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
@@ -372,7 +368,6 @@ describe('Pipe', () => {
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(role);
-
     });
 
     it('should call grant on the provided role', () => {
