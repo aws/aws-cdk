@@ -29,6 +29,9 @@ async function runInIsolatedContainer(fixture: TestFixture, pathsToMount: string
     fixture.integTestDir,
   );
 
+  // Resolve credential provider to an access key that we can pass into the container
+  const credentials = await fixture.aws.credentials();
+
   const proxy = await startProxyServer(fixture.integTestDir);
   try {
     const proxyPort = proxy.port;
@@ -63,6 +66,11 @@ async function runInIsolatedContainer(fixture: TestFixture, pathsToMount: string
       `${scriptName}`,
     ], {
       stdio: 'inherit',
+      modEnv: {
+        AWS_ACCESS_KEY_ID: credentials.accessKeyId,
+        AWS_SECRET_ACCESS_KEY: credentials.secretAccessKey,
+        AWS_SESSION_TOKEN: credentials.sessionToken,
+      },
     });
   } finally {
     await proxy.stop();
