@@ -5,7 +5,7 @@ import { AppSyncAuthorizationType } from './auth-config';
 import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token } from '../../core';
+import { IResource, Resource, Token, ValidationError } from '../../core';
 
 /**
  * An AppSync channel namespace
@@ -102,7 +102,6 @@ export interface ChannelNamespaceOptions {
  * A Channel Namespace
  */
 export class ChannelNamespace extends Resource implements IChannelNamespace {
-
   /**
    * Use an existing channel namespace by ARN
    */
@@ -125,7 +124,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
     if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
-        throw new Error(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`);
+        throw new ValidationError(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
       }
     }
 
@@ -191,7 +190,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {
     for (const mode of channelAuthModeTypes) {
       if (!apiAuthProviders.find((authProvider) => authProvider === mode)) {
-        throw new Error(`API is missing authorization configuration for ${mode}`);
+        throw new ValidationError(`API is missing authorization configuration for ${mode}`, this);
       }
     }
   }
