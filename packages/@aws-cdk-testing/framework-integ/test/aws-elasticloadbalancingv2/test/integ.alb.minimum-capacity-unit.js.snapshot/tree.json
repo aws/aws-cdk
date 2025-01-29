@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "MinimumCapacityUnitNlbStack": {
-        "id": "MinimumCapacityUnitNlbStack",
-        "path": "MinimumCapacityUnitNlbStack",
+      "MinimumCapacityUnitAlbStack": {
+        "id": "MinimumCapacityUnitAlbStack",
+        "path": "MinimumCapacityUnitAlbStack",
         "children": {
           "Stack": {
             "id": "Stack",
-            "path": "MinimumCapacityUnitNlbStack/Stack",
+            "path": "MinimumCapacityUnitAlbStack/Stack",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "MinimumCapacityUnitNlbStack/Stack/Resource",
+                "path": "MinimumCapacityUnitAlbStack/Stack/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "MinimumCapacityUnitNlbStack/Stack"
+                        "value": "MinimumCapacityUnitAlbStack/Stack"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1",
+                "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/Subnet",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/Acl",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/RouteTable",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/RouteTableAssociation",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/DefaultRoute",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/EIP",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1/NATGateway",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2",
+                "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/Subnet",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/Acl",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/RouteTable",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/RouteTableAssociation",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/DefaultRoute",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/EIP",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/NATGateway",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1",
+                "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/Subnet",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/Acl",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/RouteTable",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/RouteTableAssociation",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/DefaultRoute",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2",
+                "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/Subnet",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/Acl",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/RouteTable",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2"
+                            "value": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/RouteTableAssociation",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/DefaultRoute",
+                    "path": "MinimumCapacityUnitAlbStack/Stack/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "MinimumCapacityUnitNlbStack/Stack/IGW",
+                "path": "MinimumCapacityUnitAlbStack/Stack/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "MinimumCapacityUnitNlbStack/Stack"
+                        "value": "MinimumCapacityUnitAlbStack/Stack"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "MinimumCapacityUnitNlbStack/Stack/VPCGW",
+                "path": "MinimumCapacityUnitAlbStack/Stack/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -653,11 +653,11 @@
           },
           "LB": {
             "id": "LB",
-            "path": "MinimumCapacityUnitNlbStack/LB",
+            "path": "MinimumCapacityUnitAlbStack/LB",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "MinimumCapacityUnitNlbStack/LB/Resource",
+                "path": "MinimumCapacityUnitAlbStack/LB/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                   "aws:cdk:cloudformation:props": {
@@ -668,15 +668,71 @@
                       }
                     ],
                     "minimumLoadBalancerCapacity": {
-                      "capacityUnits": 2750
+                      "capacityUnits": 150
                     },
                     "scheme": "internal",
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "LBSecurityGroup8A41EA2B",
+                          "GroupId"
+                        ]
+                      }
+                    ],
                     "subnets": [
                       {
                         "Ref": "StackPrivateSubnet1Subnet47AC2BC7"
+                      },
+                      {
+                        "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
                       }
                     ],
-                    "type": "network"
+                    "type": "application"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "MinimumCapacityUnitAlbStack/LB/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MinimumCapacityUnitAlbStack/LB/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatically created Security Group for ELB MinimumCapacityUnitAlbStackLBD84B2E1C",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "255.255.255.255/32",
+                            "description": "Disallow all traffic",
+                            "ipProtocol": "icmp",
+                            "fromPort": 252,
+                            "toPort": 86
+                          }
+                        ],
+                        "securityGroupIngress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "ipProtocol": "tcp",
+                            "fromPort": 80,
+                            "toPort": 80,
+                            "description": "Allow from anyone on port 80"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Stack8A423254"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -686,11 +742,11 @@
               },
               "Listener": {
                 "id": "Listener",
-                "path": "MinimumCapacityUnitNlbStack/LB/Listener",
+                "path": "MinimumCapacityUnitAlbStack/LB/Listener",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "MinimumCapacityUnitNlbStack/LB/Listener/Resource",
+                    "path": "MinimumCapacityUnitAlbStack/LB/Listener/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
                       "aws:cdk:cloudformation:props": {
@@ -706,7 +762,7 @@
                           "Ref": "LB8A12904C"
                         },
                         "port": 80,
-                        "protocol": "TCP"
+                        "protocol": "HTTP"
                       }
                     },
                     "constructInfo": {
@@ -728,16 +784,22 @@
           },
           "TargetGroup": {
             "id": "TargetGroup",
-            "path": "MinimumCapacityUnitNlbStack/TargetGroup",
+            "path": "MinimumCapacityUnitAlbStack/TargetGroup",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "MinimumCapacityUnitNlbStack/TargetGroup/Resource",
+                "path": "MinimumCapacityUnitAlbStack/TargetGroup/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
                   "aws:cdk:cloudformation:props": {
                     "port": 80,
-                    "protocol": "TCP",
+                    "protocol": "HTTP",
+                    "targetGroupAttributes": [
+                      {
+                        "key": "stickiness.enabled",
+                        "value": "false"
+                      }
+                    ],
                     "targetType": "instance",
                     "vpcId": {
                       "Ref": "Stack8A423254"
@@ -757,7 +819,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "MinimumCapacityUnitNlbStack/BootstrapVersion",
+            "path": "MinimumCapacityUnitAlbStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -765,7 +827,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "MinimumCapacityUnitNlbStack/CheckBootstrapVersion",
+            "path": "MinimumCapacityUnitAlbStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -777,17 +839,17 @@
           "version": "10.4.2"
         }
       },
-      "MinimumCapacityUnitNlbInteg": {
-        "id": "MinimumCapacityUnitNlbInteg",
-        "path": "MinimumCapacityUnitNlbInteg",
+      "MinimumCapacityUnitAlbInteg": {
+        "id": "MinimumCapacityUnitAlbInteg",
+        "path": "MinimumCapacityUnitAlbInteg",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "MinimumCapacityUnitNlbInteg/DefaultTest",
+            "path": "MinimumCapacityUnitAlbInteg/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "MinimumCapacityUnitNlbInteg/DefaultTest/Default",
+                "path": "MinimumCapacityUnitAlbInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -795,11 +857,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "MinimumCapacityUnitNlbInteg/DefaultTest/DeployAssert",
+                "path": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "MinimumCapacityUnitNlbInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -807,7 +869,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "MinimumCapacityUnitNlbInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "MinimumCapacityUnitAlbInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"

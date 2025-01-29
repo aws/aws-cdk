@@ -9,7 +9,7 @@ class TestStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
       vpc,
-      minimumCapacityUnit: 1500,
+      minimumCapacityUnit: 150,
     });
     const listener = lb.addListener('Listener', { port: 80 });
     const groupOne = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
