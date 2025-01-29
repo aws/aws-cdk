@@ -23,7 +23,6 @@ describe('Job', () => {
   });
 
   describe('Create new Scala Spark Streaming Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkStreamingJob(stack, 'ImportedJob', { role, script, className });
     });
@@ -80,7 +79,6 @@ describe('Job', () => {
   });
 
   describe('Create new ScalaSpark Streaming Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {
         jobName: 'ScalaSparkStreamingJob',
@@ -115,11 +113,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new ScalaSpark Streaming Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {
         jobName: 'ScalaSparkStreamingJob',
@@ -141,11 +137,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create ScalaSpark Streaming ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {
         jobName: 'ScalaSparkStreamingJob',
@@ -260,7 +254,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark Streaming ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {
         jobName: 'ScalaSparkStreamingJob',
@@ -382,7 +375,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for ScalaSpark Streaming ETL Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.ScalaSparkStreamingJob(stack, 'ScalaSparkStreamingJob', {

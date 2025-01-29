@@ -25,7 +25,6 @@ class TestStack extends Stack {
         defaultValue: 'no_domain',
       }]),
     });
-
   }
 }
 

@@ -26,7 +26,6 @@ describe('with empty existing CodePipeline', () => {
   });
 
   test('can give both actions', () => {
-
     // WHEN
     new cdkp.CodePipeline(pipelineStack, 'Cdk', {
       codePipeline,
@@ -68,7 +67,6 @@ describe('with custom Source stage in existing Pipeline', () => {
   });
 
   test('Work with synthAction', () => {
-
     new cdkp.CodePipeline(pipelineStack, 'Cdk', {
       codePipeline,
       synth: new cdkp.ShellStep('Synth', {

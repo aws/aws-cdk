@@ -529,7 +529,6 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
    * @internal
    */
   private validateVpcCidrOverlap(requestorVpc: IVpcV2, acceptorVpc: IVpcV2): boolean {
-
     const requestorCidrs = [requestorVpc.ipv4CidrBlock];
     const acceptorCidrs = [acceptorVpc.ipv4CidrBlock];
 
