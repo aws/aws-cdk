@@ -277,10 +277,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     });
 
     const minimumCapacityUnit = props.minimumCapacityUnit;
-    if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
-      if (minimumCapacityUnit < 2750 || minimumCapacityUnit > 45000 || !Number.isInteger(minimumCapacityUnit)) {
-        throw new ValidationError(`'minimumCapacityUnit' must be a positive integer between 2750 and 45000 per AZ, got ${minimumCapacityUnit}`, this);
-      }
+    if (
+      minimumCapacityUnit &&
+      !Token.isUnresolved(minimumCapacityUnit) &&
+      (minimumCapacityUnit < 2750 || minimumCapacityUnit > 45000 || !Number.isInteger(minimumCapacityUnit))
+    ) {
+      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer between 2750 and 45000 per AZ, got ${minimumCapacityUnit}`, this);
     }
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
