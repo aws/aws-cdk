@@ -6,7 +6,7 @@ export interface IMappingValue {
    * Represents a Mapping Value.
    */
   readonly value: string;
-};
+}
 
 /**
  * Represents a Mapping Value.
@@ -71,7 +71,6 @@ export class MappingValue implements IMappingValue {
  * Represents a Parameter Mapping.
  */
 export class ParameterMapping {
-
   /**
    * Creates a mapping from an object.
    */

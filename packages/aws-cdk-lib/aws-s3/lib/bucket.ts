@@ -1472,7 +1472,7 @@ export class ReplicationTimeValue {
   /**
    * @param minutes the time in minutes
    */
-  private constructor(public readonly minutes: number) {};
+  private constructor(public readonly minutes: number) {}
 }
 
 /**
@@ -2401,7 +2401,6 @@ export class Bucket extends BucketBase {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty;
     encryptionKey?: kms.IKey;
   } {
-
     // default based on whether encryptionKey is specified
     let encryptionType = props.encryption;
     if (encryptionType === undefined) {
@@ -2757,7 +2756,6 @@ export class Bucket extends BucketBase {
   }
 
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
-
     if (!props.replicationRules || props.replicationRules.length === 0) {
       return undefined;
     }

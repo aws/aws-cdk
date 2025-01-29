@@ -1252,7 +1252,6 @@ describe('table', () => {
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
-
 });
 
 describe('replica tables', () => {
@@ -2381,7 +2380,7 @@ describe('secondary indexes', () => {
     });
   });
 
-  test('with global secondary index wihtout read capacity inherits from table when billing mode is provisioned', () => {
+  test('with global secondary index without read capacity inherits from table when billing mode is provisioned', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
 
@@ -3242,5 +3241,4 @@ test('Warm Throughput test on-demand', () => {
       },
     ],
   });
-
 });

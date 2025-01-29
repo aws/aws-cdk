@@ -106,7 +106,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGateway',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The Transit Gateway Attachment to attach the Flow Log to
@@ -116,7 +116,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGatewayAttachment',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The type of resource to attach a flow log to.

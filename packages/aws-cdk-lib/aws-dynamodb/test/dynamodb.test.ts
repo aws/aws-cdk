@@ -104,14 +104,12 @@ describe('default properties', () => {
     });
 
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
-
   });
 
   test('removalPolicy is DESTROY', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE });
-
   });
 
   test('hash + range key', () => {
@@ -911,14 +909,14 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for table with hash key only', () => {
+  test('get schema for table with hash key only', () => {
     expect(table.schema()).toEqual({
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: undefined,
     });
   });
 
-  test('get scheama for table with hash key + range key', () => {
+  test('get schema for table with hash key + range key', () => {
     table = new Table(stack, 'TableB', {
       tableName: TABLE_NAME,
       partitionKey: TABLE_PARTITION_KEY,
@@ -931,7 +929,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key', () => {
+  test('get schema for GSI with hash key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -943,7 +941,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for GSI with hash key + range key', () => {
+  test('get schema for GSI with hash key + range key', () => {
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -956,7 +954,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for LSI', () => {
+  test('get schema for LSI', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -968,7 +966,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for multiple secondary indexes', () => {
+  test('get schema for multiple secondary indexes', () => {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
@@ -991,7 +989,7 @@ describe('schema details', () => {
     });
   });
 
-  test('get scheama for unknown secondary index', () => {
+  test('get schema for unknown secondary index', () => {
     expect(() => table.schema(GSI_NAME))
       .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
   });
@@ -1389,7 +1387,7 @@ test('when adding a global secondary index without specifying read and write cap
   );
 });
 
-test.each([true, false])('when adding a global secondary index with contributoreIngishtsEnabled %s', (contributorInsightsEnabled: boolean) => {
+test.each([true, false])('when adding a global secondary index with contributorInsightsEnabled %s', (contributorInsightsEnabled: boolean) => {
   const stack = new Stack();
   const table = new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
@@ -1547,7 +1545,6 @@ test('error when adding more than 5 local secondary indexes', () => {
 
   expect(() => table.addLocalSecondaryIndex(lsiGenerator.next().value))
     .toThrow(/a maximum number of local secondary index per table is 5/);
-
 });
 
 test('error when adding a local secondary index with the name of a global secondary index', () => {
@@ -1787,7 +1784,6 @@ describe('metrics', () => {
   });
 
   test('Using metricSystemErrorsForOperations with no operations will default to all', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1809,11 +1805,9 @@ describe('metrics', () => {
       'batchexecutestatement',
       'executestatement',
     ]);
-
   });
 
   testDeprecated('Can use metricSystemErrors without the TableName dimension', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1823,11 +1817,9 @@ describe('metrics', () => {
       TableName: table.tableName,
       Operation: 'GetItem',
     });
-
   });
 
   testDeprecated('Using metricSystemErrors without the Operation dimension will fail', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1835,11 +1827,9 @@ describe('metrics', () => {
 
     expect(() => table.metricSystemErrors({ dimensions: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SystemErrors' metric./);
-
   });
 
   test('Can use metricSystemErrorsForOperations on a Dynamodb Table', () => {
-
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1878,7 +1868,6 @@ describe('metrics', () => {
         },
       },
     });
-
   });
 
   testDeprecated('Can use metricSystemErrors on a Dynamodb Table', () => {
@@ -1906,7 +1895,6 @@ describe('metrics', () => {
     });
 
     expect(() => table.metricUserErrors({ dimensions: { TableName: table.tableName } })).toThrow(/'dimensions' is not supported for the 'UserErrors' metric/);
-
   });
 
   test('Can use metricUserErrors on a Dynamodb Table', () => {
@@ -1944,7 +1932,6 @@ describe('metrics', () => {
   });
 
   test('Can use metricSuccessfulRequestLatency without the TableName dimension', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1954,11 +1941,9 @@ describe('metrics', () => {
       TableName: table.tableName,
       Operation: 'GetItem',
     });
-
   });
 
   test('Using metricSuccessfulRequestLatency without the Operation dimension will fail', () => {
-
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
@@ -1966,7 +1951,6 @@ describe('metrics', () => {
 
     expect(() => table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
-
   });
 
   test('Can use metricSuccessfulRequestLatency on a Dynamodb Table', () => {
@@ -1993,7 +1977,6 @@ describe('metrics', () => {
 });
 
 describe('grants', () => {
-
   test('"grant" allows adding arbitrary actions associated with this table resource', () => {
     // GIVEN
     const stack = new Stack();
@@ -3772,7 +3755,6 @@ test('Warm Throughput test on-demand', () => {
       },
     ],
   });
-
 });
 
 test('Warm Throughput test provisioned', () => {
@@ -3847,7 +3829,6 @@ test('Warm Throughput test provisioned', () => {
       },
     ],
   });
-
 });
 
 test('Kinesis Stream - precision timestamp', () => {

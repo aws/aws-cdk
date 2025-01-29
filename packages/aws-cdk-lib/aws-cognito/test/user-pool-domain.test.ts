@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
-import { UserPool, UserPoolDomain } from '../lib';
+import { ManagedLoginVersion, UserPool, UserPoolDomain } from '../lib';
 
 describe('User Pool Domain', () => {
   test('custom domain name', () => {
@@ -302,6 +302,24 @@ describe('User Pool Domain', () => {
 
       // THEN
       expect(signInUrl).toMatch(/amazoncognito\.com\/testsignin\?/);
+    });
+  });
+
+  test.each([
+    ManagedLoginVersion.CLASSIC_HOSTED_UI,
+    ManagedLoginVersion.NEWER_MANAGED_LOGIN,
+  ])('managed login version %s', (managedLoginVersion) => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    pool.addDomain('Domain', {
+      cognitoDomain: {
+        domainPrefix: 'cognito-domain-prefix',
+      },
+      managedLoginVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+      ManagedLoginVersion: managedLoginVersion,
     });
   });
 });

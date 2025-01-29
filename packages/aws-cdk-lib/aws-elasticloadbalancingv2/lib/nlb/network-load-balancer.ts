@@ -4,6 +4,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -232,13 +233,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
         // eslint-disable-next-line max-len
-        throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
+        throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
         // eslint-disable-next-line max-len
-        throw new Error(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`);
+        throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
     }
 
@@ -306,7 +307,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       (this.ipAddressType === IpAddressType.DUAL_STACK || this.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4) &&
       this.enablePrefixForIpv6SourceNat !== true
     ) {
-      throw new Error('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
+      throw new ValidationError('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.', this);
     }
     return new NetworkListener(this, id, {
       loadBalancer: this,

@@ -144,7 +144,6 @@ export class PySparkStreamingJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: PySparkStreamingJobProps) {

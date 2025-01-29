@@ -21,7 +21,6 @@ export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBas
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
 export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -51,7 +50,7 @@ export class EmrContainersDeleteVirtualCluster extends sfn.TaskStateBase {
         Id: this.props.virtualClusterId.value,
       }),
     };
-  };
+  }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
     const actions = ['emr-containers:DeleteVirtualCluster'];
