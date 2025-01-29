@@ -195,6 +195,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     };
 
     const cli = new CdkToolkit({
+      ioHost,
       cloudExecutable,
       deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
