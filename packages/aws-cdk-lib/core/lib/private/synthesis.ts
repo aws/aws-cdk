@@ -297,7 +297,6 @@ function invokeAspectsV2(root: IConstruct) {
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     for (const aspectApplication of allAspectsHere) {
-
       let invoked = invokedByPath[node.path];
       if (!invoked) {
         invoked = invokedByPath[node.path] = [];

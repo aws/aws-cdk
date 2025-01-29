@@ -9,7 +9,6 @@ const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 describe('bundling', () => {
   afterEach(() => {
     sinon.restore();
-
   });
 
   test('bundling with image from registry', () => {
@@ -240,7 +239,6 @@ describe('bundling', () => {
       'run', '--rm',
       tag,
     ])).toEqual(true);
-
   });
 
   test('throws in case of spawnSync error', () => {

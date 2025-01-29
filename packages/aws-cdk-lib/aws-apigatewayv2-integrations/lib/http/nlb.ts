@@ -24,7 +24,6 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
     id: string,
     private readonly listener: elbv2.INetworkListener,
     private readonly props: HttpNlbIntegrationProps = {}) {
-
     super(id);
   }
 

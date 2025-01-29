@@ -280,7 +280,6 @@ export class S3Code extends Code {
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {
@@ -308,7 +307,6 @@ export class S3CodeV2 extends Code {
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {

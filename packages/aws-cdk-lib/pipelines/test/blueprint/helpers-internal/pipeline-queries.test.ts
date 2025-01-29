@@ -14,7 +14,6 @@ afterEach(() => {
 });
 
 describe('pipeline-queries', () => {
-
   describe('stackOutputsReferenced', () => {
     let blueprint: Blueprint;
     let stageDeployment: cdkp.StageDeployment;
@@ -87,7 +86,6 @@ describe('pipeline-queries', () => {
         expect(queries.stackOutputsReferenced(stackDeployment)).toEqual(testCase.expectedResultGetter());
       });
     });
-
   });
 });
 
