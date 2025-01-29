@@ -361,7 +361,6 @@ export interface ApplicationListenerProps {
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
 export abstract class ApplicationMultipleTargetGroupsServiceBase extends Construct {
-
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -590,7 +589,6 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         }
       }
     }
-
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean, idleTimeout?: Duration): ApplicationLoadBalancer {

@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Template, Annotations } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -95,7 +95,6 @@ describe('external service', () => {
       LaunchType: LaunchType.EXTERNAL,
       ServiceName: 'bonjour',
     });
-
   });
 
   test('with cloudmap set on cluster, throw error', () => {
@@ -127,7 +126,6 @@ describe('external service', () => {
       })],
       serviceName: 'bonjour',
     })).toThrow('Cloud map integration is not supported for External service' );
-
   });
 
   test('with multiple security groups, it correctly updates the cfn template', () => {
@@ -201,7 +199,6 @@ describe('external service', () => {
         },
       ],
     });
-
   });
 
   test('with deployment alarms', () => {
@@ -288,7 +285,6 @@ describe('external service', () => {
       cluster,
       taskDefinition,
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
-
   });
 
   test('errors if minimum not less than maximum', () => {
@@ -310,7 +306,6 @@ describe('external service', () => {
       minHealthyPercent: 100,
       maxHealthyPercent: 100,
     })).toThrow('Minimum healthy percent must be less than maximum healthy percent.');
-
   });
 
   test('error if cloudmap options provided with external service', () => {
@@ -336,7 +331,6 @@ describe('external service', () => {
     })).toThrow('Cloud map options are not supported for External service');
 
     // THEN
-
   });
 
   test('error if capacityProviderStrategies options provided with external service', () => {
@@ -374,7 +368,6 @@ describe('external service', () => {
     })).toThrow('Capacity Providers are not supported for External service');
 
     // THEN
-
   });
 
   test('error when performing attachToApplicationTargetGroup to an external service', () => {
@@ -405,7 +398,6 @@ describe('external service', () => {
     expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow('Application load balancer cannot be attached to an external service');
 
     // THEN
-
   });
 
   test('error when performing loadBalancerTarget to an external service', () => {
@@ -432,7 +424,6 @@ describe('external service', () => {
     })).toThrow('External service cannot be attached as load balancer targets');
 
     // THEN
-
   });
 
   test('error when performing registerLoadBalancerTargets to an external service', () => {
@@ -466,7 +457,6 @@ describe('external service', () => {
     )).toThrow('External service cannot be registered as load balancer targets');
 
     // THEN
-
   });
 
   test('error when performing autoScaleTaskCount to an external service', () => {
@@ -494,7 +484,6 @@ describe('external service', () => {
     })).toThrow('Autoscaling not supported for external service');
 
     // THEN
-
   });
 
   test('error when performing enableCloudMap to an external service', () => {
@@ -519,7 +508,6 @@ describe('external service', () => {
     expect(() => service.enableCloudMap({})).toThrow('Cloud map integration not supported for an external service');
 
     // THEN
-
   });
 
   test('error when performing associateCloudMapService to an external service', () => {
@@ -557,7 +545,6 @@ describe('external service', () => {
       container: container,
       containerPort: 8000,
     })).toThrow('Cloud map service association is not supported for an external service');
-
   });
 
   test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
@@ -581,6 +568,7 @@ describe('external service', () => {
         type: DeploymentControllerType.EXTERNAL,
       },
       circuitBreaker: { rollback: true },
+      minHealthyPercent: 100, // required to prevent test failure due to warning
     });
     app.synth();
 
@@ -589,5 +577,52 @@ describe('external service', () => {
       'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]',
       'Deployment circuit breaker requires the ECS deployment controller.',
     ]);
+  });
+
+  test('warning if minHealthyPercent not set for an external service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+  });
+
+  test('no warning if minHealthyPercent set for an external service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const service = new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      minHealthyPercent: 100,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
+    Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
   });
 });
