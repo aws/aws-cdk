@@ -1,4 +1,4 @@
-import { StackActivityProgress } from '../../api/aws-cdk';
+import { StackActivityProgress, HotswapPropertyOverrides } from '../../api/aws-cdk';
 import type { StackSelector } from '../../api/cloud-assembly';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
@@ -260,4 +260,10 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Represents configuration property overrides for hotswap deployments.
+   * Currently only supported by ECS.
+   */
+  readonly hotswapProperties?: HotswapPropertyOverrides;
 }

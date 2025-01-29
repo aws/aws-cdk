@@ -241,15 +241,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       await ioHost.notify(warn('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
     }
 
-    // @TODO
-    // let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
-
-    // let hotswapPropertyOverrides = new HotswapPropertyOverrides();
-    // hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
-    //   hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
-    //   hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
-    // );
-
     const stacks = stackCollection.stackArtifacts;
 
     const stackOutputs: { [key: string]: any } = {};
@@ -369,7 +360,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             rollback,
             hotswap: options.hotswap,
             extraUserAgent: options.extraUserAgent,
-            // hotswapPropertyOverrides: hotswapPropertyOverrides,
+            hotswapPropertyOverrides: options.hotswapProperties,
             assetParallelism: options.assetParallelism,
           });
 
