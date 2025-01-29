@@ -5,7 +5,7 @@ import { Stack } from '../../core';
 import { CfnComputeEnvironmentProps, UnmanagedComputeEnvironment } from '../lib/';
 
 const defaultExpectedProps: CfnComputeEnvironmentProps = {
-  type: 'unmanaged',
+  type: 'UNMANAGED',
   computeEnvironmentName: undefined,
   computeResources: undefined,
   eksConfiguration: undefined,

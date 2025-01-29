@@ -7,7 +7,7 @@ import { Stack, Duration, Tags } from '../../core';
 import { AllocationStrategy, CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType } from '../lib';
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
-  type: 'managed',
+  type: 'MANAGED',
   computeEnvironmentName: undefined,
   serviceRole: undefined,
   state: 'ENABLED',

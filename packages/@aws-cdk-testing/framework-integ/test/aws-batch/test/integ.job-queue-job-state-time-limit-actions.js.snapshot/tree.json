@@ -863,7 +863,7 @@
                     },
                     "replaceComputeEnvironment": false,
                     "state": "ENABLED",
-                    "type": "managed",
+                    "type": "MANAGED",
                     "updatePolicy": {}
                   }
                 },
