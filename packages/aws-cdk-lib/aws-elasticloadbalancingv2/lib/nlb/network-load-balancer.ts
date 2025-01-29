@@ -3,7 +3,7 @@ import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Lazy, Resource } from '../../../core';
+import { Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
@@ -275,6 +275,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
     });
+
+    const minimumCapacityUnit = props.minimumCapacityUnit;
+    if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
+      if (minimumCapacityUnit < 2750 || minimumCapacityUnit > 45000 || !Number.isInteger(minimumCapacityUnit)) {
+        throw new ValidationError(`'minimumCapacityUnit' must be a positive integer between 2750 and 45000 per AZ, got ${minimumCapacityUnit}`, this);
+      }
+    }
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);

@@ -644,66 +644,6 @@
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
                 }
-              },
-              "RestrictDefaultSecurityGroupCustomResource": {
-                "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "MinimumCapacityUnitNlbStack/Stack/RestrictDefaultSecurityGroupCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "MinimumCapacityUnitNlbStack/Stack/RestrictDefaultSecurityGroupCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.4.2"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
-          "LatestNodeRuntimeMap": {
-            "id": "LatestNodeRuntimeMap",
-            "path": "MinimumCapacityUnitNlbStack/LatestNodeRuntimeMap",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
-          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
-            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "MinimumCapacityUnitNlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "MinimumCapacityUnitNlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "MinimumCapacityUnitNlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "MinimumCapacityUnitNlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
               }
             },
             "constructInfo": {
@@ -728,15 +668,12 @@
                       }
                     ],
                     "minimumLoadBalancerCapacity": {
-                      "capacityUnits": 1500
+                      "capacityUnits": 2750
                     },
                     "scheme": "internal",
                     "subnets": [
                       {
                         "Ref": "StackPrivateSubnet1Subnet47AC2BC7"
-                      },
-                      {
-                        "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
                       }
                     ],
                     "type": "network"
