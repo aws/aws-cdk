@@ -233,7 +233,7 @@ export class CloudFormationProduct extends Product {
         },
       };
     });
-  };
+  }
 
   private validateProductProps(props: CloudFormationProductProps) {
     InputValidator.validateLength(this.node.path, 'product product name', 1, 100, props.productName);

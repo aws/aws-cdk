@@ -113,7 +113,6 @@ export abstract class FirewallDomains {
         return { domainFileUrl: asset.s3ObjectUrl };
       },
     };
-
   }
 
   /** Binds the domains to a domain list */

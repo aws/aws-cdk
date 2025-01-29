@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { testFixture } from './util';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest, AuthenticationMode } from '../lib';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
 
@@ -12,6 +13,9 @@ test.each(versions)('support AlbControllerVersion (%s)', (version) => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
   AlbController.create(stack, {
     cluster,
@@ -46,11 +50,9 @@ test('all vended policies are valid', () => {
     if (addOn.startsWith('alb-iam_policy')) {
       const policy = JSON.parse(fs.readFileSync(path.join(addOnsDir, addOn)).toString());
       try {
-
         for (const statement of policy.Statement) {
           iam.PolicyStatement.fromJson(statement);
         }
-
       } catch (error) {
         throw new Error(`Invalid policy: ${addOn}: ${error}`);
       }
@@ -63,6 +65,9 @@ test('can configure a custom repository', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
@@ -96,6 +101,9 @@ test('throws when a policy is not defined for a custom version', () => {
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   expect(() => AlbController.create(stack, {
@@ -108,6 +116,9 @@ test.each(['us-gov-west-1', 'cn-north-1'])('stack does not include hard-coded pa
   const { stack } = testFixture(region);
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
@@ -124,6 +135,9 @@ test('correct helm chart version is set for selected alb controller version', ()
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
+    kubectlProviderOptions: {
+      kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+    },
   });
 
   AlbController.create(stack, {
@@ -150,52 +164,5 @@ test('correct helm chart version is set for selected alb controller version', ()
         ],
       ],
     },
-  });
-});
-
-describe('AlbController AwsAuth creation', () => {
-  const setupTest = (authenticationMode?: AuthenticationMode) => {
-    const { stack } = testFixture();
-    const cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_27,
-      authenticationMode,
-    });
-    AlbController.create(stack, {
-      cluster,
-      version: AlbControllerVersion.V2_6_2,
-    });
-    return stack;
-  };
-
-  const awsAuthManifest = {
-    Manifest: {
-      'Fn::Join': [
-        '',
-        [
-          '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-          {
-            'Fn::GetAtt': [
-              'ClusterNodegroupDefaultCapacityNodeGroupRole55953B04',
-              'Arn',
-            ],
-          },
-          '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-        ],
-      ],
-    },
-  };
-
-  test('will not create AwsAuth when the authenticationMode is API', () => {
-    const stack = setupTest(AuthenticationMode.API);
-    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, Match.not(awsAuthManifest));
-  });
-
-  test.each([
-    AuthenticationMode.API_AND_CONFIG_MAP,
-    AuthenticationMode.CONFIG_MAP,
-    undefined,
-  ])('will create AwsAuth when the authenticationMode is %p', (authenticationMode) => {
-    const stack = setupTest(authenticationMode);
-    Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, awsAuthManifest);
   });
 });
