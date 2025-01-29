@@ -14,6 +14,7 @@ import * as eks from '../lib';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -200,7 +201,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
 new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {

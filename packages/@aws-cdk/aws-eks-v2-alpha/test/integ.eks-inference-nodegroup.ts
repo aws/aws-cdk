@@ -4,6 +4,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterInferenceStack extends Stack {
   constructor(scope: App, id: string) {
@@ -33,7 +34,11 @@ class EksClusterInferenceStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-nodegroup');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-nodegroup-integ', {
   testCases: [stack],
