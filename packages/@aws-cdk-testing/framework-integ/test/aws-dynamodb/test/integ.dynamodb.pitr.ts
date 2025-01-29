@@ -20,7 +20,6 @@ class TestStack extends Stack {
         recoveryPeriodInDays: 10,
       },
     });
-
   }
 }
 
