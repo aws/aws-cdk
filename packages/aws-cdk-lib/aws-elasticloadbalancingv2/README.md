@@ -325,7 +325,8 @@ declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
-  minimumCapacityUnit: 10,
+  // Valid value is between 100 and 1500.
+  minimumCapacityUnit: 100,
 });
 ```
 
@@ -491,9 +492,11 @@ declare const vpc: ec2.Vpc;
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   vpc,
-  minimumCapacityUnit: 10,
+  minimumCapacityUnit: 5500,
 });
 ```
+
+**Note**: The `minimumCapacityUnit` value is evenly distributed across all active Availability Zones (AZs) for the network load balancer. The distributed value per AZ must be between 2,750 and 45,000 units.
 
 ## Targets and Target Groups
 
