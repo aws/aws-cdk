@@ -264,6 +264,8 @@ export interface DeployOptions extends BaseDeployOptions {
   /**
    * Represents configuration property overrides for hotswap deployments.
    * Currently only supported by ECS.
+   *
+   * @default - no overrides
    */
   readonly hotswapProperties?: HotswapPropertyOverrides;
 }
