@@ -175,11 +175,16 @@ export class CliIoHost implements IIoHost {
    */
   private static _instance: CliIoHost | undefined;
 
+  // internal state for getters/setter
   private _currentAction: ToolkitAction;
   private _isCI: boolean;
   private _isTTY: boolean;
   private _logLevel: IoMessageLevel;
   private _internalIoHost?: IIoHost;
+
+  // Corked Logging
+  private corkedCounter = 0;
+  private readonly corkedLoggingBuffer: IoMessage<any>[] = [];
 
   private constructor(props: CliIoHostProps = {}) {
     this._currentAction = props.currentAction ?? 'none' as ToolkitAction;
@@ -260,6 +265,31 @@ export class CliIoHost implements IIoHost {
   }
 
   /**
+   * Executes a block of code with corked logging. All log messages during execution
+   * are buffered and only written when all nested cork blocks complete (when CORK_COUNTER reaches 0).
+   * The corking is bound to the specific instance of the CliIoHost.
+   *
+   * @param block - Async function to execute with corked logging
+   * @returns Promise that resolves with the block's return value
+   */
+  public async withCorkedLogging<T>(block: () => Promise<T>): Promise<T> {
+    this.corkedCounter++;
+    try {
+      return await block();
+    } finally {
+      this.corkedCounter--;
+      if (this.corkedCounter === 0) {
+        // Process each buffered message through notify
+        for (const ioMessage of this.corkedLoggingBuffer) {
+          await this.notify(ioMessage);
+        }
+        // remove all buffered messages in-place
+        this.corkedLoggingBuffer.splice(0);
+      }
+    }
+  }
+
+  /**
    * Notifies the host of a message.
    * The caller waits until the notification completes.
    */
@@ -272,24 +302,20 @@ export class CliIoHost implements IIoHost {
       return;
     }
 
-    const output = this.formatMessage(msg);
-    const stream = this.stream(msg.level, msg.forceStdout ?? false);
+    if (this.corkedCounter > 0) {
+      this.corkedLoggingBuffer.push(msg);
+      return;
+    }
 
-    return new Promise((resolve, reject) => {
-      stream.write(output, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    const output = this.formatMessage(msg);
+    const stream = this.selectStream(msg.level, msg.forceStdout ?? false);
+    stream.write(output);
   }
 
   /**
    * Determines which output stream to use based on log level and configuration.
    */
-  private stream(level: IoMessageLevel, forceStdout: boolean) {
+  private selectStream(level: IoMessageLevel, forceStdout: boolean) {
     // For legacy purposes all log streams are written to stderr by default, unless
     // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
     // if the CDK is running in a CI environment. This is because some CI environments will immediately
