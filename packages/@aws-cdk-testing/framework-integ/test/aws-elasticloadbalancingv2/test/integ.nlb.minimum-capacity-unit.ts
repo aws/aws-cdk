@@ -6,16 +6,13 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Stack');
+    const vpc = new ec2.Vpc(this, 'Stack', {
+      maxAzs: 1,
+    });
     const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
       vpc,
       // minimumCapacityUnit is devided by number of availability zones
       // In this case, 2750 / 1 = 2750
-      vpcSubnets: {
-        subnets: vpc.selectSubnets({
-          availabilityZones: [vpc.availabilityZones[0]],
-        }).subnets,
-      },
       minimumCapacityUnit: 2750,
     });
     const listener = lb.addListener('Listener', { port: 80 });

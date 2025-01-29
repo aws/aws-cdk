@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c700fc289f459c8c71f8c72a4e23d333f0aaa2215152a24583e2bb3c4f32949.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eace423a560e57ed9e11d81c8434815b3c14f51088e72efc691211ee4554323a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,42 +76,6 @@
             "data": "StackPublicSubnet1NATGatewayD2E1ABF7"
           }
         ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2Subnet3C7D2288"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2RouteTableCD306445"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2RouteTableAssociation5E8F73F1"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2DefaultRoute0319539B"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2EIP8CDBC8C2"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPublicSubnet2NATGatewayA8E03AB3"
-          }
-        ],
         "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,30 +98,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StackPrivateSubnet1DefaultRouteFBF81BA5"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2SubnetA2F8EDD8"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2RouteTableA5546697"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2RouteTableAssociation68ACB8C1"
-          }
-        ],
-        "/MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StackPrivateSubnet2DefaultRoute22004492"
           }
         ],
         "/MinimumCapacityUnitNlbStack/Stack/IGW": [

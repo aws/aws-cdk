@@ -26,7 +26,7 @@
       }
      ]
     },
-    "CidrBlock": "10.0.0.0/18",
+    "CidrBlock": "10.0.0.0/17",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -123,114 +123,6 @@
     "StackPublicSubnet1RouteTableAssociation74F1C1B6"
    ]
   },
-  "StackPublicSubnet2Subnet3C7D2288": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.64.0/18",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    }
-   }
-  },
-  "StackPublicSubnet2RouteTableCD306445": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    }
-   }
-  },
-  "StackPublicSubnet2RouteTableAssociation5E8F73F1": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPublicSubnet2RouteTableCD306445"
-    },
-    "SubnetId": {
-     "Ref": "StackPublicSubnet2Subnet3C7D2288"
-    }
-   }
-  },
-  "StackPublicSubnet2DefaultRoute0319539B": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "StackIGW2F0A1126"
-    },
-    "RouteTableId": {
-     "Ref": "StackPublicSubnet2RouteTableCD306445"
-    }
-   },
-   "DependsOn": [
-    "StackVPCGWFFCB6290"
-   ]
-  },
-  "StackPublicSubnet2EIP8CDBC8C2": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
-     }
-    ]
-   }
-  },
-  "StackPublicSubnet2NATGatewayA8E03AB3": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "StackPublicSubnet2EIP8CDBC8C2",
-      "AllocationId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "StackPublicSubnet2Subnet3C7D2288"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PublicSubnet2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "StackPublicSubnet2DefaultRoute0319539B",
-    "StackPublicSubnet2RouteTableAssociation5E8F73F1"
-   ]
-  },
   "StackPrivateSubnet1Subnet47AC2BC7": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -242,7 +134,7 @@
       }
      ]
     },
-    "CidrBlock": "10.0.128.0/18",
+    "CidrBlock": "10.0.128.0/17",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -297,75 +189,6 @@
     },
     "RouteTableId": {
      "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
-    }
-   }
-  },
-  "StackPrivateSubnet2SubnetA2F8EDD8": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
-      {
-       "Fn::GetAZs": ""
-      }
-     ]
-    },
-    "CidrBlock": "10.0.192.0/18",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    }
-   }
-  },
-  "StackPrivateSubnet2RouteTableA5546697": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "MinimumCapacityUnitNlbStack/Stack/PrivateSubnet2"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    }
-   }
-  },
-  "StackPrivateSubnet2RouteTableAssociation68ACB8C1": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPrivateSubnet2RouteTableA5546697"
-    },
-    "SubnetId": {
-     "Ref": "StackPrivateSubnet2SubnetA2F8EDD8"
-    }
-   }
-  },
-  "StackPrivateSubnet2DefaultRoute22004492": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "StackPublicSubnet2NATGatewayA8E03AB3"
-    },
-    "RouteTableId": {
-     "Ref": "StackPrivateSubnet2RouteTableA5546697"
     }
    }
   },
