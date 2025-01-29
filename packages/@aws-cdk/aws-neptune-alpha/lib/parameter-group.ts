@@ -155,6 +155,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       name: props.parameterGroupName,

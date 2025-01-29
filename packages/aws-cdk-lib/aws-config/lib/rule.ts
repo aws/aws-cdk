@@ -420,6 +420,8 @@ export class CustomRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
@@ -535,6 +537,8 @@ export class CustomPolicy extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
       throw new Error('Policy Text cannot be empty.');

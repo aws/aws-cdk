@@ -660,6 +660,8 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   constructor(scope: Construct, id: string, attrs: ServerlessClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
 
@@ -725,6 +727,8 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
 
   constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enableDataApi = props.enableDataApi;
 

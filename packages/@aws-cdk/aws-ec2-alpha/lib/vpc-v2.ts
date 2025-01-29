@@ -852,6 +852,8 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
   constructor(scope: Construct, id: string, props: VPCCidrBlockProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.resource = new CfnVPCCidrBlock(this, id, props);
     this.node.defaultChild = this.resource;
     this.cidrBlock = props.cidrBlock;

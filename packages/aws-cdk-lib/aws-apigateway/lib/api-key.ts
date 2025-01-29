@@ -255,6 +255,8 @@ export class RateLimitedApiKey extends ApiKeyBase {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new ApiKey(this, 'Resource', props);
 

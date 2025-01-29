@@ -273,6 +273,8 @@ export class RequestAuthorizer extends LambdaAuthorizer {
 
   constructor(scope: Construct, id: string, props: RequestAuthorizerProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
       throw new Error('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.');

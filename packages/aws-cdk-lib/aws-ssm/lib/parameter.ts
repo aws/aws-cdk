@@ -774,6 +774,8 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     super(scope, id, {
       physicalName: props.parameterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
       throw new ValidationError('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.', this);

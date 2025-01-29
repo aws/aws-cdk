@@ -1,6 +1,14 @@
-import { ResourceMetadataUpdater } from './metadata-updater';
+import { PropertyUpdater, EnumsUpdater } from './metadata-updater';
 
-export async function main() {
-  const updater = new ResourceMetadataUpdater("../../../../packages/");
-  await updater.execute();
+export function main() {
+  const dir = '../../../../packages/'
+
+  new PropertyUpdater(dir).execute();
+  console.log('Property updater finished.')
+
+  // new ConstructsUpdater(dir).execute();
+  // console.log('Constructs updater finished.');
+
+  new EnumsUpdater(dir).execute();
+  console.log('Enums updater finished.');
 }

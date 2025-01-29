@@ -244,6 +244,8 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: FunctionUrlOriginAccessControlProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {

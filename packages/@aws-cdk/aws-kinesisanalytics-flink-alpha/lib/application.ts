@@ -974,6 +974,8 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id, { physicalName: props.applicationName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     validateApplicationProps(props);
 
     this.role = props.role ?? new iam.Role(this, 'Role', {
