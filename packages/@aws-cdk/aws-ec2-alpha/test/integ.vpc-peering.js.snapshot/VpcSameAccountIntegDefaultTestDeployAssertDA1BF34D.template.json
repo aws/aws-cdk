@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738137749031"
+    "salt": "1738179809475"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -61,15 +61,6 @@
         {
          "Action": [
           "ec2:DescribeVpcPeeringConnections"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "iam:GetRolePolicy"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -109,39 +100,6 @@
      ]
     }
    }
-  },
-  "AwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b": {
-   "Type": "Custom::DeployAssert@SdkCallIAMGetRolePolicyCommand",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "IAM",
-    "api": "GetRolePolicyCommand",
-    "expected": "{\"$ObjectLike\":{\"PolicyDocument\":\"%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Action%22%3A%22ec2%3AAcceptVpcPeeringConnection%22%2C%22Resource%22%3A%22arn%3Aaws%3Aec2%3Aeu-west-2%3A812589051300%3Avpc%2Fvpc-067bee2f1080d0e83%22%2C%22Effect%22%3A%22Allow%22%7D%2C%7B%22Condition%22%3A%7B%22StringEquals%22%3A%7B%22ec2%3AAccepterVpc%22%3A%22arn%3Aaws%3Aec2%3Aeu-west-2%3A812589051300%3Avpc%2Fvpc-067bee2f1080d0e83%22%7D%7D%2C%22Action%22%3A%22ec2%3AAcceptVpcPeeringConnection%22%2C%22Resource%22%3A%22arn%3Aaws%3Aec2%3Aeu-west-2%3A812589051300%3Avpc-peering-connection%2F%2A%22%2C%22Effect%22%3A%22Allow%22%7D%5D%7D\"}}",
-    "parameters": {
-     "RoleName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "VpcPeeringSameAccountIntegStack:ExportsOutputRefacceptorVpcVpcPeeringRoleF389E47A7BDD5A0D"
-        },
-        "\""
-       ]
-      ]
-     },
-     "PolicyName": "\"acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0\""
-    },
-    "flattenResponse": "false",
-    "salt": "1738137749033"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -149,14 +107,6 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallEC2describeVpcPeeringConnectionsffd9cfa258f9cf263dcae5acc4466f62",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b",
      "assertion"
     ]
    }

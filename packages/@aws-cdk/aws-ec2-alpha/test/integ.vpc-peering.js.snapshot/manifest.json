@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b6da567a9d5b7fb32b586eb491a0b83e2f5e77370d17532486bd34d65be22fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,18 +40,6 @@
             "data": "acceptorVpc5B7D1670"
           }
         ],
-        "/VpcPeeringSameAccountIntegStack/acceptorVpc/VpcPeeringRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "acceptorVpcVpcPeeringRoleF389E47A"
-          }
-        ],
-        "/VpcPeeringSameAccountIntegStack/acceptorVpc/VpcPeeringRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0"
-          }
-        ],
         "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -70,12 +58,6 @@
             "data": "ExportsOutputFnGetAttrequestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CDIdCEF66BF2"
           }
         ],
-        "/VpcPeeringSameAccountIntegStack/Exports/Output{\"Ref\":\"acceptorVpcVpcPeeringRoleF389E47A\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefacceptorVpcVpcPeeringRoleF389E47A7BDD5A0D"
-          }
-        ],
         "/VpcPeeringSameAccountIntegStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -86,6 +68,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "acceptorVpcVpcPeeringRoleF389E47A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acceptorVpcVpcPeeringRoleF389E47A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "acceptorVpcVpcPeeringRoleDefaultPolicyE79C72D0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -108,7 +108,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6bcd2b38a566c49b647038136deb8e8446a79a01031b620b98b4aad73516152e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/650e5e7cfa282600d370a392581e372a3552491bcef3c5808c41714cdf2324c8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -153,18 +153,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b"
-          }
-        ],
-        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallIAMGetRolePolicyCommanda81852c5a84a03f7bc5afbc719a3482b"
           }
         ],
         "/VpcSameAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [

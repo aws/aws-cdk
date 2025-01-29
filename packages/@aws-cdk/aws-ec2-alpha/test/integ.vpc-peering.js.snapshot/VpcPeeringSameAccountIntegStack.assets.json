@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "5b6da567a9d5b7fb32b586eb491a0b83e2f5e77370d17532486bd34d65be22fb": {
+    "765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d": {
       "source": {
         "path": "VpcPeeringSameAccountIntegStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5b6da567a9d5b7fb32b586eb491a0b83e2f5e77370d17532486bd34d65be22fb.json",
+          "objectKey": "765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
