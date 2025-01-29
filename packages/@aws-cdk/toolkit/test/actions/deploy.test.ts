@@ -1,8 +1,11 @@
+let mockFindCloudWatchLogGroups = jest.fn();
+
 import { RequireApproval, StackParameters } from '../../lib';
-import { CloudWatchLogEventMonitor } from '../../lib/api/aws-cdk';
+import { CloudWatchLogEventMonitor, MockSdk } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
 
+const sdk = new MockSdk();
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 const rollbackSpy = jest.spyOn(toolkit as any, '_rollback').mockResolvedValue({});
@@ -23,6 +26,7 @@ jest.mock('../../lib/api/aws-cdk', () => {
       isSingleAssetPublished: jest.fn().mockResolvedValue(true),
       readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
     })),
+    findCloudWatchLogGroups: mockFindCloudWatchLogGroups,
   };
 });
 
@@ -30,6 +34,11 @@ beforeEach(() => {
   ioHost.notifySpy.mockClear();
   ioHost.requestSpy.mockClear();
   jest.clearAllMocks();
+  mockFindCloudWatchLogGroups.mockReturnValue({
+    env: { name: 'Z', account: 'X', region: 'Y' },
+    sdk,
+    logGroupNames: ['/aws/lambda/lambda-function-name'],
+  });
 });
 
 describe('deploy', () => {
@@ -140,7 +149,7 @@ describe('deploy', () => {
         action: 'deploy',
         level: 'info',
         code: 'CDK_TOOLKIT_I3001',
-        message: expect.stringContaining('The following log groups are added'),
+        message: expect.stringContaining('The following log groups are added: /aws/lambda/lambda-function-name'),
       }));
     });
 
