@@ -39,7 +39,6 @@ class EksClusterStack extends Stack {
         name: 'config-map',
       },
     });
-
   }
 }
 

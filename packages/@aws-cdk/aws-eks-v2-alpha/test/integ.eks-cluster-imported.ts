@@ -151,7 +151,6 @@ class EksClusterStack extends Stack {
             clusterName: cluster.clusterName,
           },
         });
-
       }
     }
     const app = new cdk8s.App();
@@ -216,5 +215,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
     },
   },
 });
-
-app.synth();
