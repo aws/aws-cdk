@@ -21,7 +21,7 @@ class EventApiApiKeyAuthStack extends cdk.Stack {
       },
     });
   }
-};
+}
 
 const app = new cdk.App();
 const stack = new EventApiApiKeyAuthStack(app, 'EventApiApiKeyAuthStack');

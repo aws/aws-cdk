@@ -153,9 +153,8 @@ class EventApiStack extends cdk.Stack {
       resourceArn: api.apiArn,
       webAclArn: webAcl.attrArn,
     });
-
   }
-};
+}
 
 /**
  * In order to test this you need to have a valid public hosted zone that you can use

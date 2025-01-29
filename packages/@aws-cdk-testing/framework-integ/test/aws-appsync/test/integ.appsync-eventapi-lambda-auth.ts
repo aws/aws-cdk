@@ -51,7 +51,7 @@ class EventApiLambdaAuthStack extends cdk.Stack {
       },
     });
   }
-};
+}
 
 const app = new cdk.App();
 const stack = new EventApiLambdaAuthStack(app, 'EventApiLambdaAuthStack');

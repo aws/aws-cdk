@@ -86,7 +86,7 @@ class EventApiChannelNamespaceStack extends cdk.Stack {
           `),
     });
   }
-};
+}
 
 const app = new cdk.App();
 const stack = new EventApiChannelNamespaceStack(app, 'EventApiChannelNamespaceStack');

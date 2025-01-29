@@ -61,7 +61,7 @@ class EventApiApiGrantStack extends cdk.Stack {
     this.eventApi.grantConnect(this.pubSubAllChannelsFunction);
     this.eventApi.grantPublishAndSubscribe(this.pubSubAllChannelsFunction);
   }
-};
+}
 
 const app = new cdk.App();
 const stack = new EventApiApiGrantStack(app, 'EventApiApiGrantStack');

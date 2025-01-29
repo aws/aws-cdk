@@ -30,7 +30,7 @@ class EventApiCognitoAuthStack extends cdk.Stack {
       },
     });
   }
-};
+}
 
 const app = new cdk.App();
 const stack = new EventApiCognitoAuthStack(app, 'EventApiCognitoAuthStack');
