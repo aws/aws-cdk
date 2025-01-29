@@ -62,7 +62,7 @@ async function runInIsolatedContainer(fixture: TestFixture, pathsToMount: string
       ...['HOME', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_SESSION_TOKEN'].flatMap(e => ['-e', e]),
       '-w', fixture.integTestDir,
       '--cap-add=NET_ADMIN',
-      'ubuntu:latest',
+      'public.ecr.aws/ubuntu/ubuntu:24.04_stable',
       `${scriptName}`,
     ], {
       stdio: 'inherit',
