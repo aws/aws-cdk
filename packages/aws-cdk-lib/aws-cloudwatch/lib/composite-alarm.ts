@@ -62,7 +62,6 @@ export interface CompositeAlarmProps {
  * A Composite Alarm based on Alarm Rule.
  */
 export class CompositeAlarm extends AlarmBase {
-
   /**
    * Import an existing CloudWatch composite alarm provided an Name.
    *
@@ -154,7 +153,6 @@ export class CompositeAlarm extends AlarmBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-
   }
 
   private generateUniqueId(): string {
@@ -164,5 +162,4 @@ export class CompositeAlarm extends AlarmBase {
     }
     return name;
   }
-
 }

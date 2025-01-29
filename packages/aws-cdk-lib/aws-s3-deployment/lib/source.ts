@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { FileSystem, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Source information.
@@ -98,9 +99,9 @@ export class Source {
    */
   public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
     return {
-      bind: (_: Construct, context?: DeploymentSourceContext) => {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
-          throw new Error('To use a Source.bucket(), context must be provided');
+          throw new ValidationError('To use a Source.bucket(), context must be provided', scope);
         }
 
         bucket.grantRead(context.handlerRole);
@@ -121,7 +122,7 @@ export class Source {
     return {
       bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig {
         if (!context) {
-          throw new Error('To use a Source.asset(), context must be provided');
+          throw new ValidationError('To use a Source.asset(), context must be provided', scope);
         }
 
         let id = 1;
@@ -133,7 +134,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new Error('Asset path must be either a .zip file or a directory');
+          throw new ValidationError('Asset path must be either a .zip file or a directory', scope);
         }
         asset.grantRead(context.handlerRole);
 

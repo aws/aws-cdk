@@ -41,7 +41,6 @@ export class IntegManifestReader {
     try {
       const obj = Manifest.loadIntegManifest(fileName);
       return new IntegManifestReader(path.dirname(fileName), obj);
-
     } catch (e: any) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
     }

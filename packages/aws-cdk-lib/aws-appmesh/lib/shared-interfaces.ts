@@ -203,7 +203,7 @@ export abstract class LoggingFormat {
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);
-  };
+  }
 
   /**
    * Called when the Access Log Format is initialized. Can be used to enforce
@@ -309,7 +309,6 @@ export abstract class Backend {
  * Represents the properties needed to define a Virtual Service backend
  */
 class VirtualServiceBackend extends Backend {
-
   constructor (private readonly virtualService: IVirtualService,
     private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();

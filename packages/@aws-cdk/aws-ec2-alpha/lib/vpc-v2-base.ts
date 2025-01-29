@@ -60,6 +60,13 @@ export interface InternetGatewayOptions{
    * @default - provisioned without a resource name
    */
   readonly internetGatewayName?: string;
+
+  /**
+   * List of subnets where route to IGW will be added
+   *
+   * @default - route created for all subnets with Type `SubnetType.Public`
+   */
+  readonly subnets?: SubnetSelection[];
 }
 
 /**
@@ -194,7 +201,6 @@ export interface IVpcV2 extends IVpc {
  * For more information, see the {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.Vpc.html|AWS CDK Documentation on VPCs}.
  */
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
-
   /**
   * Identifier for this VPC
   */
@@ -358,7 +364,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Adds VPNGAtewayV2 to this VPC
    */
   public enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2 {
-
     if (this.vpnGatewayId) {
       throw new Error('The VPN Gateway has already been enabled.');
     }
@@ -421,7 +426,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @default - in case of no input subnets, no route is created
    */
   public addEgressOnlyInternetGateway(options?: EgressOnlyInternetGatewayOptions): void {
-
     const egw = new EgressOnlyInternetGateway(this, 'EgressOnlyGW', {
       vpc: this,
       egressOnlyInternetGatewayName: options?.egressOnlyInternetGatewayName,
@@ -430,17 +434,22 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     let useIpv6;
     if (this.secondaryCidrBlock) {
       useIpv6 = (this.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true ||
-    secondaryAddress.ipv6IpamPoolId != undefined));
+    secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6CidrBlock !== undefined));
     }
 
     if (!useIpv6) {
       throw new Error('Egress only IGW can only be added to Ipv6 enabled VPC');
-    };
+    }
 
     if (options?.subnets) {
+      // Use Set to ensure unique subnets
+      const processedSubnets = new Set<string>();
       const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
       subnets.forEach((subnet) => {
-        this.createEgressRoute(subnet, egw, options.destination);
+        if (!processedSubnets.has(subnet.node.id)) {
+          this.createEgressRoute(subnet, egw, options.destination);
+          processedSubnets.add(subnet.node.id);
+        }
       });
     }
   }
@@ -477,9 +486,23 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     this._internetConnectivityEstablished.add(igw);
     this._internetGatewayId = igw.routerTargetId;
 
-    // If there are no public subnets defined, no default route will be added
-    if (this.publicSubnets) {
-      this.publicSubnets.forEach( (s) => this.addDefaultInternetRoute(s, igw, options));
+    // Add routes for subnets defined as an input
+    if (options?.subnets) {
+      // Use Set to ensure unique subnets
+      const processedSubnets = new Set<string>();
+      const subnets = flatten(options.subnets.map(s => this.selectSubnets(s).subnets));
+      subnets.forEach((subnet) => {
+        if (!processedSubnets.has(subnet.node.id)) {
+          if (!this.publicSubnets.includes(subnet)) {
+            Annotations.of(this).addWarningV2('InternetGatewayWarning',
+              `Subnet ${subnet.node.id} is not a public subnet. Internet Gateway should be added only to public subnets.`);
+          }
+          this.addDefaultInternetRoute(subnet, igw, options);
+          processedSubnets.add(subnet.node.id);
+        }
+      }); // If there are no input subnets defined, default route will be added to all public subnets
+    } else if (!options?.subnets && this.publicSubnets) {
+      this.publicSubnets.forEach((publicSubnets) => this.addDefaultInternetRoute(publicSubnets, igw, options));
     }
   }
 
@@ -488,11 +511,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * @internal
    */
   private addDefaultInternetRoute(subnet: ISubnetV2, igw: InternetGateway, options?: InternetGatewayOptions): void {
-
-    if (subnet.subnetType !== SubnetType.PUBLIC) {
-      throw new Error('No public subnets defined to add route for internet gateway');
-    }
-
     // Add default route to IGW for IPv6
     if (subnet.ipv6CidrBlock) {
       new Route(this, `${subnet.node.id}-DefaultIPv6Route`, {
@@ -502,7 +520,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
         routeName: 'CDKDefaultIPv6Route',
       });
     }
-    //Add default route to IGW for IPv4
+    // Add default route to IGW for IPv4
     new Route(this, `${subnet.node.id}-DefaultRoute`, {
       routeTable: subnet.routeTable,
       destination: options?.ipv4Destination ?? '0.0.0.0/0',
@@ -603,7 +621,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     if (selection.subnetGroupName !== undefined) { // Select by name
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
-
     } else { // Or specify by type
       const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
       subnets = this.selectSubnetObjectsByType(type);
@@ -667,7 +684,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
   * PUBLIC (in that order) that has any subnets.
   */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-
     // TODO: throw error as new VpcV2 cannot support subnetName or subnetGroupName anymore
     if ('subnetName' in placement && placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
@@ -708,7 +724,6 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
     return rest;
   }
-
 }
 
 class CompositeDependable implements IDependable {
@@ -741,5 +756,4 @@ class CompositeDependable implements IDependable {
 function tap<T>(x: T, fn: (x: T) => void): T {
   fn(x);
   return x;
-
 }
