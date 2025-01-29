@@ -170,7 +170,6 @@ abstract class PipeBase extends Resource implements IPipe {
   public abstract readonly pipeName: string;
   public abstract readonly pipeArn: string;
   public abstract readonly pipeRole: IRole;
-
 }
 
 /**
@@ -207,7 +206,6 @@ export class Pipe extends PipeBase {
    * Creates a pipe from the name of a pipe.
    */
   static fromPipeName(scope: Construct, id: string, pipeName: string): IPipe {
-
     return new ImportedPipe(scope, id, pipeName);
   }
 
@@ -216,7 +214,6 @@ export class Pipe extends PipeBase {
   public readonly pipeRole: IRole;
 
   constructor(scope: Construct, id: string, props: PipeProps) {
-
     super(scope, id, { physicalName: props.pipeName });
 
     /**
@@ -299,5 +296,4 @@ export class Pipe extends PipeBase {
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
   }
-
 }

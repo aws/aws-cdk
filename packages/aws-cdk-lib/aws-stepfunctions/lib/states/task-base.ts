@@ -128,7 +128,6 @@ export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions
  * which are more convenient to use.
  */
 export abstract class TaskStateBase extends State implements INextable {
-
   public readonly endStates: INextable[];
 
   protected abstract readonly taskMetrics?: TaskMetricsConfig;

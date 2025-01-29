@@ -7,7 +7,6 @@ import { Guardrail } from '../../lib/bedrock/guardrail';
 import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });
@@ -288,8 +287,8 @@ describe('Invoke Model', () => {
       Parameters: {
         ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
         Input: {
-          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
-          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          // Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          // Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
           'S3Uri.$': '$.prompt',
         },
         Output: {
@@ -337,8 +336,8 @@ describe('Invoke Model', () => {
       Parameters: {
         ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
         Input: {
-          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
-          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          // Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          // Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
           'S3Uri.$': '$.prompt',
         },
         Output: {
@@ -348,7 +347,7 @@ describe('Invoke Model', () => {
     });
   });
 
-  //Should not throw an error for input path and body if feature flag is set to true
+  // Should not throw an error for input path and body if feature flag is set to true
   test('validation for input and body correctly with feature flag set to true', () => {
     const app = new cdk.App({ context: { [cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK]: true } });
     const stack = new cdk.Stack(app);
@@ -432,8 +431,8 @@ describe('Invoke Model', () => {
       Parameters: {
         ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
         Input: {
-          //Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
-          //Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
+          // Expected key modified from S3Uri to S3Uri.$ as per the State Machine context key field transformation
+          // Reference: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-example.html
           'S3Uri.$': '$.prompt',
         },
         Output: {

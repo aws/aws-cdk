@@ -74,17 +74,17 @@ interface LambdaInvokeBaseProps {
 /**
  * Properties for invoking a Lambda function with LambdaInvoke using JsonPath
  */
-export interface LambdaInvokeJsonPathProps extends LambdaInvokeBaseProps, sfn.TaskStateJsonPathBaseProps {}
+export interface LambdaInvokeJsonPathProps extends LambdaInvokeBaseProps, sfn.TaskStateJsonPathBaseProps { }
 
 /**
  * Properties for invoking a Lambda function with LambdaInvoke using Jsonata
  */
-export interface LambdaInvokeJsonataProps extends LambdaInvokeBaseProps, sfn.TaskStateJsonataBaseProps {}
+export interface LambdaInvokeJsonataProps extends LambdaInvokeBaseProps, sfn.TaskStateJsonataBaseProps { }
 
 /**
  * Properties for invoking a Lambda function with LambdaInvoke
  */
-export interface LambdaInvokeProps extends LambdaInvokeBaseProps, sfn.TaskStateBaseProps {}
+export interface LambdaInvokeProps extends LambdaInvokeBaseProps, sfn.TaskStateBaseProps { }
 
 /**
  * Invoke a Lambda function as a Task

@@ -66,7 +66,6 @@ export interface ExternalServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class ExternalService extends BaseService implements IExternalService {
-
   /**
    * Imports from the specified service ARN.
    */
@@ -136,7 +135,6 @@ export class ExternalService extends BaseService implements IExternalService {
     if (props.minHealthyPercent === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentExternal', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
     }
-
   }
 
   /**

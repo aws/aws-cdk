@@ -123,18 +123,18 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
  * Properties for creating an AWS EventBridge Scheduler schedule using JSONPath
  */
 export interface EventBridgeSchedulerCreateScheduleTaskJsonPathProps
-  extends sfn.TaskStateJsonPathBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
+  extends sfn.TaskStateJsonPathBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions { }
 
 /**
  * Properties for creating an AWS EventBridge Scheduler schedule using JSONata
  */
 export interface EventBridgeSchedulerCreateScheduleTaskJsonataProps
-  extends sfn.TaskStateJsonataBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
+  extends sfn.TaskStateJsonataBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions { }
 
 /**
  * Properties for creating an AWS EventBridge Scheduler schedule
  */
-export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskStateBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions {}
+export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskStateBaseProps, EventBridgeSchedulerCreateScheduleTaskOptions { }
 
 /**
  * Properties for `EventBridgeSchedulerTarget`

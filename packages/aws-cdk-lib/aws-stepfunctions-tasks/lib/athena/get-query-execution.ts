@@ -15,17 +15,17 @@ interface AthenaGetQueryExecutionOptions {
 /**
  * Properties for getting a Query Execution using JSONPath
  */
-export interface AthenaGetQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaGetQueryExecutionOptions {}
+export interface AthenaGetQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaGetQueryExecutionOptions { }
 
 /**
  * Properties for getting a Query Execution using JSONata
  */
-export interface AthenaGetQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaGetQueryExecutionOptions {}
+export interface AthenaGetQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaGetQueryExecutionOptions { }
 
 /**
  * Properties for getting a Query Execution
  */
-export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaGetQueryExecutionOptions {}
+export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaGetQueryExecutionOptions { }
 
 /**
  * Get an Athena Query Execution as a Task

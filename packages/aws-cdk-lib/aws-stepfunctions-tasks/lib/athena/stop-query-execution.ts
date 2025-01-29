@@ -13,17 +13,17 @@ interface AthenaStopQueryExecutionOptions {
 /**
  * Properties for stopping a Query Execution using JSONPath
  */
-export interface AthenaStopQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStopQueryExecutionOptions {}
+export interface AthenaStopQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStopQueryExecutionOptions { }
 
 /**
  * Properties for stopping a Query Execution using JSONata
  */
-export interface AthenaStopQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStopQueryExecutionOptions {}
+export interface AthenaStopQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStopQueryExecutionOptions { }
 
 /**
  * Properties for stopping a Query Execution
  */
-export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStopQueryExecutionOptions {}
+export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStopQueryExecutionOptions { }
 
 /**
  * Stop an Athena Query Execution as a Task

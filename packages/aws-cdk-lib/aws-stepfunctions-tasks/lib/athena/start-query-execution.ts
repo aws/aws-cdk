@@ -61,17 +61,17 @@ interface AthenaStartQueryExecutionOptions {
 /**
  * Properties for starting a Query Execution using JSONPath
  */
-export interface AthenaStartQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStartQueryExecutionOptions {}
+export interface AthenaStartQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStartQueryExecutionOptions { }
 
 /**
  * Properties for starting a Query Execution using JSONata
  */
-export interface AthenaStartQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStartQueryExecutionOptions {}
+export interface AthenaStartQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStartQueryExecutionOptions { }
 
 /**
  * Properties for starting a Query Execution
  */
-export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStartQueryExecutionOptions {}
+export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStartQueryExecutionOptions { }
 
 /**
  * Start an Athena Query as a Task
@@ -134,7 +134,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
       throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
-    };
+    }
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {

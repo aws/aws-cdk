@@ -14,17 +14,17 @@ interface GlueDataBrewStartJobRunOptions {
 /**
  * Properties for starting a job run with StartJobRun using JSONPath
  */
-export interface GlueDataBrewStartJobRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueDataBrewStartJobRunOptions {}
+export interface GlueDataBrewStartJobRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueDataBrewStartJobRunOptions { }
 
 /**
  * Properties for starting a job run with StartJobRun using JSONata
  */
-export interface GlueDataBrewStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueDataBrewStartJobRunOptions {}
+export interface GlueDataBrewStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueDataBrewStartJobRunOptions { }
 
 /**
  * Properties for starting a job run with StartJobRun
  */
-export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps, GlueDataBrewStartJobRunOptions {}
+export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps, GlueDataBrewStartJobRunOptions { }
 
 /**
  * Start a Job run as a Task

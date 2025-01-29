@@ -1,8 +1,10 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
-import * as version from '../../lib/version';
+import { Context } from '../api/context';
+import { PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../cli/user-configuration';
+import * as version from '../cli/version';
 import { error, warning, info, data } from '../logging';
-import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
+import { ToolkitError } from '../toolkit/error';
 import { renderTable } from '../util';
 
 /**
@@ -111,7 +113,7 @@ function invalidateContext(context: Context, key: string, force: boolean) {
     // Value must be in readonly bag
     error('Only context values specified in %s can be reset through the CLI', chalk.blue(PROJECT_CONTEXT));
     if (!force) {
-      throw new Error(`Cannot reset readonly context value with key: ${key}`);
+      throw new ToolkitError(`Cannot reset readonly context value with key: ${key}`);
     }
   }
 
@@ -134,12 +136,12 @@ function invalidateContext(context: Context, key: string, force: boolean) {
 
     // throw when none of the matches were reset
     if (!force && unset.length === 0) {
-      throw new Error('None of the matched context values could be reset');
+      throw new ToolkitError('None of the matched context values could be reset');
     }
     return;
   }
   if (!force) {
-    throw new Error(`No context value matching key: ${key}`);
+    throw new ToolkitError(`No context value matching key: ${key}`);
   }
 }
 
@@ -182,7 +184,7 @@ function keyByNumber(context: Context, n: number) {
       return key;
     }
   }
-  throw new Error(`No context key with number: ${n}`);
+  throw new ToolkitError(`No context key with number: ${n}`);
 }
 
 /**

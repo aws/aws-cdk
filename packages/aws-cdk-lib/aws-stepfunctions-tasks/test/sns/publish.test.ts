@@ -4,7 +4,6 @@ import * as cdk from '../../../core';
 import { SnsPublish, MessageAttributeDataType, MessageAttribute } from '../../lib/sns/publish';
 
 describe('Publish', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();

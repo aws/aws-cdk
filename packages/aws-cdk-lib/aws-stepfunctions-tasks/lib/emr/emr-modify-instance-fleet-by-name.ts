@@ -37,18 +37,18 @@ interface EmrModifyInstanceFleetByNameOptions {
 /**
  * Properties for EmrModifyInstanceFleetByName using JSONPath
  */
-export interface EmrModifyInstanceFleetByNameJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrModifyInstanceFleetByNameOptions {}
+export interface EmrModifyInstanceFleetByNameJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrModifyInstanceFleetByNameOptions { }
 
 /**
  * Properties for EmrModifyInstanceFleetByName using JSONata
  */
-export interface EmrModifyInstanceFleetByNameJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrModifyInstanceFleetByNameOptions {}
+export interface EmrModifyInstanceFleetByNameJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrModifyInstanceFleetByNameOptions { }
 
 /**
  * Properties for EmrModifyInstanceFleetByName
  *
  */
-export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceFleetByNameOptions {}
+export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceFleetByNameOptions { }
 
 /**
  * A Step Functions Task to to modify an InstanceFleet on an EMR Cluster.

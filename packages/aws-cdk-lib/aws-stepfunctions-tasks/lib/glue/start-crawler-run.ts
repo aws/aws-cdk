@@ -14,17 +14,17 @@ interface GlueStartCrawlerRunOptions {
 /**
  * Properties for starting an AWS Glue Crawler as a task that using JSONPath
  */
-export interface GlueStartCrawlerRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueStartCrawlerRunOptions {}
+export interface GlueStartCrawlerRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueStartCrawlerRunOptions { }
 
 /**
  * Properties for starting an AWS Glue Crawler as a task that using JSONata
  */
-export interface GlueStartCrawlerRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueStartCrawlerRunOptions {}
+export interface GlueStartCrawlerRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueStartCrawlerRunOptions { }
 
 /**
  * Properties for starting an AWS Glue Crawler as a task
  */
-export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps, GlueStartCrawlerRunOptions {}
+export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps, GlueStartCrawlerRunOptions { }
 
 /**
  * Starts an AWS Glue Crawler in a Task state

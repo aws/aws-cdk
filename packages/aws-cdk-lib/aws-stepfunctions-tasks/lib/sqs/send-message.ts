@@ -49,17 +49,17 @@ interface SqsSendMessageOptions {
 /**
  * Properties for sending a message to an SQS queue using JSONPath
  */
-export interface SqsSendMessageJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SqsSendMessageOptions {}
+export interface SqsSendMessageJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SqsSendMessageOptions { }
 
 /**
  * Properties for sending a message to an SQS queue using JSONata
  */
-export interface SqsSendMessageJsonataProps extends sfn.TaskStateJsonataBaseProps, SqsSendMessageOptions {}
+export interface SqsSendMessageJsonataProps extends sfn.TaskStateJsonataBaseProps, SqsSendMessageOptions { }
 
 /**
  * Properties for sending a message to an SQS queue
  */
-export interface SqsSendMessageProps extends sfn.TaskStateBaseProps, SqsSendMessageOptions {}
+export interface SqsSendMessageProps extends sfn.TaskStateBaseProps, SqsSendMessageOptions { }
 
 /**
  * A StepFunctions Task to send messages to SQS queue.

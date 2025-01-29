@@ -14,17 +14,17 @@ interface EmrContainersDeleteVirtualClusterOptions {
 /**
  * Properties to define a EMR Containers DeleteVirtualCluster Task using JSONPath
  */
-export interface EmrContainersDeleteVirtualClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrContainersDeleteVirtualClusterOptions {}
+export interface EmrContainersDeleteVirtualClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrContainersDeleteVirtualClusterOptions { }
 
 /**
  * Properties to define a EMR Containers DeleteVirtualCluster Task using JSONata
  */
-export interface EmrContainersDeleteVirtualClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersDeleteVirtualClusterOptions {}
+export interface EmrContainersDeleteVirtualClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersDeleteVirtualClusterOptions { }
 
 /**
  * Properties to define a EMR Containers DeleteVirtualCluster Task
  */
-export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps, EmrContainersDeleteVirtualClusterOptions {}
+export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBaseProps, EmrContainersDeleteVirtualClusterOptions { }
 
 /**
  * Deletes an EMR Containers virtual cluster as a Task.

@@ -29,17 +29,17 @@ interface AthenaGetQueryResultsOptions {
 /**
  * Properties for getting a Query Results using JSONPath
  */
-export interface AthenaGetQueryResultsJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaGetQueryResultsOptions {}
+export interface AthenaGetQueryResultsJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaGetQueryResultsOptions { }
 
 /**
  * Properties for getting a Query Results using JSONata
  */
-export interface AthenaGetQueryResultsJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaGetQueryResultsOptions {}
+export interface AthenaGetQueryResultsJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaGetQueryResultsOptions { }
 
 /**
  * Properties for getting a Query Results
  */
-export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps, AthenaGetQueryResultsOptions {}
+export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps, AthenaGetQueryResultsOptions { }
 
 /**
  * Get an Athena Query Results as a Task

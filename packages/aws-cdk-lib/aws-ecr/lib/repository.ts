@@ -159,7 +159,6 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-
   private readonly REPO_PULL_ACTIONS: string[] = [
     'ecr:BatchCheckLayerAvailability',
     'ecr:GetDownloadUrlForLayer',
@@ -626,7 +625,6 @@ export class Repository extends RepositoryBase {
   }
 
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
-
     // if repositoryArn is a token, the repository name is also required. this is because
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
@@ -883,7 +881,6 @@ export class Repository extends RepositoryBase {
    * user's configuration.
    */
   private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
-
     // default based on whether encryptionKey is specified
     const encryptionType = props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
 

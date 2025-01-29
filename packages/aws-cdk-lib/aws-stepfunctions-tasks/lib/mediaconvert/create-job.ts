@@ -15,12 +15,12 @@ interface MediaConvertCreateJobOptions {
 /**
  * Properties for creating a MediaConvert Job using JSONPath
  */
-export interface MediaConvertCreateJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, MediaConvertCreateJobOptions {}
+export interface MediaConvertCreateJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, MediaConvertCreateJobOptions { }
 
 /**
  * Properties for creating a MediaConvert Job using JSONata
  */
-export interface MediaConvertCreateJobJsonataProps extends sfn.TaskStateJsonataBaseProps, MediaConvertCreateJobOptions {}
+export interface MediaConvertCreateJobJsonataProps extends sfn.TaskStateJsonataBaseProps, MediaConvertCreateJobOptions { }
 
 /**
  * Properties for creating a MediaConvert Job
@@ -29,7 +29,7 @@ export interface MediaConvertCreateJobJsonataProps extends sfn.TaskStateJsonataB
  * @see https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost
  *
  */
-export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps, MediaConvertCreateJobOptions {}
+export interface MediaConvertCreateJobProps extends sfn.TaskStateBaseProps, MediaConvertCreateJobOptions { }
 
 /**
  * A Step Functions Task to create a job in MediaConvert.

@@ -139,17 +139,17 @@ interface SnsPublishOptions {
 /**
  * Properties for publishing a message to an SNS topic using JSONPath
  */
-export interface SnsPublishJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SnsPublishOptions {}
+export interface SnsPublishJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SnsPublishOptions { }
 
 /**
  * Properties for publishing a message to an SNS topic using JSONata
  */
-export interface SnsPublishJsonataProps extends sfn.TaskStateJsonataBaseProps, SnsPublishOptions {}
+export interface SnsPublishJsonataProps extends sfn.TaskStateJsonataBaseProps, SnsPublishOptions { }
 
 /**
  * Properties for publishing a message to an SNS topic
  */
-export interface SnsPublishProps extends sfn.TaskStateBaseProps, SnsPublishOptions {}
+export interface SnsPublishProps extends sfn.TaskStateBaseProps, SnsPublishOptions { }
 
 /**
  * A Step Functions Task to publish messages to SNS topic.

@@ -37,17 +37,17 @@ interface EksCallOptions {
 /**
  * Properties for calling a EKS endpoint with EksCall using JSONPath
  */
-export interface EksCallJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EksCallOptions {}
+export interface EksCallJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EksCallOptions { }
 
 /**
  * Properties for calling a EKS endpoint with EksCall using JSONata
  */
-export interface EksCallJsonataProps extends sfn.TaskStateJsonataBaseProps, EksCallOptions {}
+export interface EksCallJsonataProps extends sfn.TaskStateJsonataBaseProps, EksCallOptions { }
 
 /**
  * Properties for calling a EKS endpoint with EksCall
  */
-export interface EksCallProps extends sfn.TaskStateBaseProps, EksCallOptions {}
+export interface EksCallProps extends sfn.TaskStateBaseProps, EksCallOptions { }
 
 /**
  * Call a EKS endpoint as a Task

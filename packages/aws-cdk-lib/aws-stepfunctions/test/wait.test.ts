@@ -125,5 +125,4 @@ describe('Wait State', () => {
       },
     });
   });
-
 });

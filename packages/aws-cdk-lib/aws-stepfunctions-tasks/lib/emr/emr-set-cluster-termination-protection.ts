@@ -19,17 +19,17 @@ interface EmrSetClusterTerminationProtectionOptions {
 /**
  * Properties for EmrSetClusterTerminationProtection using JSONPath
  */
-export interface EmrSetClusterTerminationProtectionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrSetClusterTerminationProtectionOptions {}
+export interface EmrSetClusterTerminationProtectionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrSetClusterTerminationProtectionOptions { }
 
 /**
  * Properties for EmrSetClusterTerminationProtection using JSONata
  */
-export interface EmrSetClusterTerminationProtectionJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrSetClusterTerminationProtectionOptions {}
+export interface EmrSetClusterTerminationProtectionJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrSetClusterTerminationProtectionOptions { }
 
 /**
  * Properties for EmrSetClusterTerminationProtection
  */
-export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps, EmrSetClusterTerminationProtectionOptions {}
+export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps, EmrSetClusterTerminationProtectionOptions { }
 
 /**
  * A Step Functions Task to to set Termination Protection on an EMR Cluster.

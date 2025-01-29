@@ -20,19 +20,19 @@ interface EmrCancelStepOptions {
  * Properties for calling an EMR CancelStep using JSONPath from your
  * state machine.
  */
-export interface EmrCancelStepJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrCancelStepOptions {}
+export interface EmrCancelStepJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrCancelStepOptions { }
 
 /**
  * Properties for calling an EMR CancelStep using JSONata from your
  * state machine.
  */
-export interface EmrCancelStepJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrCancelStepOptions {}
+export interface EmrCancelStepJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrCancelStepOptions { }
 
 /**
  * Properties for calling an EMR CancelStep from your
  * state machine.
  */
-export interface EmrCancelStepProps extends sfn.TaskStateBaseProps, EmrCancelStepOptions {}
+export interface EmrCancelStepProps extends sfn.TaskStateBaseProps, EmrCancelStepOptions { }
 
 /**
  * A Step Functions task to cancel a Step on an EMR Cluster.
