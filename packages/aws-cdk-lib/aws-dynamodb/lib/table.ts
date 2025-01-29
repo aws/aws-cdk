@@ -1533,7 +1533,6 @@ export class Table extends TableBase {
   }
 
   private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
-
     if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
       throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
