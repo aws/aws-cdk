@@ -331,7 +331,6 @@ export class TestFixture extends ShellHelper {
     public readonly output: NodeJS.WritableStream,
     public readonly aws: AwsClients,
     public readonly randomString: string) {
-
     super(integTestDir, output);
 
     this.packages = packageSourceInSubprocess();
@@ -513,6 +512,8 @@ export class TestFixture extends ShellHelper {
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        // CI must be unset, because we're trying to capture stdout in a bunch of tests
+        CI: 'false',
         ...awsCreds,
         ...options.modEnv,
       },
@@ -564,11 +565,9 @@ export class TestFixture extends ShellHelper {
    * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
-
     // when using the atmosphere service, it does resource cleanup on our behalf
     // so we don't have to wait for it.
     if (!atmosphereEnabled()) {
-
       const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
       this.sortBootstrapStacksToTheEnd(stacksToDelete);
@@ -601,13 +600,15 @@ export class TestFixture extends ShellHelper {
       for (const bucket of this.bucketsToDelete) {
         await this.aws.deleteBucket(bucket);
       }
-
     }
 
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 
@@ -639,7 +640,6 @@ export class TestFixture extends ShellHelper {
 
   private sortBootstrapStacksToTheEnd(stacks: Stack[]) {
     stacks.sort((a, b) => {
-
       if (!a.StackName || !b.StackName) {
         throw new Error('Stack names do not exists. These are required for sorting the bootstrap stacks.');
       }

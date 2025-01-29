@@ -867,7 +867,6 @@ export class Project extends ProjectBase {
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
     validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -1344,7 +1343,6 @@ export class Project extends ProjectBase {
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -2150,7 +2148,6 @@ export class WindowsBuildImage implements IBuildImage {
     name: string,
     options: DockerImageOptions = {},
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2174,7 +2171,6 @@ export class WindowsBuildImage implements IBuildImage {
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2191,7 +2187,6 @@ export class WindowsBuildImage implements IBuildImage {
     id: string,
     props: DockerImageAssetProps,
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,

@@ -106,7 +106,7 @@ export class Deployment extends Resource {
    *
    * This should be called by constructs of the API Gateway model that want to
    * invalidate the deployment when their settings change. The component will
-   * be resolve()ed during synthesis so tokens are welcome.
+   * be resolved during synthesis so tokens are welcome.
    */
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
@@ -179,7 +179,6 @@ class LatestDeploymentResource extends CfnDeployment {
     const hash = [...this.hashComponents];
 
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
-
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.
       const cfnRestApiCF = (this.api.node.defaultChild as any)._toCloudFormation();
       hash.push(this.stack.resolve(cfnRestApiCF));

@@ -791,7 +791,6 @@ describe('fargate service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -881,7 +880,6 @@ describe('fargate service', () => {
       // THEN
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
-
     });
 
     test('errors when no container specified on task definition', () => {
@@ -1388,7 +1386,6 @@ describe('fargate service', () => {
 
   describe('when enabling service connect', () => {
     describe('when validating service connect configurations', () => {
-
       let service: ecs.FargateService;
 
       beforeEach(() => {
@@ -1510,7 +1507,6 @@ describe('fargate service', () => {
     });
 
     describe('when creating a FargateService with service connect', () => {
-
       let service: ecs.FargateService;
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
@@ -3945,7 +3941,6 @@ describe('fargate service', () => {
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
     });
 
     test('with serviceArn new format', () => {

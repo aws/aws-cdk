@@ -15,7 +15,6 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
 
   /**
    * Improved stack selection interface with a single selector
-   * @returns
    * @throws when the assembly does not contain any stacks, unless `selector.failOnEmpty` is `false`
    * @throws when individual selection strategies are not satisfied
    */

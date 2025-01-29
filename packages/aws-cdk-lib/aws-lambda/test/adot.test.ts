@@ -4,9 +4,7 @@ import * as cdk from '../../core';
 import * as lambda from '../lib';
 
 describe('ADOT Lambda Layer', () => {
-
   describe('when the stack region is specified and supported', () => {
-
     let fn: lambda.Function;
 
     beforeEach(() => {
@@ -38,7 +36,6 @@ describe('ADOT Lambda Layer', () => {
   });
 
   describe('when the Python ADOT version is specified', () => {
-
     let fn: lambda.Function;
 
     beforeEach(() => {

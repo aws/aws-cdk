@@ -65,7 +65,6 @@ class EksClusterAlbControllerStack extends Stack {
     new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
-
   }
 }
 

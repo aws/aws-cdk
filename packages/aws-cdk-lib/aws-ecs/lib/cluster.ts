@@ -714,7 +714,6 @@ export class Cluster extends Resource implements ICluster {
 
     if (options.canContainersAccessInstanceRole === false ||
       options.canContainersAccessInstanceRole === undefined) {
-
       if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
         FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
         // new commands from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#task-iam-role-considerations

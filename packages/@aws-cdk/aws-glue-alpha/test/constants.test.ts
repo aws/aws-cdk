@@ -14,7 +14,6 @@ describe('WorkerType', () => {
   test('.G_025X should set the name correctly', () => expect(glue.WorkerType.G_025X).toEqual('G.025X'));
 
   test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X).toEqual('Z.2X'));
-
 });
 
 describe('JobState', () => {
@@ -31,21 +30,18 @@ describe('JobState', () => {
   test('STOPPING should set Job State correctly', () => expect(glue.JobState.STOPPING).toEqual('STOPPING'));
 
   test('TIMEOUT should set Job State correctly', () => expect(glue.JobState.TIMEOUT).toEqual('TIMEOUT'));
-
 });
 
 describe('Metric Type', () => {
   test('GAUGE should set Metric Type correctly', () => expect(glue.MetricType.GAUGE).toEqual('gauge'));
 
   test('COUNT should set Metric Type correctly', () => expect(glue.MetricType.COUNT).toEqual('count'));
-
 });
 
 describe('Execution Class', () => {
   test('FLEX should set Execution Class correctly', () => expect(glue.ExecutionClass.FLEX).toEqual('FLEX'));
 
   test('STANDARD should set Execution Class correctly', () => expect(glue.ExecutionClass.STANDARD).toEqual('STANDARD'));
-
 });
 
 describe('Glue Version', () => {
@@ -58,14 +54,12 @@ describe('Glue Version', () => {
   test('V3_0 should set Glue Version correctly', () => expect(glue.GlueVersion.V3_0).toEqual('3.0'));
 
   test('V4_0 should set Glue Version correctly', () => expect(glue.GlueVersion.V4_0).toEqual('4.0'));
-
 });
 
 describe('Job Language', () => {
   test('PYTHON should set Job Language correctly', () => expect(glue.JobLanguage.PYTHON).toEqual('python'));
 
   test('SCALA should set Job Language correctly', () => expect(glue.JobLanguage.SCALA).toEqual('scala'));
-
 });
 
 describe('Python Version', () => {
@@ -74,12 +68,10 @@ describe('Python Version', () => {
   test('THREE should set Python Version correctly', () => expect(glue.PythonVersion.THREE).toEqual('3'));
 
   test('THREE_NINE should set Python Version correctly', () => expect(glue.PythonVersion.THREE_NINE).toEqual('3.9'));
-
 });
 
 describe('Runtime', () => {
   test('RAY_TWO_FOUR should set Runtime correctly', () => expect(glue.Runtime.RAY_TWO_FOUR).toEqual('Ray2.4'));
-
 });
 
 describe('JobType', () => {
@@ -90,5 +82,4 @@ describe('JobType', () => {
   test('RAY should set Runtime correctly', () => expect(glue.JobType.RAY).toEqual('glueray'));
 
   test('STREAMING should set Runtime correctly', () => expect(glue.JobType.STREAMING).toEqual('gluestreaming'));
-
 });
