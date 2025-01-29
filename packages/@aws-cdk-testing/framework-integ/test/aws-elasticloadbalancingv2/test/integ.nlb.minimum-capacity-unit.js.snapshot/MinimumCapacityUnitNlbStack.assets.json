@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "3c700fc289f459c8c71f8c72a4e23d333f0aaa2215152a24583e2bb3c4f32949": {
+      "source": {
+        "path": "MinimumCapacityUnitNlbStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3c700fc289f459c8c71f8c72a4e23d333f0aaa2215152a24583e2bb3c4f32949.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
