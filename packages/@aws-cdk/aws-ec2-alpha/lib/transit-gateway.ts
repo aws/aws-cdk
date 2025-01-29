@@ -6,7 +6,7 @@ import { TransitGatewayVpcAttachment, AttachVpcOptions, ITransitGatewayVpcAttach
 import { IRouteTarget } from './route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
-import { getFeatureStatusDefaultDisable, getFeatureStatusDefaultEnable, TransitGatewayFeatureStatus } from './util';
+import { getFeatureStatus, TransitGatewayFeatureStatus } from './util';
 
 /**
  * Represents a Transit Gateway.
@@ -230,13 +230,13 @@ export class TransitGateway extends TransitGatewayBase {
 
     this.resource = new CfnTransitGateway(this, id, {
       amazonSideAsn: props.amazonSideAsn ?? undefined,
-      autoAcceptSharedAttachments: getFeatureStatusDefaultDisable(props.autoAcceptSharedAttachments),
+      autoAcceptSharedAttachments: getFeatureStatus(props.autoAcceptSharedAttachments),
       // Default Association/Propagation will always be false when creating the L1 to prevent EC2 from creating the default route table.
       // Instead, CDK will create a custom default route table and use the properties to mimic the automatic assocation/propagation behaviour.
-      defaultRouteTableAssociation: getFeatureStatusDefaultDisable(props.defaultRouteTableAssociation),
-      defaultRouteTablePropagation: getFeatureStatusDefaultDisable(props.defaultRouteTablePropagation),
+      defaultRouteTableAssociation: TransitGatewayFeatureStatus.DISABLE,
+      defaultRouteTablePropagation: TransitGatewayFeatureStatus.DISABLE,
       description: props.description,
-      dnsSupport: getFeatureStatusDefaultEnable(props.dnsSupport),
+      dnsSupport: getFeatureStatus(props.dnsSupport),
       // Currently only VPC to Transit Gateway attachments are supported so both of these are disabled.
       multicastSupport: TransitGatewayFeatureStatus.DISABLE,
       vpnEcmpSupport: TransitGatewayFeatureStatus.DISABLE,

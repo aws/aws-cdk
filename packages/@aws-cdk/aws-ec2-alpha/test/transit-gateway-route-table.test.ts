@@ -72,10 +72,8 @@ describe('Transit Gateway Route Table', () => {
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },

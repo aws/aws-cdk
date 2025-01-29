@@ -178,10 +178,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
                   "aws:cdk:cloudformation:props": {
-                    "autoAcceptSharedAttachments": "disable",
                     "defaultRouteTableAssociation": "disable",
                     "defaultRouteTablePropagation": "disable",
-                    "dnsSupport": "enable",
                     "multicastSupport": "disable",
                     "vpnEcmpSupport": "disable"
                   }

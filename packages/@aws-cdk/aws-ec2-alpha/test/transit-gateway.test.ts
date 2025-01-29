@@ -43,10 +43,8 @@ describe('Transit Gateway with default settings', () => {
   test('Creates a transit gateway with all default settings and default route table', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::EC2::TransitGateway', {
-      AutoAcceptSharedAttachments: 'disable',
       DefaultRouteTableAssociation: 'disable',
       DefaultRouteTablePropagation: 'disable',
-      DnsSupport: 'enable',
       MulticastSupport: 'disable',
       VpnEcmpSupport: 'disable',
     });
@@ -56,10 +54,8 @@ describe('Transit Gateway with default settings', () => {
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },
@@ -87,10 +83,8 @@ describe('Transit Gateway with default settings', () => {
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },
@@ -221,10 +215,8 @@ describe('Transit Gateway with default route table association and propagation d
   test('should create a transit gateway with all default settings and default route table', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::EC2::TransitGateway', {
-      AutoAcceptSharedAttachments: 'disable',
       DefaultRouteTableAssociation: 'disable',
       DefaultRouteTablePropagation: 'disable',
-      DnsSupport: 'enable',
       MulticastSupport: 'disable',
       VpnEcmpSupport: 'disable',
     });
@@ -234,10 +226,8 @@ describe('Transit Gateway with default route table association and propagation d
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },
@@ -265,10 +255,8 @@ describe('Transit Gateway with default route table association and propagation d
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },
@@ -399,10 +387,8 @@ describe('Transit Gateway with default route table association and propagation d
   test('should create a transit gateway with all default settings and default route table', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::EC2::TransitGateway', {
-      AutoAcceptSharedAttachments: 'disable',
       DefaultRouteTableAssociation: 'disable',
       DefaultRouteTablePropagation: 'disable',
-      DnsSupport: 'enable',
       MulticastSupport: 'disable',
       VpnEcmpSupport: 'disable',
     });
@@ -412,10 +398,8 @@ describe('Transit Gateway with default route table association and propagation d
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },
@@ -443,10 +427,8 @@ describe('Transit Gateway with default route table association and propagation d
         TransitGateway11B93D57: {
           Type: 'AWS::EC2::TransitGateway',
           Properties: {
-            AutoAcceptSharedAttachments: 'disable',
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            DnsSupport: 'enable',
             MulticastSupport: 'disable',
             VpnEcmpSupport: 'disable',
           },

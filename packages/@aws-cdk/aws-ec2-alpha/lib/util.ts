@@ -33,12 +33,12 @@ export enum TransitGatewayFeatureStatus {
   DISABLE = 'disable',
 }
 
-export function getFeatureStatusDefaultEnable(status?: boolean): TransitGatewayFeatureStatus {
-  return (status ?? true) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
-}
-
-export function getFeatureStatusDefaultDisable(status?: boolean): TransitGatewayFeatureStatus {
-  return (status ?? false) ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+export function getFeatureStatus(status?: boolean): TransitGatewayFeatureStatus | undefined {
+  if (status === undefined) {
+    return undefined;
+  } else {
+    return status ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  }
 }
 
 /**

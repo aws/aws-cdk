@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
-import { getFeatureStatusDefaultDisable } from './util';
+import { getFeatureStatus } from './util';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { Annotations } from 'aws-cdk-lib';
 
@@ -137,10 +137,10 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
       options: props.vpcAttachmentOptions ? {
-        ApplianceModeSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.applianceModeSupport),
-        DnsSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.dnsSupport),
-        Ipv6Support: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.ipv6Support),
-        SecurityGroupReferencingSupport: getFeatureStatusDefaultDisable(props.vpcAttachmentOptions?.securityGroupReferencingSupport),
+        ApplianceModeSupport: getFeatureStatus(props.vpcAttachmentOptions?.applianceModeSupport),
+        DnsSupport: getFeatureStatus(props.vpcAttachmentOptions?.dnsSupport),
+        Ipv6Support: getFeatureStatus(props.vpcAttachmentOptions?.ipv6Support),
+        SecurityGroupReferencingSupport: getFeatureStatus(props.vpcAttachmentOptions?.securityGroupReferencingSupport),
       } : undefined,
     });
     this.node.defaultChild = this.resource;
