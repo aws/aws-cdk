@@ -1,7 +1,20 @@
 {
   "version": "39.0.0",
   "files": {
-    "eace423a560e57ed9e11d81c8434815b3c14f51088e72efc691211ee4554323a": {
+    "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+      "source": {
+        "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3c9a36935721c553c7dbbacd86ca06c5f8c52686ceba70e1224fdd9fd1e8c8b1": {
       "source": {
         "path": "MinimumCapacityUnitNlbStack.template.json",
         "packaging": "file"
@@ -9,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eace423a560e57ed9e11d81c8434815b3c14f51088e72efc691211ee4554323a.json",
+          "objectKey": "3c9a36935721c553c7dbbacd86ca06c5f8c52686ceba70e1224fdd9fd1e8c8b1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
