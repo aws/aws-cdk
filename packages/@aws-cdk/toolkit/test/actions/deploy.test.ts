@@ -1,7 +1,7 @@
 let mockFindCloudWatchLogGroups = jest.fn();
 
 import { RequireApproval, StackParameters } from '../../lib';
-import { CloudWatchLogEventMonitor, MockSdk } from '../../lib/api/aws-cdk';
+import { MockSdk } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
 
@@ -137,11 +137,11 @@ describe('deploy', () => {
       successfulDeployment();
     });
 
-    test('cloudWatchLogMonitor can be passed in', async () => {
+    test('can trace logs', async () => {
       // WHEN
       const cx = await builderFixture(toolkit, 'stack-with-role');
       await toolkit.deploy(cx, {
-        cloudWatchLogMonitor: new CloudWatchLogEventMonitor(),
+        traceLogs: true,
       });
 
       // THEN

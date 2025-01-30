@@ -455,9 +455,11 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
-        if (options.cloudWatchLogMonitor) {
+        if (options.traceLogs) {
+          // deploy calls that originate from watch will come with their own cloudWatchLogMonitor
+          const cloudWatchLogMonitor = options.cloudWatchLogMonitor ?? new CloudWatchLogEventMonitor();
           const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
-          options.cloudWatchLogMonitor.addLogGroups(
+          cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
             foundLogGroupsResult.logGroupNames,

@@ -173,6 +173,14 @@ export interface BaseDeployOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Whether to show logs from all CloudWatch log groups in the template
+   * locally in the users terminal
+   *
+   * @default - false
+   */
+  readonly traceLogs?: boolean;
 }
 
 /**
@@ -189,6 +197,14 @@ export interface ExtendedDeployOptions extends DeployOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * cloudWatchLogMonitor.setLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DeployOptions extends BaseDeployOptions {
@@ -222,14 +238,6 @@ export interface DeployOptions extends BaseDeployOptions {
   readonly outputsFile?: string;
 
   /**
-   * Whether to show logs from all CloudWatch log groups in the template
-   * locally in the users terminal
-   *
-   * @default - false
-   */
-  readonly traceLogs?: boolean;
-
-  /**
    * Build/publish assets for a single stack in parallel
    *
    * Independent of whether stacks are being done in parallel or no.
@@ -260,12 +268,4 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly progress?: StackActivityProgress;
-
-  /**
-   * Allows adding CloudWatch log groups to the log monitor via
-   * cloudWatchLogMonitor.setLogGroups();
-   *
-   * @default - not monitoring CloudWatch logs
-   */
-  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
