@@ -49,14 +49,6 @@ export interface IoMessage<T> {
   readonly message: string;
 
   /**
-   * If true, the message will be written to stdout
-   * regardless of any other parameters.
-   *
-   * @default false
-   */
-  readonly forceStdout?: boolean;
-
-  /**
    * The data attached to the message.
    */
   readonly data?: T;
@@ -69,14 +61,15 @@ export interface IoRequest<T, U> extends IoMessage<T> {
   readonly defaultResponse: U;
 }
 
-export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
+export type IoMessageLevel = 'error' | 'result' | 'warn' | 'info' | 'debug' | 'trace';
 
 export const levelPriority: Record<IoMessageLevel, number> = {
   error: 0,
-  warn: 1,
-  info: 2,
-  debug: 3,
-  trace: 4,
+  result: 1,
+  warn: 2,
+  info: 3,
+  debug: 4,
+  trace: 5,
 };
 
 /**
@@ -308,24 +301,29 @@ export class CliIoHost implements IIoHost {
     }
 
     const output = this.formatMessage(msg);
-    const stream = this.selectStream(msg.level, msg.forceStdout ?? false);
+    const stream = this.selectStream(msg.level);
     stream.write(output);
   }
 
   /**
-   * Determines which output stream to use based on log level and configuration.
+   * Determines the output stream, based on message level and configuration.
    */
-  private selectStream(level: IoMessageLevel, forceStdout: boolean) {
-    // For legacy purposes all log streams are written to stderr by default, unless
-    // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
-    // if the CDK is running in a CI environment. This is because some CI environments will immediately
-    // fail if stderr is written to. In these cases, we detect if we are in a CI environment and
-    // write all messages to stdout instead.
-    if (forceStdout) {
-      return process.stdout;
+  private selectStream(level: IoMessageLevel) {
+    // The stream selection policy for the CLI is the following:
+    //
+    //   (1) Messages of level `result` always go to `stdout`
+    //   (2) Messages of level `error` always go to `stderr`.
+    //   (3a) All remaining messages go to `stderr`.
+    //   (3b) If we are in CI mode, all remaining messages go to `stdout`.
+    //
+    switch (level) {
+      case 'error':
+        return process.stderr;
+      case 'result':
+        return process.stdout;
+      default:
+        return this.isCI ? process.stdout : process.stderr;
     }
-    if (level == 'error') return process.stderr;
-    return CliIoHost.instance().isCI ? process.stdout : process.stderr;
   }
 
   /**
@@ -370,6 +368,7 @@ export class CliIoHost implements IIoHost {
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
   error: chalk.red,
   warn: chalk.yellow,
+  result: chalk.white,
   info: chalk.white,
   debug: chalk.gray,
   trace: chalk.gray,

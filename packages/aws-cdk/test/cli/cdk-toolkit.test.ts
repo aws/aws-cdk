@@ -50,10 +50,10 @@ const fakeChokidarWatch = {
   },
 };
 
-const mockData = jest.fn();
+const mockResult = jest.fn();
 jest.mock('../../lib/logging', () => ({
   ...jest.requireActual('../../lib/logging'),
-  data: mockData,
+  result: mockResult,
 }));
 jest.setTimeout(30_000);
 
@@ -1219,7 +1219,7 @@ describe('synth', () => {
 
     // THEN
     await toolkit.synth(['Test-Stack-A-Display-Name'], false, true);
-    expect(mockData.mock.calls.length).toEqual(0);
+    expect(mockResult.mock.calls.length).toEqual(0);
   });
 
   describe('migrate', () => {
@@ -1395,7 +1395,7 @@ describe('synth', () => {
       const toolkit = defaultToolkitSetup();
       const autoValidate = false;
       await toolkit.synth([], false, true, autoValidate);
-      expect(mockData.mock.calls.length).toEqual(0);
+      expect(mockResult.mock.calls.length).toEqual(0);
     });
   });
 
@@ -1448,8 +1448,8 @@ describe('synth', () => {
 
     await toolkit.synth([MockStack.MOCK_STACK_D.stackName], true, false);
 
-    expect(mockData.mock.calls.length).toEqual(1);
-    expect(mockData.mock.calls[0][0]).toBeDefined();
+    expect(mockResult.mock.calls.length).toEqual(1);
+    expect(mockResult.mock.calls[0][0]).toBeDefined();
   });
 
   test('rollback uses deployment role', async () => {
