@@ -371,7 +371,9 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
 export interface AnalyticsConfiguration {
   /**
    * The Amazon Resource Name (ARN) of an Amazon Pinpoint project that you want to connect to your user pool app client.\
-   * Amazon Cognito publishes events to the Amazon Pinpoint project that `ApplicationArn` declares. You can also configure your application to pass an endpoint ID in the `AnalyticsMetadata` parameter of sign-in operations. The endpoint ID is information about the destination for push notifications
+   * Amazon Cognito publishes events to the Amazon Pinpoint project that `ApplicationArn` declares.\
+   * You can also configure your application to pass an endpoint ID in the `AnalyticsMetadata` parameter of sign-in operations.\
+   * The endpoint ID is information about the destination for push notifications.
    * @default - no configuration, you need to specify either `applicationArn` or all of `applicationId`, `externalId`, and `role`.
    */
   readonly applicationArn?: string;
