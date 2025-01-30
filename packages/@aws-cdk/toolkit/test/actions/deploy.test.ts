@@ -1,9 +1,9 @@
 let mockFindCloudWatchLogGroups = jest.fn();
 
 import { RequireApproval, StackParameters } from '../../lib';
-import { MockSdk } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
+import { MockSdk } from '../util/aws-cdk';
 
 const sdk = new MockSdk();
 const ioHost = new TestIoHost();

@@ -175,8 +175,8 @@ export interface BaseDeployOptions {
   readonly concurrency?: number;
 
   /**
-   * Whether to show logs from all CloudWatch log groups in the template
-   * locally in the users terminal
+   * Whether to send logs from all CloudWatch log groups in the template
+   * to the IoHost
    *
    * @default - false
    */

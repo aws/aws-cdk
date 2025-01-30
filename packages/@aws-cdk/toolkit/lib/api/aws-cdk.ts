@@ -31,9 +31,6 @@ export type { AssetBuildNode, AssetPublishNode, StackNode } from '../../../../aw
 export { CloudWatchLogEventMonitor } from '../../../../aws-cdk/lib/api/logs/logs-monitor';
 export { findCloudWatchLogGroups } from '../../../../aws-cdk/lib/api/logs/find-cloudwatch-logs';
 
-// Test APIs
-export { MockSdk } from '../../../../aws-cdk/test/util/mock-sdk';
-
 // @todo Cloud Assembly and Executable - this is a messy API right now
 export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
 export { prepareDefaultEnvironment, prepareContext, spaceAvailableForContext } from '../../../../aws-cdk/lib/api/cxapp/exec';
