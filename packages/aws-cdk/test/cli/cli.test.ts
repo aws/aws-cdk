@@ -9,7 +9,7 @@ jest.mock('../../lib/logging', () => ({
   debug: jest.fn(),
   error: jest.fn(),
   print: jest.fn(),
-  data: jest.fn(),
+  result: jest.fn(),
 }));
 
 jest.mock('@aws-cdk/cx-api');

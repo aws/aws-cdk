@@ -9,7 +9,6 @@ import { IoMessageLevel, IoMessage, CliIoHost, IoMessageSpecificCode, IoMessageC
  */
 function formatMessageAndLog(
   level: IoMessageLevel,
-  forceStdout: boolean,
   input: LogInput<IoCodeLevel>,
   style?: (str: string) => string,
   ...args: unknown[]
@@ -32,7 +31,6 @@ function formatMessageAndLog(
     level,
     message: finalMessage,
     code,
-    forceStdout,
   };
 
   void ioHost.notify(ioMessage);
@@ -75,7 +73,7 @@ type LogInput<L extends IoCodeLevel> = string | LogParams<L>;
  * ```
  */
 export const error = (input: LogInput<'E'>, ...args: unknown[]) => {
-  return formatMessageAndLog('error', false, input, undefined, ...args);
+  return formatMessageAndLog('error', input, undefined, ...args);
 };
 
 /**
@@ -90,7 +88,7 @@ export const error = (input: LogInput<'E'>, ...args: unknown[]) => {
  * ```
  */
 export const warning = (input: LogInput<'W'>, ...args: unknown[]) => {
-  return formatMessageAndLog('warn', false, input, undefined, ...args);
+  return formatMessageAndLog('warn', input, undefined, ...args);
 };
 
 /**
@@ -105,22 +103,22 @@ export const warning = (input: LogInput<'W'>, ...args: unknown[]) => {
  * ```
  */
 export const info = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('info', false, input, undefined, ...args);
+  return formatMessageAndLog('info', input, undefined, ...args);
 };
 
 /**
- * Logs an info level message to stdout.
+ * Logs an result. In the CLI, this always goes to stdout.
  *
  * Can be used in multiple ways:
  * ```ts
- * data(`${JSON.stringify(stats)}`) // infers default info code `CDK_TOOLKIT_I000`
- * data('{"count": %d}', count) // infers default info code `CDK_TOOLKIT_I000`
- * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }) // specifies info code `CDK_DATA_I001`
- * data({ message: 'stats: %j', code: 'CDK_DATA_I001' }, stats) // specifies info code `CDK_DATA_I001`
+ * result(`${JSON.stringify(stats)}`) // infers default info code `CDK_TOOLKIT_I000`
+ * result('{"count": %d}', count) // infers default info code `CDK_TOOLKIT_I000`
+ * result({ message: 'stats: %j', code: 'CDK_DATA_I001' }) // specifies info code `CDK_DATA_I001`
+ * result({ message: 'stats: %j', code: 'CDK_DATA_I001' }, stats) // specifies info code `CDK_DATA_I001`
  * ```
  */
-export const data = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('info', true, input, undefined, ...args);
+export const result = (input: LogInput<'I'>, ...args: unknown[]) => {
+  return formatMessageAndLog('result', input, undefined, ...args);
 };
 
 /**
@@ -135,7 +133,7 @@ export const data = (input: LogInput<'I'>, ...args: unknown[]) => {
  * ```
  */
 export const debug = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('debug', false, input, undefined, ...args);
+  return formatMessageAndLog('debug', input, undefined, ...args);
 };
 
 /**
@@ -150,7 +148,7 @@ export const debug = (input: LogInput<'I'>, ...args: unknown[]) => {
  * ```
  */
 export const trace = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('trace', false, input, undefined, ...args);
+  return formatMessageAndLog('trace', input, undefined, ...args);
 };
 
 /**
@@ -165,7 +163,7 @@ export const trace = (input: LogInput<'I'>, ...args: unknown[]) => {
  * ```
  */
 export const success = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('info', false, input, chalk.green, ...args);
+  return formatMessageAndLog('info', input, chalk.green, ...args);
 };
 
 /**
@@ -180,5 +178,5 @@ export const success = (input: LogInput<'I'>, ...args: unknown[]) => {
  * ```
  */
 export const highlight = (input: LogInput<'I'>, ...args: unknown[]) => {
-  return formatMessageAndLog('info', false, input, chalk.bold, ...args);
+  return formatMessageAndLog('info', input, chalk.bold, ...args);
 };
