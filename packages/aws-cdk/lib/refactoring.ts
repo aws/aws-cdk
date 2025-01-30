@@ -17,12 +17,25 @@ export type ResourceIndex = Map<string, Set<string>>
 export type ResourceCorrespondence = [Set<string>, Set<string>][]
 
 /**
- * Chcecks whether there has been any renaming and returns the corresponding
- * pairs.
- * TODO explain this better.
+ * Given two records of (logical ID -> object), finds a list of objects that
+ * are present in both records but have different logical IDs. For each of
+ * these objects, this function returns a pair of sets of logical IDs. The
+ * first set coming from the first record, and the second set, from the
+ * second object. For example:
+ *
+ *     const corr = checkRenaming({a: {x: 0}}, {b: {x: 0}});
+ *
+ * `corr` should be `[new Set('a'), new Set('b')]`
+ *
  */
-export function checkRenaming(m1: any, m2: any): ResourceCorrespondence {
-  return correspondence(index(m1), index(m2));
+export function checkRenaming(m1: Record<string, any>, m2: Record<string, any>): ResourceCorrespondence {
+  if (m1 == null || m2 == null) {
+    return [];
+  }
+  return correspondence(
+    index(new Map(Object.entries(m1))),
+    index(new Map(Object.entries(m2))),
+  );
 }
 
 function index(resourceMap: ResourceMap): ResourceIndex {
@@ -54,22 +67,7 @@ function correspondence(index1: ResourceIndex, index2: ResourceIndex): ResourceC
  * Returns a pair [s0 \ s1, s1 \ s0].
  */
 function partitionedSymmetricDifference(s0: Set<string>, s1: Set<string>): [Set<string>, Set<string>] {
-  const result: [Set<string>, Set<string>] = [new Set(), new Set()];
-
-  // TODO remove duplication
-  s0.forEach((s) => {
-    if (!s1.has(s)) {
-      result[0].add(s);
-    }
-  });
-
-  s1.forEach((s) => {
-    if (!s0.has(s)) {
-      result[1].add(s);
-    }
-  });
-
-  return result;
+  return [difference(s0, s1), difference(s1, s0)];
 }
 
 function hashObject(obj: any): string {
@@ -77,7 +75,9 @@ function hashObject(obj: any): string {
 
   function addToHash(value: any) {
     if (typeof value === 'object') {
-      if (Array.isArray(value)) {
+      if (value == null) {
+        addToHash('null');
+      } else if (Array.isArray(value)) {
         value.forEach(addToHash);
       } else {
         Object.keys(value).sort().forEach(key => {
@@ -90,9 +90,12 @@ function hashObject(obj: any): string {
     }
   }
 
-  if (obj.Metadata != null) {
-    delete obj.Metadata;
-  }
-  addToHash(obj);
+  const { Metadata, ...rest } = obj;
+  addToHash(rest);
+
   return hash.digest('hex');
+}
+
+function difference<A>(xs: Set<A>, ys: Set<A>): Set<A> {
+  return new Set([...xs].filter(x => !ys.has(x)));
 }

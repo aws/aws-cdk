@@ -1,40 +1,42 @@
 import { checkRenaming } from '../lib/refactoring';
 
-test('identical maps result in an empty correspondence', () => {
-  const a = new Map<string, any>([
-    ['foo', 123],
-    ['bar', 'blah'],
-  ]);
-  const b = new Map<string, any>([
-    ['foo', 123],
-    ['bar', 'blah'],
-  ]);
+test('identical objects result in an empty correspondence', () => {
+  const a = {
+    foo: 123,
+    bar: 'blah',
+  };
 
+  const b = {
+    bar: 'blah',
+    foo: 123,
+  };
   expect(checkRenaming(a, b)).toEqual([]);
 });
 
 test('changes in the value for the same key result in an empty correspondence', () => {
-  const a = new Map<string, any>([
-    ['foo', 123],
-    ['bar', 'blah'],
-  ]);
-  const b = new Map<string, any>([
-    ['foo', 123],
-    ['bar', 'zee'],
-  ]);
+  const a = {
+    foo: 123,
+    bar: 'blah',
+  };
+
+  const b = {
+    bar: 'zee',
+    foo: 123,
+  };
 
   expect(checkRenaming(a, b)).toEqual([]);
 });
 
 test('renaming shows up in the correspondence', () => {
-  const a = new Map<string, any>([
-    ['foo', 123],
-    ['oldName', 'blah'],
-  ]);
-  const b = new Map<string, any>([
-    ['foo', 123],
-    ['newName', 'blah'],
-  ]);
+  const a = {
+    foo: 123,
+    oldName: 'blah',
+  };
+
+  const b = {
+    newName: 'blah',
+    foo: 123,
+  };
 
   expect(checkRenaming(a, b)).toEqual([
     [new Set(['oldName']), new Set(['newName'])],
@@ -42,31 +44,59 @@ test('renaming shows up in the correspondence', () => {
 });
 
 test('changes in unrelated keys result in an empty correspondence', () => {
-  const a = new Map<string, any>([
-    ['foo', 123],
-    ['oldName', 'blah'],
-  ]);
-  const b = new Map<string, any>([
-    ['foo', 123],
-    ['newName', 'value also changed, so it is an entirely new thing'],
-  ]);
+  const a = {
+    foo: 123,
+    oldName: 'blah',
+  };
+
+  const b = {
+    newName: 'value also changed, so it is an entirely new thing',
+    foo: 123,
+  };
 
   expect(checkRenaming(a, b)).toEqual([]);
 });
 
 test('Metadata field at the top level is ignored', () => {
-  const a = new Map<string, any>([
-    ['foo', 123],
-    ['oldName', 'blah'],
-    ['Metadata', '/some/value'],
-  ]);
-  const b = new Map<string, any>([
-    ['foo', 123],
-    ['oldName', 'blah'],
-    ['Metadata', '/some/other/value'],
-  ]);
+  const a = {
+    foo: 123,
+    oldName: 'blah',
+    Metadata: '/some/value',
+  };
+
+  const b = {
+    foo: 123,
+    oldName: 'blah',
+    Metadata: '/some/other/value',
+  };
 
   expect(checkRenaming(a, b)).toEqual([]);
 });
 
-// TODO test for complex, nested objects
+test('Correspondence between complex objects', () => {
+  const a = {
+    oldName: {
+      name: 'AWS Service',
+      category: 'Cloud Computing',
+      launched: 2006,
+      specialChars: "!@#$%^&*()_+{}[]|\\:;\"'<>,.?/",
+      unicode: 'こんにちは、AWS！',
+      mixedArray: [1, 'two', false, null, 3.14],
+    },
+  };
+
+  const b = {
+    newName: {
+      name: 'AWS Service',
+      category: 'Cloud Computing',
+      launched: 2006,
+      specialChars: "!@#$%^&*()_+{}[]|\\:;\"'<>,.?/",
+      unicode: 'こんにちは、AWS！',
+      mixedArray: [1, 'two', false, null, 3.14],
+    },
+  };
+
+  expect(checkRenaming(a, b)).toEqual([
+    [new Set(['oldName']), new Set(['newName'])],
+  ]);
+});

@@ -8,7 +8,7 @@ import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { Configuration, PROJECT_CONFIG } from './user-configuration';
 import { SdkProvider } from '../api/aws-auth';
-import { Bootstrapper, BootstrapEnvironmentOptions } from '../api/bootstrap';
+import { BootstrapEnvironmentOptions, Bootstrapper } from '../api/bootstrap';
 import {
   CloudAssembly,
   DefaultSelection,
@@ -18,38 +18,38 @@ import {
 } from '../api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../api/cxapp/cloud-executable';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../api/cxapp/environments';
-import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from '../api/deployments';
+import { createDiffChangeSet, DeploymentMethod, Deployments, SuccessfulDeployStackResult } from '../api/deployments';
 import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
-import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '../api/hotswap/common';
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../api/hotswap/common';
 import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../api/logs/logs-monitor';
-import { tagsForStack, type Tag } from '../api/tags';
+import { type Tag, tagsForStack } from '../api/tags';
 import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
 import { formatTime } from '../api/util/string-manipulation';
 import {
+  appendWarningsToReadme,
+  buildCfnClient,
+  buildGenertedTemplateOutput,
+  CfnTemplateGeneratorProvider,
+  FromScan,
   generateCdkApp,
   generateStack,
+  generateTemplate,
+  GenerateTemplateOutput,
+  isThereAWarning,
+  parseSourceOptions,
   readFromPath,
   readFromStack,
   setEnvironment,
-  parseSourceOptions,
-  generateTemplate,
-  FromScan,
   TemplateSourceOptions,
-  GenerateTemplateOutput,
-  CfnTemplateGeneratorProvider,
   writeMigrateJsonFile,
-  buildGenertedTemplateOutput,
-  appendWarningsToReadme,
-  isThereAWarning,
-  buildCfnClient,
 } from '../commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
-import { ResourceImporter, removeNonImportResources } from '../import';
+import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '../logging';
 import { ResourceMigrator } from '../migrator';
-import { checkRenaming, ResourceCorrespondence, ResourceMap } from './refactoring';
+import { checkRenaming, ResourceCorrespondence } from '../refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { ToolkitError } from '../toolkit/error';
 import { numberFromBool, partition } from '../util';
@@ -350,18 +350,22 @@ export class CdkToolkit {
         );
       }
 
-      function asMap(r: any): ResourceMap {
-        return new Map(Object.entries(r));
-      }
-
       const deployedResources = (await this.props.deployments.readCurrentTemplate(stack)).Resources;
       const correspondence = checkRenaming(
-        asMap(deployedResources),
-        asMap(stack.template.Resources),
+        deployedResources,
+        stack.template.Resources,
       );
 
       function formatCorrespondence(corr: ResourceCorrespondence): string {
+        function toMetadataUsing(set: Set<string>, resources: Record<string, any>): Set<string> {
+          return new Set([...set].map(s => resources[s].Metadata?.['aws:cdk:path'] as string ?? s));
+        }
+
         let text = corr
+          .map(([before, after]) => ([
+            toMetadataUsing(before, deployedResources),
+            toMetadataUsing(after, stack.template.Resources),
+          ]))
           .map(([before, after]) => {
             if (before.size === 1 && after.size === 1) {
               return `${[...before][0]} -> ${[...after][0]}`;
