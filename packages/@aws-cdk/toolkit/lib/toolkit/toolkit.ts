@@ -19,7 +19,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -46,6 +46,13 @@ export interface ToolkitOptions {
    * The IoHost implementation, handling the inline interactions between the Toolkit and an integration.
    */
   ioHost?: IIoHost;
+
+  /**
+   * Allow emojis in messages sent to the IoHost.
+   *
+   * @default true
+   */
+  emojis?: boolean;
 
   /**
    * Configuration options for the SDK.
@@ -77,9 +84,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   public readonly toolkitStackName: string;
 
   /**
-   * @todo should probably be public in one way or the other.
+   * The IoHost of this Toolkit
    */
-  private readonly ioHost: IIoHost;
+  public readonly ioHost: IIoHost;
   private _sdkProvider?: SdkProvider;
 
   public constructor(private readonly props: ToolkitOptions = {}) {
@@ -91,7 +98,11 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     if (props.ioHost) {
       globalIoHost.registerIoHost(props.ioHost as any);
     }
-    this.ioHost = globalIoHost as IIoHost;
+    let ioHost = globalIoHost as IIoHost;
+    if (props.emojis === false) {
+      ioHost = withoutEmojis(ioHost);
+    }
+    this.ioHost = ioHost;
   }
 
   public async dispose(): Promise<void> {
