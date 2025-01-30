@@ -5,7 +5,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
 import { AssetBuildTime, type DeployOptions, RequireApproval } from '../actions/deploy';
-import { type ExtendedDeployOptions, buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
+import { type ExtendedDeployOptions, buildParameterMap, createHotswapPropertyOverrides, removePublishedAssets } from '../actions/deploy/private';
 import { type DestroyOptions } from '../actions/destroy';
 import { type DiffOptions } from '../actions/diff';
 import { diffRequiresApproval } from '../actions/diff/private';

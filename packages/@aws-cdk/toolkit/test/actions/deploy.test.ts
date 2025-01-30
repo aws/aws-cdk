@@ -141,7 +141,7 @@ describe('deploy', () => {
       const cx = await builderFixture(toolkit, 'stack-with-role');
       await toolkit.deploy(cx, {
         hotswapProperties: {
-          ecsHotswapProperties: {
+          ecs: {
             maximumHealthyPercent: 100,
             minimumHealthyPercent: 0,
           },

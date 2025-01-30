@@ -278,5 +278,5 @@ export interface HotswapProperties {
   /**
    * ECS specific hotswap property overrides
    */
-  readonly ecsHotswapProperties: EcsHotswapProperties;
+  readonly ecs: EcsHotswapProperties;
 }
