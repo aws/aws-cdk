@@ -22,8 +22,8 @@ new iam.Role(stack, 'test-iam-role', {
         new iam.PolicyStatement({
           actions: ['execute-api:Invoke'],
           resources: [
-            websocketApi.arnForExecuteApi(),
-            websocketApi.arnForExecuteApi('connect', 'prod'),
+            websocketApi.arnForExecuteApiV2(),
+            websocketApi.arnForExecuteApiV2('connect', 'prod'),
           ],
         }),
       ],

@@ -152,7 +152,72 @@ describe('WebSocketApi', () => {
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'api');
 
-    expect(stack.resolve(api.arnForExecuteApi('route', 'stage'))).toEqual({
+    expect(stack.resolve(api.arnForExecuteApi('method', '/path', 'stage'))).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        stack.resolve(api.apiId),
+        '/stage/method/path',
+      ]],
+    });
+  });
+
+  test('get arnForExecuteApi with default values', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(stack.resolve(api.arnForExecuteApi())).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        stack.resolve(api.apiId),
+        '/*/*/*',
+      ]],
+    });
+  });
+
+  test('get arnForExecuteApi with ANY method', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(stack.resolve(api.arnForExecuteApi('ANY', '/path', 'stage'))).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        stack.resolve(api.apiId),
+        '/stage/*/path',
+      ]],
+    });
+  });
+
+  test('throws when call arnForExecuteApi method with specifing a string that does not start with / for the path argument.', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(() => api.arnForExecuteApi('method', 'path', 'stage'))
+      .toThrow("Path must start with '/': path");
+  });
+
+  test('get arnForExecuteApiV2', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(stack.resolve(api.arnForExecuteApiV2('route', 'stage'))).toEqual({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -167,11 +232,11 @@ describe('WebSocketApi', () => {
     });
   });
 
-  test('get arnForExecuteApi with default values', () => {
+  test('get arnForExecuteApiV2 with default values', () => {
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'api');
 
-    expect(stack.resolve(api.arnForExecuteApi())).toEqual({
+    expect(stack.resolve(api.arnForExecuteApiV2())).toEqual({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
