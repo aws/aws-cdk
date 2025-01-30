@@ -26,16 +26,16 @@ export interface StreamKeyProps {
 }
 
 /**
-  A new IVS Stream Key
-*/
+ * A new IVS Stream Key
+ */
 export class StreamKey extends core.Resource implements IStreamKey {
   public readonly streamKeyArn: string;
 
   /**
-  * The stream-key value. For example: sk_us-west-2_abcdABCDefgh_567890abcdef
-  *
-  * @attribute
-  */
+   * The stream-key value. For example: sk_us-west-2_abcdABCDefgh_567890abcdef
+   *
+   * @attribute
+   */
   public readonly streamKeyValue: string;
 
   constructor(scope: Construct, id: string, props: StreamKeyProps) {

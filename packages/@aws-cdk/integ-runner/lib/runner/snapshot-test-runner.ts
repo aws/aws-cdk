@@ -271,11 +271,11 @@ export class IntegSnapshotRunner extends IntegRunner {
   }
 
   /**
-  * Reduce template to a normal form where asset references have been normalized
-  *
-  * This makes it possible to compare templates if all that's different between
-  * them is the hashes of the asset values.
-  */
+   * Reduce template to a normal form where asset references have been normalized
+   *
+   * This makes it possible to compare templates if all that's different between
+   * them is the hashes of the asset values.
+   */
   private canonicalizeTemplate(template: any, assets: string[]): any {
     const assetsSeen = new Set<string>();
     const stringSubstitutions = new Array<[RegExp, string]>();

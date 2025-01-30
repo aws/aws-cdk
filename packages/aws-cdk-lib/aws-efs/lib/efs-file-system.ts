@@ -114,8 +114,8 @@ export enum ThroughputMode {
   PROVISIONED = 'provisioned',
 
   /**
-  * This mode scales the throughput automatically regardless of file system size.
-  */
+   * This mode scales the throughput automatically regardless of file system size.
+   */
   ELASTIC = 'elastic',
 }
 
@@ -552,12 +552,12 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly connections: ec2.Connections;
 
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemId: string;
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemArn: string;
 
   /**

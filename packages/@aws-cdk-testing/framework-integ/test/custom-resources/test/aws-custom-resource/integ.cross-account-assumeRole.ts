@@ -26,7 +26,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  *     - `yarn integ custom-resources/test/aws-custom-resource/integ.cross-account-assumeRole.js`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
  *     - `yarn integ custom-resources/test/aws-custom-resource/integ.cross-account-assumeRole.js --profiles cross-account`
-*/
+ */
 
 const app = new cdk.App();
 

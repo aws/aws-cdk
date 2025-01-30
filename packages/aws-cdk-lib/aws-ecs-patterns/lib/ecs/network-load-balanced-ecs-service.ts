@@ -76,7 +76,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 

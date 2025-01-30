@@ -20,5 +20,6 @@ baseConfig.rules['@stylistic/padded-blocks'] = "off";
 baseConfig.rules['jsdoc/require-param-description'] = "off";
 baseConfig.rules['jsdoc/require-property-description'] = "off";
 baseConfig.rules['jsdoc/require-returns-description'] = "off";
+baseConfig.rules['jsdoc/check-alignment'] = 'off';
 
 module.exports = baseConfig;

@@ -2303,7 +2303,6 @@ export interface BootstrapOptions {
   readonly dockerConfigJson?: string;
 
   /**
-
    * Overrides the IP address to use for DNS queries within the
    * cluster.
    *

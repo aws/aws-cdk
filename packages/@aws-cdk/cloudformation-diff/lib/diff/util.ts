@@ -169,7 +169,7 @@ function safeParseFloat(str: string): number {
 
 /**
  * Lazily load the service spec database and cache the loaded db
-*/
+ */
 let DATABASE: SpecDatabase | undefined;
 function database(): SpecDatabase {
   if (!DATABASE) {

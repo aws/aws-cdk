@@ -291,9 +291,9 @@ describe('Subnet V2 with custom IP and routing', () => {
     const testsubnet = createTestSubnet(stack, subnetConfig);
 
     /**
-                 * Test case: Verify that the subnet is correctly stored in the VPC's collection of public subnets.
-                 * Expected outcome: The testsubnet should be the only public subnet in the VPC.
-                 */
+     * Test case: Verify that the subnet is correctly stored in the VPC's collection of public subnets.
+     * Expected outcome: The testsubnet should be the only public subnet in the VPC.
+     */
     expect(testVPC.publicSubnets.length).toEqual(1);
     expect(testVPC.publicSubnets[0]).toEqual(testsubnet);
   });

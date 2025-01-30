@@ -72,7 +72,7 @@ export interface NetworkMultipleTargetGroupsEc2ServiceProps extends NetworkMulti
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 

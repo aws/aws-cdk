@@ -253,8 +253,8 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
-  *  Checks whether a stack is defined in a Stage or not.
-  */
+   *  Checks whether a stack is defined in a Stage or not.
+   */
   private isStageScope(stack : cdk.Stack): boolean {
     return !(stack.node.scope instanceof cdk.App) && (stack.node.scope instanceof cdk.Stage);
   }

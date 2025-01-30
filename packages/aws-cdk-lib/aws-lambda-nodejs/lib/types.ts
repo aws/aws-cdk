@@ -243,13 +243,13 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly forceDockerBundling?: boolean;
 
   /**
-  * Run compilation using tsc before running file through bundling step.
-  * This usually is not required unless you are using new experimental features that
-  * are only supported by typescript's `tsc` compiler.
-  * One example of such feature is `emitDecoratorMetadata`.
-  *
-  * @default false
-  */
+   * Run compilation using tsc before running file through bundling step.
+   * This usually is not required unless you are using new experimental features that
+   * are only supported by typescript's `tsc` compiler.
+   * One example of such feature is `emitDecoratorMetadata`.
+   *
+   * @default false
+   */
   readonly preCompilation?: boolean;
 
   /**

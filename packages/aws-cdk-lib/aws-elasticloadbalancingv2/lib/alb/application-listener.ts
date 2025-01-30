@@ -236,7 +236,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * The port of the listener.
-  */
+   */
   public readonly port: number;
 
   /**

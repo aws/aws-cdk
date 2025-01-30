@@ -177,11 +177,11 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
 
   /**
- * Specifies which deployment controller to use for the service. For more information, see
- * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
- *
- * @default - Rolling update (ECS)
- */
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
   readonly deploymentController?: DeploymentController;
 
   /**
