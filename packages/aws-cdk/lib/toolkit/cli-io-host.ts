@@ -1,4 +1,7 @@
+import * as util from 'node:util';
 import * as chalk from 'chalk';
+import * as promptly from 'promptly';
+import { ToolkitError } from './error';
 
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
 export type IoCodeLevel = 'E' | 'W' | 'I';
@@ -332,13 +335,61 @@ export class CliIoHost implements IIoHost {
    * If the host does not return a response the suggested
    * default response from the input message will be used.
    */
-  public async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
+  public async requestResponse<DataType, ResponseType>(msg: IoRequest<DataType, ResponseType>): Promise<ResponseType> {
+    // First call out to a registered instance if we have one
     if (this._internalIoHost) {
       return this._internalIoHost.requestResponse(msg);
     }
 
-    await this.notify(msg);
-    return msg.defaultResponse;
+    // If the request cannot be prompted for by the CliIoHost, we just accept the default
+    if (!isPromptableRequest(msg)) {
+      await this.notify(msg);
+      return msg.defaultResponse;
+    }
+
+    const response = await this.withCorkedLogging(async (): Promise<string | number | true> => {
+      // prepare prompt data
+      // @todo this format is not defined anywhere, probably should be
+      const data: {
+        motivation?: string;
+        concurrency?: number;
+      } = msg.data ?? {};
+
+      const motivation = data.motivation ?? 'User input is needed';
+      const concurrency = data.concurrency ?? 0;
+
+      // only talk to user if STDIN is a terminal (otherwise, fail)
+      if (!this.isTTY) {
+        throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+      }
+
+      // only talk to user if concurrency is 1 (otherwise, fail)
+      if (concurrency > 1) {
+        throw new ToolkitError(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+      }
+
+      // Basic confirmation prompt
+      // We treat all requests with a boolean response as confirmation prompts
+      if (isConfirmationPrompt(msg)) {
+        const confirmed = await promptly.confirm(`${chalk.cyan(msg.message)} (y/n)`);
+        if (!confirmed) {
+          throw new ToolkitError('Aborted by user');
+        }
+        return confirmed;
+      }
+
+      // Asking for a specific value
+      const prompt = extractPromptInfo(msg);
+      const answer = await promptly.prompt(`${chalk.cyan(msg.message)} (${prompt.default})`, {
+        default: prompt.default,
+      });
+      return prompt.convertAnswer(answer);
+    });
+
+    // We need to cast this because it is impossible to narrow the generic type
+    // isPromptableRequest ensures that the response type is one we can prompt for
+    // the remaining code ensure we are indeed returning the correct type
+    return response as ResponseType;
   }
 
   /**
@@ -363,6 +414,39 @@ export class CliIoHost implements IIoHost {
     const pad = (n: number): string => n.toString().padStart(2, '0');
     return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
+}
+
+/**
+ * This IoHost implementation considers a request promptable, if:
+ * - it's a yes/no confirmation
+ * - asking for a string or number value
+ */
+function isPromptableRequest(msg: IoRequest<any, any>): msg is IoRequest<any, string | number | boolean> {
+  return isConfirmationPrompt(msg)
+    || typeof msg.defaultResponse === 'string'
+    || typeof msg.defaultResponse === 'number';
+}
+
+/**
+ * Check if the request is a confirmation prompt
+ * We treat all requests with a boolean response as confirmation prompts
+ */
+function isConfirmationPrompt(msg: IoRequest<any, any>): msg is IoRequest<any, boolean> {
+  return typeof msg.defaultResponse === 'boolean';
+}
+
+/**
+ * Helper to extract information for promptly from the request
+ */
+function extractPromptInfo(msg: IoRequest<any, any>): {
+  default: string;
+  convertAnswer: (input: string) => string | number;
+} {
+  const isNumber = (typeof msg.defaultResponse === 'number');
+  return {
+    default: util.format(msg.defaultResponse),
+    convertAnswer: isNumber ? (v) => Number(v) : (v) => String(v),
+  };
 }
 
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
