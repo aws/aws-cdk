@@ -25,32 +25,46 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-gateway', {
   vpcName: 'CDKintegTestVPC',
 });
 
-const routeTable = new RouteTable(stack, 'TestRouteTable', {
+const routeTable1 = new RouteTable(stack, 'TestRouteTable', {
   vpc: vpc,
   routeTableName: 'TestRouteTable',
 });
 
-const subnet = new SubnetV2(stack, 'testsubnet', {
+const subnet1 = new SubnetV2(stack, 'testsubnet', {
   vpc,
   availabilityZone: 'us-west-2b',
-  ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
+  ipv4CidrBlock: new IpCidr('10.1.1.0/28'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
-  routeTable: routeTable,
+  routeTable: routeTable1,
+});
+
+const routeTable2 = new RouteTable(stack, 'TestRouteTable2', {
+  vpc: vpc,
+  routeTableName: 'TestRouteTable2',
+});
+
+const subnet2 = new SubnetV2(stack, 'testsubnet2', {
+  vpc,
+  availabilityZone: 'us-west-2b',
+  ipv4CidrBlock: new IpCidr('10.1.2.0/28'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+  subnetName: 'CDKIntegTestSubnet2',
+  routeTable: routeTable2,
 });
 
 // Add route only for specific subnets
 vpc.addInternetGateway({
   internetGatewayName: 'CDKIntegTestTagIGW',
   ipv4Destination: '192.168.0.0/16',
-  subnets: [subnet],
+  subnets: [subnet1, subnet2],
 });
 
 // Add route only for specific subnets
 vpc.addEgressOnlyInternetGateway({
   egressOnlyInternetGatewayName: 'CDKIntegTestTagEIGW',
   destination: '2600:1f00::/24',
-  subnets: [subnet],
+  subnets: [subnet1, subnet2],
 });
 
 const integ = new IntegTest(app, 'VpcSameAccountInteg', {
@@ -97,13 +111,26 @@ eigwassertion.expect(ExpectedResult.objectLike({
 
 // Verify that the Gateways route is restricted to destination and given subnet's route table.
 const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
-  RouteTableIds: [routeTable.routeTableId],
+  RouteTableIds: [routeTable1.routeTableId, routeTable2.routeTableId],
 });
 
 rtbassertion.expect(ExpectedResult.objectLike({
   RouteTables: [
     Match.objectLike({
-      RouteTableId: routeTable.routeTableId,
+      RouteTableId: routeTable2.routeTableId,
+      Routes: Match.arrayWith([
+        Match.objectLike({
+          DestinationCidrBlock: '192.168.0.0/16',
+          GatewayId: vpc.internetGatewayId,
+        }),
+        Match.objectLike({
+          DestinationIpv6CidrBlock: '2600:1f00::/24',
+          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
+        }),
+      ]),
+    }),
+    Match.objectLike({
+      RouteTableId: routeTable1.routeTableId,
       Routes: Match.arrayWith([
         Match.objectLike({
           DestinationCidrBlock: '192.168.0.0/16',

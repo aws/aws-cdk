@@ -155,6 +155,42 @@
                   "version": "0.0.0"
                 }
               },
+              "testsubnet2-DefaultRoute": {
+                "id": "testsubnet2-DefaultRoute",
+                "path": "aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-DefaultRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-DefaultRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "192.168.0.0/16",
+                        "gatewayId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtestgatewayInternetGatewayIGWBF8CBB67",
+                            "InternetGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRouteTable2RouteTableB32AE314",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
+              },
               "EgressOnlyGW": {
                 "id": "EgressOnlyGW",
                 "path": "aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/EgressOnlyGW",
@@ -204,6 +240,42 @@
                         "routeTableId": {
                           "Fn::GetAtt": [
                             "TestRouteTableC34C2E1C",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
+              },
+              "testsubnet2-EgressRoute": {
+                "id": "testsubnet2-EgressRoute",
+                "path": "aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-EgressRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/testsubnet2-EgressRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationIpv6CidrBlock": "2600:1f00::/24",
+                        "egressOnlyInternetGatewayId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04",
+                            "Id"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRouteTable2RouteTableB32AE314",
                             "RouteTableId"
                           ]
                         }
@@ -273,7 +345,7 @@
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2b",
-                    "cidrBlock": "10.1.0.0/24",
+                    "cidrBlock": "10.1.1.0/28",
                     "tags": [
                       {
                         "key": "Name",
@@ -333,6 +405,113 @@
               "version": "0.0.0"
             }
           },
+          "TestRouteTable2": {
+            "id": "TestRouteTable2",
+            "path": "aws-cdk-ec2-alpha-gateways/TestRouteTable2",
+            "children": {
+              "RouteTable": {
+                "id": "RouteTable",
+                "path": "aws-cdk-ec2-alpha-gateways/TestRouteTable2/RouteTable",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "TestRouteTable2"
+                      }
+                    ],
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "VPCintegtestgateway2BE01D01",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+              "version": "0.0.0"
+            }
+          },
+          "testsubnet2": {
+            "id": "testsubnet2",
+            "path": "aws-cdk-ec2-alpha-gateways/testsubnet2",
+            "children": {
+              "Subnet": {
+                "id": "Subnet",
+                "path": "aws-cdk-ec2-alpha-gateways/testsubnet2/Subnet",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                  "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2b",
+                    "cidrBlock": "10.1.2.0/28",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "CDKIntegTestSubnet2"
+                      },
+                      {
+                        "key": "VpcName",
+                        "value": "CDKintegTestVPC"
+                      }
+                    ],
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "VPCintegtestgateway2BE01D01",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "Acl": {
+                "id": "Acl",
+                "path": "aws-cdk-ec2-alpha-gateways/testsubnet2/Acl",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTableAssociation": {
+                "id": "RouteTableAssociation",
+                "path": "aws-cdk-ec2-alpha-gateways/testsubnet2/RouteTableAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "TestRouteTable2RouteTableB32AE314",
+                        "RouteTableId"
+                      ]
+                    },
+                    "subnetId": {
+                      "Ref": "testsubnet2SubnetDA462F5A"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-ec2-alpha-gateways/Exports",
@@ -356,6 +535,14 @@
               "Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayEgressOnlyGWEIGW686FDB04\",\"Id\"]}": {
                 "id": "Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayEgressOnlyGWEIGW686FDB04\",\"Id\"]}",
                 "path": "aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayEgressOnlyGWEIGW686FDB04\",\"Id\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"TestRouteTable2RouteTableB32AE314\",\"RouteTableId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"TestRouteTable2RouteTableB32AE314\",\"RouteTableId\"]}",
+                "path": "aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTable2RouteTableB32AE314\",\"RouteTableId\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -567,17 +754,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3": {
-                    "id": "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3",
-                    "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3",
+                  "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
+                    "id": "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603",
+                    "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/SdkProvider",
+                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/SdkProvider/AssertionsProvider",
+                            "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -591,11 +778,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/Default",
+                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/Default/Default",
+                            "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -609,7 +796,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/AssertionResults",
+                        "path": "VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

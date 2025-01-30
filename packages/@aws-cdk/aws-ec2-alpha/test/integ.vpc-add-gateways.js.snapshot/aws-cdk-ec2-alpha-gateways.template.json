@@ -77,6 +77,28 @@
     "VPCintegtestgatewayInternetGatewayIGWBF8CBB67"
    ]
   },
+  "VPCintegtestgatewaytestsubnet2DefaultRoute3B414B5A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "192.168.0.0/16",
+    "GatewayId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgatewayInternetGatewayIGWBF8CBB67",
+      "InternetGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRouteTable2RouteTableB32AE314",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayInternetGatewayGWAttachment686DC0B9",
+    "VPCintegtestgatewayInternetGatewayIGWBF8CBB67"
+   ]
+  },
   "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04": {
    "Type": "AWS::EC2::EgressOnlyInternetGateway",
    "Properties": {
@@ -109,6 +131,27 @@
     "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04"
    ]
   },
+  "VPCintegtestgatewaytestsubnet2EgressRoute54F6A53E": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "2600:1f00::/24",
+    "EgressOnlyInternetGatewayId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04",
+      "Id"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRouteTable2RouteTableB32AE314",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayEgressOnlyGWEIGW686FDB04"
+   ]
+  },
   "TestRouteTableC34C2E1C": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
@@ -131,7 +174,7 @@
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
     "AvailabilityZone": "us-west-2b",
-    "CidrBlock": "10.1.0.0/24",
+    "CidrBlock": "10.1.1.0/28",
     "Tags": [
      {
       "Key": "Name",
@@ -164,6 +207,67 @@
     },
     "SubnetId": {
      "Ref": "testsubnetSubnetDD417829"
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayAmazonProvided7EC73953"
+   ]
+  },
+  "TestRouteTable2RouteTableB32AE314": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "TestRouteTable2"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgateway2BE01D01",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testsubnet2SubnetDA462F5A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": false,
+    "AvailabilityZone": "us-west-2b",
+    "CidrBlock": "10.1.2.0/28",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "CDKIntegTestSubnet2"
+     },
+     {
+      "Key": "VpcName",
+      "Value": "CDKintegTestVPC"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCintegtestgateway2BE01D01",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VPCintegtestgatewayAmazonProvided7EC73953"
+   ]
+  },
+  "testsubnet2RouteTableAssociation2ABEB97D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRouteTable2RouteTableB32AE314",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "testsubnet2SubnetDA462F5A"
     }
    },
    "DependsOn": [
@@ -203,6 +307,17 @@
    },
    "Export": {
     "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+   }
+  },
+  "ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRouteTable2RouteTableB32AE314",
+     "RouteTableId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
    }
   },
   "ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39": {

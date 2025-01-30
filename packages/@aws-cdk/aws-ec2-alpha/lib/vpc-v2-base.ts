@@ -299,13 +299,13 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    * Mutable private field for the internetGatewayId
    * @internal
    */
-  protected _internetGatewayId = '';
+  protected _internetGatewayId?: string;
 
   /**
    * Mutable private field for the EgressOnlyInternetGatewayId
    * @internal
    */
-  protected _egressOnlyInternetGatewayId = '';
+  protected _egressOnlyInternetGatewayId?: string;
 
   /**
   * Return information on the subnets appropriate for the given selection strategy

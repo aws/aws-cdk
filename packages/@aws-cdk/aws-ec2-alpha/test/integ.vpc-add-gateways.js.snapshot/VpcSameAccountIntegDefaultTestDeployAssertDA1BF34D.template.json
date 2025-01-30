@@ -42,7 +42,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738112250184"
+    "salt": "1738277955921"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -176,12 +176,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738112250186"
+    "salt": "1738277955923"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3": {
+  "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
    "Type": "Custom::DeployAssert@SdkCallec2DescribeRouteTablesCommand",
    "Properties": {
     "ServiceToken": {
@@ -197,6 +197,18 @@
       "",
       [
        "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"RouteTableId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
+       },
+       "\",\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"192.168.0.0/16\",\"GatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+       },
+       "\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"2600:1f00::/24\",\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+       },
+       "\"}}]}}},{\"$ObjectLike\":{\"RouteTableId\":\"",
        {
         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
        },
@@ -221,13 +233,17 @@
         {
          "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
         },
+        "\",\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
+        },
         "\"]"
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1738112250186"
+    "salt": "1738277955923"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -250,10 +266,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3": {
+  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3",
+     "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603",
      "assertion"
     ]
    }
