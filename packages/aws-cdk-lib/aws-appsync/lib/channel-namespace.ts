@@ -139,8 +139,6 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
 
     this.api = props.api;
 
-    this.api = props.api;
-
     this.channelNamespace = new CfnChannelNamespace(this, 'Resource', {
       name: this.physicalName,
       apiId: props.api.apiId,
