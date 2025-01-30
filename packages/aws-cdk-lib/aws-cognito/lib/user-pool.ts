@@ -1105,6 +1105,12 @@ export class UserPool extends UserPoolBase {
     const passwordPolicy = this.configurePasswordPolicy(props);
     const signInPolicy = this.configureSignInPolicy(props);
 
+    if (props.passkeyRelyingPartyId !== undefined && !Token.isUnresolved(props.passkeyRelyingPartyId)) {
+      if (props.passkeyRelyingPartyId.length < 1 || props.passkeyRelyingPartyId.length > 63) {
+        throw new ValidationError(`passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got ${props.passkeyRelyingPartyId.length}`, this);
+      }
+    }
+
     if (props.email && props.emailSettings) {
       throw new ValidationError('you must either provide "email" or "emailSettings", but not both', this);
     }

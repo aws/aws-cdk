@@ -2157,6 +2157,26 @@ describe('User Pool', () => {
     });
   });
 
+  test('passkeyRelyingPartyId length must be >= 1', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool1', { passkeyRelyingPartyId: '' });
+    }).toThrow('passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got 0');
+  });
+
+  test('passkeyRelyingPartyId length must be <= 63', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new UserPool(stack, 'Pool2', { passkeyRelyingPartyId: 'x'.repeat(64) });
+    }).toThrow('passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got 64');
+  });
+
   test.each([
     [PasskeyUserVerification.PREFERRED, 'preferred'],
     [PasskeyUserVerification.REQUIRED, 'required'],
