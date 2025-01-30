@@ -370,7 +370,7 @@ export class CdkToolkit {
             if (before.size === 1 && after.size === 1) {
               return `${[...before][0]} -> ${[...after][0]}`;
             } else {
-              return `${before} -> ${after}`;
+              return `{${[...before].join(', ')}} -> {${[...after].join(', ')}}`;
             }
           })
           .map(x => `  - ${x}`)
