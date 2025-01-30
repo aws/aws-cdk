@@ -235,6 +235,7 @@ export class TransitGateway extends TransitGatewayBase {
       // Instead, CDK will create a custom default route table and use the properties to mimic the automatic assocation/propagation behaviour.
       defaultRouteTableAssociation: TransitGatewayFeatureStatus.DISABLE,
       defaultRouteTablePropagation: TransitGatewayFeatureStatus.DISABLE,
+      transitGatewayCidrBlocks: props.transitGatewayCidrBlocks,
       description: props.description,
       dnsSupport: getFeatureStatus(props.dnsSupport),
       securityGroupReferencingSupport: getFeatureStatus(props.securityGroupReferencingSupport),
