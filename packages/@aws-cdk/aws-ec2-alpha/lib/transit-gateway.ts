@@ -237,6 +237,7 @@ export class TransitGateway extends TransitGatewayBase {
       defaultRouteTablePropagation: TransitGatewayFeatureStatus.DISABLE,
       description: props.description,
       dnsSupport: getFeatureStatus(props.dnsSupport),
+      securityGroupReferencingSupport: getFeatureStatus(props.securityGroupReferencingSupport),
     });
 
     this.node.defaultChild = this.resource;
