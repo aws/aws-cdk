@@ -489,7 +489,7 @@ export interface AuthFactor {
    * @default false
    */
   readonly passkey?: boolean;
-};
+}
 
 /**
  * The user-pool treatment for MFA with a passkey
@@ -500,7 +500,7 @@ export enum PasskeyUserVerification {
   PREFERRED = 'preferred',
   /** Passkey MFA is required */
   REQUIRED = 'required',
-};
+}
 
 /**
  * Email settings for the user pool.
@@ -1434,7 +1434,7 @@ export class UserPool extends UserPoolBase {
     }
 
     if (props.featurePlan === FeaturePlan.LITE) {
-      throw new Error('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 
     return { allowedFirstAuthFactors };
