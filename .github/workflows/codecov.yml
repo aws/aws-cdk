@@ -34,9 +34,9 @@ jobs:
         run: cd packages/aws-cdk && yarn test
 
       - name: Upload results to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: packages/aws-cdk/coverage/cobertura-coverage.xml,packages/aws-cdk-lib/coverage/cobertura-coverage.xml
           fail_ci_if_error: true
           flags: suite.unit
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
