@@ -395,7 +395,7 @@ export interface AnalyticsConfiguration {
   readonly role?: IRole;
 
   /**
-   * If `UserDataShared` is `true` , Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
+   * If `true`, Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
    * @default - false
    */
   readonly shareUserData?: boolean;
