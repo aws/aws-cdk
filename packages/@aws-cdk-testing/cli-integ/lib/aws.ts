@@ -19,11 +19,11 @@ import {
 import { SNSClient } from '@aws-sdk/client-sns';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { fromIni } from '@aws-sdk/credential-providers';
+import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 interface ClientConfig {
-  readonly credentials?: AwsCredentialIdentityProvider | AwsCredentialIdentity;
+  readonly credentials: AwsCredentialIdentityProvider | AwsCredentialIdentity;
   readonly region: string;
   readonly retryStrategy: ConfiguredRetryStrategy;
 }
@@ -78,6 +78,17 @@ export class AwsClients {
     });
 
     return (await stsClient.send(new GetCallerIdentityCommand({}))).Account!;
+  }
+
+  /**
+   * Resolve the current identity or identity provider to credentials
+   */
+  public async credentials() {
+    const x = this.config.credentials;
+    if (isAwsCredentialIdentity(x)) {
+      return x;
+    }
+    return x();
   }
 
   public async deleteStacks(...stackNames: string[]) {
@@ -251,7 +262,7 @@ export async function sleep(ms: number) {
   return new Promise((ok) => setTimeout(ok, ms));
 }
 
-function chainableCredentials(region: string): AwsCredentialIdentityProvider | undefined {
+function chainableCredentials(region: string): AwsCredentialIdentityProvider {
   if ((process.env.CODEBUILD_BUILD_ARN || process.env.GITHUB_RUN_ID) && process.env.AWS_PROFILE) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
@@ -261,5 +272,10 @@ function chainableCredentials(region: string): AwsCredentialIdentityProvider | u
     });
   }
 
-  return undefined;
+  // Otherwise just get what's default
+  return fromNodeProviderChain({ clientConfig: { region } });
+}
+
+function isAwsCredentialIdentity(x: any): x is AwsCredentialIdentity {
+  return Boolean(x && typeof x === 'object' && x.accessKeyId);
 }

@@ -21,9 +21,15 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     }
   };
 
-  // Always output the command
-  writeToOutputs(`💻 ${command.join(' ')}\n`);
   const show = options.show ?? 'always';
+  const verbose = Boolean(process.env.VERBOSE);
+
+  if (verbose) {
+    outputs.add(process.stdout);
+  }
+
+  // Always output the command
+  writeToOutputs(`💻 ${command.join(' ')} (show: ${show}, verbose: ${verbose})\n`);
 
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : process.env);
 

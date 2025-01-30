@@ -121,6 +121,7 @@ async function main() {
 
   try {
     await jest.run([
+      '--randomize',
       ...args.runInBand ? ['-i'] : [],
       ...args.test ? ['-t', args.test] : [],
       ...args.verbose ? ['--verbose'] : [],

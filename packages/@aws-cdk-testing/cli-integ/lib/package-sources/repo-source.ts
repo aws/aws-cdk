@@ -7,9 +7,10 @@ import { shell, addToShellPath } from '../shell';
 
 export class RepoPackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'repo';
-  readonly description = `repo(${this.repoRoot})`;
+  readonly description: string;
 
   constructor(private readonly repoRoot: string) {
+    this.description = `repo(${this.repoRoot})`;
   }
 
   public async prepare(): Promise<void> {
