@@ -311,7 +311,7 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
-
+   *
    * @param scope construct scope
    * @param id construct id
    * @param roleName the name of the role to import

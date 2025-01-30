@@ -47,9 +47,10 @@ import {
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
 import { ResourceImporter, removeNonImportResources } from '../import';
 import { listStacks } from '../list-stacks';
-import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '../logging';
+import { result as logResult, debug, error, highlight, info, success, warning } from '../logging';
 import { ResourceMigrator } from '../migrator';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
+import { CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
 import { numberFromBool, partition } from '../util';
 import { formatErrorMessage } from '../util/error';
@@ -78,6 +79,11 @@ export interface CdkToolkitProps {
    * The provisioning engine used to apply changes to the cloud
    */
   deployments: Deployments;
+
+  /**
+   * The CliIoHost that's used for I/O operations
+   */
+  ioHost?: CliIoHost;
 
   /**
    * Whether to be verbose
@@ -136,7 +142,11 @@ export enum AssetBuildTime {
  * deploys applies them to `cloudFormation`.
  */
 export class CdkToolkit {
-  constructor(private readonly props: CdkToolkitProps) {}
+  private ioHost: CliIoHost;
+
+  constructor(private readonly props: CdkToolkitProps) {
+    this.ioHost = props.ioHost ?? CliIoHost.instance();
+  }
 
   public async metadata(stackName: string, json: boolean) {
     const stacks = await this.selectSingleStackByName(stackName);
@@ -371,6 +381,7 @@ export class CdkToolkit {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await askUserConfirmation(
+            this.ioHost,
             concurrency,
             '"--require-approval" is enabled and stack includes security-sensitive updates',
             'Do you wish to deploy these changes',
@@ -451,6 +462,7 @@ export class CdkToolkit {
                 warning(`${motivation}. Rolling back first (--force).`);
               } else {
                 await askUserConfirmation(
+                  this.ioHost,
                   concurrency,
                   motivation,
                   `${motivation}. Roll back first and then proceed with deployment`,
@@ -476,6 +488,7 @@ export class CdkToolkit {
                 warning(`${motivation}. Proceeding with regular deployment (--force).`);
               } else {
                 await askUserConfirmation(
+                  this.ioHost,
                   concurrency,
                   motivation,
                   `${motivation}. Perform a regular deployment`,
@@ -513,7 +526,7 @@ export class CdkToolkit {
 
         info('Stack ARN:');
 
-        data(deployResult.stackArn);
+        logResult(deployResult.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -878,7 +891,7 @@ export class CdkToolkit {
 
     // just print stack IDs
     for (const stack of stacks) {
-      data(stack.id);
+      logResult(stack.id);
     }
 
     return 0; // exit-code
@@ -1262,7 +1275,7 @@ export class CdkToolkit {
  * Print a serialized object (YAML or JSON) to stdout.
  */
 function printSerializedObject(obj: any, json: boolean) {
-  data(serializeStructure(obj, json));
+  logResult(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {
@@ -1818,11 +1831,12 @@ function buildParameterMap(
  * cannot be interactively obtained from a human at the keyboard.
  */
 async function askUserConfirmation(
+  ioHost: CliIoHost,
   concurrency: number,
   motivation: string,
   question: string,
 ) {
-  await withCorkedLogging(async () => {
+  await ioHost.withCorkedLogging(async () => {
     // only talk to user if STDIN is a terminal (otherwise, fail)
     if (!TESTING && !process.stdin.isTTY) {
       throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
