@@ -7,7 +7,6 @@ import { FileSystem } from '../../lib/fs';
 describe('fs', () => {
   afterEach(() => {
     sinon.restore();
-
   });
 
   test('tmpdir returns a real path and is cached', () => {
@@ -32,7 +31,6 @@ describe('fs', () => {
 
     fs.unlinkSync(p);
     fs.unlinkSync(symlinkTmp);
-
   });
 
   test('mkdtemp creates a temporary directory in the system temp', () => {
@@ -42,6 +40,5 @@ describe('fs', () => {
     expect(fs.existsSync(tmpdir)).toEqual(true);
 
     fs.rmdirSync(tmpdir);
-
   });
 });

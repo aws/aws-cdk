@@ -90,7 +90,7 @@ export abstract class StreamSource extends SourceWithDeadLetterTarget {
     validateBatchSize(this.sourceParameters.batchSize);
     validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
     validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
-    validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
+    validateMaximumRetryAttempts(this.sourceParameters.maximumRetryAttempts);
     validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
   }
 }
@@ -120,7 +120,7 @@ function validateMaximumRecordAge(age?: number) {
   }
 }
 
-function validateMaxiumRetryAttemps(attempts?: number) {
+function validateMaximumRetryAttempts(attempts?: number) {
   if (attempts !== undefined && !Token.isUnresolved(attempts)) {
     if (attempts < -1 || attempts > 10000) {
       throw new Error(`Maximum retry attempts must be between -1 and 10000, received ${attempts}`);

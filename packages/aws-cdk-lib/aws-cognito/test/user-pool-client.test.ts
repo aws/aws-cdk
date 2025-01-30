@@ -44,7 +44,6 @@ describe('User Pool Client', () => {
   });
 
   describe('Client with secret', () => {
-
     test('generate secret', () => {
       // GIVEN
       const stack = new Stack();

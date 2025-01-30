@@ -31,7 +31,6 @@ export interface S3AssertProps {
  * Code is written in Python because why not.
  */
 export class S3Assert extends Construct {
-
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
@@ -48,7 +47,6 @@ export class S3Assert extends Construct {
 }
 
 class S3AssertProvider extends Construct {
-
   /**
    * Returns the singleton provider.
    */

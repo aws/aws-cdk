@@ -143,12 +143,11 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
-
   /**
    * Return whether the given object is a Cluster
    */
-  public static isCluster(x: any) : x is Cluster {
-    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  public static isCluster(x: any): x is Cluster {
+    return x !== null && typeof (x) === 'object' && CLUSTER_SYMBOL in x;
   }
 
   /**
@@ -715,7 +714,6 @@ export class Cluster extends Resource implements ICluster {
 
     if (options.canContainersAccessInstanceRole === false ||
       options.canContainersAccessInstanceRole === undefined) {
-
       if (!FeatureFlags.of(this).isEnabled(Disable_ECS_IMDS_Blocking) &&
         FeatureFlags.of(this).isEnabled(Enable_IMDS_Blocking_Deprecated_Feature)) {
         // new commands from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html#task-iam-role-considerations
@@ -878,7 +876,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * This method returns the specifed CloudWatch metric for this cluster.
+   * This method returns the specified CloudWatch metric for this cluster.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({

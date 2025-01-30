@@ -295,7 +295,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return jobExecutionRole;
   }
   private grantMonitoringPolicies() {
-
     this.logBucket?.grantReadWrite(this.role);
     this.logGroup?.grantWrite(this.role);
     this.logGroup?.grant(this.role, 'logs:DescribeLogStreams');

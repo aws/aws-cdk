@@ -19,19 +19,18 @@ import {
 import { SNSClient } from '@aws-sdk/client-sns';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import { fromIni } from '@aws-sdk/credential-providers';
-import type { AwsCredentialIdentityProvider } from '@smithy/types';
+import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
+import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
 interface ClientConfig {
-  readonly credentials?: AwsCredentialIdentityProvider;
+  readonly credentials: AwsCredentialIdentityProvider | AwsCredentialIdentity;
   readonly region: string;
   readonly retryStrategy: ConfiguredRetryStrategy;
 }
 
 export class AwsClients {
-  public static async default(output: NodeJS.WritableStream) {
-    const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-    return AwsClients.forRegion(region, output);
+  public static async forIdentity(region: string, identity: AwsCredentialIdentity, output: NodeJS.WritableStream) {
+    return new AwsClients(region, output, identity);
   }
 
   public static async forRegion(region: string, output: NodeJS.WritableStream) {
@@ -50,9 +49,12 @@ export class AwsClients {
   public readonly lambda: LambdaClient;
   public readonly sts: STSClient;
 
-  constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
+  constructor(
+    public readonly region: string,
+    private readonly output: NodeJS.WritableStream,
+    public readonly identity?: AwsCredentialIdentity) {
     this.config = {
-      credentials: chainableCredentials(this.region),
+      credentials: this.identity ?? chainableCredentials(this.region),
       region: this.region,
       retryStrategy: new ConfiguredRetryStrategy(9, (attempt: number) => attempt ** 500),
     };
@@ -76,6 +78,17 @@ export class AwsClients {
     });
 
     return (await stsClient.send(new GetCallerIdentityCommand({}))).Account!;
+  }
+
+  /**
+   * Resolve the current identity or identity provider to credentials
+   */
+  public async credentials() {
+    const x = this.config.credentials;
+    if (isAwsCredentialIdentity(x)) {
+      return x;
+    }
+    return x();
   }
 
   public async deleteStacks(...stackNames: string[]) {
@@ -249,8 +262,8 @@ export async function sleep(ms: number) {
   return new Promise((ok) => setTimeout(ok, ms));
 }
 
-function chainableCredentials(region: string): AwsCredentialIdentityProvider | undefined {
-  if (process.env.CODEBUILD_BUILD_ARN && process.env.AWS_PROFILE) {
+function chainableCredentials(region: string): AwsCredentialIdentityProvider {
+  if ((process.env.CODEBUILD_BUILD_ARN || process.env.GITHUB_RUN_ID) && process.env.AWS_PROFILE) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.
@@ -259,5 +272,10 @@ function chainableCredentials(region: string): AwsCredentialIdentityProvider | u
     });
   }
 
-  return undefined;
+  // Otherwise just get what's default
+  return fromNodeProviderChain({ clientConfig: { region } });
+}
+
+function isAwsCredentialIdentity(x: any): x is AwsCredentialIdentity {
+  return Boolean(x && typeof x === 'object' && x.accessKeyId);
 }

@@ -147,7 +147,6 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
  *
  */
 export class BedrockInvokeModel extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -172,7 +171,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     if (!useNewS3UriParamsForTask) {
       isInputSpecified = (props.input !== undefined && props.input.s3Location !== undefined) || (props.inputPath !== undefined);
     } else {
-      //Either specific props.input with bucket name and object key or input s3 path
+      // Either specific props.input with bucket name and object key or input s3 path
       isInputSpecified = props.input!==undefined ? props.input?.s3Location !== undefined || props.input?.s3InputUri !== undefined : false;
     }
 
@@ -195,7 +194,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       throw new Error('S3 Uri cannot be an empty string');
     }
 
-    //Warning to let users know about the newly introduced props
+    // Warning to let users know about the newly introduced props
     if (props.inputPath || props.outputPath && !useNewS3UriParamsForTask) {
       Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-stepfunctions-taks',
         'These props will set the value of inputPath/outputPath as s3 URI under input/output field in state machine JSON definition. To modify the behaviour set feature flag `@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": true` and use props input.s3InputUri/output.s3OutputUri');
@@ -213,7 +212,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       }),
     ];
 
-    //For Compatibility with existing behaviour of input path
+    // For Compatibility with existing behaviour of input path
     if (this.props.input?.s3InputUri !== undefined || (!useNewS3UriParamsForTask && this.props.inputPath !== undefined)) {
       policyStatements.push(
         new iam.PolicyStatement({
@@ -245,7 +244,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    //For Compatibility with existing behaviour of output path
+    // For Compatibility with existing behaviour of output path
     if (this.props.output?.s3OutputUri !== undefined || (!useNewS3UriParamsForTask && this.props.outputPath !== undefined)) {
       policyStatements.push(
         new iam.PolicyStatement({
@@ -304,7 +303,6 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-
     const useNewS3UriParamsForTask = FeatureFlags.of(this).isEnabled(cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK);
     const inputSource = this.getInputSource(this.props.input, this.props.inputPath, useNewS3UriParamsForTask);
     const outputSource = this.getOutputSource(this.props.output, this.props.outputPath, useNewS3UriParamsForTask);
@@ -326,7 +324,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             : 'DISABLED',
       }),
     };
-  };
+  }
 
   private getInputSource(props?: BedrockInvokeModelInputProps, inputPath?: string, useNewS3UriParamsForTask?: boolean): string | undefined {
     if (props?.s3Location) {

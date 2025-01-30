@@ -5,7 +5,7 @@ import {
   StackResourceSummary,
   StackStatus,
 } from '@aws-sdk/client-cloudformation';
-import { SdkProvider } from '../../../lib';
+import { SdkProvider } from '../../../lib/api';
 import { findCloudWatchLogGroups } from '../../../lib/api/logs/find-cloudwatch-logs';
 import { testStack, TestStackArtifact } from '../../util';
 import {

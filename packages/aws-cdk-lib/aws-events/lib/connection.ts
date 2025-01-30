@@ -124,7 +124,6 @@ export abstract class Authorization {
         };
       }
     }();
-
   }
 
   /**
