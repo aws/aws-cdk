@@ -30,6 +30,7 @@ export { WorkGraphBuilder } from '../../../../aws-cdk/lib/util/work-graph-builde
 export type { AssetBuildNode, AssetPublishNode, StackNode } from '../../../../aws-cdk/lib/util/work-graph-types';
 export { CloudWatchLogEventMonitor } from '../../../../aws-cdk/lib/api/logs/logs-monitor';
 export { findCloudWatchLogGroups } from '../../../../aws-cdk/lib/api/logs/find-cloudwatch-logs';
+export { HotswapPropertyOverrides, EcsHotswapProperties } from '../../../../aws-cdk/lib/api/hotswap/common';
 
 // @todo Cloud Assembly and Executable - this is a messy API right now
 export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';

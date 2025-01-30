@@ -161,6 +161,32 @@ describe('deploy', () => {
         notificationArns: [arn],
       })).rejects.toThrow(/Notification arn arn:aws:sqs:us-east-1:1111111111:resource is not a valid arn for an SNS topic/);
     });
+
+    test('hotswap property overrides', async () => {
+      // WHEN
+      const cx = await builderFixture(toolkit, 'stack-with-role');
+      await toolkit.deploy(cx, {
+        hotswapProperties: {
+          ecs: {
+            maximumHealthyPercent: 100,
+            minimumHealthyPercent: 0,
+          },
+        },
+      });
+
+      // THEN
+      // passed through correctly to Deployments
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        hotswapPropertyOverrides: {
+          ecsHotswapProperties: {
+            maximumHealthyPercent: 100,
+            minimumHealthyPercent: 0,
+          },
+        },
+      }));
+
+      successfulDeployment();
+    });
   });
 
   describe('deployment results', () => {
