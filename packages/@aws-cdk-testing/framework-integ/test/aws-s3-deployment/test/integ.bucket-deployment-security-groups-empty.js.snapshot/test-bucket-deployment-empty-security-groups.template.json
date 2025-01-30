@@ -1,0 +1,1061 @@
+{
+ "Resources": {
+  "TestVpcE77CE678": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1SubnetA7DB1EDF": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTable4CBFF871": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    }
+   }
+  },
+  "TestVpcPublicSubnet1DefaultRoute6C0F0315": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet1RouteTable4CBFF871"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet1EIP4884338C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet1NATGatewayA323E3EC": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet1EIP4884338C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet1SubnetA7DB1EDF"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315",
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9"
+   ]
+  },
+  "TestVpcPublicSubnet2Subnet80A14523": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTable75B88314": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2RouteTableAssociationB386A819": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    }
+   }
+  },
+  "TestVpcPublicSubnet2DefaultRoute054DAE0A": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPublicSubnet2RouteTable75B88314"
+    }
+   },
+   "DependsOn": [
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "TestVpcPublicSubnet2EIP83F7944C": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "TestVpcPublicSubnet2NATGatewayA9858C31": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TestVpcPublicSubnet2EIP83F7944C",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPublicSubnet2Subnet80A14523"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A",
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819"
+   ]
+  },
+  "TestVpcPrivateSubnet1SubnetCC65D771": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTable469B0105": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet1DefaultRoute32E7B814": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet1NATGatewayA323E3EC"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet1RouteTable469B0105"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2SubnetDE0C64A2": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableCEF29F7C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2RouteTableAssociation18250AB4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    },
+    "SubnetId": {
+     "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+    }
+   }
+  },
+  "TestVpcPrivateSubnet2DefaultRouteA7EB6930": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TestVpcPublicSubnet2NATGatewayA9858C31"
+    },
+    "RouteTableId": {
+     "Ref": "TestVpcPrivateSubnet2RouteTableCEF29F7C"
+    }
+   }
+  },
+  "TestVpcIGW9DD53F70": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "test-bucket-deployment-empty-security-groups/TestVpc"
+     }
+    ]
+   }
+  },
+  "TestVpcVPCGWF1827B84": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "TestVpcIGW9DD53F70"
+    },
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   }
+  },
+  "Destination920A3C57": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:empty-sg/:85747954",
+      "Value": "true"
+     }
+    ],
+    "WebsiteConfiguration": {
+     "IndexDocument": "index.html"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DestinationPolicy7982387E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Destination920A3C57"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Destination920A3C57",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination920A3C57",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DestinationAutoDeleteObjectsCustomResource15E926BA": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Destination920A3C57"
+    }
+   },
+   "DependsOn": [
+    "DestinationPolicy7982387E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "Destination920A3C57"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "DeployWithEmptySecurityGroupsAwsCliLayer87817797": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   },
+   "DependsOn": [
+    "TestVpcIGW9DD53F70",
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTable469B0105",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet1SubnetCC65D771",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4",
+    "TestVpcPrivateSubnet2SubnetDE0C64A2",
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315",
+    "TestVpcPublicSubnet1EIP4884338C",
+    "TestVpcPublicSubnet1NATGatewayA323E3EC",
+    "TestVpcPublicSubnet1RouteTable4CBFF871",
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9",
+    "TestVpcPublicSubnet1SubnetA7DB1EDF",
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A",
+    "TestVpcPublicSubnet2EIP83F7944C",
+    "TestVpcPublicSubnet2NATGatewayA9858C31",
+    "TestVpcPublicSubnet2RouteTable75B88314",
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819",
+    "TestVpcPublicSubnet2Subnet80A14523",
+    "TestVpcE77CE678",
+    "TestVpcVPCGWF1827B84"
+   ]
+  },
+  "DeployWithEmptySecurityGroupsCustomResourcec822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1c23183577": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cB189D08D",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip"
+    ],
+    "DestinationBucketName": {
+     "Ref": "Destination920A3C57"
+    },
+    "DestinationBucketKeyPrefix": "empty-sg/",
+    "RetainOnDelete": false,
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "DependsOn": [
+    "TestVpcIGW9DD53F70",
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTable469B0105",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet1SubnetCC65D771",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableCEF29F7C",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4",
+    "TestVpcPrivateSubnet2SubnetDE0C64A2",
+    "TestVpcPublicSubnet1DefaultRoute6C0F0315",
+    "TestVpcPublicSubnet1EIP4884338C",
+    "TestVpcPublicSubnet1NATGatewayA323E3EC",
+    "TestVpcPublicSubnet1RouteTable4CBFF871",
+    "TestVpcPublicSubnet1RouteTableAssociation7D1DECD9",
+    "TestVpcPublicSubnet1SubnetA7DB1EDF",
+    "TestVpcPublicSubnet2DefaultRoute054DAE0A",
+    "TestVpcPublicSubnet2EIP83F7944C",
+    "TestVpcPublicSubnet2NATGatewayA9858C31",
+    "TestVpcPublicSubnet2RouteTable75B88314",
+    "TestVpcPublicSubnet2RouteTableAssociationB386A819",
+    "TestVpcPublicSubnet2Subnet80A14523",
+    "TestVpcE77CE678",
+    "TestVpcVPCGWF1827B84"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRole41971AAD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+   ]
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRoleDefaultPolicyBC3CF7F7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Destination920A3C57",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Destination920A3C57",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRoleDefaultPolicyBC3CF7F7",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRole41971AAD"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+   ]
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cSecurityGroupF8C8B6CA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function testbucketdeploymentemptysecuritygroupsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1c584453A3",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TestVpcE77CE678"
+    }
+   },
+   "DependsOn": [
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+   ]
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cB189D08D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+     }
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "DeployWithEmptySecurityGroupsAwsCliLayer87817797"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRole41971AAD",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cSecurityGroupF8C8B6CA",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "TestVpcPrivateSubnet1SubnetCC65D771"
+      },
+      {
+       "Ref": "TestVpcPrivateSubnet2SubnetDE0C64A2"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRoleDefaultPolicyBC3CF7F7",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cServiceRole41971AAD",
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+   ]
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cLogGroupF65836C1": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc822fd0eeeb2ac583e5385bc14ea21281a6fa6cc1cB189D08D"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "TestVpcPrivateSubnet1DefaultRoute32E7B814",
+    "TestVpcPrivateSubnet1RouteTableAssociationFFD4DFF7",
+    "TestVpcPrivateSubnet2DefaultRouteA7EB6930",
+    "TestVpcPrivateSubnet2RouteTableAssociation18250AB4"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-east-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs22.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs22.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs22.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs22.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs22.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
+    "value": "nodejs22.x"
+   },
+   "il-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-central-1": {
+    "value": "nodejs22.x"
+   },
+   "me-south-1": {
+    "value": "nodejs22.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs22.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-east-2": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs22.x"
+   },
+   "us-west-2": {
+    "value": "nodejs22.x"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
