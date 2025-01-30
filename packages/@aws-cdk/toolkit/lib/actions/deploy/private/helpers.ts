@@ -24,8 +24,8 @@ export function buildParameterMap(parameters?: Map<string, string | undefined>):
 }
 
 /**
-   * Remove the asset publishing and building from the work graph for assets that are already in place
-   */
+ * Remove the asset publishing and building from the work graph for assets that are already in place
+ */
 export async function removePublishedAssets(graph: WorkGraph, deployments: Deployments, options: DeployOptions) {
   await graph.removeUnnecessaryAssets(assetNode => deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
     stack: assetNode.parentStack,

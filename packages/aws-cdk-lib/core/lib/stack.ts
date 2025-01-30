@@ -195,7 +195,7 @@ export interface StackProps {
    * default value `false` will be used.
    *
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
-  */
+   */
   readonly suppressTemplateIndentation?: boolean;
 }
 
