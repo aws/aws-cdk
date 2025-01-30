@@ -192,7 +192,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Get the "execute-api" ARN.
    *
-   * @deprecated this method does not produce an arn appropriate for Websockets specifically, use arnForExecuteApiV2.
+   * @deprecated Use arnForExecuteApiV2 instead.
    */
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
