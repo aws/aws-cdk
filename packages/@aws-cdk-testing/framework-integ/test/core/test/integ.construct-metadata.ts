@@ -7,6 +7,8 @@ const app = new cdk.App({
   analyticsReporting: true,
 });
 app.node.setContext('@aws-cdk/core:enableAdditionalMetadataCollection', true);
+// Have to set JSII AGENT to make sure the integ test generated snapshot matches local
+process.env.JSII_AGENT = 'node.js/v18.20.5';
 const stack = new cdk.Stack(app, 'metadata-testing-example');
 
 // Create an S3 bucket (L2 construct)
