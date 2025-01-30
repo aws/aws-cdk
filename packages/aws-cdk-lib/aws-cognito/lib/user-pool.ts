@@ -1412,10 +1412,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    if (props.featurePlan === FeaturePlan.LITE) {
-      throw new Error('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
-    }
-
+    // PASSWORD should be configured as one of the allowed first auth factors.
     const allowedFirstAuthFactors = ['PASSWORD'];
     if (props.allowedFirstAuthFactors.emailOtp) {
       allowedFirstAuthFactors.push('EMAIL_OTP');
@@ -1426,6 +1423,14 @@ export class UserPool extends UserPoolBase {
     if (props.allowedFirstAuthFactors.passkey) {
       allowedFirstAuthFactors.push('WEB_AUTHN');
     }
+    if (allowedFirstAuthFactors.length === 1) {
+      return undefined;
+    }
+
+    if (props.featurePlan === FeaturePlan.LITE) {
+      throw new Error('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+    }
+
     return { allowedFirstAuthFactors };
   }
 
