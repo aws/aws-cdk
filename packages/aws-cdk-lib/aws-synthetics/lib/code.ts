@@ -180,7 +180,6 @@ export class InlineCode extends Code {
   }
 
   public bind(scope: Construct, handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
-
     if (handler !== 'index.handler') {
       throw new ValidationError(`The handler for inline code must be "index.handler" (got "${handler}")`, scope);
     }

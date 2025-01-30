@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-v2-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::EKS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -130,5 +130,11 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
+      "cdk8s-plus-25": "^2.7.0"
+    }
   }
 }

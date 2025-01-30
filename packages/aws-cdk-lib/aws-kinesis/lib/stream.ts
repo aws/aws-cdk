@@ -862,10 +862,8 @@ export class Stream extends StreamBase {
     streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
     encryptionKey?: kms.IKey;
   } {
-
     // if encryption properties are not set, default to KMS in regions where KMS is available
     if (!props.encryption && !props.encryptionKey) {
-
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
       const existing = Stack.of(this).node.tryFindChild(conditionName);
 

@@ -1262,7 +1262,6 @@ integTest(
 integTest(
   'cdk diff doesnt show resource metadata changes',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -1282,7 +1281,6 @@ integTest(
 integTest(
   'cdk diff shows resource metadata changes with --no-change-set',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -2836,7 +2834,6 @@ integTest(
 );
 
 integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
-
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
     notices: [
@@ -2870,7 +2867,6 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
 
   // assert dynamic environments are resolved
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
-
 }));
 
 integTest('requests go through a proxy when configured',

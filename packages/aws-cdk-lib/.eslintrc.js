@@ -23,6 +23,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-apigatewayv2-authorizers',
   'aws-apigatewayv2-integrations',
   'aws-applicationautoscaling',
+  'aws-appsync',
   'aws-cognito',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',

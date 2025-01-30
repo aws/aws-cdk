@@ -128,7 +128,6 @@ async function main() {
       ...passWithNoTests ? ['--passWithNoTests'] : [],
       ...args['test-file'] ? [args['test-file']] : [],
     ], path.resolve(__dirname, '..', '..', 'resources', 'integ.jest.config.js'));
-
   } finally {
     await packageSource.cleanup();
   }

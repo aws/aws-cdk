@@ -18,7 +18,7 @@ import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
+import { ArnFormat, CfnResource, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * Optional configuration for data sources
@@ -64,7 +64,7 @@ export class IamResource {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
+      throw new UnscopedValidationError('At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }

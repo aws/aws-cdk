@@ -16,7 +16,6 @@ export abstract class IgnoreStrategy {
    *
    * @returns `GlobIgnorePattern` associated with the given patterns.
    * @param absoluteRootPath the absolute path to the root directory of the paths to be considered
-   * @param patterns
    */
   public static glob(absoluteRootPath: string, patterns: string[]): GlobIgnoreStrategy {
     return new GlobIgnoreStrategy(absoluteRootPath, patterns);
@@ -27,7 +26,6 @@ export abstract class IgnoreStrategy {
    *
    * @returns `GitIgnorePattern` associated with the given patterns.
    * @param absoluteRootPath the absolute path to the root directory of the paths to be considered
-   * @param patterns
    */
   public static git(absoluteRootPath: string, patterns: string[]): GitIgnoreStrategy {
     return new GitIgnoreStrategy(absoluteRootPath, patterns);
@@ -38,7 +36,6 @@ export abstract class IgnoreStrategy {
    *
    * @returns `DockerIgnorePattern` associated with the given patterns.
    * @param absoluteRootPath the absolute path to the root directory of the paths to be considered
-   * @param patterns
    */
   public static docker(absoluteRootPath: string, patterns: string[]): DockerIgnoreStrategy {
     return new DockerIgnoreStrategy(absoluteRootPath, patterns);
