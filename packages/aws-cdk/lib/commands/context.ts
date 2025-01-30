@@ -3,7 +3,7 @@ import { minimatch } from 'minimatch';
 import { Context } from '../api/context';
 import { PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../cli/user-configuration';
 import * as version from '../cli/version';
-import { error, warning, info, data } from '../logging';
+import { error, warning, info, result } from '../logging';
 import { ToolkitError } from '../toolkit/error';
 import { renderTable } from '../util';
 
@@ -58,7 +58,7 @@ export async function contextHandler(options: ContextOptions): Promise<number> {
     if (options.json) {
       /* istanbul ignore next */
       const contextValues = options.context.all;
-      data(JSON.stringify(contextValues, undefined, 2));
+      result(JSON.stringify(contextValues, undefined, 2));
     } else {
       listContext(options.context);
     }

@@ -4,22 +4,22 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
-import { AssetBuildTime, DeployOptions, ExtendedDeployOptions, RequireApproval } from '../actions/deploy';
-import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
-import { DestroyOptions } from '../actions/destroy';
-import { DiffOptions } from '../actions/diff';
+import { AssetBuildTime, type DeployOptions, RequireApproval } from '../actions/deploy';
+import { type ExtendedDeployOptions, buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
+import { type DestroyOptions } from '../actions/destroy';
+import { type DiffOptions } from '../actions/diff';
 import { diffRequiresApproval } from '../actions/diff/private';
-import { ListOptions } from '../actions/list';
-import { RollbackOptions } from '../actions/rollback';
-import { SynthOptions } from '../actions/synth';
+import { type ListOptions } from '../actions/list';
+import { type RollbackOptions } from '../actions/rollback';
+import { type SynthOptions } from '../actions/synth';
 import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
-import { SdkOptions } from '../api/aws-auth';
+import { type SdkOptions } from '../api/aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -149,7 +149,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       const firstStack = stacks.firstStack!;
       const template = firstStack.template;
       const obscuredTemplate = obscureTemplate(template);
-      await ioHost.notify(info(message, 'CDK_TOOLKIT_I0001', {
+      await ioHost.notify(result(message, 'CDK_TOOLKIT_I0001', {
         ...assemblyData,
         stack: {
           stackName: firstStack.stackName,
@@ -161,7 +161,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       }));
     } else {
       // not outputting template to stdout, let's explain things to the user a little bit...
-      await ioHost.notify(success(message, 'CDK_TOOLKIT_I0002', assemblyData));
+      await ioHost.notify(result(chalk.green(message), 'CDK_TOOLKIT_I0002', assemblyData));
       await ioHost.notify(info(`Supply a stack id (${stacks.stackArtifacts.map((s) => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`));
     }
 
@@ -234,11 +234,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
-    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      await ioHost.notify(warn(
+    const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+    if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
+      await ioHost.notify(warn([
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
-      ));
-      await ioHost.notify(warn('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
+        '⚠️ They should only be used for development - never use them for your production Stacks!',
+      ].join('\n')));
     }
 
     // @TODO
@@ -367,7 +368,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             progress,
             ci: options.ci,
             rollback,
-            hotswap: options.hotswap,
+            hotswap: hotswapMode,
             extraUserAgent: options.extraUserAgent,
             // hotswapPropertyOverrides: hotswapPropertyOverrides,
             assetParallelism: options.assetParallelism,
@@ -651,7 +652,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       const startRollbackTime = Timer.start();
       const deployments = await this.deploymentsForAction('rollback');
       try {
-        const result = await deployments.rollbackStack({
+        const stackResult = await deployments.rollbackStack({
           stack,
           roleArn: options.roleArn,
           toolkitStackName: this.toolkitStackName,
@@ -659,7 +660,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           validateBootstrapStackVersion: options.validateBootstrapStackVersion,
           orphanLogicalIds: options.orphanLogicalIds,
         });
-        if (!result.notInRollbackableState) {
+        if (!stackResult.notInRollbackableState) {
           anyRollbackable = true;
         }
         const elapsedRollbackTime = startRollbackTime.end();
@@ -771,21 +772,18 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     options: WatchOptions,
     cloudWatchLogMonitor?: CloudWatchLogEventMonitor,
   ): Promise<void> {
+    // watch defaults hotswap to enabled
+    const hotswap = options.hotswap ?? HotswapMode.HOTSWAP_ONLY;
     const deployOptions: ExtendedDeployOptions = {
       ...options,
       requireApproval: RequireApproval.NEVER,
       cloudWatchLogMonitor,
-      hotswap: options.hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
-      concurrency: options.concurrency,
+      hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap === HotswapMode.FULL_DEPLOYMENT ? 'off' : 'on'}`,
     };
 
     try {
-      await this._deploy(
-        assembly,
-        'watch',
-        deployOptions,
-      );
+      await this._deploy(assembly, 'watch', deployOptions);
     } catch {
       // just continue - deploy will show the error
     }
