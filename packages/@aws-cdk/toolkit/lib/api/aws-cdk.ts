@@ -28,6 +28,7 @@ export { WorkGraph } from '../../../../aws-cdk/lib/util/work-graph';
 export type { Concurrency } from '../../../../aws-cdk/lib/util/work-graph';
 export { WorkGraphBuilder } from '../../../../aws-cdk/lib/util/work-graph-builder';
 export type { AssetBuildNode, AssetPublishNode, StackNode } from '../../../../aws-cdk/lib/util/work-graph-types';
+export { HotswapPropertyOverrides, EcsHotswapProperties } from '../../../../aws-cdk/lib/api/hotswap/common';
 
 // @todo Cloud Assembly and Executable - this is a messy API right now
 export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
