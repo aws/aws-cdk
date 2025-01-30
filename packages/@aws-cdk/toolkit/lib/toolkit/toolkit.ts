@@ -5,7 +5,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
 import { AssetBuildTime, type DeployOptions, RequireApproval } from '../actions/deploy';
-import { type ExtendedDeployOptions, buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
+import { type ExtendedDeployOptions, buildParameterMap, createHotswapPropertyOverrides, removePublishedAssets } from '../actions/deploy/private';
 import { type DestroyOptions } from '../actions/destroy';
 import { type DiffOptions } from '../actions/diff';
 import { diffRequiresApproval } from '../actions/diff/private';
@@ -253,15 +253,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       ].join('\n')));
     }
 
-    // @TODO
-    // let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
-
-    // let hotswapPropertyOverrides = new HotswapPropertyOverrides();
-    // hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
-    //   hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
-    //   hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
-    // );
-
     const stacks = stackCollection.stackArtifacts;
 
     const stackOutputs: { [key: string]: any } = {};
@@ -381,7 +372,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             rollback,
             hotswap: hotswapMode,
             extraUserAgent: options.extraUserAgent,
-            // hotswapPropertyOverrides: hotswapPropertyOverrides,
+            hotswapPropertyOverrides: options.hotswapProperties ? createHotswapPropertyOverrides(options.hotswapProperties) : undefined,
             assetParallelism: options.assetParallelism,
           });
 
