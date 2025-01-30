@@ -1,11 +1,8 @@
 import * as path from 'path';
-import { promisify } from 'util';
 import * as fs from 'fs-extra';
-import * as _glob from 'glob';
+import { globIterate } from 'glob';
 import * as pLimit from 'p-limit';
 import yargs from 'yargs';
-
-const glob = promisify(_glob);
 
 async function main() {
   const args = yargs(process.argv.slice(2))
@@ -78,35 +75,42 @@ async function duplicateModule(config: DuplicateConfig) {
 }
 
 async function copyAndRewrite(sourceDirectory: string, targetDirectory: string, ignore: string[]) {
-  const files = await glob(path.join(sourceDirectory, '**', '*'), {
+  // Get an async iterator for all files, excluding ignored ones
+  const files = globIterate(path.join(sourceDirectory, '**', '*'), {
     ignore: [
       ...autoIgnore(sourceDirectory),
       ...ignore,
     ],
   });
 
-  // Copy all files to new destination and rewrite imports if needed
+  // Create a concurrency limiter - only 20 files processed at once
   const limit = pLimit(20);
-  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-  await Promise.all(
-    files.map((filePath: string) => limit(async () => {
+
+  // Process each file one at a time, but allow up to 20 concurrent operations
+  for await (const filePath of files) {
+    await limit(async () => {
+      // Get file stats
       const stat = await fs.stat(filePath);
+      // Calculate the new path
       const relativePath = filePath.replace(sourceDirectory, '');
       const newPath = path.join(targetDirectory, relativePath);
-      if (stat.isFile()) {
-        await fs.mkdir(path.dirname(newPath), { recursive: true });
-        if (fs.existsSync(newPath)) {
-          await fs.remove(newPath);
-        }
 
+      if (stat.isFile()) {
+        // Create directory structure
+        await fs.mkdir(path.dirname(newPath), { recursive: true });
+        // Remove existing file (fs.remove is idempotent)
+        await fs.remove(newPath);
+
+        // Calculate depth for import path adjustments
         const relativeDepth = relativePath.split(path.sep).length - 1;
 
+        // Rewrite source files with adjusted imports
         if (isSourceFile(filePath)) {
           await rewriteFileTo(filePath, newPath, relativeDepth);
         }
       }
-    })),
-  );
+    });
+  }
 }
 
 /**

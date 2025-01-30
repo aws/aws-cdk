@@ -175,6 +175,7 @@
     ]
   },
   "dependencies": {
+    "glob": "^11.0.1",
     "string-width": "^4.2.3"
   }
 }

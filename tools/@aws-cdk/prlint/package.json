@@ -16,12 +16,11 @@
     "@octokit/webhooks-definitions": "^3.68.1",
     "conventional-commits-parser": "^3.2.4",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.3"
+    "glob": "^11.0.1"
   },
   "devDependencies": {
     "@types/conventional-commits-parser": "3.0.2",
     "@types/fs-extra": "^9.0.13",
-    "@types/glob": "^7.2.0",
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "make-runnable": "^1.4.1",
