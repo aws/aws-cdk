@@ -19,7 +19,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -149,7 +149,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       const firstStack = stacks.firstStack!;
       const template = firstStack.template;
       const obscuredTemplate = obscureTemplate(template);
-      await ioHost.notify(info(message, 'CDK_TOOLKIT_I0001', {
+      await ioHost.notify(result(message, 'CDK_TOOLKIT_I0001', {
         ...assemblyData,
         stack: {
           stackName: firstStack.stackName,
@@ -161,7 +161,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       }));
     } else {
       // not outputting template to stdout, let's explain things to the user a little bit...
-      await ioHost.notify(success(message, 'CDK_TOOLKIT_I0002', assemblyData));
+      await ioHost.notify(result(chalk.green(message), 'CDK_TOOLKIT_I0002', assemblyData));
       await ioHost.notify(info(`Supply a stack id (${stacks.stackArtifacts.map((s) => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`));
     }
 
@@ -650,7 +650,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       const startRollbackTime = Timer.start();
       const deployments = await this.deploymentsForAction('rollback');
       try {
-        const result = await deployments.rollbackStack({
+        const stackResult = await deployments.rollbackStack({
           stack,
           roleArn: options.roleArn,
           toolkitStackName: this.toolkitStackName,
@@ -658,7 +658,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           validateBootstrapStackVersion: options.validateBootstrapStackVersion,
           orphanLogicalIds: options.orphanLogicalIds,
         });
-        if (!result.notInRollbackableState) {
+        if (!stackResult.notInRollbackableState) {
           anyRollbackable = true;
         }
         const elapsedRollbackTime = startRollbackTime.end();

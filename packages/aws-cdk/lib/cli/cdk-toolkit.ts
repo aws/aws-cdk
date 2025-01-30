@@ -47,7 +47,7 @@ import {
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
 import { ResourceImporter, removeNonImportResources } from '../import';
 import { listStacks } from '../list-stacks';
-import { data, debug, error, highlight, info, success, warning } from '../logging';
+import { result as logResult, debug, error, highlight, info, success, warning } from '../logging';
 import { ResourceMigrator } from '../migrator';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { CliIoHost } from '../toolkit/cli-io-host';
@@ -526,7 +526,7 @@ export class CdkToolkit {
 
         info('Stack ARN:');
 
-        data(deployResult.stackArn);
+        logResult(deployResult.stackArn);
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -891,7 +891,7 @@ export class CdkToolkit {
 
     // just print stack IDs
     for (const stack of stacks) {
-      data(stack.id);
+      logResult(stack.id);
     }
 
     return 0; // exit-code
@@ -1275,7 +1275,7 @@ export class CdkToolkit {
  * Print a serialized object (YAML or JSON) to stdout.
  */
 function printSerializedObject(obj: any, json: boolean) {
-  data(serializeStructure(obj, json));
+  logResult(serializeStructure(obj, json));
 }
 
 export interface DiffOptions {

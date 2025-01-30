@@ -18,7 +18,7 @@ describe('synth', () => {
     // THEN
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
-      level: 'info',
+      level: 'result',
       message: expect.stringContaining('Successfully synthesized'),
     }));
   });
@@ -31,7 +31,7 @@ describe('synth', () => {
     // THEN
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
-      level: 'info',
+      level: 'result',
       message: expect.stringContaining('Successfully synthesized'),
     }));
   });
@@ -44,7 +44,7 @@ describe('synth', () => {
     // THEN
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
-      level: 'info',
+      level: 'result',
       code: 'CDK_TOOLKIT_I0001',
       message: expect.stringContaining('Successfully synthesized'),
       data: expect.objectContaining({
@@ -65,7 +65,7 @@ describe('synth', () => {
     // THEN
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
-      level: 'info',
+      level: 'result',
       code: 'CDK_TOOLKIT_I0002',
       message: expect.stringContaining('Successfully synthesized'),
       data: expect.objectContaining({
