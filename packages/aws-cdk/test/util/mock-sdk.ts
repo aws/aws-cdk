@@ -20,9 +20,9 @@ import { AssumeRoleCommand, GetCallerIdentityCommand, STSClient } from '@aws-sdk
 import { createCredentialChain } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentity } from '@smithy/types';
 import { mockClient } from 'aws-sdk-client-mock';
-import { Account } from 'cdk-assets';
-import { SDK, SdkProvider } from '../../lib';
-import { CloudFormationStack } from '../../lib/api/util/cloudformation';
+import { type Account } from 'cdk-assets';
+import { SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { CloudFormationStack } from '../../lib/api/deployments';
 
 export const FAKE_CREDENTIALS: AwsCredentialIdentity = {
   accessKeyId: 'ACCESS',

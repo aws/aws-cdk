@@ -12,7 +12,8 @@ import {
 } from './bootstrap-props';
 import * as logging from '../../logging';
 import type { SDK, SdkProvider } from '../aws-auth';
-import { assertIsSuccessfulDeployStackResult, deployStack, SuccessfulDeployStackResult } from '../deploy-stack';
+import { assertIsSuccessfulDeployStackResult, SuccessfulDeployStackResult } from '../deployments';
+import { deployStack } from '../deployments/deploy-stack';
 import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { Mode } from '../plugin/mode';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';

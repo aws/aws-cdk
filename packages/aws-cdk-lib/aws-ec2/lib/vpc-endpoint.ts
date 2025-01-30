@@ -152,7 +152,6 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * @resource AWS::EC2::VPCEndpoint
  */
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
-
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -233,7 +232,6 @@ export interface IInterfaceVpcEndpointService {
  * A custom-hosted service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
-
   /**
    * The name of the service.
    */
@@ -463,6 +461,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IOT_TWINMAKER_API = new InterfaceVpcEndpointAwsService('iottwinmaker.api');
   public static readonly IOT_TWINMAKER_DATA = new InterfaceVpcEndpointAwsService('iottwinmaker.data');
   public static readonly KAFKA = new InterfaceVpcEndpointAwsService('kafka');
+  public static readonly KAFKA_CONNECT = new InterfaceVpcEndpointAwsService('kafkaconnect');
   public static readonly KAFKA_FIPS = new InterfaceVpcEndpointAwsService('kafka-fips');
   public static readonly KENDRA = new InterfaceVpcEndpointAwsService('kendra');
   public static readonly KENDRA_RANKING = new InterfaceVpcEndpointAwsService('kendra-ranking', 'aws.api');
@@ -956,7 +955,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Sanity checking when looking up AZs for an endpoint service, to make sure it won't fail
    */
   private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
-
     // Having any of these be true will cause the AZ lookup to fail at synthesis time
     const agnosticAcct = Token.isUnresolved(this.env.account);
     const agnosticRegion = Token.isUnresolved(this.env.region);

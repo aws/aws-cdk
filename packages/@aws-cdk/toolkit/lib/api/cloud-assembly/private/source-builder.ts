@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import type { ICloudAssemblySource } from '../';
 import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './context-aware-source';
@@ -10,7 +11,6 @@ import { debug } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
 
 export abstract class CloudAssemblySourceBuilder {
-
   /**
    * Helper to provide the CloudAssemblySourceBuilder with required toolkit services
    * @deprecated this should move to the toolkit really.
@@ -40,13 +40,19 @@ export abstract class CloudAssemblySourceBuilder {
         produce: async () => {
           const outdir = determineOutputDirectory(props.outdir);
           const env = await prepareDefaultEnvironment(services, { outdir });
-          return changeDir(async () =>
+          const assembly = await changeDir(async () =>
             withContext(context.all, env, props.synthOptions ?? {}, async (envWithContext, ctx) =>
               withEnv(envWithContext, () => builder({
                 outdir,
                 context: ctx,
               })),
             ), props.workingDirectory);
+
+          if (cxapi.CloudAssembly.isCloudAssembly(assembly)) {
+            return assembly;
+          }
+
+          return new cxapi.CloudAssembly(assembly.directory);
         },
       },
       contextAssemblyProps,
@@ -72,7 +78,6 @@ export abstract class CloudAssemblySourceBuilder {
           // @todo build
           await services.ioHost.notify(debug('--app points to a cloud assembly, so we bypass synth'));
           return assemblyFromDirectory(directory, services.ioHost);
-
         },
       },
       contextAssemblyProps,

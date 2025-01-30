@@ -10,4 +10,13 @@ baseConfig.overrides.push({
   },
 });
 
+// all aws-cdk files must be loaded through lib/api/aws-cdk.ts
+baseConfig.rules['import/no-restricted-paths'] = ['error', {
+  zones: [{
+    target: './',
+    from: '../../aws-cdk',
+    message: "All `aws-cdk` code must be used via lib/api/aws-cdk.ts",
+  }]
+}];
+
 module.exports = baseConfig;
