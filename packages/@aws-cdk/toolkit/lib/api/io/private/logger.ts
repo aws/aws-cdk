@@ -24,6 +24,27 @@ export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   };
 }
 
+export function withoutColor(ioHost: IIoHost): IIoHost {
+  return {
+    notify: async <T>(msg: IoMessage<T>) => {
+      await ioHost.notify({
+        ...msg,
+        message: stripColor(msg.message),
+      });
+    },
+    requestResponse: async <T, U>(msg: IoRequest<T, U>) => {
+      return ioHost.requestResponse({
+        ...msg,
+        message: stripColor(msg.message),
+      });
+    },
+  };
+}
+
+function stripColor(msg: string): string {
+  return msg.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+}
+
 /**
  * An IoHost wrapper that strips out emojis from the message before
  * sending the message to the given IoHost

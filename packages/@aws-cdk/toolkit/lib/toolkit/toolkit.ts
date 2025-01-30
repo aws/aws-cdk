@@ -19,7 +19,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -53,6 +53,16 @@ export interface ToolkitOptions {
    * @default true
    */
   emojis?: boolean;
+
+  /**
+   * Whether to allow color in IoHost messages. Setting this value
+   * to false ensures that no color or style shows up in messages sent
+   * to the IoHost. Setting this value to true is a no-op; it is equivalent
+   * to the default.
+   *
+   * @default - detects color from the TTY status of the IoHost
+   */
+  color?: boolean;
 
   /**
    * Configuration options for the SDK.
@@ -101,6 +111,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     let ioHost = globalIoHost as IIoHost;
     if (props.emojis === false) {
       ioHost = withoutEmojis(ioHost);
+    }
+    if (props.color === false) {
+      ioHost = withoutColor(ioHost);
     }
     this.ioHost = ioHost;
   }
