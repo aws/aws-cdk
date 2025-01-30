@@ -128,13 +128,31 @@ describe('watch', () => {
     }));
   });
 
+  test('can trace logs', async () => {
+    // GIVEN
+    const cx = await builderFixture(toolkit, 'stack-with-role');
+    ioHost.level = 'debug';
+    await toolkit.watch(cx, {
+      include: [],
+      traceLogs: true,
+    });
+
+    // WHEN
+    await fakeChokidarWatcherOn.readyCallback();
+
+    // THEN
+    expect(deploySpy).toHaveBeenCalledWith(expect.anything(), 'watch', expect.objectContaining({
+      cloudWatchLogMonitor: expect.anything(), // Not undefined
+    }));
+  });
+
   describe.each([
     [HotswapMode.FALL_BACK, 'on'],
     [HotswapMode.HOTSWAP_ONLY, 'on'],
     [HotswapMode.FULL_DEPLOYMENT, 'off'],
   ])('%p mode', (hotswapMode, userAgent) => {
     test('passes through the correct hotswap mode to deployStack()', async () => {
-      // WHEN
+      // GIVEN
       const cx = await builderFixture(toolkit, 'stack-with-role');
       ioHost.level = 'warn';
       await toolkit.watch(cx, {
@@ -142,6 +160,7 @@ describe('watch', () => {
         hotswap: hotswapMode,
       });
 
+      // WHEN
       await fakeChokidarWatcherOn.readyCallback();
 
       // THEN
