@@ -16,6 +16,29 @@ export type ResourceIndex = Map<string, Set<string>>
  */
 export type ResourceCorrespondence = [Set<string>, Set<string>][]
 
+export function formatCorrespondence(corr: ResourceCorrespondence, oldResources: ResourceMap, newResources: ResourceMap): string {
+  function toMetadataUsing(set: Set<string>, resources: Record<string, any>): Set<string> {
+    return new Set([...set].map(s => resources[s].Metadata?.['aws:cdk:path'] as string ?? s));
+  }
+
+  let text = corr
+    .map(([before, after]) => ([
+      toMetadataUsing(before, oldResources),
+      toMetadataUsing(after, newResources),
+    ]))
+    .map(([before, after]) => {
+      if (before.size === 1 && after.size === 1) {
+        return `${[...before][0]} -> ${[...after][0]}`;
+      } else {
+        return `{${[...before].join(', ')}} -> {${[...after].join(', ')}}`;
+      }
+    })
+    .map(x => `  - ${x}`)
+    .join('\n');
+
+  return `\n${text}\n`;
+}
+
 /**
  * Given two records of (logical ID -> object), finds a list of objects that
  * are present in both records but have different logical IDs. For each of

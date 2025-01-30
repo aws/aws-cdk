@@ -49,7 +49,7 @@ import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '../logging';
 import { ResourceMigrator } from '../migrator';
-import { checkRenaming, ResourceCorrespondence } from '../refactoring';
+import { checkRenaming, formatCorrespondence } from '../refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { ToolkitError } from '../toolkit/error';
 import { numberFromBool, partition } from '../util';
@@ -356,32 +356,9 @@ export class CdkToolkit {
         stack.template.Resources,
       );
 
-      function formatCorrespondence(corr: ResourceCorrespondence): string {
-        function toMetadataUsing(set: Set<string>, resources: Record<string, any>): Set<string> {
-          return new Set([...set].map(s => resources[s].Metadata?.['aws:cdk:path'] as string ?? s));
-        }
-
-        let text = corr
-          .map(([before, after]) => ([
-            toMetadataUsing(before, deployedResources),
-            toMetadataUsing(after, stack.template.Resources),
-          ]))
-          .map(([before, after]) => {
-            if (before.size === 1 && after.size === 1) {
-              return `${[...before][0]} -> ${[...after][0]}`;
-            } else {
-              return `{${[...before].join(', ')}} -> {${[...after].join(', ')}}`;
-            }
-          })
-          .map(x => `  - ${x}`)
-          .join('\n');
-
-        return `\n${text}\n`;
-      }
-
       if (correspondence.length > 0) {
-        // TODO Print the metadata, if present, instead of the logical ID.
-        warning(`Some resources have been renamed:${formatCorrespondence(correspondence)}`);
+        const corr = formatCorrespondence(correspondence, deployedResources, stack.template.Resources);
+        warning(`Some resources have been renamed:${corr}`);
 
         await askUserConfirmation(
           concurrency,
