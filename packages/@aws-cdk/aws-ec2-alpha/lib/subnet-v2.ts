@@ -252,7 +252,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
       throw new Error('CIDR block should be within the range of VPC');
-    };
+    }
 
     let overlap: boolean = false;
     let overlapIpv6: boolean = false;
@@ -509,7 +509,6 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
  */
 
 function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): boolean {
-
   let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;
@@ -548,7 +547,6 @@ function validateOverlappingCidrRanges(vpc: IVpcV2, ipv4CidrBlock: string): bool
  * @internal
  */
 function validateOverlappingCidrRangesipv6(vpc: IVpcV2, ipv6CidrBlock: string): boolean {
-
   let allSubnets: ISubnetV2[];
   try {
     allSubnets = vpc.selectSubnets().subnets;

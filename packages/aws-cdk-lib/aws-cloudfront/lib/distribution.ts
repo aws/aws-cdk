@@ -5,7 +5,7 @@ import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generat
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
-import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, getCoreProtectionWAFWebAclProps } from './private/utils';
@@ -718,14 +718,26 @@ export class Distribution extends Resource implements IDistribution {
         this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        this.addOriginGroup(
+          originGroupId,
+          originBindConfig.failoverConfig.statusCodes,
+          originId,
+          failoverOriginId,
+          originBindConfig.selectionCriteria,
+        );
         return originGroupId;
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
-  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(
+    originGroupId: string,
+    statusCodes: number[] | undefined,
+    originId: string,
+    failoverOriginId: string,
+    selectionCriteria: OriginSelectionCriteria | undefined,
+  ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
@@ -745,6 +757,7 @@ export class Distribution extends Resource implements IDistribution {
         ],
         quantity: 2,
       },
+      selectionCriteria,
     });
   }
 
@@ -820,7 +833,6 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderViewerCertificate(certificate: acm.ICertificate,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
-
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;

@@ -21,7 +21,6 @@ describe('Job', () => {
   });
 
   describe('Create new PySpark ETL Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -80,7 +79,6 @@ describe('Job', () => {
   });
 
   describe('Create new PySpark ETL Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJob',
@@ -120,11 +118,9 @@ describe('Job', () => {
         JobRunQueuingEnabled: false,
       });
     });
-
   });
 
   describe('Create new PySpark ETL Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJob',
@@ -145,11 +141,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create PySpark ETL Job with G2 worker type with 2 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -200,7 +194,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark ETL Job with G4 worker type with 4 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -251,7 +244,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark ETL Job with G8 worker type and 8 workers', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -302,7 +294,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for PySpark ETL Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
@@ -355,7 +346,6 @@ describe('Job', () => {
   });
 
   describe('Invalid overrides should cause errors', () => {
-
     test('Invalid SparkUI prefix should throw an error', () => {
       expect(() => {
         sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
@@ -373,11 +363,9 @@ describe('Job', () => {
         });
       }).toThrow('Invalid prefix format (value: prefix)');
     });
-
   });
 
   describe('Create PySpark ETL Job with extraPythonFiles and extraFiles', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -438,7 +426,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJobCustomName',
@@ -552,7 +539,6 @@ describe('Job', () => {
   });
 
   describe('Create PySpark ETL Job with overridden job run queueing', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJobCustomName',
@@ -671,5 +657,4 @@ describe('Job', () => {
       });
     });
   });
-
 });

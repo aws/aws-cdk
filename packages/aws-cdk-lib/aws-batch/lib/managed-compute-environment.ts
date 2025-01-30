@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token } from '../../core';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -1193,10 +1193,14 @@ function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: numb
   if (spotBidPercentage) {
     if (!spot) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
-    } else if (spotBidPercentage > 100) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
-    } else if (spotBidPercentage < 0) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+    }
+
+    if (!Token.isUnresolved(spotBidPercentage)) {
+      if (spotBidPercentage > 100) {
+        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
+      } else if (spotBidPercentage < 0) {
+        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+      }
     }
   }
 
@@ -1208,10 +1212,10 @@ function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: numb
 }
 
 function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
-  if (minvCpus < 0) {
+  if (!Token.isUnresolved(minvCpus) && minvCpus < 0) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`);
   }
-  if (minvCpus > maxvCpus) {
+  if (!Token.isUnresolved(minvCpus) && !Token.isUnresolved(maxvCpus) && minvCpus > maxvCpus) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
   }
 }

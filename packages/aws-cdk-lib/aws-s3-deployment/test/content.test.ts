@@ -153,5 +153,4 @@ test('lazy string which resolves to something with a deploy-time value', () => {
     text: 'hello, resolved!',
     markers: { },
   });
-
 });
