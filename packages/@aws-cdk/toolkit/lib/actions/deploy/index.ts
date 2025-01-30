@@ -175,22 +175,6 @@ export interface BaseDeployOptions {
   readonly concurrency?: number;
 }
 
-/**
- * Deploy options needed by the watch command.
- * Intentionally not exported because these options are not
- * meant to be public facing.
- *
- * @internal
- */
-export interface ExtendedDeployOptions extends DeployOptions {
-  /**
-   * The extra string to append to the User-Agent header when performing AWS SDK calls.
-   *
-   * @default - nothing extra is appended to the User-Agent header
-   */
-  readonly extraUserAgent?: string;
-}
-
 export interface DeployOptions extends BaseDeployOptions {
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events
