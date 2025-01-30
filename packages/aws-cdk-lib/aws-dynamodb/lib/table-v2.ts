@@ -33,6 +33,7 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -555,6 +556,8 @@ export class TableV2 extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
