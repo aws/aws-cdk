@@ -1,0 +1,4 @@
+{
+  "CloudFormation:CreateStack": "arn:aws:iam::597088032010:user/cdk-workshop",
+  "CloudFormation:DescribeStacks": "arn:aws:iam::597088032010:user/cdk-workshop"
+}
