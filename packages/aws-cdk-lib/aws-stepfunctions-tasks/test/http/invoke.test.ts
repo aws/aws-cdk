@@ -1,3 +1,4 @@
+import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -182,5 +183,93 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
       },
       Method: 'GET',
     }, sfn.QueryLanguage.JSONATA);
+  });
+
+  test('When use JSONata expression to only apiEndpoint, then should allow only apiRoot in policy', () => {
+    const task = lib.HttpInvoke.jsonata(stack, 'Task', {
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText("{% 'items/' & $item.id %}"),
+      method: sfn.TaskInput.fromText('GET'),
+      connection,
+    });
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    expectTaskWithParameters(task, {
+      ApiEndpoint: "{% 'https://api.example.com' & '/' & 'items/' & $item.id %}",
+      Authentication: {
+        ConnectionArn: stack.resolve(connection.connectionArn),
+      },
+      Method: 'GET',
+    }, sfn.QueryLanguage.JSONATA);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:RetrieveConnectionCredentials',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Connection07624BCD', 'Arn'] },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Connection07624BCD', 'SecretArn'] },
+          },
+          {
+            Action: 'states:InvokeHTTPEndpoint',
+            Condition: { StringLike: { 'states:HTTPEndpoint': 'https://api.example.com*' } },
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
+
+  test('When use JSONata expression to apiRoot, then should allow all endpoint in policy', () => {
+    const task = lib.HttpInvoke.jsonata(stack, 'Task', {
+      apiRoot: "{% 'https://' & $domain %}",
+      apiEndpoint: sfn.TaskInput.fromText('items/'),
+      method: sfn.TaskInput.fromText('GET'),
+      connection,
+    });
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    expectTaskWithParameters(task, {
+      ApiEndpoint: "{% 'https://' & $domain & '/' & 'items/' %}",
+      Authentication: {
+        ConnectionArn: stack.resolve(connection.connectionArn),
+      },
+      Method: 'GET',
+    }, sfn.QueryLanguage.JSONATA);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:RetrieveConnectionCredentials',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Connection07624BCD', 'Arn'] },
+          },
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Connection07624BCD', 'SecretArn'] },
+          },
+          {
+            Action: 'states:InvokeHTTPEndpoint',
+            Condition: { StringLike: { 'states:HTTPEndpoint': '*' } },
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    });
   });
 });

@@ -188,7 +188,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
         resources: ['*'],
         conditions: {
           StringLike: {
-            'states:HTTPEndpoint': `${this.props.apiRoot}*`,
+            'states:HTTPEndpoint': `${isJsonataExpression(this.props.apiRoot) ? '' : this.props.apiRoot}*`,
           },
         },
       }),
@@ -198,8 +198,9 @@ export class HttpInvoke extends sfn.TaskStateBase {
   private buildTaskParameters() {
     const unJsonata = (v: string) => v.replace(/^{%/, '').replace(/%}$/, '').trim();
     const useJsonata = isJsonataExpression(this.props.apiRoot) || isJsonataExpression(this.props.apiEndpoint.value);
+    const getStringValue = (v: string) => useJsonata && !isJsonataExpression(v) ? `'${v}'` : unJsonata(v);
     const apiEndpoint = useJsonata ?
-      `{% ${unJsonata(this.props.apiRoot)} & '/' & ${unJsonata(this.props.apiEndpoint.value)} %}`
+      `{% ${getStringValue(this.props.apiRoot)} & '/' & ${getStringValue(this.props.apiEndpoint.value)} %}`
       : `${this.props.apiRoot}/${this.props.apiEndpoint.value}`;
     const parameters: TaskParameters = {
       ApiEndpoint: apiEndpoint,
