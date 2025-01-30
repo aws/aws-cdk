@@ -1,5 +1,5 @@
-import { DeployOptions } from '..';
-import { Deployments, WorkGraph } from '../../../api/aws-cdk';
+import { DeployOptions, HotswapProperties } from '..';
+import { Deployments, EcsHotswapProperties, HotswapPropertyOverrides, WorkGraph } from '../../../api/aws-cdk';
 
 export function buildParameterMap(parameters?: Map<string, string | undefined>): { [name: string]: { [name: string]: string | undefined } } {
   const parameterMap: {
@@ -32,4 +32,14 @@ export async function removePublishedAssets(graph: WorkGraph, deployments: Deplo
     roleArn: options.roleArn,
     stackName: assetNode.parentStack.stackName,
   }));
+}
+
+/**
+ * Create the HotswapPropertyOverrides class out of the Interface exposed to users
+ */
+export function createHotswapPropertyOverrides(hotswapProperties: HotswapProperties): HotswapPropertyOverrides {
+  return new HotswapPropertyOverrides(new EcsHotswapProperties(
+    hotswapProperties.ecsHotswapProperties.minimumHealthyPercent,
+    hotswapProperties.ecsHotswapProperties.maximumHealthyPercent,
+  ));
 }

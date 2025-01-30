@@ -5,7 +5,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
 import { AssetBuildTime, DeployOptions, ExtendedDeployOptions, RequireApproval } from '../actions/deploy';
-import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
+import { buildParameterMap, createHotswapPropertyOverrides, removePublishedAssets } from '../actions/deploy/private';
 import { DestroyOptions } from '../actions/destroy';
 import { DiffOptions } from '../actions/diff';
 import { diffRequiresApproval } from '../actions/diff/private';
@@ -360,7 +360,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             rollback,
             hotswap: options.hotswap,
             extraUserAgent: options.extraUserAgent,
-            hotswapPropertyOverrides: options.hotswapProperties,
+            hotswapPropertyOverrides: options.hotswapProperties ? createHotswapPropertyOverrides(options.hotswapProperties) : undefined,
             assetParallelism: options.assetParallelism,
           });
 

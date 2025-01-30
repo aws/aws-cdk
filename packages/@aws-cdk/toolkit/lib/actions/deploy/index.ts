@@ -1,4 +1,4 @@
-import { StackActivityProgress, HotswapPropertyOverrides } from '../../api/aws-cdk';
+import { StackActivityProgress } from '../../api/aws-cdk';
 import type { StackSelector } from '../../api/cloud-assembly';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
@@ -267,5 +267,32 @@ export interface DeployOptions extends BaseDeployOptions {
    *
    * @default - no overrides
    */
-  readonly hotswapProperties?: HotswapPropertyOverrides;
+  readonly hotswapProperties?: HotswapProperties;
+}
+
+/**
+ * Property overrides for ECS hotswaps
+ */
+export interface EcsHotswapProperties {
+  /**
+   * The lower limit on the number of your service's tasks that must remain
+   * in the RUNNING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly minimumHealthyPercent: number;
+
+  /**
+   * The upper limit on the number of your service's tasks that are allowed
+   * in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly maximumHealthyPercent: number;
+}
+
+/**
+ * Property overrides for hotswap deployments.
+ */
+export interface HotswapProperties {
+  /**
+   * ECS specific hotswap property overrides
+   */
+  readonly ecsHotswapProperties: EcsHotswapProperties;
 }

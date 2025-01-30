@@ -1,5 +1,4 @@
 import { RequireApproval, StackParameters } from '../../lib';
-import { EcsHotswapProperties } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
 
@@ -142,7 +141,10 @@ describe('deploy', () => {
       const cx = await builderFixture(toolkit, 'stack-with-role');
       await toolkit.deploy(cx, {
         hotswapProperties: {
-          ecsHotswapProperties: new EcsHotswapProperties(0, 100),
+          ecsHotswapProperties: {
+            maximumHealthyPercent: 100,
+            minimumHealthyPercent: 0,
+          },
         },
       });
 
