@@ -128,7 +128,11 @@ describe('watch', () => {
     }));
   });
 
-  describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
+  describe.each([
+    [HotswapMode.FALL_BACK, 'on'],
+    [HotswapMode.HOTSWAP_ONLY, 'on'],
+    [HotswapMode.FULL_DEPLOYMENT, 'off'],
+  ])('%p mode', (hotswapMode, userAgent) => {
     test('passes through the correct hotswap mode to deployStack()', async () => {
       // WHEN
       const cx = await builderFixture(toolkit, 'stack-with-role');
@@ -143,9 +147,27 @@ describe('watch', () => {
       // THEN
       expect(deploySpy).toHaveBeenCalledWith(expect.anything(), 'watch', expect.objectContaining({
         hotswap: hotswapMode,
-        extraUserAgent: `cdk-watch/hotswap-${hotswapMode !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
+        extraUserAgent: `cdk-watch/hotswap-${userAgent}`,
       }));
     });
+  });
+
+  test('defaults hotswap to HOTSWAP_ONLY', async () => {
+    // WHEN
+    const cx = await builderFixture(toolkit, 'stack-with-role');
+    ioHost.level = 'warn';
+    await toolkit.watch(cx, {
+      include: [],
+      hotswap: undefined, // force the default
+    });
+
+    await fakeChokidarWatcherOn.readyCallback();
+
+    // THEN
+    expect(deploySpy).toHaveBeenCalledWith(expect.anything(), 'watch', expect.objectContaining({
+      hotswap: HotswapMode.HOTSWAP_ONLY,
+      extraUserAgent: 'cdk-watch/hotswap-on',
+    }));
   });
 });
 
