@@ -674,18 +674,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       analytics.applicationArn &&
         (analytics.applicationId || analytics.externalId || analytics.role)
     ) {
-      throw new Error('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.');
+      throw new ValidationError('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.', this);
     }
 
     if (
       !analytics.applicationArn &&
         (!analytics.applicationId || !analytics.externalId || !analytics.role)
     ) {
-      throw new Error('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+      throw new ValidationError('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.', this);
     }
 
     if (analytics.applicationArn && !Token.isUnresolved(analytics.applicationArn) && !analytics.applicationArn.startsWith('arn:')) {
-      throw new Error(`applicationArn must be start with "arn:"; received ${analytics.applicationArn}`);
+      throw new ValidationError(`applicationArn must be start with "arn:"; received ${analytics.applicationArn}`, this);
     }
 
     return {
@@ -695,6 +695,5 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       roleArn: analytics.role?.roleArn,
       userDataShared: analytics.shareUserData,
     };
-
   }
 }
