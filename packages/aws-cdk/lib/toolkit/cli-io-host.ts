@@ -301,14 +301,14 @@ export class CliIoHost implements IIoHost {
     }
 
     const output = this.formatMessage(msg);
-    const stream = this.stream(msg.level);
+    const stream = this.selectStream(msg.level);
     stream.write(output);
   }
 
   /**
    * Determines the output stream, based on message level and configuration.
    */
-  private stream(level: IoMessageLevel) {
+  private selectStream(level: IoMessageLevel) {
     // The stream selection policy for the CLI is the following:
     //
     //   (1) Messages of level `result` always go to `stdout`
