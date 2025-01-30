@@ -1,4 +1,4 @@
-import { CloudWatchLogEventMonitor, StackActivityProgress } from '../../api/aws-cdk';
+import { StackActivityProgress } from '../../api/aws-cdk';
 import type { StackSelector } from '../../api/cloud-assembly';
 
 export type DeploymentMethod = DirectDeploymentMethod | ChangeSetDeploymentMethod;
