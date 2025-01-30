@@ -162,7 +162,6 @@ export enum VpnConnectionType {
  * @resource AWS::EC2::VPNGateway
  */
 export class VpnGateway extends Resource implements IVpnGateway {
-
   /**
    * The virtual private gateway Id
    */
@@ -210,12 +209,10 @@ export interface VpnConnectionAttributes {
  * Base class for Vpn connections.
  */
 export abstract class VpnConnectionBase extends Resource implements IVpnConnection {
-
   public abstract readonly vpnId: string;
   public abstract readonly customerGatewayId: string;
   public abstract readonly customerGatewayIp: string;
   public abstract readonly customerGatewayAsn: number;
-
 }
 
 /**
@@ -224,23 +221,18 @@ export abstract class VpnConnectionBase extends Resource implements IVpnConnecti
  * @resource AWS::EC2::VPNConnection
  */
 export class VpnConnection extends VpnConnectionBase {
-
   /**
    * Import a VPN connection by supplying all attributes directly
    */
   public static fromVpnConnectionAttributes(scope: Construct, id: string, attrs: VpnConnectionAttributes): IVpnConnection {
-
     class Import extends VpnConnectionBase {
-
       public readonly vpnId: string = attrs.vpnId;
       public readonly customerGatewayId: string = attrs.customerGatewayId;
       public readonly customerGatewayIp: string = attrs.customerGatewayIp;
       public readonly customerGatewayAsn: number = attrs.customerGatewayAsn;
-
     }
 
     return new Import(scope, id);
-
   }
 
   /**

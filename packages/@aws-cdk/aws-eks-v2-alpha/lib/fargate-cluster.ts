@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
-import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
+import { Cluster, ClusterCommonOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 
 /**
  * Configuration props for EKS Fargate.
  */
-export interface FargateClusterProps extends ClusterOptions {
+export interface FargateClusterProps extends ClusterCommonOptions {
   /**
    * Fargate Profile to create along with the cluster.
    *

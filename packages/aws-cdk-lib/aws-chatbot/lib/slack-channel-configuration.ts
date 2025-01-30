@@ -167,7 +167,6 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   /**
    * Adds extra permission to iam-role of Slack channel configuration
-   * @param statement
    */
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     if (!this.role) {
@@ -206,7 +205,6 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
  * A new Slack channel configuration
  */
 export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
-
   /**
    * Import an existing Slack channel configuration provided an ARN
    * @param scope The parent creating construct
@@ -224,7 +222,6 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     }
 
     class Import extends SlackChannelConfigurationBase {
-
       /**
        * @attribute
        */
@@ -328,7 +325,6 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   /**
    * Adds a SNS topic that deliver notifications to AWS Chatbot.
-   * @param notificationTopic
    */
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
     this.notificationTopics.push(notificationTopic);

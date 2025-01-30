@@ -179,7 +179,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     connection: Port,
     fromTo: 'from' | 'to',
     remoteRule?: boolean): RuleScope {
-
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
@@ -434,7 +433,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group.
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
 
@@ -515,8 +514,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
+      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true }),
+      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
       vpcId: props.vpc.vpcId,
     });
 
@@ -552,7 +551,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv4IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllOutbound\' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup');
       }
       return;
@@ -567,7 +566,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // In the case of "allowAllIpv6Outbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
       // rule.
-      if (!remoteRule) { // Warn only if addEgressRule() was explicitely called
+      if (!remoteRule) { // Warn only if addEgressRule() was explicitly called
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:ipv6IgnoreEgressRule', 'Ignoring Egress rule since \'allowAllIpv6Outbound\' is set to true; To add customized rules, set allowAllIpv6Outbound=false on the SecurityGroup');
       }
       return;
@@ -653,7 +652,7 @@ export class SecurityGroup extends SecurityGroupBase {
       const description = this.allowAllOutbound ? ALLOW_ALL_RULE.description : MATCH_NO_TRAFFIC.description;
       super.addEgressRule(peer, port, description, false);
     } else {
-      const rule = this.allowAllOutbound? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
+      const rule = this.allowAllOutbound ? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
       this.directEgressRules.push(rule);
     }
   }
