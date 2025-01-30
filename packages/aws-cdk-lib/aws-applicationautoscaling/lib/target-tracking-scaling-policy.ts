@@ -312,8 +312,8 @@ export enum PredefinedMetric {
   SAGEMAKER_INFERENCE_COMPONENT_CONCURRENT_REQUESTS_PER_COPY_HIGH_RESOLUTION = 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
   /**
    * SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION
-    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
-    */
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION = 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
   /**
    * WORKSPACES_AVERAGE_USER_SESSIONS_CAPACITY_UTILIZATION
