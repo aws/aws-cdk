@@ -1,8 +1,9 @@
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
-import * as version from '../../lib/version';
+import { Context } from '../api/context';
+import { PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../cli/user-configuration';
+import * as version from '../cli/version';
 import { error, warning, info, data } from '../logging';
-import { Context, PROJECT_CONFIG, PROJECT_CONTEXT, USER_DEFAULTS } from '../settings';
 import { ToolkitError } from '../toolkit/error';
 import { renderTable } from '../util';
 

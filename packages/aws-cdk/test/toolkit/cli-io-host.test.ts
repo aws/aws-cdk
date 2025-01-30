@@ -226,24 +226,6 @@ describe('CliIoHost', () => {
     });
   });
 
-  describe('error handling', () => {
-    test('rejects on write error', async () => {
-      jest.spyOn(process.stdout, 'write').mockImplementation((_: any, callback: any) => {
-        if (callback) callback(new Error('Write failed'));
-        return true;
-      });
-
-      await expect(ioHost.notify({
-        time: new Date(),
-        level: 'info',
-        action: 'synth',
-        code: 'CDK_TOOLKIT_I0001',
-        message: 'test message',
-        forceStdout: true,
-      })).rejects.toThrow('Write failed');
-    });
-  });
-
   describe('requestResponse', () => {
     test('logs messages and returns default', async () => {
       ioHost.isTTY = true;

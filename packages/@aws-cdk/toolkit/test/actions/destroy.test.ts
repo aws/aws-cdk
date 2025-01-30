@@ -14,9 +14,6 @@ jest.mock('../../lib/api/aws-cdk', () => {
     ...jest.requireActual('../../lib/api/aws-cdk'),
     Deployments: jest.fn().mockImplementation(() => ({
       destroyStack: mockDestroyStack,
-      // resolveEnvironment: jest.fn().mockResolvedValue({}),
-      // isSingleAssetPublished: jest.fn().mockResolvedValue(true),
-      // readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
     })),
   };
 });

@@ -159,7 +159,6 @@ export class ScalaSparkStreamingJob extends Job {
   }
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-
     validateSparkUiPrefix(sparkUiProps.prefix);
     const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
