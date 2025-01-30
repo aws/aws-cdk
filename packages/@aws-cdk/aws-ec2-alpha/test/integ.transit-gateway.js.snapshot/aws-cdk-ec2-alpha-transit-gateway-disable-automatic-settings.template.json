@@ -85,9 +85,7 @@
    "Type": "AWS::EC2::TransitGateway",
    "Properties": {
     "DefaultRouteTableAssociation": "disable",
-    "DefaultRouteTablePropagation": "disable",
-    "MulticastSupport": "disable",
-    "VpnEcmpSupport": "disable"
+    "DefaultRouteTablePropagation": "disable"
    }
   },
   "TransitGatewayDefaultRouteTable608EC117": {

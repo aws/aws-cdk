@@ -74,8 +74,6 @@ describe('Transit Gateway Route Table', () => {
           Properties: {
             DefaultRouteTableAssociation: 'disable',
             DefaultRouteTablePropagation: 'disable',
-            MulticastSupport: 'disable',
-            VpnEcmpSupport: 'disable',
           },
         },
         TransitGatewayDefaultRouteTable608EC117: {

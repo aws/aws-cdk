@@ -188,40 +188,8 @@ describe('TransitGatewayVpcAttachment', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
     expect(annotations.length).toBe(2);
 
-    Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment',
-      {
-        'Fn::Join': [
-          '',
-          [
-            "'DnsSupport' is enabled for the VPC Attachment ",
-            {
-              'Fn::GetAtt': ['TransitGateway2VpcAttachmentE9A375F9', 'Id'],
-            },
-            ' but disabled on TransitGateway ',
-            {
-              'Fn::GetAtt': ['TransitGateway2338EB7F2', 'Id'],
-            },
-            '. The feature will not work unless DnsSupport is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch]',
-          ],
-        ],
-      });
+    Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment', '\'DnsSupport\' is enabled for the VPC Attachment but disabled on the TransitGateway. The feature will not work unless \'DnsSupport\' is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch]');
 
-    Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment',
-      {
-        'Fn::Join': [
-          '',
-          [
-            "'SecurityGroupReferencingSupport' is enabled for the VPC Attachment ",
-            {
-              'Fn::GetAtt': ['TransitGateway2VpcAttachmentE9A375F9', 'Id'],
-            },
-            ' but disabled on TransitGateway ',
-            {
-              'Fn::GetAtt': ['TransitGateway2338EB7F2', 'Id'],
-            },
-            '. The feature will not work unless SecurityGroupReferencingSupport is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch]',
-          ],
-        ],
-      });
+    Annotations.fromStack(stack).hasWarning('/Default/TransitGateway2/VpcAttachment', '\'SecurityGroupReferencingSupport\' is enabled for the VPC Attachment but disabled on the TransitGateway. The feature will not work unless \'SecurityGroupReferencingSupport\' is enabled on both. [ack: @aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch]');
   });
 });

@@ -10,13 +10,7 @@ import { ITransitGatewayRouteTablePropagation, TransitGatewayRouteTablePropagati
 /**
  * Represents a Transit Gateway Route Table.
  */
-export interface ITransitGatewayRouteTable extends IResource {
-  /**
-   * The ID of the transit gateway route table.
-   * @attribute
-   */
-  readonly routeTableId: string;
-
+export interface ITransitGatewayRouteTable extends IResource, IRouteTable {
   /**
    * Add an active route to this route table.
    *
@@ -67,7 +61,7 @@ export interface TransitGatewayRouteTableProps {
  * A Transit Gateway Route Table.
  * @internal
  */
-abstract class TransitGatewayRouteTableBase extends Resource implements ITransitGatewayRouteTable, IRouteTable {
+abstract class TransitGatewayRouteTableBase extends Resource implements ITransitGatewayRouteTable {
   public abstract readonly routeTableId: string;
   public abstract readonly transitGateway: ITransitGateway;
 

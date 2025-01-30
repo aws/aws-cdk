@@ -55,12 +55,12 @@ export interface ITransitGateway extends cdk.IResource, IRouteTarget {
   readonly defaultRouteTablePropagation: boolean;
 
   /**
-   * Enable or disable DNS support.
+   * Whether or not DNS support is enabled on the Transit Gateway.
    */
   readonly dnsSupport: boolean;
 
   /**
-   * Enable or disablesecurity group referencing support.
+   * Whether or not security group referencing support is enabled on the Transit Gateway.
    */
   readonly securityGroupReferencingSupport: boolean;
 }
@@ -122,7 +122,7 @@ export interface TransitGatewayProps {
   readonly dnsSupport?: boolean;
 
   /**
-   * Enable or disablesecurity group referencing support
+   * Enable or disable security group referencing support
    *
    * If securityGroupReferencingSupport is enabled on a VPC Attachment, this also needs to be enabled for the feature to work.
    * Otherwise the resources will still deploy but the feature will not work.
@@ -237,9 +237,6 @@ export class TransitGateway extends TransitGatewayBase {
       defaultRouteTablePropagation: TransitGatewayFeatureStatus.DISABLE,
       description: props.description,
       dnsSupport: getFeatureStatus(props.dnsSupport),
-      // Currently only VPC to Transit Gateway attachments are supported so both of these are disabled.
-      multicastSupport: TransitGatewayFeatureStatus.DISABLE,
-      vpnEcmpSupport: TransitGatewayFeatureStatus.DISABLE,
     });
 
     this.node.defaultChild = this.resource;

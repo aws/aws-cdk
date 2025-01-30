@@ -149,11 +149,11 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
     this.subnets = props.subnets;
 
     if (props.vpcAttachmentOptions?.dnsSupport && !props.transitGateway.dnsSupport) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch', `\'DnsSupport\' is enabled for the VPC Attachment ${this.transitGatewayAttachmentId} but disabled on TransitGateway ${props.transitGateway.transitGatewayId}. The feature will not work unless DnsSupport is enabled on both.`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewayDnsSupportMismatch', '\'DnsSupport\' is enabled for the VPC Attachment but disabled on the TransitGateway. The feature will not work unless \'DnsSupport\' is enabled on both.');
     }
 
     if (props.vpcAttachmentOptions?.securityGroupReferencingSupport && !props.transitGateway.securityGroupReferencingSupport) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch', `\'SecurityGroupReferencingSupport\' is enabled for the VPC Attachment ${this.transitGatewayAttachmentId} but disabled on TransitGateway ${props.transitGateway.transitGatewayId}. The feature will not work unless SecurityGroupReferencingSupport is enabled on both.`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:transitGatewaySecurityGroupReferencingSupportMismatch', '\'SecurityGroupReferencingSupport\' is enabled for the VPC Attachment but disabled on the TransitGateway. The feature will not work unless \'SecurityGroupReferencingSupport\' is enabled on both.');
     }
 
     if (props.transitGateway.defaultRouteTableAssociation) {

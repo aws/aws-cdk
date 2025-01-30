@@ -179,9 +179,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::TransitGateway",
                   "aws:cdk:cloudformation:props": {
                     "defaultRouteTableAssociation": "disable",
-                    "defaultRouteTablePropagation": "disable",
-                    "multicastSupport": "disable",
-                    "vpnEcmpSupport": "disable"
+                    "defaultRouteTablePropagation": "disable"
                   }
                 },
                 "constructInfo": {
