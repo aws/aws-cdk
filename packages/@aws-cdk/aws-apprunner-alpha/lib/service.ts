@@ -73,7 +73,7 @@ export class Cpu {
     );
     if (!isValidValue) {
       throw new Error('CPU value is invalid');
-    };
+    }
 
     return new Cpu(unit);
   }
@@ -150,7 +150,7 @@ export class Memory {
     );
     if (!isValidValue) {
       throw new Error('Memory value is invalid');
-    };
+    }
 
     return new Memory(unit);
   }
@@ -166,7 +166,6 @@ export class Memory {
  * The code runtimes
  */
 export class Runtime {
-
   /**
    * CORRETTO 8
    */
@@ -1103,6 +1102,7 @@ export interface IService extends cdk.IResource {
 
   /**
    * The ARN of the service.
+   * @attribute
    */
   readonly serviceArn: string;
 }
@@ -1178,7 +1178,7 @@ export abstract class Secret {
 /**
  * The App Runner Service.
  */
-export class Service extends cdk.Resource implements iam.IGrantable {
+export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * Import from service name.
    */
@@ -1294,7 +1294,6 @@ export class Service extends cdk.Resource implements iam.IGrantable {
     }
 
     if (props.serviceName !== undefined && !cdk.Token.isUnresolved(props.serviceName)) {
-
       if (props.serviceName.length < 4 || props.serviceName.length > 40) {
         throw new Error(
           `\`serviceName\` must be between 4 and 40 characters, got: ${props.serviceName.length} characters.`,

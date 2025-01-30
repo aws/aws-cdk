@@ -139,11 +139,11 @@ export class PrefixList extends PrefixListBase {
     if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {
         throw new Error('The name cannot start with \'com.amazonaws.\'');
-      };
+      }
       if (props.prefixListName.length > 255 ) {
         throw new Error('Lengths exceeding 255 characters cannot be set.');
-      };
-    };
+      }
+    }
 
     this.prefixListName = this.physicalName;
 

@@ -35,7 +35,6 @@ NQIDAQAB
 -----END PUBLIC KEY-----`;
 
 describe('web distribution', () => {
-
   testDeprecated('distribution with custom origin adds custom origin', () => {
     const stack = new cdk.Stack();
 
@@ -126,7 +125,6 @@ describe('web distribution', () => {
         },
       },
     );
-
   });
 
   test('most basic distribution', () => {
@@ -282,7 +280,6 @@ describe('web distribution', () => {
         },
       },
     });
-
   });
 
   test('ensure long comments will not break the distribution', () => {
@@ -354,7 +351,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('distribution with bucket and OAI', () => {
@@ -406,7 +402,6 @@ added the ellipsis so a user would know there was more to r...`,
         }],
       },
     });
-
   });
 
   testDeprecated('distribution with trusted signers on default distribution', () => {
@@ -524,7 +519,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('distribution with ViewerProtocolPolicy set to a non-default value', () => {
@@ -602,7 +596,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('distribution with ViewerProtocolPolicy overridden in Behavior', () => {
@@ -783,7 +776,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('distribution with CloudFront function-association', () => {
@@ -828,7 +820,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('distribution with resolvable lambda-association', () => {
@@ -876,7 +867,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   test('associate a lambda with removable env vars', () => {
@@ -913,7 +903,6 @@ added the ellipsis so a user would know there was more to r...`,
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Environment: Match.absent(),
     });
-
   });
 
   test('throws when associating a lambda with incompatible env vars', () => {
@@ -950,7 +939,6 @@ added the ellipsis so a user would know there was more to r...`,
     });
 
     expect(() => app.synth()).toThrow(/KEY/);
-
   });
 
   test('throws when associating a lambda with includeBody and a response event type', () => {
@@ -981,7 +969,6 @@ added the ellipsis so a user would know there was more to r...`,
         ],
       });
     }).toThrow(/'includeBody' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types./);
-
   });
 
   test('distribution has a defaultChild', () => {
@@ -1000,7 +987,6 @@ added the ellipsis so a user would know there was more to r...`,
     });
 
     expect(distribution.node.defaultChild instanceof CfnDistribution).toEqual(true);
-
   });
 
   testDeprecated('allows multiple aliasConfiguration CloudFrontWebDistribution per stack', () => {
@@ -1040,7 +1026,6 @@ added the ellipsis so a user would know there was more to r...`,
         },
       },
     });
-
   });
 
   describe('viewerCertificate', () => {
@@ -1072,7 +1057,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
       test('imported certificate fromCertificateArn', () => {
         const stack = new cdk.Stack();
@@ -1099,7 +1083,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
       test('advanced usage', () => {
         const stack = new cdk.Stack();
@@ -1133,7 +1116,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
     });
     describe('iamCertificate', () => {
@@ -1158,7 +1140,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
       test('advanced usage', () => {
         const stack = new cdk.Stack();
@@ -1186,7 +1167,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
     });
     describe('cloudFrontDefaultCertificate', () => {
@@ -1210,7 +1190,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
       test('aliases are set', () => {
         const stack = new cdk.Stack();
@@ -1232,7 +1211,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
     });
     describe('errors', () => {
@@ -1250,7 +1228,6 @@ added the ellipsis so a user would know there was more to r...`,
             viewerCertificate: ViewerCertificate.fromCloudFrontDefaultCertificate('example.com', 'www.example.com'),
           });
         }).toThrow(/You cannot set both aliasConfiguration and viewerCertificate properties/);
-
       });
       test('throws if invalid security policy for SSL method', () => {
         const stack = new cdk.Stack();
@@ -1268,7 +1245,6 @@ added the ellipsis so a user would know there was more to r...`,
             }),
           });
         }).toThrow(/TLSv1.1_2016 is not compabtible with sslMethod vip./);
-
       });
       // FIXME https://github.com/aws/aws-cdk/issues/4724
       test('does not throw if acmCertificate explicitly not in us-east-1', () => {
@@ -1296,7 +1272,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
     });
   });
@@ -1354,7 +1329,6 @@ added the ellipsis so a user would know there was more to r...`,
         'Version': '2012-10-17',
       },
     });
-
   });
 
   test('edgelambda.amazonaws.com is not added to lambda role for imported functions', () => {
@@ -1384,7 +1358,6 @@ added the ellipsis so a user would know there was more to r...`,
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
-
   });
 
   describe('geo restriction', () => {
@@ -1462,7 +1435,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
       test('denylist', () => {
         const stack = new cdk.Stack();
@@ -1537,7 +1509,6 @@ added the ellipsis so a user would know there was more to r...`,
             },
           },
         });
-
       });
     });
     describe('error', () => {
@@ -1549,7 +1520,6 @@ added the ellipsis so a user would know there was more to r...`,
         expect(() => {
           GeoRestriction.denylist();
         }).toThrow(/Should provide at least 1 location/);
-
       });
       test('throws if locations format is wrong', () => {
         expect(() => {
@@ -1559,7 +1529,6 @@ added the ellipsis so a user would know there was more to r...`,
         expect(() => {
           GeoRestriction.denylist('us');
         }).toThrow(/Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
-
       });
     });
   });
@@ -1577,7 +1546,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).not.toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('3 = connectionAttempts', () => {
         const stack = new cdk.Stack();
@@ -1590,7 +1558,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).not.toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('connectionTimeout = 1', () => {
         const stack = new cdk.Stack();
@@ -1603,7 +1570,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).not.toThrow(/connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive)./);
-
       });
       test('10 = connectionTimeout', () => {
         const stack = new cdk.Stack();
@@ -1616,7 +1582,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).not.toThrow(/connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive)./);
-
       });
     });
     describe('errors', () => {
@@ -1631,7 +1596,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('connectionAttempts = -1', () => {
         const stack = new cdk.Stack();
@@ -1644,7 +1608,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('connectionAttempts < 1', () => {
         const stack = new cdk.Stack();
@@ -1657,7 +1620,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('3 < connectionAttempts', () => {
         const stack = new cdk.Stack();
@@ -1670,7 +1632,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionAttempts: You can specify 1, 2, or 3 as the number of attempts./);
-
       });
       test('connectionTimeout = 1.1', () => {
         const stack = new cdk.Stack();
@@ -1683,7 +1644,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/must be a whole number of/);
-
       });
       test('connectionTimeout < 1', () => {
         const stack = new cdk.Stack();
@@ -1696,7 +1656,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
-
       });
       test('10 < connectionTimeout', () => {
         const stack = new cdk.Stack();
@@ -1709,7 +1668,6 @@ added the ellipsis so a user would know there was more to r...`,
             }],
           });
         }).toThrow(/connectionTimeout: You can specify a number of seconds between 1 and 10 \(inclusive\)./);
-
       });
     });
   });
@@ -1724,7 +1682,6 @@ added the ellipsis so a user would know there was more to r...`,
     expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
     expect(dist.distributionId).toEqual('012345ABCDEF');
     expect(dist.distributionArn).toEqual(`arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/012345ABCDEF`);
-
   });
 });
 

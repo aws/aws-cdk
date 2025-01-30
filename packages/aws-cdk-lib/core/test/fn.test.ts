@@ -210,7 +210,6 @@ describe('fn', () => {
       expect(stack.resolve(Fn.ref('hello'))).toEqual({
         Ref: 'hello',
       });
-
     });
   });
 
