@@ -32,8 +32,6 @@ Compared to the original EKS module, it has the following major changes:
 Here is the minimal example of defining an AWS EKS cluster
 
 ```ts
-import * as eks from '@aws-cdk/aws-eks-v2-alpha';
-
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_31,
 });
@@ -92,9 +90,10 @@ be created by default. It will only be deployed when `kubectlProviderOptions`
 property is used.**
 
 ```ts
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+
 new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_31,
-  # Using this property will create `Kubectl Handler` as custom resource handler
   kubectlProviderOptions: {
     kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
   }
@@ -303,20 +302,23 @@ To create a `Kubectl Handler`, use `kubectlProviderOptions` when creating the cl
 `kubectlLayer` is the only required property in `kubectlProviderOptions`.
 
 ```ts
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+
 new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_31,
-  # Using this property will create `Kubectl Handler` as custom resource handler
   kubectlProviderOptions: {
     kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
   }
 });
+```
 
 `Kubectl Handler` created along with the cluster will be granted admin permissions to the cluster.
-```
 
 If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
 
 ```ts
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
 // get the serivceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
@@ -336,6 +338,8 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_31,
   kubectlProviderOptions: {
@@ -375,6 +379,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `memory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+
 new eks.Cluster(this, 'MyCluster', {
   kubectlProviderOptions: {
     kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
@@ -835,12 +841,12 @@ You can also compose a few stock `cdk8s+` constructs into your own custom constr
 you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `aws-cdk-lib` like you normally would.
 This is why we used `new cdk8s.App()` as the scope of the chart above.
 
-```ts nofixture
+```ts
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-25';
 
-export interface LoadBalancedWebService {
+interface LoadBalancedWebService {
   readonly port: number;
   readonly image: string;
   readonly replicas: number;
@@ -849,7 +855,7 @@ export interface LoadBalancedWebService {
 const app = new cdk8s.App();
 const chart = new cdk8s.Chart(app, 'my-chart');
 
-export class LoadBalancedWebService extends constructs.Construct {
+class LoadBalancedWebService extends constructs.Construct {
   constructor(scope: constructs.Construct, id: string, props: LoadBalancedWebService) {
     super(scope, id);
 
@@ -950,12 +956,14 @@ that are not defined as part of your CDK app.
 First you will need to import the kubectl provider and cluster created in another stack
 
 ```ts
-const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+
+const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
   serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
   role: handlerRole,
 });
 
-const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
   clusterName: 'cluster',
   kubectlProvider,
 });

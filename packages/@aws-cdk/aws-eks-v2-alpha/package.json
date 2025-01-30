@@ -130,5 +130,11 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
+      "cdk8s-plus-25": "^2.7.0"
+    }
   }
 }
