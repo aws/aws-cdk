@@ -375,35 +375,30 @@ export interface AnalyticsConfiguration {
    * Amazon Cognito publishes events to the Amazon Pinpoint project that `ApplicationArn` declares.
    * You can also configure your application to pass an endpoint ID in the `AnalyticsMetadata` parameter of sign-in operations.
    * The endpoint ID is information about the destination for push notifications.
-   * 
    * @default - no configuration, you need to specify either `applicationArn` or all of `applicationId`, `externalId`, and `role`.
    */
   readonly applicationArn?: string;
 
   /**
    * Your Amazon Pinpoint project ID.
-   * 
    * @default - no configuration, you need to specify either this property along with `externalId` and `role` or `applicationArn`.
    */
   readonly applicationId?: string;
 
   /**
    * The [external ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html) of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint.
-   * 
    * @default - no configuration, you need to specify either this property along with `applicationId` and `role` or `applicationArn`.
    */
   readonly externalId?: string;
 
   /**
    * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
-   * 
    * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `applicationArn`.
    */
   readonly role?: IRole;
 
   /**
    * If `true`, Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
-   * 
    * @default - false
    */
   readonly shareUserData?: boolean;
