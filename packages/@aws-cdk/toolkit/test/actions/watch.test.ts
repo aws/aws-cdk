@@ -128,7 +128,7 @@ describe('watch', () => {
     }));
   });
 
-  test('can specify cloudwatch log monitor', async () => {
+  test('can trace logs', async () => {
     // GIVEN
     const cx = await builderFixture(toolkit, 'stack-with-role');
     ioHost.level = 'debug';
