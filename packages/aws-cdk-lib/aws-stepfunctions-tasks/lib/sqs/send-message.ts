@@ -63,10 +63,8 @@ export interface SqsSendMessageProps extends sfn.TaskStateBaseProps, SqsSendMess
 
 /**
  * A StepFunctions Task to send messages to SQS queue.
- *
  */
 export class SqsSendMessage extends sfn.TaskStateBase {
-
   /**
    * A StepFunctions Task to send messages to SQS queue using JSONPath.
    */

@@ -271,7 +271,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    //For Compatibility with existing behaviour of output path
+    // For Compatibility with existing behaviour of output path
     if (this.modelOutput?.s3OutputUri !== undefined || (!useNewS3UriParamsForTask && this.props.outputPath !== undefined)) {
       policyStatements.push(
         new iam.PolicyStatement({

@@ -153,10 +153,8 @@ export interface SnsPublishProps extends sfn.TaskStateBaseProps, SnsPublishOptio
 
 /**
  * A Step Functions Task to publish messages to SNS topic.
- *
  */
 export class SnsPublish extends sfn.TaskStateBase {
-
   /**
    * A Step Functions Task to publish messages to SNS topic using JSONPath.
    */
