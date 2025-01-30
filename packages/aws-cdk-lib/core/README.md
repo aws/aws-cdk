@@ -1313,6 +1313,14 @@ const stack = new Stack(app, 'StackName', {});
 stack.terminationProtection = true;
 ```
 
+You can also set termination protection via any parent stage and it will be inherit by all child stacks (unless overridden on stack level):
+```ts
+const stage = new Stage(app, 'StageName', {
+  terminationProtection: true,
+});
+const stack = new Stack(stage, 'StackName', {});
+```
+
 By default, termination protection is disabled.
 
 ### Description
