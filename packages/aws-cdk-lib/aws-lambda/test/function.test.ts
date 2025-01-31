@@ -2801,7 +2801,6 @@ describe('function', () => {
   });
 
   describe('filesystem', () => {
-
     test('mount efs filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -4334,10 +4333,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'cn-north-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'cn-northwest-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'eu-central-1': {
         value: 'nodejs20.x',
@@ -4382,10 +4381,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'us-gov-east-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-gov-west-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-iso-east-1': {
         value: 'nodejs18.x',
@@ -4451,7 +4450,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });
@@ -4489,7 +4488,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });

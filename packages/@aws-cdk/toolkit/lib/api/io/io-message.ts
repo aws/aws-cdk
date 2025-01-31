@@ -4,7 +4,7 @@ import { ToolkitAction } from '../../toolkit';
  * The reporting level of the message.
  * All messages are always reported, it's up to the IoHost to decide what to log.
  */
-export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
+export type IoMessageLevel = 'error'| 'result' | 'warn' | 'info' | 'debug' | 'trace';
 
 /**
  * Valid reporting categories for messages.
@@ -89,6 +89,7 @@ const levels = [
   'debug',
   'info',
   'warn',
+  'result',
   'error',
 ] as const;
 

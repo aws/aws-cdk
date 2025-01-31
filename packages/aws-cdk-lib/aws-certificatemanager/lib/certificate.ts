@@ -141,7 +141,7 @@ export class KeyAlgorithm {
      * The name of the algorithm
      */
     public readonly name: string,
-  ) { };
+  ) { }
 }
 
 /**

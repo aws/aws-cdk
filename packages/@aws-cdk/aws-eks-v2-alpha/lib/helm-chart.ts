@@ -36,11 +36,11 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
-  * The chart in the form of an asset.
-  * Either this or `chart` must be specified.
-  *
-  * @default - No chart asset. Implies `chart` is used.
-  */
+   * The chart in the form of an asset.
+   * Either this or `chart` must be specified.
+   *
+   * @default - No chart asset. Implies `chart` is used.
+   */
   readonly chartAsset?: Asset;
 
   /**
@@ -133,7 +133,10 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
+    if (!provider) {
+      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+    }
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
@@ -159,14 +162,13 @@ export class HelmChart extends Construct {
     // default to set atomic as false
     const atomic = props.atomic ?? false;
 
-    this.chartAsset?.grantRead(provider.handlerRole);
+    this.chartAsset?.grantRead(provider.role!);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
         ClusterName: props.cluster.clusterName,
-        RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: this.chart,
         ChartAssetURL: this.chartAsset?.s3ObjectUrl,

@@ -73,11 +73,11 @@ export interface PipeProps {
   readonly filter?: IFilter;
 
   /**
-  * Enrichment step to enhance the data from the source before sending it to the target.
-  *
-  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
-  * @default - no enrichment
-  */
+   * Enrichment step to enhance the data from the source before sending it to the target.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
+   * @default - no enrichment
+   */
   readonly enrichment?: IEnrichment;
 
   /**
@@ -88,12 +88,12 @@ export interface PipeProps {
   readonly target: ITarget;
 
   /**
-  * Name of the pipe in the AWS console
-  *
-  * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
-  *
-  * @default - automatically generated name
-  */
+   * Name of the pipe in the AWS console
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   *
+   * @default - automatically generated name
+   */
   readonly pipeName?: string;
 
   /**
@@ -206,7 +206,6 @@ export class Pipe extends PipeBase {
    * Creates a pipe from the name of a pipe.
    */
   static fromPipeName(scope: Construct, id: string, pipeName: string): IPipe {
-
     return new ImportedPipe(scope, id, pipeName);
   }
 
@@ -215,7 +214,6 @@ export class Pipe extends PipeBase {
   public readonly pipeRole: IRole;
 
   constructor(scope: Construct, id: string, props: PipeProps) {
-
     super(scope, id, { physicalName: props.pipeName });
 
     /**

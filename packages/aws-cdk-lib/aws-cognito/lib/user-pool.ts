@@ -573,7 +573,7 @@ export enum FeaturePlan {
   ESSENTIALS = 'ESSENTIALS',
   /** Plus feature plan */
   PLUS = 'PLUS',
-};
+}
 
 /**
  * Props for the UserPool construct
@@ -937,7 +937,7 @@ export class UserPool extends UserPoolBase {
 
     const userPoolId = arnParts.resourceName;
     // ex) cognito-idp.us-east-1.amazonaws.com/us-east-1_abcdefghi
-    const providerName = `cognito-idp.${arnParts.region}.${Stack.of(scope).urlSuffix}/${userPoolId}`;;
+    const providerName = `cognito-idp.${arnParts.region}.${Stack.of(scope).urlSuffix}/${userPoolId}`;
 
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
@@ -1129,7 +1129,6 @@ export class UserPool extends UserPoolBase {
       default:
         (this.triggers as any)[operation.operationName] = fn.functionArn;
     }
-
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {

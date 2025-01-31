@@ -158,7 +158,6 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
    */
   public static fromSecurityConfigurationName(scope: constructs.Construct, id: string,
     securityConfigurationName: string): ISecurityConfiguration {
-
     class Import extends cdk.Resource implements ISecurityConfiguration {
       public readonly securityConfigurationName = securityConfigurationName;
     }

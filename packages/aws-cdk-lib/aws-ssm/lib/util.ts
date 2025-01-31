@@ -47,7 +47,6 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
     // look for a concrete name as a hint for determining the separator
     const concreteName = !Token.isUnresolved(parameterName) ? parameterName : physicalName;
     if (!concreteName || Token.isUnresolved(concreteName)) {
-
       if (options.simpleName === undefined) {
         throw new ValidationError('Unable to determine ARN separator for SSM parameter since the parameter name is an unresolved token. Use "fromAttributes" and specify "simpleName" explicitly', scope);
       }
@@ -59,7 +58,6 @@ export function arnForParameterName(scope: IConstruct, parameterName: string, op
 
     // if users explicitly specify the separator and it conflicts with the one we need, it's an error.
     if (options.simpleName !== undefined && options.simpleName !== result) {
-
       if (concreteName === AUTOGEN_MARKER) {
         throw new ValidationError('If "parameterName" is not explicitly defined, "simpleName" must be "true" or undefined since auto-generated parameter names always have simple names', scope);
       }

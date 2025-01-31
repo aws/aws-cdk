@@ -705,8 +705,8 @@ export enum InstanceClass {
   D3 = 'd3',
 
   /**
-  * Storage-optimized instances, 3rd generation
-  */
+   * Storage-optimized instances, 3rd generation
+   */
   STORAGE3_ENHANCED_NETWORK = 'storage3-enhanced-network',
 
   /**
