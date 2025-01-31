@@ -1,19 +1,13 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { CfnTransitGatewayRouteTableAssociation } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
+import { ITransitGatewayAssociation, TransitGatewayAssociationBase } from './transit-gateway-association';
 
 /**
  * Represents a Transit Gateway Route Table Association.
  */
-export interface ITransitGatewayRouteTableAssociation extends IResource {
-  /**
-   * The ID of the transit gateway route table association.
-   * @attribute
-   */
-  readonly transitGatewayRouteTableAssociationId: string;
-}
+export interface ITransitGatewayRouteTableAssociation extends ITransitGatewayAssociation {}
 
 /**
  * Common properties for a Transit Gateway Route Table Association.
@@ -38,41 +32,25 @@ export interface TransitGatewayRouteTableAssociationProps {
 }
 
 /**
- * A Transit Gateway Route Table Association.
- * @internal
- */
-abstract class TransitGatewayRouteTableAssociationBase extends Resource implements ITransitGatewayRouteTableAssociation {
-  /**
-   * The ID of the transit gateway route table association.
-   */
-  public abstract readonly transitGatewayRouteTableAssociationId: string;
-}
-
-/**
  * Create a Transit Gateway Route Table Association.
  *
  * @resource AWS::EC2::TransitGatewayRouteTableAssociation
  */
-export class TransitGatewayRouteTableAssociation extends TransitGatewayRouteTableAssociationBase {
+export class TransitGatewayRouteTableAssociation extends TransitGatewayAssociationBase {
   /**
    * The ID of the transit gateway route table association.
    */
-  public readonly transitGatewayRouteTableAssociationId: string;
-
-  /**
-   * The AWS CloudFormation resource representing the Transit Gateway Route Table Association.
-   */
-  public readonly resource: CfnTransitGatewayRouteTableAssociation;
+  public readonly transitGatewayAssociationId: string;
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTableAssociationProps) {
     super(scope, id);
 
-    this.resource = new CfnTransitGatewayRouteTableAssociation(this, id, {
+    const resource = new CfnTransitGatewayRouteTableAssociation(this, id, {
       transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayAttachmentId,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
-    this.node.defaultChild = this.resource;
+    this.node.defaultChild = resource;
 
-    this.transitGatewayRouteTableAssociationId = this.resource.ref;
+    this.transitGatewayAssociationId = resource.ref;
   }
 }

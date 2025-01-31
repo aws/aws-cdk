@@ -110,22 +110,17 @@ export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
   public readonly routeTable: ITransitGatewayRouteTable;
   public readonly destinationCidrBlock: string;
 
-  /**
-   * The AWS CloudFormation resource representing the Transit Gateway Route.
-   */
-  public readonly resource: CfnTransitGatewayRoute;
-
   constructor(scope: Construct, id: string, props: TransitGatewayBlackholeRouteProps) {
     super(scope, id);
 
-    this.resource = new CfnTransitGatewayRoute(this, id, {
+    const resource = new CfnTransitGatewayRoute(this, id, {
       blackhole: true,
       destinationCidrBlock: props.destinationCidrBlock,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
 
-    this.node.defaultChild = this.resource;
-    this.destinationCidrBlock = this.resource.destinationCidrBlock;
+    this.node.defaultChild = resource;
+    this.destinationCidrBlock = resource.destinationCidrBlock;
     this.routeTable = props.transitGatewayRouteTable;
   }
 }

@@ -122,17 +122,17 @@ export interface AttachVpcOptions extends BaseTransitGatewayVpcAttachmentProps {
  */
 export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase implements ITransitGatewayVpcAttachment {
   public readonly transitGatewayAttachmentId: string;
+  private readonly subnets: ISubnet[] = [];
 
   /**
    * The AWS CloudFormation resource representing the Transit Gateway Attachment.
    */
-  public readonly resource: CfnTransitGatewayAttachment;
-  private readonly subnets: ISubnet[] = [];
+  private readonly _resource: CfnTransitGatewayAttachment;
 
   constructor(scope: Construct, id: string, props: TransitGatewayVpcAttachmentProps) {
     super(scope, id);
 
-    this.resource = new CfnTransitGatewayAttachment(this, id, {
+    this._resource = new CfnTransitGatewayAttachment(this, id, {
       subnetIds: props.subnets.map((subnet) => subnet.subnetId),
       transitGatewayId: props.transitGateway.transitGatewayId,
       vpcId: props.vpc.vpcId,
@@ -143,9 +143,9 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
         SecurityGroupReferencingSupport: getFeatureStatus(props.vpcAttachmentOptions?.securityGroupReferencingSupport),
       } : undefined,
     });
-    this.node.defaultChild = this.resource;
+    this.node.defaultChild = this._resource;
 
-    this.transitGatewayAttachmentId = this.resource.attrId;
+    this.transitGatewayAttachmentId = this._resource.attrId;
     this.subnets = props.subnets;
 
     if (props.vpcAttachmentOptions?.dnsSupport && !props.transitGateway.dnsSupport) {
@@ -181,7 +181,7 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
       }
       this.subnets.push(subnet);
     }
-    this.resource.subnetIds = this.subnets.map(subnet => subnet.subnetId);
+    this._resource.subnetIds = this.subnets.map(subnet => subnet.subnetId);
   }
 
   /**
@@ -195,6 +195,6 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
       }
       this.subnets.splice(index, 1);
     }
-    this.resource.subnetIds = this.subnets.map(subnet => subnet.subnetId);
+    this._resource.subnetIds = this.subnets.map(subnet => subnet.subnetId);
   }
 }

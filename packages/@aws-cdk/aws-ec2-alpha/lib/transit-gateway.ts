@@ -220,15 +220,10 @@ export class TransitGateway extends TransitGatewayBase {
   public readonly dnsSupport: boolean;
   public readonly securityGroupReferencingSupport: boolean;
 
-  /**
-   * The AWS CloudFormation resource representing the Transit Gateway.
-   */
-  public readonly resource: CfnTransitGateway;
-
   constructor(scope: Construct, id: string, props: TransitGatewayProps = {}) {
     super(scope, id);
 
-    this.resource = new CfnTransitGateway(this, id, {
+    const resource = new CfnTransitGateway(this, id, {
       amazonSideAsn: props.amazonSideAsn ?? undefined,
       autoAcceptSharedAttachments: getFeatureStatus(props.autoAcceptSharedAttachments),
       // Default Association/Propagation will always be false when creating the L1 to prevent EC2 from creating the default route table.
@@ -241,12 +236,11 @@ export class TransitGateway extends TransitGatewayBase {
       securityGroupReferencingSupport: getFeatureStatus(props.securityGroupReferencingSupport),
     });
 
-    this.node.defaultChild = this.resource;
-
-    this.transitGatewayId = this.resource.attrId;
-    this.routerTargetId = this.resource.attrId;
+    this.node.defaultChild = resource;
+    this.transitGatewayId = resource.attrId;
+    this.routerTargetId = resource.attrId;
     this.routerType = RouterType.TRANSIT_GATEWAY;
-    this.transitGatewayArn = this.resource.attrTransitGatewayArn;
+    this.transitGatewayArn = resource.attrTransitGatewayArn;
     this.dnsSupport = props.dnsSupport ?? true;
     this.securityGroupReferencingSupport = props.securityGroupReferencingSupport ?? false;
 

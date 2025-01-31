@@ -38,41 +38,25 @@ export interface TransitGatewayRouteTablePropagationProps {
 }
 
 /**
- * A Transit Gateway Route Table Propagation.
- * @internal
- */
-abstract class TransitGatewayRouteTablePropagationBase extends Resource implements ITransitGatewayRouteTablePropagation {
-  /**
-   * The ID of the transit gateway route table propagation.
-   */
-  public abstract readonly transitGatewayRouteTablePropagationId: string;
-}
-
-/**
  * Create a Transit Gateway Route Table Propagation.
  *
  * @resource AWS::EC2::TransitGatewayRouteTablePropagation
  */
-export class TransitGatewayRouteTablePropagation extends TransitGatewayRouteTablePropagationBase {
+export class TransitGatewayRouteTablePropagation extends Resource implements ITransitGatewayRouteTablePropagation {
   /**
    * The ID of the transit gateway route table propagation.
    */
   public readonly transitGatewayRouteTablePropagationId: string;
 
-  /**
-   * The AWS CloudFormation resource representing the Transit Gateway Route Table Propagation.
-   */
-  public readonly resource: CfnTransitGatewayRouteTablePropagation;
-
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTablePropagationProps) {
     super(scope, id);
 
-    this.resource = new CfnTransitGatewayRouteTablePropagation(this, id, {
+    const resource = new CfnTransitGatewayRouteTablePropagation(this, id, {
       transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayAttachmentId,
       transitGatewayRouteTableId: props.transitGatewayRouteTable.routeTableId,
     });
-    this.node.defaultChild = this.resource;
+    this.node.defaultChild = resource;
 
-    this.transitGatewayRouteTablePropagationId = this.resource.ref;
+    this.transitGatewayRouteTablePropagationId = resource.ref;
   }
 }
