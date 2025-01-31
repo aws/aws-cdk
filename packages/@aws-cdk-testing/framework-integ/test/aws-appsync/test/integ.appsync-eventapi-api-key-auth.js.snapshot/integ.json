@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-api-key-auth/DefaultTest": {
+      "stacks": [
+        "EventApiApiKeyAuthStack"
+      ],
+      "assertionStack": "appsync-event-api-api-key-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapiapikeyauthDefaultTestDeployAssert83D8BCB4"
+    }
+  }
+}
