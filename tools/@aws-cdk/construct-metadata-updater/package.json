@@ -10,7 +10,7 @@
     "build+test": "npm run build && npm run test",
     "lint": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test",
     "package": "mkdir -p dist/js && mv $(npm pack) dist/js/",
-    "test": "jest --passWithNoTests --updateSnapshot",
+    "test": "jest --passWithNoTests --updateSnapshot --coverage=false",
     "test:watch": "jest --watch",
     "watch": "tsc --build -w tsconfig.json"
   },
