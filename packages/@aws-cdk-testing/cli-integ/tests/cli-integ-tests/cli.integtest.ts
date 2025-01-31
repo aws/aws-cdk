@@ -2835,11 +2835,15 @@ integTest(
 
 integTest('renamed resources require user approval',
   withCompositeFixture([
+    // First deploy a stack
     withCdkApp(async (fixture) => {
       process.env.INTEG_NO_CLEAN = 'true';
 
       await fixture.cdkDeploy('notices');
     }),
+
+    // Then deploy a stack with the same name,
+    // but with a resource name changed.
     withSpecificCdkApp('refactoring', async (fixture) => {
       delete process.env.INTEG_NO_CLEAN;
 

@@ -535,7 +535,7 @@ Since a renaming like this might have happened by accident, the CLI will detect
 such cases just before performing a deployment, and ask for confirmation to go 
 ahead. For example, suppose you have the following construct tree:
 
-```
+```text
 MyStack
 └ MyBucket
   └ Resource 
@@ -548,7 +548,7 @@ and try to deploy it again, to update the stack. Since the logical ID has
 changed (to something like `NewNameEF569C1A`), the CLI will prompt you with 
 the following message: 
 
-```
+```text
 Some resources have been renamed:
   - MyStack/MyBucket/Resource -> MyStack/NewName/Resource
 
@@ -564,7 +564,7 @@ and you rename at least two of them, it's impossible to establish a 1:1
 correspondence as above. So the CLI will display a correspondence between sets 
 of identifiers:
 
-```
+```text
 Some resources have been renamed:
   - {MyStack/MyBucket1/Resource, MyStack/MyBucket2/Resource} -> 
   {MyStack/NewName1/Resource, MyStack/NewName2/Resource}
