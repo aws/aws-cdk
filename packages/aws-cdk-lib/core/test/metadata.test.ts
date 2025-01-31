@@ -45,6 +45,9 @@ describe('redactMetadata', () => {
 jest.mock('../lib/token', () => ({
   Token: {
     isUnresolved: jest.fn(),
+    asString: jest.fn(),
+    asList: jest.fn(),
+    asNumber: jest.fn(),
   },
 }));
 
