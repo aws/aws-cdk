@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/616dcb4adca0395435735b413925e2b0bf5438f24891731f4c263abe5dae7866.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/319feecbdd79b561ade2169ee0a835fdb91b5ecaecd5b259a64e78735ae73be0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,28 +100,28 @@
             "data": "Hello4A628BD4"
           }
         ],
-        "/CallRestApiInteg-ApiStack/StateMachine/Role/Resource": [
+        "/CallRestApiInteg-ApiStack/ExportsWriteruseast10F67B507/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
+            "data": "ExportsWriteruseast10F67B507DDE2E818"
           }
         ],
-        "/CallRestApiInteg-ApiStack/StateMachine/Role/DefaultPolicy/Resource": [
+        "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
-        "/CallRestApiInteg-ApiStack/StateMachine/Resource": [
+        "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
           }
         ],
-        "/CallRestApiInteg-ApiStack/stateMachineArn": [
+        "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "stateMachineArn"
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
           }
         ],
         "/CallRestApiInteg-ApiStack/BootstrapVersion": [
@@ -156,7 +156,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2433e42ae1b4508c1c7fd6e07c37bb4fd69dee68ca495f3a70646d5bf05f9eb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -169,9 +169,58 @@
         }
       },
       "dependencies": [
+        "CallRestApiInteg-ApiStack",
         "CallRestApiInteg-SfnStack.assets"
       ],
       "metadata": {
+        "/CallRestApiInteg-SfnStack/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/Custom::CrossRegionExportReaderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
         "/CallRestApiInteg-SfnStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

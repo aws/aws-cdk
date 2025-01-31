@@ -229,95 +229,105 @@
     "HelloServiceRole1E55EA16"
    ]
   },
-  "StateMachineRoleB840431D": {
+  "ExportsWriteruseast10F67B507DDE2E818": {
+   "Type": "Custom::CrossRegionExportWriter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+      "Arn"
+     ]
+    },
+    "WriterProps": {
+     "region": "us-east-1",
+     "exports": {
+      "/cdk/exports/CallRestApiInteg-SfnStack/CallRestApiIntegApiStackuswest2RefMyRestApi2D1F47A94BF96318": {
+       "Ref": "MyRestApi2D1F47A9"
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
      "Statement": [
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "states.amazonaws.com"
+        "Service": "lambda.amazonaws.com"
        }
       }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "StateMachineRoleDefaultPolicyDF1E6607": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "execute-api:Invoke",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:aws:execute-api:us-west-2:",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":",
-          {
-           "Ref": "MyRestApi2D1F47A9"
-          },
-          "/prod/GET/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
+     ]
     },
-    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
-    "Roles": [
+    "ManagedPolicyArns": [
      {
-      "Ref": "StateMachineRoleB840431D"
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-east-1:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
+           ]
+          }
+         ],
+         "Action": [
+          "ssm:DeleteParameters",
+          "ssm:ListTagsForResource",
+          "ssm:GetParameters",
+          "ssm:PutParameter"
+         ]
+        }
+       ]
+      }
      }
     ]
    }
   },
-  "StateMachine2E01A3A5": {
-   "Type": "AWS::StepFunctions::StateMachine",
+  "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A": {
+   "Type": "AWS::Lambda::Function",
    "Properties": {
-    "DefinitionString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"StartAt\":\"Call APIGW\",\"States\":{\"Call APIGW\":{\"End\":true,\"Type\":\"Task\",\"OutputPath\":\"$.ResponseBody\",\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::apigateway:invoke\",\"Parameters\":{\"ApiEndpoint\":\"",
-       {
-        "Ref": "MyRestApi2D1F47A9"
-       },
-       ".execute-api.us-west-2.",
-       {
-        "Ref": "AWS::URLSuffix"
-       },
-       "\",\"Method\":\"GET\",\"Stage\":\"prod\",\"AuthType\":\"IAM_ROLE\"}}},\"TimeoutSeconds\":30}"
-      ]
-     ]
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
+     },
+     "S3Key": "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b.zip"
     },
-    "RoleArn": {
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
      "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
+      "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1",
       "Arn"
      ]
-    }
+    },
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
-    "StateMachineRoleDefaultPolicyDF1E6607",
-    "StateMachineRoleB840431D"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+    "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+   ]
   }
  },
  "Outputs": {
@@ -341,11 +351,6 @@
       "/"
      ]
     ]
-   }
-  },
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
    }
   }
  },

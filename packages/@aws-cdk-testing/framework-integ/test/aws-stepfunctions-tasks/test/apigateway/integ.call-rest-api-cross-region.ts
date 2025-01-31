@@ -24,6 +24,7 @@ const sfnStack = new cdk.Stack(app, 'CallRestApiInteg-SfnStack', {
   env: {
     region: 'us-east-1',
   },
+  crossRegionReferences: true,
 });
 const restApi = new apigateway.RestApi(apiStack, 'MyRestApi', { cloudWatchRole: true });
 
@@ -34,8 +35,9 @@ const hello = new apigateway.LambdaIntegration(new lambda.Function(apiStack, 'He
 }));
 restApi.root.addMethod('ANY', hello);
 
+const importedRestApi = apigateway.RestApi.fromRestApiId(sfnStack, 'CrossStackReferenceToApi', restApi.restApiId);
 const callEndpointJob = new CallApiGatewayRestApiEndpoint(sfnStack, 'Call APIGW', {
-  api: restApi,
+  api: importedRestApi,
   stageName: 'prod',
   method: HttpMethod.GET,
   authType: AuthType.IAM_ROLE,
@@ -44,12 +46,12 @@ const callEndpointJob = new CallApiGatewayRestApiEndpoint(sfnStack, 'Call APIGW'
 
 const chain = sfn.Chain.start(callEndpointJob);
 
-const sm = new sfn.StateMachine(apiStack, 'StateMachine', {
+const sm = new sfn.StateMachine(sfnStack, 'StateMachine', {
   definition: chain,
   timeout: cdk.Duration.seconds(30),
 });
 
-new cdk.CfnOutput(apiStack, 'stateMachineArn', {
+new cdk.CfnOutput(sfnStack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
 
