@@ -7,7 +7,7 @@ import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvi
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = KubernetesVersion.V1_16;
+const CLUSTER_VERSION = KubernetesVersion.V1_31;
 
 describe('k8s manifest', () => {
   test('basic usage', () => {

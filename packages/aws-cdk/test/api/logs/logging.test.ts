@@ -1,4 +1,4 @@
-import { data, success, highlight, error, warning, info, debug, trace } from '../../../lib/logging';
+import { result, success, highlight, error, warning, info, debug, trace } from '../../../lib/logging';
 import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 
 describe('logging', () => {
@@ -34,13 +34,13 @@ describe('logging', () => {
   });
 
   describe('stream selection', () => {
-    test('data() always writes to stdout with both styles', () => {
+    test('result() always writes to stdout with both styles', () => {
       // String style
-      data('test message');
+      result('test message');
       expect(mockStdout).toHaveBeenCalledWith('test message\n');
 
       // Object style
-      data({ message: 'test message 2' });
+      result({ message: 'test message 2' });
       expect(mockStdout).toHaveBeenCalledWith('test message 2\n');
       expect(mockStderr).not.toHaveBeenCalled();
     });
