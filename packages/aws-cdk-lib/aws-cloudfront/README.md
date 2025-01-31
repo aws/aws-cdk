@@ -1222,7 +1222,7 @@ See:
 
 ### WAF security protections
 
-Enable [WAF default one-click security protection](https://aws.amazon.com/about-aws/whats-new/2023/05/amazon-cloudfront-one-click-security-protections/)
+Enable [WAF security protection](https://aws.amazon.com/about-aws/whats-new/2023/05/amazon-cloudfront-one-click-security-protections/)
 
 ```ts
 declare const sourceBucket: s3.Bucket;

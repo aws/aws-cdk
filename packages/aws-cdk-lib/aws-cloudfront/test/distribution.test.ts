@@ -1382,7 +1382,7 @@ describe('Distribution metrics tests', () => {
 });
 
 describe('WAF protection', () => {
-  test('default one-click security rendered correctly', () => {
+  test('core security settings rendered correctly', () => {
     const origin = defaultOrigin();
     const nameMatcher = Match.stringLikeRegexp('CreatedByCloudFront-');
     stack = new Stack(app, 'UsEast1Stack', {

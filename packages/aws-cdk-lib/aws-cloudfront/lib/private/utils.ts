@@ -15,7 +15,7 @@ export function formatDistributionArn(dist: IDistribution) {
 }
 
 /**
- * Populate recommended one-click security WAF WebACL setting for CloudFront
+ * Recommended security WAF WebACL setting for CloudFront
  *
  * TODO: how to keep this up-to-date
  */

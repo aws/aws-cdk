@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
@@ -95,7 +94,7 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 }
 
 /**
- * One-click security protection config for CloudFront
+ * WAF security protection config for CloudFront
  *
  * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
  * @default - disabled
@@ -637,7 +636,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
-   * Enable WAF one-click security protections.
+   * Enable WAF security protections.
    * This method will add an AWS::WAFv2::WebACL resource to the stack.
    *
    * Can only be used in US East (N. Virginia) Region (us-east-1).
@@ -659,7 +658,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
     }
 
-    const webAclName = `CreatedByCloudFront-${randomUUID()}`;
+    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`;
 
     const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
 
