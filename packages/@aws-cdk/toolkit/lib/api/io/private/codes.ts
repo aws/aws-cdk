@@ -1,20 +1,6 @@
 import { IoMessageCode } from '../io-message';
 
 export const CODES = {
-  // Default codes -- all 0000 codes
-  CDK_TOOLKIT_I0000: 'Default toolkit info code',
-  CDK_TOOLKIT_E0000: 'Default toolkit error code',
-  CDK_TOOLKIT_W0000: 'Default toolkit warning code',
-  CDK_SDK_I0000: 'Default sdk info code',
-  CDK_SDK_E0000: 'Default sdk error code',
-  CDK_SDK_WOOOO: 'Default sdk warning code',
-  CDK_ASSETS_I0000: 'Default assets info code',
-  CDK_ASSETS_E0000: 'Default assets error code',
-  CDK_ASSETS_W0000: 'Default assets warning code',
-  CDK_ASSEMBLY_I0000: 'Default assembly info code',
-  CDK_ASSEMBLY_E0000: 'Default assembly error code',
-  CDK_ASSEMBLY_W0000: 'Default assembly warning code',
-
   // Toolkit Info codes
   CDK_TOOLKIT_I0001: 'Display stack data',
   CDK_TOOLKIT_I0002: 'Successfully deployed stacks',
@@ -31,10 +17,10 @@ export const CODES = {
   // Assembly Info codes
   CDK_ASSEMBLY_I0042: 'Writing updated context',
   CDK_ASSEMBLY_I0241: 'Fetching missing context',
-
-  // Assembly Warning codes
-
-  // Assembly Error codes
+  CDK_ASSEMBLY_I1000: 'Cloud assembly output starts',
+  CDK_ASSEMBLY_I1001: 'Output lines emitted by the cloud assembly to stdout',
+  CDK_ASSEMBLY_E1002: 'Output lines emitted by the cloud assembly to stderr',
+  CDK_ASSEMBLY_I1003: 'Cloud assembly output finished',
   CDK_ASSEMBLY_E1111: 'Incompatible CDK CLI version. Upgrade needed.',
 };
 
