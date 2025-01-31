@@ -1,12 +1,12 @@
 import { Construct, IConstruct } from 'constructs';
 import { AWS_CDK_CONSTRUCTOR_PROPS } from './analytics-data-source/classes';
 import { AWS_CDK_ENUMS } from './analytics-data-source/enums';
+import { Annotations } from './annotations';
 import { RESOURCE_SYMBOL, JSII_RUNTIME_SYMBOL } from './constants';
 import { FeatureFlags } from './feature-flags';
 import { Resource } from './resource';
 import { Token } from './token';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { Annotations } from './annotations';
 
 /**
  * Enumeration of metadata types used for tracking analytics in AWS CDK.

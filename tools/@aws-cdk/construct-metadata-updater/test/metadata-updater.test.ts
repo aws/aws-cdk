@@ -340,14 +340,14 @@ describe('PropertyUpdater', () => {
       const mockType = {
         isUnion: () => true,
         getUnionTypes: () => [{
-          getText: () => 'string',
-          isLiteral: () => false,
+          getText: () => 'true',
+          isLiteral: () => true,
           isArray: () => false,
           isClass: () => false,
           isInterface: () => false,
         }, {
           getText: () => 'undefined',
-          isLiteral: () => false,
+          isLiteral: () => true,
           isArray: () => false,
           isClass: () => false,
           isInterface: () => false,
@@ -362,9 +362,11 @@ describe('PropertyUpdater', () => {
       const mockType = {
         isUnion: () => false,
         isArray: () => true,
+        getSymbol: () => false,
         getArrayElementType: () => ({
           getText: () => 'string',
           isUnion: () => false,
+          getSymbol: () => false,
           isLiteral: () => false,
           isArray: () => false,
           isClass: () => false,
@@ -383,7 +385,8 @@ describe('PropertyUpdater', () => {
         isArray: () => false,
         isClass: () => true,
         getSymbol: () => ({
-          getFullyQualifiedName: () => 'TestType'
+          getFullyQualifiedName: () => 'TestType',
+          getDeclarations: () => []
         })
       };
 

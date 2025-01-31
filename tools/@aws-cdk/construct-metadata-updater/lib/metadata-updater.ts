@@ -10,7 +10,6 @@ const DIRECTORIES_TO_SKIP = [
   "decdk",
   "awslint",
   "test",
-  "aws-eks-v2-alpha"
 ];
 
 interface ResourceClass {
