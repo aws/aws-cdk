@@ -43,8 +43,8 @@ export interface IAccessPoint extends core.IResource {
 }
 
 /**
-  * The S3 object lambda access point configuration.
-  */
+ * The S3 object lambda access point configuration.
+ */
 export interface AccessPointProps {
   /**
    * The bucket to which this access point belongs.
@@ -163,9 +163,9 @@ function validateAccessPointName(name: string): void {
 }
 
 /**
-  * An S3 object lambda access point for intercepting and
-  * transforming `GetObject` requests.
-  */
+ * An S3 object lambda access point for intercepting and
+ * transforming `GetObject` requests.
+ */
 export class AccessPoint extends AccessPointBase {
   /**
    * Reference an existing AccessPoint defined outside of the CDK code.

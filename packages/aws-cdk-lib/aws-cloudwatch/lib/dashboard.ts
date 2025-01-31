@@ -102,7 +102,7 @@ export class Dashboard extends Resource {
    * The name of this dashboard
    *
    * @attribute
-  */
+   */
   public readonly dashboardName: string;
 
   /**

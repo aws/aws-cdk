@@ -173,22 +173,14 @@ export interface BaseDeployOptions {
    * @default 1
    */
   readonly concurrency?: number;
-}
 
-/**
- * Deploy options needed by the watch command.
- * Intentionally not exported because these options are not
- * meant to be public facing.
- *
- * @internal
- */
-export interface ExtendedDeployOptions extends DeployOptions {
   /**
-   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   * Whether to send logs from all CloudWatch log groups in the template
+   * to the IoHost
    *
-   * @default - nothing extra is appended to the User-Agent header
+   * @default - false
    */
-  readonly extraUserAgent?: string;
+  readonly traceLogs?: boolean;
 }
 
 export interface DeployOptions extends BaseDeployOptions {
@@ -222,14 +214,6 @@ export interface DeployOptions extends BaseDeployOptions {
   readonly outputsFile?: string;
 
   /**
-   * Whether to show logs from all CloudWatch log groups in the template
-   * locally in the users terminal
-   *
-   * @default - false
-   */
-  readonly traceLogs?: boolean;
-
-  /**
    * Build/publish assets for a single stack in parallel
    *
    * Independent of whether stacks are being done in parallel or no.
@@ -260,4 +244,39 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Represents configuration property overrides for hotswap deployments.
+   * Currently only supported by ECS.
+   *
+   * @default - no overrides
+   */
+  readonly hotswapProperties?: HotswapProperties;
+}
+
+/**
+ * Property overrides for ECS hotswaps
+ */
+export interface EcsHotswapProperties {
+  /**
+   * The lower limit on the number of your service's tasks that must remain
+   * in the RUNNING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly minimumHealthyPercent: number;
+
+  /**
+   * The upper limit on the number of your service's tasks that are allowed
+   * in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly maximumHealthyPercent: number;
+}
+
+/**
+ * Property overrides for hotswap deployments.
+ */
+export interface HotswapProperties {
+  /**
+   * ECS specific hotswap property overrides
+   */
+  readonly ecs: EcsHotswapProperties;
 }
