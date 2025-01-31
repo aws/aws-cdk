@@ -6,6 +6,7 @@ import { FeatureFlags } from './feature-flags';
 import { Resource } from './resource';
 import { Token } from './token';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
+import { Annotations } from './annotations';
 
 /**
  * Enumeration of metadata types used for tracking analytics in AWS CDK.
@@ -42,6 +43,7 @@ export function addConstructMetadata(scope: Construct, props: any): void {
      * Without this, it will just fall back to the previous metadata
      * collection strategy.
      */
+    Annotations.of(scope).addWarningV2(`@aws-cdk/core:addConstructMetadataFailed`, `Failed to add construct metadata for node [${scope.node.id}]. Reason: ${e}`);
   }
 }
 
