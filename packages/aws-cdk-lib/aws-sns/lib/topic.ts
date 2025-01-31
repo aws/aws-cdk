@@ -356,6 +356,10 @@ export class Topic extends TopicBase {
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
+
+    if (this.enforceSSL) {
+      this.addSSLPolicy();
+    }
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
