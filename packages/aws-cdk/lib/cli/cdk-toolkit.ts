@@ -371,6 +371,7 @@ export class CdkToolkit {
         warning(`Some resources have been renamed:${correspondence}`);
 
         await askUserConfirmation(
+          this.ioHost,
           concurrency,
           'Some resources have been renamed, which may cause resource replacement',
           'Do you wish to deploy these changes',
