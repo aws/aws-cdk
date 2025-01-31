@@ -43,7 +43,7 @@ export function addConstructMetadata(scope: Construct, props: any): void {
      * Without this, it will just fall back to the previous metadata
      * collection strategy.
      */
-    Annotations.of(scope).addWarningV2(`@aws-cdk/core:addConstructMetadataFailed`, `Failed to add construct metadata for node [${scope.node.id}]. Reason: ${e}`);
+    Annotations.of(scope).addWarningV2('@aws-cdk/core:addConstructMetadataFailed', `Failed to add construct metadata for node [${scope.node.id}]. Reason: ${e}`);
   }
 }
 
