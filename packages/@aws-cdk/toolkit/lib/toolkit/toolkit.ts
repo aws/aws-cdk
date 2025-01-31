@@ -55,10 +55,10 @@ export interface ToolkitOptions {
   emojis?: boolean;
 
   /**
-   * Whether to allow color in IoHost messages. Setting this value
-   * to false ensures that no color or style shows up in messages sent
-   * to the IoHost. Setting this value to true is a no-op; it is equivalent
-   * to the default.
+   * Whether to allow ANSI colors and formatting in IoHost messages.
+   * Setting this value to `falsez enforces that no color or style shows up
+   * in messages sent to the IoHost.
+   * Setting this value to true is a no-op; it is equivalent to the default.
    *
    * @default - detects color from the TTY status of the IoHost
    */
