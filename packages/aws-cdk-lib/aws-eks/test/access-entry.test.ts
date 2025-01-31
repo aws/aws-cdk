@@ -136,5 +136,4 @@ describe('AccessEntry', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
   });
-
 });

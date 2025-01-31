@@ -127,14 +127,14 @@ export interface PoolOptions {
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
   /**
-  * Limits which service in AWS that the pool can be used in.
-  *
-  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
-  *
-  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
-  *
-  * @default - required in case of an IPv6, throws an error if not provided.
-  */
+   * Limits which service in AWS that the pool can be used in.
+   *
+   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+   *
+   * @default - required in case of an IPv6, throws an error if not provided.
+   */
   readonly awsService?: AwsServiceName;
 
   /**
@@ -184,9 +184,9 @@ export interface IpamPoolCidrProvisioningOptions {
  */
 export interface IIpamPool {
   /**
- * Pool ID to be passed to the VPC construct
- * @attribute IpamPoolId
- */
+   * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
+   */
   readonly ipamPoolId: string;
 
   /**
@@ -468,10 +468,10 @@ class IpamScopeBase implements IIpamScopeBase {
  */
 export class Ipam extends Resource {
   /**
- * Provides access to default public IPAM scope through add pool method.
- * Usage: To add an Ipam Pool to a default public scope
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
- */
+   * Provides access to default public IPAM scope through add pool method.
+   * Usage: To add an Ipam Pool to a default public scope
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
+   */
   public readonly publicScope: IIpamScopeBase;
 
   /**
@@ -536,7 +536,6 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-
   }
 
   /**

@@ -144,7 +144,7 @@ export enum LoggingFormat {
 export enum RecursiveLoop {
   /**
    * Allows the recursive loop to happen and does not terminate it.
-  */
+   */
   ALLOW = 'Allow',
   /**
    * Terminates the recursive loop.
@@ -354,11 +354,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-  * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
-  *
-  * @default - No snapstart
-  */
+   * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   *
+   * @default - No snapstart
+   */
   readonly snapStart?: SnapStartConf;
 
   /**
@@ -562,11 +562,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly loggingFormat?: LoggingFormat;
 
   /**
-  * Sets the Recursive Loop Protection for Lambda Function.
-  * It lets Lambda detect and terminate unintended recursive loops.
-  *
-  * @default RecursiveLoop.Terminate
-  */
+   * Sets the Recursive Loop Protection for Lambda Function.
+   * It lets Lambda detect and terminate unintended recursive loops.
+   *
+   * @default RecursiveLoop.Terminate
+   */
   readonly recursiveLoop?: RecursiveLoop;
 
   /**
@@ -1329,7 +1329,6 @@ export class Function extends FunctionBase {
     description?: string,
     provisionedExecutions?: number,
     asyncInvokeConfig: EventInvokeConfigOptions = {}): Version {
-
     return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
@@ -1429,7 +1428,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    * @param props properties for the ADOT instrumentation
    */
   private configureAdotInstrumentation(props: FunctionProps): void {
-
     if (props.adotInstrumentation === undefined) {
       return;
     }

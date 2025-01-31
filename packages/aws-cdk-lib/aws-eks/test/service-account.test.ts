@@ -287,7 +287,6 @@ describe('service account', () => {
         'Pod Identity is not supported in Fargate. Use IRSA identity type instead.',
       );
     });
-
   });
   describe('Service Account with eks.IdentityType.IRSA', () => {
     test('default', () => {

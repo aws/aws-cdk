@@ -136,29 +136,29 @@ export interface EventBridgeSchedulerTargetProps {
   readonly arn: string;
 
   /**
-  * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
-  */
+   * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
+   */
   readonly role: iam.IRole;
 
   /**
-  * The input to the target.
-  *
-  * @default - EventBridge Scheduler delivers a default notification to the target
-  */
+   * The input to the target.
+   *
+   * @default - EventBridge Scheduler delivers a default notification to the target
+   */
   readonly input?: string;
 
   /**
-  * The retry policy settings
-  *
-  * @default - Do not retry
-  */
+   * The retry policy settings
+   *
+   * @default - Do not retry
+   */
   readonly retryPolicy?: RetryPolicy;
 
   /**
-  * Dead letter queue for failed events
-  *
-  * @default - No dead letter queue
-  */
+   * Dead letter queue for failed events
+   *
+   * @default - No dead letter queue
+   */
   readonly deadLetterQueue?: sqs.IQueue;
 }
 

@@ -687,7 +687,6 @@ export class CfnInclude extends core.CfnElement {
     } else if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else if (this.dehydratedResources.includes(logicalId)) {
-
       l1Instance = new core.CfnResource(this, logicalId, {
         type: resourceAttributes.Type,
         properties: resourceAttributes.Properties,

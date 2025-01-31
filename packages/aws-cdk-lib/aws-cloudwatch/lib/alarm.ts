@@ -347,7 +347,6 @@ export class Alarm extends AlarmBase {
               };
             },
             withExpression(expr, conf) {
-
               const hasSubmetrics = mathExprHasSubmetrics(expr);
 
               if (hasSubmetrics) {

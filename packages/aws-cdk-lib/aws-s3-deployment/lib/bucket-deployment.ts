@@ -499,7 +499,6 @@ export class BucketDeployment extends Construct {
      * be set to true on the Bucket.
      */
     cdk.Tags.of(this.destinationBucket).add(tagKey, 'true');
-
   }
 
   /**

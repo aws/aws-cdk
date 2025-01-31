@@ -67,7 +67,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_31,
       })).toThrow(/cannot select multiple subnet groups/);
     });
 
@@ -77,7 +77,7 @@ describe('cluster', () => {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_21,
+        version: eks.KubernetesVersion.V1_31,
       });
 
       // THEN
@@ -443,7 +443,6 @@ describe('cluster', () => {
 
         const resource = new cdk.CfnResource(this, 'resource', { type: 'MyType' });
         new eks.HelmChart(this, `chart-${id}`, { cluster: props.cluster, chart: resource.ref });
-
       }
     }
 
@@ -1059,7 +1058,6 @@ describe('cluster', () => {
       });
 
       describe('spot instances', () => {
-
         test('nodes labeled an tainted accordingly', () => {
           // GIVEN
           const { app, stack } = testFixtureNoVpc();

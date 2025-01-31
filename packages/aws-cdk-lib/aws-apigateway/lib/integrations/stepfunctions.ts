@@ -247,9 +247,6 @@ function integrationResponse() {
 
 /**
  * Defines the request template that will be used for the integration
- * @param stateMachine
- * @param options
- * @returns requestTemplate
  */
 function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
   const templateStr = templateString(stateMachine, options);
@@ -265,11 +262,6 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
 /**
  * Reads the VTL template and returns the template string to be used
  * for the request template.
- *
- * @param stateMachine
- * @param includeRequestContext
- * @param options
- * @reutrns templateString
  */
 function templateString(
   stateMachine: sfn.IStateMachine,

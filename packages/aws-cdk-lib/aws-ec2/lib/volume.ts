@@ -738,7 +738,6 @@ export class Volume extends VolumeBase {
         if (iopsRatio > maximumThroughputRatio) {
           throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
         }
-
       }
     }
 

@@ -110,5 +110,4 @@ describe('S3OriginAccessControl', () => {
 
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
   });
-
 });
