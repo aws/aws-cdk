@@ -439,7 +439,6 @@ test('pass param to training job', () => {
 });
 
 test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {},
@@ -458,11 +457,10 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
     },
   }))
-    .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
+    .toThrow(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });
 
 test('Cannot create a SageMaker train task with both algorithm name and image name defined', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -484,11 +482,10 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
     },
   }))
-    .toThrowError(/Cannot define both an algorithm name and training image URI in the algorithm specification/);
+    .toThrow(/Cannot define both an algorithm name and training image URI in the algorithm specification/);
 });
 
 test('create a SageMaker train task with trainingImage', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -522,7 +519,6 @@ test('create a SageMaker train task with trainingImage', () => {
 });
 
 test('create a SageMaker train task with image URI algorithmName', () => {
-
   const task = new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -555,7 +551,6 @@ test('create a SageMaker train task with image URI algorithmName', () => {
 });
 
 test('Cannot create a SageMaker train task when algorithmName length is 171 or more', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -576,11 +571,10 @@ test('Cannot create a SageMaker train task when algorithmName length is 171 or m
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
     },
   }))
-    .toThrowError(/Algorithm name length must be between 1 and 170, but got 171/);
+    .toThrow(/Algorithm name length must be between 1 and 170, but got 171/);
 });
 
 test('Cannot create a SageMaker train task with incorrect algorithmName', () => {
-
   expect(() => new SageMakerCreateTrainingJob(stack, 'SageMakerTrainingTask', {
     trainingJobName: 'myTrainJob',
     algorithmSpecification: {
@@ -601,5 +595,5 @@ test('Cannot create a SageMaker train task with incorrect algorithmName', () => 
       s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath/'),
     },
   }))
-    .toThrowError(/Expected algorithm name to match pattern/);
+    .toThrow(/Expected algorithm name to match pattern/);
 });

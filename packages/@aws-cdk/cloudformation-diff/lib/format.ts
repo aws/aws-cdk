@@ -106,7 +106,6 @@ export class Formatter {
     entryType: string,
     collection: DifferenceCollection<V, T>,
     formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
-
     if (collection.differenceCount === 0) {
       return;
     }
@@ -160,7 +159,7 @@ export class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`.trimEnd());
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -345,7 +344,6 @@ export class Formatter {
     /**
      * Path is supposed to start with "/stack-name". If this is the case (i.e. path has more than
      * two components, we remove the first part. Otherwise, we just use the full path.
-     * @param p
      */
     function normalizePath(p: string) {
       if (p.startsWith('/')) {

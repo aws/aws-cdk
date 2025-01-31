@@ -186,8 +186,8 @@ export class Alias extends AliasBase {
   public readonly aliasId: string;
 
   /**
-    * The ARN of the alias.
-    */
+   * The ARN of the alias.
+   */
   public readonly aliasArn: string;
 
   /**

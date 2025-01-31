@@ -207,11 +207,15 @@ Resources:
         Status: Enabled
       LifecycleConfiguration:
         Rules:
-          # Exising objects will never be overwritten but Security Hub wants this rule to exist
+          # Objects will only be noncurrent if they are deleted via garbage collection.
           - Id: CleanupOldVersions
             Status: Enabled
             NoncurrentVersionExpiration:
-              NoncurrentDays: 365
+              NoncurrentDays: 30
+          - Id: AbortIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -485,6 +489,8 @@ Resources:
                   - cloudformation:ExecuteChangeSet
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
+                  - cloudformation:RollbackStack
+                  - cloudformation:ContinueUpdateRollback
                 Resource: "*"
               - Sid: PipelineCrossAccountArtifactsBucket
                 # Read/write buckets in different accounts. Permissions to buckets in
@@ -651,7 +657,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '22'
+      Value: '25'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

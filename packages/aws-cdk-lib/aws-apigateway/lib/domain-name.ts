@@ -7,6 +7,7 @@ import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Options for creating an api mapping
@@ -115,7 +116,6 @@ export interface IDomainName extends IResource {
 }
 
 export class DomainName extends Resource implements IDomainName {
-
   /**
    * Imports an existing domain name.
    */
@@ -144,7 +144,7 @@ export class DomainName extends Resource implements IDomainName {
     this.securityPolicy = props.securityPolicy;
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
-      throw new Error(`Domain name does not support uppercase letters. Got: ${props.domainName}`);
+      throw new ValidationError(`Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -182,10 +182,10 @@ export class DomainName extends Resource implements IDomainName {
   private validateBasePath(path?: string): boolean {
     if (this.isMultiLevel(path)) {
       if (this.endpointType === EndpointType.EDGE) {
-        throw new Error('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL');
+        throw new ValidationError('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
       }
       if (this.securityPolicy && this.securityPolicy !== SecurityPolicy.TLS_1_2) {
-        throw new Error('securityPolicy must be set to TLS_1_2 if multi-level basePath is provided');
+        throw new ValidationError('securityPolicy must be set to TLS_1_2 if multi-level basePath is provided', this);
       }
       return true;
     }
@@ -208,10 +208,10 @@ export class DomainName extends Resource implements IDomainName {
    */
   public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
-      throw new Error(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`);
+      throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     if (this.isMultiLevel(options.basePath)) {
-      throw new Error('BasePathMapping does not support multi-level paths. Use "addApiMapping instead.');
+      throw new ValidationError('BasePathMapping does not support multi-level paths. Use "addApiMapping instead.', this);
     }
 
     this.basePaths.add(options.basePath);
@@ -237,7 +237,7 @@ export class DomainName extends Resource implements IDomainName {
    */
   public addApiMapping(targetStage: IStage, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
-      throw new Error(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`);
+      throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     this.validateBasePath(options.basePath);
     this.basePaths.add(options.basePath);

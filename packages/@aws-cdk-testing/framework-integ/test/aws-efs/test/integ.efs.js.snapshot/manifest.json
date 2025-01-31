@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "test-efs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-efs-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5b1ebc6006a2ce28112fae5df0ca689544d5dbbbbdd004fc794310ce2d08695.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f38d63f13d470d5b3ddbf40c819538dea6aefd66655c0fdbfc1d5bc3edf24d17.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -186,7 +187,10 @@
         "/test-efs-integ/FileSystem/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemAccessPointF8178182"
+            "data": "FileSystemAccessPointF8178182",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/test-efs-integ/BootstrapVersion": [
@@ -217,6 +221,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "testefsintegtestDefaultTestDeployAssert7E1529D5.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

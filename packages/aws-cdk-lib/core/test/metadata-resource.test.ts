@@ -110,7 +110,7 @@ describe('MetadataResource', () => {
       const a = App.of(stage)!;
       stackArtifact = a.synth().getNestedAssembly(stage.artifactId).getStackByName(stackName);
     }
-    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;;
+    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
@@ -174,7 +174,6 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
-
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {
@@ -185,12 +184,12 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 class TestConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' };
 }
 
 class TestThirdPartyConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' };
 }
 
 class ValidationPlugin implements IPolicyValidationPluginBeta1 {

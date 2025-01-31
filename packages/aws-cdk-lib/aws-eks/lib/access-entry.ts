@@ -143,7 +143,6 @@ export class AccessPolicyArn {
   constructor(public readonly policyName: string) {
     this.policyArn = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
   }
-
 }
 
 /**
@@ -206,7 +205,7 @@ export class AccessPolicy implements IAccessPolicy {
       public readonly accessScope: AccessScope = {
         type: options.accessScopeType,
         namespaces: options.namespaces,
-      }
+      };
     }
     return new Import();
   }
@@ -240,7 +239,7 @@ export enum AccessEntryType {
   /**
    * Represents a standard access entry.
    */
-  STANDARD = 'Standard',
+  STANDARD = 'STANDARD',
 
   /**
    * Represents a Fargate Linux access entry.
@@ -308,7 +307,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
-
     }
     return new Import(scope, id);
   }

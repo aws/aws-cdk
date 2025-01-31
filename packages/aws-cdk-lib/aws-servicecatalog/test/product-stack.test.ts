@@ -69,6 +69,26 @@ describe('ProductStack', () => {
     expect(assembly.directory).toBe('/tmp/foobar');
   });
 
+  test.each([true, false])('Can enable or disable anlaytics reporting in product stack', (enabled) => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStackAbsolutePath');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new ProductWithAnAsset(mainStack, 'MyProductStackAbsolutePath', {
+      assetBucket: testAssetBucket,
+      analyticsReporting: enabled,
+      description: 'foo bar',
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const stackTemplate = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    Template.fromJSON(stackTemplate).resourceCountIs('AWS::CDK::Metadata', enabled ? 1 : 0);
+    expect(Template.fromJSON(stackTemplate).toJSON().Description).toEqual('foo bar');
+  });
+
   test('Used defined Asset bucket in product stack with nested assets', () => {
     // GIVEN
     const app = new cdk.App(
@@ -103,7 +123,7 @@ describe('ProductStack', () => {
     // WHEN
     app.synth();
 
-    //THEN
+    // THEN
     const template = JSON.parse(fs.readFileSync(path.join(portfolioStage.outdir, templateFileUrl), 'utf-8'));
     Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
       Code: {

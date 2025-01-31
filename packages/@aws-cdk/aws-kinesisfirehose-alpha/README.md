@@ -1,28 +1,28 @@
-# Amazon Kinesis Data Firehose Construct Library
-
+# Amazon Data Firehose Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
 <!--END STABILITY BANNER-->
 
-[Amazon Kinesis Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html)
+
+[Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html), [formerly known as Amazon Kinesis Data Firehose](https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-data-firehose-formerly-kinesis-data-firehose/),
 is a service for fully-managed delivery of real-time streaming data to storage services
 such as Amazon S3, Amazon Redshift, Amazon Elasticsearch, Splunk, or any custom HTTP
 endpoint or third-party services such as Datadog, Dynatrace, LogicMonitor, MongoDB, New
 Relic, and Sumo Logic.
 
-Kinesis Data Firehose delivery streams are distinguished from Kinesis data streams in
+Amazon Data Firehose delivery streams are distinguished from Kinesis data streams in
 their models of consumption. Whereas consumers read from a data stream by actively pulling
 data from the stream, a delivery stream pushes data to its destination on a regular
 cadence. This means that data streams are intended to have consumers that do on-demand
@@ -31,47 +31,47 @@ intended to have destinations that are sources for offline processing and analyt
 as Amazon S3 and Amazon Redshift.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk)
-project. It allows you to define Kinesis Data Firehose delivery streams.
+project. It allows you to define Amazon Data Firehose delivery streams.
 
 ## Defining a Delivery Stream
 
 In order to define a Delivery Stream, you must specify a destination. An S3 bucket can be
-used as a destination. More supported destinations are covered [below](#destinations).
+used as a destination. Currently the CDK supports only S3 as a destination which is covered [below](#destinations).
 
 ```ts
 const bucket = new s3.Bucket(this, 'Bucket');
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [new destinations.S3Bucket(bucket)],
+  destination: new destinations.S3Bucket(bucket),
 });
 ```
 
 The above example defines the following resources:
 
 - An S3 bucket
-- A Kinesis Data Firehose delivery stream with Direct PUT as the source and CloudWatch
+- An Amazon Data Firehose delivery stream with Direct PUT as the source and CloudWatch
   error logging turned on.
 - An IAM role which gives the delivery stream permission to write to the S3 bucket.
 
 ## Sources
 
-There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put".
+An Amazon Data Firehose delivery stream can accept data from three main sources: Kinesis Data Streams, Managed Streaming for Apache Kafka (MSK), or via a "direct put" (API calls). Currently only Kinesis Data Streams and direct put are supported in the CDK. 
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ### Kinesis Data Stream
 
 A delivery stream can read directly from a Kinesis data stream as a consumer of the data
-stream. Configure this behaviour by providing a data stream in the `sourceStream`
-property when constructing a delivery stream:
+stream. Configure this behaviour by passing in a data stream in the `source`
+property via the `KinesisStreamSource` class when constructing a delivery stream:
 
 ```ts
 declare const destination: firehose.IDestination;
 const sourceStream = new kinesis.Stream(this, 'Source Stream');
+
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  sourceStream: sourceStream,
-  destinations: [destination],
+  source: new firehose.KinesisStreamSource(sourceStream),
+  destination: destination,
 });
 ```
 
@@ -81,11 +81,11 @@ Data must be provided via "direct put", ie., by using a `PutRecord` or
 `PutRecordBatch` API call. There are a number of ways of doing so, such as:
 
 - Kinesis Agent: a standalone Java application that monitors and delivers files while
-  handling file rotation, checkpointing, and retries. See: [Writing to Kinesis Data Firehose Using Kinesis Agent](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-agents.html)
-  in the *Kinesis Data Firehose Developer Guide*.
+  handling file rotation, checkpointing, and retries. See: [Writing to Amazon Data Firehose Using Kinesis Agent](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-agents.html)
+  in the *Amazon Data Firehose Developer Guide*.
 - AWS SDK: a general purpose solution that allows you to deliver data to a delivery stream
-  from anywhere using Java, .NET, Node.js, Python, or Ruby. See: [Writing to Kinesis Data Firehose Using the AWS SDK](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-sdk.html)
-  in the *Kinesis Data Firehose Developer Guide*.
+  from anywhere using Java, .NET, Node.js, Python, or Ruby. See: [Writing to Amazon Data Firehose Using the AWS SDK](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-sdk.html)
+  in the *Amazon Data Firehose Developer Guide*.
 - CloudWatch Logs: subscribe to a log group and receive filtered log events directly into
   a delivery stream. See: [logs-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-logs-destinations-readme.html).
 - Eventbridge: add an event rule target to send events to a delivery stream based on the
@@ -96,7 +96,9 @@ Data must be provided via "direct put", ie., by using a `PutRecord` or
 
 ## Destinations
 
-The following destinations are supported. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
+Amazon Data Firehose supports multiple AWS and third-party services as destinations, including Amazon S3, Amazon Redshift, and more. You can find the full list of supported destination [here](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html). 
+
+Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
 for the implementations of these destinations.
 
 ### S3
@@ -108,7 +110,7 @@ declare const bucket: s3.Bucket;
 const s3Destination = new destinations.S3Bucket(bucket);
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
@@ -125,11 +127,11 @@ const s3Destination = new destinations.S3Bucket(bucket, {
 ```
 
 See: [Custom S3 Prefixes](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ## Server-side Encryption
 
-Enabling server-side encryption (SSE) requires Kinesis Data Firehose to encrypt all data
+Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data
 sent to delivery stream when it is stored at rest. This means that data is encrypted
 before being written to the service's internal storage layer and decrypted after it is
 received from the internal storage layer. The service manages keys and cryptographic
@@ -152,39 +154,40 @@ in the *KMS Developer Guide*.
 declare const destination: firehose.IDestination;
 
 // SSE with an AWS-owned key
-new firehose.DeliveryStream(this, 'Delivery Stream AWS Owned', {
+new firehose.DeliveryStream(this, 'Delivery Stream with AWS Owned Key', {
   encryption: firehose.StreamEncryption.awsOwnedKey(),
-  destinations: [destination],
+  destination: destination,
 });
 // SSE with an customer-managed key that is created automatically by the CDK
-new firehose.DeliveryStream(this, 'Delivery Stream Implicit Customer Managed', {
+new firehose.DeliveryStream(this, 'Delivery Stream with Customer Managed Key', {
   encryption: firehose.StreamEncryption.customerManagedKey(),
-  destinations: [destination],
+  destination: destination,
 });
 // SSE with an customer-managed key that is explicitly specified
 declare const key: kms.Key;
-new firehose.DeliveryStream(this, 'Delivery Stream Explicit Customer Managed', {
+new firehose.DeliveryStream(this, 'Delivery Stream with Customer Managed and Provided Key', {
   encryption: firehose.StreamEncryption.customerManagedKey(key),
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
 See: [Data Protection](https://docs.aws.amazon.com/firehose/latest/dev/encryption.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ## Monitoring
 
-Kinesis Data Firehose is integrated with CloudWatch, so you can monitor the performance of
+Amazon Data Firehose is integrated with CloudWatch, so you can monitor the performance of
 your delivery streams via logs and metrics.
 
 ### Logs
 
-Kinesis Data Firehose will send logs to CloudWatch when data transformation or data
+Amazon Data Firehose will send logs to CloudWatch when data transformation or data
 delivery fails. The CDK will enable logging by default and create a CloudWatch LogGroup
-and LogStream for your Delivery Stream.
+and LogStream with default settings for your Delivery Stream.
 
 When creating a destination, you can provide an `ILoggingConfig`, which can either be an `EnableLogging` or `DisableLogging` instance.
-If you use `EnableLogging`, you can specify a log group where the CDK will create log streams to capture and store log events. For example:
+If you use `EnableLogging`, the CDK will create a CloudWatch LogGroup and LogStream with all CloudFormation default settings for you, or you can optionally 
+specify your own log group to be used for capturing and storing log events. For example:
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -196,7 +199,7 @@ const destination = new destinations.S3Bucket(bucket, {
 });
 
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -208,16 +211,16 @@ const destination = new destinations.S3Bucket(bucket, {
   loggingConfig: new destinations.DisableLogging(),
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
 See: [Monitoring using CloudWatch Logs](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-logs.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ### Metrics
 
-Kinesis Data Firehose sends metrics to CloudWatch so that you can collect and analyze the
+Amazon Data Firehose sends metrics to CloudWatch so that you can collect and analyze the
 performance of the delivery stream, including data delivery, data ingestion, data
 transformation, format conversion, API usage, encryption, and resource usage. You can then
 use CloudWatch alarms to alert you, for example, when data freshness (the age of the
@@ -229,7 +232,7 @@ than it is configured to process).
 CDK provides methods for accessing delivery stream metrics with default configuration,
 such as `metricIncomingBytes`, and `metricIncomingRecords` (see [`IDeliveryStream`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-kinesisfirehose.IDeliveryStream.html)
 for a full list). CDK also provides a generic `metric` method that can be used to produce
-metric configurations for any metric provided by Kinesis Data Firehose; the configurations
+metric configurations for any metric provided by Amazon Data Firehose; the configurations
 are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts
@@ -254,7 +257,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 ```
 
 See: [Monitoring Using CloudWatch Metrics](https://docs.aws.amazon.com/firehose/latest/dev/monitoring-with-cloudwatch-metrics.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ## Compression
 
@@ -271,7 +274,7 @@ const s3Destination = new destinations.S3Bucket(bucket, {
   compression: destinations.Compression.SNAPPY,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
@@ -292,14 +295,14 @@ const destination = new destinations.S3Bucket(bucket, {
   bufferingSize: Size.mebibytes(8),
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
 See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
-Zero buffering, where Amazon Kinesis Data Firehose stream can be configured to not buffer data before delivery, is supported by
+Zero buffering, where Amazon Data Firehose stream can be configured to not buffer data before delivery, is supported by
 setting the "buffer interval" to 0.
 
 ```ts
@@ -309,7 +312,7 @@ const destination = new destinations.S3Bucket(bucket, {
   bufferingInterval: Duration.seconds(0),
 });
 new firehose.DeliveryStream(this, 'ZeroBufferDeliveryStream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -318,12 +321,12 @@ See: [Buffering Hints](https://docs.aws.amazon.com/firehose/latest/dev/buffering
 ## Destination Encryption
 
 Your data can be automatically encrypted when it is delivered to S3 as a final or an
-intermediary/backup destination. Kinesis Data Firehose supports Amazon S3 server-side
+intermediary/backup destination. Amazon Data Firehose supports Amazon S3 server-side
 encryption with AWS Key Management Service (AWS KMS) for encrypting delivered data in
 Amazon S3. You can choose to not encrypt the data or to encrypt with a key from the list
 of AWS KMS keys that you own. For more information,
 see [Protecting Data Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html).
-Data is not encrypted by default.
+By default, encryption isn’t directly enabled on the delivery stream; instead, it uses the default encryption settings of the destination S3 bucket.
 
 ```ts
 declare const bucket: s3.Bucket;
@@ -332,7 +335,7 @@ const destination = new destinations.S3Bucket(bucket, {
   encryptionKey: key,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
 });
 ```
 
@@ -350,35 +353,32 @@ backed up to S3.
 // Enable backup of all source records (to an S3 bucket created by CDK).
 declare const bucket: s3.Bucket;
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All', {
-  destinations: [
+  destination:
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         mode: destinations.BackupMode.ALL,
       },
     }),
-  ],
 });
 // Explicitly provide an S3 bucket to which all source records will be backed up.
 declare const backupBucket: s3.Bucket;
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
-  destinations: [
+  destination: 
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         bucket: backupBucket,
       },
     }),
-  ],
 });
 // Explicitly provide an S3 prefix under which all source records will be backed up.
 new firehose.DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
-  destinations: [
+  destination:
     new destinations.S3Bucket(bucket, {
       s3Backup: {
         mode: destinations.BackupMode.ALL,
         dataOutputPrefix: 'mybackup',
       },
     }),
-  ],
 });
 ```
 
@@ -397,7 +397,7 @@ to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
 
-To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
+To transform the data, Amazon Data Firehose will call a Lambda function that you provide
 and deliver the data returned in place of the source record. The function must return a
 result that contains records in a specific format, including the following fields:
 
@@ -431,36 +431,36 @@ const s3Destination = new destinations.S3Bucket(bucket, {
   processor: lambdaProcessor,
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 ```
 
 [Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations-alpha/test/integ.s3-bucket.lit.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ## Specifying an IAM role
 
 The DeliveryStream class automatically creates IAM service roles with all the minimum
-necessary permissions for Kinesis Data Firehose to access the resources referenced by your
-delivery stream. One service role is created for the delivery stream that allows Kinesis
+necessary permissions for Amazon Data Firehose to access the resources referenced by your
+delivery stream. One service role is created for the delivery stream that allows Amazon
 Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
 stream source) and for server-side encryption. Note that if the DeliveryStream is created 
-without specifying `sourceStream` or `encryptionKey`, this role is not created as it is not needed.
+without specifying a `source` or `encryptionKey`, this role is not created as it is not needed.
 
-Another service role is created for each destination, which gives Kinesis Data Firehose write 
+Another service role is created for each destination, which gives Amazon Data Firehose write 
 access to the destination resource, as well as the ability to invoke data transformers and 
 read schemas for record format conversion. If you wish, you may specify your own IAM role for 
 either the delivery stream or the destination service role, or both. It must have the correct 
-trust policy (it must allow Kinesis Data Firehose to assume it) or delivery stream creation or 
+trust policy (it must allow Amazon Data Firehose to assume it) or delivery stream creation or 
 data delivery will fail. Other required permissions to destination resources, encryption keys, etc.,
 will be provided automatically.
 
 ```ts
 // Create service roles for the delivery stream and destination.
 // These can be used for other purposes and granted access to different resources.
-// They must include the Kinesis Data Firehose service principal in their trust policies.
+// They must include the Amazon Data Firehose service principal in their trust policies.
 // Two separate roles are shown below, but the same role can be used for both purposes.
 const deliveryStreamRole = new iam.Role(this, 'Delivery Stream Role', {
   assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
@@ -473,13 +473,13 @@ const destinationRole = new iam.Role(this, 'Destination Role', {
 declare const bucket: s3.Bucket;
 const destination = new destinations.S3Bucket(bucket, { role: destinationRole });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [destination],
+  destination: destination,
   role: deliveryStreamRole,
 });
 ```
 
 See [Controlling Access](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html)
-in the *Kinesis Data Firehose Developer Guide*.
+in the *Amazon Data Firehose Developer Guide*.
 
 ## Granting application access to a delivery stream
 
@@ -512,7 +512,7 @@ The following write permissions are provided to a service principal by the
 
 ## Granting a delivery stream access to a resource
 
-Conversely to the above, Kinesis Data Firehose requires permissions in order for delivery
+Conversely to the above, Amazon Data Firehose requires permissions in order for delivery
 streams to interact with resources that you own. For example, if an S3 bucket is specified
 as a destination of a delivery stream, the delivery stream must be granted permissions to
 put and get objects from the bucket. When using the built-in AWS service destinations
@@ -530,9 +530,3 @@ const fn = new lambda.Function(this, 'Function', {
 declare const deliveryStream: firehose.DeliveryStream;
 fn.grantInvoke(deliveryStream);
 ```
-
-## Multiple destinations
-
-Though the delivery stream allows specifying an array of destinations, only one
-destination per delivery stream is currently allowed. This limitation is enforced at CDK
-synthesis time and will throw an error.

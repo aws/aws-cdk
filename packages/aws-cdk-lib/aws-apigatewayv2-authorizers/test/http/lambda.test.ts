@@ -7,7 +7,6 @@ import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 
 describe('HttpLambdaAuthorizer', () => {
-
   test('default', () => {
     // GIVEN
     const stack = new Stack();
@@ -157,5 +156,48 @@ describe('HttpLambdaAuthorizer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerResultTtlInSeconds: 600,
     });
+  });
+
+  test('should expose authorizer id after authorizer has been bound to route', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    // THEN
+    expect(authorizer.authorizerId).toBeDefined();
+  });
+
+  test('should throw error when acessing authorizer before it been bound to route', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    const t = () => {
+      const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+      const authorizerId = authorizer.authorizerId;
+    };
+
+    // THEN
+    expect(t).toThrow(Error);
   });
 });

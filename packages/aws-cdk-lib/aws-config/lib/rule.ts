@@ -455,7 +455,7 @@ export class CustomRule extends RuleNew {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
         sourceAccount: this.env.account,
       });
-    };
+    }
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
@@ -825,7 +825,7 @@ export class ManagedRuleIdentifiers {
    * greater for viewer connections.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
    */
-  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK'
+  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK';
   /**
    * Checks if Amazon CloudFront distributions are using a custom SSL certificate and are configured
    * to use SNI to serve HTTPS requests.
@@ -1319,9 +1319,9 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
   /**
-    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
-    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
-    */
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+   */
   public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
   /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
@@ -2488,7 +2488,7 @@ export class ResourceType {
   /** AWS IoT mitigation action */
   public static readonly IOT_MITIGATION_ACTION = new ResourceType('AWS::IoT::MitigationAction');
   /** AWS IoT TwinMaker workspace */
-  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTwinMaker::Workspace');
+  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTTwinMaker::Workspace');
   /** AWS IoT TwinMaker entity */
   public static readonly IOT_TWINMAKER_ENTITY = new ResourceType('AWS::IoTTwinMaker::Entity');
   /** AWS IoT Analytics datastore */
@@ -2525,7 +2525,7 @@ export class ResourceType {
   public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
   /** AWS ResilienceHub resiliency policy */
   public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
-  /**AWS Secrets Manager secret */
+  /** AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
   public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType('AWS::ServiceCatalog::CloudFormationProduct');
@@ -2926,7 +2926,6 @@ export class ResourceType {
   private constructor(type: string) {
     this.complianceResourceType = type;
   }
-
 }
 
 function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {

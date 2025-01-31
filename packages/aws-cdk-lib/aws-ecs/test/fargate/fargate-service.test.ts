@@ -791,7 +791,6 @@ describe('fargate service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -881,7 +880,6 @@ describe('fargate service', () => {
       // THEN
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
-
     });
 
     test('errors when no container specified on task definition', () => {
@@ -1343,11 +1341,51 @@ describe('fargate service', () => {
         },
       });
     });
+
+    test('warning if minHealthyPercent not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
   });
 
   describe('when enabling service connect', () => {
     describe('when validating service connect configurations', () => {
-
       let service: ecs.FargateService;
 
       beforeEach(() => {
@@ -1380,7 +1418,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Port Mapping '100' does not exist on the task definition./);
+        }).toThrow(/Port Mapping '100' does not exist on the task definition./);
       });
 
       test('throws an exception when adding multiple services without different discovery names', () => {
@@ -1410,7 +1448,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Cannot create multiple services with the discoveryName 'abc'./);
+        }).toThrow(/Cannot create multiple services with the discoveryName 'abc'./);
       });
 
       test('throws an exception if ingressPortOverride is not valid.', () => {
@@ -1437,7 +1475,7 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/ingressPortOverride 100000 is not valid./);
+        }).toThrow(/ingressPortOverride 100000 is not valid./);
       });
 
       test('throws an exception if Client Alias port is not valid', () => {
@@ -1464,12 +1502,11 @@ describe('fargate service', () => {
         };
         expect(() => {
           service.enableServiceConnect(config);
-        }).toThrowError(/Client Alias port 100000 is not valid./);
+        }).toThrow(/Client Alias port 100000 is not valid./);
       });
     });
 
     describe('when creating a FargateService with service connect', () => {
-
       let service: ecs.FargateService;
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
@@ -3502,6 +3539,7 @@ describe('fargate service', () => {
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
+        minHealthyPercent: 50, // must be set to avoid warning causing test failure
       });
 
       // WHEN
@@ -3903,7 +3941,6 @@ describe('fargate service', () => {
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
     });
 
     test('with serviceArn new format', () => {

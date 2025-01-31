@@ -3,6 +3,7 @@ import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Properties to associate SQS queues with a policy
@@ -51,6 +52,6 @@ export class QueuePolicy extends Resource {
    * @attribute
    */
   public get queuePolicyId(): string {
-    throw new Error('QueuePolicy.queuePolicyId has been removed from CloudFormation');
+    throw new ValidationError('QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
   }
 }

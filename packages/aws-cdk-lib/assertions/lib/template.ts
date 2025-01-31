@@ -17,7 +17,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
@@ -54,7 +53,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+    if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
     }
   }

@@ -11,6 +11,7 @@ import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
@@ -144,7 +145,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
    *
    * For serverless v2 instances this means:
    * - true: The serverless v2 reader will scale to match the writer instance (provisioned or serverless)
-   * - false: The serverless v2 reader will scale with the read workfload on the instance
+   * - false: The serverless v2 reader will scale with the read workload on the instance
    *
    * @default false
    */
@@ -436,9 +437,24 @@ export interface IAuroraClusterInstance extends IResource {
   readonly instanceSize?: string;
 
   /**
-   * Te promotion tier the instance was created in
+   * The promotion tier the instance was created in
    */
   readonly tier: number;
+
+  /**
+   * Whether Performance Insights is enabled
+   */
+  readonly performanceInsightsEnabled?: boolean;
+
+  /**
+   * The amount of time, in days, to retain Performance Insights data.
+   */
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
+
+  /**
+   * The AWS KMS key for encryption of Performance Insights data.
+   */
+  readonly performanceInsightEncryptionKey?: kms.IKey;
 }
 
 class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
@@ -449,6 +465,9 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
   public readonly type: InstanceType;
   public readonly tier: number;
   public readonly instanceSize?: string;
+  public readonly performanceInsightsEnabled: boolean;
+  public readonly performanceInsightRetention?: PerformanceInsightRetention;
+  public readonly performanceInsightEncryptionKey?: kms.IKey;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {
     super(
       scope,
@@ -458,7 +477,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       });
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
-      throw new Error('promotionTier must be between 0-15');
+      throw new ValidationError('promotionTier must be between 0-15', this);
     }
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);
@@ -481,8 +500,14 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
+
+    this.performanceInsightsEnabled = enablePerformanceInsights;
+    this.performanceInsightRetention = enablePerformanceInsights
+      ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
+      : undefined;
+    this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
@@ -511,11 +536,9 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-        enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
-        performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
-        performanceInsightsRetentionPeriod: enablePerformanceInsights
-          ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
-          : undefined,
+        enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
+        performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
+        performanceInsightsRetentionPeriod: this.performanceInsightRetention,
         // only need to supply this when migrating from legacy method.
         // this is not applicable for aurora instances, but if you do provide it and then
         // change it it will cause an instance replacement

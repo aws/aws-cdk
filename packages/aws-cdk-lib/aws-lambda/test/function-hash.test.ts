@@ -13,7 +13,6 @@ const THE_RUNTIME = new lambda.Runtime('nodejs99.x', lambda.RuntimeFamily.NODEJS
 
 describe('function hash', () => {
   describe('trimFromStart', () => {
-
     test('trim not needed', () => {
       expect(trimFromStart('foo', 100)).toEqual('foo');
       expect(trimFromStart('foo', 3)).toEqual('foo');
@@ -525,5 +524,4 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   } else {
     expect(template1.toJSON()).toEqual(template2.toJSON());
   }
-
 });

@@ -23,7 +23,7 @@ describe('S3 destination', () => {
 
   it('provides defaults when no configuration is provided', () => {
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket, { role: destinationRole })],
+      destination: new firehosedestinations.S3Bucket(bucket, { role: destinationRole }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -40,9 +40,8 @@ describe('S3 destination', () => {
   });
 
   it('creates a role when none is provided', () => {
-
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [new firehosedestinations.S3Bucket(bucket)],
+      destination: new firehosedestinations.S3Bucket(bucket),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -74,7 +73,7 @@ describe('S3 destination', () => {
     const destination = new firehosedestinations.S3Bucket(bucket, { role: destinationRole });
 
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [destination],
+      destination: destination,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -111,7 +110,7 @@ describe('S3 destination', () => {
       role: destinationRole, loggingConfig: new firehosedestinations.EnableLogging(logGroup),
     });
     new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destinations: [destination],
+      destination: destination,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -157,7 +156,7 @@ describe('S3 destination', () => {
   describe('logging', () => {
     it('creates resources and configuration by default', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket)],
+        destination: new firehosedestinations.S3Bucket(bucket),
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
@@ -173,7 +172,7 @@ describe('S3 destination', () => {
 
     it('does not create resources or configuration if disabled', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.DisableLogging() })],
+        destination: new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.DisableLogging() }),
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
@@ -188,7 +187,7 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.EnableLogging(logGroup) })],
+        destination: new firehosedestinations.S3Bucket(bucket, { loggingConfig: new firehosedestinations.EnableLogging(logGroup) }),
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
@@ -206,9 +205,9 @@ describe('S3 destination', () => {
       const logGroup = new logs.LogGroup(stack, 'Log Group');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           loggingConfig: new firehosedestinations.EnableLogging(logGroup), role: destinationRole,
-        })],
+        }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -249,7 +248,7 @@ describe('S3 destination', () => {
 
     it('creates configuration for LambdaFunctionProcessor', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destinationWithBasicLambdaProcessor],
+        destination: destinationWithBasicLambdaProcessor,
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
@@ -286,7 +285,7 @@ describe('S3 destination', () => {
         processor: processor,
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
@@ -326,7 +325,7 @@ describe('S3 destination', () => {
 
     it('grants invoke access to the lambda function and delivery stream depends on grant', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destinationWithBasicLambdaProcessor],
+        destination: destinationWithBasicLambdaProcessor,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -357,7 +356,7 @@ describe('S3 destination', () => {
         compression: firehosedestinations.Compression.GZIP,
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -372,7 +371,7 @@ describe('S3 destination', () => {
         compression: firehosedestinations.Compression.of('SNAZZY'),
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -386,10 +385,10 @@ describe('S3 destination', () => {
   describe('buffering', () => {
     it('creates configuration when interval and size provided', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(1),
-        })],
+        }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -404,28 +403,28 @@ describe('S3 destination', () => {
 
     it('validates bufferingInterval', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
-        })],
-      })).toThrowError('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+        }),
+      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(0),
 
-        })],
-      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+        }),
+      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
-        })],
-      })).toThrowError('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+        }),
+      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
     });
   });
 
@@ -434,10 +433,10 @@ describe('S3 destination', () => {
       const key = new kms.Key(stack, 'Key');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           encryptionKey: key,
           role: destinationRole,
-        })],
+        }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -455,10 +454,10 @@ describe('S3 destination', () => {
       const key = new kms.Key(stack, 'Key');
 
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
+        destination: new firehosedestinations.S3Bucket(bucket, {
           encryptionKey: key,
           role: destinationRole,
-        })],
+        }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -488,7 +487,7 @@ describe('S3 destination', () => {
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -513,7 +512,7 @@ describe('S3 destination', () => {
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
@@ -536,13 +535,13 @@ describe('S3 destination', () => {
         s3Backup: {
           mode: firehosedestinations.BackupMode.FAILED,
         },
-      })).toThrowError('S3 destinations do not support BackupMode.FAILED');
+      })).toThrow('S3 destinations do not support BackupMode.FAILED');
     });
 
     it('by default does not create resources', () => {
       const destination = new firehosedestinations.S3Bucket(bucket);
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
@@ -572,7 +571,7 @@ describe('S3 destination', () => {
         },
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [destination],
+        destination: destination,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {

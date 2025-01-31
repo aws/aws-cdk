@@ -16,8 +16,8 @@ export class FakeTask extends sfn.TaskStateBase {
   }
 
   /**
-     * @internal
-     */
+   * @internal
+   */
   protected _renderTask(): any {
     return {
       Resource: 'my-resource',

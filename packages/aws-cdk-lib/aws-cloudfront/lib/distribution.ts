@@ -4,7 +4,7 @@ import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generat
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
-import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn } from './private/utils';
@@ -43,6 +43,13 @@ export interface IDistribution extends IResource {
    * @attribute
    */
   readonly distributionId: string;
+
+  /**
+   * The distribution ARN for this distribution.
+   *
+   * @attribute
+   */
+  readonly distributionArn: string;
 
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
@@ -232,32 +239,32 @@ export interface DistributionProps {
   readonly errorResponses?: ErrorResponse[];
 
   /**
-    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
-    *
-    * CloudFront serves your objects only to browsers or devices that support at
-    * least the SSL version that you specify.
-    *
-    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
-    */
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
+   */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 
   /**
-    * The SSL method CloudFront will use for your distribution.
-    *
-    * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
-    * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
-    * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
-    * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
-    *
-    * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
-    *
-    * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
-    * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
-    *
-    * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
-    *
-    * @default SSLMethod.SNI
-    */
+   * The SSL method CloudFront will use for your distribution.
+   *
+   * Server Name Indication (SNI) - is an extension to the TLS computer networking protocol by which a client indicates
+   * which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present
+   * multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites
+   * (or any other service over TLS) to be served by the same IP address without requiring all those sites to use the same certificate.
+   *
+   * CloudFront can use SNI to host multiple distributions on the same IP - which a large majority of clients will support.
+   *
+   * If your clients cannot support SNI however - CloudFront can use dedicated IPs for your distribution - but there is a prorated monthly charge for
+   * using this feature. By default, we use SNI - but you can optionally enable dedicated IPs (VIP).
+   *
+   * See the CloudFront SSL for more details about pricing : https://aws.amazon.com/cloudfront/custom-ssl-domains/
+   *
+   * @default SSLMethod.SNI
+   */
   readonly sslSupportMethod?: SSLMethod;
 
   /**
@@ -274,7 +281,6 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 export class Distribution extends Resource implements IDistribution {
-
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
@@ -291,6 +297,9 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionId = attrs.distributionId;
       }
 
+      public get distributionArn(): string {
+        return formatDistributionArn(this);
+      }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
@@ -312,6 +321,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
+  private webAclId?: string;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -333,6 +343,11 @@ export class Distribution extends Resource implements IDistribution {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
       });
+    }
+
+    if (props.webAclId) {
+      this.validateWebAclId(props.webAclId);
+      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -363,7 +378,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: props.webAclId,
+        webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
 
@@ -381,6 +396,10 @@ export class Distribution extends Resource implements IDistribution {
         },
       });
     }
+  }
+
+  public get distributionArn(): string {
+    return formatDistributionArn(this);
   }
 
   /**
@@ -601,6 +620,30 @@ export class Distribution extends Resource implements IDistribution {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
   }
 
+  /**
+   * Attach WAF WebACL to this CloudFront distribution
+   *
+   * WebACL must be in the us-east-1 region
+   *
+   * @param webAclId The WAF WebACL to associate with this distribution
+   */
+  public attachWebAclId(webAclId: string) {
+    if (this.webAclId) {
+      throw new Error('A WebACL has already been attached to this distribution');
+    }
+    this.validateWebAclId(webAclId);
+    this.webAclId = webAclId;
+  }
+
+  private validateWebAclId(webAclId: string) {
+    if (webAclId.startsWith('arn:')) {
+      const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
+      if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
+        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
+      }
+    }
+  }
+
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
     const ORIGIN_ID_MAX_LENGTH = 128;
 
@@ -629,14 +672,26 @@ export class Distribution extends Resource implements IDistribution {
         this.boundOrigins.push({ origin, originId, distributionId, originGroupId, ...originBindConfig });
 
         const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        this.addOriginGroup(
+          originGroupId,
+          originBindConfig.failoverConfig.statusCodes,
+          originId,
+          failoverOriginId,
+          originBindConfig.selectionCriteria,
+        );
         return originGroupId;
       }
       return originBindConfig.originProperty?.id ?? originId;
     }
   }
 
-  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(
+    originGroupId: string,
+    statusCodes: number[] | undefined,
+    originId: string,
+    failoverOriginId: string,
+    selectionCriteria: OriginSelectionCriteria | undefined,
+  ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
@@ -656,6 +711,7 @@ export class Distribution extends Resource implements IDistribution {
         ],
         quantity: 2,
       },
+      selectionCriteria,
     });
   }
 
@@ -731,7 +787,6 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderViewerCertificate(certificate: acm.ICertificate,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
-
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;

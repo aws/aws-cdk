@@ -13,7 +13,7 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 
 const MAX_INLINE_SIZE = 10000;
@@ -300,7 +300,7 @@ export class Role extends Resource implements IRole {
   }
 
   /**
-    * Return whether the given object is a Role
+   * Return whether the given object is a Role
    */
   public static isRole(x: any) : x is Role {
     return x !== null && typeof(x) === 'object' && IAM_ROLE_SYMBOL in x;
@@ -311,7 +311,7 @@ export class Role extends Resource implements IRole {
    *
    * The imported role is assumed to exist in the same account as the account
    * the scope's containing Stack is being deployed to.
-
+   *
    * @param scope construct scope
    * @param id construct id
    * @param roleName the name of the role to import
@@ -493,7 +493,7 @@ export class Role extends Resource implements IRole {
             this.splitLargePolicy();
           }
         },
-      });
+      }, { priority: AspectPriority.MUTATING });
     }
 
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
@@ -631,6 +631,19 @@ export class Role extends Resource implements IRole {
     return this.immutableRole;
   }
 
+  /**
+   * Skip applyRemovalPolicy if role synthesis is prevented by customizeRoles.
+   * Because in this case, this construct does not have a CfnResource in the tree.
+   * @override
+   * @param policy RemovalPolicy
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy): void {
+    const config = this.getPrecreatedRoleConfig();
+    if (!config.preventSynthesis) {
+      super.applyRemovalPolicy(policy);
+    }
+  }
+
   private validateRole(): string[] {
     const errors = new Array<string>();
     errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
@@ -696,7 +709,6 @@ export class Role extends Resource implements IRole {
   private getPrecreatedRoleConfig(): CustomizeRoleConfig {
     return getPrecreatedRoleConfig(this);
   }
-
 }
 
 /**

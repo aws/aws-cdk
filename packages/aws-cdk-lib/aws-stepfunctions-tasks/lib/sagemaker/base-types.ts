@@ -688,7 +688,6 @@ export interface ContainerDefinitionOptions {
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
  */
 export class ContainerDefinition implements IContainerDefinition {
-
   constructor(private readonly options: ContainerDefinitionOptions) {}
 
   /**
@@ -804,7 +803,7 @@ export class AcceleratorClass {
   /**
    * Custom AcceleratorType
    * @param version - Elastic Inference accelerator generation
-  */
+   */
   public static of(version: string) { return new AcceleratorClass(version); }
   /**
    * @param version - Elastic Inference accelerator generation

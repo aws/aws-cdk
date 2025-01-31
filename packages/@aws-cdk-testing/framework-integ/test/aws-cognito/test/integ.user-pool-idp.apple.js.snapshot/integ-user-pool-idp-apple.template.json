@@ -34,9 +34,6 @@
   "poolclient2623294C": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,7 +54,10 @@
       "Ref": "apple9B5408AC"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
    }
   },
   "pooldomain430FA744": {
@@ -72,14 +72,10 @@
   "apple9B5408AC": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "SignInWithApple",
-    "ProviderType": "SignInWithApple",
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AttributeMapping": {
      "family_name": "lastName",
-     "given_name": "firstName"
+     "given_name": "firstName",
+     "email_verified": "email_verified"
     },
     "ProviderDetails": {
      "client_id": "com.amzn.cdk",
@@ -87,6 +83,11 @@
      "key_id": "CDKKEYCDK1",
      "private_key": "PRIV_KEY_CDK",
      "authorize_scopes": "email name"
+    },
+    "ProviderName": "SignInWithApple",
+    "ProviderType": "SignInWithApple",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
     }
    }
   }

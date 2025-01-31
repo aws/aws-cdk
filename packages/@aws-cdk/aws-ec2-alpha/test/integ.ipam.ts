@@ -20,13 +20,13 @@ import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
+const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-integ-ipam');
 
 const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegion: ['us-west-2'],
+  operatingRegions: ['us-west-2'],
 });
 
-/**Test Ipam Pool Ipv4 */
+/** Test Ipam Pool Ipv4 */
 
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
@@ -70,8 +70,8 @@ new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'us-west-2a',
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  //defined on the basis of allocation done in IPAM console
-  //ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
+  // defined on the basis of allocation done in IPAM console
+  // ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 

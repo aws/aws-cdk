@@ -1,5 +1,155 @@
 {
  "Resources": {
+  "ScheduleWithImportedLambda1C2110DF": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":function:FirstSelfTaggingLambda"
+       ]
+      ]
+     },
+     "Input": "{\"tagValue\":\"importedLambdaTagValue\"}",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 185
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SchedulerRoleForTargeted282bDF60C6B6",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "SchedulerRoleForTargeted282bDF60C6B6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         },
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":scheduler:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":schedule-group/default"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SchedulerRoleForTargeted282bDefaultPolicyC5F8D00B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":lambda:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":function:FirstSelfTaggingLambda"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":lambda:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":function:FirstSelfTaggingLambda:*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SchedulerRoleForTargeted282bDefaultPolicyC5F8D00B",
+    "Roles": [
+     {
+      "Ref": "SchedulerRoleForTargeted282bDF60C6B6"
+     }
+    ]
+   }
+  },
   "MyLambdaServiceRole4539ECB6": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -59,7 +209,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7f6fc8a416807b6be0ca2397479cd45d43dfe989a95bc81708f269e993296d34.zip"
+     "S3Key": "67412d7336becb4f3cc171ba3cf4ad59c7a45c7f2371ad1745ff38de715411f2.zip"
     },
     "Environment": {
      "Variables": {
@@ -79,13 +229,13 @@
          {
           "Ref": "AWS::AccountId"
          },
-         ":function:TestSchedulerLambdaInvokeTarget"
+         ":function:SecondSelfTaggingLambda"
         ]
        ]
       }
      }
     },
-    "FunctionName": "TestSchedulerLambdaInvokeTarget",
+    "FunctionName": "SecondSelfTaggingLambda",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -101,7 +251,7 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "Schedule83A77FD1": {
+  "ScheduleWithSameStackLambda41F66AE8": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
     "FlexibleTimeWindow": {
@@ -117,21 +267,21 @@
        "Arn"
       ]
      },
-     "Input": "\"test\"",
+     "Input": "{\"tagValue\":\"sameStackLambdaTagValue\"}",
      "RetryPolicy": {
       "MaximumEventAgeInSeconds": 86400,
       "MaximumRetryAttempts": 185
      },
      "RoleArn": {
       "Fn::GetAtt": [
-       "SchedulerRoleForTarget1441a743A31888",
+       "SchedulerRoleForTarget637b5173FB8068",
        "Arn"
       ]
      }
     }
    }
   },
-  "SchedulerRoleForTarget1441a743A31888": {
+  "SchedulerRoleForTarget637b5173FB8068": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -142,6 +292,26 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         },
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":scheduler:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":schedule-group/default"
+           ]
+          ]
          }
         }
        },
@@ -155,7 +325,7 @@
     }
    }
   },
-  "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD": {
+  "SchedulerRoleForTarget637b51DefaultPolicyBAF35E02": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -189,15 +359,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+    "PolicyName": "SchedulerRoleForTarget637b51DefaultPolicyBAF35E02",
     "Roles": [
      {
-      "Ref": "SchedulerRoleForTarget1441a743A31888"
+      "Ref": "SchedulerRoleForTarget637b5173FB8068"
      }
     ]
    }
   },
-  "Schedule2750DFBB1": {
+  "ScheduleWithStaticDate9FC69014": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
     "FlexibleTimeWindow": {
@@ -214,29 +384,16 @@
       ]
      },
      "RetryPolicy": {
-      "MaximumEventAgeInSeconds": 86400,
-      "MaximumRetryAttempts": 0
+      "MaximumEventAgeInSeconds": 60,
+      "MaximumRetryAttempts": 1
      },
      "RoleArn": {
       "Fn::GetAtt": [
-       "SchedulerRoleForTarget1441a743A31888",
+       "SchedulerRoleForTarget637b5173FB8068",
        "Arn"
       ]
      }
     }
-   }
-  }
- },
- "Outputs": {
-  "ExportsOutputFnGetAttMyLambdaCCE802FBArn91287F74": {
-   "Value": {
-    "Fn::GetAtt": [
-     "MyLambdaCCE802FB",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "aws-cdk-schedule:ExportsOutputFnGetAttMyLambdaCCE802FBArn91287F74"
    }
   }
  },

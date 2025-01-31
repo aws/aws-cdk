@@ -276,9 +276,7 @@ describe('container definition', () => {
             portMap.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     describe('ServiceConnect class', () => {
@@ -317,7 +315,6 @@ describe('container definition', () => {
           // THEN
           expect(serviceConnect.isServiceConnect()).toEqual(false);
         });
-
       });
 
       describe('validate', () => {
@@ -362,9 +359,7 @@ describe('container definition', () => {
             serviceConnect.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     test('port mapping throws an error when appProtocol is set without name', () => {
@@ -2480,7 +2475,6 @@ describe('container definition', () => {
 
       // THEN
       expect(taskDefinition.defaultContainer).toEqual(container);
-
     });
 
     test('when the props passed in is not an essential container', () => {
@@ -2508,7 +2502,7 @@ describe('container definition', () => {
       const swappinessValues = [-1, 30.5, 101];
       swappinessValues.forEach(swappiness => expect(() =>
         new ecs.LinuxParameters(stack, `LinuxParametersWithSwappiness(${swappiness})`, { swappiness }))
-        .toThrowError(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
+        .toThrow(`swappiness: Must be an integer between 0 and 100; received ${swappiness}.`));
     });
 
     test('with only required properties set, it correctly sets default properties', () => {

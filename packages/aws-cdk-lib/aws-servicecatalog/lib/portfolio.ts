@@ -364,9 +364,9 @@ export class Portfolio extends PortfolioBase {
       visit(c: IConstruct) {
         if (c.node.id === portfolioNodeId) {
           (c as Portfolio).addBucketPermissionsToSharedAccounts();
-        };
+        }
       },
-    });
+    }, { priority: cdk.AspectPriority.MUTATING });
   }
 
   protected generateUniqueHash(value: string): string {

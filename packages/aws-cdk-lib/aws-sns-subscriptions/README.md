@@ -44,6 +44,35 @@ const url = new CfnParameter(this, 'url-param');
 myTopic.addSubscription(new subscriptions.UrlSubscription(url.valueAsString));
 ```
 
+The [delivery policy](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) can also be set like so:
+
+```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
+
+myTopic.addSubscription(
+  new subscriptions.UrlSubscription(
+    'https://foobar.com/',
+    {
+      deliveryPolicy: {
+        healthyRetryPolicy: {
+          minDelayTarget: Duration.seconds(5),
+          maxDelayTarget: Duration.seconds(10),
+          numRetries: 6,
+          backoffFunction: sns.BackoffFunction.EXPONENTIAL,
+        },
+        throttlePolicy: {
+          maxReceivesPerSecond: 10,
+        },
+        requestPolicy: {
+          headerContentType: 'application/json',
+        },
+      },
+    },
+  ),
+);
+```
+
+
 ### Amazon SQS
 
 Subscribe a queue to your topic:

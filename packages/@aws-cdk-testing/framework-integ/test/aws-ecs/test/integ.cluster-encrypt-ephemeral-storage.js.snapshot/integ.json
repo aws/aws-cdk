@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-ecs-cluster-encrypt-ephemeral-storage/DefaultTest": {
+      "stacks": [
+        "aws-ecs-ephemeral-integ"
+      ],
+      "assertionStack": "aws-ecs-cluster-encrypt-ephemeral-storage/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsclusterencryptephemeralstorageDefaultTestDeployAssertCC6A879E"
+    }
+  }
+}

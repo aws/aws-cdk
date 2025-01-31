@@ -563,7 +563,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -734,6 +734,14 @@ export interface CommonProjectProps {
    * @default - no visibility is set
    */
   readonly visibility?: ProjectVisibility;
+
+  /**
+   * CodeBuild will automatically call retry build using the project's service role up to the auto-retry limit.
+   * `autoRetryLimit` must be between 0 and 10.
+   *
+   * @default - no retry
+   */
+  readonly autoRetryLimit?: number;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -859,7 +867,6 @@ export class Project extends ProjectBase {
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
     validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -1060,7 +1067,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1107,6 +1114,12 @@ export class Project extends ProjectBase {
       this.addFileSystemLocation(fileSystemLocation);
     }
 
+    if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
+      if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
+        throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
+      }
+    }
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -1143,6 +1156,7 @@ export class Project extends ProjectBase {
           return config;
         },
       }),
+      autoRetryLimit: props.autoRetryLimit,
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1329,7 +1343,6 @@ export class Project extends ProjectBase {
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -1624,7 +1637,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1826,10 +1839,19 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
+  /** The Amazon Linux 2023 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -2126,7 +2148,6 @@ export class WindowsBuildImage implements IBuildImage {
     name: string,
     options: DockerImageOptions = {},
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2150,7 +2171,6 @@ export class WindowsBuildImage implements IBuildImage {
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2167,7 +2187,6 @@ export class WindowsBuildImage implements IBuildImage {
     id: string,
     props: DockerImageAssetProps,
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,

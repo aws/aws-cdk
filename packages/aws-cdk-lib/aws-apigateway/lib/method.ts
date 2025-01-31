@@ -14,8 +14,8 @@ import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
-
 export interface MethodOptions {
   /**
    * A friendly operation name for the method. For example, you can assign the
@@ -330,8 +330,8 @@ export class Method extends Resource {
 
     // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
     if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
-      throw new Error(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
-        `which is different from what is required by the authorizer [${authorizerAuthType}]`);
+      throw new ValidationError(`${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+        `which is different from what is required by the authorizer [${authorizerAuthType}]`, this);
     }
 
     return finalAuthType;
@@ -408,7 +408,7 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new Error('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.');
+      throw new ValidationError('Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.', this);
     }
 
     if (options.requestValidatorOptions) {

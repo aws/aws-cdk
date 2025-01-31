@@ -19,7 +19,6 @@ beforeEach(() => {
 });
 
 describe('InitCommand', () => {
-
   test('throws error on empty argv command', () => {
     expect(() => { ec2.InitCommand.argvCommand([]); }).toThrow();
   });
@@ -131,11 +130,9 @@ describe('InitCommand', () => {
       command._bind(defaultOptions(InitPlatform.LINUX));
     }).toThrow(/'waitAfterCompletion' is only valid for Windows/);
   });
-
 });
 
 describe('InitFile', () => {
-
   test('fromString creates inline content', () => {
     // GIVEN
     const file = ec2.InitFile.fromString('/tmp/foo', 'My content');
@@ -361,7 +358,6 @@ describe('InitFile', () => {
 
     // THEN
     expect(() => {
-
       new ec2.Instance(myStack, 'SecondInstance', {
         vpc,
         instanceType:
@@ -383,14 +379,11 @@ describe('InitFile', () => {
           },
         }),
       });
-
     }).not.toThrow();
   });
-
 });
 
 describe('InitGroup', () => {
-
   test('renders without a group id', () => {
     // GIVEN
     const group = ec2.InitGroup.fromName('amazon');
@@ -422,11 +415,9 @@ describe('InitGroup', () => {
       group._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Init groups are not supported on Windows');
   });
-
 });
 
 describe('InitUser', () => {
-
   test('fromName accepts just a name to create a user', () => {
     // GIVEN
     const group = ec2.InitUser.fromName('sysuser1');
@@ -468,11 +459,9 @@ describe('InitUser', () => {
       group._bind(defaultOptions(InitPlatform.WINDOWS));
     }).toThrow('Init users are not supported on Windows');
   });
-
 });
 
 describe('InitPackage', () => {
-
   test('rpm auto-generates a name if none is provided', () => {
     // GIVEN
     const pkg = ec2.InitPackage.rpm('https://example.com/rpm/mypkg.rpm');
@@ -605,11 +594,9 @@ describe('InitPackage', () => {
       pkg._bind(defaultOptions(InitPlatform.LINUX));
     }).toThrow('MSI installers are only supported on Windows systems.');
   });
-
 });
 
 describe('InitService', () => {
-
   test.each([
     ['Linux', 'sysvinit', InitPlatform.LINUX],
     ['Windows', 'windows', InitPlatform.WINDOWS],
@@ -759,7 +746,6 @@ describe('InitService', () => {
 });
 
 describe('InitSource', () => {
-
   test('fromUrl renders correctly', () => {
     // GIVEN
     const source = ec2.InitSource.fromUrl('/tmp/foo', 'https://example.com/archive.zip');
@@ -812,7 +798,6 @@ describe('InitSource', () => {
       '/tmp/foo': expect.stringContaining('/mybucket/myKey'),
     });
   });
-
 });
 
 function getElementConfig(element: ec2.InitElement, platform: InitPlatform) {

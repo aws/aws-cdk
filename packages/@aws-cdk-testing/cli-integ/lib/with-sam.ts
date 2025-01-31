@@ -1,5 +1,4 @@
 import * as child_process from 'child_process';
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import axios from 'axios';
@@ -119,7 +118,7 @@ export function withSamIntegrationFixture(block: (context: SamIntegrationTestFix
 export class SamIntegrationTestFixture extends TestFixture {
   public async samShell(command: string[], filter?: string, action?: () => any, options: Omit<ShellOptions, 'cwd' | 'output'> = {}): Promise<ActionOutput> {
     return shellWithAction(command, filter, action, {
-      output: this.output,
+      outputs: [this.output],
       cwd: path.join(this.integTestDir, 'cdk.out').toString(),
       ...options,
     });
@@ -139,6 +138,7 @@ export class SamIntegrationTestFixture extends TestFixture {
     args.push('--port');
     args.push(port.toString());
 
+    // "Press Ctrl+C to quit" looks to be printed by a Flask server built into SAM CLI.
     return this.samShell(['sam', 'local', 'start-api', ...args], 'Press CTRL+C to quit', ()=>{
       return new Promise<ActionOutput>((resolve, reject) => {
         axios.get(`http://127.0.0.1:${port}${apiPath}`).then( resp => {
@@ -157,7 +157,11 @@ export class SamIntegrationTestFixture extends TestFixture {
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        // eslint-disable-next-line no-console
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 }
@@ -182,7 +186,12 @@ export async function shellWithAction(
     throw new Error('Use either env or modEnv but not both');
   }
 
-  options.output?.write(`💻 ${command.join(' ')}\n`);
+  const writeToOutputs = (x: string) => {
+    for (const output of options.outputs ?? []) {
+      output.write(x);
+    }
+  };
+  writeToOutputs(`💻 ${command.join(' ')}\n`);
 
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : undefined);
 
@@ -202,23 +211,24 @@ export async function shellWithAction(
     let actionOutput: any;
     let actionExecuted = false;
 
-    function executeAction(chunk: any) {
+    async function maybeExecuteAction(chunk: any) {
       out.push(Buffer.from(chunk));
       if (!actionExecuted && typeof filter === 'string' && Buffer.concat(out).toString('utf-8').includes(filter) && typeof action === 'function') {
         actionExecuted = true;
-        options.output?.write('before executing action');
-        action().then((output) => {
-          options.output?.write(`action output is ${output}`);
+        writeToOutputs('before executing action\n');
+        try {
+          const output = await action();
+          writeToOutputs(`action output is ${JSON.stringify(output)}\n`);
           actionOutput = output;
           actionSucceeded = true;
-        }).catch((error) => {
-          options.output?.write(`action error is ${error}`);
+        } catch (error: any) {
+          writeToOutputs(`action error is ${error}\n`);
           actionSucceeded = false;
           actionOutput = error;
-        }).finally(() => {
-          options.output?.write('terminate sam sub process');
+        } finally {
+          writeToOutputs('terminate sam sub process\n');
           killSubProcess(child, command.join(' '));
-        });
+        }
       }
     }
 
@@ -229,28 +239,31 @@ export async function shellWithAction(
         () => {
           if (!actionExecuted) {
             reject(new Error(`Timed out waiting for filter ${JSON.stringify(filter)} to appear in command output after ${actionTimeoutSeconds} seconds\nOutput so far:\n${Buffer.concat(out).toString('utf-8')}`));
+            killSubProcess(child, command.join(' '));
           }
         }, actionTimeoutSeconds * 1_000,
       ).unref();
     }
 
     child.stdout!.on('data', chunk => {
-      options.output?.write(chunk);
+      writeToOutputs(chunk);
       stdout.push(chunk);
-      executeAction(chunk);
+      void maybeExecuteAction(chunk);
     });
 
     child.stderr!.on('data', chunk => {
-      options.output?.write(chunk);
+      writeToOutputs(chunk);
       if (options.captureStderr ?? true) {
         stderr.push(chunk);
       }
-      executeAction(chunk);
+      void maybeExecuteAction(chunk);
     });
 
     child.once('error', reject);
 
-    child.once('close', code => {
+    // Wait for 'exit' instead of close, don't care about reading the streams all the way to the end
+    child.once('exit', (code, signal) => {
+      writeToOutputs(`Subprocess has exited with code ${code}, signal ${signal}\n`);
       const output = (Buffer.concat(stdout).toString('utf-8') + Buffer.concat(stderr).toString('utf-8')).trim();
       if (code == null || code === 0 || options.allowErrExit) {
         let result = new Array<string>();
@@ -265,7 +278,6 @@ export async function shellWithAction(
         reject(new Error(`'${command.join(' ')}' exited with error code ${code}. Output: \n${output}`));
       }
     });
-
   });
 }
 
@@ -274,10 +286,6 @@ function killSubProcess(child: child_process.ChildProcess, command: string) {
    * Check if the sub process is running in container, so child_process.spawn will
    * create multiple processes, and to kill all of them we need to run different logic
    */
-  if (fs.existsSync('/.dockerenv')) {
-    child_process.exec(`for pid in $(ps -ef | grep "${command}" | awk '{print $2}'); do kill -2 $pid; done`);
-  } else {
-    child.kill('SIGINT');
-  }
-
+  child.kill('SIGINT');
+  child_process.exec(`for pid in $(ps -ef | grep "${command}" | awk '{print $2}'); do kill -2 $pid; done`);
 }

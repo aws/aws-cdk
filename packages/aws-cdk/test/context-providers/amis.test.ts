@@ -1,30 +1,19 @@
-/* eslint-disable import/order */
-import * as aws from 'aws-sdk';
-import * as AWS from 'aws-sdk-mock';
+import 'aws-sdk-client-mock';
+import { DescribeImagesCommand } from '@aws-sdk/client-ec2';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client } from '../util/mock-sdk';
 
-// If the 'aws-sdk' package imported here and the 'aws-sdk' package imported by 'aws-sdk-mock' aren't
-// the same physical package on disk (if version mismatches cause hoisting/deduping to not happen),
-// the type check here takes too long and makes the TypeScript compiler fail.
-// Suppress the type check using 'as any' to make this more robust.
-AWS.setSDKInstance(aws as any);
-
-afterEach(done => {
-  AWS.restore();
-  done();
-});
-
-const mockSDK = new MockSdkProvider();
-
-type AwsCallback<T> = (err: Error | null, val: T) => void;
+const mockSDK = new (class extends MockSdkProvider {
+  public forEnvironment(): Promise<SdkForEnvironment> {
+    return Promise.resolve({ sdk: new SDK(FAKE_CREDENTIAL_CHAIN, mockSDK.defaultRegion, {}), didAssumeRole: false });
+  }
+})();
 
 test('calls DescribeImages on the request', async () => {
   // GIVEN
-  let request: aws.EC2.DescribeImagesRequest;
-  AWS.mock('EC2', 'describeImages', (params: aws.EC2.DescribeImagesRequest, cb: AwsCallback<aws.EC2.DescribeImagesResult>) => {
-    request = params;
-    return cb(null, { Images: [{ ImageId: 'ami-1234' }] });
+  mockEC2Client.on(DescribeImagesCommand).resolves({
+    Images: [{ ImageId: 'ami-1234' }],
   });
 
   // WHEN
@@ -38,7 +27,7 @@ test('calls DescribeImages on the request', async () => {
   });
 
   // THEN
-  expect(request!).toEqual({
+  expect(mockEC2Client).toHaveReceivedCommandWith(DescribeImagesCommand, {
     Owners: ['some-owner'],
     Filters: [
       {
@@ -46,24 +35,22 @@ test('calls DescribeImages on the request', async () => {
         Values: ['filtered'],
       },
     ],
-  } as aws.EC2.DescribeImagesRequest);
+  });
 });
 
 test('returns the most recent AMI matching the criteria', async () => {
   // GIVEN
-  AWS.mock('EC2', 'describeImages', (_: aws.EC2.DescribeImagesRequest, cb: AwsCallback<aws.EC2.DescribeImagesResult>) => {
-    return cb(null, {
-      Images: [
-        {
-          ImageId: 'ami-1234',
-          CreationDate: '2016-06-22T08:39:59.000Z',
-        },
-        {
-          ImageId: 'ami-5678',
-          CreationDate: '2019-06-22T08:39:59.000Z',
-        },
-      ],
-    });
+  mockEC2Client.on(DescribeImagesCommand).resolves({
+    Images: [
+      {
+        ImageId: 'ami-1234',
+        CreationDate: '2016-06-22T08:39:59.000Z',
+      },
+      {
+        ImageId: 'ami-5678',
+        CreationDate: '2019-06-22T08:39:59.000Z',
+      },
+    ],
   });
 
   // WHEN

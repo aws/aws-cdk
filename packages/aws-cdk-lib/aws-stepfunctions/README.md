@@ -574,15 +574,134 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
-Map states in Distributed mode support multiple sources for an array to iterate:
+`DistributedMap` supports various input source types to determine a list of objects to iterate over:
 
-* JSON array from the state input payload
-* objects in an S3 bucket and optional prefix
+* JSON array from the JSON state input
+  * By default, `DistributedMap` assumes whole JSON state input is an JSON array and iterates over it:
+  ```ts
+  /**
+   * JSON state input:
+   *  [
+   *    "item1",
+   *    "item2"
+   *  ]
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap');
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * When input source is present at a specific path in JSON state input, then `itemsPath` can be utilised to configure the iterator source.
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "distributedMapItemList": [
+   *      "item1",
+   *      "item2"
+   *    ]
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemsPath: '$.distributedMapItemList',
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+* Objects in a S3 bucket with an optional prefix.
+  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  /**
+   * Tree view of bucket:
+   *  my-bucket
+   *  |
+   *  +--item1
+   *  |
+   *  +--otherItem
+   *  |
+   *  +--item2
+   *  |
+   *  ...
+   */
+  const bucket = new s3.Bucket(this, 'Bucket', {
+    bucketName: 'my-bucket',
+  });
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3ObjectsItemReader({
+      bucket,
+      prefix: 'item',
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via JSON state input:
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "bucketName": "my-bucket",
+   *    "prefix": "item"
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3ObjectsItemReader({
+      bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+      prefix: sfn.JsonPath.stringAt('$.prefix'),
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * Both `bucket` and `bucketNamePath` are mutually exclusive.
 * JSON array in a JSON file stored in S3
+  * When `DistributedMap` is required to iterate over a JSON array stored in a JSON file in a S3 bucket, then an object of `S3JsonItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  /**
+   * Tree view of bucket:
+   *  my-bucket
+   *  |
+   *  +--input.json
+   *  |
+   *  ...
+   *
+   * File content of input.json:
+   *  [
+   *    "item1",
+   *    "item2"
+   *  ]
+   */
+  const bucket = new s3.Bucket(this, 'Bucket', {
+    bucketName: 'my-bucket',
+  });
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucket,
+      key: 'input.json',
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
+  * If information about `bucket` is only known while starting execution of `StateMachine` (dynamically or at run-time) via state input:
+  ```ts
+  /**
+   * JSON state input:
+   *  {
+   *    "bucketName": "my-bucket",
+   *    "key": "input.json"
+   *  }
+   */
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
+      key: sfn.JsonPath.stringAt('$.key'),
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
-
-There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property.  The default behavior if `itemReader` is omitted is to use the input payload.
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
@@ -593,10 +712,6 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Bucket');
 
 const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
-  itemReader: new sfn.S3JsonItemReader({
-    bucket: bucket,
-    key: 'my-key.json',
-  }),
   resultWriter: new sfn.ResultWriter({
     bucket: bucket,
     prefix: 'my-prefix',

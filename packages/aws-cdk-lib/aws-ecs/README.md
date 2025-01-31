@@ -35,6 +35,7 @@ taskDefinition.addContainer('DefaultContainer', {
 const ecsService = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -82,6 +83,17 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
+});
+```
+
+To encrypt the fargate ephemeral storage configure a KMS key.
+```ts
+declare const key: kms.Key;
+
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  managedStorageConfiguration: {
+    fargateEphemeralStorageKmsKey: key,
+  },
 });
 ```
 
@@ -326,6 +338,17 @@ cluster.addCapacity('ASGEncryptedSNS', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
   topicEncryptionKey: key,
+});
+```
+
+### Container Insights
+
+On a cluster, CloudWatch Container Insights can be enabled by setting the `containerInsightsV2` property. [Container Insights](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cloudwatch-container-insights.html) 
+can be disabled, enabled, or enhanced.
+
+```ts
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  containerInsightsV2: ecs.ContainerInsights.ENHANCED
 });
 ```
 
@@ -635,6 +658,22 @@ taskDefinition.addContainer('container', {
 });
 ```
 
+### Enable Fault Injection
+You can utilize fault injection with Amazon ECS on both Amazon EC2 and Fargate to test how their application responds to certain impairment scenarios. These tests provide information you can use to optimize your application's performance and resiliency.
+
+When fault injection is enabled, the Amazon ECS container agent allows tasks access to new fault injection endpoints.
+Fault injection only works with tasks using the `AWS_VPC` or `HOST` network modes.
+
+For more infomation, see [Use fault injection with your Amazon ECS and Fargate workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html).
+
+To enable Fault Injection for the task definiton, set `enableFaultInjection` to true.
+
+```ts
+new ecs.Ec2TaskDefinition(this, 'Ec2TaskDefinition', {
+  enableFaultInjection: true,
+});
+```
+
 ## Docker labels
 
 You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
@@ -750,6 +789,7 @@ const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -763,6 +803,7 @@ const service = new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
+  minHealthyPercent: 100,
 });
 ```
 
@@ -783,14 +824,16 @@ new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1),
 });
 
 new ecs.ExternalService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5,
-  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+  minHealthyPercent: 100,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
 });
 ```
 
@@ -811,6 +854,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   circuitBreaker: {
     enable: true,
     rollback: true
@@ -847,6 +891,7 @@ declare const elbAlarm: cw.Alarm;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   deploymentAlarms: {
     alarmNames: [elbAlarm.alarmName],
     behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
@@ -933,6 +978,7 @@ const service = new ecs.FargateService(this, 'Service', {
   serviceName,
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 const cpuMetric = new cw.Metric({
@@ -970,7 +1016,7 @@ on the service, there will be no restrictions on the alarm name.
 declare const vpc: ec2.Vpc;
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -997,7 +1043,7 @@ Alternatively, you can also create all load balancer targets to be registered in
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -1036,7 +1082,7 @@ for the alternatives.
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1049,7 +1095,7 @@ Similarly, if you want to have more control over load balancer targeting:
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const vpc: ec2.Vpc;
-const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition, minHealthyPercent: 100 });
 
 const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
@@ -1134,7 +1180,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)'),
+  schedule: events.Schedule.expression('rate(1 minute)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task
@@ -1174,10 +1220,10 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awsLogs({ 
+  logging: ecs.LogDrivers.awsLogs({
     streamPrefix: 'EventDemo',
     mode: ecs.AwsLogDriverMode.NON_BLOCKING,
-    maxBufferSize: Size.mebibytes(25), 
+    maxBufferSize: Size.mebibytes(25),
   }),
 });
 ```
@@ -1385,6 +1431,7 @@ specificContainer.addPortMappings({
 new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   cloudMapOptions: {
     // Create SRV records - useful for bridge networking
     dnsRecordType: cloudmap.DnsRecordType.SRV,
@@ -1442,6 +1489,7 @@ taskDefinition.addContainer('web', {
 new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: 'FARGATE_SPOT',
@@ -1519,6 +1567,7 @@ taskDefinition.addContainer('web', {
 new ecs.Ec2Service(this, 'EC2Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
@@ -1606,7 +1655,7 @@ to work, you need to have the SSM plugin for the AWS CLI installed locally. For 
 [Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
-your `Ec2Service` or `FargateService`.
+your `Ec2Service`, `FargateService` or `ExternalService`.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -1615,6 +1664,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   enableExecuteCommand: true,
 });
 ```
@@ -1688,6 +1738,7 @@ cluster.addDefaultCloudMapNamespace({
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1712,6 +1763,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 service.enableServiceConnect();
 ```
@@ -1725,6 +1777,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const customService = new ecs.FargateService(this, 'CustomizedService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     logDriver: ecs.LogDrivers.awsLogs({
       streamPrefix: 'sc-traffic',
@@ -1754,6 +1807,7 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
   serviceConnectConfiguration: {
     services: [
       {
@@ -1771,9 +1825,9 @@ const service = new ecs.FargateService(this, 'Service', {
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
-allowing you to utilize persistent, high-performance block storage with your ECS services. 
-This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or 
-loading data from EBS snapshots. 
+allowing you to utilize persistent, high-performance block storage with your ECS services.
+This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or
+loading data from EBS snapshots.
 You can also specify `encrypted: true` so that ECS will manage the KMS key. If you want to use your own KMS key, you may do so by providing both `encrypted: true` and `kmsKeyId`.
 
 You can only attach a single volume for each task in the ECS Service.
@@ -1817,6 +1871,7 @@ taskDefinition.addVolume(volume);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volume);
@@ -1846,6 +1901,7 @@ taskDefinition.addVolume(volumeFromSnapshot);
 const service = new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
+  minHealthyPercent: 100,
 });
 
 service.addVolume(volumeFromSnapshot);
@@ -1880,5 +1936,42 @@ taskDefinition.addContainer('TheContainer', {
     name: ecs.UlimitName.RSS,
     softLimit: 128,
   }],
+});
+```
+
+## Service Connect TLS
+
+Service Connect TLS is a feature that allows you to secure the communication between services using TLS.
+
+You can specify the `tls` option in the `services` array of the `serviceConnectConfiguration` property.
+
+The `tls` property is an object with the following properties:
+
+- `role`: The IAM role that's associated with the Service Connect TLS.
+- `awsPcaAuthorityArn`: The ARN of the certificate root authority that secures your service.
+- `kmsKey`: The KMS key used for encryption and decryption.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const kmsKey: kms.IKey;
+declare const role: iam.IRole;
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        tls: {
+          role,
+          kmsKey,
+          awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+        },
+        portMappingName: 'api',
+      },
+    ],
+    namespace: 'sample namespace',
+  },
 });
 ```

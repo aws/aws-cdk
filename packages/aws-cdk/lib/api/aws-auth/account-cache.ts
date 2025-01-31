@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { accountCacheDir, debug } from './_env';
 import { Account } from './sdk-provider';
+import { debug } from '../../logging';
+import { cdkCacheDir } from '../../util/directories';
 
 /**
  * Disk cache which maps access key IDs to account IDs.
@@ -21,7 +22,7 @@ export class AccountAccessKeyCache {
    * @param filePath Path to the cache file
    */
   constructor(filePath?: string) {
-    this.cacheFile = filePath || path.join(accountCacheDir(), 'accounts_partitions.json');
+    this.cacheFile = filePath || path.join(cdkCacheDir(), 'accounts_partitions.json');
   }
 
   /**
@@ -67,7 +68,7 @@ export class AccountAccessKeyCache {
 
     // nuke cache if it's too big.
     if (Object.keys(map).length >= AccountAccessKeyCache.MAX_ENTRIES) {
-      map = { };
+      map = {};
     }
 
     map[accessKeyId] = account;
@@ -80,10 +81,14 @@ export class AccountAccessKeyCache {
     } catch (e: any) {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
-      if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
+      if (e.code === 'ENOENT' || e.code === 'EACCES') {
+        return {};
+      }
       // File is not JSON, could be corrupted because of concurrent writes.
       // Again, an empty cache is fine.
-      if (e instanceof SyntaxError) { return {}; }
+      if (e instanceof SyntaxError) {
+        return {};
+      }
       throw e;
     }
   }
@@ -95,7 +100,9 @@ export class AccountAccessKeyCache {
     } catch (e: any) {
       // File doesn't exist or file/dir isn't writable. This is a cache,
       // if we can't write it then too bad.
-      if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') { return; }
+      if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') {
+        return;
+      }
       throw e;
     }
   }

@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "ba285c3d32df9eb5784aa37a7742b096033c91381c3f2ba7d10f22061c8468d7": {
+      "source": {
+        "path": "lambda-event-source-metrics-config-dynamodb.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ba285c3d32df9eb5784aa37a7742b096033c91381c3f2ba7d10f22061c8468d7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

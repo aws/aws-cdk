@@ -101,7 +101,7 @@ and is not compliant with `S3EventSource`. If this is the case, please consider 
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'bucket-name');
+const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket');
 declare const fn: lambda.Function;
 
 fn.addEventSource(new S3EventSourceV2(bucket, {
@@ -393,6 +393,29 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
   topic,
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   onFailure: s3OnFailureDestination,
+}));
+```
+
+Set configuration for provisioned pollers that read from the event source.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
 }));
 ```
 

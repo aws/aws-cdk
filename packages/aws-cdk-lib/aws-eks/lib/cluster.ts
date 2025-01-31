@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
-import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { IAddon, Addon } from './addon';
@@ -733,7 +732,6 @@ interface EndpointAccessConfig {
  * Endpoint access characteristics.
  */
 export class EndpointAccess {
-
   /**
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.
@@ -992,6 +990,15 @@ export class KubernetesVersion {
   public static readonly V1_30 = KubernetesVersion.of('1.30');
 
   /**
+   * Kubernetes version 1.31
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV31Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v31`.
+   */
+  public static readonly V1_31 = KubernetesVersion.of('1.31');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1125,7 +1132,6 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @returns a `KubernetesManifest` construct representing the chart.
    */
   public addCdk8sChart(id: string, chart: Construct, options: KubernetesManifestOptions = {}): KubernetesManifest {
-
     const cdk8sChart = chart as any;
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
@@ -1298,7 +1304,7 @@ export interface ServiceLoadBalancerAddressOptions {
 /**
  * Options for fetching an IngressLoadBalancerAddress.
  */
-export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1570,10 +1576,9 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
 
-    const kubectlVersion = new semver.SemVer(`${props.version.version}.0`);
-    if (semver.gte(kubectlVersion, '1.22.0') && !props.kubectlLayer) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v${kubectlVersion.minor}.`);
-    };
+    if (!props.kubectlLayer) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterKubectlLayerNotSpecified', `You created a cluster with Kubernetes Version ${props.version.version} without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.`);
+    }
     this.version = props.version;
 
     // since this lambda role needs to be added to the trust policy of the creation role,
@@ -1699,7 +1704,6 @@ export class Cluster extends ClusterBase {
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
-
       // when private access is enabled and the vpc has private subnets, lets connect
       // the provider to the vpc so that it will work even when restricting public access.
 
@@ -1818,7 +1822,6 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
-
   }
 
   /**
@@ -1843,7 +1846,6 @@ export class Cluster extends ClusterBase {
    * @param options Additional operation options.
    */
   public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
-
     const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
       objectType: 'service',
@@ -1854,7 +1856,6 @@ export class Cluster extends ClusterBase {
     });
 
     return loadBalancerAddress.value;
-
   }
 
   /**
@@ -1864,7 +1865,6 @@ export class Cluster extends ClusterBase {
    * @param options Additional operation options.
    */
   public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
-
     const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
       cluster: this,
       objectType: 'ingress',
@@ -1875,7 +1875,6 @@ export class Cluster extends ClusterBase {
     });
 
     return loadBalancerAddress.value;
-
   }
 
   /**
@@ -2114,9 +2113,7 @@ export class Cluster extends ClusterBase {
     const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
-
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
-
         if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
           // definitely private, take it.
           privateSubnets.push(subnet);
@@ -2133,7 +2130,6 @@ export class Cluster extends ClusterBase {
         // fail at deploy time :\ (its better than filtering it out and preventing a possibly successful deployment)
         privateSubnets.push(subnet);
       }
-
     }
 
     return privateSubnets;
@@ -2307,7 +2303,6 @@ export interface BootstrapOptions {
   readonly dockerConfigJson?: string;
 
   /**
-
    * Overrides the IP address to use for DNS queries within the
    * cluster.
    *

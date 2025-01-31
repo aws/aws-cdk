@@ -1,0 +1,183 @@
+{
+ "Resources": {
+  "ScheduleTargetQueueFA42B954": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "RoleDefaultPolicy5FFB7DAB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ScheduleDeadLetterQueue0D6B48D2",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ScheduleTargetQueueFA42B954",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
+   }
+  },
+  "ScheduleDeadLetterQueue0D6B48D2": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DenySendMessagePolicy3060CA43": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Deny",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduleTargetQueueFA42B954",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DenySendMessagePolicy3060CA43",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
+   }
+  },
+  "ScheduleToSendMessageToQueueF9F96D90": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "Description": "test description from the ScheduleToSendMessageToQueue",
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "ScheduleTargetQueueFA42B954",
+       "Arn"
+      ]
+     },
+     "DeadLetterConfig": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ScheduleDeadLetterQueue0D6B48D2",
+        "Arn"
+       ]
+      }
+     },
+     "Input": "testing dlq",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 185
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     },
+     "SqsParameters": {}
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefScheduleTargetQueueFA42B9547168FABC": {
+   "Value": {
+    "Ref": "ScheduleTargetQueueFA42B954"
+   },
+   "Export": {
+    "Name": "aws-cdk-schedule-dlq:ExportsOutputRefScheduleTargetQueueFA42B9547168FABC"
+   }
+  },
+  "ExportsOutputRefScheduleDeadLetterQueue0D6B48D20DE8F8DC": {
+   "Value": {
+    "Ref": "ScheduleDeadLetterQueue0D6B48D2"
+   },
+   "Export": {
+    "Name": "aws-cdk-schedule-dlq:ExportsOutputRefScheduleDeadLetterQueue0D6B48D20DE8F8DC"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

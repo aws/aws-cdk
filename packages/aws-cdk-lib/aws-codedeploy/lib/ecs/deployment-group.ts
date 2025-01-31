@@ -66,7 +66,7 @@ export interface EcsBlueGreenDeploymentConfig {
    * The load balancer listener used to route test traffic to the 'green' ECS task set during a blue-green deployment.
    *
    * During a blue-green deployment, validation can occur after test traffic has been re-routed and before production
-   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda funtions in the
+   * traffic has been re-routed to the 'green' ECS task set.  You can specify one or more Lambda functions in the
    * deployment's AppSpec file that run during the AfterAllowTestTraffic hook. The functions can run validation tests.
    * If a validation test fails, a deployment rollback is triggered. If the validation tests succeed, the next hook in
    * the deployment lifecycle, BeforeAllowTraffic, is triggered.
@@ -97,17 +97,17 @@ export interface EcsBlueGreenDeploymentConfig {
   readonly deploymentApprovalWaitTime?: cdk.Duration;
 
   /**
-    * Specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment is complete.
-    *
-    * During this wait time, CodeDeploy will continue to monitor any CloudWatch alarms specified for the deployment group,
-    * and the deployment group can be configured to automatically roll back if those alarms fire.  Once CodeDeploy begins to
-    * terminate the 'blue' ECS task set, the deployment can no longer be rolled back, manually or automatically.
-    *
-    * By default, the deployment will immediately terminate the 'blue' ECS task set after production traffic is successfully
-    * routed to the 'green' ECS task set.
-    *
-    * @default 0
-    */
+   * Specify how long CodeDeploy waits before it terminates the original 'blue' ECS task set when a blue-green deployment is complete.
+   *
+   * During this wait time, CodeDeploy will continue to monitor any CloudWatch alarms specified for the deployment group,
+   * and the deployment group can be configured to automatically roll back if those alarms fire.  Once CodeDeploy begins to
+   * terminate the 'blue' ECS task set, the deployment can no longer be rolled back, manually or automatically.
+   *
+   * By default, the deployment will immediately terminate the 'blue' ECS task set after production traffic is successfully
+   * routed to the 'green' ECS task set.
+   *
+   * @default 0
+   */
   readonly terminationWaitTime?: cdk.Duration;
 }
 
@@ -203,7 +203,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    * @returns a Construct representing a reference to an existing Deployment Group
    */
   public static fromEcsDeploymentGroupAttributes(
-    scope:Construct,
+    scope: Construct,
     id: string,
     attrs: EcsDeploymentGroupAttributes): IEcsDeploymentGroup {
     return new ImportedEcsDeploymentGroup(scope, id, attrs);

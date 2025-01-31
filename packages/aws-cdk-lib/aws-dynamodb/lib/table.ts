@@ -8,7 +8,7 @@ import { ScalableTableAttribute } from './scalable-table-attribute';
 import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType,
+  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -21,6 +21,7 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -209,6 +210,23 @@ export interface ImportSourceSpecification {
 }
 
 /**
+ * The precision associated with the DynamoDB write timestamps that will be replicated to Kinesis.
+ * The default setting for record timestamp precision is microseconds. You can change this setting at any time.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-kinesisstreamspecification.html#aws-properties-dynamodb-table-kinesisstreamspecification-properties
+ */
+export enum ApproximateCreationDateTimePrecision {
+  /**
+   * Millisecond precision
+   */
+  MILLISECOND = 'MILLISECOND',
+
+  /**
+   * Microsecond precision
+   */
+  MICROSECOND = 'MICROSECOND',
+}
+
+/**
  * Properties of a DynamoDB Table
  *
  * Use `TableProps` for all table properties
@@ -235,7 +253,7 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
+   * those will share the table's maximum on-demand throughput.
    *
    * Can only be provided if billingMode is PAY_PER_REQUEST.
    *
@@ -243,13 +261,13 @@ export interface TableOptions extends SchemaOptions {
    */
   readonly maxReadRequestUnits?: number;
   /**
-     * The write request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
-     *
-     * Can only be provided if billingMode is PAY_PER_REQUEST.
-     *
-     * @default - on-demand throughput is disabled
-     */
+   * The write request units for the table. Careful if you add Global Secondary Indexes, as
+   * those will share the table's maximum on-demand throughput.
+   *
+   * Can only be provided if billingMode is PAY_PER_REQUEST.
+   *
+   * @default - on-demand throughput is disabled
+   */
   readonly maxWriteRequestUnits?: number;
 
   /**
@@ -260,10 +278,27 @@ export interface TableOptions extends SchemaOptions {
   readonly billingMode?: BillingMode;
 
   /**
+   * Specify values to pre-warm you DynamoDB Table
+   * Warm Throughput feature is not available for Global Table replicas using the `Table` construct. To enable Warm Throughput, use the `TableV2` construct instead.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
+   * @default - warm throughput is not configured
+   */
+  readonly warmThroughput?: WarmThroughput;
+
+  /**
    * Whether point-in-time recovery is enabled.
-   * @default - point-in-time recovery is disabled
+   * @deprecated use `pointInTimeRecoverySpecification` instead
+   * @default false - point in time recovery is not enabled.
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   *
+   * @default - point in time recovery is not enabled.
+   */
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
@@ -415,6 +450,13 @@ export interface TableProps extends TableOptions {
    * @default - no Kinesis Data Stream
    */
   readonly kinesisStream?: kinesis.IStream;
+
+  /**
+   * Kinesis Data Stream approximate creation timestamp precision
+   *
+   * @default ApproximateCreationDateTimePrecision.MICROSECOND
+   */
+  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision;
 }
 
 /**
@@ -456,6 +498,20 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default - on-demand throughput is disabled
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -900,7 +956,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   private createMetricsForOperations(metricName: string, operations: Operation[],
     props?: cloudwatch.MetricOptions, metricNameMapper?: (op: Operation) => string): Record<string, cloudwatch.IMetric> {
-
     const metrics: Record<string, cloudwatch.IMetric> = {};
 
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
@@ -910,7 +965,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
     }
 
     for (const operation of operations) {
-
       const metric = this.metric(metricName, {
         ...props,
         dimensionsMap: {
@@ -1039,9 +1093,7 @@ export class Table extends TableBase {
    * @param attrs A `TableAttributes` object.
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-
     class Import extends TableBase {
-
       public readonly tableName: string;
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
@@ -1134,6 +1186,8 @@ export class Table extends TableBase {
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
+    const pointInTimeRecoverySpecification = this.validatePitr(props);
+
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
@@ -1150,13 +1204,20 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    const kinesisStreamSpecification = props.kinesisStream
+      ? {
+        streamArn: props.kinesisStream.streamArn,
+        ...(props.kinesisPrecisionTimestamp && { approximateCreationDateTimePrecision: props.kinesisPrecisionTimestamp }),
+      }
+      : undefined;
+
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pointInTimeRecovery != null ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
@@ -1174,12 +1235,13 @@ export class Table extends TableBase {
       tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
-      kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
+      kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
       resourcePolicy: props.resourcePolicy
         ? { policyDocument: props.resourcePolicy }
         : undefined,
+      warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1227,6 +1289,7 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -1241,6 +1304,7 @@ export class Table extends TableBase {
             maxWriteRequestUnits: props.maxWriteRequestUnits || undefined,
           },
         } : undefined),
+      warmThroughput: props.warmThroughput ?? undefined,
     });
 
     this.secondaryIndexSchemas.set(props.indexName, {
@@ -1466,6 +1530,27 @@ export class Table extends TableBase {
 
     // store all non-key attributes
     nonKeyAttributes.forEach(att => this.nonKeyAttributes.add(att));
+  }
+
+  private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
+    if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
+      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
+    }
+
+    const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
+
+    if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
+      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
+    }
+
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
+    }
+
+    return props.pointInTimeRecoverySpecification ??
+      (props.pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery }
+        : undefined);
   }
 
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {

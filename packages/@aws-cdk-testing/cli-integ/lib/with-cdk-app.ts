@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import * as assert from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -10,10 +11,10 @@ import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
-import { AwsContext, withAws } from './with-aws';
+import { AwsContext, atmosphereEnabled, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
-export const DEFAULT_TEST_TIMEOUT_S = 10 * 60;
+export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
 export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
 
 /**
@@ -24,7 +25,8 @@ export const EXTENDED_TEST_TIMEOUT_S = 30 * 60;
  * For backwards compatibility with existing tests (so we don't have to change
  * too much) the inner block is expected to take a `TestFixture` object.
  */
-export function withCdkApp(
+export function withSpecificCdkApp(
+  appName: string,
   block: (context: TestFixture) => Promise<void>,
 ): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
   return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
@@ -36,7 +38,7 @@ export function withCdkApp(
     context.output.write(` Test directory: ${integTestDir}\n`);
     context.output.write(` Region:         ${context.aws.region}\n`);
 
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'app'), integTestDir, context.output);
+    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', appName), integTestDir, context.output);
     const fixture = new TestFixture(
       integTestDir,
       stackNamePrefix,
@@ -87,23 +89,37 @@ export function withCdkApp(
   };
 }
 
-export function withCdkMigrateApp<A extends TestContext>(language: string, block: (context: TestFixture) => Promise<void>) {
-  return async (context: A) => {
+/**
+ * Like `withSpecificCdkApp`, but uses the default integration testing app with a million stacks in it
+ */
+export function withCdkApp(
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  // 'app' is the name of the default integration app in the `cdk-apps` directory
+  return withSpecificCdkApp('app', block);
+}
+
+export function withCdkMigrateApp(
+  language: string,
+  block: (context: TestFixture) => Promise<void>,
+): (context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void> {
+  return async (context: TestContext & AwsContext & DisableBootstrapContext) => {
     const stackName = `cdk-migrate-${language}-integ-${context.randomString}`;
     const integTestDir = path.join(os.tmpdir(), `cdk-migrate-${language}-integ-${context.randomString}`);
 
     context.output.write(` Stack name:   ${stackName}\n`);
     context.output.write(` Test directory: ${integTestDir}\n`);
 
-    const awsClients = await AwsClients.default(context.output);
     fs.mkdirSync(integTestDir);
     const fixture = new TestFixture(
       integTestDir,
       stackName,
       context.output,
-      awsClients,
+      context.aws,
       context.randomString,
     );
+
+    await ensureBootstrapped(fixture);
 
     await fixture.cdkMigrate(language, stackName);
 
@@ -111,57 +127,13 @@ export function withCdkMigrateApp<A extends TestContext>(language: string, block
       path.join(integTestDir, stackName),
       stackName,
       context.output,
-      awsClients,
+      context.aws,
       context.randomString,
     );
 
     let success = true;
     try {
       await block(testFixture);
-    } catch (e) {
-      success = false;
-      throw e;
-    } finally {
-      if (process.env.INTEG_NO_CLEAN) {
-        context.log(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)`);
-      } else {
-        await fixture.dispose(success);
-      }
-    }
-  };
-}
-
-export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (context: TestFixture) => Promise<void>) {
-  return async (context: A) => {
-    const uberPackage = process.env.UBERPACKAGE;
-    if (!uberPackage) {
-      throw new Error('The UBERPACKAGE environment variable is required for running this test!');
-    }
-
-    const randy = context.randomString;
-    const stackNamePrefix = `cdk-uber-cfn-include-${randy}`;
-    const integTestDir = path.join(os.tmpdir(), `cdk-uber-cfn-include-${randy}`);
-
-    context.output.write(` Stack prefix:   ${stackNamePrefix}\n`);
-    context.output.write(` Test directory: ${integTestDir}\n`);
-
-    const awsClients = await AwsClients.default(context.output);
-    await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'cfn-include-app'), integTestDir, context.output);
-    const fixture = new TestFixture(
-      integTestDir,
-      stackNamePrefix,
-      context.output,
-      awsClients,
-      context.randomString,
-    );
-
-    let success = true;
-    try {
-      await installNpmPackages(fixture, {
-        [uberPackage]: fixture.packages.requestedFrameworkVersion(),
-      });
-
-      await block(fixture);
     } catch (e) {
       success = false;
       throw e;
@@ -186,6 +158,10 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
  */
 export function withDefaultFixture(block: (context: TestFixture) => Promise<void>) {
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkApp(block)));
+}
+
+export function withSpecificFixture(appName: string, block: (context: TestFixture) => Promise<void>) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withSpecificCdkApp(appName, block)));
 }
 
 export function withExtendedTimeoutFixture(block: (context: TestFixture) => Promise<void>) {
@@ -227,9 +203,9 @@ export interface CdkCliOptions extends ShellOptions {
  * Prepare a target dir byreplicating a source directory
  */
 export async function cloneDirectory(source: string, target: string, output?: NodeJS.WritableStream) {
-  await shell(['rm', '-rf', target], { output });
-  await shell(['mkdir', '-p', target], { output });
-  await shell(['cp', '-R', source + '/*', target], { output });
+  await shell(['rm', '-rf', target], { outputs: output ? [output] : [] });
+  await shell(['mkdir', '-p', target], { outputs: output ? [output] : [] });
+  await shell(['cp', '-R', source + '/*', target], { outputs: output ? [output] : [] });
 }
 
 interface CommonCdkBootstrapCommandOptions {
@@ -258,6 +234,11 @@ interface CommonCdkBootstrapCommandOptions {
    * @default - none
    */
   readonly tags?: string;
+
+  /**
+   * @default - the default CDK qualifier
+   */
+  readonly qualifier?: string;
 }
 
 export interface CdkLegacyBootstrapCommandOptions extends CommonCdkBootstrapCommandOptions {
@@ -309,10 +290,38 @@ export interface CdkModernBootstrapCommandOptions extends CommonCdkBootstrapComm
    * @default undefined
    */
   readonly usePreviousParameters?: boolean;
+
+  readonly trust?: string[];
+
+  readonly untrust?: string[];
+}
+
+export interface CdkGarbageCollectionCommandOptions {
+  /**
+   * The amount of days an asset should stay isolated before deletion, to
+   * guard against some pipeline rollback scenarios
+   *
+   * @default 0
+   */
+  readonly rollbackBufferDays?: number;
+
+  /**
+   * The type of asset that is getting garbage collected.
+   *
+   * @default 'all'
+   */
+  readonly type?: 'ecr' | 's3' | 'all';
+
+  /**
+   * The name of the bootstrap stack
+   *
+   * @default 'CdkToolkit'
+   */
+  readonly bootstrapStackName?: string;
 }
 
 export class TestFixture extends ShellHelper {
-  public readonly qualifier = this.randomString.slice(0, 10);
+  public readonly qualifier: string;
   private readonly bucketsToDelete = new Array<string>();
   public readonly packages: IPackageSource;
 
@@ -322,9 +331,9 @@ export class TestFixture extends ShellHelper {
     public readonly output: NodeJS.WritableStream,
     public readonly aws: AwsClients,
     public readonly randomString: string) {
-
     super(integTestDir, output);
 
+    this.qualifier = this.randomString.slice(0, 10);
     this.packages = packageSourceInSubprocess();
   }
 
@@ -333,16 +342,21 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
-    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
+    return this.cdk(this.cdkDeployCommandLine(stackNames, options, skipStackRename), options);
+  }
 
+  public cdkDeployCommandLine(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
+    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
     const neverRequireApproval = options.neverRequireApproval ?? true;
 
-    return this.cdk(['deploy',
+    return [
+      'deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames)),
+    ];
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {
@@ -408,7 +422,7 @@ export class TestFixture extends ShellHelper {
     if (options.bootstrapBucketName) {
       args.push('--bootstrap-bucket-name', options.bootstrapBucketName);
     }
-    args.push('--qualifier', this.qualifier);
+    args.push('--qualifier', options.qualifier ?? this.qualifier);
     if (options.cfnExecutionPolicy) {
       args.push('--cloudformation-execution-policies', options.cfnExecutionPolicy);
     }
@@ -433,6 +447,13 @@ export class TestFixture extends ShellHelper {
       args.push('--template', options.bootstrapTemplate);
     }
 
+    if (options.trust != null) {
+      args.push('--trust', options.trust.join(','));
+    }
+    if (options.untrust != null) {
+      args.push('--untrust', options.untrust.join(','));
+    }
+
     return this.cdk(args, {
       ...options.cliOptions,
       modEnv: {
@@ -442,6 +463,26 @@ export class TestFixture extends ShellHelper {
         CDK_NEW_BOOTSTRAP: '1',
       },
     });
+  }
+
+  public async cdkGarbageCollect(options: CdkGarbageCollectionCommandOptions): Promise<string> {
+    const args = [
+      'gc',
+      '--unstable=gc', // TODO: remove when stabilizing
+      '--confirm=false',
+      '--created-buffer-days=0', // Otherwise all assets created during integ tests are too young
+    ];
+    if (options.rollbackBufferDays) {
+      args.push('--rollback-buffer-days', String(options.rollbackBufferDays));
+    }
+    if (options.type) {
+      args.push('--type', options.type);
+    }
+    if (options.bootstrapStackName) {
+      args.push('--bootstrapStackName', options.bootstrapStackName);
+    }
+
+    return this.cdk(args);
   }
 
   public async cdkMigrate(language: string, stackName: string, inputPath?: string, options?: CdkCliOptions) {
@@ -465,19 +506,50 @@ export class TestFixture extends ShellHelper {
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
-        AWS_REGION: this.aws.region,
-        AWS_DEFAULT_REGION: this.aws.region,
-        STACK_NAME_PREFIX: this.stackNamePrefix,
-        PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        ...this.cdkShellEnv(),
         ...options.modEnv,
       },
     });
+  }
+
+  /**
+   * Return the environment variables with which to execute CDK
+   */
+  public cdkShellEnv() {
+    // if tests are using an explicit aws identity already (i.e creds)
+    // force every cdk command to use the same identity.
+    const awsCreds: Record<string, string> = this.aws.identity ? {
+      AWS_ACCESS_KEY_ID: this.aws.identity.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: this.aws.identity.secretAccessKey,
+      AWS_SESSION_TOKEN: this.aws.identity.sessionToken!,
+    } : {};
+
+    return {
+      AWS_REGION: this.aws.region,
+      AWS_DEFAULT_REGION: this.aws.region,
+      STACK_NAME_PREFIX: this.stackNamePrefix,
+      PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+      // In these tests we want to make a distinction between stdout and sterr
+      CI: 'false',
+      ...awsCreds,
+    };
   }
 
   public template(stackName: string): any {
     const fullStackName = this.fullStackName(stackName);
     const templatePath = path.join(this.integTestDir, 'cdk.out', `${fullStackName}.template.json`);
     return JSON.parse(fs.readFileSync(templatePath, { encoding: 'utf-8' }).toString());
+  }
+
+  public async bootstrapRepoName(): Promise<string> {
+    await ensureBootstrapped(this);
+
+    const response = await this.aws.cloudFormation.send(new DescribeStacksCommand({}));
+
+    const stack = (response.Stacks ?? [])
+      .filter((s) => s.StackName && s.StackName == this.bootstrapStackName);
+    assert(stack.length == 1);
+    return outputFromStack('ImageRepositoryName', stack[0]) ?? '';
   }
 
   public get bootstrapStackName() {
@@ -505,42 +577,53 @@ export class TestFixture extends ShellHelper {
   }
 
   /**
-   * Cleanup leftover stacks and buckets
+   * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
-    const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+    // when using the atmosphere service, it does resource cleanup on our behalf
+    // so we don't have to wait for it.
+    if (!atmosphereEnabled()) {
+      const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-    this.sortBootstrapStacksToTheEnd(stacksToDelete);
+      this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
-    // Bootstrap stacks have buckets that need to be cleaned
-    const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
-    await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
-    // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
-    this.bucketsToDelete.push(...bucketNames);
+      // Bootstrap stacks have buckets that need to be cleaned
+      const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+      // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
+      this.bucketsToDelete.push(...bucketNames);
 
-    // Bootstrap stacks have ECR repositories with images which should be deleted
-    const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
-    await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+      // Bootstrap stacks have ECR repositories with images which should be deleted
+      const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
-    await this.aws.deleteStacks(
-      ...stacksToDelete.map((s) => {
-        if (!s.StackName) {
-          throw new Error('Stack name is required to delete a stack.');
-        }
-        return s.StackName;
-      }),
-    );
+      await this.aws.deleteStacks(
+        ...stacksToDelete.map((s) => {
+          if (!s.StackName) {
+            throw new Error('Stack name is required to delete a stack.');
+          }
+          return s.StackName;
+        }),
+      );
 
-    // We might have leaked some buckets by upgrading the bootstrap stack. Be
-    // sure to clean everything.
-    for (const bucket of this.bucketsToDelete) {
-      await this.aws.deleteBucket(bucket);
+      // We might have leaked some buckets by upgrading the bootstrap stack. Be
+      // sure to clean everything.
+      for (const bucket of this.bucketsToDelete) {
+        await this.aws.deleteBucket(bucket);
+      }
     }
 
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 
@@ -572,7 +655,6 @@ export class TestFixture extends ShellHelper {
 
   private sortBootstrapStacksToTheEnd(stacks: Stack[]) {
     stacks.sort((a, b) => {
-
       if (!a.StackName || !b.StackName) {
         throw new Error('Stack names do not exists. These are required for sorting the bootstrap stacks.');
       }
@@ -594,7 +676,7 @@ export class TestFixture extends ShellHelper {
  * Since we go striping across regions, it's going to suck doing this
  * by hand so let's just mass-automate it.
  */
-async function ensureBootstrapped(fixture: TestFixture) {
+export async function ensureBootstrapped(fixture: TestFixture) {
   // Always use the modern bootstrap stack, otherwise we may get the error
   // "refusing to downgrade from version 7 to version 0" when bootstrapping with default
   // settings using a v1 CLI.
@@ -610,7 +692,12 @@ async function ensureBootstrapped(fixture: TestFixture) {
       CDK_NEW_BOOTSTRAP: '1',
     },
   });
-  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+
+  // when using the atmosphere service, every test needs to bootstrap
+  // its own environment.
+  if (!atmosphereEnabled()) {
+    ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+  }
 }
 
 function defined<A>(x: A): x is NonNullable<A> {

@@ -18,7 +18,6 @@ export interface IClusterParameterGroup extends IResource {
  * A new cluster or instance parameter group
  */
 abstract class ClusterParameterGroupBase extends Resource implements IClusterParameterGroup {
-
   /**
    * The name of the parameter group
    */
@@ -65,12 +64,12 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
 
   /**
    * The parameters in the parameter group
-  */
+   */
   readonly parameters: { [name: string]: string };
 
   /**
    * The underlying CfnClusterParameterGroup
-  */
+   */
   private readonly resource: CfnClusterParameterGroup;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {

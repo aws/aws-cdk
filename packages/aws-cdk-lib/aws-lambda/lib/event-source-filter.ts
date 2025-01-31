@@ -5,8 +5,8 @@ export class FilterRule {
   /**
    * Null comparison operator
    */
-  public static null(): string[] {
-    return [];
+  public static null(): any {
+    return [null];
   }
 
   /**

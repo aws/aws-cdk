@@ -1,4 +1,4 @@
-import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
@@ -11,6 +11,7 @@ describe('schedule target', () => {
   let stack: Stack;
   let template: CfnAssessmentTemplate;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
+  const roleId = 'SchedulerRoleForTarget78b2d848BF7444';
 
   beforeEach(() => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
@@ -37,7 +38,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyTemplate', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -53,7 +54,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -62,7 +63,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -113,7 +130,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('reuses IAM role and IAM policy for two schedules from the same account', () => {
+  test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
     const inspectorTarget = new InspectorStartAssessmentRun(template);
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -132,7 +149,23 @@ describe('schedule target', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
             Principal: {
               Service: 'scheduler.amazonaws.com',
             },
@@ -152,7 +185,88 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: roleId }],
+    }, 1);
+  });
+
+  test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
+    const inspectorTarget = new InspectorStartAssessmentRun(template);
+    const group = new Group(stack, 'Group', {
+      groupName: 'mygroup',
+    });
+
+    new Schedule(stack, 'MyScheduleDummy1', {
+      schedule: expr,
+      target: inspectorTarget,
+    });
+
+    new Schedule(stack, 'MyScheduleDummy2', {
+      schedule: expr,
+      target: inspectorTarget,
+      group,
+    });
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':scheduler:us-east-1:123456789012:schedule-group/default',
+                    ],
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+          {
+            Effect: 'Allow',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '123456789012',
+                'aws:SourceArn': {
+                  'Fn::GetAtt': [
+                    'GroupC77FDACD',
+                    'Arn',
+                  ],
+                },
+              },
+            },
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+          },
+        ],
+      },
+    }, 1);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'inspector:StartAssessmentRun',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
     }, 1);
   });
 
@@ -183,7 +297,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::ImportValue': 'Stack2:ExportsOutputFnGetAttAnotherTemplateArn9F673A62',
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetea46910831E154', 'Arn'] },
           RetryPolicy: {},
         },
       },
@@ -199,7 +313,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetea46910831E154' }],
     });
   });
 
@@ -291,67 +405,7 @@ describe('schedule target', () => {
     });
   });
 
-  test('throws when inspector assessment template is in the another stack with different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
-    });
-    const assessmentTarget = new CfnAssessmentTarget(stack2, 'AnotherTarget');
-    const anotherTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
-      assessmentTargetArn: assessmentTarget.attrArn,
-      durationInSeconds: 3600,
-      rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
-    });
-
-    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: inspectorTarget,
-      })).toThrow(/Both the schedule and the assessment template must be in the same account/);
-  });
-
-  test('throws when inspector assessment template is in the another stack with different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const assessmentTarget = new CfnAssessmentTarget(stack2, 'AnotherTarget');
-    const anotherTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
-      assessmentTargetArn: assessmentTarget.attrArn,
-      durationInSeconds: 3600,
-      rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
-    });
-
-    const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: inspectorTarget,
-      })).toThrow(/Both the schedule and the assessment template must be in the same region/);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const inspectorTarget = new InspectorStartAssessmentRun(template, {
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: inspectorTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
     const inspectorTarget = new InspectorStartAssessmentRun(template, {
@@ -363,14 +417,16 @@ describe('schedule target', () => {
       target: inspectorTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
+            Action: 'inspector:StartAssessmentRun',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
             Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
-            },
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -378,34 +434,11 @@ describe('schedule target', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const inspectorTarget = new InspectorStartAssessmentRun(template, {
-      deadLetterQueue: queue,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: inspectorTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
     const inspectorTarget = new InspectorStartAssessmentRun(template, {
@@ -417,31 +450,23 @@ describe('schedule target', () => {
       target: inspectorTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
-  });
-
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'inspector:StartAssessmentRun',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
       },
+      Roles: [{ Ref: roleId }],
     });
-
-    const queue = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const inspectorTarget = new InspectorStartAssessmentRun(template, {
-      deadLetterQueue: queue,
-    });
-
-    new Schedule(stack, 'MyScheduleDummy', {
-      schedule: expr,
-      target: inspectorTarget,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
   });
 
   test('renders expected retry policy', () => {
@@ -461,7 +486,7 @@ describe('schedule target', () => {
           Arn: {
             'Fn::GetAtt': ['MyTemplate', 'Arn'],
           },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
@@ -483,16 +508,16 @@ describe('schedule target', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const inspectorTarget = new InspectorStartAssessmentRun(template, {
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: inspectorTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

@@ -144,11 +144,20 @@ export interface TableProps extends DatabaseOptions {
   readonly removalPolicy?: cdk.RemovalPolicy;
 
   /**
-     * A comment to attach to the table.
-     *
-     * @default - no comment
-     */
+   * A comment to attach to the table.
+   *
+   * @default - no comment
+   */
   readonly tableComment?: string;
+
+  /**
+   * Handler timeout duration.
+   *
+   * Valid values are between 1 second and 15 minutes.
+   *
+   * @default - 1 minute
+   */
+  readonly timeout?: cdk.Duration;
 }
 
 /**
@@ -263,7 +272,7 @@ export class Table extends TableBase {
       properties: {
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
-          generateSuffix: !props.tableName ? 'true' : 'false',
+          generateSuffix: (props.tableName == null).toString(),
         },
         tableColumns: this.tableColumns,
         distStyle: props.distStyle,
@@ -273,7 +282,7 @@ export class Table extends TableBase {
       },
     });
 
-    this.tableName = this.resource.ref;
+    this.tableName = props.tableName ?? this.resource.ref;
   }
 
   /**

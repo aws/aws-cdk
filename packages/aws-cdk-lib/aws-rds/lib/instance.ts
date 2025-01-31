@@ -18,6 +18,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -180,15 +181,15 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new Error('Cannot grant connect when IAM authentication is disabled');
+      throw new ValidationError('Cannot grant connect when IAM authentication is disabled', this);
     }
 
     if (!this.instanceResourceId) {
-      throw new Error('For imported Database Instances, instanceResourceId is required to grantConnect()');
+      throw new ValidationError('For imported Database Instances, instanceResourceId is required to grantConnect()', this);
     }
 
     if (!dbUser) {
-      throw new Error('For imported Database Instances, the dbUser is required to grantConnect()');
+      throw new ValidationError('For imported Database Instances, the dbUser is required to grantConnect()', this);
     }
 
     this.enableIamAuthentication = true;
@@ -262,7 +263,7 @@ export enum LicenseModel {
   LICENSE_INCLUDED = 'license-included',
 
   /**
-   * Bring your own licencse.
+   * Bring your own license.
    */
   BRING_YOUR_OWN_LICENSE = 'bring-your-own-license',
 
@@ -784,12 +785,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.vpc = props.vpc;
     if (props.vpcSubnets && props.vpcPlacement) {
-      throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
+      throw new ValidationError('Only one of `vpcSubnets` or `vpcPlacement` can be specified', this);
     }
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
-      throw new Error('Requesting a specific availability zone is not valid for Multi-AZ instances');
+      throw new ValidationError('Requesting a specific availability zone is not valid for Multi-AZ instances', this);
     }
 
     const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
@@ -820,12 +821,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new Error(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`);
+      throw new ValidationError(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
     }
     if (storageType === StorageType.GP3 && props.storageThroughput && iops
         && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
         && props.storageThroughput/iops > 0.25) {
-      throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
+      throw new ValidationError(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
     }
 
     this.cloudwatchLogGroups = {};
@@ -837,7 +838,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new Error('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
+      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
 
     if (props.domain) {
@@ -1019,13 +1020,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineFeatures = engineConfig.features;
     if (s3ImportRole) {
       if (!engineFeatures?.s3Import) {
-        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 import`);
+        throw new ValidationError(`Engine '${engineDescription(props.engine)}' does not support S3 import`, this);
       }
       instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
     }
     if (s3ExportRole) {
       if (!engineFeatures?.s3Export) {
-        throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
+        throw new ValidationError(`Engine '${engineDescription(props.engine)}' does not support S3 export`, this);
       }
       // only add the export feature if it's different from the import feature
       if (engineFeatures.s3Import !== engineFeatures?.s3Export) {
@@ -1036,7 +1037,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
-      throw new Error('You cannot specify both parameterGroup and parameters');
+      throw new ValidationError('You cannot specify both parameterGroup and parameters', this);
     }
 
     const dbParameterGroupName = props.parameters
@@ -1069,13 +1070,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for an instance without secret.');
+      throw new ValidationError('Cannot add single user rotation for an instance without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new Error('A single user rotation was already added to this instance.');
+      throw new ValidationError('A single user rotation was already added to this instance.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1092,7 +1093,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for an instance without secret.');
+      throw new ValidationError('Cannot add multi user rotation for an instance without secret.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1115,7 +1116,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (!this.secret) {
-        throw new Error('A secret or dbUser is required to grantConnect()');
+        throw new ValidationError('A secret or dbUser is required to grantConnect()', this);
       }
 
       dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
@@ -1248,7 +1249,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+        throw new ValidationError('`credentials` `username` must be specified when `generatePassword` is set to true', this);
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
@@ -1333,6 +1334,13 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceIdentifier: string;
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
+
+  /**
+   * The AWS Region-unique, immutable identifier for the DB instance.
+   * This identifier is found in AWS CloudTrail log entries whenever the AWS KMS key for the DB instance is accessed.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
+   */
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
@@ -1344,11 +1352,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
         && props.backupRetention) {
-      throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
+      throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
     // The read replica instance always uses the same engine as the source instance
-    // but some CF validations require the engine to be explicitely passed when some
+    // but some CF validations require the engine to be explicitly passed when some
     // properties are specified.
     const shouldPassEngine = props.domain != null;
 
@@ -1366,7 +1374,9 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
-    this.instanceResourceId = instance.attrDbInstanceArn;
+
+    this.instanceResourceId = FeatureFlags.of(this).isEnabled(cxapi.USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY) ?
+      instance.attrDbiResourceId : instance.attrDbInstanceArn;
 
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);

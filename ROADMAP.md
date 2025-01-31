@@ -1,6 +1,6 @@
 # AWS CDK Roadmap
 
-> Updated 9/3/2024
+> Updated 11/5/2024
 
 The roadmap priorities for the AWS CDK (Cloud Development Kit) are informed by what we hear from customers and interactions on Github, CDK.dev Slack, Stack Overflow, and Twitter. This document outlines the high level direction we are working towards, and for each project there is a tracking issue where you can leave feedback. We update this doc on a quarterly basis to reflect any changing priorities.
 
@@ -37,15 +37,11 @@ Over the course of the last few years, the CDK team has spent time speaking with
 ### L2 Abstractions
 
 The CDK team is committed to supporting our existing library of AWS L2 abstractions. We continue to solicit community feedback on where additional L2 coverage makes it simpler and more efficient to build with AWS. Current L2s that the team’s working on are listed below. Please be aware that this list will update throughout the year. If you have feedback on other L2s that should be prioritized by our team, feel free to submit a separate RFC.
-
-* 🚀 [VPC Construct with Full Control](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-ec2-alpha)
-* 🚀 [AWS APIGateway_v2 graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2-readme.html) 
-* 🚀 [AWS Batch graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_batch-readme.html) 
-* 🚀 [AWS Synthetics graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_synthetics-readme.html)  
-* 🛠️ [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/617)
-* 🛠️ [AWS Cognito_Identity_pool graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html)
-* 🛠️ [AWS Kinesis_firehose graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-kinesisfirehose-alpha-readme.html)
-* 🚦️ [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605)
+ 
+* 🚀 [CloudFront Origin Access Control L2](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront_origins-readme.html)
+* 🚀 [AWS Cognito_Identity_pool graduation to Developer Preview](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html)
+* 🚀 [AWS Kinesis_firehose graduation to Developer Preview](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-kinesisfirehose-alpha-readme.html)
+* 🛠️ [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605)
 * 🔍 [aws-lambda-python graduation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-lambda-python-alpha-readme.html)
 * 🔍 [Auto-generation of L2 constructs](https://github.com/aws/aws-cdk-rfcs/issues/611) 
 * 🔍 [Glue Alpha Construct Graduation](https://github.com/aws/aws-cdk/issues/7534) 
@@ -58,9 +54,10 @@ The CDK team is committed to supporting our existing library of AWS L2 abstracti
 
 ### User Experience
 
-- 🛠️ [Garbage Collection for Assets](https://github.com/aws/aws-cdk-rfcs/issues/64)
-- 🚦️ [Programmatic Access of the AWS CDK CLI](https://github.com/aws/aws-cdk-rfcs/issues/300)
-- 👂🏽 [CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162)
+- 🚀 [Garbage Collection for Assets](https://github.com/aws/aws-cdk-rfcs/issues/64)
+- 🛠️ [Programmatic Access of the AWS CDK CLI](https://github.com/aws/aws-cdk-rfcs/issues/300)
+- 🚦 [CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162)
+- 🚦 [cli: Enable client-side telemetry and analytics](https://github.com/aws/aws-cdk/issues/32010)
 
 ### Community contribution call-outs
 
