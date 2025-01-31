@@ -110,7 +110,7 @@ describe('MetadataResource', () => {
       const a = App.of(stage)!;
       stackArtifact = a.synth().getNestedAssembly(stage.artifactId).getStackByName(stackName);
     }
-    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;;
+    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
@@ -174,7 +174,6 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
-
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {

@@ -656,7 +656,6 @@ describe('bucket', () => {
         ],
       },
     });
-
   });
   test('bucketKeyEnabled can not be enabled with UNENCRYPTED', () => {
     const stack = new cdk.Stack();
@@ -676,7 +675,6 @@ describe('bucket', () => {
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
     }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: UNENCRYPTED)");
-
   });
 
   testDeprecated('logs to self, UNENCRYPTED does not throw error', () => {
@@ -1193,7 +1191,6 @@ describe('bucket', () => {
     });
 
     testDeprecated('arnForObjects accepts multiple arguments and FnConcats them for an UNENCRYPTED bucket', () => {
-
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
@@ -1229,7 +1226,6 @@ describe('bucket', () => {
     });
 
     test('arnForObjects accepts multiple arguments and FnConcats them an S3_MANAGED bucket', () => {
-
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });
@@ -2064,7 +2060,6 @@ describe('bucket', () => {
       's3:Abort*',
     ]);
     expect(actions('DeleterDefaultPolicyCD33B8A0')).toEqual('s3:DeleteObject*');
-
   });
 
   test('grantDelete, with a KMS Key', () => {
@@ -2534,7 +2529,6 @@ describe('bucket', () => {
           'Version': '2012-10-17',
         },
       });
-
     });
 
     test('"keyPrefix" can be used to only grant access to certain objects', () => {
@@ -2559,7 +2553,6 @@ describe('bucket', () => {
           'Version': '2012-10-17',
         },
       });
-
     });
 
     test('"allowedActions" can be used to specify actions explicitly', () => {
@@ -2584,7 +2577,6 @@ describe('bucket', () => {
           'Version': '2012-10-17',
         },
       });
-
     });
 
     test('returns the PolicyStatement which can be then customized', () => {
@@ -2613,7 +2605,6 @@ describe('bucket', () => {
           'Version': '2012-10-17',
         },
       });
-
     });
 
     test('throws when blockPublicPolicy is set to true', () => {
@@ -2639,7 +2630,6 @@ describe('bucket', () => {
           IndexDocument: 'index2.html',
         },
       });
-
     });
     test('fails if only error doc is specified', () => {
       const stack = new cdk.Stack();
@@ -2648,7 +2638,6 @@ describe('bucket', () => {
           websiteErrorDocument: 'error.html',
         });
       }).toThrow(/"websiteIndexDocument" is required if "websiteErrorDocument" is set/);
-
     });
     test('error and index docs', () => {
       const stack = new cdk.Stack();
@@ -2662,7 +2651,6 @@ describe('bucket', () => {
           ErrorDocument: 'error.html',
         },
       });
-
     });
     test('exports the WebsiteURL', () => {
       const stack = new cdk.Stack();
@@ -2670,7 +2658,6 @@ describe('bucket', () => {
         websiteIndexDocument: 'index.html',
       });
       expect(stack.resolve(bucket.bucketWebsiteUrl)).toEqual({ 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
-
     });
     test('exports the WebsiteDomain', () => {
       const stack = new cdk.Stack();
@@ -2685,7 +2672,6 @@ describe('bucket', () => {
           },
         ],
       });
-
     });
     test('exports the WebsiteURL for imported buckets', () => {
       const stack = new cdk.Stack();
@@ -2729,7 +2715,6 @@ describe('bucket', () => {
       });
       expect(stack.resolve(bucket.bucketWebsiteUrl)).toEqual('http://my-test-bucket.my-test.suffix');
       expect(stack.resolve(bucket.bucketWebsiteDomainName)).toEqual('my-test-bucket.my-test.suffix');
-
     });
     test('adds RedirectAllRequestsTo property', () => {
       const stack = new cdk.Stack();
@@ -2747,7 +2732,6 @@ describe('bucket', () => {
           },
         },
       });
-
     });
     test('fails if websiteRedirect and websiteIndex and websiteError are specified', () => {
       const stack = new cdk.Stack();
@@ -2760,7 +2744,6 @@ describe('bucket', () => {
           },
         });
       }).toThrow(/"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
-
     });
     test('fails if websiteRedirect and websiteRoutingRules are specified', () => {
       const stack = new cdk.Stack();
@@ -2772,7 +2755,6 @@ describe('bucket', () => {
           },
         });
       }).toThrow(/"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used/);
-
     });
     test('adds RedirectRules property', () => {
       const stack = new cdk.Stack();
@@ -2804,7 +2786,6 @@ describe('bucket', () => {
           }],
         },
       });
-
     });
     test('adds RedirectRules property with empty keyPrefixEquals condition', () => {
       const stack = new cdk.Stack();
@@ -2836,7 +2817,6 @@ describe('bucket', () => {
           }],
         },
       });
-
     });
     test('fails if routingRule condition object is empty', () => {
       const stack = new cdk.Stack();
@@ -2848,7 +2828,6 @@ describe('bucket', () => {
           }],
         });
       }).toThrow(/The condition property cannot be an empty object/);
-
     });
     describe('isWebsite set properly with', () => {
       test('only index doc', () => {
@@ -2857,7 +2836,6 @@ describe('bucket', () => {
           websiteIndexDocument: 'index2.html',
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('error and index docs', () => {
         const stack = new cdk.Stack();
@@ -2866,7 +2844,6 @@ describe('bucket', () => {
           websiteErrorDocument: 'error.html',
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('redirects', () => {
         const stack = new cdk.Stack();
@@ -2877,13 +2854,11 @@ describe('bucket', () => {
           },
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('no website properties set', () => {
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'Website');
         expect(bucket.isWebsite).toEqual(false);
-
       });
       test('imported website buckets', () => {
         const stack = new cdk.Stack();
@@ -2892,7 +2867,6 @@ describe('bucket', () => {
           isWebsite: true,
         });
         expect(bucket.isWebsite).toEqual(true);
-
       });
       test('imported buckets', () => {
         const stack = new cdk.Stack();
@@ -2900,7 +2874,6 @@ describe('bucket', () => {
           bucketArn: 'arn:aws:s3:::my-bucket',
         });
         expect(bucket.isWebsite).toEqual(false);
-
       });
     });
   });
@@ -2915,7 +2888,6 @@ describe('bucket', () => {
     // THEN
     expect(bucket.bucketName).toEqual('my-corporate-bucket');
     expect(bucket.bucketArn).toEqual('arn:aws:s3:::my-corporate-bucket');
-
   });
 
   test('Bucket.fromBucketName', () => {

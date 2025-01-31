@@ -108,7 +108,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {
       throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
-    };
+    }
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
@@ -275,7 +275,7 @@ export interface ResultConfiguration {
    * Example value: `s3://query-results-bucket/folder/`
    *
    * @default - Query Result Location set in Athena settings for this workgroup
-  */
+   */
   readonly outputLocation?: s3.Location;
 
   /**

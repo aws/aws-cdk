@@ -310,9 +310,9 @@ export class VpcV2 extends VpcV2Base {
    */
   public static fromVpcV2Attributes(scope: Construct, id: string, attrs: VpcV2Attributes): IVpcV2 {
     /**
-    * Internal class to allow users to import VPC
-    * @internal
-    */
+     * Internal class to allow users to import VPC
+     * @internal
+     */
     class ImportedVpcV2 extends VpcV2Base {
       public readonly vpcId: string;
       public readonly vpcArn: string;
@@ -332,9 +332,9 @@ export class VpcV2 extends VpcV2Base {
       public readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
       /**
-      * Refers to actual VPC Resource attribute in non-imported VPC
-      * Required to implement here due to extension from Base class
-      */
+       * Refers to actual VPC Resource attribute in non-imported VPC
+       * Required to implement here due to extension from Base class
+       */
       public readonly vpcCidrBlock: string;
 
       // Required to do CIDR range test on imported VPCs to create new subnets
@@ -532,7 +532,6 @@ export class VpcV2 extends VpcV2Base {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
         if (!secondaryVpcOptions.cidrBlockName) {
           throw new Error('Cidr Block Name is required to create secondary IP address');
@@ -626,7 +625,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: { cidrBlockName: string}) {};
+  constructor(private readonly props: { cidrBlockName: string}) {}
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
@@ -662,7 +661,6 @@ class IpamIpv4 implements IIpAddresses {
   constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
-
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
@@ -744,10 +742,10 @@ export interface VPCCidrBlockattributes {
   readonly cidrBlock?: string;
 
   /**
-  * The secondary IPv4 CIDR Block
-  *
-  * @default - no CIDR block provided
-  */
+   * The secondary IPv4 CIDR Block
+   *
+   * @default - no CIDR block provided
+   */
   readonly cidrBlockName?: string;
 
   /**

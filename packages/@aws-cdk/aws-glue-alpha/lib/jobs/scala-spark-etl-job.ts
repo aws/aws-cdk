@@ -25,7 +25,7 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * Class name (required for Scala scripts)
    * Package and class name for the entry point of Glue job execution for
    * Java scripts
-  **/
+   **/
   readonly className: string;
 
   /**
@@ -164,7 +164,6 @@ export class ScalaSparkEtlJob extends Job {
   }
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-
     validateSparkUiPrefix(sparkUiProps.prefix);
     const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));

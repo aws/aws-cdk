@@ -67,9 +67,9 @@ export interface IVpcIngressConnection extends cdk.IResource {
   readonly vpcIngressConnectionArn: string;
 
   /**
-    * The name of the VPC Ingress Connection.
-    * @attribute
-    */
+   * The name of the VPC Ingress Connection.
+   * @attribute
+   */
   readonly vpcIngressConnectionName: string;
 }
 
@@ -144,7 +144,6 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
     });
 
     if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
-
       if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
         throw new Error(
           `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`,

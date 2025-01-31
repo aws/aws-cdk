@@ -90,6 +90,7 @@ export class AstBuilder<T extends Module> {
     CDK_CORE.import(this.module, 'cdk', { fromLocation: props.importLocations?.core });
     CONSTRUCTS.import(this.module, 'constructs');
     CDK_CORE.helpers.import(this.module, 'cfn_parse', { fromLocation: props.importLocations?.coreHelpers });
+    CDK_CORE.errors.import(this.module, 'cdk_errors', { fromLocation: props.importLocations?.coreErrors });
   }
 
   public addResource(resource: Resource) {
