@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
@@ -79,6 +80,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
     expectedProps = ComputeEnvironment === ManagedEc2EcsComputeEnvironment
@@ -740,6 +742,7 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
   });
@@ -909,6 +912,7 @@ describe('ManagedEc2EksComputeEnvironment', () => {
       kubernetesNamespace: 'cdk-test-namespace',
       eksCluster: new eks.Cluster(stack, 'eksTestCluster', {
         version: eks.KubernetesVersion.V1_24,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       }),
     };
   });

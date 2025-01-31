@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../../../aws-eks';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
@@ -12,6 +13,7 @@ beforeEach(() => {
   cluster = new eks.Cluster(stack, 'Cluster', {
     version: eks.KubernetesVersion.V1_21,
     clusterName: 'eksCluster',
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 });
 
@@ -199,6 +201,7 @@ test('Task throws if cluster supplied does not have clusterEndpoint configured',
   const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
     clusterName: 'importedCluster',
     clusterCertificateAuthorityData: 'clusterCertificateAuthorityData',
+    kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
   });
   expect(() => {
     new EksCall(stack, 'Call', {
@@ -218,6 +221,7 @@ test('Task throws if cluster supplied does not have clusterCertificateAuthorityD
   const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
     clusterName: 'importedCluster',
     clusterEndpoint: 'clusterEndpoint',
+    kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
   });
   expect(() => {
     new EksCall(stack, 'Call', {
