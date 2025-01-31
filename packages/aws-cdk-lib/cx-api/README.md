@@ -594,3 +594,15 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-codepipeline:removeTheColonFromStackID`
+Some stack IDs include colons in their naming, which are not supported by the Windows file system, rendering the repository incompatible with Windows users. Enabling this feature flag removes the colons, allowing Windows users to clone and contribute to the repository. Disabling the flag may create challenges for Windows-based contributors.
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-codepipeline:removeTheColonFromStackID": true
+  }
+}
+```

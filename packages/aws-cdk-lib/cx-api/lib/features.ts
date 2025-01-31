@@ -122,6 +122,7 @@ export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableI
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID = '@aws-cdk/aws-codepipeline:removeTheColonFromStackID';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1371,6 +1372,16 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
   },
+  //////////////////////////////////////////////////////////////////////
+  [CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, it removes the colon from the stack ID, making the repository compatible with the Windows file system.',
+    detailsMd: `The current stack ID uses a colon, which is not supported by the Windows file system and makes the repository incompatible for Windows users. Enable this feature flag to remove the colon, allowing Windows users to clone and contribute to the repository. Disabling the flag poses challenges for Windows-based contributors.`,
+    introducedIn: { v2: 'V2NEXT' },
+    compatibilityWithOldBehaviorMd: '',
+    defaults: { v2: true },
+    recommendedValue: true
+  },  
 };
 
 const CURRENT_MV = 'v2';

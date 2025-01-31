@@ -38,6 +38,9 @@ import {
 } from '../../core';
 import * as cxapi from '../../cx-api';
 
+const CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID = { [cxapi.CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID]: true };
+
+
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
  * Note that you can provide only one of the below properties -
@@ -823,7 +826,13 @@ export class Pipeline extends PipelineBase {
     }
 
     const app = this.supportScope();
-    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}:${actionRegion}`;
+    
+    
+    const supportStackId = CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID[cxapi.CODEPIPELINE_REMOVE_THE_COLON_FROM_STACK_ID]
+    ? `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}-${actionRegion}`
+    : `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}:${actionRegion}`;
+    
+    
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
