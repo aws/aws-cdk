@@ -45,15 +45,15 @@ interface FailJsonPathOptions {
 /**
  * Properties for defining a Fail state that using JSONPath
  */
-export interface FailJsonPathProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions {}
+export interface FailJsonPathProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions { }
 /**
  * Properties for defining a Fail state that using JSONata
  */
-export interface FailJsonataProps extends StateBaseProps, FailBaseOptions {}
+export interface FailJsonataProps extends StateBaseProps, FailBaseOptions { }
 /**
  * Properties for defining a Fail state
  */
-export interface FailProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions {}
+export interface FailProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions { }
 
 /**
  * Define a Fail state in the state machine
@@ -61,19 +61,19 @@ export interface FailProps extends StateBaseProps, FailBaseOptions, FailJsonPath
  * Reaching a Fail state terminates the state execution in failure.
  */
 export class Fail extends State {
-/**
- * Define a Fail state using JSONPath in the state machine
- *
- * Reaching a Fail state terminates the state execution in failure.
- */
+  /**
+   * Define a Fail state using JSONPath in the state machine
+   *
+   * Reaching a Fail state terminates the state execution in failure.
+   */
   public static jsonPath(scope: Construct, id: string, props: FailJsonPathProps = {}) {
     return new Fail(scope, id, props);
   }
   /**
- * Define a Fail state using JSONata in the state machine
- *
- * Reaching a Fail state terminates the state execution in failure.
- */
+   * Define a Fail state using JSONata in the state machine
+   *
+   * Reaching a Fail state terminates the state execution in failure.
+   */
   public static jsonata(scope: Construct, id: string, props: FailJsonataProps = {}) {
     return new Fail(scope, id, {
       ...props,
