@@ -523,6 +523,58 @@ and might have breaking changes in the future.
 
 > *: `Fn::GetAtt` is only partially supported. Refer to [this implementation](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts#L477-L492) for supported resources and attributes.
 
+#### Renaming detection
+
+If you change the ID of a construct, this change will be propagated all the 
+way down to the CloudFormation level, leading to the change of at least one 
+resource logical ID. If you then use this template to update a stack created 
+with the previous version of the template, all the renamed resources will be 
+replaced.
+
+Since a renaming like this might have happened by accident, the CLI will detect 
+such cases just before performing a deployment, and ask for confirmation to go 
+ahead. For example, suppose you have the following construct tree:
+
+```
+MyStack
+└ MyBucket
+  └ Resource 
+```
+
+In the template, the bucket resource will have a logical ID like 
+`MyBucketFD3F4958`. So you deploy this template for the first time, creating 
+the stack. Then you decide to rename the `MyBucket` construct to `NewName` 
+and try to deploy it again, to update the stack. Since the logical ID has 
+changed (to something like `NewNameEF569C1A`), the CLI will prompt you with 
+the following message: 
+
+```
+Some resources have been renamed:
+  - MyStack/MyBucket/Resource -> MyStack/NewName/Resource
+
+Do you wish to deploy these changes (y/n)?
+```
+
+Notice that it displays the CDK metadata path for the resource. If this 
+field is not present, it will use the logical ID instead.
+
+Resources are considered equal if they have the same content (up to reordering 
+of properties). So if you have different logical IDs referring to equal objects, 
+and you rename at least two of them, it's impossible to establish a 1:1 
+correspondence as above. So the CLI will display a correspondence between sets 
+of identifiers:
+
+```
+Some resources have been renamed:
+  - {MyStack/MyBucket1/Resource, MyStack/MyBucket2/Resource} -> 
+  {MyStack/NewName1/Resource, MyStack/NewName2/Resource}
+
+Do you wish to deploy these changes (y/n)?
+```
+
+As usual, you can force the CLI to skip this approval with the
+`--require-approval nevel` option.
+
 ### `cdk rollback`
 
 If a deployment performed using `cdk deploy --no-rollback` fails, your
