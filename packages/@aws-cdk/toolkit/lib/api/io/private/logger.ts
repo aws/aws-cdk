@@ -1,10 +1,11 @@
 import * as util from 'node:util';
 import type { Logger } from '@smithy/types';
-import type { IIoHost, IoMessage, IoMessageCodeCategory, IoMessageLevel, IoRequest } from '../io-host';
-import { debug, error, info, messageCode, trace, warn } from './messages';
-import { ActionAwareIoHost } from './types';
+import type { IoMessage, IoMessageCodeCategory, IoMessageLevel, IoRequest } from '../io-message';
+import { debug, error, info, defaultMessageCode, trace, warn } from './messages';
+import type { ActionAwareIoHost } from './types';
 import type { ToolkitAction } from '../../../toolkit';
 import { formatSdkLoggerContent } from '../../aws-cdk';
+import type { IIoHost } from '../io-host';
 
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   return {
@@ -117,7 +118,7 @@ export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
  * Turn an ActionAwareIoHost into a logger that is compatible with older code, but doesn't support data
  */
 export function asLogger(ioHost: ActionAwareIoHost, category?: IoMessageCodeCategory) {
-  const code = (level: IoMessageLevel) => messageCode(level, category);
+  const code = (level: IoMessageLevel) => defaultMessageCode(level, category);
 
   return {
     trace: async (msg: string, ...args: any[]) => {

@@ -249,7 +249,6 @@ export interface LustreFileSystemProps extends FileSystemProps {
  * @resource AWS::FSx::FileSystem
  */
 export class LustreFileSystem extends FileSystemBase {
-
   /**
    * Import an existing FSx for Lustre file system from the given properties.
    */
@@ -583,6 +582,5 @@ export class LustreFileSystem extends FileSystemBase {
     if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
       throw new Error('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
     }
-
   }
 }

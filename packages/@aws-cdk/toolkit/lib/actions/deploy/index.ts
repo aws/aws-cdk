@@ -82,21 +82,21 @@ export class StackParameters {
    */
   public static onlyExisting() {
     return new StackParameters({}, true);
-  };
+  }
 
   /**
    * Use exactly these parameters and remove any other existing parameters from the stack.
    */
   public static exactly(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, false);
-  };
+  }
 
   /**
    * Define additional parameters for the stack, while keeping existing parameters for unspecified values.
    */
   public static withExisting(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, true);
-  };
+  }
 
   public readonly parameters: Map<string, string | undefined>;
   public readonly keepExistingParameters: boolean;
@@ -110,8 +110,10 @@ export class StackParameters {
 export interface BaseDeployOptions {
   /**
    * Criteria for selecting stacks to deploy
+   *
+   * @default - all stacks
    */
-  readonly stacks: StackSelector;
+  readonly stacks?: StackSelector;
 
   /**
    * @deprecated set on toolkit
@@ -148,9 +150,9 @@ export interface BaseDeployOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
+   * @default - no hotswap
    */
-  readonly hotswap: HotswapMode;
+  readonly hotswap?: HotswapMode;
 
   /**
    * Rollback failed deployments
@@ -173,6 +175,22 @@ export interface BaseDeployOptions {
   readonly concurrency?: number;
 }
 
+/**
+ * Deploy options needed by the watch command.
+ * Intentionally not exported because these options are not
+ * meant to be public facing.
+ *
+ * @internal
+ */
+export interface ExtendedDeployOptions extends DeployOptions {
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
+}
+
 export interface DeployOptions extends BaseDeployOptions {
   /**
    * ARNs of SNS topics that CloudFormation will notify with stack related events
@@ -182,7 +200,7 @@ export interface DeployOptions extends BaseDeployOptions {
   /**
    * What kind of security changes require approval
    *
-   * @default RequireApproval.Broadening
+   * @default RequireApproval.NEVER
    */
   readonly requireApproval?: RequireApproval;
 

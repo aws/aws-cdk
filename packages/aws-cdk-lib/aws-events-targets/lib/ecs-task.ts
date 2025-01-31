@@ -243,7 +243,7 @@ export class EcsTask implements events.IRuleTarget {
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
-    };
+    }
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
 
