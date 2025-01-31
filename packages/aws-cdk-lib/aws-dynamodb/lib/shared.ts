@@ -92,13 +92,32 @@ export interface WarmThroughput {
   /**
    * Configures the number of read units per second a table will be able to handle instantly
    * @default - no readUnitsPerSecond configured
-  */
+   */
   readonly readUnitsPerSecond?: number;
   /**
    * Configures the number of write units per second a table will be able to handle instantly
    * @default - no writeUnitsPerSecond configured
-  */
+   */
   readonly writeUnitsPerSecond?: number;
+}
+
+/**
+ * Reference to PointInTimeRecovey Specification
+ * for continuous backups
+ */
+export interface PointInTimeRecoverySpecification {
+  /**
+   * Indicates whether point in time recovery is enabled (true) or disabled (false) on the table.
+   * @default false
+   */
+  readonly pointInTimeRecoveryEnabled: boolean;
+  /**
+   * The number of preceding days for which continuous backups are taken and maintained.
+   * Your table data is only recoverable to any point-in-time from within the configured recovery period.
+   * If no value is provided, the value will default to 35.
+   * @default 35
+   */
+  readonly recoveryPeriodInDays?: number;
 }
 
 /**

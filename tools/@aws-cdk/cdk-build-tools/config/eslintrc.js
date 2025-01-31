@@ -81,6 +81,7 @@ module.exports = {
     'jsdoc/require-param-description': ['error'],
     'jsdoc/require-property-description': ['error'],
     'jsdoc/require-returns-description': ['error'],
+    'jsdoc/check-alignment': ['error'],
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
