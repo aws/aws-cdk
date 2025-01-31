@@ -49,7 +49,7 @@ import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
 import { data, debug, error, highlight, info, success, warning, withCorkedLogging } from '../logging';
 import { ResourceMigrator } from '../migrator';
-import { checkRenaming, formatCorrespondence } from '../refactoring';
+import { findResourceCorrespondence } from '../refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { ToolkitError } from '../toolkit/error';
 import { numberFromBool, partition } from '../util';
@@ -350,15 +350,15 @@ export class CdkToolkit {
         );
       }
 
-      const deployedResources = (await this.props.deployments.readCurrentTemplate(stack)).Resources;
-      const correspondence = checkRenaming(
-        deployedResources,
-        stack.template.Resources,
+      const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
+      const deployedResources = currentTemplate?.Resources;
+      const correspondence = findResourceCorrespondence(
+        deployedResources ?? {},
+        stack.template.Resources ?? {},
       );
 
-      if (correspondence.length > 0) {
-        const corr = formatCorrespondence(correspondence, deployedResources, stack.template.Resources);
-        warning(`Some resources have been renamed:${corr}`);
+      if (!correspondence.isEmpty()) {
+        warning(`Some resources have been renamed:${correspondence}`);
 
         await askUserConfirmation(
           concurrency,
@@ -386,7 +386,6 @@ export class CdkToolkit {
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await askUserConfirmation(
             concurrency,

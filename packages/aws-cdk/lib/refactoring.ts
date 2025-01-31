@@ -11,32 +11,45 @@ export type ResourceMap = Map<string, any>
 export type ResourceIndex = Map<string, Set<string>>
 
 /**
- * Correspondence between sets of logical IDs.
- * Both sets are names for the same resource
+ * A pair of sets of logical IDs that are equivalent,
+ * that is, that refer to the same resource.
  */
-export type ResourceCorrespondence = [Set<string>, Set<string>][]
+export type RenamingPair = [Set<string>, Set<string>]
 
-export function formatCorrespondence(corr: ResourceCorrespondence, oldResources: ResourceMap, newResources: ResourceMap): string {
-  function toMetadataUsing(set: Set<string>, resources: Record<string, any>): Set<string> {
-    return new Set([...set].map(s => resources[s].Metadata?.['aws:cdk:path'] as string ?? s));
+export class ResourceCorrespondence {
+  constructor(
+    public readonly pairs: RenamingPair[],
+    private readonly oldResources: Record<string, any>,
+    private readonly newResources: Record<string, any>,
+  ) {
   }
 
-  let text = corr
-    .map(([before, after]) => ([
-      toMetadataUsing(before, oldResources),
-      toMetadataUsing(after, newResources),
-    ]))
-    .map(([before, after]) => {
-      if (before.size === 1 && after.size === 1) {
-        return `${[...before][0]} -> ${[...after][0]}`;
-      } else {
-        return `{${[...before].join(', ')}} -> {${[...after].join(', ')}}`;
-      }
-    })
-    .map(x => `  - ${x}`)
-    .join('\n');
+  toString(): string {
+    function toMetadataUsing(set: Set<string>, resources: Record<string, any>): Set<string> {
+      return new Set([...set].map(s => resources[s].Metadata?.['aws:cdk:path'] as string ?? s));
+    }
 
-  return `\n${text}\n`;
+    let text = this.pairs
+      .map(([before, after]) => ([
+        toMetadataUsing(before, this.oldResources),
+        toMetadataUsing(after, this.newResources),
+      ]))
+      .map(([before, after]) => {
+        if (before.size === 1 && after.size === 1) {
+          return `${[...before][0]} -> ${[...after][0]}`;
+        } else {
+          return `{${[...before].join(', ')}} -> {${[...after].join(', ')}}`;
+        }
+      })
+      .map(x => `  - ${x}`)
+      .join('\n');
+
+    return `\n${text}\n`;
+  }
+
+  isEmpty(): boolean {
+    return this.pairs.length === 0;
+  }
 }
 
 /**
@@ -46,19 +59,18 @@ export function formatCorrespondence(corr: ResourceCorrespondence, oldResources:
  * first set coming from the first record, and the second set, from the
  * second object. For example:
  *
- *     const corr = checkRenaming({a: {x: 0}}, {b: {x: 0}});
+ *     const corr = findResourceCorrespondence({a: {x: 0}}, {b: {x: 0}});
  *
  * `corr` should be `[new Set('a'), new Set('b')]`
  *
  */
-export function checkRenaming(m1: Record<string, any>, m2: Record<string, any>): ResourceCorrespondence {
-  if (m1 == null || m2 == null) {
-    return [];
-  }
-  return correspondence(
+export function findResourceCorrespondence(m1: Record<string, any>, m2: Record<string, any>): ResourceCorrespondence {
+  const pairs = renamingPairs(
     index(new Map(Object.entries(m1))),
     index(new Map(Object.entries(m2))),
   );
+
+  return new ResourceCorrespondence(pairs, m1, m2);
 }
 
 function index(resourceMap: ResourceMap): ResourceIndex {
@@ -73,8 +85,8 @@ function index(resourceMap: ResourceMap): ResourceIndex {
   return result;
 }
 
-function correspondence(index1: ResourceIndex, index2: ResourceIndex): ResourceCorrespondence {
-  const result: ResourceCorrespondence = [];
+function renamingPairs(index1: ResourceIndex, index2: ResourceIndex): RenamingPair[] {
+  const result: RenamingPair[] = [];
 
   const keyUnion = new Set([...index1.keys(), ...index2.keys()]);
   keyUnion.forEach((key) => {
