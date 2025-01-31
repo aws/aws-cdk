@@ -1,29 +1,29 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "aws-stepfunctions-tasks-http-invoke-integ.assets": {
+    "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-stepfunctions-tasks-http-invoke-integ.assets.json",
+        "file": "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-stepfunctions-tasks-http-invoke-integ": {
+    "aws-stepfunctions-tasks-http-invoke-json-path-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-stepfunctions-tasks-http-invoke-integ.template.json",
+        "templateFile": "aws-stepfunctions-tasks-http-invoke-json-path-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca4f79a229025c752ce088e43e4cabe6295af117112b2895737776e439733378.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3e8f340d6f62e16fc00a99621fccb9cb20bff5bbfb4a909f05faf2dee80abb2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-stepfunctions-tasks-http-invoke-integ.assets"
+          "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,113 +32,113 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-tasks-http-invoke-integ.assets"
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AuthorizerHandlerServiceRole5F40A014"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AuthorizerHandler0112B303"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C:Permissions": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AuthorizerHandlerawsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1CPermissions7F5D78AD"
+            "data": "AuthorizerHandlerawsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200PermissionsAC1581B9"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/Authorizer/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AuthorizerBD825682"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegRestApiF8B59B0D"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910"
+            "data": "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegRestApiDeploymentStageprod29E2686A"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Endpoint": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Endpoint": [
           {
             "type": "aws:cdk:logicalId",
             "data": "IntegRestApiEndpoint7BEB0C53"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegRestApitest58FEA9C5"
+            "data": "IntegRestApitestjsonpath7AE2D560"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegRestApitestGET52631013"
+            "data": "IntegRestApitestjsonpathGETEA421C58"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/Connection/Connection": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection/Connection": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Connection07624BCD"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/BootstrapVersion": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-stepfunctions-tasks-http-invoke-integ/CheckBootstrapVersion": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-stepfunctions-tasks-http-invoke-integ"
+      "displayName": "aws-stepfunctions-tasks-http-invoke-json-path-integ"
     },
     "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets": {
       "type": "cdk:asset-manifest",
@@ -158,7 +158,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7186e13c4d3029cdebdd12962d94bfaf3c16356514e84e66844b9e37977656e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9decf407c2b66df60db6e15a5350c0fceab94474b4a40ba563dddf2f32905319.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,14 +171,14 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-tasks-http-invoke-integ",
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ",
         "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets"
       ],
       "metadata": {
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
+            "data": "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14"
           }
         ],
         "/HttpInvokeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -199,16 +199,16 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+            "data": "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e"
           }
         ],
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/AssertionResults": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e"
           }
         ],
         "/HttpInvokeTest/DefaultTest/DeployAssert/BootstrapVersion": [
