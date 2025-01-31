@@ -124,13 +124,13 @@ export interface AppSyncLogConfig {
   readonly role?: IRole;
 
   /**
-  * The number of days log events are kept in CloudWatch Logs.
-  * By default AppSync keeps the logs infinitely. When updating this property,
-  * unsetting it doesn't remove the log retention policy.
-  * To remove the retention policy, set the value to `INFINITE`
-  *
-  * @default RetentionDays.INFINITE
-  */
+   * The number of days log events are kept in CloudWatch Logs.
+   * By default AppSync keeps the logs infinitely. When updating this property,
+   * unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`
+   *
+   * @default RetentionDays.INFINITE
+   */
   readonly retention?: RetentionDays;
 }
 
