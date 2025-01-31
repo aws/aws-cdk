@@ -302,7 +302,7 @@ export interface ResultConfiguration {
    * Example value: `s3://query-results-bucket/folder/`
    *
    * @default - Query Result Location set in Athena settings for this workgroup
-  */
+   */
   readonly outputLocation?: s3.Location;
 
   /**

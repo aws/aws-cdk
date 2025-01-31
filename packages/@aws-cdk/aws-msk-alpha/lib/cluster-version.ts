@@ -7,7 +7,7 @@ export interface KafkaVersionFeatures {
    *
    * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
    * @default false
-  */
+   */
   readonly tieredStorage?: boolean;
 }
 
