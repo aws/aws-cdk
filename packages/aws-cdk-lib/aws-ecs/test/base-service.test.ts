@@ -1,6 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -78,6 +79,100 @@ describe('When import an ECS Service', () => {
         'FargateTaskDefTaskRole0B257552',
       ],
     });
+  });
+
+  test('should add tls configuration to service connect service', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    const kmsKey = new kms.Key(stack, 'KmsKey');
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+    });
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
+        },
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.enableServiceConnect({
+      services: [
+        {
+          tls: {
+            awsPcaAuthorityArn:
+              'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+            kmsKey,
+            role,
+          },
+          portMappingName: 'api',
+        },
+      ],
+      namespace: 'test namespace',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      ServiceConnectConfiguration: {
+        Services: [
+          {
+            Tls: {
+              IssuerCertificateAuthority: {
+                AwsPcaAuthorityArn:
+                  'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+              },
+              KmsKey: stack.resolve(kmsKey.keyArn),
+              RoleArn: stack.resolve(role.roleArn),
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('throws an error when awsPcaAuthorityArn is not an ARN', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
+        },
+      ],
+    });
+
+    // WHEN
+    const createFargateService = () => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      serviceConnectConfiguration: {
+        services: [
+          {
+            tls: {
+              awsPcaAuthorityArn: 'invalid-arn',
+            },
+            portMappingName: 'api',
+          },
+        ],
+        namespace: 'test namespace',
+      },
+    });
+
+    // THEN
+    expect(() => createFargateService()).toThrow(/awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received invalid-arn/);
   });
 });
 
