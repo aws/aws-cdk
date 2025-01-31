@@ -93,6 +93,12 @@ export class ServerlessCluster extends ClusterBase {
       securityGroups: this._securityGroups,
     });
 
+    /**
+     * TODO At the time of implementation, MSK Serverless only supports IAM authentication, so it cannot be disabled.
+     * If it becomes configurable in the future, the property will need to be exposed.
+     *
+     * @see https://docs.aws.amazon.com/msk/latest/developerguide/serverless.html
+     */
     const resource = new CfnServerlessCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clientAuthentication: {
