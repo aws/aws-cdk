@@ -368,7 +368,7 @@
          "Arn"
         ]
        },
-       "\"},\"Method\":\"GET\"},\"Resource\":\"arn:",
+       "\"},\"Method\":\"GET\"},\"Output\":{\"ResponseBody\":\"{% $states.result.ResponseBody %}\"},\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d6cc5921e94930e9fd9a28cc85d4ca332aedb96eba1d6deed4af809db8a94c0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c819c14d8cf2a591a21a9c9ef704b1e3d3d5d538228b446100595e5ad1ce18c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -156,7 +156,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11d104672ad142c49e78e848f9cd2a4dee97a2d4118f30a0ef08cadc02857b98.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f357ba7a71c9a3e75aff4a8765c630e1ce80251f16f79f06aca84096e5460a20.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -173,10 +173,10 @@
         "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets"
       ],
       "metadata": {
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc/Default/Default": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc"
+            "data": "AwsApiCallawssdkclientsfnStartExecution61c62f6bde43fb51e937a355afd0b3bc"
           }
         ],
         "/HttpInvokeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -197,16 +197,16 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/Default/Default": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439"
+            "data": "AwsApiCallawssdkclientsfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949"
           }
         ],
-        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/AssertionResults": [
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439"
+            "data": "AssertionResultsAwsApiCallawssdkclientsfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949"
           }
         ],
         "/HttpInvokeTest/DefaultTest/DeployAssert/BootstrapVersion": [

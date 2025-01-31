@@ -649,7 +649,7 @@
                               "Arn"
                             ]
                           },
-                          "\"},\"Method\":\"GET\"},\"Resource\":\"arn:",
+                          "\"},\"Method\":\"GET\"},\"Output\":{\"ResponseBody\":\"{% $states.result.ResponseBody %}\"},\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -736,17 +736,17 @@
                 "id": "DeployAssert",
                 "path": "HttpInvokeTest/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc": {
-                    "id": "AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc",
-                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc",
+                  "AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc": {
+                    "id": "AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc",
+                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc/SdkProvider",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc/SdkProvider/AssertionsProvider",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -760,11 +760,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc/Default",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc/Default/Default",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution61c62f6bde43fb51e937a355afd0b3bc/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -824,17 +824,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439": {
-                    "id": "AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439",
-                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439",
+                  "AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949": {
+                    "id": "AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949",
+                    "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/SdkProvider",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/SdkProvider/AssertionsProvider",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -848,11 +848,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/Default",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/Default/Default",
+                            "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -866,7 +866,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439/AssertionResults",
+                        "path": "HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

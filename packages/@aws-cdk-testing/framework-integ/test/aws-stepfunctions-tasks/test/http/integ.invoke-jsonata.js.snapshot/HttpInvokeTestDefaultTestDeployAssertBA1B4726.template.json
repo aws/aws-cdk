@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc": {
-   "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
+  "AwsApiCallawssdkclientsfnStartExecution61c62f6bde43fb51e937a355afd0b3bc": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-sfnStartExecutio",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,8 +9,8 @@
       "Arn"
      ]
     },
-    "service": "StepFunctions",
-    "api": "startExecution",
+    "service": "@aws-sdk/client-sfn",
+    "api": "StartExecution",
     "parameters": {
      "stateMachineArn": {
       "Fn::Join": [
@@ -30,7 +30,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1738266443043"
+    "salt": "1738287213469"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -113,8 +113,8 @@
     }
    }
   },
-  "AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439": {
-   "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
+  "AwsApiCallawssdkclientsfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-sfnDescribeExecu",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -122,9 +122,9 @@
       "Arn"
      ]
     },
-    "service": "StepFunctions",
-    "api": "describeExecution",
-    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
+    "service": "@aws-sdk/client-sfn",
+    "api": "DescribeExecution",
+    "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\",\"output\":\"{\\\"ResponseBody\\\":{\\\"message\\\":\\\"Hello, tester!\\\"}}\"}}",
     "parameters": {
      "executionArn": {
       "Fn::Join": [
@@ -133,7 +133,7 @@
         "\"",
         {
          "Fn::GetAtt": [
-          "AwsApiCallStepFunctionsstartExecution61c62f6bde43fb51e937a355afd0b3bc",
+          "AwsApiCallawssdkclientsfnStartExecution61c62f6bde43fb51e937a355afd0b3bc",
           "apiCallResponse.executionArn"
          ]
         },
@@ -143,7 +143,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738266443044"
+    "salt": "1738287213470"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -274,10 +274,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439": {
+  "AssertionResultsAwsApiCallawssdkclientsfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsdescribeExecution094955c37eec5d2eac99e15a94257439",
+     "AwsApiCallawssdkclientsfnDescribeExecution6c70a15ac7e24e04bd8282ccb31f2949",
      "assertion"
     ]
    }
