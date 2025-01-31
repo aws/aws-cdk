@@ -22,10 +22,12 @@
 on the VPC being created. `VpcV2` implements the existing [`IVpc`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2.IVpc.html), therefore,
 `VpcV2` is compatible with other constructs that accepts `IVpc` (e.g. [`ApplicationLoadBalancer`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationLoadBalancer.html#construct-props)).
 
-To create a VPC with both IPv4 and IPv6 support:
+`VpcV2` supports the addition of both primary and secondary addresses. The primary address must be an IPv4 address, which can be specified as a CIDR string or assigned from an IPAM pool. Secondary addresses can be either IPv4 or IPv6.
+By default, `VpcV2` assigns `10.0.0.0/16` as the primary CIDR if no other CIDR is specified.
+
+Below is an example of creating a VPC with both IPv4 and IPv6 support:
 
 ```ts
-
 const stack = new Stack();
 new VpcV2(this, 'Vpc', {
   primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/24'),
@@ -44,7 +46,6 @@ This new construct can be used to add subnets to a `VpcV2` instance:
 Note: When defining a subnet with `SubnetV2`, CDK automatically creates a new route table, unless a route table is explicitly provided as an input to the construct.
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc', {
   secondaryAddressBlocks: [
@@ -61,11 +62,12 @@ new SubnetV2(this, 'subnetA', {
 })
 ```
 
+Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
+
 ## IP Addresses Management
 
-By default `VpcV2` uses `10.0.0.0/16` as the primary CIDR if none is defined. 
-Additional CIDRs can be adding to the VPC via the `secondaryAddressBlocks` prop.
-The following example illustrates the different options of defining the address blocks:
+Additional CIDRs can be added to the VPC via the `secondaryAddressBlocks` property.
+The following example illustrates the options of defining these secondary address blocks using `IPAM`:
 
 Note: There’s currently an issue with IPAM pool deletion that may affect the `cdk --destroy` command. This is because IPAM takes time to detect when the IP address pool has been deallocated after the VPC is deleted. The current workaround is to wait until the IP address is fully deallocated from the pool before retrying the deletion. Below command can be used to check allocations for a pool using CLI 
 
@@ -76,7 +78,6 @@ aws ec2 get-ipam-pool-allocations --ipam-pool-id <ipam-pool-id>
 Ref: https://docs.aws.amazon.com/cli/latest/reference/ec2/get-ipam-pool-allocations.html
 
 ```ts
-
 const stack = new Stack();
 const ipam = new Ipam(this, 'Ipam', {
   operatingRegions: ['us-west-1']
@@ -111,8 +112,6 @@ new VpcV2(this, 'Vpc', {
   ],
 });
 ```
-
-Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
 
 ### Bring your own IPv6 addresses (BYOIP) 
 
@@ -149,10 +148,10 @@ const myVpc = new VpcV2(this, 'Vpc', {
 
 ## Routing
 
-`RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. For instance, the following example shows how a custom route table can be created and appended to a subnet:
+`RouteTable` is a new construct that allows for route tables to be customized in a variety of ways. Using this construct, a customized route table can be added to the subnets defined using `SubnetV2`. 
+For instance, the following example shows how a custom route table can be created and appended to a `SubnetV2`:
 
 ```ts
-
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
@@ -194,7 +193,6 @@ Alternatively, `Routes` can also be created via method `addRoute` in the `RouteT
 Note: `EgressOnlyInternetGateway` can only be used to set up outbound IPv6 routing.
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc',{
       primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
@@ -217,7 +215,6 @@ routeTable.addRoute('EIGW', '::/0', { gateway: eigw });
 Other route targets may require a deeper set of parameters to set up properly. For instance, the example below illustrates how to set up a `NatGateway`:
 
 ```ts
-
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
   vpc: myVpc,
@@ -244,7 +241,6 @@ new Route(this, 'NatGwRoute', {
 It is also possible to set up endpoints connecting other AWS services. For instance, the example below illustrates the linking of a Dynamo DB endpoint via the existing `ec2.GatewayVpcEndpoint` construct as a route target:
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
@@ -266,7 +262,6 @@ new Route(this, 'DynamoDBRoute', {
   destination: '0.0.0.0/0',
   target: { endpoint: dynamoEndpoint },
 });
-
 ```
 
 ## VPC Peering Connection
@@ -431,7 +426,6 @@ By default, this method sets up a route to all outbound IPv6 address ranges, unl
 The `Subnets` parameter accepts a `SubnetFilter`, which can be based on a `SubnetType` in VpcV2. A new route will be added to the route tables of all subnets that match this filter.
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc',{
       primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
@@ -475,7 +469,6 @@ Additionally, you can set up a route in any route table with the target set to t
 The code example below provides the definition for adding a NAT gateway to your subnet:
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 const routeTable = new RouteTable(this, 'RouteTable', {
@@ -509,7 +502,6 @@ Additionally, you can set up a route in any route table with the target set to t
 The code example below provides the definition for setting up a VPN gateway with `vpnRoutePropagation` enabled:
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 const vpnGateway = myVpc.enableVpnGatewayV2({
@@ -541,7 +533,6 @@ In addition to the custom IP range, you can also choose to filter subnets where 
 The code example below shows how to add an internet gateway with a custom outbound destination IP range:
 
 ```ts
-
 const stack = new Stack();
 const myVpc = new VpcV2(this, 'Vpc');
 
@@ -597,14 +588,12 @@ If you wish to add a new subnet to imported VPC, new subnet's IP range(IPv4) wil
 Here's an example of importing a VPC with only the required parameters
 
 ``` ts
-
 const stack = new Stack();
 
 const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       vpcId: 'mockVpcID',
       vpcCidrBlock: '10.0.0.0/16',
 });
-
 ```
 
 In case of cross account or cross region VPC, its recommended to provide region and ownerAccountId so that these values for the VPC can be used to populate correct arn value for the VPC. If a VPC region and account ID is not provided, then region and account configured in the stack will be used. Furthermore, these fields will be referenced later while setting up VPC peering connection, so its necessary to set these fields to a correct value.
@@ -612,7 +601,6 @@ In case of cross account or cross region VPC, its recommended to provide region 
 Below is an example of importing a cross region and cross account VPC, VPC arn for this case would be 'arn:aws:ec2:us-west-2:123456789012:vpc/mockVpcID'
 
 ``` ts
-
 const stack = new Stack();
 
 //Importing a cross account or cross region VPC
@@ -622,7 +610,6 @@ const importedVpc = VpcV2.fromVpcV2Attributes(stack, 'ImportedVpc', {
       ownerAccountId: '123456789012',
       region: 'us-west-2',
 });
-
 ```
 
 Here's an example of how to import a VPC with multiple CIDR blocks, IPv6 support, and different subnet types:
@@ -637,7 +624,6 @@ In this example, we're importing a VPC with:
  - A public subnet in us-west-2b
 
 ```ts
-
 const stack = new Stack();
 
 const importedVpc = VpcV2.fromVpcV2Attributes(this, 'ImportedVPC', {
@@ -704,7 +690,6 @@ You can also import individual subnets using the `SubnetV2.fromSubnetV2Attribute
 Here's an example of how to import a subnet:
 
 ```ts
-
 SubnetV2.fromSubnetV2Attributes(this, 'ImportedSubnet', {
   subnetId: 'subnet-0123456789abcdef0',
   availabilityZone: 'us-west-2a',
@@ -723,7 +708,6 @@ By default, when a resource name is given to the construct, it automatically add
 For example, if the `vpcName` is set to `TestVpc`, the following code will add a tag to the VPC with `key: Name` and `value: TestVpc`.
 
 ```ts
-
 const vpc = new VpcV2(this, 'VPC-integ-test-tag', {
   primaryAddressBlock: IpAddresses.ipv4('10.1.0.0/16'),
   enableDnsHostnames: true,
