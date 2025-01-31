@@ -1,7 +1,7 @@
 import * as util from 'node:util';
 import type { Logger } from '@smithy/types';
 import type { IoMessage, IoMessageCodeCategory, IoMessageLevel, IoRequest } from '../io-message';
-import { debug, error, info, messageCode, trace, warn } from './messages';
+import { debug, error, info, defaultMessageCode, trace, warn } from './messages';
 import type { ActionAwareIoHost } from './types';
 import type { ToolkitAction } from '../../../toolkit';
 import { formatSdkLoggerContent } from '../../aws-cdk';
@@ -22,6 +22,32 @@ export function withAction(ioHost: IIoHost, action: ToolkitAction) {
       });
     },
   };
+}
+
+/**
+ * An IoHost wrapper that strips out emojis from the message before
+ * sending the message to the given IoHost
+ */
+export function withoutEmojis(ioHost: IIoHost): IIoHost {
+  return {
+    notify: async <T>(msg: IoMessage<T>) => {
+      await ioHost.notify({
+        ...msg,
+        message: stripEmojis(msg.message),
+      });
+    },
+    requestResponse: async <T, U>(msg: IoRequest<T, U>) => {
+      return ioHost.requestResponse({
+        ...msg,
+        message: stripEmojis(msg.message),
+      });
+    },
+  };
+}
+
+function stripEmojis(msg: string): string {
+  // https://www.unicode.org/reports/tr51/#def_emoji_presentation
+  return msg.replace(/\p{Emoji_Presentation}/gu, '');
 }
 
 // @todo these cannot be awaited WTF
@@ -118,7 +144,7 @@ export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
  * Turn an ActionAwareIoHost into a logger that is compatible with older code, but doesn't support data
  */
 export function asLogger(ioHost: ActionAwareIoHost, category?: IoMessageCodeCategory) {
-  const code = (level: IoMessageLevel) => messageCode(level, category);
+  const code = (level: IoMessageLevel) => defaultMessageCode(level, category);
 
   return {
     trace: async (msg: string, ...args: any[]) => {

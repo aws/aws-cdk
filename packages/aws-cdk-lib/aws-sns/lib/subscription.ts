@@ -162,7 +162,6 @@ export class Subscription extends Resource {
       subscriptionRoleArn: props.subscriptionRoleArn,
       deliveryPolicy: props.deliveryPolicy ? this.renderDeliveryPolicy(props.deliveryPolicy, props.protocol): undefined,
     });
-
   }
 
   private renderDeliveryPolicy(deliveryPolicy: DeliveryPolicy, protocol: SubscriptionProtocol): any {
@@ -343,7 +342,7 @@ function buildFilterPolicyWithMessageBody(
   }
 
   return result;
-};
+}
 
 /**
  * The type of the MessageBody at a given key value pair
@@ -365,8 +364,6 @@ export enum FilterOrPolicyType {
 export abstract class FilterOrPolicy {
   /**
    * Filter of MessageBody
-   * @param filter
-   * @returns
    */
   public static filter(filter: SubscriptionFilter) {
     return new Filter(filter);
@@ -374,8 +371,6 @@ export abstract class FilterOrPolicy {
 
   /**
    * Policy of MessageBody
-   * @param policy
-   * @returns
    */
   public static policy(policy: { [attribute: string]: FilterOrPolicy }) {
     return new Policy(policy);

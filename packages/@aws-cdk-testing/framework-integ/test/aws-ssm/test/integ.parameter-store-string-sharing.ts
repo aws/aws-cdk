@@ -62,7 +62,6 @@ class ProducingStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ParameterArn', { value: this.parameterArn });
 
     share.node.addDependency(publicParameter);
-
   }
 }
 class AcceptingStack extends cdk.Stack {
@@ -88,7 +87,6 @@ class AcceptingStack extends cdk.Stack {
         resourceShareInvitationArn,
       },
     });
-
   }
 }
 

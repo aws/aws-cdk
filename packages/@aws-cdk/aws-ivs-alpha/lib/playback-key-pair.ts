@@ -43,15 +43,15 @@ export interface PlaybackKeyPairProps {
 
 /**
   A new IVS Playback Key Pair
-*/
+ */
 export class PlaybackKeyPair extends PlaybackKeyPairBase {
   public readonly playbackKeyPairArn: string;
 
   /**
-  * Key-pair identifier. For example: 98:0d:1a:a0:19:96:1e:ea:0a:0a:2c:9a:42:19:2b:e7
-  *
-  * @attribute
-  */
+   * Key-pair identifier. For example: 98:0d:1a:a0:19:96:1e:ea:0a:0a:2c:9a:42:19:2b:e7
+   *
+   * @attribute
+   */
   public readonly playbackKeyPairFingerprint: string;
 
   constructor(scope: Construct, id: string, props: PlaybackKeyPairProps) {

@@ -203,7 +203,7 @@ export abstract class LoggingFormat {
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);
-  };
+  }
 
   /**
    * Called when the Access Log Format is initialized. Can be used to enforce
@@ -217,8 +217,8 @@ export abstract class LoggingFormat {
  */
 class JsonLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly json: Array<CfnVirtualNode.JsonFormatRefProperty>;
   constructor(json: {[key:string]: string}) {
     super();
@@ -236,8 +236,8 @@ class JsonLoggingFormat extends LoggingFormat {
 
 class TextLoggingFormat extends LoggingFormat {
   /**
-  * Json pattern for the output logs
-  */
+   * Json pattern for the output logs
+   */
   private readonly text: string;
   constructor(text: string) {
     super();

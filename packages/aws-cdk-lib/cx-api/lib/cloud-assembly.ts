@@ -154,7 +154,7 @@ export class CloudAssembly implements ICloudAssembly {
       const [head, ...tail] = assemblies;
       const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
       return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
-    };
+    }
 
     return search([], [this]);
   }
@@ -325,10 +325,8 @@ export class CloudAssemblyBuilder {
   /**
    * Finalizes the cloud assembly into the output directory returns a
    * `CloudAssembly` object that can be used to inspect the assembly.
-   * @param options
    */
   public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
-
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
     let manifest: cxschema.AssemblyManifest = {

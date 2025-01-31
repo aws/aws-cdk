@@ -62,7 +62,7 @@ export interface IpamProps {
    *
    * @default - Stack.region if defined in the stack
    */
-  readonly operatingRegion?: string[];
+  readonly operatingRegions?: string[];
 
   /**
    * Name of IPAM that can be used for tagging resource
@@ -127,14 +127,14 @@ export interface PoolOptions {
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
   /**
-  * Limits which service in AWS that the pool can be used in.
-  *
-  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
-  *
-  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
-  *
-  * @default - required in case of an IPv6, throws an error if not provided.
-  */
+   * Limits which service in AWS that the pool can be used in.
+   *
+   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+   *
+   * @default - required in case of an IPv6, throws an error if not provided.
+   */
   readonly awsService?: AwsServiceName;
 
   /**
@@ -184,9 +184,9 @@ export interface IpamPoolCidrProvisioningOptions {
  */
 export interface IIpamPool {
   /**
- * Pool ID to be passed to the VPC construct
- * @attribute IpamPoolId
- */
+   * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
+   */
   readonly ipamPoolId: string;
 
   /**
@@ -468,10 +468,10 @@ class IpamScopeBase implements IIpamScopeBase {
  */
 export class Ipam extends Resource {
   /**
- * Provides access to default public IPAM scope through add pool method.
- * Usage: To add an Ipam Pool to a default public scope
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
- */
+   * Provides access to default public IPAM scope through add pool method.
+   * Usage: To add an Ipam Pool to a default public scope
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
+   */
   public readonly publicScope: IIpamScopeBase;
 
   /**
@@ -511,11 +511,11 @@ export class Ipam extends Resource {
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }
-    if (!props?.operatingRegion && !Stack.of(this).region) {
+    if (props?.operatingRegions && (props.operatingRegions.length === 0)) {
       throw new Error('Please provide at least one operating region');
     }
 
-    this.operatingRegions = props?.operatingRegion ?? [Stack.of(this).region];
+    this.operatingRegions = props?.operatingRegions ?? [Stack.of(this).region];
     this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
@@ -536,7 +536,6 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-
   }
 
   /**

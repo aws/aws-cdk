@@ -215,6 +215,5 @@ describe('IntegTest runSnapshotTests', () => {
         output: '../../does/not/exist',
       });
     });
-
   });
 });

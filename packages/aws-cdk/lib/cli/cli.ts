@@ -23,7 +23,7 @@ import { docs } from '../commands/docs';
 import { doctor } from '../commands/doctor';
 import { getMigrateScanType } from '../commands/migrate';
 import { cliInit, printAvailableTemplates } from '../init';
-import { data, debug, error, info } from '../logging';
+import { result, debug, error, info } from '../logging';
 import { Notices } from '../notices';
 import { Command, Configuration } from './user-configuration';
 import { IoMessageLevel, CliIoHost } from '../toolkit/cli-io-host';
@@ -195,6 +195,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     };
 
     const cli = new CdkToolkit({
+      ioHost,
       cloudExecutable,
       deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
@@ -489,7 +490,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
       case 'version':
         ioHost.currentAction = 'version';
-        return data(version.DISPLAY_VERSION);
+        return result(version.DISPLAY_VERSION);
 
       default:
         throw new ToolkitError('Unknown command: ' + command);

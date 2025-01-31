@@ -62,7 +62,7 @@ export class DiffMethod {
         this.options = opts;
       }
     }({ path });
-  };
+  }
 
   private constructor(
     public readonly method: 'change-set' | 'template-only' | 'local-file',

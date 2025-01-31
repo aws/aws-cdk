@@ -347,7 +347,6 @@ export class Alarm extends AlarmBase {
               };
             },
             withExpression(expr, conf) {
-
               const hasSubmetrics = mathExprHasSubmetrics(expr);
 
               if (hasSubmetrics) {
@@ -462,7 +461,7 @@ function assertSubmetricsCount(expr: MetricExpressionConfig) {
   if (Object.keys(expr.usingMetrics).length > 10) {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
     throw new Error('Alarms on math expressions cannot contain more than 10 individual metrics');
-  };
+  }
 }
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

@@ -17,8 +17,8 @@ import { ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
 
 /**
-  * Interface representing a serverless database cluster.
-  *
+ * Interface representing a serverless database cluster.
+ *
  */
 export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -93,7 +93,7 @@ interface ServerlessClusterNewProps {
    * Whether to enable the Data API.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
-    *
+   *
    * @default false
    */
   readonly enableDataApi?: boolean;
@@ -540,7 +540,6 @@ export class ServerlessCluster extends ServerlessClusterNew {
   public static fromServerlessClusterAttributes(
     scope: Construct, id: string, attrs: ServerlessClusterAttributes,
   ): IServerlessCluster {
-
     return new ImportedServerlessCluster(scope, id, attrs);
   }
 

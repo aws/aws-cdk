@@ -41,7 +41,7 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-};
+}
 
 beforeEach(resetState);
 
@@ -388,7 +388,6 @@ const ASSET_STATEMENT = {
 };
 
 describe('assets n buckets', () => {
-
   test.each([
     ['Existing'],
     [''],

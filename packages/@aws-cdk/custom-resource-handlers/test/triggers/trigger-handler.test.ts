@@ -151,7 +151,6 @@ test('throws an error for other exceptions', async () => {
 describe('function error', () => {
   const makeTest = (payload: string | undefined, expectedError: string) => {
     return async () => {
-
       lambdaMock.on(InvokeCommand).resolvesOnce({
         StatusCode: 200,
         FunctionError: 'Unhandled',

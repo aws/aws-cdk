@@ -75,5 +75,4 @@ describe('IAM Access keys', () => {
       'Fn::GetAtt': ['MyAccessKeyF0FFBE2E', 'SecretAccessKey'],
     });
   });
-
 });

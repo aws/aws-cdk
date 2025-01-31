@@ -303,7 +303,6 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-
     const useNewS3UriParamsForTask = FeatureFlags.of(this).isEnabled(cxapi.USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK);
     const inputSource = this.getInputSource(this.props.input, this.props.inputPath, useNewS3UriParamsForTask);
     const outputSource = this.getOutputSource(this.props.output, this.props.outputPath, useNewS3UriParamsForTask);
@@ -325,7 +324,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
             : 'DISABLED',
       }),
     };
-  };
+  }
 
   private getInputSource(props?: BedrockInvokeModelInputProps, inputPath?: string, useNewS3UriParamsForTask?: boolean): string | undefined {
     if (props?.s3Location) {

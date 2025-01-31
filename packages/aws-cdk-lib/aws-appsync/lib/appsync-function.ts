@@ -5,7 +5,7 @@ import { BaseDataSource, LambdaDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
-import { Resource, IResource, Lazy, Fn } from '../../core';
+import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
 
 /**
  * the base properties for AppSync Functions
@@ -160,15 +160,15 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new Error('Code is required when specifying a runtime');
+      throw new ValidationError('Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new Error('Mapping templates cannot be used alongside code');
+      throw new ValidationError('Mapping templates cannot be used alongside code', scope);
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new Error('maxBatchSize can only be set for the data source of type \LambdaDataSource\'');
+      throw new ValidationError('maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
     }
 
     const code = props.code?.bind(this);
