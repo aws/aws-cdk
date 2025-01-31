@@ -24,6 +24,32 @@ export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   };
 }
 
+/**
+ * An IoHost wrapper that strips out emojis from the message before
+ * sending the message to the given IoHost
+ */
+export function withoutEmojis(ioHost: IIoHost): IIoHost {
+  return {
+    notify: async <T>(msg: IoMessage<T>) => {
+      await ioHost.notify({
+        ...msg,
+        message: stripEmojis(msg.message),
+      });
+    },
+    requestResponse: async <T, U>(msg: IoRequest<T, U>) => {
+      return ioHost.requestResponse({
+        ...msg,
+        message: stripEmojis(msg.message),
+      });
+    },
+  };
+}
+
+function stripEmojis(msg: string): string {
+  // https://www.unicode.org/reports/tr51/#def_emoji_presentation
+  return msg.replace(/\p{Emoji_Presentation}/gu, '');
+}
+
 // @todo these cannot be awaited WTF
 export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
   return new class implements Logger {
