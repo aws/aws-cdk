@@ -2,14 +2,6 @@ import type { BaseDeployOptions, HotswapMode } from '../deploy';
 
 export interface WatchOptions extends BaseDeployOptions {
   /**
-   * Whether to show CloudWatch logs for hotswapped resources
-   * locally in the users terminal
-   *
-   * @default - false
-   */
-  readonly traceLogs?: boolean;
-
-  /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
    * @default - nothing extra is appended to the User-Agent header

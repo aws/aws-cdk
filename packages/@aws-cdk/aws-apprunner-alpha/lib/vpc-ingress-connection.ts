@@ -67,9 +67,9 @@ export interface IVpcIngressConnection extends cdk.IResource {
   readonly vpcIngressConnectionArn: string;
 
   /**
-    * The name of the VPC Ingress Connection.
-    * @attribute
-    */
+   * The name of the VPC Ingress Connection.
+   * @attribute
+   */
   readonly vpcIngressConnectionName: string;
 }
 

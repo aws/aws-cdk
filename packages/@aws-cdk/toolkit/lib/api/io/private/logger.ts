@@ -7,6 +7,10 @@ import type { ToolkitAction } from '../../../toolkit';
 import { formatSdkLoggerContent } from '../../aws-cdk';
 import type { IIoHost } from '../io-host';
 
+/**
+ * An IoHost wrapper that adds the given action to an actionless message before
+ * sending the message to the given IoHost
+ */
 export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   return {
     notify: async <T>(msg: Omit<IoMessage<T>, 'action'>) => {
@@ -24,6 +28,10 @@ export function withAction(ioHost: IIoHost, action: ToolkitAction) {
   };
 }
 
+/**
+ * An IoHost wrapper that strips out ANSI colors and styles from the message before
+ * sending the message to the given IoHost
+ */
 export function withoutColor(ioHost: IIoHost): IIoHost {
   return {
     notify: async <T>(msg: IoMessage<T>) => {
