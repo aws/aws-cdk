@@ -174,7 +174,7 @@ export interface IdentityPoolFacebookLoginProvider {
 
 /**
  * Login Provider for identity federation using Apple credentials
-*/
+ */
 export interface IdentityPoolAppleLoginProvider {
   /**
    * Services ID for Apple identity federation

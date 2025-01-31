@@ -929,7 +929,7 @@ export abstract class BaseService extends Resource
      * Resolve which namespace to use by picking:
      * 1. The namespace defined in service connect config.
      * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
-    */
+     */
     let namespace;
     if (this.cluster.defaultCloudMapNamespace) {
       namespace = this.cluster.defaultCloudMapNamespace.namespaceName;

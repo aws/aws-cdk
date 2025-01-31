@@ -86,17 +86,17 @@ export enum DriveCacheType {
 }
 
 /**
-  * The permitted Lustre data compression algorithms
-*/
+ * The permitted Lustre data compression algorithms
+ */
 export enum LustreDataCompressionType {
   /**
-  *
-  * `NONE` - (Default) Data compression is turned off when the file system is created.
-  */
+   *
+   * `NONE` - (Default) Data compression is turned off when the file system is created.
+   */
   NONE = 'NONE',
   /**
-  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
-  */
+   * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
+   */
   LZ4 = 'LZ4',
 }
 
