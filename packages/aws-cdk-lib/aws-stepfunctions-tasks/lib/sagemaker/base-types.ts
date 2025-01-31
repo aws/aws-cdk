@@ -805,7 +805,7 @@ export class AcceleratorClass {
   /**
    * Custom AcceleratorType
    * @param version - Elastic Inference accelerator generation
-  */
+   */
   public static of(version: string) { return new AcceleratorClass(version); }
   /**
    * @param version - Elastic Inference accelerator generation
