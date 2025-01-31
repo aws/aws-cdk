@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "616dcb4adca0395435735b413925e2b0bf5438f24891731f4c263abe5dae7866": {
+      "source": {
+        "path": "CallRestApiInteg-ApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "616dcb4adca0395435735b413925e2b0bf5438f24891731f4c263abe5dae7866.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

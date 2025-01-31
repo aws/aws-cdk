@@ -110,7 +110,6 @@ describe('CallApiGatewayRestApiEndpoint', () => {
     });
   });
 
-
   test('wait for task token', () => {
     // GIVEN
     const stack = new cdk.Stack();

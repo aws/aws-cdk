@@ -1,0 +1,245 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "CallRestApiInteg-ApiStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CallRestApiInteg-ApiStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CallRestApiInteg-ApiStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "CallRestApiInteg-ApiStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/616dcb4adca0395435735b413925e2b0bf5438f24891731f4c263abe5dae7866.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CallRestApiInteg-ApiStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CallRestApiInteg-ApiStack.assets"
+      ],
+      "metadata": {
+        "/CallRestApiInteg-ApiStack/MyRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiCloudWatchRoleD4042E8E"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiAccount2FB6DB7A"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentB555B5824a2dace0b77d6e14d0cc32d4d28422f3"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiDeploymentStageprodC33B8E5F"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY/ApiPermission.CallRestApiIntegApiStackMyRestApiC2593C7A.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANYApiPermissionCallRestApiIntegApiStackMyRestApiC2593C7AANY7E91F016"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY/ApiPermission.Test.CallRestApiIntegApiStackMyRestApiC2593C7A.ANY..": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANYApiPermissionTestCallRestApiIntegApiStackMyRestApiC2593C7AANY4B5F396C"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestApiANY05143F93"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/Hello/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloServiceRole1E55EA16"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/Hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Hello4A628BD4"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CallRestApiInteg-ApiStack"
+    },
+    "CallRestApiInteg-SfnStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CallRestApiInteg-SfnStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CallRestApiInteg-SfnStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "CallRestApiInteg-SfnStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CallRestApiInteg-SfnStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CallRestApiInteg-SfnStack.assets"
+      ],
+      "metadata": {
+        "/CallRestApiInteg-SfnStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CallRestApiInteg-SfnStack"
+    },
+    "callrestapicrossregionDefaultTestDeployAssert2A1021D3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "callrestapicrossregionDefaultTestDeployAssert2A1021D3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "callrestapicrossregionDefaultTestDeployAssert2A1021D3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "callrestapicrossregionDefaultTestDeployAssert2A1021D3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "callrestapicrossregionDefaultTestDeployAssert2A1021D3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "callrestapicrossregionDefaultTestDeployAssert2A1021D3.assets"
+      ],
+      "metadata": {
+        "/call-rest-api-cross-region/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/call-rest-api-cross-region/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "call-rest-api-cross-region/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
