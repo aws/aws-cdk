@@ -1,0 +1,233 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "appsync-event-api-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsync-event-api-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsync-event-api-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-event-api-stack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81fd18d11ebbb128985758f25bcfedc35fceb7522962b1f7a0ed0a3c59b97b84.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsync-event-api-stack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsync-event-api-stack.assets"
+      ],
+      "metadata": {
+        "/appsync-event-api-stack/Certificate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Certificate4E7ABB08"
+          }
+        ],
+        "/appsync-event-api-stack/Pool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PoolD3F588B8"
+          }
+        ],
+        "/appsync-event-api-stack/AuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionServiceRole5B2A061B"
+          }
+        ],
+        "/appsync-event-api-stack/AuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionB4DBAA43"
+          }
+        ],
+        "/appsync-event-api-stack/AuthorizerFunction/EventApi-appsync": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionEventApiappsyncE4B8E11D"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/ApiLogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiLogsRoleED9A8150"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiE141E6C0"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDefaultApiKeyB9AB1E44"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/DomainName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDomainName1C1CA3FD"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/DomainAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiDomainAssociationECB84F09"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLogRetention68604E65"
+          }
+        ],
+        "/appsync-event-api-stack/EventApi/AnotherChannelNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiAnotherChannelNamespace5BC7F3A5"
+          }
+        ],
+        "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/appsync-event-api-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-event-api-stack/ChannelNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChannelNamespace5873C25D"
+          }
+        ],
+        "/appsync-event-api-stack/WebAcl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebAcl"
+          }
+        ],
+        "/appsync-event-api-stack/WafAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WafAssociation"
+          }
+        ],
+        "/appsync-event-api-stack/AWS AppSync Events HTTP endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsHTTPendpoint"
+          }
+        ],
+        "/appsync-event-api-stack/AWS AppSync Events Realtime endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsRealtimeendpoint"
+          }
+        ],
+        "/appsync-event-api-stack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-event-api-stack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-event-api-stack"
+    },
+    "appsynceventapiDefaultTestDeployAssertFB25AF14.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapiDefaultTestDeployAssertFB25AF14.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapiDefaultTestDeployAssertFB25AF14": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapiDefaultTestDeployAssertFB25AF14.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapiDefaultTestDeployAssertFB25AF14.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsynceventapiDefaultTestDeployAssertFB25AF14.assets"
+      ],
+      "metadata": {
+        "/appsync-event-api/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-event-api/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-event-api/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
