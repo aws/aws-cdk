@@ -22,10 +22,10 @@ export interface IUserPoolGroup extends IResource {
  */
 export interface UserPoolGroupOptions {
   /**
-    * A string containing the description of the group.
-    *
-    * @default - no description
-    */
+   * A string containing the description of the group.
+   *
+   * @default - no description
+   */
   readonly description?: string;
 
   /**

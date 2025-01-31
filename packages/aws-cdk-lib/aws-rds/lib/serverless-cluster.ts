@@ -18,8 +18,8 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
-  * Interface representing a serverless database cluster.
-  *
+ * Interface representing a serverless database cluster.
+ *
  */
 export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -94,7 +94,7 @@ interface ServerlessClusterNewProps {
    * Whether to enable the Data API.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html
-    *
+   *
    * @default false
    */
   readonly enableDataApi?: boolean;

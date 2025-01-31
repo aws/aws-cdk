@@ -2555,11 +2555,11 @@ export interface ApplyCloudFormationInitOptions {
   readonly includeUrl?: boolean;
 
   /**
-  * Include --role argument when running cfn-init and cfn-signal commands
-  *
-  * This will be the IAM instance profile attached to the EC2 instance
-  *
-  * @default false
-  */
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
   readonly includeRole?: boolean;
 }

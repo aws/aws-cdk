@@ -194,13 +194,8 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
   /**
    * Get the "execute-api" ARN.
-   * When 'ANY' is passed to the method, an ARN with the method set to '*' is obtained.
    *
-   * @default - The default behavior applies when no specific method, path, or stage is provided.
-   * In this case, the ARN will cover all methods, all resources, and all stages of this API.
-   * Specifically, if 'method' is not specified, it defaults to '*', representing all methods.
-   * If 'path' is not specified, it defaults to '/*', representing all paths.
-   * If 'stage' is not specified, it also defaults to '*', representing all stages.
+   * @deprecated Use `arnForExecuteApiV2()` instead.
    */
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
@@ -216,6 +211,23 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       resource: this.apiId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,
+    });
+  }
+
+  /**
+   * Get the "execute-api" ARN.
+   *
+   * @default - The default behavior applies when no specific route, or stage is provided.
+   * In this case, the ARN will cover all routes, and all stages of this API.
+   * Specifically, if 'route' is not specified, it defaults to '*', representing all routes.
+   * If 'stage' is not specified, it also defaults to '*', representing all stages.
+   */
+  public arnForExecuteApiV2(route?: string, stage?: string): string {
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: `${stage ?? '*'}/${route ?? '*'}`,
     });
   }
 }

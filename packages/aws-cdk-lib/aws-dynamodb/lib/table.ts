@@ -254,7 +254,7 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
+   * those will share the table's maximum on-demand throughput.
    *
    * Can only be provided if billingMode is PAY_PER_REQUEST.
    *

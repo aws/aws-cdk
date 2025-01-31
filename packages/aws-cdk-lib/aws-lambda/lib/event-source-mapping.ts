@@ -320,8 +320,8 @@ export enum MetricType {
  */
 export interface MetricsConfig {
   /**
-  * List of metric types to enable for this event source
-  */
+   * List of metric types to enable for this event source
+   */
   readonly metrics: MetricType[];
 }
 

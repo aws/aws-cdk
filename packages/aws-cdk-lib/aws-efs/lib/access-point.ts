@@ -30,7 +30,7 @@ export interface IAccessPoint extends IResource {
 
 /**
  * Permissions as POSIX ACL
-*/
+ */
 export interface Acl {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).

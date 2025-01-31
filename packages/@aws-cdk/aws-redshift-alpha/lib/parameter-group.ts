@@ -65,12 +65,12 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
 
   /**
    * The parameters in the parameter group
-  */
+   */
   readonly parameters: { [name: string]: string };
 
   /**
    * The underlying CfnClusterParameterGroup
-  */
+   */
   private readonly resource: CfnClusterParameterGroup;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {

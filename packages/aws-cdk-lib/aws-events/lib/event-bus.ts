@@ -103,10 +103,10 @@ export interface EventBusProps {
   readonly description?: string;
 
   /**
-  * The customer managed key that encrypt events on this event bus.
-  *
-  * @default - Use an AWS managed key
-  */
+   * The customer managed key that encrypt events on this event bus.
+   *
+   * @default - Use an AWS managed key
+   */
   readonly kmsKey?: kms.IKey;
 }
 

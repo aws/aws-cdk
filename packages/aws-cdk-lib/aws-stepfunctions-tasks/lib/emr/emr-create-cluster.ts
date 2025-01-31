@@ -870,7 +870,7 @@ export namespace EmrCreateCluster {
      * For a master instance fleet, only one of `targetSpotCapacity` and `targetOnDemandCapacity` can be specified, and its value
      * must be 1.
      *
-    * @default No targetSpotCapacity
+     * @default No targetSpotCapacity
      */
     readonly targetSpotCapacity?: number;
   }

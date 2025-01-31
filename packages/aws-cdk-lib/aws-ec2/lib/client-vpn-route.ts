@@ -63,17 +63,16 @@ export abstract class ClientVpnRouteTarget {
  * Properties for a ClientVpnRoute
  */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
-
   /**
    * The client VPN endpoint to which to add the route.
    * @default clientVpnEndpoint is required
    */
   readonly clientVpnEndpoint?: IClientVpnEndpoint;
+
   /**
    * The client VPN endpoint to which to add the route.
    * @deprecated Use `clientVpnEndpoint` instead
    * @default clientVpnEndpoint is required
-
    */
   readonly clientVpnEndoint?: IClientVpnEndpoint;
 }

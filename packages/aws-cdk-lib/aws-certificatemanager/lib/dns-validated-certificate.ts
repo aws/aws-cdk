@@ -72,9 +72,9 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   public readonly certificateArn: string;
 
   /**
-  * Resource Tags.
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
-  */
+   * Resource Tags.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
+   */
 
   public readonly tags: cdk.TagManager;
   protected readonly region?: string;

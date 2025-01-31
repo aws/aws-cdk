@@ -179,7 +179,7 @@ export interface IApplication extends core.IResource, ec2.IConnectable, iam.IGra
   metricOldGenerationGCCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-	 * The total number of live threads used by the application.
+   * The total number of live threads used by the application.
    *
    * Units: Count
    *

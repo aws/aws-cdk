@@ -10,10 +10,10 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
  */
 export interface PythonShellJobProps extends JobProperties {
   /**
-  * Python Version
-  * The version of Python to use to execute this job
-  * @default 3.9 for Shell Jobs
-  **/
+   * Python Version
+   * The version of Python to use to execute this job
+   * @default 3.9 for Shell Jobs
+   **/
   readonly pythonVersion?: PythonVersion;
 
   /**
@@ -50,8 +50,8 @@ export class PythonShellJob extends Job {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-  * PythonShellJob constructor
-  */
+   * PythonShellJob constructor
+   */
   constructor(scope: Construct, id: string, props: PythonShellJobProps) {
     super(scope, id, { physicalName: props.jobName });
     // Enhanced CDK Analytics Telemetry
@@ -108,10 +108,10 @@ export class PythonShellJob extends Job {
   }
 
   /**
-  * Set the executable arguments with best practices enabled by default
-  *
-  * @returns An array of arguments for Glue to use on execution
-  */
+   * Set the executable arguments with best practices enabled by default
+   *
+   * @returns An array of arguments for Glue to use on execution
+   */
   private executableArguments(props: PythonShellJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;

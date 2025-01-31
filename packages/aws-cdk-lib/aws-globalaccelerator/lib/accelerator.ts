@@ -83,12 +83,12 @@ export interface AcceleratorProps {
   readonly ipAddresses?: string[];
 
   /**
-  * The IP address type that an accelerator supports.
-  *
-  * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
-  *
-  * @default - "IPV4"
-  */
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   *
+   * @default - "IPV4"
+   */
   readonly ipAddressType?: IpAddressType;
 }
 

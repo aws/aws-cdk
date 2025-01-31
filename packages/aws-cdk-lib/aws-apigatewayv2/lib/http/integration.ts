@@ -435,10 +435,10 @@ export interface HttpRouteIntegrationConfig {
   readonly timeout?: Duration;
 
   /**
-  * Specifies how to transform HTTP requests before sending them to the backend
-  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
-  * @default undefined requests are sent to the backend unmodified
-  */
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
   readonly parameterMapping?: ParameterMapping;
 
   /**

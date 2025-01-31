@@ -268,9 +268,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     /**
-    * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
-    */
+     * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+     */
 
     if (bucket.encryptionKey) {
       throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
@@ -329,9 +329,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
-    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
-    */
+     * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
+     */
     if (bucket.encryptionKey) {
       throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }

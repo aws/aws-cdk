@@ -6,7 +6,7 @@ import { Stack } from './stack';
 
 /**
  * Options for creating a unique resource name.
-*/
+ */
 export interface UniqueResourceNameOptions {
 
   /**

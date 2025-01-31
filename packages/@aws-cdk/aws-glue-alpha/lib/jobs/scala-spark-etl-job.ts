@@ -26,7 +26,7 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * Class name (required for Scala scripts)
    * Package and class name for the entry point of Glue job execution for
    * Java scripts
-  **/
+   **/
   readonly className: string;
 
   /**

@@ -109,7 +109,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   /**
    * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
-  */
+   */
   public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
     iam.Grant.addToPrincipal({
       actions: ['batch:SubmitJob'],
