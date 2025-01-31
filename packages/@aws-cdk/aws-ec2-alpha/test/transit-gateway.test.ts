@@ -6,7 +6,6 @@ import * as subnet from '../lib/subnet-v2';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 describe('Transit Gateway with default settings', () => {
-
   let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;
@@ -110,7 +109,6 @@ describe('Transit Gateway with default settings', () => {
   });
 
   test('attach vpc method should create an attachment, association and propagation when default association/propagation are enabled', () => {
-
     tgw.attachVpc('VpcAttachment', {
       vpc: myVpc,
       subnets: [mySubnet],
@@ -169,7 +167,6 @@ describe('Transit Gateway with default settings', () => {
 });
 
 describe('Transit Gateway with default route table association and propagation disabled', () => {
-
   let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;
@@ -276,7 +273,6 @@ describe('Transit Gateway with default route table association and propagation d
   });
 
   test('attach vpc method should create an attachment and not create an association or propagation when default association/propagation are disabled', () => {
-
     tgw.attachVpc('VpcAttachment', {
       vpc: myVpc,
       subnets: [mySubnet],

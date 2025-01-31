@@ -42,7 +42,6 @@ describe('TransitGatewayRouteTablePropagation', () => {
       transitGateway: transitGateway,
       subnets: [mySubnet],
     });
-
   });
 
   test('creates propagation with required properties', () => {

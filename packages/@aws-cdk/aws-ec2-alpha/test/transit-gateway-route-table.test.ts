@@ -8,7 +8,6 @@ import { TransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
 
 describe('Transit Gateway Route Table', () => {
-
   let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;

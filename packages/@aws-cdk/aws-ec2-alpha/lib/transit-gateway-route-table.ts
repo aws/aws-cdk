@@ -71,7 +71,7 @@ abstract class TransitGatewayRouteTableBase extends Resource implements ITransit
       transitGatewayAttachment,
       destinationCidrBlock: destinationCidr,
     });
-  };
+  }
 
   public addBlackholeRoute(id: string, destinationCidr: string): ITransitGatewayRoute {
     return new TransitGatewayBlackholeRoute(this, id, {
