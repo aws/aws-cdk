@@ -173,6 +173,14 @@ export interface BaseDeployOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Whether to send logs from all CloudWatch log groups in the template
+   * to the IoHost
+   *
+   * @default - false
+   */
+  readonly traceLogs?: boolean;
 }
 
 export interface DeployOptions extends BaseDeployOptions {
@@ -204,14 +212,6 @@ export interface DeployOptions extends BaseDeployOptions {
    * @default - Outputs are not written to any file
    */
   readonly outputsFile?: string;
-
-  /**
-   * Whether to show logs from all CloudWatch log groups in the template
-   * locally in the users terminal
-   *
-   * @default - false
-   */
-  readonly traceLogs?: boolean;
 
   /**
    * Build/publish assets for a single stack in parallel
