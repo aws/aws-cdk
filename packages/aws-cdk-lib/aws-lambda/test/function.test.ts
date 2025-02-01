@@ -3833,6 +3833,21 @@ describe('function', () => {
                 ],
               },
             },
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyLambdaCCE802FB',
+                  'Arn',
+                ],
+              },
+              Condition: {
+                Bool: {
+                  'lambda:InvokedViaFunctionUrl': true,
+                },
+              },
+            },
           ],
         },
       });

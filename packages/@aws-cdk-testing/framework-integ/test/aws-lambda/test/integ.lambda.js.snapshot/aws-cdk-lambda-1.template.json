@@ -58,7 +58,6 @@
     "Code": {
      "ZipFile": "foo"
     },
-    "Description": "version-hash:328ef84696e962e6a3e0f3c7b7e62c5d",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -85,7 +84,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350": {
+  "MyLambdaCurrentVersionE7A382CC886b1d5a6670b1ccc617b858b07da0e5": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -104,7 +103,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350",
+      "MyLambdaCurrentVersionE7A382CC886b1d5a6670b1ccc617b858b07da0e5",
       "Version"
      ]
     },
@@ -148,6 +147,17 @@
     "Principal": "*"
    }
   },
+  "Aliasinvokefunction83AEC4F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "Alias325C5727"
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
   "MySnapStartLambdaServiceRoleE0F04324": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -188,7 +198,6 @@
      },
      "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
     },
-    "Description": "version-hash:cb4acf3f2fee0dc7ef3d57cc9e3c231f",
     "Handler": "example.Handler::handleRequest",
     "Role": {
      "Fn::GetAtt": [
@@ -248,7 +257,6 @@
      },
      "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
     },
-    "Description": "version-hash:522e22f485651f1644be7e317c07836f",
     "Handler": "example.Handler::handleRequest",
     "Role": {
      "Fn::GetAtt": [

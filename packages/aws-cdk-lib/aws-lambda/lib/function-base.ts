@@ -407,6 +407,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       sourceArn: permission.sourceArn ?? sourceArn,
       principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
+      invokedViaFunctionUrl: permission.invokedViaFunctionUrl,
     });
   }
 
@@ -540,6 +541,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const identifierDualAuth = identifier + '-DualAuth';
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._functionUrlInvocationGrants[identifier];
@@ -547,6 +549,18 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
         functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
       });
+
+      // return if failed
+      if (!grant.success) {
+        return grant;
+      }
+
+      // proceed to grant invokefunction for FURL Dual auth
+      grant = this.grant(grantee, identifierDualAuth, 'lambda:InvokeFunction', [this.functionArn],
+        {
+          invokedViaFunctionUrl: true,
+        });
+
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
@@ -611,6 +625,22 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
+  /**
+   * Given permission overrides in lambda resource base policy, return equivalent condition for IAM policy statement
+   * @param permission Permission override for lambda resource base policy
+   * @returns condition for IAM policy statement, or undefined
+   */
+  private permissionToCondition(permission?: Partial<Permission>): Record<string, Record<string, unknown>>|undefined {
+    if (!permission) return undefined;
+    let condition:Record<string, Record<string, unknown>> = {};
+    // eslint-disable-next-line dot-notation
+    permission.functionUrlAuthType ? condition['StringEquals'] = { 'lambda:FunctionUrlAuthType': permission.functionUrlAuthType } : undefined;
+    // eslint-disable-next-line dot-notation
+    permission.invokedViaFunctionUrl ? condition['Bool'] = { 'lambda:InvokedViaFunctionUrl': permission.invokedViaFunctionUrl } : undefined;
+
+    return condition;
+  }
+
   private grant(
     grantee: iam.IGrantable,
     identifier:string,
@@ -622,6 +652,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       grantee,
       actions: [action],
       resourceArns,
+      conditions: this.permissionToCondition(permissionOverrides),
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()

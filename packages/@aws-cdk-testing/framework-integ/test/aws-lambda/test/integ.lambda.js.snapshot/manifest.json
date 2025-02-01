@@ -214,6 +214,12 @@
             "data": "Aliasinvokefunctionurl4CA9917B"
           }
         ],
+        "/aws-cdk-lambda-1/Alias/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Aliasinvokefunction83AEC4F1"
+          }
+        ],
         "/aws-cdk-lambda-1/MySnapStartLambda": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -323,6 +329,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
