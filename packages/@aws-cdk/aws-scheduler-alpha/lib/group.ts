@@ -2,6 +2,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 
 export interface GroupProps {
@@ -339,6 +340,8 @@ export class Group extends GroupBase {
 
   public constructor(scope: Construct, id: string, props: GroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.groupName = props.groupName ?? Names.uniqueResourceName(this, {
       maxLength: 64,

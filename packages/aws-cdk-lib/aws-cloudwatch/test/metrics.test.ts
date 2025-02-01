@@ -29,14 +29,12 @@ describe('Metrics', () => {
         ],
       },
     });
-
   });
 
   test('can not use invalid period in Metric', () => {
     expect(() => {
       new Metric({ namespace: 'Test', metricName: 'ACount', period: cdk.Duration.seconds(20) });
     }).toThrow(/'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
-
   });
 
   test('Metric optimization: "with" with the same period returns the same object', () => {
@@ -47,7 +45,6 @@ describe('Metrics', () => {
     expect(m.with({ period: cdk.Duration.minutes(10) })).toEqual(m);
 
     expect(m.with({ period: cdk.Duration.minutes(5) })).not.toEqual(m);
-
   });
 
   testDeprecated('cannot use null dimension value', () => {
@@ -61,7 +58,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(/Dimension value of 'null' is invalid/);
-
   });
 
   testDeprecated('cannot use undefined dimension value', () => {
@@ -75,7 +71,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(/Dimension value of 'undefined' is invalid/);
-
   });
 
   testDeprecated('cannot use long dimension values', () => {
@@ -92,7 +87,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
-
   });
 
   test('cannot use long dimension values in dimensionsMap', () => {
@@ -109,7 +103,6 @@ describe('Metrics', () => {
         },
       });
     }).toThrow(`Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
-
   });
 
   testDeprecated('throws error when there are more than 30 dimensions', () => {
@@ -153,7 +146,6 @@ describe('Metrics', () => {
         },
       } );
     }).toThrow(/The maximum number of dimensions is 30, received 31/);
-
   });
 
   test('throws error when there are more than 30 dimensions in dimensionsMap', () => {
@@ -197,7 +189,6 @@ describe('Metrics', () => {
         },
       } );
     }).toThrow(/The maximum number of dimensions is 30, received 31/);
-
   });
 
   test('can create metric with dimensionsMap property', () => {
@@ -237,7 +228,6 @@ describe('Metrics', () => {
       Threshold: 10,
       EvaluationPeriods: 1,
     });
-
   });
 
   test('"with" with a different dimensions property', () => {
@@ -259,7 +249,6 @@ describe('Metrics', () => {
     expect(metric.with({
       dimensionsMap: newDims,
     }).dimensions).toEqual(newDims);
-
   });
 
   test('metric accepts a variety of statistics', () => {

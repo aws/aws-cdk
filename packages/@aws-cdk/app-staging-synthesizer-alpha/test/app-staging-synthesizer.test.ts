@@ -597,10 +597,10 @@ describe(AppStagingSynthesizer, () => {
   });
 
   /**
-  * Evaluate a possibly string-containing value the same way CFN would do
-  *
-  * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
-  */
+   * Evaluate a possibly string-containing value the same way CFN would do
+   *
+   * (Be invariant to the specific Fn::Sub or Fn::Join we would output)
+   */
   function evalCFN(value: any) {
     return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
   }

@@ -48,7 +48,6 @@ describe('Pipeline Actions', () => {
       });
 
       done();
-
     });
 
     test('uses a single permission statement if the same ChangeSet name is used', () => {
@@ -105,7 +104,6 @@ describe('Pipeline Actions', () => {
           },
         ],
       );
-
     });
   });
 
@@ -178,7 +176,6 @@ describe('Pipeline Actions', () => {
           },
         ],
       );
-
     });
   });
 

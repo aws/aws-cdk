@@ -17,7 +17,6 @@ test('skips bump if skip.bump is set', async () => {
 });
 
 describe('stable versions', () => {
-
   test('does a prerelease bump with provided tag if given', async () => {
     const currentVersion = { stableVersion: '1.2.3' };
     const bumpedVersion = await bump({ releaseAs: 'minor', versionFile: 'version.json', prerelease: 'rc' }, currentVersion);
@@ -40,11 +39,9 @@ describe('stable versions', () => {
     const version = '{\n  "version": "1.3.0"\n}';
     expect(mockWriteFile).toHaveBeenCalledWith(expect.any(Object), versionPath, version);
   });
-
 });
 
 describe('alpha versions', () => {
-
   test('long-running prerelease: bumps existing alpha counter as a prerelease', async () => {
     const currentVersion = { stableVersion: '1.2.0-rc.4', alphaVersion: '1.2.0-alpha.0' };
     const bumpedVersion = await bump({ releaseAs: 'minor', versionFile: 'version.json', prerelease: 'rc' }, currentVersion);
@@ -83,5 +80,4 @@ describe('alpha versions', () => {
     const version = '{\n  "version": "1.3.0",\n  "alphaVersion": "1.3.0-alpha.0"\n}';
     expect(mockWriteFile).toHaveBeenCalledWith(expect.any(Object), versionPath, version);
   });
-
 });

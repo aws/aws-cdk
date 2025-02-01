@@ -14,7 +14,10 @@ module.exports = {
   moduleFileExtensions: ["js"],
 
   testEnvironment: "node",
-  testTimeout: 300000,
+
+  // Because of the way Jest concurrency works, this timeout includes waiting
+  // for the lock. Which is almost never what we actually care about. Set it high.
+  testTimeout: 600000,
 
   // Affects test.concurrent(), these are self-limiting anyway
   maxConcurrency: 10,

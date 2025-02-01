@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Initialization properties for `OpenIdConnectProvider`.
@@ -41,12 +42,13 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
    * @param props Initialization properties
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
-
     const clientIds = ['sts.amazonaws.com'];
 
     super(scope, id, {
       url: props.url,
       clientIds,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

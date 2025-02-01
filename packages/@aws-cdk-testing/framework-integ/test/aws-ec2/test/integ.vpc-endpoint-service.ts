@@ -19,7 +19,6 @@ class TestStack extends cdk.Stack {
       contributorInsights: true,
     });
   }
-
 }
 
 const stack = new TestStack(app, 'TestStackLoadBalancer');

@@ -19,7 +19,6 @@ afterEach(() => {
 });
 
 test('CodePipeline has self-mutation stage', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // THEN
@@ -58,7 +57,6 @@ test('CodePipeline has self-mutation stage', () => {
 });
 
 test('selfmutation stage correctly identifies nested assembly of pipeline stack', () => {
-
   const pipelineStage = new Stage(app, 'PipelineStage');
   const nestedPipelineStack = new Stack(pipelineStage, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(nestedPipelineStack, 'Cdk');
@@ -80,7 +78,6 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 });
 
 test('selfmutation feature can be turned off', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutation: false,
@@ -116,7 +113,6 @@ test('can control fix/CLI version used in pipeline selfupdate', () => {
 });
 
 test('Pipeline stack itself can use assets (has implications for selfupdate)', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'PrivilegedPipeline', {
     dockerEnabledForSelfMutation: true,
@@ -162,7 +158,6 @@ test('self-update project role uses tagged bootstrap-role permissions', () => {
 });
 
 test('self-mutation stage can be customized with BuildSpec', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutationCodeBuildDefaults: {
       partialBuildSpec: cb.BuildSpec.fromObject({

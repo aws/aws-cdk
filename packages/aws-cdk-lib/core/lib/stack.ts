@@ -195,7 +195,7 @@ export interface StackProps {
    * default value `false` will be used.
    *
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
-  */
+   */
   readonly suppressTemplateIndentation?: boolean;
 }
 
@@ -584,7 +584,6 @@ export class Stack extends Construct implements ITaggable {
           }
         },
       }, { priority: AspectPriority.MUTATING });
-
     }
   }
 
@@ -1129,7 +1128,6 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
-
       // 'account' and 'region' are added to the schema at tree instantiation time.
       // these options however are only known at synthesis, so are added here.
       // see https://github.com/aws/aws-cdk/blob/v2.158.0/packages/aws-cdk-lib/core/lib/context-provider.ts#L71

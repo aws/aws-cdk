@@ -64,4 +64,27 @@ describe('Fail State', () => {
       },
     );
   });
+  test('Fail State using JSONata', () => {
+    // WHEN
+    const definition = stepfunctions.Fail.jsonata(stack, 'JSONataFail', {
+      queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      cause: '{% $cause %}',
+      error: '{% $error %}',
+    });
+
+    // THEN
+    expect(render(stack, definition)).toStrictEqual(
+      {
+        StartAt: 'JSONataFail',
+        States: {
+          JSONataFail: {
+            Type: 'Fail',
+            QueryLanguage: 'JSONata',
+            Cause: '{% $cause %}',
+            Error: '{% $error %}',
+          },
+        },
+      },
+    );
+  });
 });

@@ -111,7 +111,7 @@ export class LambdaInvokeAction extends Action {
       resources: ['*'],
     }));
 
-    // allow pipeline to invoke this lambda functionn
+    // allow pipeline to invoke this lambda function
     this.props.lambda.grantInvoke(options.role);
 
     // allow the Role access to the Bucket, if there are any inputs/outputs

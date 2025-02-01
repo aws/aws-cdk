@@ -222,6 +222,5 @@ describe('origin group', () => {
         ],
       },
     });
-
   });
 });

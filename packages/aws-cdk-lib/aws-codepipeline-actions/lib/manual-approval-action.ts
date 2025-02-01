@@ -112,7 +112,6 @@ export class ManualApprovalAction extends Action {
       }),
     };
   }
-
 }
 
 function undefinedIfAllValuesAreEmpty(object: object): object | undefined {

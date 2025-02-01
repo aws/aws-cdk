@@ -42,7 +42,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add metrics to graphs on either axis', () => {
@@ -74,7 +73,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add metrics to graphs on either axis lazily', () => {
@@ -102,7 +100,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('label and color are respected in constructor', () => {
@@ -126,7 +123,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('bar view', () => {
@@ -149,7 +145,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('singlevalue widget', () => {
@@ -175,7 +170,6 @@ describe('Graphs', () => {
         ],
       },
     }]);
-
   });
 
   test('query result widget', () => {
@@ -203,7 +197,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - bar', () => {
@@ -232,7 +225,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - pie', () => {
@@ -261,7 +253,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - line', () => {
@@ -291,7 +282,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('query result widget - stackedarea', () => {
@@ -321,7 +311,6 @@ describe('Graphs', () => {
         query: `SOURCE '${logGroup.logGroupName}' | fields @message\n| filter @message like /Error/`,
       },
     }]);
-
   });
 
   test('alarm widget', () => {
@@ -352,7 +341,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('custom widget basic', () => {
@@ -460,7 +448,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add vertical annotations to graph', () => {
@@ -561,7 +548,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('add yAxis to graph', () => {
@@ -605,7 +591,6 @@ describe('Graphs', () => {
         },
       },
     }]);
-
   });
 
   test('specify liveData property on graph', () => {
@@ -635,7 +620,6 @@ describe('Graphs', () => {
         yAxis: {},
       },
     }]);
-
   });
 
   test('can use imported alarm with graph', () => {
@@ -650,7 +634,6 @@ describe('Graphs', () => {
     });
 
     // THEN: Compiles
-
   });
 
   test('add setPeriodToTimeRange to singleValueWidget', () => {
@@ -678,7 +661,6 @@ describe('Graphs', () => {
         setPeriodToTimeRange: true,
       },
     }]);
-
   });
 
   test('add sparkline to singleValueWidget', () => {
@@ -706,7 +688,6 @@ describe('Graphs', () => {
         sparkline: true,
       },
     }]);
-
   });
 
   test('throws if setPeriodToTimeRange and sparkline is set on singleValueWidget', () => {
@@ -752,7 +733,6 @@ describe('Graphs', () => {
         singleValueFullPrecision: true,
       },
     }]);
-
   });
 
   test('add period to singleValueWidget', () => {
@@ -780,7 +760,6 @@ describe('Graphs', () => {
         period: 172800,
       },
     }]);
-
   });
 
   test('allows overriding custom values of dashboard widgets', () => {
@@ -802,7 +781,6 @@ describe('Graphs', () => {
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0])
       .toEqual(['CDK', 'Test', { visible: false }]);
-
   });
 
   test('GraphColor is correctly converted into the correct hexcode', () => {
@@ -822,7 +800,6 @@ describe('Graphs', () => {
 
     expect(stack.resolve(widget.toJson())[0].properties.metrics[0]).toEqual(['CDK', 'Test', { color: '#1f77b4' }]);
     expect(stack.resolve(widget.toJson())[0].properties.annotations.horizontal[0]).toEqual({ yAxis: 'left', value: 100, color: '#d62728' });
-
   });
 
   test('legend position is respected in constructor', () => {
@@ -850,7 +827,6 @@ describe('Graphs', () => {
         },
       },
     }]);
-
   });
 
   test('add setPeriodToTimeRange to GraphWidget', () => {

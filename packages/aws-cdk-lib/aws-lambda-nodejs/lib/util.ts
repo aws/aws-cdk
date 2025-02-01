@@ -117,7 +117,7 @@ export function tryGetModuleVersionFromPkg(mod: string, pkgJson: { [key: string]
   if (fileMatch && !path.isAbsolute(fileMatch[1])) {
     const absoluteFilePath = path.join(path.dirname(pkgPath), fileMatch[1]);
     return `file:${absoluteFilePath}`;
-  };
+  }
 
   return dependencies[mod];
 }
@@ -166,7 +166,6 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
 
   let compilerOptionsString = '';
   Object.keys(options).sort().forEach((key: string) => {
-
     if (excludedCompilerOptions.includes(key)) {
       return;
     }

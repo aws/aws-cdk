@@ -83,7 +83,6 @@ export async function writeChangelogs(opts: WriteChangelogOptions): Promise<Chan
 export async function changelog(
   args: ChangelogOptions, currentVersion: string, newVersion: string, commits: ConventionalCommit[],
 ): Promise<string> {
-
   createChangelogIfMissing(args);
 
   // find the position of the last release and remove header

@@ -5,7 +5,6 @@ import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 import { IntegTest } from '../../lib/test-case';
 
 describe('DeployAssert', () => {
-
   test('of', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -222,7 +221,7 @@ describe('DeployAssert', () => {
       const deplossert = new DeployAssert(app);
       deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(
         ExpectedResult.objectLike({}),
-      );;
+      );
 
       // THEN
       const template = Template.fromStack(deplossert.scope);
@@ -379,7 +378,7 @@ describe('DeployAssert', () => {
 
 describe('User provided assertions stack', () => {
   test('Same stack for integration test and assertions', () => {
-    //GIVEN
+    // GIVEN
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
@@ -398,7 +397,7 @@ describe('User provided assertions stack', () => {
   });
 
   test('Different stack for integration test and assertions', () => {
-    //GIVEN
+    // GIVEN
     const app = new App();
     const integStack = new Stack(app, 'TestStack');
     const assertionStack = new Stack(app, 'AssertionsStack');
@@ -419,7 +418,7 @@ describe('User provided assertions stack', () => {
   });
 
   test('not throw when environment matches', () => {
-    //GIVEN
+    // GIVEN
     const app = new App();
     const env = { region: 'us-west-2' };
     const integStack = new Stack(app, 'IntegStack', { env: env });

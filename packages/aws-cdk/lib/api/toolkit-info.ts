@@ -10,7 +10,8 @@ import {
   DEFAULT_BOOTSTRAP_VARIANT,
   REPOSITORY_NAME_OUTPUT,
 } from './bootstrap/bootstrap-props';
-import { CloudFormationStack, stabilizeStack } from './util/cloudformation';
+import { type CloudFormationStack, stabilizeStack } from './deployments/cloudformation';
+import { ToolkitError } from '../toolkit/error';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -155,7 +156,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
    */
   private requireOutput(output: string): string {
     if (!(output in this.bootstrapStack.outputs)) {
-      throw new Error(
+      throw new ToolkitError(
         `The CDK toolkit stack (${this.bootstrapStack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`,
       );
     }
@@ -184,31 +185,31 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
   }
 
   public get bootstrapStack(): CloudFormationStack {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public get bucketUrl(): string {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public get bucketName(): string {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public get repositoryName(): string {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public get version(): number {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public get variant(): string {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 
   public prepareEcrRepository(): Promise<EcrRepositoryInfo> {
-    throw new Error(this.errorMessage);
+    throw new ToolkitError(this.errorMessage);
   }
 }
 

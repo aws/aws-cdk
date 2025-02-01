@@ -18,7 +18,6 @@ afterEach(() => {
 });
 
 test('security check option generates lambda/codebuild at pipeline scope', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(app, 'App');
   pipeline.addStage(stage, {
@@ -54,7 +53,6 @@ test('security check option generates lambda/codebuild at pipeline scope', () =>
 });
 
 test('security check option passes correct environment variables to check project', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(pipelineStack, 'App');
   pipeline.addStage(stage, {
@@ -87,7 +85,6 @@ test('security check option passes correct environment variables to check projec
 });
 
 test('pipeline created with auto approve tags and lambda/codebuild w/ valid permissions', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new OneStackApp(app, 'App');
   pipeline.addStage(stage, {
@@ -170,7 +167,6 @@ test('pipeline created with auto approve tags and lambda/codebuild w/ valid perm
 });
 
 test('confirmBroadeningPermissions and notification topic options generates the right resources', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const topic = new Topic(pipelineStack, 'NotificationTopic');
   const stage = new OneStackApp(app, 'MyStack');

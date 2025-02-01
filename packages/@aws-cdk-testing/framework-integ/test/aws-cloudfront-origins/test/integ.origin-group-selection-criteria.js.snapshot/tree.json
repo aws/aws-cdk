@@ -1,0 +1,257 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cloudfront-origin-group-selection-criteria": {
+        "id": "cloudfront-origin-group-selection-criteria",
+        "path": "cloudfront-origin-group-selection-criteria",
+        "children": {
+          "cg1": {
+            "id": "cg1",
+            "path": "cloudfront-origin-group-selection-criteria/cg1",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::MediaPackageV2::ChannelGroup",
+              "aws:cdk:cloudformation:props": {
+                "channelGroupName": "channelGroup1"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_mediapackagev2.CfnChannelGroup",
+              "version": "0.0.0"
+            }
+          },
+          "cg2": {
+            "id": "cg2",
+            "path": "cloudfront-origin-group-selection-criteria/cg2",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::MediaPackageV2::ChannelGroup",
+              "aws:cdk:cloudformation:props": {
+                "channelGroupName": "channelGroup2"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_mediapackagev2.CfnChannelGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Distribution": {
+            "id": "Distribution",
+            "path": "cloudfront-origin-group-selection-criteria/Distribution",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "cloudfront-origin-group-selection-criteria/Distribution/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "OriginGroup1": {
+                "id": "OriginGroup1",
+                "path": "cloudfront-origin-group-selection-criteria/Distribution/OriginGroup1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Origin2": {
+                "id": "Origin2",
+                "path": "cloudfront-origin-group-selection-criteria/Distribution/Origin2",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cloudfront-origin-group-selection-criteria/Distribution/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "cg1",
+                              "EgressDomain"
+                            ]
+                          },
+                          "id": "cloudfrontorigingroupselectioncriteriaDistributionOrigin1AA511FA4",
+                          "customOriginConfig": {
+                            "originSslProtocols": [
+                              "TLSv1.2"
+                            ],
+                            "originProtocolPolicy": "https-only"
+                          }
+                        },
+                        {
+                          "domainName": {
+                            "Fn::GetAtt": [
+                              "cg2",
+                              "EgressDomain"
+                            ]
+                          },
+                          "id": "cloudfrontorigingroupselectioncriteriaDistributionOrigin2AFDC8F08",
+                          "customOriginConfig": {
+                            "originSslProtocols": [
+                              "TLSv1.2"
+                            ],
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "originGroups": {
+                        "items": [
+                          {
+                            "failoverCriteria": {
+                              "statusCodes": {
+                                "items": [
+                                  404
+                                ],
+                                "quantity": 1
+                              }
+                            },
+                            "id": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+                            "members": {
+                              "items": [
+                                {
+                                  "originId": "cloudfrontorigingroupselectioncriteriaDistributionOrigin1AA511FA4"
+                                },
+                                {
+                                  "originId": "cloudfrontorigingroupselectioncriteriaDistributionOrigin2AFDC8F08"
+                                }
+                              ],
+                              "quantity": 2
+                            },
+                            "selectionCriteria": "media-quality-based"
+                          }
+                        ],
+                        "quantity": 1
+                      },
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+                        "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                        "compress": true,
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "cacheBehaviors": [
+                        {
+                          "pathPattern": "/video",
+                          "targetOriginId": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+                          "cachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+                          "compress": true,
+                          "viewerProtocolPolicy": "allow-all"
+                        }
+                      ],
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cloudfront-origin-group-selection-criteria/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cloudfront-origin-group-selection-criteria/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "origin-group-selection-criteria": {
+        "id": "origin-group-selection-criteria",
+        "path": "origin-group-selection-criteria",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "origin-group-selection-criteria/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "origin-group-selection-criteria/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "origin-group-selection-criteria/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "origin-group-selection-criteria/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "origin-group-selection-criteria/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

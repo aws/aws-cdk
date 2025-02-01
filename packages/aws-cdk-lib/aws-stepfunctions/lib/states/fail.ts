@@ -1,27 +1,10 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
+import { renderJsonPath, State, StateBaseProps } from './state';
 import { Token } from '../../../core';
-import { INextable } from '../types';
+import { INextable, QueryLanguage } from '../types';
 
-/**
- * Properties for defining a Fail state
- */
-export interface FailProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default - No comment
-   */
-  readonly comment?: string;
-
+interface FailBaseOptions {
   /**
    * Error code used to represent this failure
    *
@@ -29,6 +12,15 @@ export interface FailProps {
    */
   readonly error?: string;
 
+  /**
+   * A description for the cause of the failure
+   *
+   * @default - No description
+   */
+  readonly cause?: string;
+}
+
+interface FailJsonPathOptions {
   /**
    * JsonPath expression to select part of the state to be the error to this state.
    *
@@ -38,13 +30,6 @@ export interface FailProps {
    * @default - No error path
    */
   readonly errorPath?: string;
-
-  /**
-   * A description for the cause of the failure
-   *
-   * @default - No description
-   */
-  readonly cause?: string;
 
   /**
    * JsonPath expression to select part of the state to be the cause to this state.
@@ -58,11 +43,43 @@ export interface FailProps {
 }
 
 /**
+ * Properties for defining a Fail state that using JSONPath
+ */
+export interface FailJsonPathProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions { }
+/**
+ * Properties for defining a Fail state that using JSONata
+ */
+export interface FailJsonataProps extends StateBaseProps, FailBaseOptions { }
+/**
+ * Properties for defining a Fail state
+ */
+export interface FailProps extends StateBaseProps, FailBaseOptions, FailJsonPathOptions { }
+
+/**
  * Define a Fail state in the state machine
  *
  * Reaching a Fail state terminates the state execution in failure.
  */
 export class Fail extends State {
+  /**
+   * Define a Fail state using JSONPath in the state machine
+   *
+   * Reaching a Fail state terminates the state execution in failure.
+   */
+  public static jsonPath(scope: Construct, id: string, props: FailJsonPathProps = {}) {
+    return new Fail(scope, id, props);
+  }
+  /**
+   * Define a Fail state using JSONata in the state machine
+   *
+   * Reaching a Fail state terminates the state execution in failure.
+   */
+  public static jsonata(scope: Construct, id: string, props: FailJsonataProps = {}) {
+    return new Fail(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   private static allowedIntrinsics = [
     'States.Format',
     'States.JsonToString',
@@ -92,9 +109,10 @@ export class Fail extends State {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(queryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.FAIL,
+      ...this.renderQueryLanguage(queryLanguage),
       Comment: this.comment,
       Error: this.error,
       ErrorPath: this.isIntrinsicString(this.errorPath) ? this.errorPath : renderJsonPath(this.errorPath),

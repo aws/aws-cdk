@@ -6,10 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 
-/**
- * Properties for DynamoUpdateItem Task
- */
-export interface DynamoUpdateItemProps extends sfn.TaskStateBaseProps {
+interface DynamoUpdateItemOptions {
   /**
    * The name of the table containing the requested item.
    */
@@ -93,9 +90,38 @@ export interface DynamoUpdateItemProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for DynamoUpdateItem Task using JSONPath
+ */
+export interface DynamoUpdateItemJsonPathProps extends sfn.TaskStateJsonPathBaseProps, DynamoUpdateItemOptions {}
+
+/**
+ * Properties for DynamoUpdateItem Task using JSONata
+ */
+export interface DynamoUpdateItemJsonataProps extends sfn.TaskStateJsonataBaseProps, DynamoUpdateItemOptions {}
+
+/**
+ * Properties for DynamoUpdateItem Task
+ */
+export interface DynamoUpdateItemProps extends sfn.TaskStateBaseProps, DynamoUpdateItemOptions {}
+
+/**
  * A StepFunctions task to call DynamoUpdateItem
  */
 export class DynamoUpdateItem extends sfn.TaskStateBase {
+  /**
+   * A StepFunctions task using JSONPath to call DynamoUpdateItem
+   */
+  public static jsonPath(scope: Construct, id: string, props: DynamoUpdateItemJsonPathProps) {
+    return new DynamoUpdateItem(scope, id, props);
+  }
+
+  /**
+   * A StepFunctions task using JSONata to call DynamoUpdateItem
+   */
+  public static jsonata(scope: Construct, id: string, props: DynamoUpdateItemJsonataProps) {
+    return new DynamoUpdateItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -119,10 +145,11 @@ export class DynamoUpdateItem extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: getDynamoResourceArn(DynamoMethod.UPDATE),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Key: transformAttributeValueMap(this.props.key),
         TableName: this.props.table.tableName,
         ConditionExpression: this.props.conditionExpression,
@@ -132,7 +159,7 @@ export class DynamoUpdateItem extends sfn.TaskStateBase {
         ReturnItemCollectionMetrics: this.props.returnItemCollectionMetrics,
         ReturnValues: this.props.returnValues,
         UpdateExpression: this.props.updateExpression,
-      }),
+      }, queryLanguage),
     };
   }
 }

@@ -291,7 +291,6 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
           zoneName: 'example.com',
         }),
       });
-
     }).toThrow(/When @aws-cdk\/aws-route53-patters:useCertificate is enabled, a region must be defined on the Stack/);
   });
 });

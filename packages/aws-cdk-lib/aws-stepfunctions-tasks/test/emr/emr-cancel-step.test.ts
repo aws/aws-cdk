@@ -40,6 +40,37 @@ test('Cancel a Step with static ClusterId and StepId', () => {
   });
 });
 
+test('Cancel a Step with static ClusterId and StepId - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrCancelStep.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    stepId: 'StepId',
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:cancelStep',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+      StepId: 'StepId',
+    },
+  });
+});
+
 test('task policies are generated', () => {
   // WHEN
   const task = new tasks.EmrCancelStep(stack, 'Task', {

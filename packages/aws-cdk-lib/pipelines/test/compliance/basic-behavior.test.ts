@@ -19,7 +19,6 @@ afterEach(() => {
 });
 
 test('stack templates in nested assemblies are correctly addressed', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackApp(app, 'App'));
@@ -42,7 +41,6 @@ test('stack templates in nested assemblies are correctly addressed', () => {
 });
 
 test('obvious error is thrown when stage contains no stacks', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // WHEN
@@ -52,7 +50,6 @@ test('obvious error is thrown when stage contains no stacks', () => {
 });
 
 test('overridden stack names are respected', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App1'));
   pipeline.addStage(new OneStackAppWithCustomName(app, 'App2'));
@@ -109,7 +106,6 @@ test('two stacks can have the same name', () => {
 });
 
 test('changing CLI version leads to a different pipeline structure (restarting it)', () => {
-
   // GIVEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
   const stack3 = new Stack(app, 'Stack3', { env: PIPELINE_ENV });
@@ -137,7 +133,6 @@ test('changing CLI version leads to a different pipeline structure (restarting i
 });
 
 test('tags get reflected in pipeline', () => {
-
   // WHEN
   const stage = new OneStackApp(app, 'App');
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');

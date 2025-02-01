@@ -3,6 +3,7 @@ import { BaseInstanceProps, InstanceBase } from './instance';
 import { defaultDiscoveryType } from './private/utils';
 import { IService, DiscoveryType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
@@ -36,6 +37,8 @@ export class NonIpInstance extends InstanceBase {
 
   constructor(scope: Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
     if (discoveryType !== DiscoveryType.API) {

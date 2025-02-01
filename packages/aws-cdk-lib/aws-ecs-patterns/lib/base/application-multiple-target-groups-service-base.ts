@@ -361,7 +361,6 @@ export interface ApplicationListenerProps {
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
 export abstract class ApplicationMultipleTargetGroupsServiceBase extends Construct {
-
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -398,12 +397,12 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
    */
   public readonly listeners = new Array<ApplicationListener>();
   /**
-  * The target groups of the service.
-  */
+   * The target groups of the service.
+   */
   public readonly targetGroups = new Array<ApplicationTargetGroup>();
   /**
-  * The load balancers of the service.
-  */
+   * The load balancers of the service.
+   */
   public readonly loadBalancers = new Array<ApplicationLoadBalancer>();
 
   /**
@@ -590,7 +589,6 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         }
       }
     }
-
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean, idleTimeout?: Duration): ApplicationLoadBalancer {

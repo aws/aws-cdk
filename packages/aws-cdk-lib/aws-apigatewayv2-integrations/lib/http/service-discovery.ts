@@ -2,6 +2,7 @@ import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
 import * as servicediscovery from '../../../aws-servicediscovery';
+import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.
@@ -22,13 +23,12 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
     id: string,
     private readonly service: servicediscovery.IService,
     private readonly props: HttpServiceDiscoveryIntegrationProps = {}) {
-
     super(id);
   }
 
-  public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     if (!this.props.vpcLink) {
-      throw new Error('The vpcLink property is mandatory');
+      throw new ValidationError('The vpcLink property is mandatory', options.scope);
     }
 
     return {

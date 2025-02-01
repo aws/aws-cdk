@@ -295,3 +295,22 @@ new dynamodb.Table(this, 'MyTable', {
 ```
 
 If you have a global table replica, note that it does not support the addition of a resource-based policy.
+
+## Point-in-Time Recovery
+
+`pointInTimeRecoverySpecifcation` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+
+You can also choose to set `recoveryPeriodInDays` to a value between `1` and `35` which dictates how many days of recoverable data is stored. If no value is provided, the recovery period defaults to `35` days.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+    recoveryPeriodInDays: 4,
+  },
+});
+```

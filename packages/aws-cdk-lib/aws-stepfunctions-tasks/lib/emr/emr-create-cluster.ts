@@ -1,3 +1,4 @@
+
 import { Construct } from 'constructs';
 import {
   ApplicationConfigPropertyToJson,
@@ -12,15 +13,7 @@ import * as cdk from '../../../core';
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for EmrCreateCluster
- *
- * See the RunJobFlow API for complete documentation on input parameters
- *
- * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
- *
- */
-export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
+interface EmrCreateClusterOptions {
   /**
    * A specification of the number and type of Amazon EC2 instances.
    */
@@ -166,6 +159,24 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling an AWS service's API action using JSONPath from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrCreateClusterOptions {}
+
+/**
+ * Properties for calling an AWS service's API action using JSONata from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrCreateClusterOptions {}
+
+/**
+ * Properties for calling an AWS service's API action from your
+ * state machine across regions.
+ */
+export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps, EmrCreateClusterOptions {}
+
+/**
  * A Step Functions Task to create an EMR Cluster.
  *
  * The ClusterConfiguration is defined as Parameters in the state machine definition.
@@ -174,6 +185,26 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
  *
  */
 export class EmrCreateCluster extends sfn.TaskStateBase {
+  /**
+   * A Step Functions task using JSONPath to create an EMR Cluster.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrCreateClusterJsonPathProps) {
+    return new EmrCreateCluster(scope, id, props);
+  }
+  /**
+   * A Step Functions task using JSONata to create an EMR Cluster.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrCreateClusterJsonataProps) {
+    return new EmrCreateCluster(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -285,10 +316,11 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'createCluster', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Instances: InstancesConfigPropertyToJson(this.props.instances),
         JobFlowRole: cdk.stringToCloudFormation(this._clusterRole.roleName),
         Name: cdk.stringToCloudFormation(this.props.name),
@@ -311,7 +343,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         AutoTerminationPolicy: this.props.autoTerminationPolicyIdleTimeout
           ? { IdleTimeout: this.props.autoTerminationPolicyIdleTimeout.toSeconds() }
           : undefined,
-      }),
+      }, queryLanguage),
     };
   }
 
@@ -870,7 +902,7 @@ export namespace EmrCreateCluster {
      * For a master instance fleet, only one of `targetSpotCapacity` and `targetOnDemandCapacity` can be specified, and its value
      * must be 1.
      *
-    * @default No targetSpotCapacity
+     * @default No targetSpotCapacity
      */
     readonly targetSpotCapacity?: number;
   }

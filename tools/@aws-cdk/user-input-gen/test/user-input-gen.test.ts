@@ -49,7 +49,7 @@ describe('render', () => {
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { Command } from './settings';
+      import { Command } from './user-configuration';
 
       /**
        * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
@@ -110,7 +110,7 @@ describe('render', () => {
         /**
          * plugins to load
          *
-         * @default - []
+         * @default - undefined
          */
         readonly plugin?: Array<string>;
       }
@@ -158,7 +158,7 @@ describe('render', () => {
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { Command } from './settings';
+      import { Command } from './user-configuration';
 
       /**
        * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts
@@ -205,7 +205,7 @@ describe('render', () => {
         /**
          * Other array
          *
-         * @default - []
+         * @default - undefined
          */
         readonly otherArray?: Array<string>;
       }
@@ -240,7 +240,7 @@ describe('render', () => {
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
-      import { Command } from './settings';
+      import { Command } from './user-configuration';
 
       /**
        * The structure of the user input -- either CLI options or cdk.json -- generated from packages/aws-cdk/lib/config.ts

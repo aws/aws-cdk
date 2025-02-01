@@ -156,7 +156,7 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
    *
    * @default - If `bucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
    * source records are not backed up to S3.
-  */
+   */
   readonly mode?: BackupMode;
 }
 

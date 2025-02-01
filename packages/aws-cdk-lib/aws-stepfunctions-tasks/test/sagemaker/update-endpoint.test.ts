@@ -40,6 +40,37 @@ test('update endpoint', () => {
   });
 });
 
+test('update endpoint - using JSONata', () => {
+  // WHEN
+  const task = tasks.SageMakerUpdateEndpoint.jsonata(stack, 'SagemakerEndpoint', {
+    endpointName: 'MyEndpoint',
+    endpointConfigName: 'MyEndpointConfig',
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:updateEndpoint',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      EndpointConfigName: 'MyEndpointConfig',
+      EndpointName: 'MyEndpoint',
+    },
+  });
+});
+
 test('pass parameters to update endpoint', () => {
   // WHEN
   const task = new tasks.SageMakerUpdateEndpoint(stack, 'SagemakerEndpoint', {

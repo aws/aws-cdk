@@ -7,6 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Defines Extension action points.
@@ -496,6 +497,8 @@ export class Extension extends Resource implements IExtension {
     super(scope, id, {
       physicalName: props.extensionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.actions = props.actions;
     this.name = props.extensionName || Names.uniqueResourceName(this, {

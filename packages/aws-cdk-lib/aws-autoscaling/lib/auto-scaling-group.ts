@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization, withResolved,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -862,7 +863,6 @@ export abstract class Signals {
       },
     };
   }
-
 }
 
 /**
@@ -1026,7 +1026,6 @@ export interface RollingUpdateOptions {
  * A set of group metrics
  */
 export class GroupMetrics {
-
   /**
    * Report all group metrics.
    */
@@ -1048,7 +1047,6 @@ export class GroupMetrics {
  * Group metrics that an Auto Scaling group sends to Amazon CloudWatch.
  */
 export class GroupMetric {
-
   /**
    * The minimum size of the Auto Scaling group
    */
@@ -1119,7 +1117,6 @@ export enum CapacityDistributionStrategy {
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
-
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
   public abstract readonly osType: ec2.OperatingSystemType;
@@ -1273,7 +1270,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
   elbv2.INetworkLoadBalancerTarget {
-
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
@@ -1337,6 +1333,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 
@@ -2557,11 +2555,11 @@ export interface ApplyCloudFormationInitOptions {
   readonly includeUrl?: boolean;
 
   /**
-  * Include --role argument when running cfn-init and cfn-signal commands
-  *
-  * This will be the IAM instance profile attached to the EC2 instance
-  *
-  * @default false
-  */
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
   readonly includeRole?: boolean;
 }

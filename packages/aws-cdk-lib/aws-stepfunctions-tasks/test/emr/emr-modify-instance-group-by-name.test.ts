@@ -76,6 +76,73 @@ test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and Inst
   });
 });
 
+test('Modify an InstanceGroup with static ClusterId, InstanceGroupName, and InstanceGroup - using JSONata', () => {
+  // WHEN
+  const task = tasks.EmrModifyInstanceGroupByName.jsonata(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceGroupName: 'InstanceGroupName',
+    instanceGroup: {
+      configurations: [{
+        classification: 'Classification',
+        properties: {
+          Key: 'Value',
+        },
+      }],
+      eC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+      instanceCount: 1,
+      shrinkPolicy: {
+        decommissionTimeout: cdk.Duration.seconds(1),
+        instanceResizePolicy: {
+          instanceTerminationTimeout: cdk.Duration.seconds(1),
+          instancesToProtect: ['InstanceToProtect'],
+          instancesToTerminate: ['InstanceToTerminate'],
+        },
+      },
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:modifyInstanceGroupByName',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ClusterId: 'ClusterId',
+      InstanceGroupName: 'InstanceGroupName',
+      InstanceGroup: {
+        Configurations: [{
+          Classification: 'Classification',
+          Properties: {
+            Key: 'Value',
+          },
+        }],
+        EC2InstanceIdsToTerminate: ['InstanceToTerminate'],
+        InstanceCount: 1,
+        ShrinkPolicy: {
+          DecommissionTimeout: 1,
+          InstanceResizePolicy: {
+            InstanceTerminationTimeout: 1,
+            InstancesToProtect: ['InstanceToProtect'],
+            InstancesToTerminate: ['InstanceToTerminate'],
+          },
+        },
+      },
+    },
+  });
+});
+
 test('task policies are generated', () => {
   // WHEN
   const task = new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {

@@ -6,7 +6,6 @@ import { Stack } from '../../core';
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
 export class DataProtectionPolicy {
-
   private readonly dataProtectionPolicyProps: DataProtectionPolicyProps;
 
   constructor(props: DataProtectionPolicyProps) {
@@ -61,7 +60,7 @@ export class DataProtectionPolicy {
           resourceName: identifier.name,
         }));
       }
-    };
+    }
 
     const statement = [
       {

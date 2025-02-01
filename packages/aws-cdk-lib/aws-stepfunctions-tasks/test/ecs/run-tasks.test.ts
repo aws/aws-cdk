@@ -397,6 +397,82 @@ test('Running a Fargate Task', () => {
   });
 });
 
+test('Running a Fargate Task - using JSONata', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+  const containerDefinition = taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  // WHEN
+  const runTask = tasks.EcsRunTask.jsonata(stack, 'RunFargate', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinition,
+    containerOverrides: [
+      {
+        containerDefinition,
+        environment: [{ name: 'SOME_KEY', value: '{% $SomeKey %}' }],
+      },
+    ],
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    QueryLanguage: 'JSONata',
+    Arguments: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          SecurityGroups: [{ 'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId'] }],
+          Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
+        },
+      },
+      PlatformVersion: '1.4.0',
+      TaskDefinition: 'TD',
+      Overrides: {
+        ContainerOverrides: [
+          {
+            Environment: [
+              {
+                Name: 'SOME_KEY',
+                'Value': '{% $SomeKey %}',
+              },
+            ],
+            Name: 'TheContainer',
+          },
+        ],
+      },
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+});
+
 test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,

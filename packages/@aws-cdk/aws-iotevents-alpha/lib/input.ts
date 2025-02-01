@@ -2,6 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Resource, IResource, Aws } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnInput } from 'aws-cdk-lib/aws-iotevents';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an AWS IoT Events input.
@@ -102,6 +103,8 @@ export class Input extends InputBase {
     super(scope, id, {
       physicalName: props.inputName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.attributeJsonPaths.length === 0) {
       throw new Error('attributeJsonPaths property cannot be empty');

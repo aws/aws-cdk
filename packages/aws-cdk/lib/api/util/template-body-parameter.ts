@@ -6,8 +6,9 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { debug, error } from '../../logging';
 import { toYAML } from '../../serialize';
-import { AssetManifestBuilder } from '../../util/asset-manifest-builder';
+import { ToolkitError } from '../../toolkit/error';
 import { contentHash } from '../../util/content-hash';
+import { type AssetManifestBuilder } from '../deployments';
 import { EnvironmentResources } from '../environment-resources';
 
 export type TemplateBodyParameter = {
@@ -60,7 +61,7 @@ export async function makeBodyParameter(
       chalk.blue(`\t$ cdk bootstrap ${resolvedEnvironment.name}\n`),
     );
 
-    throw new Error('Template too large to deploy ("cdk bootstrap" is required)');
+    throw new ToolkitError('Template too large to deploy ("cdk bootstrap" is required)');
   }
 
   const templateHash = contentHash(templateJson);
@@ -110,7 +111,7 @@ async function restUrlFromManifest(url: string, environment: Environment): Promi
   // Yes, this is extremely crude, but we don't actually need this so I'm not inclined to spend
   // a lot of effort trying to thread the right value to this location.
   if (url.indexOf(doNotUseMarker) > -1) {
-    throw new Error("Cannot use '${AWS::Partition}' in the 'stackTemplateAssetObjectUrl' field");
+    throw new ToolkitError("Cannot use '${AWS::Partition}' in the 'stackTemplateAssetObjectUrl' field");
   }
 
   const s3Url = url.match(/s3:\/\/([^/]+)\/(.*)$/);

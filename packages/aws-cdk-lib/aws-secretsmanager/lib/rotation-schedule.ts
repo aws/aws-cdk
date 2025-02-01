@@ -7,6 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -89,6 +90,8 @@ export interface RotationScheduleProps extends RotationScheduleOptions {
 export class RotationSchedule extends Resource {
   constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
       throw new Error('One of `rotationLambda` or `hostedRotation` must be specified.');

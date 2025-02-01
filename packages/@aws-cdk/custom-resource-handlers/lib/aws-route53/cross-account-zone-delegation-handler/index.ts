@@ -9,13 +9,13 @@ export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomReso
 }
 
 interface ResourceProperties {
-  AssumeRoleArn: string,
-  ParentZoneName?: string,
-  ParentZoneId?: string,
-  DelegatedZoneName: string,
-  DelegatedZoneNameServers: string[],
-  TTL: number,
-  AssumeRoleRegion?: string,
+  AssumeRoleArn: string;
+  ParentZoneName?: string;
+  ParentZoneId?: string;
+  DelegatedZoneName: string;
+  DelegatedZoneNameServers: string[];
+  TTL: number;
+  AssumeRoleRegion?: string;
 }
 
 export async function handler(event: CrossAccountZoneDelegationEvent) {

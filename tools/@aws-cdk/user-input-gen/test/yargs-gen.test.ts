@@ -50,7 +50,6 @@ describe('render', () => {
             desc: 'text for two',
           })
           .option('three', {
-            default: [],
             type: 'array',
             alias: 't',
             desc: 'text for three',
@@ -198,7 +197,6 @@ describe('render', () => {
                 requiresArg: true,
               })
               .option('other-array', {
-                default: [],
                 type: 'array',
                 desc: 'Other array',
                 nargs: 1,

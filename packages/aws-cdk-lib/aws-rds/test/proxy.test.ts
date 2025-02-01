@@ -487,7 +487,7 @@ describe('proxy', () => {
       },
     });
 
-    //WHEN
+    // WHEN
     new rds.DatabaseProxy(stack, 'proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
       secrets: [cluster.secret!],
@@ -519,7 +519,7 @@ describe('proxy', () => {
       },
     });
 
-    //WHEN
+    // WHEN
     cluster.addProxy('Proxy', {
       vpc,
       secrets: [cluster.secret!],
@@ -567,7 +567,7 @@ describe('proxy', () => {
       readers: [rds.ClusterInstance.provisioned('reader')],
     });
 
-    //WHEN
+    // WHEN
     new rds.DatabaseProxy(stack, 'proxy', {
       proxyTarget: rds.ProxyTarget.fromCluster(cluster),
       secrets: [cluster.secret!],
@@ -599,7 +599,7 @@ describe('proxy', () => {
       readers: [rds.ClusterInstance.provisioned('reader')],
     });
 
-    //WHEN
+    // WHEN
     cluster.addProxy('Proxy', {
       vpc,
       secrets: [cluster.secret!],

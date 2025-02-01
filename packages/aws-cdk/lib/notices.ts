@@ -7,14 +7,14 @@ import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { SdkHttpOptions } from './api';
 import { AwsCliCompatible } from './api/aws-auth/awscli-compatible';
+import type { Context } from './api/context';
+import { versionNumber } from './cli/version';
 import { debug, info, warning, error } from './logging';
-import { Context } from './settings';
 import { ToolkitError } from './toolkit/error';
 import { loadTreeFromDir, some } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { formatErrorMessage } from './util/error';
-import { versionNumber } from './version';
 
 const CACHE_FILE_PATH = path.join(cdkCacheDir(), 'notices.json');
 
@@ -265,7 +265,7 @@ export class Notices {
   /**
    * Refresh the list of notices this instance is aware of.
    * To make sure this never crashes the CLI process, all failures are caught and
-   * slitently logged.
+   * silently logged.
    *
    * If context is configured to not display notices, this will no-op.
    */

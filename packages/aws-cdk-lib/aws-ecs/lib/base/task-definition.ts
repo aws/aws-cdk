@@ -3,6 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -136,7 +137,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   readonly compatibility: Compatibility;
 
@@ -287,7 +288,6 @@ export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
-
   public abstract readonly compatibility: Compatibility;
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
@@ -320,7 +320,6 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
  * The base class for all task definitions.
  */
 export class TaskDefinition extends TaskDefinitionBase {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    *
@@ -432,6 +431,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.family = props.family || Names.uniqueId(this);
     this.compatibility = props.compatibility;
@@ -843,7 +844,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       const pm = container.findPortMappingByName(name);
       if (pm) {
         portMapping = pm;
-      };
+      }
     });
 
     return portMapping;
@@ -913,7 +914,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     } else {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
     }
-  };
+  }
 }
 
 /**

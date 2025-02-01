@@ -8,7 +8,7 @@ import { TestEnvironment as NodeEnvironment } from 'jest-environment-node';
 
 interface ConsoleMessage {
   type: 'log' | 'error' | 'warn' | 'info' | 'debug';
-  message: string;
+  args: any[];
 }
 
 export default class TestEnvironment extends NodeEnvironment implements JestEnvironment<unknown> {
@@ -26,11 +26,15 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     // doesn't work properly.
     (this as JestEnvironment<unknown>).handleTestEvent = (async (event, _state) => {
       if (event.name === 'test_done' && event.test.errors.length > 0 && this.log.length > 0) {
+        this.stopCapture();
+
         this.originalConsole.log(`[Console output] ${fullTestName(event.test)}\n`);
         for (const item of this.log) {
-          this.originalConsole[item.type]('    ' + item.message);
+          this.originalConsole[item.type].apply(this.originalConsole, ['    ', ...item.args]);
         }
         this.originalConsole.log('\n');
+
+        this.startCapture();
       }
 
       if (event.name === 'test_done') {
@@ -43,24 +47,33 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     await super.setup();
 
     this.log = [];
+    this.startCapture();
+  }
+
+  async teardown() {
+    this.stopCapture();
+    await super.teardown();
+  }
+
+  private startCapture() {
     this.originalConsole = console;
     this.originalStdoutWrite = process.stdout.write;
     this.originalStderrWrite = process.stderr.write;
 
     this.global.console = {
       ...console,
-      log: (message) => this.log.push({ type: 'log', message }),
-      error: (message) => this.log.push({ type: 'error', message }),
-      warn: (message) => this.log.push({ type: 'warn', message }),
-      info: (message) => this.log.push({ type: 'info', message }),
-      debug: (message) => this.log.push({ type: 'debug', message }),
+      log: (...args) => this.log.push({ type: 'log', args }),
+      error: (...args) => this.log.push({ type: 'error', args }),
+      warn: (...args) => this.log.push({ type: 'warn', args }),
+      info: (...args) => this.log.push({ type: 'info', args }),
+      debug: (...args) => this.log.push({ type: 'debug', args }),
     };
 
     const self = this;
     process.stdout.write = function (chunk: Buffer | string, enccb?: BufferEncoding | ((error?: Error | null) => void)): void {
       const encoding = typeof enccb === 'string' ? enccb : 'utf-8';
       const message = Buffer.isBuffer(chunk) ? chunk.toString(encoding) : chunk;
-      self.log.push({ type: 'log', message: message.replace(/\n$/, '') });
+      self.log.push({ type: 'log', args: [message.replace(/\n$/, '')] });
       if (typeof enccb === 'function') {
         enccb();
       }
@@ -68,18 +81,17 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
     process.stderr.write = function (chunk: Buffer | string, enccb?: BufferEncoding | ((error?: Error | null) => void)): void {
       const encoding = typeof enccb === 'string' ? enccb : 'utf-8';
       const message = Buffer.isBuffer(chunk) ? chunk.toString(encoding) : chunk;
-      self.log.push({ type: 'error', message: message.replace(/\n$/, '') });
+      self.log.push({ type: 'error', args: [message.replace(/\n$/, '')] });
       if (typeof enccb === 'function') {
         enccb();
       }
     } as any;
   }
 
-  async teardown() {
+  private stopCapture() {
     this.global.console = this.originalConsole;
     process.stdout.write = this.originalStdoutWrite;
     process.stderr.write = this.originalStderrWrite;
-    await super.teardown();
   }
 }
 
@@ -92,7 +104,7 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 function fullTestName(test: TestDescription) {
   let ret = test.name;
   while (test.parent != null && test.parent.name !== 'ROOT_DESCRIBE_BLOCK') {
-    ret = test.parent.name + ' › ' + fullTestName;
+    ret = test.parent.name + ' › ' + ret;
     test = test.parent;
   }
   return ret;

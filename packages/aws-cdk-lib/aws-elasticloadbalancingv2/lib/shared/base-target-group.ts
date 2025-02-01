@@ -3,6 +3,7 @@ import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -347,12 +348,12 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
+      throw new ValidationError(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new Error('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.');
+      throw new ValidationError('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {

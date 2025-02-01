@@ -8,8 +8,8 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 
 /**
-  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
-  */
+ * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
+ */
 export interface Tag {
 
   /**
@@ -243,7 +243,7 @@ export class EcsTask implements events.IRuleTarget {
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
-    };
+    }
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
 

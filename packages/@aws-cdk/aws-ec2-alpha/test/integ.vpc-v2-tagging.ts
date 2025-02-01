@@ -13,7 +13,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-ec2-alpha-tag');
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-tag', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
   secondaryAddressBlocks: [
-    //Test Amazon provided secondary ipv6 address
+    // Test Amazon provided secondary ipv6 address
     vpc_v2.IpAddresses.amazonProvidedIpv6({
       cidrBlockName: 'AmazonProvided',
     }),
@@ -53,7 +53,7 @@ const natgw = vpc.addNatGateway({
 natgw.node.addDependency(vpnGateway);
 
 const ipam = new Ipam(stack, 'IpamIntegTest', {
-  operatingRegion: ['us-west-2'],
+  operatingRegions: ['us-west-2'],
   ipamName: 'CDKIpamTestTag',
 });
 

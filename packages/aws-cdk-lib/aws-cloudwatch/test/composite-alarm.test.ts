@@ -105,7 +105,6 @@ describe('CompositeAlarm', () => {
         ],
       },
     });
-
   });
 
   test('test action suppressor translates to a correct CFN properties', () => {
@@ -205,5 +204,4 @@ describe('CompositeAlarm', () => {
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
-
 });

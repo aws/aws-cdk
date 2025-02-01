@@ -1,0 +1,32 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855": {
+      "source": {
+        "path": "asset.432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "09d72521949f27a084c5d8161fed094012e7bd42e95d2e7d292737f4c6118077": {
+      "source": {
+        "path": "aws-glue-job-pyspark-streaming.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "09d72521949f27a084c5d8161fed094012e7bd42e95d2e7d292737f4c6118077.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

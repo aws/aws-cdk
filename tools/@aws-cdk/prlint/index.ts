@@ -1,56 +1,107 @@
-import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
-import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
-import * as linter from './lint';
+import { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
+import { PullRequestLinter } from './lint';
+import { LinterActions } from './linter-base';
+import { DEFAULT_LINTER_LOGIN } from './constants';
 
+/**
+ * Entry point for PR linter
+ *
+ * This gets run as a GitHub action.
+ *
+ * To test locally, do the following:
+ *
+ * ```
+ * env GITHUB_TOKEN=$(cat ~/.my-github-token) LINTER_LOGIN=my-gh-alias GITHUB_REPOSITORY=aws/aws-cdk PR_NUMBER=1234 npx ts-node ./index
+ * ```
+ */
 async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
   const client = new Octokit({ auth: token });
 
-  try {
-    switch (github.context.eventName) {
-      case 'status':
-        const statusPayload = github.context.payload as StatusEvent;
-        const pr = await linter.PullRequestLinter.getPRFromCommit(client, 'aws', 'aws-cdk', statusPayload.sha);
-        if (pr) {
-          const prLinter = new linter.PullRequestLinter({
-            client,
-            owner: 'aws',
-            repo: 'aws-cdk',
-            number: pr.number,
-          });
-          console.log('validating status event');
-          await prLinter.validateStatusEvent(pr, github.context.payload as StatusEvent);
-        }
-        break;
-      case 'workflow_run':
-        const prNumber = process.env.PR_NUMBER;
-        const prSha = process.env.PR_SHA;
-        if (!prNumber || !prSha) {
-          throw new Error(`Cannot have undefined values in: ${prNumber} pr number and ${prSha} pr sha.`)
-        }
-        const workflowPrLinter = new linter.PullRequestLinter({
-          client,
-          owner: github.context.repo.owner,
-          repo: github.context.repo.repo,
-          number: Number(prNumber),
-        });
-        await workflowPrLinter.validatePullRequestTarget(prSha);
-        break;
-      default:
-        const payload = github.context.payload as PullRequestEvent;
-        const prLinter = new linter.PullRequestLinter({
-          client,
-          owner: github.context.repo.owner,
-          repo: github.context.repo.repo,
-          number: github.context.issue.number,
-        });
-        await prLinter.validatePullRequestTarget(payload.pull_request.head.sha);
+  const owner = github.context.repo.owner;
+  const repo = github.context.repo.repo;
+
+  const number = await determinePrNumber(client);
+  if (!number) {
+    if (['check_suite', 'status'].includes(github.context.eventName)) {
+      console.error(`Could not find PR belonging to event, but that's not unusual. Skipping.`);
+      process.exit(0);
     }
-  } catch (error: any) {
-    core.setFailed(error.message);
+
+    throw new Error(`Could not determine a PR number from either \$PR_NUMBER or \$PR_SHA or ${github.context.eventName}: ${JSON.stringify(github.context.payload)}`);
+  }
+
+  const prLinter = new PullRequestLinter({
+    client,
+    owner,
+    repo,
+    number,
+    // On purpose || instead of ??, also collapse empty string
+    linterLogin: process.env.LINTER_LOGIN || DEFAULT_LINTER_LOGIN,
+  });
+
+  let actions: LinterActions | undefined;
+
+  switch (github.context.eventName) {
+    case 'status':
+      // Triggering on a 'status' event is solely used to see if the CodeBuild
+      // job just turned green, and adding certain 'ready for review' labels
+      // if it does.
+      const statusPayload = github.context.payload as StatusEvent;
+      console.log('validating status event');
+      actions = await prLinter.validateStatusEvent(statusPayload);
+      break;
+
+    default:
+      // This is the main PR validator action.
+      actions = await prLinter.validatePullRequestTarget();
+      break;
+  }
+
+  if (actions) {
+    console.log(actions);
+
+    if (github.context.eventName || process.env.FOR_REAL) {
+      console.log('Carrying out actions');
+
+      // Actually running in GitHub actions, do it (otherwise we're just testing)
+      await prLinter.executeActions(actions);
+    }
   }
 }
 
-void run();
+async function determinePrNumber(client: Octokit): Promise<number | undefined> {
+  const owner = github.context.repo.owner;
+  const repo = github.context.repo.repo;
+
+  if (process.env.PR_NUMBER) {
+    return Number(process.env.PR_NUMBER);
+  }
+  if (github.context.eventName.startsWith('pull_request')) {
+    return (github.context.payload as PullRequestEvent).pull_request.number;
+  }
+
+  // If we don't have PR_NUMBER, try to find a SHA and convert that into a PR number
+  let sha = process.env.PR_SHA;
+  if (!sha && github.context.eventName === 'status') {
+    sha = (github.context.payload as StatusEvent)?.sha;
+  }
+  if (!sha && github.context.eventName === 'check_suite') {
+    // For a check_suite event, take the SHA and try to find a PR for it.
+    sha = (github.context.payload as CheckSuiteEvent)?.check_suite.head_sha;
+  }
+  if (!sha) {
+    return undefined;
+    throw new Error(`Could not determine a SHA from either \$PR_SHA or ${JSON.stringify(github.context.payload)}`);
+  }
+
+  const pr = await PullRequestLinter.getPRFromCommit(client, owner, repo, sha);
+  return pr?.number;
+}
+
+run().catch(e => {
+  console.error(e);
+  process.exitCode = 1;
+});

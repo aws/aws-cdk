@@ -1,0 +1,19 @@
+name: PR Prioritization R5 Check
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'  # Runs at 6AM every day during weekdays
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  update_project_status:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check and Assign R5 Priority to PRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const script = require('./scripts/prioritization/assign-r5-priority.js')
+            await script({github})

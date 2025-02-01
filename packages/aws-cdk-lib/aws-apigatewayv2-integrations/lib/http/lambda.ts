@@ -41,7 +41,6 @@ export interface HttpLambdaIntegrationProps {
  * The Lambda Proxy integration resource for HTTP API
  */
 export class HttpLambdaIntegration extends HttpRouteIntegration {
-
   private readonly _id: string;
 
   /**
@@ -53,7 +52,6 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     id: string,
     private readonly handler: IFunction,
     private readonly props: HttpLambdaIntegrationProps = {}) {
-
     super(id);
     this._id = id;
   }

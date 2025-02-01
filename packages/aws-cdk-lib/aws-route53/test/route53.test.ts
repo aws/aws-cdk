@@ -11,7 +11,6 @@ describe('route53', () => {
       Template.fromStack(app.stack).hasResourceProperties('AWS::Route53::HostedZone', {
         Name: 'test.public.',
       });
-
     });
     test('private hosted zone', () => {
       const app = new TestApp();

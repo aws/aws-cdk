@@ -1,0 +1,23 @@
+name: PR Prioritization
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  prioritize:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add PR to Project & Set Priority
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const script = require('./scripts/prioritization/assign-priority.js')
+            await script({github, context})

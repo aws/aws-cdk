@@ -656,17 +656,17 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
 }
 
 /**
-* Return the extension name of a source path
-*
-* Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
-*/
+ * Return the extension name of a source path
+ *
+ * Loop through ARCHIVE_EXTENSIONS for valid archive extensions.
+ */
 function getExtension(source: string): string {
   for ( const ext of ARCHIVE_EXTENSIONS ) {
     if (source.toLowerCase().endsWith(ext)) {
       return ext;
-    };
-  };
+    }
+  }
 
   return path.extname(source);
-};
+}
 

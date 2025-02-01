@@ -5,10 +5,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for CodeBuildStartBuildBatch
- */
-export interface CodeBuildStartBuildBatchProps extends sfn.TaskStateBaseProps {
+interface CodeBuildStartBuildBatchOptions {
   /**
    * CodeBuild project to start
    */
@@ -23,11 +20,44 @@ export interface CodeBuildStartBuildBatchProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for CodeBuildStartBuildBatch using JSONPath
+ */
+export interface CodeBuildStartBuildBatchJsonPathProps extends sfn.TaskStateJsonPathBaseProps, CodeBuildStartBuildBatchOptions {}
+
+/**
+ * Properties for CodeBuildStartBuildBatch using JSONata
+ */
+export interface CodeBuildStartBuildBatchJsonataProps extends sfn.TaskStateJsonataBaseProps, CodeBuildStartBuildBatchOptions {}
+
+/**
+ * Properties for CodeBuildStartBuildBatch
+ */
+export interface CodeBuildStartBuildBatchProps extends sfn.TaskStateBaseProps, CodeBuildStartBuildBatchOptions {}
+
+/**
  * Start a CodeBuild BatchBuild as a task
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html
  */
 export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
+  /**
+   * Start a CodeBuild BatchBuild as a task using JSONPath
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: CodeBuildStartBuildBatchJsonPathProps): CodeBuildStartBuildBatch {
+    return new CodeBuildStartBuildBatch(scope, id, props);
+  }
+
+  /**
+   * Start a CodeBuild BatchBuild as a task using JSONata
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html
+   */
+  public static jsonata(scope: Construct, id: string, props: CodeBuildStartBuildBatchJsonataProps): CodeBuildStartBuildBatch {
+    return new CodeBuildStartBuildBatch(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -105,15 +135,16 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('codebuild', 'startBuildBatch', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ProjectName: this.props.project.projectName,
         EnvironmentVariablesOverride: this.props.environmentVariablesOverride
           ? this.serializeEnvVariables(this.props.environmentVariablesOverride)
           : undefined,
-      }),
+      }, queryLanguage),
     };
   }
 

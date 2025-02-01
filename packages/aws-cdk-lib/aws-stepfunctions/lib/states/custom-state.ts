@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Chain } from '..';
 import { State } from './state';
 import { Annotations } from '../../../core/';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Properties for defining a custom state definition
@@ -68,8 +68,9 @@ export class CustomState extends State implements IChainable, INextable {
   /**
    * Returns the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(queryLanguage?: QueryLanguage): object {
     const state = {
+      ...this.renderQueryLanguage(queryLanguage),
       ...this.renderNextEnd(),
       ...this.stateJson,
       ...this.renderRetryCatch(),

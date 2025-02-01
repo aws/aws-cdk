@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDeploymentStrategy } from './appconfig.generated';
 import { Resource, IResource, Stack, ArnFormat, Names, Duration } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for DeploymentStrategy.
@@ -132,6 +133,8 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     super(scope, id, {
       physicalName: props.deploymentStrategyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.deploymentDurationInMinutes = props.rolloutStrategy.deploymentDuration.toMinutes();
     this.growthFactor = props.rolloutStrategy.growthFactor;

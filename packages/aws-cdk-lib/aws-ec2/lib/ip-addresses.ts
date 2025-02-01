@@ -283,9 +283,7 @@ class AwsIpam implements IIpAddresses {
    * Allocates Subnets CIDRs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
-
     const cidrSplit = calculateCidrSplits(this.props.ipv4NetmaskLength, input.requestedSubnets.map((mask => {
-
       if ((mask.configuration.cidrMask === undefined) && (this.props.defaultSubnetIpv4NetmaskLength=== undefined) ) {
         throw new Error('If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
       }
@@ -308,7 +306,6 @@ class AwsIpam implements IIpAddresses {
     return {
       allocatedSubnets: allocatedSubnets,
     };
-
   }
 }
 
@@ -390,10 +387,9 @@ class Cidr implements IIpAddresses {
    * Allocates Subnets Cidrs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
-
     const allocatedSubnets: AllocatedSubnet[] = [];
     const subnetsWithoutDefinedCidr: IRequestedSubnetInstance[] = [];
-    //default: Available IP space is evenly divided across subnets if no cidr is given.
+    // default: Available IP space is evenly divided across subnets if no cidr is given.
 
     input.requestedSubnets.forEach((requestedSubnet, index) => {
       if (requestedSubnet.configuration.cidrMask === undefined) {
@@ -496,7 +492,7 @@ class AmazonProvided implements IIpv6Addresses {
    * Note this is specific to the IPv6 CIDR.
    */
   allocateVpcIpv6Cidr(input: AllocateVpcIpv6CidrRequest): CfnVPCCidrBlock {
-    //throw new Error(`vpcId not found, got ${(scope as any).vpcId}`);
+    // throw new Error(`vpcId not found, got ${(scope as any).vpcId}`);
     return new CfnVPCCidrBlock(input.scope, 'ipv6cidr', {
       vpcId: input.vpcId,
       amazonProvidedIpv6CidrBlock: this.amazonProvided,

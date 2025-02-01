@@ -354,7 +354,6 @@ describe('FSx for Lustre File System', () => {
       });
 
       test('autoImportPath requires importPath', () => {
-
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
           autoImportPolicy: LustreAutoImportPolicy.NEW_CHANGED_DELETED,

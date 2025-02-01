@@ -66,5 +66,4 @@ describe('User Pool Group', () => {
       groupName,
     })).toThrow('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
   });
-
 });

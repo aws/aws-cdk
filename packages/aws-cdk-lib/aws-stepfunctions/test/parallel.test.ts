@@ -58,6 +58,39 @@ describe('Parallel State', () => {
       },
     });
   });
+
+  test('State Machine With Parallel State using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parallel = stepfunctions.Parallel.jsonata(stack, 'Parallel State', {
+      outputs: {
+        foo: '{% $state.input.result[0] %}',
+      },
+    });
+    parallel.branch(stepfunctions.Pass.jsonPath(stack, 'Branch 1', { stateName: 'first-pass-state' }));
+    parallel.branch(stepfunctions.Pass.jsonPath(stack, 'Branch 2'));
+
+    // THEN
+    expect(render(parallel)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          QueryLanguage: 'JSONata',
+          End: true,
+          Branches: [
+            { StartAt: 'first-pass-state', States: { 'first-pass-state': { Type: 'Pass', End: true } } },
+            { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
+          ],
+          Output: {
+            foo: '{% $state.input.result[0] %}',
+          },
+        },
+      },
+    });
+  });
 });
 
 function render(sm: stepfunctions.IChainable) {

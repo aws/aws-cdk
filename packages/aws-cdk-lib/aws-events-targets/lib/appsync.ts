@@ -33,7 +33,6 @@ export interface AppSyncGraphQLApiProps extends TargetBaseProps {
  * Use an AppSync GraphQL API as a target for Amazon EventBridge rules.
  */
 export class AppSync implements events.IRuleTarget {
-
   constructor(private readonly appsyncApi: appsync.IGraphqlApi, private readonly props: AppSyncGraphQLApiProps) {
   }
 

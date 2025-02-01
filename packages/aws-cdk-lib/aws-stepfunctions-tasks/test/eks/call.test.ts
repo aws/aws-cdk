@@ -7,7 +7,7 @@ let stack: Stack;
 let cluster: eks.Cluster;
 
 beforeEach(() => {
-  //GIVEN
+  // GIVEN
   stack = new Stack();
   cluster = new eks.Cluster(stack, 'Cluster', {
     version: eks.KubernetesVersion.V1_21,
@@ -43,6 +43,59 @@ test('Call an EKS endpoint', () => {
     },
     End: true,
     Parameters: {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      CertificateAuthority: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      Endpoint: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      Method: 'GET',
+      Path: 'path',
+      RequestBody: {
+        Body: 'requestBody',
+      },
+    },
+  });
+});
+
+test('Call an EKS endpoint - using JSONata', () => {
+  // WHEN
+  const task = EksCall.jsonata(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromObject({
+      Body: 'requestBody',
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },

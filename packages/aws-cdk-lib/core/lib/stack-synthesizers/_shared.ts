@@ -20,7 +20,6 @@ export function addStackArtifactToAssembly(
   stack: Stack,
   stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
   additionalStackDependencies: string[]) {
-
   const stackTags = stack.tags.tagValues();
 
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource

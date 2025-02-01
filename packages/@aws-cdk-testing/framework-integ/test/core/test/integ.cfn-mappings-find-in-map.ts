@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'core-cfn-mapping-1'/*,{ env }*/);
+const stack = new cdk.Stack(app, 'core-cfn-mapping-1'/* ,{ env }*/);
 
 const backing = {
   TopLevelKey1: {

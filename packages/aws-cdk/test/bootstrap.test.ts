@@ -1,5 +1,5 @@
 import { Bootstrapper } from '../lib/api/bootstrap/bootstrap-environment';
-import { exec } from '../lib/cli';
+import { exec } from '../lib/cli/cli';
 
 beforeEach(() => {
   jest.clearAllMocks();

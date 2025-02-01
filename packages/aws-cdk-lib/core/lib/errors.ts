@@ -5,18 +5,24 @@ const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
 
 /**
- * Helper to check if an error is a SynthesisErrors
+ * Helper to check if an error is of a certain type.
  */
 export class Errors {
   /**
-   * Test whether the given errors is a ConstructionError
+   * Test whether the given errors is a ConstructionError.
+   *
+   * A ConstructionError is a generic error that will be thrown during the App construction or synthesis.
+   * To check for more specific errors, use the respective methods.
    */
   public static isConstructError(x: any): x is ConstructError {
     return x !== null && typeof(x) === 'object' && CONSTRUCT_ERROR_SYMBOL in x;
   }
 
   /**
-   * Test whether the given error is a ValidationError
+   * Test whether the given error is a ValidationError.
+   *
+   * A ValidationError is thrown when input props are failing to pass the rules of the construct.
+   * It usually means the underlying CloudFormation resource(s) would not deploy with a given configuration.
    */
   public static isValidationError(x: any): x is ValidationError {
     return Errors.isConstructError(x) && VALIDATION_ERROR_SYMBOL in x;
@@ -29,7 +35,7 @@ interface ConstructInfo {
 }
 
 /**
- * Generic, abstract error that is thrown from the users app during app construction or synth.
+ * Generic, abstract error class used for errors thrown from the users app during construction or synth.
  */
 abstract class ConstructError extends Error {
   #time: string;
@@ -69,12 +75,12 @@ abstract class ConstructError extends Error {
     return this.#constructInfo;
   }
 
-  constructor(msg: string, scope?: IConstruct) {
+  constructor(msg: string, scope?: IConstruct, name?: string) {
     super(msg);
     Object.setPrototypeOf(this, ConstructError.prototype);
     Object.defineProperty(this, CONSTRUCT_ERROR_SYMBOL, { value: true });
 
-    this.name = new.target.name;
+    this.name = name ?? new.target.name;
     this.#time = new Date().toISOString();
     this.#constructPath = scope?.node.path;
 
@@ -130,7 +136,14 @@ abstract class ConstructError extends Error {
 }
 
 /**
- * An Error that is thrown when a construct has validation errors.
+ * A ValidationError should be used when input props fail to pass the validation rules of a construct
+ * or class or late binding. The error indicates that the underlying CloudFormation resource(s) would
+ * not deploy with a given configuration, or that some other prerequisites are not met.
+ *
+ * A ValidationError is always attached to a Construct scope. To a user, the error will present with additional
+ * information on the construct that caused the validation to fail.
+ *
+ * @internal
  */
 export class ValidationError extends ConstructError {
   public get type(): 'validation' {
@@ -140,6 +153,28 @@ export class ValidationError extends ConstructError {
   constructor(msg: string, scope: IConstruct) {
     super(msg, scope);
     Object.setPrototypeOf(this, ValidationError.prototype);
+    Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
+  }
+}
+
+/**
+ * An UnscopedValidationError is a ValidationError that is not attached to a specific construct.
+ * This can be used to report validation errors that are thrown when no construct scope is available.
+ * The common use case here are data classes that assert on props, but are not constructs itself.
+ *
+ * To a User, these errors still present themselves as a "ValidationError".
+ * However they do not contain any information about the location in the construct tree.
+ *
+ * @internal
+ */
+export class UnscopedValidationError extends ConstructError {
+  public get type(): 'validation' {
+    return 'validation';
+  }
+
+  constructor(msg: string) {
+    super(msg, undefined, ValidationError.name);
+    Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
 }

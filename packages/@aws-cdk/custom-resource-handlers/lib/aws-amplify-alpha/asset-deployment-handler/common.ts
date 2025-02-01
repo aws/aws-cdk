@@ -19,7 +19,7 @@ export interface IsCompleteResponse {
    * Additional/changes to resource attributes.
    */
   readonly Data?: { [name: string]: any };
-};
+}
 
 export abstract class ResourceHandler {
   protected readonly requestId: string;

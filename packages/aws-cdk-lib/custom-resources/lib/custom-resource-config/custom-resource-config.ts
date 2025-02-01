@@ -52,7 +52,6 @@ export class CustomResourceConfig {
   public addLambdaRuntime(lambdaRuntime: lambda.Runtime) {
     Aspects.of(this.scope).add(new CustomResourceLambdaRuntime(lambdaRuntime), { priority: AspectPriority.MUTATING });
   }
-
 }
 
 /**

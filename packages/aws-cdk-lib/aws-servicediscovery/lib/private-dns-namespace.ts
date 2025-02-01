@@ -4,6 +4,7 @@ import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -35,7 +36,6 @@ export interface PrivateDnsNamespaceAttributes {
  * Define a Service Discovery HTTP Namespace
  */
 export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
-
   public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
     class Import extends Resource implements IPrivateDnsNamespace {
       public namespaceName = attrs.namespaceName;
@@ -73,6 +73,8 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
 
   constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     if (props.vpc === undefined) {
       throw new Error('VPC must be specified for PrivateDNSNamespaces');
     }

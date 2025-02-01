@@ -11,7 +11,7 @@ import {
 } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { NestedStackTemplates } from './api/nested-stack-helpers';
+import { type NestedStackTemplates } from './api/deployments';
 import { info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 

@@ -1393,7 +1393,6 @@ describe('EnvironmentVariables', () => {
     });
 
     test('does not grant read permissions when variables are not from parameter store', () => {
-
       // GIVEN
       const stack = new cdk.Stack();
 

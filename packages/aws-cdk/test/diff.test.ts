@@ -7,10 +7,9 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { DescribeChangeSetCommandOutput } from '@aws-sdk/client-cloudformation';
 import { instanceMockFrom, MockCloudExecutable } from './util';
-import { Deployments } from '../lib/api/deployments';
-import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
-import * as cfn from '../lib/api/util/cloudformation';
-import { CdkToolkit } from '../lib/cdk-toolkit';
+import { Deployments, PrepareChangeSetOptions, type NestedStackTemplates } from '../lib/api/deployments';
+import * as cfn from '../lib/api/deployments/cloudformation';
+import { CdkToolkit } from '../lib/cli/cdk-toolkit';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -108,7 +107,7 @@ describe('fixed template', () => {
 });
 
 describe('imports', () => {
-  let createDiffChangeSet: jest.SpyInstance<Promise<DescribeChangeSetCommandOutput | undefined>, [options: cfn.PrepareChangeSetOptions], any>;
+  let createDiffChangeSet: jest.SpyInstance<Promise<DescribeChangeSetCommandOutput | undefined>, [options: PrepareChangeSetOptions], any>;
 
   beforeEach(() => {
     const outputToJson = {

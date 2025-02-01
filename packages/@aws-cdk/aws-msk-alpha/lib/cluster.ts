@@ -13,6 +13,7 @@ import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a MSK Cluster
@@ -461,6 +462,8 @@ export class Cluster extends ClusterBase {
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
     super(scope, id, { physicalName: props.clusterName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const subnetSelection = props.vpc.selectSubnets(props.vpcSubnets);
 
@@ -789,7 +792,6 @@ export class Cluster extends ClusterBase {
       });
     }
     return this._clusterBootstrapBrokers.getResponseField(responseField);
-
   }
   /**
    * Get the list of brokers that a client application can use to bootstrap

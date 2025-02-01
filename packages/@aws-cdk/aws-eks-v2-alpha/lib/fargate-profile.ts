@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import { Cluster } from './cluster';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
@@ -111,7 +111,6 @@ export interface Selector {
  * match a selector in that profile in order to be scheduled onto Fargate.
  */
 export class FargateProfile extends Construct implements ITaggable {
-
   /**
    * The full Amazon Resource Name (ARN) of the Fargate profile.
    *
@@ -146,8 +145,6 @@ export class FargateProfile extends Construct implements ITaggable {
       assumedBy: new iam.ServicePrincipal('eks-fargate-pods.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSFargatePodExecutionRolePolicy')],
     });
-
-    this.podExecutionRole.grantPassRole(props.cluster.adminRole);
 
     if (props.subnetSelection && !props.vpc) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:fargateProfileDefaultToPrivateSubnets', 'Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
@@ -193,25 +190,6 @@ export class FargateProfile extends Construct implements ITaggable {
     if (clusterFargateProfiles.length > 1) {
       const previousProfile = clusterFargateProfiles[clusterFargateProfiles.length - 2];
       resource.node.addDependency(previousProfile);
-    }
-
-    const supportConfigMap = [
-      undefined,
-      AuthenticationMode.CONFIG_MAP,
-      AuthenticationMode.API_AND_CONFIG_MAP,
-    ].includes(props.cluster.authenticationMode);
-
-    if (supportConfigMap) {
-      // map the fargate pod execution role to the relevant groups in rbac
-      // see https://github.com/aws/aws-cdk/issues/7981
-      props.cluster.awsAuth.addRoleMapping(this.podExecutionRole, {
-        username: 'system:node:{{SessionName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-          'system:node-proxier',
-        ],
-      });
     }
   }
 }

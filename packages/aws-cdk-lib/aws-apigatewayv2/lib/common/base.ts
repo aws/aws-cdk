@@ -3,6 +3,7 @@ import { ApiMapping } from './api-mapping';
 import { DomainMappingOptions, IStage } from './stage';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Resource } from '../../../core';
+import { UnscopedValidationError } from '../../../core/lib/errors';
 
 /**
  * Base class representing an API
@@ -46,7 +47,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     if (this._apiMapping) {
-      throw new Error('Only one ApiMapping allowed per Stage');
+      throw new UnscopedValidationError('Only one ApiMapping allowed per Stage');
     }
     this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,

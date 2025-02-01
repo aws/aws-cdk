@@ -82,6 +82,21 @@ describe('Invoke EMR Containers Delete Virtual cluster with ', () => {
       },
     });
   });
+
+  test('passing in JSONata', () => {
+  // WHEN
+    const task = EmrContainersDeleteVirtualCluster.jsonata(stack, 'Task', {
+      virtualClusterId: sfn.TaskInput.fromText('{% $states.input.VirtualClusterId %}'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      QueryLanguage: 'JSONata',
+      Arguments: {
+        Id: '{% $states.input.VirtualClusterId %}',
+      },
+    });
+  });
 });
 
 describe('Valid policy statements and resources are passed ', () => {

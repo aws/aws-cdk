@@ -27,7 +27,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           containerImageInputs,
         });
       }).toThrow(/Action cannot have more than 4 container image inputs, got: 5/);
-
     });
 
     test('throws an exception if both appspec artifact input and file are specified', () => {
@@ -45,7 +44,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           appSpecTemplateFile: artifactPath,
         });
       }).toThrow(/Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action/);
-
     });
 
     test('throws an exception if neither appspec artifact input nor file are specified', () => {
@@ -60,7 +58,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           taskDefinitionTemplateInput: artifact,
         });
       }).toThrow(/Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action/);
-
     });
 
     test('throws an exception if both task definition artifact input and file are specified', () => {
@@ -78,7 +75,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           appSpecTemplateInput: artifact,
         });
       }).toThrow(/Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action/);
-
     });
 
     test('throws an exception if neither task definition artifact input nor file are specified', () => {
@@ -93,7 +89,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           appSpecTemplateInput: artifact,
         });
       }).toThrow(/Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action/);
-
     });
 
     test('defaults task definition and appspec template paths', () => {
@@ -133,7 +128,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
     });
 
     test('defaults task definition placeholder string', () => {
@@ -187,7 +181,6 @@ describe('CodeDeploy ECS Deploy Action', () => {
           },
         ],
       });
-
     });
   });
 

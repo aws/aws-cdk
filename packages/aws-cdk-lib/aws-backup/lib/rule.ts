@@ -241,6 +241,5 @@ export class BackupPlanRule {
       ...props,
       deleteAfter,
     };
-
   }
 }

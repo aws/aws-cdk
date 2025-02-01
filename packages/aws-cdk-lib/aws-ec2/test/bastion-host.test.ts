@@ -19,7 +19,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
     });
-
   });
   test('default instance is created in isolated vpc', () => {
     // GIVEN
@@ -43,7 +42,6 @@ describe('bastion host', () => {
       InstanceType: 't3.nano',
       SubnetId: { Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6' },
     });
-
   });
   test('ebs volume is encrypted', () => {
     // GIVEN
@@ -80,7 +78,6 @@ describe('bastion host', () => {
         },
       ],
     });
-
   });
   test('x86-64 instances use x86-64 image by default', () => {
     // GIVEN
@@ -98,7 +95,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
   test('arm instances use arm image by default', () => {
     // GIVEN
@@ -117,7 +113,6 @@ describe('bastion host', () => {
         Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     });
-
   });
 
   test('add CloudFormation Init to instance', () => {
@@ -158,11 +153,11 @@ describe('bastion host', () => {
   });
 
   test('imdsv2 is required', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
 
-    //WHEN
+    // WHEN
     new BastionHostLinux(stack, 'Bastion', {
       vpc,
       requireImdsv2: true,
@@ -179,7 +174,7 @@ describe('bastion host', () => {
   });
 
   test('appends new hash digest to instance logical Id if userDataCausesReplacement is true', () => {
-    //GIVEN
+    // GIVEN
     const stackOld = new Stack();
     const stackNew = new Stack();
     const vpcOld = new Vpc(stackOld, 'VPC');
@@ -230,7 +225,7 @@ describe('bastion host', () => {
   });
 
   test('does not append new hash digest to instance logical Id if userDataCausesReplacement is false', () => {
-    //GIVEN
+    // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const sshKeys = ['foo', 'bar'];

@@ -11,7 +11,11 @@ export interface ModuleImportLocations {
    * @default 'aws-cdk-lib/core/lib/helpers-internal'
    */
   readonly coreHelpers?: string;
-
+  /**
+   * The import name used to import core errors module
+   * @default 'aws-cdk-lib/core/lib/errors'
+   */
+  readonly coreErrors?: string;
   /**
    * The import name used to import the CloudWatch module
    *
@@ -22,6 +26,7 @@ export interface ModuleImportLocations {
 
 export class CdkCore extends ExternalModule {
   public readonly helpers = new CdkInternalHelpers(this);
+  public readonly errors = new CdkErrors(this);
 
   public readonly CfnResource = Type.fromName(this, 'CfnResource');
   public readonly Resource = $T(Type.fromName(this, 'Resource'));
@@ -90,6 +95,14 @@ export class CdkInternalHelpers extends ExternalModule {
 
   constructor(parent: CdkCore) {
     super(`${parent.fqn}/core/lib/helpers-internal`);
+  }
+}
+
+export class CdkErrors extends ExternalModule {
+  public readonly ValidationError = Type.fromName(this, 'ValidationError');
+
+  constructor(parent: CdkCore) {
+    super(`${parent.fqn}/core/lib/errors`);
   }
 }
 

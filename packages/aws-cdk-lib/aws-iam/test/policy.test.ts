@@ -592,7 +592,7 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
     Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: pol, resource, resourceArns: ['*'] });
 
@@ -616,7 +616,7 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
 
     expect(() => {
@@ -633,7 +633,7 @@ describe('IAM policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         throw new Error('should not be called.');
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
 
     expect(() => {

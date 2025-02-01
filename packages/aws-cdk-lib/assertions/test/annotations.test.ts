@@ -206,7 +206,7 @@ class MyAspect implements IAspect {
         this.info(node, 'this is an info');
       }
     }
-  };
+  }
 
   protected warn(node: IConstruct, message: string): void {
     // Use construct ID as suppression string, just to make it unique easily

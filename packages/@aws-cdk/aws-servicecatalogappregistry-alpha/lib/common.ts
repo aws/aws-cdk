@@ -14,7 +14,7 @@ export enum SharePermission {
    * Allows principals in the share to associate resources and attribute groups with applications.
    */
   ALLOW_ACCESS,
-};
+}
 
 /**
  * The options that are passed into a share of an Application or Attribute Group.
@@ -62,7 +62,7 @@ export interface ShareOptions {
 }
 
 /**
- * Generates a unique hash identfifer using SHA256 encryption algorithm.
+ * Generates a unique hash identifier using SHA256 encryption algorithm.
  */
 export function hashValues(...values: string[]): string {
   const sha256 = crypto.createHash('sha256');

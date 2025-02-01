@@ -1,24 +1,34 @@
-# Ignore artifacts
+# Ignore build artifacts
+**/cdk.out
+**/*.snapshot
 dist
 .LAST_PACKAGE
 .LAST_BUILD
 *.snk
 *.ts
-!*.d.ts
-!*.js
 coverage
 .nyc_output
 *.tgz
+docs
 
-# Ignore configs and test files
+# Ignore config files
 .eslintrc.js
 tsconfig.json
 *.tsbuildinfo
 junit.xml
+jest.config.js
+build-tools
 
-# Include .jsii
-!.jsii
+# Ignore tests
+test
 
-# exclude cdk artifacts
-**/cdk.out
-**/*.snapshot
+# Explicitly allow all required files
+!build-info.json
+!db.json.gz
+# !lib/api/bootstrap/bootstrap-template.yaml
+!*.d.ts
+!*.d.ts.map
+!lib/*.js
+!LICENSE
+!NOTICE
+!THIRD_PARTY_LICENSES

@@ -2,7 +2,7 @@ import { md5hash } from './md5';
 
 /**
  * Options for creating a unique resource name.
-*/
+ */
 interface MakeUniqueResourceNameOptions {
 
   /**
@@ -43,8 +43,8 @@ interface MakeUniqueResourceNameOptions {
 const HIDDEN_FROM_HUMAN_ID = 'Resource';
 
 /**
-* Resources with this ID are complete hidden from the logical ID calculation.
-*/
+ * Resources with this ID are complete hidden from the logical ID calculation.
+ */
 const HIDDEN_ID = 'Default';
 
 const PATH_SEP = '/';

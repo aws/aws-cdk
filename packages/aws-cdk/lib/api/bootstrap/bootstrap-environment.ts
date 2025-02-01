@@ -9,7 +9,7 @@ import { loadStructuredFile, serializeStructure } from '../../serialize';
 import { ToolkitError } from '../../toolkit/error';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
-import type { SuccessfulDeployStackResult } from '../deploy-stack';
+import type { SuccessfulDeployStackResult } from '../deployments';
 import { Mode } from '../plugin/mode';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
@@ -102,11 +102,24 @@ export class Bootstrapper {
     // Ideally we'd do this inside the template, but the `Rules` section of CFN
     // templates doesn't seem to be able to express the conditions that we need
     // (can't use Fn::Join or reference Conditions) so we do it here instead.
-    const trustedAccounts = params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts);
+    const allTrusted = new Set([
+      ...params.trustedAccounts ?? [],
+      ...params.trustedAccountsForLookup ?? [],
+    ]);
+    const invalid = intersection(allTrusted, new Set(params.untrustedAccounts));
+    if (invalid.size > 0) {
+      throw new ToolkitError(`Accounts cannot be both trusted and untrusted. Found: ${[...invalid].join(',')}`);
+    }
+
+    const removeUntrusted = (accounts: string[]) =>
+      accounts.filter(acc => !params.untrustedAccounts?.map(String).includes(String(acc)));
+
+    const trustedAccounts = removeUntrusted(params.trustedAccounts ?? splitCfnArray(current.parameters.TrustedAccounts));
     info(`Trusted accounts for deployment: ${trustedAccounts.length > 0 ? trustedAccounts.join(', ') : '(none)'}`);
 
-    const trustedAccountsForLookup =
-      params.trustedAccountsForLookup ?? splitCfnArray(current.parameters.TrustedAccountsForLookup);
+    const trustedAccountsForLookup = removeUntrusted(
+      params.trustedAccountsForLookup ?? splitCfnArray(current.parameters.TrustedAccountsForLookup),
+    );
     info(
       `Trusted accounts for lookup: ${trustedAccountsForLookup.length > 0 ? trustedAccountsForLookup.join(', ') : '(none)'}`,
     );
@@ -375,4 +388,8 @@ function splitCfnArray(xs: string | undefined): string[] {
     return [];
   }
   return xs.split(',');
+}
+
+function intersection<A>(xs: Set<A>, ys: Set<A>): Set<A> {
+  return new Set<A>(Array.from(xs).filter(x => ys.has(x)));
 }

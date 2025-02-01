@@ -19,8 +19,7 @@ function defaultLogger(fmt: string, ...args: any[]) {
 /**
  * Downloads the CA thumbprint from the issuer URL
  */
-async function downloadThumbprint(issuerUrl: string) {
-
+async function downloadThumbprint(issuerUrl: string, rejectUnauthorized: boolean) {
   return new Promise<string>((ok, ko) => {
     const purl = url.parse(issuerUrl);
     const port = purl.port ? parseInt(purl.port, 10) : 443;
@@ -31,7 +30,7 @@ async function downloadThumbprint(issuerUrl: string) {
 
     external.log(`Fetching x509 certificate chain from issuer ${issuerUrl}`);
 
-    const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
+    const socket = tls.connect(port, purl.host, { rejectUnauthorized, servername: purl.host });
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {

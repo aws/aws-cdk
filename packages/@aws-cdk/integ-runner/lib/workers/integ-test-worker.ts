@@ -111,7 +111,6 @@ function getAccountWorkers(regions: string[], profiles?: string[]): AccountWorke
 export async function runIntegrationTestsInParallel(
   options: IntegTestRunOptions,
 ): Promise<IntegBatchResponse> {
-
   const queue = options.tests;
   const results: IntegBatchResponse = {
     metrics: [],

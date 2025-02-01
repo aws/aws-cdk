@@ -59,4 +59,4 @@ function deleteFolderRecursive(directoryPath: string) {
     });
     fs.rmdirSync(directoryPath);
   }
-};
+}

@@ -1,5 +1,5 @@
 import { App, Stack } from '../lib';
-import { Errors, ValidationError } from '../lib/errors';
+import { Errors, UnscopedValidationError, ValidationError } from '../lib/errors';
 
 jest
   .useFakeTimers()
@@ -30,5 +30,14 @@ describe('ValidationError', () => {
     expect(error.message).toBe('this is an error');
     expect(error.stack).toContain('ValidationError: this is an error');
     expect(error.stack).toContain('at path [MyStack] in');
+  });
+
+  test('UnscopedValidationError is ValidationError and ConstructError', () => {
+    const error = new UnscopedValidationError('this is an error');
+
+    expect(Errors.isConstructError(error)).toBe(true);
+    expect(Errors.isValidationError(error)).toBe(true);
+    expect(error.name).toBe('ValidationError');
+    expect(error.stack).toContain('ValidationError: this is an error');
   });
 });

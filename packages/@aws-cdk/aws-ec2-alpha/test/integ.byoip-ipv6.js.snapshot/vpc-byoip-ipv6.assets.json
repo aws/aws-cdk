@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "2ac973cd3fa2ed1a3934fbe78ee77203b26df0366d34997e96d1570af96f2614": {
+      "source": {
+        "path": "vpc-byoip-ipv6.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2ac973cd3fa2ed1a3934fbe78ee77203b26df0366d34997e96d1570af96f2614.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

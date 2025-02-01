@@ -21,7 +21,6 @@ describe('manual approval', () => {
       stage.addAction(manualApprovalAction);
 
       expect(manualApprovalAction.notificationTopic).toEqual(topic);
-
     });
 
     test('allows granting manual approval permissions to role', () => {
@@ -108,7 +107,6 @@ describe('manual approval', () => {
           },
         ],
       });
-
     });
 
     test('rejects granting manual approval permissions before binding action to stage', () => {
@@ -121,7 +119,6 @@ describe('manual approval', () => {
       expect(() => {
         manualApprovalAction.grantManualApproval(role);
       }).toThrow('Cannot grant permissions before binding action to a stage');
-
     });
 
     test('renders CustomData and ExternalEntityLink even if notificationTopic was not passed', () => {
@@ -170,7 +167,6 @@ describe('manual approval', () => {
           },
         ],
       });
-
     });
   });
 });

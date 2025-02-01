@@ -4,14 +4,9 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for creating an Amazon SageMaker endpoint configuration
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- */
-export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBaseProps {
+interface SageMakerCreateEndpointConfigOptions {
   /**
    * The name of the endpoint configuration.
    */
@@ -40,11 +35,53 @@ export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBasePro
 }
 
 /**
+ * Properties for creating an Amazon SageMaker endpoint configuration using JSONPath
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateEndpointConfigJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerCreateEndpointConfigOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker endpoint configuration using JSONata
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateEndpointConfigJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerCreateEndpointConfigOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker endpoint configuration
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+ */
+export interface SageMakerCreateEndpointConfigProps extends sfn.TaskStateBaseProps, SageMakerCreateEndpointConfigOptions {}
+
+/**
  * A Step Functions Task to create a SageMaker endpoint configuration
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
 export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task using JSONPath to create a SageMaker endpoint configuration
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerCreateEndpointConfigJsonPathProps) {
+    return new SageMakerCreateEndpointConfig(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task using JSONata to create a SageMaker endpoint configuration
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerCreateEndpointConfigJsonataProps) {
+    return new SageMakerCreateEndpointConfig(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
@@ -64,10 +101,11 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createEndpointConfig', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -78,7 +116,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       KmsKeyId: this.props.kmsKey?.keyId,
       ProductionVariants: this.props.productionVariants.map((variant) => ({
         InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
-        InstanceType: sfn.JsonPath.isEncodedJsonPath(variant.instanceType.toString())
+        InstanceType: isJsonPathOrJsonataExpression(variant.instanceType.toString())
           ? variant.instanceType.toString() : `ml.${variant.instanceType}`,
         ModelName: variant.modelName,
         VariantName: variant.variantName,
@@ -101,7 +139,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
             resource: 'endpoint-config',
             // If the endpoint configuration name comes from input, we cannot target the policy to a particular ARN prefix reliably.
             // SageMaker uses lowercase for resource name in the arn
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
+            resourceName: isJsonPathOrJsonataExpression(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
           }),
         ],
       }),

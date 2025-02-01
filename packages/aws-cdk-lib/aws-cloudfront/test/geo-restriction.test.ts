@@ -4,7 +4,6 @@ describe.each([
   ['whitelist', GeoRestriction.allowlist],
   ['blacklist', GeoRestriction.denylist],
 ])('%s', (type, geoFn) => {
-
   test('throws is location is empty', () => {
     expect(() => { geoFn(); }).toThrow(/Should provide at least 1 location/);
   });
@@ -22,5 +21,4 @@ describe.each([
     expect(restriction.restrictionType).toEqual(type);
     expect(restriction.locations).toEqual(['US', 'GB']);
   });
-
 });

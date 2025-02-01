@@ -7,7 +7,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 class SsmIncidentAlarmActionIntegrationTestStack extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 

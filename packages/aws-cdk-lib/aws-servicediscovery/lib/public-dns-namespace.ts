@@ -3,6 +3,7 @@ import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace { }
@@ -27,7 +28,6 @@ export interface PublicDnsNamespaceAttributes {
  * Define a Public DNS Namespace
  */
 export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace {
-
   public static fromPublicDnsNamespaceAttributes(scope: Construct, id: string, attrs: PublicDnsNamespaceAttributes): IPublicDnsNamespace {
     class Import extends Resource implements IPublicDnsNamespace {
       public namespaceName = attrs.namespaceName;
@@ -65,6 +65,8 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
 
   constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const ns = new CfnPublicDnsNamespace(this, 'Resource', {
       name: props.name,

@@ -4,6 +4,7 @@ import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads
@@ -98,12 +99,11 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Resource {
-
   /**
    * The name of this dashboard
    *
    * @attribute
-  */
+   */
   public readonly dashboardName: string;
 
   /**
@@ -121,6 +121,8 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     {
       const { dashboardName } = props;

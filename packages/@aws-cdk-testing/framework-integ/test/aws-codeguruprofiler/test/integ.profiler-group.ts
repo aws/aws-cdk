@@ -18,7 +18,6 @@ class ProfilerGroupIntegrationTest extends Stack {
       assumedBy: new AccountRootPrincipal(),
     });
     profilingGroup.grantRead(readAppRole);
-
   }
 }
 

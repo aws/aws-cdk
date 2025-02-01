@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -45,7 +46,6 @@ export interface IVpcEndpointService extends IResource {
  *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
-
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
@@ -101,6 +101,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   constructor(scope: Construct, id: string, props: VpcEndpointServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
       throw new Error('VPC Endpoint Service must have at least one load balancer specified.');

@@ -6,6 +6,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -698,7 +699,6 @@ abstract class StreamBase extends Resource implements IStream {
       ...props,
     }).attachTo(this);
   }
-
 }
 
 /**
@@ -768,7 +768,6 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamBase {
-
   /**
    * Import an existing Kinesis Stream provided an ARN
    *
@@ -813,6 +812,8 @@ export class Stream extends StreamBase {
     super(scope, id, {
       physicalName: props.streamName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let shardCount = props.shardCount;
     const streamMode = props.streamMode;
@@ -864,10 +865,8 @@ export class Stream extends StreamBase {
     streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
     encryptionKey?: kms.IKey;
   } {
-
     // if encryption properties are not set, default to KMS in regions where KMS is available
     if (!props.encryption && !props.encryptionKey) {
-
       const conditionName = 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions';
       const existing = Stack.of(this).node.tryFindChild(conditionName);
 

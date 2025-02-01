@@ -96,7 +96,6 @@ describe('AssertionProvider', () => {
     });
 
     test('multiple providers, 1 resource', () => {
-
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       const provider2 = new AssertionsProvider(stack, 'AssertionsProvider2');

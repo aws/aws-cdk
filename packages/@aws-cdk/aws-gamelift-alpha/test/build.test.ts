@@ -7,7 +7,6 @@ import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as gamelift from '../lib';
 
 describe('build', () => {
-
   describe('new', () => {
     const localAsset = path.join(__dirname, 'my-game-build');
     const contentBucketName = 'bucketname';
@@ -59,7 +58,6 @@ describe('build', () => {
             },
           },
         });
-
       });
     });
 
@@ -73,7 +71,6 @@ describe('build', () => {
             Key: 'content',
           },
         });
-
       });
     });
 

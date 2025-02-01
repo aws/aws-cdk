@@ -31,15 +31,15 @@ export class InputValidator {
   }
 
   /**
-  * Validates string matches the valid email regex pattern.
-  */
+   * Validates string matches the valid email regex pattern.
+   */
   public static validateEmail(resourceName: string, inputName: string, inputString?: string): void {
     this.validateRegex(resourceName, inputName, /^[\w\d.%+\-]+@[a-z\d.\-]+\.[a-z]{2,4}$/i, inputString);
   }
 
   /**
-  * Validates that a role being used as a local launch role has the role name set
-  */
+   * Validates that a role being used as a local launch role has the role name set
+   */
   public static validateRoleNameSetForLocalLaunchRole(role: iam.IRole): void {
     if (role.node.defaultChild) {
       if (cdk.Token.isUnresolved((role.node.defaultChild as iam.CfnRole).roleName)) {

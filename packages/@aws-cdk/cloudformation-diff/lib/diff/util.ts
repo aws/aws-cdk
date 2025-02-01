@@ -49,7 +49,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     for (const key of keys) {
       if (!rvalue.hasOwnProperty(key)) { return false; }
       if (key === 'DependsOn') {
-        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; };
+        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; }
         // check differences other than `DependsOn`
         continue;
       }
@@ -169,7 +169,7 @@ function safeParseFloat(str: string): number {
 
 /**
  * Lazily load the service spec database and cache the loaded db
-*/
+ */
 let DATABASE: SpecDatabase | undefined;
 function database(): SpecDatabase {
   if (!DATABASE) {

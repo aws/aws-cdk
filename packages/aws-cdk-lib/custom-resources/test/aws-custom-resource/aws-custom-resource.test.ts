@@ -26,11 +26,13 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       physicalResourceId: PhysicalResourceId.of('loggroup'),
     },
     onDelete: {
-      service: 'CloudWatchLogs',
-      action: 'deleteRetentionPolicy',
+      service: 'CloudWatch',
+      action: 'tagResource',
       parameters: {
-        logGroupName: '/aws/lambda/loggroup',
+        ResourceARN: 'dummy',
+        Tags: [{ Key: 'Name', Value: 'prod' }],
       },
+      physicalResourceId: PhysicalResourceId.of('add_tag'),
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   });
@@ -49,10 +51,14 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       },
     }),
     'Delete': JSON.stringify({
-      'service': 'CloudWatchLogs',
-      'action': 'deleteRetentionPolicy',
+      'service': 'CloudWatch',
+      'action': 'tagResource',
       'parameters': {
-        'logGroupName': '/aws/lambda/loggroup',
+        'ResourceARN': 'dummy',
+        'Tags': [{ 'Key': 'Name', 'Value': 'prod' }],
+      },
+      'physicalResourceId': {
+        'id': 'add_tag',
       },
     }),
     'InstallLatestAwsSdk': true,
@@ -67,7 +73,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           'Resource': '*',
         },
         {
-          'Action': 'logs:DeleteRetentionPolicy',
+          'Action': 'cloudwatch:TagResource',
           'Effect': 'Allow',
           'Resource': '*',
         },
@@ -789,7 +795,6 @@ test('getData', () => {
 });
 
 test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -807,11 +812,9 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseFieldReference('ShouldFail')).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -829,11 +832,9 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseField('ShouldFail')).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
-
   const stack = new cdk.Stack();
   expect(() => new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
     onUpdate: {
@@ -876,7 +877,6 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('getDataString', () => {

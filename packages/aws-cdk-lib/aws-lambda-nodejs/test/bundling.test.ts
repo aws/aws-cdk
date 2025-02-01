@@ -262,8 +262,8 @@ test('esbuild bundling with esbuild options', () => {
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
           `--minify --sourcemap --sources-content=false --external:${STANDARD_EXTERNAL} --loader:.png=dataurl`,
           defineInstructions,
-          '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-          '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
+          '--log-level=silent --keep-names --tsconfig="/asset-input/lib/custom-tsconfig.ts"',
+          '--metafile="/asset-output/index.meta.json" --banner:js="/* comments */" --footer:js="/* comments */"',
           '--main-fields=module,main --inject:"./my-shim.js" --inject:"./path with space/second-shim.js"',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
@@ -777,7 +777,7 @@ test('esbuild bundling with projectRoot', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --tsconfig=/asset-input/lib/custom-tsconfig.ts`,
+        `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --tsconfig="/asset-input/lib/custom-tsconfig.ts"`,
       ],
     }),
   });
@@ -859,7 +859,6 @@ test('throws with pre compilation and not found tsconfig', () => {
       architecture: Architecture.X86_64,
     });
   }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
-
 });
 
 test('with custom hash', () => {

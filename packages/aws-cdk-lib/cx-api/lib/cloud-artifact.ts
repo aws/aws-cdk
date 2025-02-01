@@ -94,7 +94,6 @@ export class CloudArtifact {
 
   /**
    * @returns all the metadata entries of a specific type in this artifact.
-   * @param type
    */
   public findMetadataByType(type: string): MetadataEntryResult[] {
     const result = new Array<MetadataEntryResult>();

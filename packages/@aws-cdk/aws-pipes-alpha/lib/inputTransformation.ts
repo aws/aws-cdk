@@ -71,7 +71,6 @@ export class InputTransformation implements IInputTransformation {
   }
 
   public bind(pipe: IPipe): InputTransformationConfig {
-
     if (this.type === 'Text') {
       return { inputTemplate: this.inputTemplate as string };
     }
@@ -85,7 +84,6 @@ export class InputTransformation implements IInputTransformation {
   }
 
   private unquoteDynamicInputs(sub: string) {
-
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     /**

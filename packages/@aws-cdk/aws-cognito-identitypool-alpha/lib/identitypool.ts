@@ -4,6 +4,7 @@ import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { IdentityPoolRoleAttachment, IdentityPoolRoleMapping } from './identitypool-role-attachment';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Cognito Identity Pool
@@ -174,7 +175,7 @@ export interface IdentityPoolFacebookLoginProvider {
 
 /**
  * Login Provider for identity federation using Apple credentials
-*/
+ */
 export interface IdentityPoolAppleLoginProvider {
   /**
    * Services ID for Apple identity federation
@@ -362,6 +363,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
     super(scope, id, {
       physicalName: props.identityPoolName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;

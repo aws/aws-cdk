@@ -17,7 +17,6 @@ describe('image asset', () => {
         directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }).toThrow(/Cannot find image directory at/);
-
   });
 
   test('fails if the directory does not contain a Dockerfile', () => {
@@ -28,7 +27,6 @@ describe('image asset', () => {
         directory: __dirname,
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   test('fails if the file does not exist', () => {
@@ -40,7 +38,6 @@ describe('image asset', () => {
         file: 'doesnt-exist',
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   test('docker directory is staged if asset staging is enabled', () => {
@@ -54,7 +51,6 @@ describe('image asset', () => {
 
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'Dockerfile'))).toBe(true);
     expect(fs.existsSync(path.join(session.directory, `asset.${image.assetHash}`, 'index.py'))).toBe(true);
-
   });
 
   describeDeprecated('docker ignore option', () => {

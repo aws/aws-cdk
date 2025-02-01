@@ -2,7 +2,6 @@
  * A Condition for use in a Choice state branch
  */
 export abstract class Condition {
-
   /**
    * Matches if variable is present
    */
@@ -339,6 +338,13 @@ export abstract class Condition {
   }
 
   /**
+   * JSONata expression condition
+   */
+  public static jsonata(condition: string): Condition {
+    return new JsonataCondition(condition);
+  }
+
+  /**
    * Render Amazon States Language JSON for the condition
    */
   public abstract renderCondition(): any;
@@ -449,6 +455,24 @@ class NotCondition extends Condition {
   public renderCondition(): any {
     return {
       Not: this.comparisonOperation.renderCondition(),
+    };
+  }
+}
+
+/**
+ * JSONata for Condition
+ */
+class JsonataCondition extends Condition {
+  constructor(private readonly condition: string) {
+    super();
+    if (!/^{%(.*)%}$/.test(condition)) {
+      throw new Error(`JSONata expression must be start with '{%' and end with '%}', got '${condition}'`);
+    }
+  }
+
+  public renderCondition(): any {
+    return {
+      Condition: this.condition,
     };
   }
 }

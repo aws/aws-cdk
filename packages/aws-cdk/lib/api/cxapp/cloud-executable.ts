@@ -1,8 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssembly } from './cloud-assembly';
+import { Configuration } from '../../cli/user-configuration';
 import * as contextproviders from '../../context-providers';
 import { debug } from '../../logging';
-import { Configuration } from '../../settings';
 import { ToolkitError } from '../../toolkit/error';
 import { SdkProvider } from '../aws-auth';
 

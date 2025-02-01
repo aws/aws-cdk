@@ -13,7 +13,12 @@ import { integTest, withTemporaryDirectory, ShellHelper, withPackages } from '..
     // Canaries will use the generated go.mod as is
     // For pipeline tests we replace the source with the locally build one
     if (!isCanary) {
-      await shell.shell(['go', 'mod', 'edit', '-replace', 'github.com/aws/aws-cdk-go/awscdk/v2=$CODEBUILD_SRC_DIR/go/awscdk']);
+      const dir = process.env.CODEBUILD_SRC_DIR ?? process.env.GITHUB_WORKSPACE;
+      if (!dir) {
+        throw new Error('Cannot figure out CI system root directory');
+      }
+
+      await shell.shell(['go', 'mod', 'edit', '-replace', `github.com/aws/aws-cdk-go/awscdk/v2=${dir}/go/awscdk`]);
     }
 
     await shell.shell(['go', 'mod', 'tidy']);

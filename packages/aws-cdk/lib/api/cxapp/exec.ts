@@ -5,13 +5,14 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
+import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../cli/user-configuration';
+import { versionNumber } from '../../cli/version';
 import { debug, warning } from '../../logging';
-import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { ToolkitError } from '../../toolkit/error';
 import { loadTree, some } from '../../tree';
 import { splitBySize } from '../../util/objects';
-import { versionNumber } from '../../version';
 import { SdkProvider } from '../aws-auth';
+import { Settings } from '../settings';
 import { RWLock, ILock } from '../util/rwlock';
 
 export interface ExecProgramResult {
@@ -22,7 +23,7 @@ export interface ExecProgramResult {
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SdkProvider, config: Configuration): Promise<ExecProgramResult> {
   const env = await prepareDefaultEnvironment(aws);
-  const context = await prepareContext(config, env);
+  const context = await prepareContext(config.settings, config.context.all, env);
 
   const build = config.settings.get(['build']);
   if (build) {
@@ -44,7 +45,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     return { assembly: createAssembly(app), lock };
   }
 
-  const commandLine = await guessExecutable(appToArray(app));
+  const commandLine = await guessExecutable(app);
 
   const outdir = config.settings.get(['output']);
   if (!outdir) {
@@ -166,16 +167,19 @@ export function createAssembly(appDir: string) {
  *
  * @param context The context key/value bash.
  */
-export async function prepareDefaultEnvironment(aws: SdkProvider): Promise<{ [key: string]: string }> {
+export async function prepareDefaultEnvironment(
+  aws: SdkProvider,
+  logFn: (msg: string, ...args: any) => any = debug,
+): Promise<{ [key: string]: string }> {
   const env: { [key: string]: string } = { };
 
   env[cxapi.DEFAULT_REGION_ENV] = aws.defaultRegion;
-  debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
+  await logFn(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
   const accountId = (await aws.defaultAccount())?.accountId;
   if (accountId) {
     env[cxapi.DEFAULT_ACCOUNT_ENV] = accountId;
-    debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
+    await logFn(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
   }
 
   return env;
@@ -186,35 +190,33 @@ export async function prepareDefaultEnvironment(aws: SdkProvider): Promise<{ [ke
  * The merging of various configuration sources like cli args or cdk.json has already happened.
  * We now need to set the final values to the context.
  */
-export async function prepareContext(config: Configuration, env: { [key: string]: string | undefined}) {
-  const context = config.context.all;
-
-  const debugMode: boolean = config.settings.get(['debug']) ?? true;
+export async function prepareContext(settings: Settings, context: {[key: string]: any}, env: { [key: string]: string | undefined}) {
+  const debugMode: boolean = settings.get(['debug']) ?? true;
   if (debugMode) {
     env.CDK_DEBUG = 'true';
   }
 
-  const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
+  const pathMetadata: boolean = settings.get(['pathMetadata']) ?? true;
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  const assetMetadata: boolean = config.settings.get(['assetMetadata']) ?? true;
+  const assetMetadata: boolean = settings.get(['assetMetadata']) ?? true;
   if (assetMetadata) {
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
-  const versionReporting: boolean = config.settings.get(['versionReporting']) ?? true;
+  const versionReporting: boolean = settings.get(['versionReporting']) ?? true;
   if (versionReporting) { context[cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT] = true; }
   // We need to keep on doing this for framework version from before this flag was deprecated.
   if (!versionReporting) { context['aws:cdk:disable-version-reporting'] = true; }
 
-  const stagingEnabled = config.settings.get(['staging']) ?? true;
+  const stagingEnabled = settings.get(['staging']) ?? true;
   if (!stagingEnabled) {
     context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
   }
 
-  const bundlingStacks = config.settings.get(['bundlingStacks']) ?? ['**'];
+  const bundlingStacks = settings.get(['bundlingStacks']) ?? ['**'];
   context[cxapi.BUNDLING_STACKS] = bundlingStacks;
 
   debug('context:', context);
@@ -257,7 +259,8 @@ const EXTENSION_MAP = new Map<string, CommandGenerator>([
  * verify if registry associations have or have not been set up for this
  * file type, so we'll assume the worst and take control.
  */
-async function guessExecutable(commandLine: string[]) {
+export async function guessExecutable(app: string) {
+  const commandLine = appToArray(app);
   if (commandLine.length === 1) {
     let fstat;
 
@@ -300,7 +303,7 @@ function contextOverflowCleanup(location: string | undefined, assembly: cxapi.Cl
   }
 }
 
-function spaceAvailableForContext(env: { [key: string]: string }, limit: number) {
+export function spaceAvailableForContext(env: { [key: string]: string }, limit: number) {
   const size = (value: string) => value != null ? Buffer.byteLength(value) : 0;
 
   const usedSpace = Object.entries(env)

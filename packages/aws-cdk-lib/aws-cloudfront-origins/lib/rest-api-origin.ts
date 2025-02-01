@@ -34,7 +34,6 @@ export interface RestApiOriginProps extends cloudfront.OriginProps {
  * An Origin for an API Gateway REST API.
  */
 export class RestApiOrigin extends cloudfront.OriginBase {
-
   constructor(restApi: apigateway.RestApiBase, private readonly props: RestApiOriginProps = {}) {
     // urlForPath() is of the form 'https://<rest-api-id>.execute-api.<region>.amazonaws.com/<stage>'
     // Splitting on '/' gives: ['https', '', '<rest-api-id>.execute-api.<region>.amazonaws.com', '<stage>']

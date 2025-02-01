@@ -1,5 +1,5 @@
 import { DescribeAvailabilityZonesCommand } from '@aws-sdk/client-ec2';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import { AZContextProviderPlugin } from '../../lib/context-providers/availability-zones';
 import { FAKE_CREDENTIAL_CHAIN, mockEC2Client, MockSdkProvider } from '../util/mock-sdk';
 

@@ -116,7 +116,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  */
 export class KubernetesManifest extends Construct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResource';
 
@@ -124,7 +124,10 @@ export class KubernetesManifest extends Construct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
+    if (!provider) {
+      throw new Error('Kubectl Provider is not defined in this cluster. Define it when creating the cluster');
+    }
 
     const prune = props.prune ?? props.cluster.prune;
     const pruneLabel = prune
@@ -144,7 +147,6 @@ export class KubernetesManifest extends Construct {
         // StepFunctions, CloudWatch Dashboards etc).
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
-        RoleArn: provider.roleArn, // TODO: bake into provider's environment
         PruneLabel: pruneLabel,
         Overwrite: props.overwrite,
         SkipValidation: props.skipValidation,
@@ -194,9 +196,7 @@ export class KubernetesManifest extends Construct {
    * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
    */
   private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
-
     for (const resource of manifest) {
-
       // skip resource if it's not an object or if it does not have a "kind"
       if (typeof(resource) !== 'object' || !resource.kind) {
         continue;
@@ -210,6 +210,5 @@ export class KubernetesManifest extends Construct {
         };
       }
     }
-
   }
 }

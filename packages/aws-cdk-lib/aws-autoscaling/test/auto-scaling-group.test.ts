@@ -564,7 +564,6 @@ describe('auto scaling group', () => {
         ],
       },
     });
-
   });
 
   testDeprecated('can configure replacing update', () => {
@@ -1589,7 +1588,6 @@ describe('auto scaling group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       CapacityRebalance: true,
     });
-
   });
 
   test('Can protect new instances from scale-in via constructor property', () => {
@@ -2303,7 +2301,6 @@ describe('auto scaling group', () => {
       vpc: mockVpc(stack),
       signals: autoscaling.Signals.waitForAll(),
     })).not.toThrow();
-
   });
 
   describe('multiple target groups', () => {
@@ -2480,7 +2477,6 @@ describe('auto scaling group', () => {
       });
     }).toThrow("Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set");
   });
-
 });
 
 function mockVpc(stack: cdk.Stack) {

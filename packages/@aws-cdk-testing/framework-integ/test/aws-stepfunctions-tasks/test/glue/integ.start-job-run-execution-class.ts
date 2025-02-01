@@ -53,7 +53,6 @@ class GlueStartJobRunExecutionClassStack extends cdk.Stack {
     this.stateMachine = new sfn.StateMachine(this, 'State Machine', {
       definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
     });
-
   }
 }
 

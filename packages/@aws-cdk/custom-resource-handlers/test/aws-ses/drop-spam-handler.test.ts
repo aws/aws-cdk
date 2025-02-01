@@ -15,11 +15,11 @@ describe('handler', () => {
 });
 
 interface Verdicts {
-  spam?: AWSLambda.SESReceiptStatus,
-  virus?: AWSLambda.SESReceiptStatus,
-  spf?: AWSLambda.SESReceiptStatus,
-  dkim?: AWSLambda.SESReceiptStatus,
-  dmarc?: AWSLambda.SESReceiptStatus,
+  spam?: AWSLambda.SESReceiptStatus;
+  virus?: AWSLambda.SESReceiptStatus;
+  spf?: AWSLambda.SESReceiptStatus;
+  dkim?: AWSLambda.SESReceiptStatus;
+  dmarc?: AWSLambda.SESReceiptStatus;
 }
 
 function createSesEvent(verdicts: Verdicts = {}) {

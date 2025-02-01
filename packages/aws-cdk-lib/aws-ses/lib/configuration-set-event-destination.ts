@@ -4,6 +4,7 @@ import { CfnConfigurationSetEventDestination } from './ses.generated';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set event destination
@@ -237,6 +238,8 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     super(scope, id, {
       physicalName: props.configurationSetEventDestinationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
       configurationSetName: props.configurationSet.configurationSetName,

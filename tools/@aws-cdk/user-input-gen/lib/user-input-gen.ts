@@ -1,7 +1,7 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { generateDefault, kebabToCamelCase, kebabToPascal } from './util';
+import { kebabToCamelCase, kebabToPascal } from './util';
 import { CliConfig } from './yargs-types';
 
 export async function renderUserInputType(config: CliConfig): Promise<string> {
@@ -21,7 +21,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
   });
 
   // add required command
-  scope.addImport(new SelectiveModuleImport(scope, './settings', ['Command']));
+  scope.addImport(new SelectiveModuleImport(scope, './user-configuration', ['Command']));
   const commandEnum = Type.fromName(scope, 'Command');
 
   userInputType.addProperty({
@@ -46,7 +46,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
       name: kebabToCamelCase(optionName),
       type: convertType(option.type, option.count),
       docs: {
-        default: normalizeDefault(option.default, option.type),
+        default: normalizeDefault(option.default),
         summary: option.desc,
         deprecated: option.deprecated ? String(option.deprecated) : undefined,
       },
@@ -81,7 +81,7 @@ export async function renderUserInputType(config: CliConfig): Promise<string> {
         type: convertType(option.type, option.count),
         docs: {
           // Notification Arns is a special property where undefined and [] mean different things
-          default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default, option.type),
+          default: optionName === 'notification-arns' ? 'undefined' : normalizeDefault(option.default),
           summary: option.desc,
           deprecated: option.deprecated ? String(option.deprecated) : undefined,
           remarks: option.alias ? `aliases: ${Array.isArray(option.alias) ? option.alias.join(' ') : option.alias}` : undefined,
@@ -140,7 +140,7 @@ function convertType(type: 'string' | 'array' | 'number' | 'boolean' | 'count', 
   }
 }
 
-function normalizeDefault(defaultValue: any, type: string): string {
+function normalizeDefault(defaultValue: any): string {
   switch (typeof defaultValue) {
     case 'boolean':
     case 'string':
@@ -153,7 +153,6 @@ function normalizeDefault(defaultValue: any, type: string): string {
     case 'undefined':
     case 'function':
     default:
-      const generatedDefault = generateDefault(type);
-      return generatedDefault ? JSON.stringify(generatedDefault) : 'undefined';
+      return 'undefined';
   }
 }

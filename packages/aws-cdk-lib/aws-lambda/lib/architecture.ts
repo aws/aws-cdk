@@ -38,8 +38,8 @@ export class Architecture {
   }
 
   /**
-  * Returns a string representation of the architecture using the name
-  */
+   * Returns a string representation of the architecture using the name
+   */
   public toString(): string {
     return this.name;
   }

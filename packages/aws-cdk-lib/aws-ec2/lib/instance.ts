@@ -17,6 +17,7 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -402,7 +403,6 @@ export interface InstanceProps {
  * This represents a single EC2 instance
  */
 export class Instance extends Resource implements IInstance {
-
   /**
    * The type of OS the instance is running.
    */
@@ -462,6 +462,8 @@ export class Instance extends Resource implements IInstance {
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.initOptions && !props.init) {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');

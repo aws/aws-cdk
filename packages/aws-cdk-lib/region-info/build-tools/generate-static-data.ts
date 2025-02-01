@@ -99,7 +99,6 @@ export async function main(): Promise<void> {
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
-
       }
     }
 
@@ -166,7 +165,6 @@ function checkRegionsSubMap(map: Record<string, Record<string, Record<string, un
           throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
         }
       }
-
     }
   }
 }

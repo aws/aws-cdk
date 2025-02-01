@@ -36,7 +36,6 @@ class TestStack extends Stack {
         region: 'eu-west-2',
       }],
     });
-
   }
 }
 

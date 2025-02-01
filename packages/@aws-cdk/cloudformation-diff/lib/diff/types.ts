@@ -420,7 +420,6 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    *  - Updated
    *  - Others
    *
-   * @param cb
    */
   public forEachDifference(cb: (logicalId: string, change: T) => any): void {
     const removed = new Array<{ logicalId: string; change: T }>();

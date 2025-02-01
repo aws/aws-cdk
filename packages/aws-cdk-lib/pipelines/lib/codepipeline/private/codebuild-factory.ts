@@ -184,7 +184,6 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
   private constructor(
     private readonly constructId: string,
     private readonly props: CodeBuildFactoryProps) {
-
     this.stepId = props.stepId ?? constructId;
   }
 

@@ -5,6 +5,7 @@ import { IApplication } from './application';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
 import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly`;
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation`;
@@ -150,6 +151,8 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
   constructor(scope: Construct, id: string, props: AttributeGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAttributeGroupProps(props);
 

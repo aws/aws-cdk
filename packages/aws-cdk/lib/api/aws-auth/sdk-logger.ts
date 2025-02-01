@@ -1,6 +1,7 @@
 import { inspect } from 'util';
 import { Logger } from '@smithy/types';
 import { trace } from '../../logging';
+import { replacerBufferWithInfo } from '../../serialize';
 
 export class SdkToCliLogger implements Logger {
   public trace(..._content: any[]) {
@@ -105,7 +106,7 @@ function formatApiCall(content: any): string | undefined {
     parts.push(`[${content.metadata?.attempts} attempts, ${content.metadata?.totalRetryDelay}ms retry]`);
   }
 
-  parts.push(`${service}.${api}(${JSON.stringify(content.input)})`);
+  parts.push(`${service}.${api}(${JSON.stringify(content.input, replacerBufferWithInfo)})`);
 
   if (isSdkApiCallSuccess(content)) {
     parts.push('-> OK');

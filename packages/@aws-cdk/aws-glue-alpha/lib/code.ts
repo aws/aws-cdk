@@ -10,7 +10,6 @@ import * as constructs from 'constructs';
  * Represents a Glue Job's Code assets (an asset can be a scripts, a jar, a python file or any other file).
  */
 export abstract class Code {
-
   /**
    * Job code as an S3 object.
    * @param bucket The S3 bucket
@@ -96,7 +95,7 @@ export class AssetCode extends Code {
    */
   private hashcode(s: string): string {
     return md5hash(s);
-  };
+  }
 }
 
 /**

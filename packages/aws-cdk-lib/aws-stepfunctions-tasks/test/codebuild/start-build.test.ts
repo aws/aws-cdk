@@ -100,6 +100,51 @@ test('Task with all the parameters', () => {
   });
 });
 
+test('Task with all the parameters - using JSONata', () => {
+  // WHEN
+  const task = CodeBuildStartBuild.jsonata(stack, 'Task', {
+    project: codebuildProject,
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    environmentVariablesOverride: {
+      env: {
+        type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        value: 'prod',
+      },
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::codebuild:startBuild.sync',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ProjectName: {
+        Ref: 'ProjectC78D97AD',
+      },
+      EnvironmentVariablesOverride: [
+        {
+          Name: 'env',
+          Type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          Value: 'prod',
+        },
+      ],
+    },
+  });
+});
+
 test('supports tokens', () => {
   // WHEN
   const task = new CodeBuildStartBuild(stack, 'Task', {

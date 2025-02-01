@@ -1,8 +1,13 @@
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [cxapi.IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 const stack = new Stack(app, 'oidc-provider-integ-test');
 
 const noClients = new iam.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {

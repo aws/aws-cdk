@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "password-history-size-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-password-history-size"
+      ],
+      "assertionStack": "password-history-size-test/DefaultTest/DeployAssert",
+      "assertionStackName": "passwordhistorysizetestDefaultTestDeployAssert64FCD5B1"
+    }
+  }
+}

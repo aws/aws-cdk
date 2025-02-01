@@ -34,7 +34,7 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n  }\n}';
+    const expected = '/* eslint-disable prettier/prettier, @stylistic/max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n  }\n}';
     expect(result).toEqual(expected);
   });
 
@@ -48,7 +48,7 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n    fqn.secondCallableExpr(scope);\n  }\n}';
+    const expected = '/* eslint-disable prettier/prettier, @stylistic/max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope);\n    fqn.secondCallableExpr(scope);\n  }\n}';
     expect(result).toEqual(expected);
   });
 
@@ -62,7 +62,7 @@ describe('callable expression', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier,max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope, arg2);\n  }\n}';
+    const expected = '/* eslint-disable prettier/prettier, @stylistic/max-len */\nimport * as fqn from "fqn";\n\nclass testFunction {\n  public testMethod(): void {\n    fqn.firstCallableExpr(scope, arg2);\n  }\n}';
     expect(result).toEqual(expected);
   });
 });

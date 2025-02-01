@@ -117,6 +117,66 @@ describe('CallApiGatewayRestApiEndpoint', () => {
     });
   });
 
+  test('wait for task token - using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const restApi = new apigateway.RestApi(stack, 'RestApi');
+
+    // WHEN
+    const task = CallApiGatewayRestApiEndpoint.jsonata(stack, 'Call', {
+      api: restApi,
+      method: HttpMethod.GET,
+      stageName: 'dev',
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      headers: sfn.TaskInput.fromObject({ TaskToken: '{% States.Array($states.context.Task.Token) %}' }),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      End: true,
+      Arguments: {
+        ApiEndpoint: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                Ref: 'RestApi0C43BF4B',
+              },
+              '.execute-api.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
+              {
+                Ref: 'AWS::URLSuffix',
+              },
+            ],
+          ],
+        },
+        AuthType: 'NO_AUTH',
+        Headers: {
+          TaskToken: '{% States.Array($states.context.Task.Token) %}',
+        },
+        Method: 'GET',
+        Stage: 'dev',
+      },
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::apigateway:invoke.waitForTaskToken',
+          ],
+        ],
+      },
+    });
+  });
+
   test('wait for task token - missing token', () => {
     // GIVEN
     const stack = new cdk.Stack();

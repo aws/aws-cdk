@@ -1,9 +1,8 @@
-import { AssumeRoleCommand, GetCallerIdentityCommand, Tag } from '@aws-sdk/client-sts';
+import { Tag } from '@aws-sdk/client-sts';
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';
 import { formatErrorMessage } from '../../lib/util/error';
-import { mockSTSClient } from '../util/mock-sdk';
 
 interface RegisteredIdentity {
   readonly account: string;
@@ -21,6 +20,7 @@ interface RegisteredRole {
 interface AssumedRole {
   readonly roleArn: string;
   readonly serialNumber: string;
+  readonly externalId?: string;
   readonly tokenCode: string;
   readonly roleSessionName: string;
   readonly tags?: Tag[];
@@ -43,10 +43,22 @@ interface AssumedRole {
 export class FakeSts {
   public readonly assumedRoles = new Array<AssumedRole>();
 
+  /**
+   * AccessKey -> User or Session
+   */
   private identities: Record<string, RegisteredIdentity> = {};
+
+  /**
+   * RoleARN -> Role
+   *
+   * When a Role is assumed it creates a Session.
+   */
   private roles: Record<string, RegisteredRole> = {};
 
-  constructor() {}
+  /**
+   * Throw this error when AssumeRole is called
+   */
+  public failAssumeRole?: Error;
 
   /**
    * Begin mocking
@@ -71,7 +83,8 @@ export class FakeSts {
             parsedBody,
             headers: this.req.headers,
           });
-          cb(null, [200, xmlJs.js2xml(response, { compact: true })]);
+          const xml = xmlJs.js2xml(response, { compact: true });
+          cb(null, [200, xml]);
         } catch (e: any) {
           cb(null, [
             400,
@@ -111,6 +124,13 @@ export class FakeSts {
     nock.enableNetConnect();
   }
 
+  public printState() {
+    // eslint-disable-next-line no-console
+    console.log(this.roles);
+    // eslint-disable-next-line no-console
+    console.log(this.identities);
+  }
+
   /**
    * Register a user
    */
@@ -124,8 +144,6 @@ export class FakeSts {
       arn,
       userId,
     };
-
-    this.setSTSMocks(account, arn, userName, accessKey);
   }
 
   /**
@@ -140,33 +158,6 @@ export class FakeSts {
       roleName,
       account,
     };
-
-    this.setSTSMocks(account, roleArn, roleArn);
-  }
-
-  private setSTSMocks(account: string, roleArn: string, name: string, accessKey?: string) {
-    const accessKeyId = accessKey ?? uuid.v4();
-    mockSTSClient
-      .on(GetCallerIdentityCommand)
-      .resolves({
-        Account: account,
-        Arn: roleArn,
-        UserId: name,
-      })
-      .on(AssumeRoleCommand)
-      .resolves({
-        AssumedRoleUser: {
-          Arn: roleArn,
-          AssumedRoleId: `${accessKeyId}:${name}`,
-        },
-        Credentials: {
-          AccessKeyId: accessKeyId,
-          SecretAccessKey: 'Secret',
-          SessionToken: 'Token',
-          Expiration: new Date(Date.now() + 3600 * 1000),
-        },
-        PackedPolicySize: 6,
-      });
   }
 
   private handleRequest(mockRequest: MockRequest): Record<string, any> {
@@ -174,10 +165,10 @@ export class FakeSts {
       const identity = this.identity(mockRequest);
 
       switch (mockRequest.parsedBody.Action) {
-        case 'GetCallerIdentityCommand':
+        case 'GetCallerIdentity':
           return this.handleGetCallerIdentity(identity);
 
-        case 'AssumeRoleCommand':
+        case 'AssumeRole':
           return this.handleAssumeRole(identity, mockRequest);
       }
 
@@ -229,6 +220,9 @@ export class FakeSts {
 
   private handleAssumeRole(identity: RegisteredIdentity, mockRequest: MockRequest): Record<string, any> {
     this.checkForFailure(mockRequest.parsedBody.RoleArn);
+    if (this.failAssumeRole) {
+      throw this.failAssumeRole;
+    }
 
     this.assumedRoles.push({
       roleArn: mockRequest.parsedBody.RoleArn,
@@ -237,6 +231,7 @@ export class FakeSts {
       tokenCode: mockRequest.parsedBody.TokenCode,
       tags: this.decodeMapFromRequestBody('Tags', mockRequest.parsedBody),
       transitiveTagKeys: this.decodeListKeysFromRequestBody('TransitiveTagKeys', mockRequest.parsedBody),
+      externalId: mockRequest.parsedBody.ExternalId,
     });
 
     const roleArn = mockRequest.parsedBody.RoleArn;
@@ -274,9 +269,9 @@ export class FakeSts {
           },
           PackedPolicySize: 6,
         },
-      },
-      ResponseMetadata: {
-        RequestId: '1',
+        ResponseMetadata: {
+          RequestId: '1',
+        },
       },
     };
   }

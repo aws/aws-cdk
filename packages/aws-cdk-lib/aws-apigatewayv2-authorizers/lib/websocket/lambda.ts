@@ -10,6 +10,7 @@ import {
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Names } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties to initialize WebSocketTokenAuthorizer.
@@ -49,7 +50,7 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
 
   public bind(options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
     if (this.webSocketApi && (this.webSocketApi.apiId !== options.route.webSocketApi.apiId)) {
-      throw new Error('Cannot attach the same authorizer to multiple Apis');
+      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {

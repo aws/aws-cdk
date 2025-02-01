@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Scaling mode to use for this IP pool.
@@ -77,6 +78,8 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     super(scope, id, {
       physicalName: props.dedicatedIpPoolName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
       throw new Error(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`);

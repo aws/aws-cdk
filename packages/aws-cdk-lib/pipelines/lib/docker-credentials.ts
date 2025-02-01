@@ -109,7 +109,7 @@ export enum DockerCredentialUsage {
   SELF_UPDATE = 'SELF_UPDATE',
   /** Asset publishing */
   ASSET_PUBLISHING = 'ASSET_PUBLISHING',
-};
+}
 
 /** DockerCredential defined by registry domain and a secret */
 class ExternalDockerCredential extends DockerCredential {
@@ -203,7 +203,6 @@ export function dockerCredentialsInstallCommands(
   usage: DockerCredentialUsage,
   registries?: DockerCredential[],
   osType?: ec2.OperatingSystemType | 'both'): string[] {
-
   const relevantRegistries = (registries ?? []).filter(reg => reg._applicableForUsage(usage));
   if (!relevantRegistries || relevantRegistries.length === 0) { return []; }
 

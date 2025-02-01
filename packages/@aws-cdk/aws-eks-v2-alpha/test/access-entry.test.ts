@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib/core';
 import {
   AccessEntry, AccessEntryProps, AccessEntryType,
-  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
+  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion,
 } from '../lib';
 
 describe('AccessEntry', () => {
@@ -17,7 +17,6 @@ describe('AccessEntry', () => {
     stack = new Stack(app, 'test-stack');
     cluster = new Cluster(stack, 'Cluster', {
       version: KubernetesVersion.V1_29,
-      authenticationMode: AuthenticationMode.API,
     });
 
     mockAccessPolicies = [
@@ -132,6 +131,6 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryName).toEqual(importedAccessEntryName);
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
   });
 });

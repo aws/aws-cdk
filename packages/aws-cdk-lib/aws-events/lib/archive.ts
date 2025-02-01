@@ -4,6 +4,7 @@ import { EventPattern } from './event-pattern';
 import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
 import { Duration, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The event archive base properties
@@ -62,6 +63,8 @@ export class Archive extends Resource {
 
   constructor(scope: Construct, id: string, props: ArchiveProps) {
     super(scope, id, { physicalName: props.archiveName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let archive = new CfnArchive(this, 'Archive', {
       sourceArn: props.sourceEventBus.eventBusArn,

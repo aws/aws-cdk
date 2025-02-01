@@ -137,6 +137,71 @@ test('Task with all the parameters', () => {
   });
 });
 
+test('Task with all the parameters - using JSONata', () => {
+  // WHEN
+  const task = BatchSubmitJob.jsonata(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    arraySize: 15,
+    containerOverrides: {
+      command: ['sudo', 'rm'],
+      environment: { key: 'value' },
+      instanceType: new ec2.InstanceType('MULTI'),
+      memory: cdk.Size.mebibytes(1024),
+      gpuCount: 1,
+      vcpus: 10,
+    },
+    dependsOn: [{ jobId: '1234', type: 'some_type' }],
+    payload: sfn.TaskInput.fromObject({
+      foo: '{% $states.input.bar %}',
+    }),
+    attempts: 3,
+    taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::batch:submitJob',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
+      JobName: 'JobName',
+      JobQueue: {
+        'Fn::GetAtt': [
+          'JobQueueEE3AD499',
+          'JobQueueArn',
+        ],
+      },
+      ArrayProperties: { Size: 15 },
+      ContainerOverrides: {
+        Command: ['sudo', 'rm'],
+        Environment: [{ Name: 'key', Value: 'value' }],
+        InstanceType: 'MULTI',
+        ResourceRequirements: [{ Type: 'GPU', Value: '1' }, { Type: 'MEMORY', Value: '1024' }, { Type: 'VCPU', Value: '10' }],
+      },
+      DependsOn: [{ JobId: '1234', Type: 'some_type' }],
+      Parameters: { foo: '{% $states.input.bar %}' },
+      RetryStrategy: { Attempts: 3 },
+      Timeout: { AttemptDurationSeconds: 60 },
+    },
+  });
+});
+
 test('supports tokens', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {

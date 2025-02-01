@@ -9,7 +9,6 @@ import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 

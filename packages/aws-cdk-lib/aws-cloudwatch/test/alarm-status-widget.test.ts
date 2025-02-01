@@ -60,6 +60,5 @@ describe('Alarm Status Widget', () => {
         },
       },
     ]);
-
   });
 });

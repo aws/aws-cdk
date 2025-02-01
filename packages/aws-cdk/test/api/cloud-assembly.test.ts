@@ -4,33 +4,6 @@ import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';
 import { MockCloudExecutable } from '../util';
 import { cliAssemblyWithForcedVersion } from './assembly-versions';
 
-test('do not throw when selecting stack without errors', async () => {
-  // GIVEN
-  const cxasm = await testCloudAssembly();
-
-  // WHEN
-  const selected = await cxasm.selectStacks( { patterns: ['withouterrorsNODEPATH'] }, {
-    defaultBehavior: DefaultSelection.AllStacks,
-  });
-  selected.processMetadataMessages();
-
-  // THEN
-  expect(selected.firstStack.template.resource).toBe('noerrorresource');
-});
-
-test('do throw when selecting stack with errors', async () => {
-  // GIVEN
-  const cxasm = await testCloudAssembly();
-
-  // WHEN
-  const selected = await cxasm.selectStacks({ patterns: ['witherrors'] }, {
-    defaultBehavior: DefaultSelection.AllStacks,
-  });
-
-  // THEN
-  expect(() => selected.processMetadataMessages()).toThrow(/Found errors/);
-});
-
 test('select all top level stacks in the presence of nested assemblies', async () => {
   // GIVEN
   const cxasm = await testNestedCloudAssembly();
@@ -52,7 +25,7 @@ test('select stacks by glob pattern', async () => {
   const x = await cxasm.selectStacks({ patterns: ['with*'] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN
-  expect(x.stackCount).toBe(2);
+  expect(x.stackCount).toBe(3);
   expect(x.stackIds).toContain('witherrors');
   expect(x.stackIds).toContain('withouterrors');
 });
@@ -65,7 +38,7 @@ test('select behavior: all', async () => {
   const x = await cxasm.selectStacks({ patterns: [] }, { defaultBehavior: DefaultSelection.AllStacks });
 
   // THEN
-  expect(x.stackCount).toBe(2);
+  expect(x.stackCount).toBe(3);
 });
 
 test('select behavior: none', async () => {
@@ -186,6 +159,95 @@ test('select behavior with no stacks and default ignore stacks options (false)',
     .rejects.toThrow('This app contains no stacks');
 });
 
+describe('StackCollection', () => {
+  test('returns hierarchicalIds', async () => {
+    // GIVEN
+    const cxasm = await testNestedCloudAssembly();
+
+    // WHEN
+    const x = await cxasm.selectStacks({ allTopLevel: true, patterns: [] }, { defaultBehavior: DefaultSelection.AllStacks });
+
+    // THEN
+    expect(x.stackCount).toBe(2);
+    expect(x.hierarchicalIds).toEqual(['witherrors', 'deeply/hidden/withouterrors']);
+  });
+
+  describe('validateMetadata', () => {
+    test('do not throw when selecting stack without errors', async () => {
+    // GIVEN
+      const cxasm = await testCloudAssembly();
+
+      // WHEN
+      const selected = await cxasm.selectStacks( { patterns: ['withouterrorsNODEPATH'] }, {
+        defaultBehavior: DefaultSelection.AllStacks,
+      });
+      await selected.validateMetadata();
+
+      // THEN
+      expect(selected.stackCount).toBe(1);
+      expect(selected.firstStack.template.resource).toBe('noerrorresource');
+    });
+
+    test('do not throw when selecting stack with warnings', async () => {
+      // GIVEN
+      const cxasm = await testCloudAssembly();
+
+      // WHEN
+      const selected = await cxasm.selectStacks( { patterns: ['withwarns'] }, {
+        defaultBehavior: DefaultSelection.AllStacks,
+      });
+      await selected.validateMetadata();
+
+      // THEN
+      expect(selected.stackCount).toBe(1);
+      expect(selected.firstStack.template.resource).toBe('warnresource');
+    });
+
+    test('do not throw when selecting stack with errors but errors are ignored', async () => {
+      // GIVEN
+      const cxasm = await testCloudAssembly();
+
+      // WHEN
+      const selected = await cxasm.selectStacks({ patterns: ['witherrors'] }, {
+        defaultBehavior: DefaultSelection.AllStacks,
+      });
+      await selected.validateMetadata('none');
+
+      // THEN
+      expect(selected.stackCount).toBe(1);
+      expect(selected.firstStack.template.resource).toBe('errorresource');
+    });
+
+    test('do throw when selecting stack with errors', async () => {
+      // GIVEN
+      const cxasm = await testCloudAssembly();
+
+      // WHEN
+      const selected = await cxasm.selectStacks({ patterns: ['witherrors'] }, {
+        defaultBehavior: DefaultSelection.AllStacks,
+      });
+
+      // THEN
+      expect(selected.stackCount).toBe(1);
+      await expect(async () => selected.validateMetadata()).rejects.toThrow(/Found errors/);
+    });
+
+    test('do throw when selecting stack with warnings and we are on strict mode', async () => {
+      // GIVEN
+      const cxasm = await testCloudAssembly();
+
+      // WHEN
+      const selected = await cxasm.selectStacks( { patterns: ['withwarns'] }, {
+        defaultBehavior: DefaultSelection.AllStacks,
+      });
+
+      // THEN
+      expect(selected.stackCount).toBe(1);
+      await expect(async () => selected.validateMetadata('warn')).rejects.toThrow(/Found warnings/);
+    });
+  });
+});
+
 async function testCloudAssembly({ env }: { env?: string; versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
@@ -203,6 +265,19 @@ async function testCloudAssembly({ env }: { env?: string; versionReporting?: boo
           {
             type: cxschema.ArtifactMetadataEntryType.ERROR,
             data: 'this is an error',
+          },
+        ],
+      },
+    },
+    {
+      stackName: 'withwarns',
+      env,
+      template: { resource: 'warnresource' },
+      metadata: {
+        '/resource': [
+          {
+            type: cxschema.ArtifactMetadataEntryType.WARN,
+            data: 'this is a warning',
           },
         ],
       },

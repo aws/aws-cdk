@@ -181,7 +181,6 @@ test('creates a secret with a custom excludeCharacters', () => {
 });
 
 describe('node count', () => {
-
   test('Single Node Clusters do not define node count', () => {
     // WHEN
     new Cluster(stack, 'Redshift', {
@@ -324,11 +323,9 @@ describe('parameter group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     });
-
   });
 
   test('Adding to the cluster parameter group on a cluster not instantiated with a parameter group', () => {
-
     // WHEN
     const cluster = new Cluster(stack, 'Redshift', {
       clusterName: 'foobar',
@@ -358,7 +355,6 @@ describe('parameter group', () => {
   });
 
   test('Adding to the cluster parameter group on a cluster instantiated with a parameter group', () => {
-
     // WHEN
     const group = new ClusterParameterGroup(stack, 'Params', {
       description: 'lorem ipsum',
@@ -413,7 +409,6 @@ describe('parameter group', () => {
       // THEN
       .toThrow('Cannot add a parameter to an imported parameter group');
   });
-
 });
 
 test('publicly accessible cluster', () => {
@@ -556,7 +551,6 @@ test('throws when trying to add rotation to a cluster without secret', () => {
   expect(() => {
     cluster.addRotationSingleUser();
   }).toThrow();
-
 });
 
 test('throws validation error when trying to set encryptionKey without enabling encryption', () => {
@@ -577,7 +571,6 @@ test('throws validation error when trying to set encryptionKey without enabling 
   expect(() => {
     new Cluster(stack, 'Redshift', props);
   }).toThrow();
-
 });
 
 test('throws when trying to add single user rotation multiple times', () => {
@@ -844,7 +837,7 @@ describe('reboot for Parameter Changes', () => {
       rebootForParameterChanges: true,
     });
     cluster.addToParameterGroup('foo', 'bar');
-    //WHEN
+    // WHEN
     cluster.enableRebootForParameterChanges();
     // THEN
     Template.fromStack(stack).resourceCountIs('Custom::RedshiftClusterRebooter', 1);
@@ -872,7 +865,7 @@ describe('reboot for Parameter Changes', () => {
     cluster.enableRebootForParameterChanges();
     cluster2.enableRebootForParameterChanges();
 
-    //THEN
+    // THEN
     const template = Template.fromStack(stack);
     template.resourceCountIs('Custom::RedshiftClusterRebooter', 2);
     template.templateMatches({
@@ -903,7 +896,7 @@ describe('reboot for Parameter Changes', () => {
     // WHEN
     cluster.addToParameterGroup('lorem', 'ipsum');
 
-    //THEN
+    // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::RedshiftClusterRebooter', {
       ParametersString: JSON.stringify(
@@ -917,7 +910,6 @@ describe('reboot for Parameter Changes', () => {
 });
 
 describe('default IAM role', () => {
-
   test('Default role not in role list', () => {
     // GIVEN
     const clusterRole1 = new iam.Role(stack, 'clusterRole1', { assumedBy: new iam.ServicePrincipal('redshift.amazonaws.com') });

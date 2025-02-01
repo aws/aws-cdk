@@ -1,9 +1,9 @@
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
 import { ToolkitInfo } from '../../lib/api';
+import { Context } from '../../lib/api/context';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
+import * as version from '../../lib/cli/version';
 import { CachedDataSource, Notices, NoticesFilter } from '../../lib/notices';
-import { Context } from '../../lib/settings';
-import * as version from '../../lib/version';
 import { MockSdk, mockBootstrapStack, mockSSMClient } from '../util/mock-sdk';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 

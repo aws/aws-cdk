@@ -5,10 +5,32 @@ import { Duration, Stack } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
- * Properties for starting an AWS Glue job as a task
+ * Properties for the worker configuration.
  */
-export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
+export interface WorkerConfigurationProperty {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   *
+   * @default - must choose one of `workerType` or `workerTypeV2`
+   * @deprecated Use `workerTypeV2` for more flexibility in defining worker types.
+   */
+  readonly workerType?: WorkerType;
 
+  /**
+   * The type of predefined worker that is allocated when a job runs. Can be one of the
+   * predefined values or dynamic values using `WorkerTypeV2.of(...)`.
+   *
+   * @default - must choose one of `workerType` or `workerTypeV2`
+   */
+  readonly workerTypeV2?: WorkerTypeV2;
+
+  /**
+   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
+   */
+  readonly numberOfWorkers: number;
+}
+
+interface GlueStartJobRunOptions {
   /**
    * Glue job name
    */
@@ -59,30 +81,18 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
 }
 
 /**
- * Properties for the worker configuration.
+ * Properties for starting an AWS Glue job as a task
  */
-export interface WorkerConfigurationProperty {
-  /**
-   * The type of predefined worker that is allocated when a job runs.
-   *
-   * @default - must choose one of `workerType` or `workerTypeV2`
-   * @deprecated Use `workerTypeV2` for more flexibility in defining worker types.
-   */
-  readonly workerType?: WorkerType;
+export interface GlueStartJobRunJsonPathProps extends sfn.TaskStateJsonPathBaseProps, GlueStartJobRunOptions {}
+/**
+ * Properties for starting an AWS Glue job as a task
+ */
+export interface GlueStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, GlueStartJobRunOptions {}
 
-  /**
-   * The type of predefined worker that is allocated when a job runs. Can be one of the
-   * predefined values or dynamic values using `WorkerTypeV2.of(...)`.
-   *
-   * @default - must choose one of `workerType` or `workerTypeV2`
-   */
-  readonly workerTypeV2?: WorkerTypeV2;
-
-  /**
-   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
-   */
-  readonly numberOfWorkers: number;
-}
+/**
+ * Properties for starting an AWS Glue job as a task
+ */
+export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps, GlueStartJobRunOptions {}
 
 /**
  * Starts an AWS Glue job in a Task state
@@ -93,6 +103,31 @@ export interface WorkerConfigurationProperty {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
  */
 export class GlueStartJobRun extends sfn.TaskStateBase {
+  /**
+   * Starts an AWS Glue job in a Task state using JSONPath
+   *
+   * OUTPUT: the output of this task is a JobRun structure, for details consult
+   * https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-JobRun
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: GlueStartJobRunJsonPathProps) {
+    return new GlueStartJobRun(scope, id, props);
+  }
+  /**
+   * Starts an AWS Glue job in a Task state using JSONata
+   *
+   * OUTPUT: the output of this task is a JobRun structure, for details consult
+   * https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-JobRun
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html
+   */
+  public static jsonata(scope: Construct, id: string, props: GlueStartJobRunJsonataProps) {
+    return new GlueStartJobRun(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -102,9 +137,17 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private readonly jobArguments?: sfn.TaskInput;
 
   constructor(scope: Construct, id: string, private readonly props: GlueStartJobRunProps) {
-    super(scope, id, props);
+    const superProps = {
+      ...props,
+      // this arguments is for Glue job,
+      // However arguments of state props is used by JSONata states so overwrite by undefined.
+      arguments: undefined,
+    };
+    super(scope, id, superProps);
+    this.jobArguments = props.arguments;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
@@ -121,7 +164,8 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
 
     let timeout: number | undefined = undefined;
@@ -146,16 +190,16 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
 
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         JobName: this.props.glueJobName,
-        Arguments: this.props.arguments?.value,
+        Arguments: this.jobArguments?.value,
         Timeout: timeout,
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,
         WorkerType: workerType,
         NumberOfWorkers: this.props.workerConfiguration?.numberOfWorkers,
         ExecutionClass: this.props.executionClass,
-      }),
+      }, queryLanguage),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
     };

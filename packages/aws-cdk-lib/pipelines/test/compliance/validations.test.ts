@@ -24,7 +24,6 @@ afterEach(() => {
 });
 
 test('can add manual approval after app', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'MyApp'), {
@@ -49,7 +48,6 @@ test('can add manual approval after app', () => {
 });
 
 test('can add steps to wave', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const wave = pipeline.addWave('MyWave', {
@@ -79,7 +77,6 @@ test('can add steps to wave', () => {
 });
 
 test('script validation steps can use stack outputs as environment variables', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const myApp = new AppWithOutput(app, 'Alpha');
   pipeline.addStage(myApp, {
@@ -116,7 +113,6 @@ test('script validation steps can use stack outputs as environment variables', (
 });
 
 test('stackOutput generates names limited to 100 characters', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   const stage = new StageWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
   pipeline.addStage(stage, {
@@ -144,7 +140,6 @@ test('stackOutput generates names limited to 100 characters', () => {
 });
 
 test('validation step can run from scripts in source', () => {
-
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
     post: [
@@ -263,7 +258,6 @@ test('can use additional output artifacts from build', () => {
 });
 
 test('can add policy statements to shell script action', () => {
-
   // WHEN
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new TwoStackApp(app, 'Test'), {
@@ -422,7 +416,6 @@ test('can run shell script actions with a specific SecurityGroup', () => {
 });
 
 test('can run scripts with specified BuildEnvironment', () => {
-
   // Run all Build jobs with the given image
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     codeBuildDefaults: {
@@ -457,7 +450,6 @@ test('can run scripts with specified BuildEnvironment', () => {
 });
 
 test('can run scripts with magic environment variables', () => {
-
   // Run all Build jobs with the given image
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 

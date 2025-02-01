@@ -5,6 +5,7 @@ import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The interface of the EndpointGroup
@@ -178,6 +179,8 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
 
   constructor(scope: Construct, id: string, props: EndpointGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerArn,

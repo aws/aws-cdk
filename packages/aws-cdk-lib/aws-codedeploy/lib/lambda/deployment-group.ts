@@ -5,6 +5,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -164,6 +165,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       role: props.role,
       roleConstructId: 'ServiceRole',
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = this._role;
 
     this.application = props.application || new LambdaApplication(this, 'Application');
@@ -305,6 +308,8 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.application = props.application;
     this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);

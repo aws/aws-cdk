@@ -95,7 +95,6 @@ export interface NestedStackProps {
  *
  */
 export class NestedStack extends Stack {
-
   /**
    * Checks if `x` is an object of type `NestedStack`.
    */

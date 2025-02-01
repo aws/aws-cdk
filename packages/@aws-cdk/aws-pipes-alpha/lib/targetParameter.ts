@@ -11,5 +11,4 @@ export class TargetParameter {
     }
     return `<${jsonPath}>`;
   }
-
 }

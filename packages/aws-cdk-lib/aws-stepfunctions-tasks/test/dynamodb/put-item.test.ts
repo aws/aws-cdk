@@ -67,3 +67,54 @@ test('PutItem task', () => {
     },
   });
 });
+
+test('PutItem task - using JSONata', () => {
+  // WHEN
+  const task = tasks.DynamoPutItem.jsonata(stack, 'PutItem', {
+    item: { SOME_KEY: tasks.DynamoAttributeValue.fromString('1234') },
+    table,
+    conditionExpression: 'ForumName <> :f and Subject <> :s',
+    expressionAttributeNames: { OTHER_KEY: '#OK' },
+    expressionAttributeValues: {
+      ':val': tasks.DynamoAttributeValue.numberFromString('{% $Item.TotalCount.N %}'),
+      ':bool': tasks.DynamoAttributeValue.booleanFromJsonata('{% $Item.flag %}'),
+    },
+    returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+    returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+    returnValues: tasks.DynamoReturnValues.ALL_NEW,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::dynamodb:putItem',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Item: { SOME_KEY: { S: '1234' } },
+      TableName: {
+        Ref: 'mytable0324D45C',
+      },
+      ConditionExpression: 'ForumName <> :f and Subject <> :s',
+      ExpressionAttributeNames: { OTHER_KEY: '#OK' },
+      ExpressionAttributeValues: {
+        ':val': { N: '{% $Item.TotalCount.N %}' },
+        ':bool': { BOOL: '{% $Item.flag %}' },
+      },
+      ReturnConsumedCapacity: 'TOTAL',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+    },
+  });
+});

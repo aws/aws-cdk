@@ -6,6 +6,7 @@ import * as ec2 from '../../aws-ec2';
 import { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A database instance
@@ -219,6 +220,8 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,
