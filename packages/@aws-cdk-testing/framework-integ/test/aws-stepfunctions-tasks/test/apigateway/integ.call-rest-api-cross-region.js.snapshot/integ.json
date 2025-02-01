@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "call-rest-api-cross-region/DefaultTest": {
+      "stacks": [
+        "CallRestApiInteg-ApiStack",
+        "CallRestApiInteg-SfnStack"
+      ],
+      "assertionStack": "call-rest-api-cross-region/DefaultTest/DeployAssert",
+      "assertionStackName": "callrestapicrossregionDefaultTestDeployAssert2A1021D3"
+    }
+  }
+}
