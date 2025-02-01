@@ -19,6 +19,29 @@ export function subnetId(name: string, i: number) {
 }
 
 /**
+ * The status of a Transit Gateway feature.
+ */
+export enum TransitGatewayFeatureStatus {
+  /**
+   * The feature is enabled.
+   */
+  ENABLE = 'enable',
+
+  /**
+   * The feature is disabled.
+   */
+  DISABLE = 'disable',
+}
+
+export function getFeatureStatus(status?: boolean): TransitGatewayFeatureStatus | undefined {
+  if (status === undefined) {
+    return undefined;
+  } else {
+    return status ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  }
+}
+
+/**
  * Return the union of table IDs from all selected subnets
  */
 export function allRouteTableIds(subnets: ISubnet[]): string[] {

@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "abbff3a0484dd36d58296bffebd14d57a957f5202e481df8ef1ba150a399c149": {
+      "source": {
+        "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "abbff3a0484dd36d58296bffebd14d57a957f5202e481df8ef1ba150a399c149.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
