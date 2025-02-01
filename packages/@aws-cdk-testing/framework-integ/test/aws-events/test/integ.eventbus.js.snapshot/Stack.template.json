@@ -95,6 +95,30 @@
     },
     "StatementId": "cdk-Statement2"
    }
+  },
+  "BusSchemaDiscoveryE6A342A5": {
+   "Type": "AWS::EventSchemas::Discoverer",
+   "Properties": {
+    "CrossAccount": true,
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Schema Discoverer for ",
+       {
+        "Ref": "BusEA82B648"
+       },
+       " Event Bus"
+      ]
+     ]
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "BusEA82B648",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Parameters": {

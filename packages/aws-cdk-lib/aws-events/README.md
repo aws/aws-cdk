@@ -272,6 +272,22 @@ bus.archive('MyArchive', {
 });
 ```
 
+## Schema Discovery
+
+It is possible to automatically generate schemas in Schema Registry for events sent to an event bus. This is useful for discovering what events are sent to the event bus.
+
+```ts
+const bus = new events.EventBus(this, 'bus', {
+  eventBusName: 'MyCustomEventBus',
+  description: 'MyCustomEventBus',
+});
+
+bus.schemaDiscovery('MySchemaDiscovery', {
+  crossAccount: true,
+  description: 'MyCustomerEventBus Schema Discovery',
+});
+```
+
 ## Dead-Letter Queue for EventBus
 
 It is possible to configure a [Dead Letter Queue for an EventBus](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq). This is useful when you want to capture events that could not be delivered to any of the targets.
