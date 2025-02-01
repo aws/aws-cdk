@@ -391,7 +391,10 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    this.role.addToPrincipalPolicy(statement);
+    const policyToAdd = new iam.Policy(this, 'Policy', {
+      statements: [statement],
+    });
+    this.role.attachInlinePolicy(policyToAdd);
   }
 
   /**

@@ -41,7 +41,7 @@ describe('KafkaEventSource', () => {
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        PolicyName: 'FnPolicyF3937D5F',
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',
@@ -92,19 +92,42 @@ describe('KafkaEventSource', () => {
                 Ref: 'SecretA720EF05',
               },
             },
+            // {
+            //   Action: [
+            //     'kafka:DescribeCluster',
+            //     'kafka:GetBootstrapBrokers',
+            //     'kafka:ListScramSecrets',
+            //   ],
+            //   Effect: 'Allow',
+            //   Resource: clusterArn,
+            // },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        Roles: [
+          {
+            Ref: 'FnServiceRoleB9001A96',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
             {
+              Effect: 'Allow',
               Action: [
                 'kafka:DescribeCluster',
                 'kafka:GetBootstrapBrokers',
                 'kafka:ListScramSecrets',
               ],
-              Effect: 'Allow',
               Resource: clusterArn,
             },
           ],
-          Version: '2012-10-17',
         },
-        PolicyName: 'FnServiceRoleDefaultPolicyC6A839BF',
+        PolicyName: 'FnPolicyF3937D5F',
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',

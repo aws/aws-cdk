@@ -42,7 +42,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56"
+            "data": "MyLambdaAliasPCEPolicyCFC383B2"
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/Resource": [
@@ -78,7 +78,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552"
+            "data": "MyLambdaVersionPCEPolicy0862B493"
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/Resource": [

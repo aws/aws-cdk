@@ -31,7 +31,7 @@
     ]
    }
   },
-  "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56": {
+  "MyLambdaAliasPCEPolicyCFC383B2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -44,7 +44,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
+    "PolicyName": "MyLambdaAliasPCEPolicyCFC383B2",
     "Roles": [
      {
       "Ref": "MyLambdaAliasPCEServiceRoleF7C9F212"
@@ -69,7 +69,6 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
     "MyLambdaAliasPCEServiceRoleF7C9F212"
    ]
   },
@@ -140,7 +139,7 @@
     ]
    }
   },
-  "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552": {
+  "MyLambdaVersionPCEPolicy0862B493": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -153,7 +152,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
+    "PolicyName": "MyLambdaVersionPCEPolicy0862B493",
     "Roles": [
      {
       "Ref": "MyLambdaVersionPCEServiceRole2ACFB73E"
@@ -178,7 +177,6 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
     "MyLambdaVersionPCEServiceRole2ACFB73E"
    ]
   },

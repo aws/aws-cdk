@@ -43,7 +43,7 @@
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "data": "MyLambdaPolicyEEA76B97"
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/Resource": [
