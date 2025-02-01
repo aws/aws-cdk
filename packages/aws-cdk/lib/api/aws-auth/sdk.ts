@@ -20,6 +20,15 @@ import {
   type UpdateResolverCommandOutput,
 } from '@aws-sdk/client-appsync';
 import {
+  CloudControlClient,
+  GetResourceCommand,
+  GetResourceCommandInput,
+  GetResourceCommandOutput,
+  ListResourcesCommand,
+  ListResourcesCommandInput,
+  ListResourcesCommandOutput,
+} from '@aws-sdk/client-cloudcontrol';
+import {
   CloudFormationClient,
   ContinueUpdateRollbackCommand,
   ContinueUpdateRollbackCommandInput,
@@ -371,6 +380,11 @@ export interface IAppSyncClient {
   listFunctions(input: ListFunctionsCommandInput): Promise<FunctionConfiguration[]>;
 }
 
+export interface ICloudControlClient{
+  listResources(input: ListResourcesCommandInput): Promise<ListResourcesCommandOutput>;
+  getResource(input: GetResourceCommandInput): Promise<GetResourceCommandOutput>;
+}
+
 export interface ICloudFormationClient {
   continueUpdateRollback(input: ContinueUpdateRollbackCommandInput): Promise<ContinueUpdateRollbackCommandOutput>;
   createChangeSet(input: CreateChangeSetCommandInput): Promise<CreateChangeSetCommandOutput>;
@@ -597,6 +611,16 @@ export class SDK {
         }
         return functions;
       },
+    };
+  }
+
+  public cloudControl(): ICloudControlClient {
+    const client = new CloudControlClient(this.config);
+    return {
+      listResources: (input: ListResourcesCommandInput): Promise<ListResourcesCommandOutput> =>
+        client.send(new ListResourcesCommand(input)),
+      getResource: (input: GetResourceCommandInput): Promise<GetResourceCommandOutput> =>
+        client.send(new GetResourceCommand(input)),
     };
   }
 
