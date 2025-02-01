@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { IGameSessionQueue } from './game-session-queue';
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for a new queued matchmaking configuration
@@ -105,6 +106,8 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
     super(scope, id, {
       physicalName: props.matchmakingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.matchmakingConfigurationName && !cdk.Token.isUnresolved(props.matchmakingConfigurationName)) {
       if (props.matchmakingConfigurationName.length > 128) {

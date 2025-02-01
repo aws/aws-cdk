@@ -6,6 +6,7 @@ import {
 } from '../../aws-ec2';
 import { Duration, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a LoadBalancer
@@ -256,6 +257,8 @@ export class LoadBalancer extends Resource implements IConnectable {
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });

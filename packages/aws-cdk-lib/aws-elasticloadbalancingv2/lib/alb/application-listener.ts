@@ -10,6 +10,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -269,6 +270,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
       } : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
@@ -775,6 +778,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
@@ -792,6 +797,8 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     this.connections = new ec2.Connections({

@@ -5,6 +5,7 @@ import { Compatibility } from './ecs-job-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
@@ -150,6 +151,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.containers = props?.containers ?? [];
     this.mainNode = props?.mainNode;

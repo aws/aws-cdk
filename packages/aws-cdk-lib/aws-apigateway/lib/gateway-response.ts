@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnGatewayResponse, CfnGatewayResponseProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents gateway response resource.
@@ -57,6 +58,8 @@ export interface GatewayResponseOptions {
 export class GatewayResponse extends Resource implements IGatewayResponse {
   constructor(scope: Construct, id: string, props: GatewayResponseProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const gatewayResponseProps: CfnGatewayResponseProps = {
       restApiId: props.restApi.restApiId,

@@ -11,6 +11,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IAlias extends IFunction {
   /**
@@ -146,6 +147,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     super(scope, id, {
       physicalName: props.aliasName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.lambda = props.version.lambda;
     this.aliasName = this.physicalName;

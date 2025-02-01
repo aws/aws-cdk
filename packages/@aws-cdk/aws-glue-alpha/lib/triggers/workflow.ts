@@ -15,6 +15,7 @@ import {
   NotifyEventTriggerOptions,
   ConditionalTriggerOptions,
 } from './trigger-options';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The base interface for Glue Workflow
@@ -407,6 +408,8 @@ export class Workflow extends WorkflowBase {
     super(scope, id, {
       physicalName: props?.workflowName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,

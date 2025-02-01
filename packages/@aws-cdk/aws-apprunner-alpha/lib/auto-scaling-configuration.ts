@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the App Runner Auto Scaling Configuration.
@@ -154,6 +155,8 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     super(scope, id, {
       physicalName: props.autoScalingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAutoScalingConfiguration(props);
 

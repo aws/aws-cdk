@@ -240,7 +240,11 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
     validationCollector.validateRuleSet({
       exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
-      testRuleSet: [{ test: noMetadataChanges }],
+      testRuleSet: [
+        { test: noMetadataChanges },
+        { test: noAnalyticsClassesChanges },
+        { test: noAnalyticsEnumsChanges },
+      ],
     });
 
     validationCollector.validateRuleSet({
@@ -545,6 +549,20 @@ function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
   result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsClassesChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/classes.ts');
+  result.assessFailure(condition, 'Manual changes to the classes.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts');
+  result.assessFailure(condition, 'Manual changes to the enums.ts file are not allowed.');
   return result;
 }
 

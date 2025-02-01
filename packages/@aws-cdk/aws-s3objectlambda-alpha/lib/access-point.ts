@@ -4,6 +4,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The interface that represents the AccessPoint resource.
@@ -210,6 +211,8 @@ export class AccessPoint extends AccessPointBase {
     super(scope, id, {
       physicalName: props.accessPointName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.accessPointName) {
       validateAccessPointName(props.accessPointName);

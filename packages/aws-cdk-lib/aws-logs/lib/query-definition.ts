@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { ILogGroup } from './log-group';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a QueryString
@@ -202,6 +203,8 @@ export class QueryDefinition extends Resource {
     super(scope, id, {
       physicalName: props.queryDefinitionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,

@@ -11,6 +11,7 @@ import { InstanceType } from './instance-type';
 import { sameEnv } from './private/util';
 import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import { ScalableInstanceCount } from './scalable-instance-count';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /*
  * Amazon SageMaker automatic scaling doesn't support automatic scaling for burstable instances such
@@ -408,6 +409,8 @@ export class Endpoint extends EndpointBase {
     super(scope, id, {
       physicalName: props.endpointName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateEnvironmentCompatibility(props.endpointConfig);
     this.endpointConfig = props.endpointConfig;

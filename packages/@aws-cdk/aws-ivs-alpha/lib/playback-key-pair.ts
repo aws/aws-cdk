@@ -2,6 +2,7 @@ import * as core from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an IVS Playback Key Pair
@@ -60,6 +61,8 @@ export class PlaybackKeyPair extends PlaybackKeyPairBase {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.playbackKeyPairName && !core.Token.isUnresolved(props.playbackKeyPairName) && !/^[a-zA-Z0-9-_]*$/.test(props.playbackKeyPairName)) {
       throw new Error(`playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: '${props.playbackKeyPairName}'`);

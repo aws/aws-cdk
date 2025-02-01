@@ -9,6 +9,7 @@ import { parseMethodOptionsPath } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an APIGateway Stage.
@@ -376,6 +377,8 @@ export class Stage extends StageBase {
 
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enableCacheCluster = props.cacheClusterEnabled;
 

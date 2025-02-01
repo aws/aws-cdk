@@ -23,6 +23,7 @@ import {
   Token,
   FeatureFlags,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -597,6 +598,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Basic validation of the provided spot block duration
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });

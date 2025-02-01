@@ -18,6 +18,7 @@ import {
   Arn, Annotations, ContextProvider,
   IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -1495,6 +1496,8 @@ export class Vpc extends VpcBase {
    */
   constructor(scope: Construct, id: string, props: VpcProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const stack = Stack.of(this);
 
@@ -2075,6 +2078,8 @@ export class Subnet extends Resource implements ISubnet {
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
@@ -2366,6 +2371,8 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
 
   constructor(scope: Construct, id: string, props: PublicSubnetProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   /**
@@ -2404,6 +2411,8 @@ export class PrivateSubnet extends Subnet implements IPrivateSubnet {
 
   constructor(scope: Construct, id: string, props: PrivateSubnetProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -2425,6 +2434,8 @@ class ImportedVpc extends VpcBase {
     super(scope, id, {
       region: props.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
@@ -2478,6 +2489,8 @@ class LookedUpVpc extends VpcBase {
       region: props.region,
       account: props.ownerAccountId,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
@@ -2581,6 +2594,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!attrs.routeTableId) {
       // The following looks a little weird, but comes down to:

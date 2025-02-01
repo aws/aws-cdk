@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { IFirewallDomainList } from './firewall-domain-list';
 import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Firewall Rule Group
@@ -225,6 +226,8 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
 
   constructor(scope: Construct, id: string, props: FirewallRuleGroupProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.rules = props.rules ?? [];
 

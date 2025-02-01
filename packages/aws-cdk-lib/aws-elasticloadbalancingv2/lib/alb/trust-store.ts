@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -105,6 +106,8 @@ export class TrustStore extends Resource implements ITrustStore {
         produce: () => Names.uniqueResourceName(this, { maxLength: 32 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {

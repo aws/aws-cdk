@@ -3,6 +3,7 @@ import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a JobQueue
@@ -259,6 +260,8 @@ export class JobQueue extends Resource implements IJobQueue {
     super(scope, id, {
       physicalName: props?.jobQueueName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.computeEnvironments = props?.computeEnvironments ?? [];
     this.priority = props?.priority ?? 1;

@@ -3,6 +3,7 @@ import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -141,6 +142,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {

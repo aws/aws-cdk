@@ -7,6 +7,8 @@ import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+
 /**
  * Properties for defining a new Step Functions Activity
  */
@@ -76,6 +78,8 @@ export class Activity extends Resource implements IActivity {
       physicalName: props.activityName ||
         Lazy.string({ produce: () => this.generateName() }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.encryptionConfiguration = props.encryptionConfiguration;
 
