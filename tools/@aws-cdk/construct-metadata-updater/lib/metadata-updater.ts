@@ -160,12 +160,22 @@ export class ConstructsUpdater extends MetadataUpdater {
       return;
     }
 
-    // Create the new import statement
-    sourceFile.addImportDeclaration({
+    // Find the correct insertion point (after the last import before the new one)
+    const importDeclarations = sourceFile.getImportDeclarations();
+    let insertIndex = importDeclarations.length;
+    for (let i = 0; i < importDeclarations.length; i++) {
+      const existingImport = importDeclarations[i].getModuleSpecifier().getText();
+      if (existingImport.localeCompare(relativePath) > 0) {
+        insertIndex = i;
+        break;
+      }
+    }
+
+    // Insert the new import at the appropriate position
+    sourceFile.insertImportDeclaration(insertIndex, {
       moduleSpecifier: relativePath,
       namedImports: [{ name: "addConstructMetadata" }],
     });
-
     console.log(`Added import for MetadataType in file: ${filePath} with relative path: ${relativePath}`);
 
     // Write the updated file back to disk
