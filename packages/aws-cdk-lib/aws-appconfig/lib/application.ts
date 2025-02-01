@@ -6,6 +6,7 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -433,6 +434,8 @@ export class Application extends ApplicationBase {
 
   constructor(scope: Construct, id: string, props: ApplicationProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.description = props.description;
     this.name = props.applicationName || cdk.Names.uniqueResourceName(this, {

@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.
@@ -424,6 +425,8 @@ export class GameServerGroup extends GameServerGroupBase {
     super(scope, id, {
       physicalName: props.gameServerGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!cdk.Token.isUnresolved(props.gameServerGroupName)) {
       if (props.gameServerGroupName.length > 128) {

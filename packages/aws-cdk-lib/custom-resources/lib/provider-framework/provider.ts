@@ -159,7 +159,6 @@ export interface ProviderProps {
  * Defines an AWS CloudFormation custom resource provider.
  */
 export class Provider extends Construct implements ICustomResourceProvider {
-
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
    * lifecycle operations (CREATE/UPDATE/DELETE).

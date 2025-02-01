@@ -21,7 +21,13 @@
                     "cidrBlock": "10.1.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-vpcv2-alpha-new/SubnetTest"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -109,6 +115,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
                         "vpcId": {
                           "Fn::GetAtt": [
                             "SubnetTest3296A161",

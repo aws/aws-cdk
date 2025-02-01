@@ -153,6 +153,75 @@ describe('table', () => {
     });
   });
 
+  test('with point-in-time-recovery-specification', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 4,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+            RecoveryPeriodInDays: 4,
+          },
+        },
+      ],
+    });
+  });
+
+  test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecovery: true,
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 5,
+        },
+      });
+    }).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+  });
+
+  test('recoveryPeriodInDays set out of bounds', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+  });
+
   test('with STANDARD table class', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
@@ -1183,7 +1252,6 @@ describe('table', () => {
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
-
 });
 
 describe('replica tables', () => {
@@ -2312,7 +2380,7 @@ describe('secondary indexes', () => {
     });
   });
 
-  test('with global secondary index wihtout read capacity inherits from table when billing mode is provisioned', () => {
+  test('with global secondary index without read capacity inherits from table when billing mode is provisioned', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
 
@@ -3173,5 +3241,4 @@ test('Warm Throughput test on-demand', () => {
       },
     ],
   });
-
 });

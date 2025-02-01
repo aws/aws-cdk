@@ -90,7 +90,7 @@ test('can set batchMode', () => {
   });
 });
 
-test('can set separotor', () => {
+test('can set separator', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
