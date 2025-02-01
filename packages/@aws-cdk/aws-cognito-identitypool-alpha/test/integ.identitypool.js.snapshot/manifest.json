@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "38.0.1",
   "artifacts": {
     "integ-identitypool.assets": {
       "type": "cdk:asset-manifest",
@@ -16,9 +16,10 @@
         "templateFile": "integ-identitypool.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9878ed708b3905cec265bc8f85c35d4d18478d2827955e7de76503c82cf85eda.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a419f51103122cf49e830150b633e34c0ae509e93865139f1fe532b434798eb8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
