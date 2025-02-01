@@ -53,6 +53,38 @@ describe('fromCdkApp', () => {
     // THEN
     expect(JSON.stringify(stack)).toContain('amzn-s3-demo-bucket');
   });
+
+  test('will capture error output', async () => {
+    // WHEN
+    const cx = await appFixture(toolkit, 'validation-error');
+    try {
+      await cx.produce();
+    } catch {
+      // we are just interested in the output for this test
+    }
+
+    // THEN
+    expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+      level: 'error',
+      code: 'CDK_ASSEMBLY_E1002',
+      message: expect.stringContaining('ValidationError'),
+    }));
+  });
+
+  test('will capture all output', async () => {
+    // WHEN
+    const cx = await appFixture(toolkit, 'console-output');
+    await cx.produce();
+
+    // THEN
+    ['one', 'two', 'three', 'four'].forEach((line) => {
+      expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+        level: 'info',
+        code: 'CDK_ASSEMBLY_I1001',
+        message: `line ${line}`,
+      }));
+    });
+  });
 });
 
 describe('fromAssemblyDirectory', () => {
