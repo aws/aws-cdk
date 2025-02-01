@@ -57,6 +57,55 @@ describe('Invoke Model', () => {
     });
   });
 
+  test('default settings - using JSONata', () => {
+  // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });
+
+    // WHEN
+    const task = BedrockInvokeModel.jsonata(stack, 'Invoke', {
+      model: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      body: sfn.TaskInput.fromObject({
+        prompt: 'Hello world',
+      }),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        ModelId: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':bedrock:us-turbo-1::foundation-model/anthropic.claude-instant-v1',
+            ],
+          ],
+        },
+        Body: {
+          prompt: 'Hello world',
+        },
+      },
+    });
+  });
+
   test('InvokeModel permissions are created in generated policy', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-1' } });

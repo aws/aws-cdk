@@ -754,6 +754,53 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State with JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          QueryLanguage: 'JSONata',
+          End: true,
+          Items: '{% $inputForMap %}',
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('synth is successful', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {

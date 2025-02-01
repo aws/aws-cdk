@@ -1,47 +1,20 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { State } from './state';
-import { INextable } from '../types';
+import { JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import { INextable, QueryLanguage } from '../types';
 
+/**
+ * Properties for defining a Succeed state that using JSONPath
+ */
+export interface SucceedJsonPathProps extends StateBaseProps, JsonPathCommonOptions {}
+/**
+ * Properties for defining a Succeed state that using JSONata
+ */
+export interface SucceedJsonataProps extends StateBaseProps, JsonataCommonOptions {}
 /**
  * Properties for defining a Succeed state
  */
-export interface SucceedProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default No comment
-   */
-  readonly comment?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the input to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the output to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly outputPath?: string;
-
-}
+export interface SucceedProps extends StateBaseProps, JsonPathCommonOptions, JsonataCommonOptions {}
 
 /**
  * Define a Succeed state in the state machine
@@ -49,6 +22,25 @@ export interface SucceedProps {
  * Reaching a Succeed state terminates the state execution in success.
  */
 export class Succeed extends State {
+  /**
+   * Define a Succeed state in the state machine
+   *
+   * Reaching a Succeed state terminates the state execution in success.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SucceedJsonPathProps = {}) {
+    return new Succeed(scope, id, props);
+  }
+  /**
+   * Define a Succeed state in the state machine
+   *
+   * Reaching a Succeed state terminates the state execution in success.
+   */
+  public static jsonata(scope: Construct, id: string, props: SucceedJsonataProps = {}) {
+    return new Succeed(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   public readonly endStates: INextable[] = [];
 
   constructor(scope: Construct, id: string, props: SucceedProps = {}) {
@@ -58,9 +50,10 @@ export class Succeed extends State {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(queryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.SUCCEED,
+      ...this.renderQueryLanguage(queryLanguage),
       Comment: this.comment,
       ...this.renderInputOutput(),
     };

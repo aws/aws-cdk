@@ -51,6 +51,46 @@ test('create basic model', () => {
   );
 });
 
+test('create basic model - using JSONata', () => {
+  // WHEN
+  const task = tasks.SageMakerCreateModel.jsonata(stack, 'SagemakerModel', {
+    modelName: 'MyModel',
+    primaryContainer: new tasks.ContainerDefinition({
+      image: tasks.DockerImage.fromJsonExpression('{% $Model.imageName %}'),
+      mode: tasks.Mode.SINGLE_MODEL,
+      modelS3Location: tasks.S3Location.fromJsonExpression('{% $TrainingJob.ModelArtifacts.S3ModelArtifacts %}'),
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createModel',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      ExecutionRoleArn: { 'Fn::GetAtt': ['SagemakerModelSagemakerRoleF5035084', 'Arn'] },
+      ModelName: 'MyModel',
+      PrimaryContainer: {
+        Image: '{% $Model.imageName %}',
+        ModelDataUrl: '{% $TrainingJob.ModelArtifacts.S3ModelArtifacts %}',
+        Mode: 'SingleModel',
+      },
+    },
+  });
+});
+
 test('create complex model', () => {
   // WHEN
   const vpc = new ec2.Vpc(stack, 'VPC');

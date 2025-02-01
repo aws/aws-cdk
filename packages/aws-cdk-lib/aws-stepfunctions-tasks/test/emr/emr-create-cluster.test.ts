@@ -90,6 +90,53 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   });
 });
 
+test('Create Cluster with FIRE_AND_FORGET integrationPattern - using JSONata', () => {
+  // WHEN
+  const task = EmrCreateCluster.jsonata(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+    },
+  });
+});
+
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {

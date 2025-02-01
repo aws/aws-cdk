@@ -67,6 +67,54 @@ describe('LambdaInvoke', () => {
     });
   });
 
+  test('default settings - using JSONata', () => {
+  // WHEN
+    const task = LambdaInvoke.jsonata(stack, 'Task', {
+      lambdaFunction,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      End: true,
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      Arguments: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload': '{% $states.input %}',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
+    });
+  });
+
   testDeprecated('optional settings', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {

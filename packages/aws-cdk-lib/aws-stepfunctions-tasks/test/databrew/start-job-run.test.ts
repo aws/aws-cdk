@@ -34,6 +34,38 @@ describe('Start Job Run', () => {
     });
   });
 
+  test('default settings - using JSONata', () => {
+  // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = GlueDataBrewStartJobRun.jsonata(stack, 'JobRun', {
+      name: 'jobName',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::databrew:startJobRun',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        Name: 'jobName',
+      },
+    });
+  });
+
   test('create job with input from task', () => {
     // GIVEN
     const stack = new cdk.Stack();
