@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 16 * * 2" # Every Tuesday at 10 AM PDT or 9 AM PST
+  pull_request:
+    branches:
+      - yuanhaoz/metadata_workflow # TODO, remove this
 
 jobs:
   update-analytics-metadata:
