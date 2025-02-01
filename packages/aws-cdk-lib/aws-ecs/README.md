@@ -135,7 +135,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   instanceType: new ec2.InstanceType('t2.xlarge'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
-  // machineImage: EcsOptimizedImage.amazonLinux2(),
+  // machineImage: EcsOptimizedImage.amazonLinux2Kernel510(),
   desiredCapacity: 3,
   // ... other options here ...
 });
@@ -174,7 +174,7 @@ To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `us
 declare const vpc: ec2.Vpc;
 const launchTemplate = new ec2.LaunchTemplate(this, 'ASG-LaunchTemplate', {
   instanceType: new ec2.InstanceType('t3.medium'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(),
   userData: ec2.UserData.forLinux(),
 });
 
@@ -273,7 +273,7 @@ declare const cluster: ecs.Cluster;
 cluster.addCapacity('graviton-cluster', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c6g.large'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(ecs.AmiHardwareType.ARM),
 });
 ```
 
@@ -299,7 +299,7 @@ declare const cluster: ecs.Cluster;
 cluster.addCapacity('neuron-cluster', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('inf1.xlarge'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(ecs.AmiHardwareType.NEURON),
 });
 ```
 
@@ -1546,7 +1546,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510(),
   minCapacity: 0,
   maxCapacity: 100,
 });
