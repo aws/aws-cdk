@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
@@ -311,7 +312,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     ],
     Layers: [
       {
-        Ref: 'DeployAwsCliLayer8445CB38',
+        Ref: 'awscdklambdalayerawscliAwsCliLayer437D4B14',
       },
     ],
     VpcConfig: {
@@ -820,6 +821,7 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
   // THEN
   // we expect to find only two handlers, one for each configuration
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::LayerVersion', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 256 });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
 });
@@ -852,6 +854,7 @@ test('ephemeralStorageSize can be used to specify the storage size for the deplo
   // THEN
   // we expect to find only two handlers, one for each configuration
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::LayerVersion', 1);
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     EphemeralStorage: {
       Size: 512,
@@ -1720,4 +1723,30 @@ test('outputObjectKeys default value is true', () => {
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     OutputObjectKeys: true,
   });
+});
+
+test('similar deployments share their Lambda and AwsCliLayer', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const c1 = new Construct(stack, 'Construct1');
+  const c2 = new Construct(stack, 'Construct2');
+
+  // WHEN
+  new s3deploy.BucketDeployment(c1, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: 'foo',
+  });
+  new s3deploy.BucketDeployment(c2, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: 'bar',
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::Lambda::LayerVersion', 1);
+  template.resourceCountIs('AWS::Lambda::Function', 1);
+  template.resourceCountIs('Custom::CDKBucketDeployment', 2);
 });
