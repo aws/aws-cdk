@@ -1,10 +1,11 @@
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Lazy, Resource, IResolvable, Token } from 'aws-cdk-lib/core';
+import { Lazy, Resource, IResolvable, Token, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options to add a domain to an application
@@ -66,7 +67,6 @@ export interface DomainProps extends DomainOptions {
  * An Amplify Console domain
  */
 export class Domain extends Resource {
-
   /**
    * The ARN of the domain
    *
@@ -127,15 +127,17 @@ export class Domain extends Resource {
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.subDomains = props.subDomains || [];
 
     const domainName = props.domainName || id;
     if (!Token.isUnresolved(domainName) && domainName.length > 255) {
-      throw new Error(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`);
+      throw new ValidationError(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
     }
     if (!Token.isUnresolved(domainName) && !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
-      throw new Error(`Domain name must be a valid hostname, got: ${domainName}.`);
+      throw new ValidationError(`Domain name must be a valid hostname, got: ${domainName}.`, this);
     }
 
     const domain = new CfnDomain(this, 'Resource', {

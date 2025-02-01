@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
 import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
@@ -31,6 +32,8 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     super(scope, id, {
       account: props.account,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.roleArn = props.roleArn;
     this.roleName = props.roleName;
