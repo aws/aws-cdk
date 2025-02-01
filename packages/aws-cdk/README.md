@@ -412,7 +412,15 @@ This automatically imports resources in your CDK application that represent
 unmanaged resources in your account. It reduces the manual effort of import operations and 
 avoids deployment failures due to naming conflicts with unmanaged resources in your account.
 
-Use the `--method=prepare-change-set` flag to review which resources are imported or not before deploying a changeset.
+You can also use `cdk diff` to review which resources will be imported:
+
+```console
+$ cdk diff --import-existing-resources
+```
+
+Please note that `cdk diff --import-existing-resources` only works when the stack has already been created; it will not work for a new stack that does not exist yet.
+
+You can also use the `--method=prepare-change-set` flag to review which resources are imported or not before deploying a changeset.
 You can inspect the change set created by CDK from the management console or other external tools.
 
 ```console
