@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
+import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource } from '../../core';
@@ -68,6 +69,12 @@ export abstract class EventDestination {
   }
 
   /**
+   * Use default Event Bus as event destination
+   */
+  public static defaultEventBus(): EventDestination {
+    return { useDefaultEventBus: true };
+  }
+  /**
    * A SNS topic to use as event destination
    *
    * @default - do not send events to a SNS topic
@@ -80,6 +87,13 @@ export abstract class EventDestination {
    * @default - do not send events to CloudWatch
    */
   public abstract readonly dimensions?: CloudWatchDimension[];
+
+  /**
+   * Use default Event Bus as event destination
+   *
+   * @default - do not send events to default Event bus
+   */
+  public abstract readonly useDefaultEventBus?: boolean;
 }
 
 /**
@@ -241,6 +255,12 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    let defaultEventBusArn = '';
+    if (props.destination.useDefaultEventBus) {
+      const defaultEventBus = events.EventBus.fromEventBusName(this, 'DefaultEventBus', 'default');
+      defaultEventBusArn = defaultEventBus.eventBusArn;
+    }
+
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
       configurationSetName: props.configurationSet.configurationSetName,
       eventDestination: {
@@ -257,6 +277,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
             })),
           }
           : undefined,
+        eventBridgeDestination: defaultEventBusArn ? { eventBusArn: defaultEventBusArn } : undefined,
       },
     });
 

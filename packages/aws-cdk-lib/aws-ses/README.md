@@ -160,6 +160,15 @@ myConfigurationSet.addEventDestination('ToSns', {
 })
 ```
 
+For EventBridge, only default EventBus can be used:
+```ts
+declare const myConfigurationSet: ses.ConfigurationSet;
+
+myConfigurationSet.addEventDestination('ToDefaultEventBus', {
+  destination: ses.EventDestination.defaultEventBus(),
+})
+```
+
 ### Override account-level suppression list settings
 
 You can customize account-level suppression list separately for different configuration sets by overriding it

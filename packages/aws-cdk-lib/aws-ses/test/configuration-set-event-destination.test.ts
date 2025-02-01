@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as events from '../../aws-events';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
 import { CloudWatchDimensionSource, ConfigurationSet, ConfigurationSetEventDestination, EventDestination } from '../lib';
@@ -105,3 +106,41 @@ test('cloudwatch dimensions destination', () => {
   });
 });
 
+test('event bridge destination', () => {
+  new ConfigurationSetEventDestination(stack, 'Destination', {
+    configurationSet,
+    destination: EventDestination.defaultEventBus(),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSetEventDestination', {
+    ConfigurationSetName: { Ref: 'ConfigurationSet3DD38186' },
+    EventDestination: {
+      Enabled: true,
+      EventBridgeDestination: {
+        EventBusArn: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':events:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':event-bus/default',
+          ]],
+        },
+      },
+      MatchingEventTypes: [
+        'send',
+        'reject',
+        'bounce',
+        'complaint',
+        'delivery',
+        'open',
+        'click',
+        'renderingFailure',
+        'deliveryDelay',
+        'subscription',
+      ],
+    },
+  });
+});

@@ -25,6 +25,10 @@ class TestStack extends Stack {
         defaultValue: 'no_domain',
       }]),
     });
+
+    configurationSet.addEventDestination('EventBridge', {
+      destination: ses.EventDestination.defaultEventBus(),
+    });
   }
 }
 
