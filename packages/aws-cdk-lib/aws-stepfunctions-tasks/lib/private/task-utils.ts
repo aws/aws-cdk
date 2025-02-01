@@ -1,5 +1,6 @@
 import {
   IntegrationPattern,
+  JsonPath,
 } from '../../../aws-stepfunctions';
 import { Aws } from '../../../core';
 
@@ -31,5 +32,19 @@ export function integrationResourceArn(service: string, api: string, integration
     throw new Error("Both 'service' and 'api' must be provided to build the resource ARN.");
   }
   return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
-        (integrationPattern ? resourceArnSuffix[integrationPattern] : '');
+    (integrationPattern ? resourceArnSuffix[integrationPattern] : '');
+}
+
+/**
+ * Determines if the indicated string is an JSONata expression
+ */
+export function isJsonataExpression(value: string) {
+  return /^{%(.*)%}$/.test(value);
+}
+
+/**
+ * Determines if the indicated string is an encoded JSON path or JSONata expression
+ */
+export function isJsonPathOrJsonataExpression(value: string) {
+  return JsonPath.isEncodedJsonPath(value) || isJsonataExpression(value);
 }
