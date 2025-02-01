@@ -14,6 +14,7 @@
      "Ref": "HttpApiF5A9A8A7"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   },
@@ -396,6 +397,7 @@
      "Ref": "HttpApiF5A9A8A7"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "dev"
    }
   }
