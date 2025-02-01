@@ -1,11 +1,10 @@
 name: CDK Analytics Metadata Updater
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 16 * * 2" # Every Tuesday at 10 AM PDT or 9 AM PST
   pull_request:
     branches:
       - yuanhaoz/metadata_workflow # TODO, remove this
+      - v2-release
 
 jobs:
   update-analytics-metadata:
@@ -16,6 +15,9 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -34,27 +36,19 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git add .
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "changes=true" >> $GITHUB_ENV
+            echo "changes=true" >> $GITHUB_OUTPUT
           else
-            echo "changes=false" >> $GITHUB_ENV
+            echo "changes=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          # Git commit details
-          branch: automation/analytics-metadata-update
-          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
-          commit-message: |-
-            update analytics metadata information 
-          # Pull Request details
-          title: "chore: update analytics metadata information"
-          body: |-
-            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
-          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test,pr-linter/exempt-codecov
-          team-reviewers: aws-cdk-team
-          # Github prevents further Github actions to be run if the default Github token is used.
-          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit & Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git add .
+          git commit -m "chore: update lambda runtime integration tests"
+          git push origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
