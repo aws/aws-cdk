@@ -1112,3 +1112,66 @@ userPool.addGroup('AnotherUserPoolGroup', {
   groupName: 'another-group-name'
 });
 ```
+
+### Analytics Configuration
+
+User pool clients can be configured with Amazon Pinpoint analytics to collect user activity metrics. This integration enables you to track user engagement and campaign effectiveness.
+
+📝 Note: Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+
+The following example shows how to configure analytics for a user pool client:
+
+#### When specifying an Application ARN
+
+If you specify the `applicationArn` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // The ARN of your Pinpoint project
+    applicationArn: pinpointApp.attrArn,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```
+
+#### When specifying an Application ID, External ID, and Role ARN
+
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.  
+(In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
+
+Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project ID
+    applicationId: pinpointApp.ref,
+
+    // External ID for the IAM role
+    externalId: "sample-external-id",
+
+    // IAM role that Cognito can assume to publish to Pinpoint
+    role: pinpointRole,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```

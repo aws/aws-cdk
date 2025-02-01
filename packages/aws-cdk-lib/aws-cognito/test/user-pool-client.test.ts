@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
+import { Role, ServicePrincipal } from '../../aws-iam';
 import { Stack, Duration } from '../../core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes, AnalyticsConfiguration } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -1339,5 +1340,135 @@ describe('User Pool Client', () => {
       },
     }),
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
+  });
+
+  describe('analytics configuration', () => {
+    test('analytics configuration can be added to userPoolClients by specifying applicationArn', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      new UserPoolClient(stack, 'Client', {
+        userPool: pool,
+        analytics: {
+          applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          UserDataShared: true,
+        },
+      });
+    });
+
+    test('analytics configuration can be added to userPoolClients by specifying applicationId, externalId, and role', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
+
+      // WHEN
+      new UserPoolClient(stack, 'Client', {
+        userPool: pool,
+        analytics: {
+          applicationId: '12345678-1234-1234-1234-123456789012',
+          externalId: 'sample-external-id',
+          role,
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationId: '12345678-1234-1234-1234-123456789012',
+          ExternalId: 'sample-external-id',
+          RoleArn: stack.resolve(role.roleArn),
+          UserDataShared: true,
+        },
+      });
+    });
+
+    test('throws an error when applicationArn is not an ARN', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const createUserPoolClient = () => new UserPoolClient(stack, 'Client', {
+        userPool: pool,
+        analytics: {
+          applicationArn: 'invalid-arn',
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      expect(() => createUserPoolClient()).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
+    });
+
+    test('throws an error when both applicationArn and applicationId are specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      const createUserPoolClient = () => new UserPoolClient(stack, 'PoolClient', {
+        userPool: pool,
+        analytics: {
+          applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          applicationId: '12345678-1234-1234-1234-123456789012',
+        },
+      });
+
+      // THEN
+      expect(() => createUserPoolClient()).toThrow('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.');
+    });
+
+    test('throws an error when either applicationId, externalId or role is not specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
+
+      // WHEN
+      const createUserPoolClient = (id: string, analytics: AnalyticsConfiguration) => new UserPoolClient(stack, id, {
+        userPool: pool,
+        analytics,
+      });
+
+      // THEN
+      expect(
+        () =>
+          createUserPoolClient('PoolClient1', {
+            applicationId: '12345678-1234-1234-1234-123456789012',
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+
+      expect(
+        () =>
+          createUserPoolClient('PoolClient2', {
+            externalId: 'sample-external-id',
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+
+      expect(
+        () =>
+          createUserPoolClient('PoolClient3', {
+            role,
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+    });
   });
 });
