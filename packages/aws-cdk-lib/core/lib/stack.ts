@@ -38,7 +38,6 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 const MAX_RESOURCES = 500;
 
-const STRING_LIST_REFERENCE_DELIMITER = '||';
 export interface StackProps {
   /**
    * A description of the stack.
@@ -1781,7 +1780,7 @@ interface StackDependency {
 }
 
 interface ResolvedExport {
-  exportable: Reference;
+  exportable: Intrinsic;
   exportsScope: Construct;
   id: string;
   exportName: string;
@@ -1831,8 +1830,10 @@ import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable } from './private/refs';
+import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
-import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { makeUniqueResourceName } from './private/unique-resource-name';
+import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { Intrinsic } from './private/intrinsic';
 /* eslint-enable import/order */
