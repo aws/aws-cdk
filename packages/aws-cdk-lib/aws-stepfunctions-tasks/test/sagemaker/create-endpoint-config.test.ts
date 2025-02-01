@@ -51,6 +51,47 @@ test('create basic endpoint config', () => {
   });
 });
 
+test('create basic endpoint config - using JSONata', () => {
+  // WHEN
+  const task = tasks.SageMakerCreateEndpointConfig.jsonata(stack, 'SagemakerEndpointConfig', {
+    endpointConfigName: 'MyEndpointConfig',
+    productionVariants: [{
+      initialInstanceCount: 2,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+      modelName: 'MyModel',
+      variantName: 'awesome-variant',
+    }],
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createEndpointConfig',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      EndpointConfigName: 'MyEndpointConfig',
+      ProductionVariants: [{
+        InitialInstanceCount: 2,
+        InstanceType: 'ml.m5.xlarge',
+        ModelName: 'MyModel',
+        VariantName: 'awesome-variant',
+      }],
+    },
+  });
+});
+
 test('create complex endpoint config', () => {
   // WHEN
   const key = new kms.Key(stack, 'Key');

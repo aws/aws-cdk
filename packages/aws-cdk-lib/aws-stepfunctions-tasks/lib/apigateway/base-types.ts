@@ -41,7 +41,7 @@ export enum AuthType {
 /**
  * Base CallApiGatewayEdnpoint Task Props
  */
-export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps {
+export interface CallApiGatewayEndpointBaseOptions {
   /**
    * Http method for the API
    */
@@ -77,3 +77,18 @@ export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps 
    */
   readonly authType?: AuthType;
 }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointJsonPathBaseProps extends sfn.TaskStateJsonPathBaseProps, CallApiGatewayEndpointBaseOptions { }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointJsonataBaseProps extends sfn.TaskStateJsonataBaseProps, CallApiGatewayEndpointBaseOptions { }
+
+/**
+ * Base CallApiGatewayEndpoint Task Props
+ */
+export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps, CallApiGatewayEndpointBaseOptions { }
