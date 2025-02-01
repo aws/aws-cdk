@@ -2,7 +2,7 @@ name: CDK Analytics Metadata Updater
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 16 * * 2" # Every week at 10 AM PDT or 9 AM PST
+    - cron: "0 16 * * 2" # Every Tuesday at 10 AM PDT or 9 AM PST
 
 jobs:
   update-analytics-metadata:
