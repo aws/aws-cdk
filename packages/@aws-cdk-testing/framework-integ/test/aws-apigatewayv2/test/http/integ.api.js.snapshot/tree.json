@@ -42,6 +42,7 @@
                           "Ref": "HttpApiF5A9A8A7"
                         },
                         "autoDeploy": true,
+                        "defaultRouteSettings": {},
                         "stageName": "$default"
                       }
                     },
@@ -53,13 +54,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {
@@ -97,7 +100,7 @@
                 "path": "http-api/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -143,7 +146,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

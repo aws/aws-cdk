@@ -21,7 +21,10 @@
                     "path": "integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -122,13 +125,29 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -148,7 +167,8 @@
                     "path": "integ-apigwv2-lambda-connect-integration/Connect Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -194,7 +214,17 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "functionName": "*",
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*",
+                  "timeout": "*",
+                  "environment": "*"
+                }
+              ]
             }
           },
           "Disconnect Function": {
@@ -210,7 +240,10 @@
                     "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -311,13 +344,29 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -337,7 +386,8 @@
                     "path": "integ-apigwv2-lambda-connect-integration/Disconnect Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -383,7 +433,17 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "functionName": "*",
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*",
+                  "timeout": "*",
+                  "environment": "*"
+                }
+              ]
             }
           },
           "WebSocket Log Table": {
@@ -425,13 +485,26 @@
                 "path": "integ-apigwv2-lambda-connect-integration/WebSocket Log Table/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "tableName": "*",
+                  "partitionKey": {
+                    "name": "*",
+                    "type": "S"
+                  },
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "WebSocket API": {
@@ -549,8 +622,11 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -584,8 +660,11 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "$disconnect-Route": {
@@ -683,8 +762,11 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -718,14 +800,20 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketApi",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Production Stage": {
@@ -742,6 +830,7 @@
                       "Ref": "WebSocketAPIDA75128A"
                     },
                     "autoDeploy": true,
+                    "defaultRouteSettings": {},
                     "stageName": "prod"
                   }
                 },
@@ -752,8 +841,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.WebSocketStage",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "BootstrapVersion": {
@@ -791,7 +883,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -837,7 +929,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },

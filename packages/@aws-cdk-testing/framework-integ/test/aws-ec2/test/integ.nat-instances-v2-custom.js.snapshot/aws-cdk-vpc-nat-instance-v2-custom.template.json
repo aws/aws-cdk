@@ -977,6 +977,7 @@
      "Ref": "HttpProxyPrivateApiA55E154D"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   }

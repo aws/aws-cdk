@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-alb-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee2e351e728b8f102f3818cca3c6c4ff8961914b881abd50ae295b5828ecee4a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/35a8192707de3f9129231c4566045ac0060fe8d603f9f65666e8857fffe3213d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,42 @@
         "integ-alb-integration.assets"
       ],
       "metadata": {
+        "/integ-alb-integration/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": "*"
+            }
+          }
+        ],
         "/integ-alb-integration/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/integ-alb-integration/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-alb-integration/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +108,30 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/integ-alb-integration/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-alb-integration/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +168,30 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/integ-alb-integration/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-alb-integration/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +214,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/integ-alb-integration/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-alb-integration/VPC/PrivateSubnet2/Subnet": [
@@ -172,10 +276,26 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/integ-alb-integration/lb": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-alb-integration/lb/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lbA35910C5"
+          }
+        ],
+        "/integ-alb-integration/lb/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": "*"
+            }
           }
         ],
         "/integ-alb-integration/lb/SecurityGroup/Resource": [
@@ -185,6 +305,10 @@
           }
         ],
         "/integ-alb-integration/lb/listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
           {
             "type": "aws:cdk:warning",
             "data": "A default Action already existed on this Listener and was replaced. Configure exactly one default Action. [ack: @aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced]"
@@ -208,10 +332,28 @@
             "data": "lblistenertargetGroupC7489D1E"
           }
         ],
+        "/integ-alb-integration/HttpProxyPrivateApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-alb-integration/HttpProxyPrivateApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiA55E154D"
+          }
+        ],
+        "/integ-alb-integration/HttpProxyPrivateApi/DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-alb-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-alb-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration/Resource": [
@@ -226,10 +368,22 @@
             "data": "HttpProxyPrivateApiDefaultRoute1BDCA252"
           }
         ],
+        "/integ-alb-integration/HttpProxyPrivateApi/VpcLink-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-alb-integration/HttpProxyPrivateApi/VpcLink-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiVpcLink190366CAE"
+          }
+        ],
+        "/integ-alb-integration/HttpProxyPrivateApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-alb-integration/HttpProxyPrivateApi/DefaultStage/Resource": [
@@ -276,7 +430,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62a908350bb5534d9d1c1edeafca72b4fc7c5f7021887f16f070f68b43f311e8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f551ba7d873f2329e7bd507579b3af072ae997c81bdc74e51b29a7325eb56394.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -293,6 +447,12 @@
         "integalbintegrationtestDefaultTestDeployAssert91001477.assets"
       ],
       "metadata": {
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/HttpApiCalla783627932e25f8a930fccc254ea4a09/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-alb-integration-test/DefaultTest/DeployAssert/HttpApiCalla783627932e25f8a930fccc254ea4a09/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -321,6 +481,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-alb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-alb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/Default/Default": [

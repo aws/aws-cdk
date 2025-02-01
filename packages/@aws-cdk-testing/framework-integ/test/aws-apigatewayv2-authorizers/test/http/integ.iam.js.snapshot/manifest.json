@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "IntegApiGatewayV2Iam.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegApiGatewayV2Iam.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b46d250c47897b59c971b488d6f6bb6f29b101efdb994a0f5e4e547b8dafb886.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff5ed636e3ed0b48493510c93523f20602d00adcfc5dde5531ed8205ea12d2f9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,22 @@
         "IntegApiGatewayV2Iam.assets"
       ],
       "metadata": {
+        "/IntegApiGatewayV2Iam/User": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IntegApiGatewayV2Iam/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "User00B015A1"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/User/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IntegApiGatewayV2Iam/User/DefaultPolicy/Resource": [
@@ -45,10 +58,24 @@
             "data": "UserDefaultPolicy1F97781E"
           }
         ],
+        "/IntegApiGatewayV2Iam/UserAccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "user": "*"
+            }
+          }
+        ],
         "/IntegApiGatewayV2Iam/UserAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserAccessEC42ADF7"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/Resource": [
@@ -57,10 +84,28 @@
             "data": "HttpApiF5A9A8A7"
           }
         ],
+        "/IntegApiGatewayV2Iam/HttpApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/IntegApiGatewayV2Iam/HttpApi/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiDefaultStage3EEB07D6"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--foo": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--foo/examplecom/Resource": [
@@ -73,6 +118,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpApiANYfooD178456F"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/IntegApiGatewayV2Iam/HttpApi/ANY--books--{book}/examplecom/Resource": [

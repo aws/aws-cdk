@@ -30,7 +30,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "fifo": "*",
+                  "queueName": "*"
+                }
+              ]
             }
           },
           "webSocketApi": {
@@ -119,7 +125,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -154,13 +163,19 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "DevStage": {
@@ -177,6 +192,7 @@
                       "Ref": "webSocketApi5AB89700"
                     },
                     "autoDeploy": true,
+                    "defaultRouteSettings": {},
                     "stageName": "dev"
                   }
                 },
@@ -188,7 +204,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "webSocketApiRole": {
@@ -200,7 +219,10 @@
                 "path": "integ-aws-websocket-sqs-integration/webSocketApiRole/ImportwebSocketApiRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -269,13 +291,24 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                }
+              ]
             }
           },
           "BootstrapVersion": {
@@ -313,7 +346,7 @@
                 "path": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -359,7 +392,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

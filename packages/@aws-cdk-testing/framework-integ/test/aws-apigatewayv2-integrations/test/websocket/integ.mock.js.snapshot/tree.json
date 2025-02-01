@@ -57,7 +57,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -92,7 +95,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "sendmessage-Route": {
@@ -128,7 +134,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -184,13 +193,19 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketRoute",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "mystage": {
@@ -207,6 +222,7 @@
                       "Ref": "mywsapi32E6CE11"
                     },
                     "autoDeploy": true,
+                    "defaultRouteSettings": {},
                     "stageName": "dev"
                   }
                 },
@@ -218,7 +234,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ApiEndpoint": {
@@ -264,7 +283,7 @@
                 "path": "apigatewayv2-mock-integration-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -310,7 +329,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-nlb-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0bc0237a216225de4f1a4941417a6df200d0633a5e73d4cd5b402dfe6609c99e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01d2f1ffc4d4dd8fa6a78e50ad286fc898e3d2cc7e2a12b6dd01b52f0b76aa38.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,42 @@
         "integ-nlb-integration.assets"
       ],
       "metadata": {
+        "/integ-nlb-integration/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": "*"
+            }
+          }
+        ],
         "/integ-nlb-integration/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/integ-nlb-integration/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-nlb-integration/VPC/PublicSubnet1/Subnet": [
@@ -76,6 +108,30 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/integ-nlb-integration/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-nlb-integration/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +168,30 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/integ-nlb-integration/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-nlb-integration/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +214,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/integ-nlb-integration/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-nlb-integration/VPC/PrivateSubnet2/Subnet": [
@@ -172,10 +276,22 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/integ-nlb-integration/lb": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-nlb-integration/lb/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "lbA35910C5"
+          }
+        ],
+        "/integ-nlb-integration/lb/listener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-nlb-integration/lb/listener/Resource": [
@@ -196,10 +312,28 @@
             "data": "lblistenertargetGroupC7489D1E"
           }
         ],
+        "/integ-nlb-integration/HttpProxyPrivateApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-nlb-integration/HttpProxyPrivateApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiA55E154D"
+          }
+        ],
+        "/integ-nlb-integration/HttpProxyPrivateApi/DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-nlb-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-nlb-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration/Resource": [
@@ -214,10 +348,22 @@
             "data": "HttpProxyPrivateApiDefaultRoute1BDCA252"
           }
         ],
+        "/integ-nlb-integration/HttpProxyPrivateApi/VpcLink-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-nlb-integration/HttpProxyPrivateApi/VpcLink-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiVpcLink190366CAE"
+          }
+        ],
+        "/integ-nlb-integration/HttpProxyPrivateApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-nlb-integration/HttpProxyPrivateApi/DefaultStage/Resource": [
@@ -264,7 +410,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a161d21bc9931eb8ae1a9705837051a05e1a381ce3dc9f6a14506078a6c357de.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f68c80cb34623f2854830b5cdffb9e712d35fba1921061eb86c67f9fe9c8d33f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -281,6 +427,12 @@
         "integnlbintegrationtestDefaultTestDeployAssert2961C4CC.assets"
       ],
       "metadata": {
+        "/integ-nlb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-nlb-integration-test/DefaultTest/DeployAssert/AwsApiCallApiGatewayV2getIntegrationsc12e4a027611445945e507648d582654/Default/Default": [
           {
             "type": "aws:cdk:logicalId",

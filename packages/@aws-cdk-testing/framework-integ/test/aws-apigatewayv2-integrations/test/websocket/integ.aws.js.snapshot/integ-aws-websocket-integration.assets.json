@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "files": {
-    "636fdd026b7f14567bc975abac73dfbac55058665c31d090375174adc715aab5": {
+    "9da13880bc3dca3cd76d543784db37de564b95c71e948a9a18a202c3211f0b7d": {
       "source": {
         "path": "integ-aws-websocket-integration.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "636fdd026b7f14567bc975abac73dfbac55058665c31d090375174adc715aab5.json",
+          "objectKey": "9da13880bc3dca3cd76d543784db37de564b95c71e948a9a18a202c3211f0b7d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

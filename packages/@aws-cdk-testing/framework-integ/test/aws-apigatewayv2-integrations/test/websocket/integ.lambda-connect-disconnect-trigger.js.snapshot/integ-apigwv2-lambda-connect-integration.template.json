@@ -429,6 +429,7 @@
      "Ref": "WebSocketAPIDA75128A"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "prod"
    }
   }

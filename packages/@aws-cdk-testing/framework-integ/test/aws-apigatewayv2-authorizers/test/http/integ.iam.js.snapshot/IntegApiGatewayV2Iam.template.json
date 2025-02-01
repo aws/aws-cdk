@@ -94,8 +94,9 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "StageName": "$default",
-    "AutoDeploy": true
+    "AutoDeploy": true,
+    "DefaultRouteSettings": {},
+    "StageName": "$default"
    }
   },
   "HttpApiANYfooexamplecom903F7A9F": {
@@ -104,8 +105,8 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "IntegrationType": "HTTP_PROXY",
     "IntegrationMethod": "GET",
+    "IntegrationType": "HTTP_PROXY",
     "IntegrationUri": "https://www.example.com/",
     "PayloadFormatVersion": "1.0"
    }
@@ -116,8 +117,8 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "RouteKey": "ANY /foo",
     "AuthorizationType": "AWS_IAM",
+    "RouteKey": "ANY /foo",
     "Target": {
      "Fn::Join": [
       "",
@@ -137,8 +138,8 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "IntegrationType": "HTTP_PROXY",
     "IntegrationMethod": "GET",
+    "IntegrationType": "HTTP_PROXY",
     "IntegrationUri": "https://www.example.com/",
     "PayloadFormatVersion": "1.0"
    }
@@ -149,8 +150,8 @@
     "ApiId": {
      "Ref": "HttpApiF5A9A8A7"
     },
-    "RouteKey": "ANY /books/{book}",
     "AuthorizationType": "AWS_IAM",
+    "RouteKey": "ANY /books/{book}",
     "Target": {
      "Fn::Join": [
       "",

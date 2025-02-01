@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "39.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "integ-service-discovery-integration.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-service-discovery-integration.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46ad1c04ffa4e5d9f049d190ba62f99576b12bceab7128aceac621f18b07f717.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a62ca1eff840bce4f9d74307f8c748ecc6c4d09431fa6f96d1998dfe0c40bf9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,10 +34,42 @@
         "integ-service-discovery-integration.assets"
       ],
       "metadata": {
+        "/integ-service-discovery-integration/VPC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "restrictDefaultSecurityGroup": "*"
+            }
+          }
+        ],
         "/integ-service-discovery-integration/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/integ-service-discovery-integration/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-service-discovery-integration/VPC/PublicSubnet1/Subnet": [
@@ -81,6 +108,30 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
+        "/integ-service-discovery-integration/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-service-discovery-integration/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -117,6 +168,30 @@
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
+        "/integ-service-discovery-integration/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          }
+        ],
         "/integ-service-discovery-integration/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -139,6 +214,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/integ-service-discovery-integration/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": "*",
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
           }
         ],
         "/integ-service-discovery-integration/VPC/PrivateSubnet2/Subnet": [
@@ -177,10 +276,25 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/integ-service-discovery-integration/VpcLink": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-service-discovery-integration/VpcLink/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcLink42ED6FF0"
+          }
+        ],
+        "/integ-service-discovery-integration/Namespace": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "name": "*",
+              "vpc": "*"
+            }
           }
         ],
         "/integ-service-discovery-integration/Namespace/Resource": [
@@ -189,16 +303,42 @@
             "data": "Namespace9B63B8C8"
           }
         ],
+        "/integ-service-discovery-integration/Namespace/Service": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "namespace": "*"
+            }
+          }
+        ],
         "/integ-service-discovery-integration/Namespace/Service/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NamespaceServiceCABDF534"
           }
         ],
+        "/integ-service-discovery-integration/HttpProxyPrivateApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-service-discovery-integration/HttpProxyPrivateApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiA55E154D"
+          }
+        ],
+        "/integ-service-discovery-integration/HttpProxyPrivateApi/DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-service-discovery-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-service-discovery-integration/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration/Resource": [
@@ -211,6 +351,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "HttpProxyPrivateApiDefaultRoute1BDCA252"
+          }
+        ],
+        "/integ-service-discovery-integration/HttpProxyPrivateApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-service-discovery-integration/HttpProxyPrivateApi/DefaultStage/Resource": [
@@ -239,6 +385,12 @@
         ]
       },
       "displayName": "integ-service-discovery-integration"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

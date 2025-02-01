@@ -23,8 +23,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
                 }
               },
               "DefaultStage": {
@@ -41,18 +41,22 @@
                           "Ref": "testapigwv2addsubrouteintegration74634536"
                         },
                         "autoDeploy": true,
+                        "defaultRouteSettings": {},
                         "stageName": "$default"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--firstroute": {
@@ -83,14 +87,17 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "my-lambda-integration-Permission": {
@@ -134,8 +141,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -163,14 +170,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--firstroute--subroute": {
@@ -218,8 +228,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -247,14 +257,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--secondroute": {
@@ -285,14 +298,17 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "my-referenced-lambda-integration-Permission": {
@@ -336,8 +352,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -365,14 +381,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--secondroute--subroute": {
@@ -420,8 +439,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -449,14 +468,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--thirdroute": {
@@ -501,14 +523,17 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "my-referenced-lambda-integration-Permission": {
@@ -566,8 +591,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -595,14 +620,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--thirdroute--subroute": {
@@ -664,8 +692,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -693,20 +721,26 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "first-lambda-function": {
@@ -721,8 +755,11 @@
                     "id": "ImportServiceRole",
                     "path": "integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -760,14 +797,27 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -790,14 +840,21 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*"
+                }
+              ]
             }
           },
           "second-lambda-function": {
@@ -812,8 +869,11 @@
                     "id": "ImportServiceRole",
                     "path": "integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -851,14 +911,27 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -881,22 +954,30 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*"
+                }
+              ]
             }
           },
           "Referenced-Lambda-Attributes": {
             "id": "Referenced-Lambda-Attributes",
             "path": "integ-lambda-add-subroute-integration/Referenced-Lambda-Attributes",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "third-lambda-function": {
@@ -911,8 +992,11 @@
                     "id": "ImportServiceRole",
                     "path": "integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -950,14 +1034,27 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -981,22 +1078,31 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*",
+                  "functionName": "*"
+                }
+              ]
             }
           },
           "Referenced-Lambda-Name": {
             "id": "Referenced-Lambda-Name",
             "path": "integ-lambda-add-subroute-integration/Referenced-Lambda-Name",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "Exports": {
@@ -1007,36 +1113,36 @@
                 "id": "Output{\"Fn::GetAtt\":[\"testapigwv2addsubrouteintegration74634536\",\"ApiEndpoint\"]}",
                 "path": "integ-lambda-add-subroute-integration/Exports/Output{\"Fn::GetAtt\":[\"testapigwv2addsubrouteintegration74634536\",\"ApiEndpoint\"]}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-lambda-add-subroute-integration/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "integ-lambda-add-subroute-integration/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "Integ": {
@@ -1052,7 +1158,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1072,7 +1178,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall7dacc083253f26a999a4913954f49a9a/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1089,22 +1195,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall7dacc083253f26a999a4913954f49a9a/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCall7dacc083253f26a999a4913954f49a9a/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1121,30 +1230,38 @@
                         "id": "Staging",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "Integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7": {
@@ -1160,7 +1277,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1177,22 +1294,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1214,7 +1334,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallb05bdbffdf1026883c48a2ba9aefeb87/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1231,22 +1351,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallb05bdbffdf1026883c48a2ba9aefeb87/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCallb05bdbffdf1026883c48a2ba9aefeb87/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1268,7 +1391,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall15aab15a91ac373366ca7a735ab6c703/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1285,22 +1408,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall15aab15a91ac373366ca7a735ab6c703/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCall15aab15a91ac373366ca7a735ab6c703/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1322,7 +1448,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallaf823e6c0ce90f79da08c1df48bb46a9/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1339,22 +1465,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCallaf823e6c0ce90f79da08c1df48bb46a9/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCallaf823e6c0ce90f79da08c1df48bb46a9/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1376,7 +1505,7 @@
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall2790ea0c1d011a803e7486fa06839fe8/HttpProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -1393,22 +1522,25 @@
                             "id": "Default",
                             "path": "Integ/DefaultTest/DeployAssert/HttpApiCall2790ea0c1d011a803e7486fa06839fe8/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "Integ/DefaultTest/DeployAssert/HttpApiCall2790ea0c1d011a803e7486fa06839fe8/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -1421,22 +1553,22 @@
                     "id": "BootstrapVersion",
                     "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -1456,13 +1588,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.2.70"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

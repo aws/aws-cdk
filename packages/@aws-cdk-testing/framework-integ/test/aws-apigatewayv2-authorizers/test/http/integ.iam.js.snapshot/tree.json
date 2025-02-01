@@ -109,13 +109,19 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.User",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "UserAccess": {
@@ -141,7 +147,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.AccessKey",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "user": "*"
+                }
+              ]
             }
           },
           "HttpApi": {
@@ -176,8 +187,9 @@
                         "apiId": {
                           "Ref": "HttpApiF5A9A8A7"
                         },
-                        "stageName": "$default",
-                        "autoDeploy": true
+                        "autoDeploy": true,
+                        "defaultRouteSettings": {},
+                        "stageName": "$default"
                       }
                     },
                     "constructInfo": {
@@ -187,8 +199,11 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "ANY--foo": {
@@ -208,8 +223,8 @@
                             "apiId": {
                               "Ref": "HttpApiF5A9A8A7"
                             },
-                            "integrationType": "HTTP_PROXY",
                             "integrationMethod": "GET",
+                            "integrationType": "HTTP_PROXY",
                             "integrationUri": "https://www.example.com/",
                             "payloadFormatVersion": "1.0"
                           }
@@ -221,8 +236,11 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -234,8 +252,8 @@
                         "apiId": {
                           "Ref": "HttpApiF5A9A8A7"
                         },
-                        "routeKey": "ANY /foo",
                         "authorizationType": "AWS_IAM",
+                        "routeKey": "ANY /foo",
                         "target": {
                           "Fn::Join": [
                             "",
@@ -256,8 +274,11 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "ANY--books--{book}": {
@@ -277,8 +298,8 @@
                             "apiId": {
                               "Ref": "HttpApiF5A9A8A7"
                             },
-                            "integrationType": "HTTP_PROXY",
                             "integrationMethod": "GET",
+                            "integrationType": "HTTP_PROXY",
                             "integrationUri": "https://www.example.com/",
                             "payloadFormatVersion": "1.0"
                           }
@@ -290,8 +311,11 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
-                      "version": "0.0.0"
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -303,8 +327,8 @@
                         "apiId": {
                           "Ref": "HttpApiF5A9A8A7"
                         },
-                        "routeKey": "ANY /books/{book}",
                         "authorizationType": "AWS_IAM",
+                        "routeKey": "ANY /books/{book}",
                         "target": {
                           "Fn::Join": [
                             "",
@@ -325,14 +349,20 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "API": {
@@ -394,7 +424,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.4.2"
         }
       }
     },

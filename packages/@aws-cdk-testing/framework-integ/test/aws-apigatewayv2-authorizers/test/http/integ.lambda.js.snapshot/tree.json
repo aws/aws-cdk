@@ -21,7 +21,10 @@
                     "path": "AuthorizerInteg/auth-function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -66,7 +69,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -86,7 +102,8 @@
                     "path": "AuthorizerInteg/auth-function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -125,7 +142,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*"
+                }
+              ]
             }
           },
           "MyHttpApi": {
@@ -161,6 +185,7 @@
                           "Ref": "MyHttpApi8AEAAC21"
                         },
                         "autoDeploy": true,
+                        "defaultRouteSettings": {},
                         "stageName": "$default"
                       }
                     },
@@ -172,7 +197,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "GET--": {
@@ -210,7 +238,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "RootIntegration-Permission": {
@@ -293,7 +324,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "LambdaAuthorizer": {
@@ -350,7 +384,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission": {
@@ -404,7 +441,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "MyHttpApiWithDefaultAuthorizer": {
@@ -440,6 +480,7 @@
                           "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
                         },
                         "autoDeploy": true,
+                        "defaultRouteSettings": {},
                         "stageName": "$default"
                       }
                     },
@@ -451,7 +492,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "LambdaDefaultAuthorizer": {
@@ -508,7 +552,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpAuthorizer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "AuthorizerIntegMyHttpApiWithDefaultAuthorizerLambdaDefaultAuthorizer1BC6EA35-Permission": {
@@ -562,7 +609,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "lambda": {
@@ -578,7 +628,10 @@
                     "path": "AuthorizerInteg/lambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -623,7 +676,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -643,7 +709,8 @@
                     "path": "AuthorizerInteg/lambda/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -682,7 +749,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*"
+                }
+              ]
             }
           },
           "Route": {
@@ -720,7 +794,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "RootIntegration-Permission": {
@@ -803,7 +880,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "URL": {
@@ -865,7 +945,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

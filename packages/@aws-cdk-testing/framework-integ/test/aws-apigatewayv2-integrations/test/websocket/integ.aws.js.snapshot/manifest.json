@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-aws-websocket-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/636fdd026b7f14567bc975abac73dfbac55058665c31d090375174adc715aab5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9da13880bc3dca3cd76d543784db37de564b95c71e948a9a18a202c3211f0b7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,6 +36,18 @@
       "metadata": {
         "/integ-aws-websocket-integration/MyTable": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "billingMode": "PAY_PER_REQUEST",
+              "removalPolicy": "destroy"
+            }
+          },
+          {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
               "Ref": "MyTable794EDED1"
@@ -48,16 +60,62 @@
             "data": "MyTable794EDED1"
           }
         ],
+        "/integ-aws-websocket-integration/MyTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-aws-websocket-integration/ApiGatewayRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-aws-websocket-integration/ApiGatewayRole/ImportApiGatewayRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-integration/ApiGatewayRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiGatewayRoleD2518903"
           }
         ],
+        "/integ-aws-websocket-integration/mywsapi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-integration/mywsapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapi32E6CE11"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/$default-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/$default-Route/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-aws-websocket-integration/mywsapi/$default-Route/DefaultIntegration/Resource": [
@@ -72,6 +130,18 @@
             "data": "mywsapidefaultRouteE9382DF8"
           }
         ],
+        "/integ-aws-websocket-integration/mywsapi/$connect-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/$connect-Route/DynamodbPutItem": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-integration/mywsapi/$connect-Route/DynamodbPutItem/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -82,6 +152,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapiconnectRoute45A0ED6A"
+          }
+        ],
+        "/integ-aws-websocket-integration/DevStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-aws-websocket-integration/DevStage/Resource": [

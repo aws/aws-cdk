@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-aws-websocket-sqs-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d180cf28b233d302bb39a6b0f591e18057775009ad9c2cf014d786e425cd95f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1145f78b7e113d91f8f6271834f958a7084f950b52047e07cda6a54c493073b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,43 @@
         "integ-aws-websocket-sqs-integration.assets"
       ],
       "metadata": {
+        "/integ-aws-websocket-sqs-integration/MessageSQSQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "fifo": "*",
+              "queueName": "*"
+            }
+          }
+        ],
         "/integ-aws-websocket-sqs-integration/MessageSQSQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MessageSQSQueueF7E656B7"
           }
         ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-sqs-integration/webSocketApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "webSocketApi5AB89700"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi/$default-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/SQSSendMessage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/SQSSendMessage/Resource": [
@@ -58,16 +85,45 @@
             "data": "webSocketApidefaultRoute749519EC"
           }
         ],
+        "/integ-aws-websocket-sqs-integration/DevStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-sqs-integration/DevStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DevStage520A913F"
           }
         ],
+        "/integ-aws-websocket-sqs-integration/webSocketApiRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApiRole/ImportwebSocketApiRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-aws-websocket-sqs-integration/webSocketApiRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "webSocketApiRoleE85311F3"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApiRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-aws-websocket-sqs-integration/webSocketApiRole/DefaultPolicy/Resource": [
