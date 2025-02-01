@@ -31,6 +31,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -144,7 +145,7 @@ export enum LoggingFormat {
 export enum RecursiveLoop {
   /**
    * Allows the recursive loop to happen and does not terminate it.
-  */
+   */
   ALLOW = 'Allow',
   /**
    * Terminates the recursive loop.
@@ -354,11 +355,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-  * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
-  *
-  * @default - No snapstart
-  */
+   * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   *
+   * @default - No snapstart
+   */
   readonly snapStart?: SnapStartConf;
 
   /**
@@ -562,11 +563,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly loggingFormat?: LoggingFormat;
 
   /**
-  * Sets the Recursive Loop Protection for Lambda Function.
-  * It lets Lambda detect and terminate unintended recursive loops.
-  *
-  * @default RecursiveLoop.Terminate
-  */
+   * Sets the Recursive Loop Protection for Lambda Function.
+   * It lets Lambda detect and terminate unintended recursive loops.
+   *
+   * @default RecursiveLoop.Terminate
+   */
   readonly recursiveLoop?: RecursiveLoop;
 
   /**
@@ -914,6 +915,8 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.functionName && !Token.isUnresolved(props.functionName)) {
       if (props.functionName.length > 64) {

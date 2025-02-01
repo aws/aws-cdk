@@ -5,6 +5,7 @@ import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
 import { region_info } from 'aws-cdk-lib';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Additional props needed for secondary Address
@@ -310,9 +311,9 @@ export class VpcV2 extends VpcV2Base {
    */
   public static fromVpcV2Attributes(scope: Construct, id: string, attrs: VpcV2Attributes): IVpcV2 {
     /**
-    * Internal class to allow users to import VPC
-    * @internal
-    */
+     * Internal class to allow users to import VPC
+     * @internal
+     */
     class ImportedVpcV2 extends VpcV2Base {
       public readonly vpcId: string;
       public readonly vpcArn: string;
@@ -332,9 +333,9 @@ export class VpcV2 extends VpcV2Base {
       public readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
       /**
-      * Refers to actual VPC Resource attribute in non-imported VPC
-      * Required to implement here due to extension from Base class
-      */
+       * Refers to actual VPC Resource attribute in non-imported VPC
+       * Required to implement here due to extension from Base class
+       */
       public readonly vpcCidrBlock: string;
 
       // Required to do CIDR range test on imported VPCs to create new subnets
@@ -496,6 +497,8 @@ export class VpcV2 extends VpcV2Base {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
@@ -742,10 +745,10 @@ export interface VPCCidrBlockattributes {
   readonly cidrBlock?: string;
 
   /**
-  * The secondary IPv4 CIDR Block
-  *
-  * @default - no CIDR block provided
-  */
+   * The secondary IPv4 CIDR Block
+   *
+   * @default - no CIDR block provided
+   */
   readonly cidrBlockName?: string;
 
   /**
@@ -847,6 +850,8 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
   constructor(scope: Construct, id: string, props: VPCCidrBlockProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.resource = new CfnVPCCidrBlock(this, id, props);
     this.node.defaultChild = this.resource;
     this.cidrBlock = props.cidrBlock;

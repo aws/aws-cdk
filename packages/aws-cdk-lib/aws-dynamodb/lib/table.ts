@@ -22,6 +22,7 @@ import {
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -253,7 +254,7 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
+   * those will share the table's maximum on-demand throughput.
    *
    * Can only be provided if billingMode is PAY_PER_REQUEST.
    *
@@ -1183,6 +1184,8 @@ export class Table extends TableBase {
     super(scope, id, {
       physicalName: props.tableName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 

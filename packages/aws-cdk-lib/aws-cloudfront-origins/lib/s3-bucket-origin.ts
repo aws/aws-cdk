@@ -33,10 +33,10 @@ export interface S3BucketOriginBaseProps extends cloudfront.OriginProps { }
  */
 export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
   /**
-  * An optional Origin Access Control
-  *
-  * @default - an Origin Access Control will be created.
-  */
+   * An optional Origin Access Control
+   *
+   * @default - an Origin Access Control will be created.
+   */
   readonly originAccessControl?: cloudfront.IOriginAccessControl;
 
   /**
@@ -53,10 +53,10 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
  */
 export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
   /**
-  * An optional Origin Access Identity
-  *
-  * @default - an Origin Access Identity will be created.
-  */
+   * An optional Origin Access Identity
+   *
+   * @default - an Origin Access Identity will be created.
+   */
   readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 }
 

@@ -3,6 +3,7 @@ import { CfnCodeSigningConfig } from './lambda.generated';
 import { ISigningProfile } from '../../aws-signer';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Code signing configuration policy for deployment validation failure.
@@ -101,6 +102,8 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
       return signingProfile.signingProfileVersionArn;

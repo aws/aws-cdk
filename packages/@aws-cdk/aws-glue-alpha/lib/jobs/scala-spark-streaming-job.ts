@@ -5,6 +5,7 @@ import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -24,14 +25,14 @@ export interface ScalaSparkStreamingJobProps extends JobProperties {
    * Class name (required for Scala scripts)
    * Package and class name for the entry point of Glue job execution for
    * Java scripts
-  **/
+   **/
   readonly className: string;
 
   /**
    * Extra Jars S3 URL (optional)
    * S3 URL where additional jar dependencies are located
    * @default - no extra jar files
-  */
+   */
   readonly extraJars?: string[];
 
   /**
@@ -70,7 +71,7 @@ export class ScalaSparkStreamingJob extends Job {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-  */
+   */
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   /**
@@ -80,6 +81,8 @@ export class ScalaSparkStreamingJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {

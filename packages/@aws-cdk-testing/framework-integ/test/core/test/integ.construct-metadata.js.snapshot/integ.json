@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "cdk-metadata-testing-example1/DefaultTest": {
+      "stacks": [
+        "metadata-testing-example"
+      ],
+      "assertionStack": "cdk-metadata-testing-example1/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkmetadatatestingexample1DefaultTestDeployAssert8073CA62"
+    }
+  }
+}
