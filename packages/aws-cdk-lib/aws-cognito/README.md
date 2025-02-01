@@ -1149,6 +1149,8 @@ new cognito.UserPoolClient(this, 'Client', {
 If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.  
 (In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
 
+Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.
+
 ```ts
 import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
 
