@@ -141,6 +141,132 @@ describe('Create Schedule', () => {
     });
   });
 
+  test('default settings - using JSONata', () => {
+    const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+    schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [targetQueue.queueArn],
+    }));
+
+    const schedule = tasks.Schedule.rate(Duration.minutes(1));
+
+    const createScheduleTask = tasks.EventBridgeSchedulerCreateScheduleTask.jsonata(stack, 'createSchedule', {
+      scheduleName: 'TestSchedule',
+      schedule,
+      target: new tasks.EventBridgeSchedulerTarget({
+        arn: targetQueue.queueArn,
+        role: schedulerRole,
+      }),
+    });
+
+    new sfn.StateMachine(stack, 'stateMachine', {
+      definition: sfn.Chain.start(createScheduleTask),
+    });
+
+    expect(stack.resolve(createScheduleTask.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::aws-sdk:scheduler:createSchedule',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        ActionAfterCompletion: 'NONE',
+        FlexibleTimeWindow: {
+          Mode: 'OFF',
+        },
+        Name: 'TestSchedule',
+        ScheduleExpression: schedule.expressionString,
+        State: 'ENABLED',
+        Target: {
+          Arn: {
+            'Fn::GetAtt': [
+              'TargetQueue08AD2B3C',
+              'Arn',
+            ],
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'SchedulerRole59E73443',
+              'Arn',
+            ],
+          },
+        },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'scheduler.amazonaws.com',
+            },
+          },
+        ],
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'scheduler:CreateSchedule',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':scheduler:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':schedule/default/TestSchedule',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'SchedulerRole59E73443',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'stateMachineRole64DF9B42',
+        },
+      ],
+    });
+  });
+
   test('with all settings', () => {
     const kmsKey = new kms.Key(stack, 'Key', {
       removalPolicy: RemovalPolicy.DESTROY,
