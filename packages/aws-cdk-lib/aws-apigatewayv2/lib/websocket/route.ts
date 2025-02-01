@@ -5,6 +5,7 @@ import { WebSocketRouteIntegration } from './integration';
 import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IRoute } from '../common';
 
 /**
@@ -84,6 +85,8 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
 
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
       throw new ValidationError('You can only set a WebSocket authorizer to a $connect route.', scope);

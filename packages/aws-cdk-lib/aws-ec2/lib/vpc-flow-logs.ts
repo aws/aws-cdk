@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -854,6 +855,8 @@ export class FlowLog extends FlowLogBase {
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 
