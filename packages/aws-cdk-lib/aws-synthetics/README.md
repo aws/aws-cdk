@@ -156,8 +156,7 @@ To learn more about these underlying resources, see
 [Synthetics Canaries Deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/synthetics_canaries_deletion.html).
 
 In the CDK, you can configure your canary to delete the underlying lambda function when the canary is deleted.
-This can be provisioned by setting `cleanup: Cleanup.LAMBDA`. Note that this
-will create a custom resource under the hood that takes care of the lambda deletion for you.
+This can be provisioned by setting `provisionedResourceCleanup` to `true`.
 
 ```ts
 const canary = new synthetics.Canary(this, 'Canary', {
@@ -165,13 +164,15 @@ const canary = new synthetics.Canary(this, 'Canary', {
     handler: 'index.handler',
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
-  cleanup: synthetics.Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
 ```
 
 > Note: To properly clean up your canary on deletion, you still have to manually delete other resources
 > like S3 buckets and CloudWatch logs.
+
+> Note: The deletion of Lambda resources can also be performed by setting the `cleanup` argument to `Cleanup.LAMBDA`. However, this is an outdated argument that uses custom resources and is currently deprecated.
 
 ### Configuring the Canary Script
 
@@ -343,3 +344,4 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   artifactS3KmsKey: key,
 });
 ```
+

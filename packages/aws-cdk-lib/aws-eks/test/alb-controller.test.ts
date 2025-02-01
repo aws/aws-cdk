@@ -46,11 +46,9 @@ test('all vended policies are valid', () => {
     if (addOn.startsWith('alb-iam_policy')) {
       const policy = JSON.parse(fs.readFileSync(path.join(addOnsDir, addOn)).toString());
       try {
-
         for (const statement of policy.Statement) {
           iam.PolicyStatement.fromJson(statement);
         }
-
       } catch (error) {
         throw new Error(`Invalid policy: ${addOn}: ${error}`);
       }

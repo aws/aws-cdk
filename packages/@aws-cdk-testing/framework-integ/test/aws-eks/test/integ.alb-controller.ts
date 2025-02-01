@@ -11,7 +11,6 @@ import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
 class EksClusterAlbControllerStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -66,7 +65,6 @@ class EksClusterAlbControllerStack extends Stack {
     new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
-
   }
 }
 

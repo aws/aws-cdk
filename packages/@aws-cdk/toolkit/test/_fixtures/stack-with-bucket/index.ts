@@ -5,5 +5,5 @@ export default async () => {
   const app = new core.App();
   const stack = new core.Stack(app, 'Stack1');
   new s3.Bucket(stack, 'MyBucket');
-  return app.synth() as any;
+  return app.synth();
 };

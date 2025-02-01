@@ -7,7 +7,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('build fleet', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
 
@@ -362,7 +361,6 @@ describe('build fleet', () => {
       expect(() => fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcp(144)))
         .toThrow('No more than 50 ingress rules are allowed per fleet');
     });
-
   });
 
   describe('add locations', () => {
@@ -679,5 +677,4 @@ describe('build fleet', () => {
       Annotations.fromStack(stack).hasWarning('/Default/MyBuildFleet', Match.stringLikeRegexp(warningMessage));
     });
   });
-
 });

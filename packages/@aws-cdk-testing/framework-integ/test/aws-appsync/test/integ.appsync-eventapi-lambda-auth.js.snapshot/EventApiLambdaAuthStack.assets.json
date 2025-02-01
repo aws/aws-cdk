@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "a23502018e98761dadeea712f4b7b8552f528fce830bd02ed222eaa09fcbfbc2": {
+      "source": {
+        "path": "EventApiLambdaAuthStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a23502018e98761dadeea712f4b7b8552f528fce830bd02ed222eaa09fcbfbc2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

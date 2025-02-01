@@ -3,7 +3,6 @@ import { Stack } from 'aws-cdk-lib';
 import { ClusterParameterGroup, ParameterGroup, ParameterGroupFamily } from '../lib';
 
 describe('ClusterParameterGroup', () => {
-
   test('create a cluster parameter group', () => {
     // GIVEN
     const stack = new Stack();

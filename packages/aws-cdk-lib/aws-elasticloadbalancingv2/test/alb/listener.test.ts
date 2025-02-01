@@ -1135,7 +1135,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad fixed responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1173,7 +1172,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad redirect responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1778,7 +1776,7 @@ describe('tests', () => {
     interface TestCase {
       readonly removeSuffix?: boolean;
       readonly expectedLogicalId: string;
-    };
+    }
     const nonDefaultTestCases: TestCase[] = [
       { removeSuffix: true, expectedLogicalId: identifierToken },
       { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
@@ -2006,7 +2004,6 @@ describe('tests', () => {
       }),
       ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
     });
-
   });
 
   describe('Mutual Authentication', () => {
@@ -2165,7 +2162,6 @@ describe('tests', () => {
       }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
     });
   });
-
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {
