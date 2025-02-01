@@ -73,6 +73,7 @@ test('bundling with file as entry', () => {
     runtime: Runtime.GO_1_X,
     architecture: Architecture.X86_64,
     moduleDir,
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -94,6 +95,7 @@ test('bundling with file in subdirectory as entry', () => {
     runtime: Runtime.GO_1_X,
     architecture: Architecture.X86_64,
     moduleDir,
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -115,6 +117,7 @@ test('bundling with file other than main.go in subdirectory as entry', () => {
     runtime: Runtime.GO_1_X,
     architecture: Architecture.X86_64,
     moduleDir,
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -250,6 +253,7 @@ test('Go build flags can be passed', () => {
       KEY: 'value',
     },
     goBuildFlags: ['-ldflags "-s -w"'],
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -282,6 +286,7 @@ test('AssetHashType can be specified', () => {
       KEY: 'value',
     },
     assetHashType: AssetHashType.OUTPUT,
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -321,6 +326,7 @@ test('with command hooks', () => {
         return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
       },
     },
+    forcedDockerBundling: true,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
@@ -332,6 +338,37 @@ test('with command hooks', () => {
       ],
     }),
   });
+});
+
+test('command hooks should be called once in local bundling', () => {
+  jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const beforeBundling = jest.fn(() => []);
+  const afterBundling = jest.fn(() => []);
+
+  const bundler = new Bundling({
+    entry,
+    moduleDir,
+    runtime: Runtime.PROVIDED_AL2023,
+    architecture: Architecture.X86_64,
+    commandHooks: {
+      beforeBundling,
+      afterBundling,
+    },
+  });
+
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(beforeBundling.mock.calls).toHaveLength(1);
+  expect(afterBundling.mock.calls).toHaveLength(1);
 });
 
 test('Custom bundling entrypoint', () => {

@@ -15,11 +15,31 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // assert that beforeBundling/afterBundling are called only once
+    let beforeBundlingCallCount = 0;
+    let afterBundlingCallCount = 0;
+
     this.lambdaFunction = new lambda.GoFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
       bundling: {
         forcedDockerBundling: true,
         goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
+        commandHooks: {
+          beforeBundling() {
+            if (1 < beforeBundlingCallCount) {
+              throw new Error('afterBundling should called only once');
+            }
+            beforeBundlingCallCount++;
+            return [];
+          },
+          afterBundling() {
+            if (1 < afterBundlingCallCount) {
+              throw new Error('afterBundling should called only once');
+            }
+            afterBundlingCallCount++;
+            return [];
+          },
+        },
       },
     });
   }
