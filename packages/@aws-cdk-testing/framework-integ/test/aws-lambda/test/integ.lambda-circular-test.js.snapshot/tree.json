@@ -93,13 +93,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Policy": {
-                "id": "Policy",
-                "path": "aws-cdk-lambda-1/MyLambda/Policy",
+              "inlinePolicyAddedToExecutionRole-0": {
+                "id": "inlinePolicyAddedToExecutionRole-0",
+                "path": "aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/MyLambda/Policy/Resource",
+                    "path": "aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -118,7 +118,7 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "MyLambdaPolicyEEA76B97",
+                        "policyName": "MyLambdainlinePolicyAddedToExecutionRole0E0144580",
                         "roles": [
                           {
                             "Ref": "MyLambdaServiceRole4539ECB6"

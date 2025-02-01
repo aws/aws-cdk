@@ -323,6 +323,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _functionUrlInvocationGrants: Record<string, iam.Grant> = {};
 
   /**
+   * The number of permissions added to this function
+   * @internal
+   */
+  private _policyCounter: number = 0;
+
+  /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
    * - function.currentVersion is invoked before or after the permission is created.
@@ -391,7 +397,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    const policyToAdd = new iam.Policy(this, 'Policy', {
+    const policyToAdd = new iam.Policy(this, `inlinePolicyAddedToExecutionRole-${this._policyCounter++}`, {
       statements: [statement],
     });
     this.role.attachInlinePolicy(policyToAdd);

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d451a6da059acd3acd7bbbb5cc22c8bbd2dd055a1bcb6d3589470e3b2f4d3cca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01aa4b400611081a4b66fea14086871711d5e9ea61b8882d34c339dd75887241.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,10 +46,10 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/Policy/Resource": [
+        "/aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaPolicyEEA76B97"
+            "data": "MyLambdainlinePolicyAddedToExecutionRole0E0144580"
           }
         ],
         "/aws-cdk-lambda-1/myUserPoolTest/FnCognito": [
@@ -74,6 +74,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLambdaPolicyEEA76B97": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaPolicyEEA76B97",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

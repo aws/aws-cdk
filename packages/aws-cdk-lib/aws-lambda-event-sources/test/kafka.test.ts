@@ -41,7 +41,7 @@ describe('KafkaEventSource', () => {
           ],
           Version: '2012-10-17',
         },
-        PolicyName: 'FnPolicyF3937D5F',
+        PolicyName: 'FninlinePolicyAddedToExecutionRole00AF5C038',
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',
@@ -127,7 +127,7 @@ describe('KafkaEventSource', () => {
             },
           ],
         },
-        PolicyName: 'FnPolicyF3937D5F',
+        PolicyName: 'FninlinePolicyAddedToExecutionRole00AF5C038',
         Roles: [
           {
             Ref: 'FnServiceRoleB9001A96',

@@ -50,7 +50,7 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaPolicyEEA76B97": {
+  "MyLambdainlinePolicyAddedToExecutionRole0E0144580": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -68,7 +68,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyLambdaPolicyEEA76B97",
+    "PolicyName": "MyLambdainlinePolicyAddedToExecutionRole0E0144580",
     "Roles": [
      {
       "Ref": "MyLambdaServiceRole4539ECB6"

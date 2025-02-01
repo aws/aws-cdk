@@ -430,7 +430,6 @@ describe('function', () => {
           Statement: [
             { Action: 'confirm:itsthesame', Effect: 'Allow', Resource: '*' },
             { Action: 'inline:inline', Effect: 'Allow', Resource: '*' },
-            // { Action: 'explicit:explicit', Effect: 'Allow', Resource: '*' },
           ],
         },
       });
@@ -851,7 +850,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaPolicyEEA76B97',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -1148,7 +1147,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaPolicyEEA76B97',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -1203,7 +1202,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaPolicyEEA76B97',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',

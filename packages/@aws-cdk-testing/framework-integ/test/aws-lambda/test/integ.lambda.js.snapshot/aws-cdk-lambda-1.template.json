@@ -31,27 +31,6 @@
     ]
    }
   },
-  "MyLambdaPolicyEEA76B97": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MyLambdaPolicyEEA76B97",
-    "Roles": [
-     {
-      "Ref": "MyLambdaServiceRole4539ECB6"
-     }
-    ]
-   }
-  },
   "MyLambdaCCE802FB": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -71,6 +50,27 @@
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
    ]
+  },
+  "MyLambdainlinePolicyAddedToExecutionRole0E0144580": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyLambdainlinePolicyAddedToExecutionRole0E0144580",
+    "Roles": [
+     {
+      "Ref": "MyLambdaServiceRole4539ECB6"
+     }
+    ]
+   }
   },
   "MyLambdaFunctionUrlC2055677": {
    "Type": "AWS::Lambda::Url",

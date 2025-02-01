@@ -31,7 +31,7 @@
     ]
    }
   },
-  "MyFunc1Policy669C7667": {
+  "MyFunc1inlinePolicyAddedToExecutionRole050337A59": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -47,7 +47,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc1Policy669C7667",
+    "PolicyName": "MyFunc1inlinePolicyAddedToExecutionRole050337A59",
     "Roles": [
      {
       "Ref": "MyFunc1ServiceRoleF96C5B5C"
@@ -130,7 +130,7 @@
     ]
    }
   },
-  "MyFunc2Policy1A06B663": {
+  "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -146,7 +146,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc2Policy1A06B663",
+    "PolicyName": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15",
     "Roles": [
      {
       "Ref": "MyFunc2ServiceRole68E50443"
@@ -226,7 +226,7 @@
     ]
    }
   },
-  "MyFunc3Policy32221FF2": {
+  "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -242,7 +242,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc3Policy32221FF2",
+    "PolicyName": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8",
     "Roles": [
      {
       "Ref": "MyFunc3ServiceRoleA69795ED"
@@ -322,7 +322,7 @@
     ]
    }
   },
-  "MyFunc4PolicyD180DEAE": {
+  "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -338,7 +338,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc4PolicyD180DEAE",
+    "PolicyName": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D",
     "Roles": [
      {
       "Ref": "MyFunc4ServiceRole93C4DEFF"
@@ -418,7 +418,7 @@
     ]
    }
   },
-  "MyFunc5Policy272F3F5A": {
+  "MyFunc5inlinePolicyAddedToExecutionRole0431C1882": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -434,7 +434,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc5Policy272F3F5A",
+    "PolicyName": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882",
     "Roles": [
      {
       "Ref": "MyFunc5ServiceRoleFE4CE92B"
