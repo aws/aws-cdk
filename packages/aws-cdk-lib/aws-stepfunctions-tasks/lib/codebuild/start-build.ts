@@ -5,10 +5,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for CodeBuildStartBuild
- */
-export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
+interface CodeBuildStartBuildOptions {
   /**
    * CodeBuild project to start
    */
@@ -22,11 +19,40 @@ export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for CodeBuildStartBuild using JSONPath
+ */
+export interface CodeBuildStartBuildJsonPathProps extends sfn.TaskStateJsonPathBaseProps, CodeBuildStartBuildOptions {}
+
+/**
+ * Properties for CodeBuildStartBuild using JSONata
+ */
+export interface CodeBuildStartBuildJsonataProps extends sfn.TaskStateJsonataBaseProps, CodeBuildStartBuildOptions {}
+
+/**
+ * Properties for CodeBuildStartBuild
+ */
+export interface CodeBuildStartBuildProps extends sfn.TaskStateBaseProps, CodeBuildStartBuildOptions {}
+
+/**
  * Start a CodeBuild Build as a task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html
  */
 export class CodeBuildStartBuild extends sfn.TaskStateBase {
+  /**
+   * Start a CodeBuild Build as a task using JSONPath
+   */
+  public static jsonPath(scope: Construct, id: string, props: CodeBuildStartBuildJsonPathProps) {
+    return new CodeBuildStartBuild(scope, id, props);
+  }
+
+  /**
+   * Start a CodeBuild Build as a task using JSONata
+   */
+  public static jsonata(scope: Construct, id: string, props: CodeBuildStartBuildJsonataProps) {
+    return new CodeBuildStartBuild(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -90,15 +116,16 @@ export class CodeBuildStartBuild extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('codebuild', 'startBuild', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ProjectName: this.props.project.projectName,
         EnvironmentVariablesOverride: this.props.environmentVariablesOverride
           ? this.serializeEnvVariables(this.props.environmentVariablesOverride)
           : undefined,
-      }),
+      }, queryLanguage),
     };
   }
 
