@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-lambda-add-subroute-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13f7f339f1f4fc7730c51d7df90db70db88fc0755ae67b48e9b35666d0b470d4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db3e2c1156b29cac919985e98d6906772b81a6b4fad55751ed95d4c646816d84.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,40 @@
         "integ-lambda-add-subroute-integration.assets"
       ],
       "metadata": {
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testapigwv2addsubrouteintegration74634536"
           }
         ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "testapigwv2addsubrouteintegrationDefaultStage95CBB85F"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration/Resource": [
@@ -64,6 +88,12 @@
             "data": "testapigwv2addsubrouteintegrationGETfirstrouteA8B45A0F"
           }
         ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/my-lambda-integration-Permission": [
           {
             "type": "aws:cdk:logicalId",
@@ -74,6 +104,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testapigwv2addsubrouteintegrationGETfirstroutesubroute1247B83F"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration/Resource": [
@@ -94,6 +136,12 @@
             "data": "testapigwv2addsubrouteintegrationGETsecondroute4AF1E609"
           }
         ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/my-referenced-lambda-integration-Permission": [
           {
             "type": "aws:cdk:logicalId",
@@ -104,6 +152,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testapigwv2addsubrouteintegrationGETsecondroutesubrouteB60A5707"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration/Resource": [
@@ -124,6 +184,12 @@
             "data": "testapigwv2addsubrouteintegrationGETthirdroute55217764"
           }
         ],
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/my-referenced-lambda-integration-Permission": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +200,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "testapigwv2addsubrouteintegrationGETthirdroutesubroute4E0397C0"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/first-lambda-function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole/Resource": [
@@ -148,6 +246,38 @@
             "data": "firstlambdafunction507195EE"
           }
         ],
+        "/integ-lambda-add-subroute-integration/second-lambda-function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -158,6 +288,39 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "secondlambdafunction075D9D2B"
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/third-lambda-function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "functionName": "*"
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole/Resource": [
@@ -210,7 +373,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0be61d4940ffb1bc4d32da45a072ceca671508ddc6239a16d898570338fdf44.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a04b243ee35cbdaf7d9b48b9470eccde385b86c4f192604df129d87b6c78f42f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -227,6 +390,12 @@
         "IntegDefaultTestDeployAssert4E6713E1.assets"
       ],
       "metadata": {
+        "/Integ/DefaultTest/DeployAssert/HttpApiCall7dacc083253f26a999a4913954f49a9a/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCall7dacc083253f26a999a4913954f49a9a/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -251,6 +420,18 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
+        "/Integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCallfce36bbf7bfa2d827873369c11ac8bc7/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -261,6 +442,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallfce36bbf7bfa2d827873369c11ac8bc7"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/HttpApiCallb05bdbffdf1026883c48a2ba9aefeb87/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCallb05bdbffdf1026883c48a2ba9aefeb87/Default/Default": [
@@ -275,6 +462,12 @@
             "data": "AssertionResultsHttpApiCallb05bdbffdf1026883c48a2ba9aefeb87"
           }
         ],
+        "/Integ/DefaultTest/DeployAssert/HttpApiCall15aab15a91ac373366ca7a735ab6c703/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCall15aab15a91ac373366ca7a735ab6c703/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -287,6 +480,12 @@
             "data": "AssertionResultsHttpApiCall15aab15a91ac373366ca7a735ab6c703"
           }
         ],
+        "/Integ/DefaultTest/DeployAssert/HttpApiCallaf823e6c0ce90f79da08c1df48bb46a9/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCallaf823e6c0ce90f79da08c1df48bb46a9/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -297,6 +496,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallaf823e6c0ce90f79da08c1df48bb46a9"
+          }
+        ],
+        "/Integ/DefaultTest/DeployAssert/HttpApiCall2790ea0c1d011a803e7486fa06839fe8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/Integ/DefaultTest/DeployAssert/HttpApiCall2790ea0c1d011a803e7486fa06839fe8/Default/Default": [

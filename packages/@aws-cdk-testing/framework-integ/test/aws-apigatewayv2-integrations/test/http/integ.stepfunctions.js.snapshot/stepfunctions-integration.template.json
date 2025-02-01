@@ -83,6 +83,7 @@
      "Ref": "ApiF70053CD"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   },

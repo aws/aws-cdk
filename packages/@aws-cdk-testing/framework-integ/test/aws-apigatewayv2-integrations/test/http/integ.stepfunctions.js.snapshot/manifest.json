@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "stepfunctions-integration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19e42465a3a7d7c94541f96a140ab7bdb71eb54da666c1b3c1bc9f3a03c310a2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7714fbec7802813e9f3c189a3a5556953e799c8901227dda16e3c11bc899c2b8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,31 @@
         "stepfunctions-integration.assets"
       ],
       "metadata": {
+        "/stepfunctions-integration/RouteStateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*"
+            }
+          }
+        ],
+        "/stepfunctions-integration/RouteStateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/RouteStateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/RouteStateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +69,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RouteStateMachineC11CAF3B"
+          }
+        ],
+        "/stepfunctions-integration/ExpressStateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*",
+              "stateMachineType": "EXPRESS"
+            }
+          }
+        ],
+        "/stepfunctions-integration/ExpressStateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/ExpressStateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/ExpressStateMachine/Role/Resource": [
@@ -58,10 +109,22 @@
             "data": "ExpressStateMachineE90FFF22"
           }
         ],
+        "/stepfunctions-integration/Api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiF70053CD"
+          }
+        ],
+        "/stepfunctions-integration/Api/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/Api/DefaultStage/Resource": [
@@ -70,16 +133,51 @@
             "data": "ApiDefaultStage189A7074"
           }
         ],
+        "/stepfunctions-integration/Api/POST--default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/InvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/InvokeRole/ImportInvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--default/InvokeRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTdefaultInvokeRole9137E4F5"
           }
         ],
+        "/stepfunctions-integration/Api/POST--default/InvokeRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/Integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/Api/POST--default/Integration/Resource": [
@@ -94,16 +192,51 @@
             "data": "ApiPOSTdefault1EEA0D1D"
           }
         ],
+        "/stepfunctions-integration/Api/POST--start": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/InvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/InvokeRole/ImportInvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--start/InvokeRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstartInvokeRoleA9D6BD6A"
           }
         ],
+        "/stepfunctions-integration/Api/POST--start/InvokeRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--start/InvokeRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstartInvokeRoleDefaultPolicy495BCE0C"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/Integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/Api/POST--start/Integration/Resource": [
@@ -118,16 +251,51 @@
             "data": "ApiPOSTstartB39FD25E"
           }
         ],
+        "/stepfunctions-integration/Api/POST--start-sync": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/InvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/ImportInvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstartsyncInvokeRoleC429A7AB"
           }
         ],
+        "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstartsyncInvokeRoleDefaultPolicy244CA8B0"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/Integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/Api/POST--start-sync/Integration/Resource": [
@@ -142,16 +310,51 @@
             "data": "ApiPOSTstartsync3659F9A0"
           }
         ],
+        "/stepfunctions-integration/Api/POST--stop": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/InvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/InvokeRole/ImportInvokeRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--stop/InvokeRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstopInvokeRoleB9DFDAA9"
           }
         ],
+        "/stepfunctions-integration/Api/POST--stop/InvokeRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/stepfunctions-integration/Api/POST--stop/InvokeRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ApiPOSTstopInvokeRoleDefaultPolicy4B17C921"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/Integration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/stepfunctions-integration/Api/POST--stop/Integration/Resource": [

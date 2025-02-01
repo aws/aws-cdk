@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "AuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "AuthorizerInteg.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88d5ad156d2cbb044227b4188a274f0800e0bfd4c8564e1eb29c296b68081937.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/192c47472f3613b9b07c5ed64d36816deaef00e67e014680daa2373657c75185.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,10 +34,24 @@
         "AuthorizerInteg.assets"
       ],
       "metadata": {
+        "/AuthorizerInteg/userpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/userpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "userpool0AC4AA96"
+          }
+        ],
+        "/AuthorizerInteg/userpool/UserPoolAuthorizerClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*"
+            }
           }
         ],
         "/AuthorizerInteg/userpool/UserPoolAuthorizerClient/Resource": [
@@ -47,10 +60,24 @@
             "data": "userpoolUserPoolAuthorizerClient6A7486E8"
           }
         ],
+        "/AuthorizerInteg/userpoolForDefaultAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/userpoolForDefaultAuthorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "userpoolForDefaultAuthorizerDFBE8E74"
+          }
+        ],
+        "/AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*"
+            }
           }
         ],
         "/AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient/Resource": [
@@ -59,16 +86,40 @@
             "data": "userpoolForDefaultAuthorizerUserPoolAuthorizerClient3AA110E7"
           }
         ],
+        "/AuthorizerInteg/MyHttpApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/MyHttpApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApi8AEAAC21"
           }
         ],
+        "/AuthorizerInteg/MyHttpApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/MyHttpApi/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApiDefaultStageDCB9BC49"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/GET--": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegratin": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AuthorizerInteg/MyHttpApi/GET--/RootIntegratin/Resource": [
@@ -89,10 +140,22 @@
             "data": "MyHttpApiGETE0EFC6F8"
           }
         ],
+        "/AuthorizerInteg/MyHttpApi/UserPoolAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/MyHttpApi/UserPoolAuthorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApiUserPoolAuthorizer8754262B"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/Resource": [
@@ -101,16 +164,60 @@
             "data": "MyHttpApiWithDefaultAuthorizerE08800A1"
           }
         ],
+        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6"
           }
         ],
+        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHttpApiWithDefaultAuthorizerUserPoolDefaultAuthorizerF10D4FFF"
+          }
+        ],
+        "/AuthorizerInteg/lambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/AuthorizerInteg/lambda/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/AuthorizerInteg/lambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AuthorizerInteg/lambda/ServiceRole/Resource": [
@@ -123,6 +230,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambda8B5974B5"
+          }
+        ],
+        "/AuthorizerInteg/Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/AuthorizerInteg/Route/RootIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AuthorizerInteg/Route/RootIntegration/Resource": [

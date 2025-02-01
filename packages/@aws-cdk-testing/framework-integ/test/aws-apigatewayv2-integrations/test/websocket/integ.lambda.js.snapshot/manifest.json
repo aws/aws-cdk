@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "WebSocketApiInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f542f97a9aa5e38fc369d5e5530a480ab81374b9796bc3e79ae4f98411f2900b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b817d842318f3fc1776761a3edda6afaab237510ff502344683a4628bcdb1f45.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,38 @@
         "WebSocketApiInteg.assets"
       ],
       "metadata": {
+        "/WebSocketApiInteg/ConnectHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/WebSocketApiInteg/ConnectHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/WebSocketApiInteg/ConnectHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/ConnectHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +76,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ConnectHandler2FFD52D8"
+          }
+        ],
+        "/WebSocketApiInteg/DisconnectHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/WebSocketApiInteg/DisconnectHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/WebSocketApiInteg/DisconnectHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/DisconnectHandler/ServiceRole/Resource": [
@@ -58,6 +122,38 @@
             "data": "DisconnectHandlerCB7ED6F7"
           }
         ],
+        "/WebSocketApiInteg/DefaultHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/WebSocketApiInteg/DefaultHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/WebSocketApiInteg/DefaultHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/DefaultHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +164,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultHandler604DF7AC"
+          }
+        ],
+        "/WebSocketApiInteg/MessageHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/WebSocketApiInteg/MessageHandler/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/WebSocketApiInteg/MessageHandler/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/MessageHandler/ServiceRole/Resource": [
@@ -82,16 +210,34 @@
             "data": "MessageHandlerDFBBCD6B"
           }
         ],
+        "/WebSocketApiInteg/mywsapi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/mywsapi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapi32E6CE11"
           }
         ],
+        "/WebSocketApiInteg/mywsapi/$connect-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration/Resource": [
@@ -106,10 +252,22 @@
             "data": "mywsapiconnectRoute45A0ED6A"
           }
         ],
+        "/WebSocketApiInteg/mywsapi/$disconnect-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration/Resource": [
@@ -124,10 +282,22 @@
             "data": "mywsapidisconnectRoute421A8CB9"
           }
         ],
+        "/WebSocketApiInteg/mywsapi/$default-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration/Resource": [
@@ -142,10 +312,22 @@
             "data": "mywsapidefaultRouteE9382DF8"
           }
         ],
+        "/WebSocketApiInteg/mywsapi/sendmessage-Route": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E"
+          }
+        ],
+        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
@@ -158,6 +340,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "mywsapisendmessageRouteAE873328"
+          }
+        ],
+        "/WebSocketApiInteg/mystage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/WebSocketApiInteg/mystage/Resource": [

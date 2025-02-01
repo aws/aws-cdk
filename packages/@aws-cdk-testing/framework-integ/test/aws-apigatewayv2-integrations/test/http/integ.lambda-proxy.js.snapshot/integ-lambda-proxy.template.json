@@ -138,6 +138,7 @@
      "Ref": "LambdaProxyApi67594471"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   }

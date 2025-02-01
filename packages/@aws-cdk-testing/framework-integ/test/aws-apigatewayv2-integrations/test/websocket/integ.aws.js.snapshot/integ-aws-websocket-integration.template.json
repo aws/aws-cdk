@@ -168,6 +168,7 @@
      "Ref": "mywsapi32E6CE11"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "dev"
    }
   }

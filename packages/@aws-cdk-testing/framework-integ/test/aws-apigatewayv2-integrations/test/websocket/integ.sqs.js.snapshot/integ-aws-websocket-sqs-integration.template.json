@@ -92,6 +92,7 @@
      "Ref": "webSocketApi5AB89700"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "dev"
    }
   },

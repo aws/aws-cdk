@@ -67,6 +67,7 @@
      "Ref": "MyHttpApi8AEAAC21"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   },
@@ -240,6 +241,7 @@
      "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
     },
     "AutoDeploy": true,
+    "DefaultRouteSettings": {},
     "StageName": "$default"
    }
   },

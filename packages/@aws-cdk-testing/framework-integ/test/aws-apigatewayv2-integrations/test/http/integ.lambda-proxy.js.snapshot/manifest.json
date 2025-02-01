@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-lambda-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-lambda-proxy.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a29ead41f311de07e90732cdf1d07d0b089eac71fcb6327078b10a4fb642744.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00e288ef9c8bbde9178760b8484752bb23d0f7238a2a0bc706bf45ec0b22a32b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,38 @@
         "integ-lambda-proxy.assets"
       ],
       "metadata": {
+        "/integ-lambda-proxy/AlwaysSuccess": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-lambda-proxy/AlwaysSuccess/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-lambda-proxy/AlwaysSuccess/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-proxy/AlwaysSuccess/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -45,10 +78,28 @@
             "data": "AlwaysSuccess099EAB05"
           }
         ],
+        "/integ-lambda-proxy/LambdaProxyApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-lambda-proxy/LambdaProxyApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaProxyApi67594471"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration/Resource": [
@@ -67,6 +118,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaProxyApiDefaultRoute1EB30A46"
+          }
+        ],
+        "/integ-lambda-proxy/LambdaProxyApi/DefaultStage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-lambda-proxy/LambdaProxyApi/DefaultStage/Resource": [
