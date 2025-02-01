@@ -172,6 +172,14 @@ export function withCDKMigrateFixture(language: string, block: (content: TestFix
   return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCdkMigrateApp(language, block)));
 }
 
+export function withCompositeFixture(blocks: ((context: TestContext & AwsContext & DisableBootstrapContext) => Promise<void>)[]) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, async (context: TestContext & AwsContext & DisableBootstrapContext) => {
+    for (let block of blocks) {
+      await block(context);
+    }
+  }));
+}
+
 export interface DisableBootstrapContext {
   /**
    * Whether to disable creating the default bootstrap
