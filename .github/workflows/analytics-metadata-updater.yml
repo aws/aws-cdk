@@ -1,0 +1,56 @@
+name: CDK Analytics Metadata Updater
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 16 * * 2" # Every week at 10 AM PDT or 9 AM PST
+
+jobs:
+  update-analytics-metadata:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/construct-metadata-updater && yarn build+test
+
+      - name: Invoke Analytics Metadata Updater
+        run: |
+          cd tools/@aws-cdk/construct-metadata-updater
+          ./bin/update-construct-metadata
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add .
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+
+      - name: Make Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # Git commit details
+          branch: automation/analytics-metadata-update
+          author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+          commit-message: |-
+            update analytics metadata information 
+          # Pull Request details
+          title: "chore: update analytics metadata information"
+          body: |-
+            Update the list of regions where the CDK deploys the `AWS::CDK::Metadata` resource.
+          labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test,pr-linter/exempt-codecov
+          team-reviewers: aws-cdk-team
+          # Github prevents further Github actions to be run if the default Github token is used.
+          # Instead use a privileged token here, so further GH actions can be triggered on this PR.
+          token: ${{ secrets.GITHUB_TOKEN }}
