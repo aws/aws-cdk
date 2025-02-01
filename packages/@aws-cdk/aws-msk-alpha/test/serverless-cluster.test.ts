@@ -131,7 +131,6 @@ describe('MSK Serverless Cluster', () => {
   });
 
   test('throws an error when `securityGroups` in `vpcConfig` is empty', () => {
-
     expect(() =>
       new msk.ServerlessCluster(stack, 'ServerlessCluster', {
         vpcConfigs: [
