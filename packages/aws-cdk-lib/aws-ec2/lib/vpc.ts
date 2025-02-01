@@ -1351,6 +1351,7 @@ export class Vpc extends VpcBase {
         subnetGroupNameTag: options.subnetGroupNameTag,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
+      additionalCacheKey: options.additionalCacheKey,
     }).value;
 
     return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);
