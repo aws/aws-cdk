@@ -121,6 +121,7 @@ class MutualTls extends Stack {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       certificates: [certificate],
       mutualAuthentication: {
+        advertiseTrustStoreCaNames: true,
         ignoreClientCertificateExpiry: false,
         mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
         trustStore,
