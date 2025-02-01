@@ -93,6 +93,10 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
       memoryLimitMiB: 512,
       cpu: 2,
       ephemeralStorageGiB: 100,
+      runtimePlatform: {
+        operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+      },
+      pidMode: ecs.PidMode.TASK,
       environment: { TRIGGER: 'CloudWatch Events' },
     },
     desiredTaskCount: 2,
@@ -166,6 +170,10 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
     EphemeralStorage: {
       SizeInGiB: 100,
     },
+    RuntimePlatform: {
+      OperatingSystemFamily: 'LINUX',
+    },
+    PidMode: 'task',
   });
 });
 
