@@ -347,6 +347,9 @@
       "Value": "false"
      }
     ],
+    "MinimumLoadBalancerCapacity": {
+     "CapacityUnits": 2750
+    },
     "Scheme": "internal",
     "Subnets": [
      {

@@ -524,6 +524,9 @@
       "Value": "false"
      }
     ],
+    "MinimumLoadBalancerCapacity": {
+     "CapacityUnits": 150
+    },
     "Scheme": "internal",
     "SecurityGroups": [
      {
