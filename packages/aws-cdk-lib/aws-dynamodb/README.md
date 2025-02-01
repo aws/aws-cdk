@@ -19,7 +19,9 @@ const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsights: true,
   tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+  },
 });
 ```
 
@@ -66,7 +68,7 @@ globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 The following properties are configurable on a per-replica basis, but will be inherited from the `TableV2` properties if not specified:
 * contributorInsights
 * deletionProtection
-* pointInTimeRecovery
+* pointInTimeRecoverySpecification
 * tableClass
 * readCapacity (only configurable if the `TableV2` billing mode is `PROVISIONED`)
 * globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
@@ -82,12 +84,16 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsights: true,
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+      pointInTimeRecoveryEnabled: true,
+  },
   replicas: [
     {
       region: 'us-east-1',
       tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-      pointInTimeRecovery: false,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: false,
+      },
     },
     {
       region: 'us-east-2',
@@ -585,7 +591,7 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  // applys to all replicas, i.e., us-west-2, us-east-1, us-east-2
+  // applies to all replicas, i.e., us-west-2, us-east-1, us-east-2
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicas: [
     { region: 'us-east-1' },
@@ -622,12 +628,17 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
 
 ## Point-in-Time Recovery
 
-`pointInTimeRecovery` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+`pointInTimeRecoverySpecifcation` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+
+You can also choose to set `recoveryPeriodInDays` to a value between `1` and `35` which dictates how many days of recoverable data is stored. If no value is provided, the recovery period defaults to `35` days.
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+    recoveryPeriodInDays: 4,
+  },
 });
 ```
 
@@ -749,7 +760,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData only applys to the table in us-west-2 and the tableKey
+// grantReadData only applies to the table in us-west-2 and the tableKey
 globalTable.grantReadData(user);
 ```
 
@@ -779,7 +790,7 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   ],
 });
 
-// grantReadData applys to the table in us-east-2 and the key arn for the key in us-east-2
+// grantReadData applies to the table in us-east-2 and the key arn for the key in us-east-2
 globalTable.replica('us-east-2').grantReadData(user);
 ```
 
@@ -815,7 +826,7 @@ new cloudwatch.Alarm(this, 'Alarm', {
 The `replica` method can be used to generate a metric for a specific replica table:
 
 ```ts
-import * as cdk form 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 class FooStack extends cdk.Stack {
@@ -824,7 +835,7 @@ class FooStack extends cdk.Stack {
   public constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    this.globalTable = new dynamodb.Tablev2(this, 'GlobalTable', {
+    this.globalTable = new dynamodb.TableV2(this, 'GlobalTable', {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       replicas: [
         { region: 'us-east-1' },
@@ -834,7 +845,7 @@ class FooStack extends cdk.Stack {
   }
 }
 
-interface BarStack extends cdk.StackProps {
+interface BarStackProps extends cdk.StackProps {
   readonly replicaTable: dynamodb.ITableV2;
 }
 

@@ -11,7 +11,6 @@ import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class LambdaStack extends Stack {
-
   public readonly queue: sqs.Queue;
 
   constructor(scope: constructs.Construct, id: string) {
