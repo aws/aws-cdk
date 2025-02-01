@@ -5,3 +5,4 @@ export * from './service-discovery';
 export * from './http-proxy';
 export * from './lambda';
 export * from './stepfunctions';
+export * from './sqs';
