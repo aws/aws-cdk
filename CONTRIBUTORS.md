@@ -2,9 +2,9 @@
 Shout out to our top contributors!
 
 - [rix0rrr](https://github.com/rix0rrr)
+- [kaizencc](https://github.com/kaizencc)
 - [skinny85](https://github.com/skinny85)
 - [RomainMuller](https://github.com/RomainMuller)
-- [kaizencc](https://github.com/kaizencc)
 - [njlynch](https://github.com/njlynch)
 - [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
@@ -12,10 +12,10 @@ Shout out to our top contributors!
 - [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [mrgrain](https://github.com/mrgrain)
-- [pahud](https://github.com/pahud)
 - [mazyu36](https://github.com/mazyu36)
-- [comcalvi](https://github.com/comcalvi)
+- [pahud](https://github.com/pahud)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
+- [comcalvi](https://github.com/comcalvi)
 - [madeline-k](https://github.com/madeline-k)
 - [go-to-k](https://github.com/go-to-k)
 - [NetaNir](https://github.com/NetaNir)
@@ -26,7 +26,7 @@ Shout out to our top contributors!
 - [peterwoodworth](https://github.com/peterwoodworth)
 - [msambol](https://github.com/msambol)
 - [colifran](https://github.com/colifran)
-- [watany-dev](https://github.com/watany-dev)
+- [GavinZZ](https://github.com/GavinZZ)
 
 
-_Last updated: Wed, 01 Jan 25 00:12:26 +0000_
+_Last updated: Sat, 01 Feb 25 00:11:52 +0000_
