@@ -164,7 +164,7 @@ describe('HttpStage with domain mapping', () => {
     expect(t).toThrow(/domainUrl is not available when no API mapping is associated with the Stage/);
   });
 
-  test('correctly sets throttle settings', () => {
+  test('correctly sets route settings', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api', {
@@ -178,6 +178,7 @@ describe('HttpStage with domain mapping', () => {
         burstLimit: 1000,
         rateLimit: 1000,
       },
+      detailedMetricsEnabled: true,
     });
 
     // THEN
@@ -187,6 +188,7 @@ describe('HttpStage with domain mapping', () => {
       DefaultRouteSettings: {
         ThrottlingBurstLimit: 1000,
         ThrottlingRateLimit: 1000,
+        DetailedMetricsEnabled: true,
       },
     });
   });

@@ -475,3 +475,19 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
   apiKeySelectionExpression: apigwv2.WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
 });
 ```
+
+## Common Config
+Common config for both HTTP API and WebSocket API
+
+### Route Settings
+Represents a collection of route settings.
+
+```ts
+new apigw.HttpStage(stack, 'HttpStageWithProperties', {
+  throttle: {
+    rateLimit: 1000,
+    burstLimit: 1000,
+  },
+  detailedMetricsEnabled: true,
+});
+```

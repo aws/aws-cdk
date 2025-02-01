@@ -108,7 +108,7 @@ describe('WebSocketStage', () => {
     });
   });
 
-  test('correctly sets throttle settings', () => {
+  test('correctly sets route settings', () => {
     // GIVEN
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'Api');
@@ -121,6 +121,7 @@ describe('WebSocketStage', () => {
         burstLimit: 1000,
         rateLimit: 1000,
       },
+      detailedMetricsEnabled: true,
     });
 
     // THEN
@@ -130,6 +131,7 @@ describe('WebSocketStage', () => {
       DefaultRouteSettings: {
         ThrottlingBurstLimit: 1000,
         ThrottlingRateLimit: 1000,
+        DetailedMetricsEnabled: true,
       },
     });
   });

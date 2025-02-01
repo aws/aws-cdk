@@ -31,7 +31,8 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "websocket-stage": {
@@ -47,6 +48,7 @@
                     "apiId": {
                       "Ref": "webocketapiD5DB5DB0"
                     },
+                    "defaultRouteSettings": {},
                     "stageName": "prod"
                   }
                 },
@@ -58,7 +60,8 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "test-iam-role": {
@@ -70,7 +73,8 @@
                 "path": "aws-cdk-aws-apigatewayv2/test-iam-role/Importtest-iam-role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "Resource": {
@@ -165,7 +169,8 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {
