@@ -28,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
       tags: {
         foo: 'bar',
       },
@@ -105,6 +105,21 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       skipCrds: true,
       atomic: true,
+      values: { aws: { region: this.region } },
+    });
+
+    // testing installation with --take-ownership flag set to true
+    // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
+    this.cluster.addHelmChart('test-take-ownership-installation', {
+      chart: 'sns-chart',
+      release: 'sns-chart-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/sns-chart',
+      version: '1.1.2',
+      namespace: 'ask-system',
+      createNamespace: true,
+      skipCrds: true,
+      atomic: true,
+      takeOwnership: true,
       values: { aws: { region: this.region } },
     });
 
