@@ -19,6 +19,11 @@ const handler = new lambda.NodejsFunction(stack, 'Function', {
     nodeModules: ['axios'],
     forceDockerBundling: true,
   },
+
+  // To (re-)generate this lockfile:
+  // 1. Ensure your local version of bun matches the version in packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile
+  // 2. Run `bun install` in the `packages/@aws-cdk-testing/framework-integ` directory
+  // 3. Copy the generated `bun.lockb` file (it'll be a few directories up) to this location
   depsLockFilePath: path.join(__dirname, 'integ-handlers/bun/bun.lockb'),
 });
 
