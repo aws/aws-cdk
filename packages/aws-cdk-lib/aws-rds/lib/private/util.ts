@@ -4,8 +4,8 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { FeatureFlags, RemovalPolicy } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import { ValidationError } from '../../../core/lib/errors';
+import * as cxapi from '../../../cx-api';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { CommonRotationUserOptions, Credentials, SnapshotCredentials } from '../props';
@@ -195,7 +195,7 @@ export function getStorageEncryptedProperty(
 
   if (storageEncryptedLegacyDefaultValue) {
     if (storageEncrypted) {
-      throw new Error('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
+      throw new ValidationError('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.', scope);
     }
 
     return undefined;
