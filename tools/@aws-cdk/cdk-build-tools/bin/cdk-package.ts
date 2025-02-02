@@ -24,6 +24,7 @@ async function main() {
     })
     .option('pre-only', { type: 'boolean', default: false, desc: 'run pre package steps only' })
     .option('post-only', { type: 'boolean', default: false, desc: 'run post package steps only' })
+    .option('private', { type: 'boolean', default: false, desc: 'Also package private packages for local usage' })
     .argv;
 
   if (args['pre-only'] && args['post-only']) {
@@ -43,8 +44,9 @@ async function main() {
   const outdir = 'dist';
 
   // if this is a private module, don't package
-  if (isPrivate()) {
-    process.stdout.write('No packaging for private modules.\n');
+  const packPrivate = args.private || options.private;
+  if (isPrivate() && !packPrivate) {
+    process.stdout.write('No packaging for private modules.\nUse --private to force packing private packages for local testing.\n');
     return;
   }
 

@@ -51,7 +51,7 @@ describe('Migrate Function Tests', () => {
   });
 
   test('parseSourceOptions throws if both --from-path and --from-stack is provided', () => {
-    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrowError(
+    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrow(
       'Only one of `--from-path` or `--from-stack` may be provided.',
     );
   });
@@ -86,7 +86,7 @@ describe('Migrate Function Tests', () => {
 
   test('readFromPath throws error when template file does not exist at a given path', () => {
     const badTemplatePath = './not-here.json';
-    expect(() => readFromPath(badTemplatePath)).toThrowError(`\'${badTemplatePath}\' is not a valid path.`);
+    expect(() => readFromPath(badTemplatePath)).toThrow(`\'${badTemplatePath}\' is not a valid path.`);
   });
 
   test('readFromStack produces a string representation of the template retrieved from CloudFormation', async () => {
@@ -190,7 +190,7 @@ describe('Migrate Function Tests', () => {
   });
 
   test('generateStack throws error when called for other language', () => {
-    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError(
+    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrow(
       'BadBadBadStack could not be generated because php is not a supported language',
     );
   });

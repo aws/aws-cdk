@@ -7,7 +7,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('build fleet', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
 
@@ -346,13 +345,13 @@ describe('build fleet', () => {
     test('add invalid IPv4 CIDR address', () => {
       // WHEN
       expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3/23'), gamelift.Port.tcp(144)))
-        .toThrowError('Invalid IPv4 CIDR: \"1.2.3/23\"');
+        .toThrow('Invalid IPv4 CIDR: \"1.2.3/23\"');
     });
 
     test('add IPv4 CIDR address without mask', () => {
       // WHEN
       expect(() => fleet.addIngressRule(gamelift.Peer.ipv4('1.2.3.4'), gamelift.Port.tcp(144)))
-        .toThrowError('CIDR mask is missing in IPv4: \"1.2.3.4\". Did you mean \"1.2.3.4/32\"?');
+        .toThrow('CIDR mask is missing in IPv4: \"1.2.3.4\". Did you mean \"1.2.3.4/32\"?');
     });
 
     test('add too much ingress rules', () => {
@@ -360,9 +359,8 @@ describe('build fleet', () => {
         fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcpRange(100, 200));
       }
       expect(() => fleet.addIngressRule(gamelift.Peer.anyIpv4(), gamelift.Port.tcp(144)))
-        .toThrowError('No more than 50 ingress rules are allowed per fleet');
+        .toThrow('No more than 50 ingress rules are allowed per fleet');
     });
-
   });
 
   describe('add locations', () => {
@@ -679,5 +677,4 @@ describe('build fleet', () => {
       Annotations.fromStack(stack).hasWarning('/Default/MyBuildFleet', Match.stringLikeRegexp(warningMessage));
     });
   });
-
 });

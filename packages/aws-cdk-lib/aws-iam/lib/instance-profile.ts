@@ -3,6 +3,7 @@ import { CfnInstanceProfile } from './iam.generated';
 import { ServicePrincipal } from './principals';
 import { IRole, Role } from './role';
 import { Resource, Arn, Stack, IResource, PhysicalName } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM Instance Profile
@@ -169,6 +170,8 @@ export class InstanceProfile extends InstanceProfileBase {
 
   constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._role = props.role || new Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,

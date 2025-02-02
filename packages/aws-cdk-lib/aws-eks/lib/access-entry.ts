@@ -4,6 +4,7 @@ import { CfnAccessEntry } from './eks.generated';
 import {
   Resource, IResource, Aws, Lazy,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -143,7 +144,6 @@ export class AccessPolicyArn {
   constructor(public readonly policyName: string) {
     this.policyArn = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
   }
-
 }
 
 /**
@@ -206,7 +206,7 @@ export class AccessPolicy implements IAccessPolicy {
       public readonly accessScope: AccessScope = {
         type: options.accessScopeType,
         namespaces: options.namespaces,
-      }
+      };
     }
     return new Import();
   }
@@ -308,7 +308,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
-
     }
     return new Import(scope, id);
   }
@@ -326,6 +325,8 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
     this.principal = props.principal;

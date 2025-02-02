@@ -2,7 +2,7 @@
 import '@jsii/check-node/run';
 import { Environment } from '@aws-cdk/cx-api';
 import { DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
-import { CdkToolkit } from './cdk-toolkit';
+import { CdkToolkit } from './cli/cdk-toolkit';
 
 /**
  * Options for List Stacks

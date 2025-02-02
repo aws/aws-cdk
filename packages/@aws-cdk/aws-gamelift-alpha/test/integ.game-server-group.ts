@@ -12,7 +12,7 @@ class TestStack extends cdk.Stack {
     // Create default VPC
     const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
-    //Create default launch template
+    // Create default launch template
     const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
       machineImage: ec2.MachineImage.latestAmazonLinux(),
     });

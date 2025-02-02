@@ -1,5 +1,4 @@
 import { existsSync, promises as fs } from 'fs';
-import * as querystring from 'node:querystring';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -23,8 +22,6 @@ import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as mockttp from 'mockttp';
-import { CompletedRequest } from 'mockttp';
 import {
   cloneDirectory,
   integTest,
@@ -41,6 +38,7 @@ import {
   withSamIntegrationFixture,
   withSpecificFixture,
 } from '../../lib';
+import { awsActionsFromRequests, startProxyServer } from '../../lib/proxy';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -363,7 +361,8 @@ integTest('doubly nested stack',
     await fixture.cdkDeploy('with-doubly-nested-stack', {
       captureStderr: false,
     });
-  }));
+  }),
+);
 
 integTest(
   'nested stack with parameters',
@@ -406,7 +405,7 @@ integTest(
     );
     expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
-    //verify a change set was created with the provided name
+    // verify a change set was created with the provided name
     const changeSetResponse = await fixture.aws.cloudFormation.send(
       new ListChangeSetsCommand({
         StackName: stackArn,
@@ -486,6 +485,65 @@ integTest(
     });
   }),
 );
+
+integTest('deploy with import-existing-resources true', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--no-execute', '--import-existing-resources'],
+    captureStderr: false,
+  });
+  // verify that we only deployed a single stack (there's a single ARN in the output)
+  expect(stackArn.split('\n').length).toEqual(1);
+
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: stackArn,
+  }));
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  // verify a change set was successfully created
+  // Here, we do not test whether a resource is actually imported, because that is a CloudFormation feature, not a CDK feature.
+  const changeSetResponse = await fixture.aws.cloudFormation.send(new ListChangeSetsCommand({
+    StackName: stackArn,
+  }));
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(changeSets[0].ImportExistingResources).toEqual(true);
+}));
+
+integTest('deploy without import-existing-resources', withDefaultFixture(async (fixture) => {
+  const stackArn = await fixture.cdkDeploy('test-2', {
+    options: ['--no-execute'],
+    captureStderr: false,
+  });
+  // verify that we only deployed a single stack (there's a single ARN in the output)
+  expect(stackArn.split('\n').length).toEqual(1);
+
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: stackArn,
+  }));
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  // verify a change set was successfully created and ImportExistingResources = false
+  const changeSetResponse = await fixture.aws.cloudFormation.send(new ListChangeSetsCommand({
+    StackName: stackArn,
+  }));
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(changeSets[0].ImportExistingResources).toEqual(false);
+}));
+
+integTest('deploy with method=direct and import-existing-resources fails', withDefaultFixture(async (fixture) => {
+  const stackName = 'iam-test';
+  await expect(fixture.cdkDeploy(stackName, {
+    options: ['--import-existing-resources', '--method=direct'],
+  })).rejects.toThrow('exited with error');
+
+  // Ensure stack was not deployed
+  await expect(fixture.aws.cloudFormation.send(new DescribeStacksCommand({
+    StackName: fixture.fullStackName(stackName),
+  }))).rejects.toThrow('does not exist');
+}));
 
 integTest(
   'update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one',
@@ -1114,7 +1172,7 @@ integTest(
     await diffShouldSucceedWith({ fail: undefined, enableDiffNoFail: true });
 
     async function diffShouldSucceedWith(props: DiffParameters) {
-      await expect(diff(props)).resolves.not.toThrowError();
+      await expect(diff(props)).resolves.not.toThrow();
     }
 
     async function diffShouldFailWith(props: DiffParameters) {
@@ -1204,7 +1262,6 @@ integTest(
 integTest(
   'cdk diff doesnt show resource metadata changes',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -1224,7 +1281,6 @@ integTest(
 integTest(
   'cdk diff shows resource metadata changes with --no-change-set',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -2488,6 +2544,8 @@ integTest(
     // THEN
     const expectedSubstring = 'Resource is not in the expected state due to waiter status: TIMEOUT';
     expect(deployOutput).toContain(expectedSubstring);
+    expect(deployOutput).toContain('Observed responses:');
+    expect(deployOutput).toContain('200: OK');
     expect(deployOutput).not.toContain('hotswapped!');
   }),
 );
@@ -2776,7 +2834,6 @@ integTest(
 );
 
 integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
-
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
     notices: [
@@ -2810,57 +2867,36 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
 
   // assert dynamic environments are resolved
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
-
 }));
 
 integTest('requests go through a proxy when configured',
   withDefaultFixture(async (fixture) => {
-    // Set up key and certificate
-    const { key, cert } = await mockttp.generateCACertificate();
-    const certDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-'));
-    const certPath = path.join(certDir, 'cert.pem');
-    const keyPath = path.join(certDir, 'key.pem');
-    await fs.writeFile(keyPath, key);
-    await fs.writeFile(certPath, cert);
-
-    const proxyServer = mockttp.getLocal({
-      https: { keyPath, certPath },
-    });
-
-    // We don't need to modify any request, so the proxy
-    // passes through all requests to the host.
-    const endpoint = await proxyServer
-      .forAnyRequest()
-      .thenPassThrough();
-
-    proxyServer.enableDebug();
-    await proxyServer.start();
-
-    // The proxy is now ready to intercept requests
-
+    const proxyServer = await startProxyServer();
     try {
+      // Delete notices cache if it exists
+      await fs.rm(path.join(process.env.HOME ?? os.userInfo().homedir, '.cdk/cache/notices.json'), { force: true });
+
       await fixture.cdkDeploy('test-2', {
         captureStderr: true,
         options: [
           '--proxy', proxyServer.url,
-          '--ca-bundle-path', certPath,
+          '--ca-bundle-path', proxyServer.certPath,
         ],
+        modEnv: {
+          CDK_HOME: fixture.integTestDir,
+        },
       });
+
+      const requests = await proxyServer.getSeenRequests();
+
+      expect(requests.map(req => req.url))
+        .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
+
+      const actionsUsed = awsActionsFromRequests(requests);
+      expect(actionsUsed).toContain('AssumeRole');
+      expect(actionsUsed).toContain('CreateChangeSet');
     } finally {
-      await fs.rm(certDir, { recursive: true, force: true });
       await proxyServer.stop();
     }
-
-    const actionsUsed = actions(await endpoint.getSeenRequests());
-    expect(actionsUsed).toContain('AssumeRole');
-    expect(actionsUsed).toContain('CreateChangeSet');
   }),
 );
-
-function actions(requests: CompletedRequest[]): string[] {
-  return [...new Set(requests
-    .map(req => req.body.buffer.toString('utf-8'))
-    .map(body => querystring.decode(body))
-    .map(x => x.Action as string)
-    .filter(action => action != null))];
-}
