@@ -122,7 +122,6 @@ export abstract class Capacity {
           },
         };
       }
-
     }) (CapacityMode.AUTOSCALED);
   }
 

@@ -3,7 +3,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Alarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 
 class AlarmWithLabelIntegrationTest extends Stack {
-
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 

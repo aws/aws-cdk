@@ -1,5 +1,5 @@
 import { DescribeSecurityGroupsCommand } from '@aws-sdk/client-ec2';
-import { SDK, type SdkForEnvironment } from '../../lib';
+import { SDK, type SdkForEnvironment } from '../../lib/api';
 import { hasAllTrafficEgress, SecurityGroupContextProviderPlugin } from '../../lib/context-providers/security-groups';
 import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client, restoreSdkMocksToDefault } from '../util/mock-sdk';
 

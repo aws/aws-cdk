@@ -18,7 +18,7 @@ export function compareLoggingProps(oldProps: Partial<EKS.CreateClusterCommandIn
   if (newProps.logging?.clusterLogging === undefined && oldProps.logging?.clusterLogging === undefined) {
     return newProps;
   }
-  // if newProps containes LogSetup
+  // if newProps contains LogSetup
   if (newProps.logging && newProps.logging.clusterLogging && newProps.logging.clusterLogging.length > 0) {
     enabledTypes = newProps.logging.clusterLogging[0].types!;
     // if oldProps contains LogSetup with enabled:true

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnReceiptFilter } from './ses.generated';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The policy for the receipt filter.
@@ -52,6 +53,8 @@ export class ReceiptFilter extends Resource {
     super(scope, id, {
       physicalName: props.receiptFilterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnReceiptFilter(this, 'Resource', {
       filter: {

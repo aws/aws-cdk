@@ -1,5 +1,5 @@
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import { SSMContextProviderPlugin } from '../../lib/context-providers/ssm-parameters';
 import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockSSMClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
