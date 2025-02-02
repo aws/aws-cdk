@@ -15,7 +15,6 @@ export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements 
   }
 
   protected addTargetActionToRole(role: IRole): void {
-
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: ['firehose:PutRecord'],
       resources: [this.deliveryStream.deliveryStreamArn],

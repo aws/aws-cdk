@@ -51,7 +51,6 @@ test('built-in data features known regions', () => {
 });
 
 test('limitedRegionMap only returns information for certain regions', () => {
-
   const map = RegionInfo.limitedRegionMap(FactName.ELBV2_ACCOUNT, ['aws']);
   expect(map['us-east-1']).toBeDefined();
   expect(map['cn-north-1']).not.toBeDefined();

@@ -4,7 +4,6 @@ import * as cdk from '../../../core';
 import { SnsPublish, MessageAttributeDataType, MessageAttribute } from '../../lib/sns/publish';
 
 describe('Publish', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -38,6 +37,42 @@ describe('Publish', () => {
       },
     });
   });
+
+  test('default settings - using JSONata', () => {
+  // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    const task = SnsPublish.jsonata(stack, 'Publish', {
+      topic,
+      message: sfn.TaskInput.fromText('Publish this message'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sns:publish',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        TopicArn: { Ref: 'TopicBFC7AF6E' },
+        Message: 'Publish this message',
+      },
+    });
+  });
+
   test('with message attributes', () => {
     // GIVEN
     const stack = new cdk.Stack();

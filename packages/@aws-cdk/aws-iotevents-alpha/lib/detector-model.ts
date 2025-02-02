@@ -3,6 +3,7 @@ import { Resource, IResource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
 import { State } from './state';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an AWS IoT Events detector model.
@@ -108,6 +109,8 @@ export class DetectorModel extends Resource implements IDetectorModel {
     super(scope, id, {
       physicalName: props.detectorModelName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.initialState._onEnterEventsHaveAtLeastOneCondition()) {
       throw new Error('Detector Model must have at least one Input with a condition');

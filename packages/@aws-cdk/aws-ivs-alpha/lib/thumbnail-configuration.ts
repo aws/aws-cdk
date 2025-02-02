@@ -65,7 +65,6 @@ export class ThumbnailConfiguration {
     public readonly storage?: Storage[],
     public readonly targetInterval?: Duration,
   ) {
-
     if (targetInterval === undefined || Token.isUnresolved(targetInterval)) {
       return;
     }

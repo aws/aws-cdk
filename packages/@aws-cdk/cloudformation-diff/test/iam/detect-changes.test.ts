@@ -662,7 +662,6 @@ test('can summarize addition of ssoAssignment', () => {
       ].map(s => chalk.green(s)),
     ],
   );
-
 });
 
 test('can summarize addition of SsoInstanceACAConfigs', () => {
@@ -705,7 +704,6 @@ test('can summarize addition of SsoInstanceACAConfigs', () => {
       ].map(s => chalk.green(s)),
     ],
   );
-
 });
 
 test('can summarize negation of SsoInstanceACAConfigs', () => {
@@ -748,7 +746,6 @@ test('can summarize negation of SsoInstanceACAConfigs', () => {
       ].map(s => chalk.red(s)),
     ],
   );
-
 });
 
 test('can summarize negation of ssoAssignment', () => {
