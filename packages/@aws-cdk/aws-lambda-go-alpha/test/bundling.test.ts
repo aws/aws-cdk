@@ -364,7 +364,7 @@ test('command hooks should be called once in local bundling', () => {
     },
   });
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingDockerImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingImage });
   expect(tryBundle).toBe(true);
 
   expect(beforeBundling.mock.calls).toHaveLength(1);
