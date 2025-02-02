@@ -308,7 +308,6 @@ describe('external service', () => {
         desiredCount: 2,
       });
     }).toThrow(/Don't supply desiredCount/);
-
   });
 
   test('errors if daemon and maximumPercent not 100', () => {
@@ -332,7 +331,6 @@ describe('external service', () => {
         maxHealthyPercent: 300,
       });
     }).toThrow(/Maximum percent must be 100 for daemon mode./);
-
   });
 
   test('sets daemon scheduling strategy', () => {
@@ -363,7 +361,6 @@ describe('external service', () => {
       EnableECSManagedTags: false,
       LaunchType: LaunchType.EXTERNAL,
     });
-
   });
 
   test('errors if minimum not less than maximum', () => {
