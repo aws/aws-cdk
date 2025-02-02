@@ -213,6 +213,44 @@ describe('WebSocketApi', () => {
       .toThrow("Path must start with '/': path");
   });
 
+  test('get arnForExecuteApiV2', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(stack.resolve(api.arnForExecuteApiV2('route', 'stage'))).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        stack.resolve(api.apiId),
+        '/stage/route',
+      ]],
+    });
+  });
+
+  test('get arnForExecuteApiV2 with default values', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    expect(stack.resolve(api.arnForExecuteApiV2())).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        stack.resolve(api.apiId),
+        '/*/*',
+      ]],
+    });
+  });
+
   describe('grantManageConnections', () => {
     test('adds an IAM policy to the principal', () => {
       // GIVEN

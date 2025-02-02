@@ -7,6 +7,7 @@ import {
   Resource,
   Token,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from '../../cx-api';
 
@@ -139,6 +140,8 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    */
   public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
 
