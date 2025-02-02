@@ -29,7 +29,10 @@
                     "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/AcceptorStateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -93,13 +96,24 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -136,7 +150,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "definitionBody": "*"
+                }
+              ]
             }
           },
           "StartExecution": {
@@ -148,12 +167,22 @@
                 "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.CallAwsServiceCrossRegion",
               "version": "0.0.0"
             }
           },
@@ -178,7 +207,10 @@
                     "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -258,13 +290,29 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -284,7 +332,8 @@
                     "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -332,7 +381,15 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "timeout": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                }
+              ]
             }
           },
           "StateMachine": {
@@ -348,7 +405,10 @@
                     "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -433,13 +493,24 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -491,7 +562,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "definitionBody": "*"
+                }
+              ]
             }
           },
           "Exports": {
@@ -591,7 +667,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       }
                     },
@@ -679,7 +758,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {
