@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "aws-glue-job-scalaspark-etl-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-scalaspark-etl"
+      ],
+      "assertionStack": "aws-glue-job-scalaspark-etl-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobscalasparketlintegtestDefaultTestDeployAssertCA9A8121"
+    }
+  }
+}

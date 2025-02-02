@@ -1259,7 +1259,6 @@ describe('ec2 task definition', () => {
           DeviceType: 'eia2.medium',
         }],
       });
-
     });
     test('correctly sets inferenceAccelerators using props and addInferenceAccelerator method', () => {
       // GIVEN
@@ -1413,5 +1412,4 @@ describe('ec2 task definition', () => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { placementConstraints: [invalidConstraint] });
     }).toThrow(/Invalid placement constraint\(s\): distinctInstance. Only 'memberOf' is currently supported in the Ec2TaskDefinition class./);
   });
-
 });

@@ -1,7 +1,7 @@
 import * as util from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
-import { print, error } from '../../logging';
+import { info, error } from '../../logging';
 import { flatten } from '../../util/arrays';
 import type { SDK } from '../aws-auth';
 
@@ -162,7 +162,7 @@ export class CloudWatchLogEventMonitor {
    * Print out a cloudwatch event
    */
   private print(event: CloudWatchLogEvent): void {
-    print(
+    info(
       util.format(
         '[%s] %s %s',
         chalk.blue(event.logGroupName),
@@ -211,7 +211,7 @@ export class CloudWatchLogEventMonitor {
       }
       // As long as there are _any_ events in the log group `filterLogEvents` will return a nextToken.
       // This is true even if these events are before `startTime`. So if we have 100 events and a nextToken
-      // then assume that we have hit the limit and let the user know some messages have been supressed.
+      // then assume that we have hit the limit and let the user know some messages have been suppressed.
       // We are essentially showing them a sampling (10000 events printed out is not very useful)
       if (filteredEvents.length === 100 && response.nextToken) {
         events.push({

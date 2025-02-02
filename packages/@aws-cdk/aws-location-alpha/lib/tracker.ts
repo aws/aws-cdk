@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { IGeofenceCollection } from './geofence-collection';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Tracker
@@ -172,7 +173,6 @@ export class Tracker extends Resource implements ITracker {
   public readonly trackerUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: TrackerProps = {}) {
-
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
@@ -197,6 +197,8 @@ export class Tracker extends Resource implements ITracker {
     super(scope, id, {
       physicalName: props.trackerName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const tracker = new CfnTracker(this, 'Resource', {
       trackerName: this.physicalName,

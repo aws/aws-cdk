@@ -30,11 +30,7 @@ export enum ActionOnFailure {
   CONTINUE = 'CONTINUE',
 }
 
-/**
- * Properties for EmrAddStep
- *
- */
-export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
+interface EmrAddStepOptions {
   /**
    * The ClusterId to add the Step to.
    */
@@ -101,6 +97,24 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for EmrAddStep using JSONPath
+ *
+ */
+export interface EmrAddStepJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrAddStepOptions {}
+
+/**
+ * Properties for EmrAddStep using JSONata
+ *
+ */
+export interface EmrAddStepJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrAddStepOptions {}
+
+/**
+ * Properties for EmrAddStep
+ *
+ */
+export interface EmrAddStepProps extends sfn.TaskStateBaseProps, EmrAddStepOptions {}
+
+/**
  * A Step Functions Task to add a Step to an EMR Cluster
  *
  * The StepConfiguration is defined as Parameters in the state machine definition.
@@ -109,6 +123,33 @@ export interface EmrAddStepProps extends sfn.TaskStateBaseProps {
  *
  */
 export class EmrAddStep extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task that using JSONPath to add a Step to an EMR Cluster
+   *
+   * The StepConfiguration is defined as Parameters in the state machine definition.
+   *
+   * OUTPUT: the StepId
+   *
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrAddStepJsonPathProps) {
+    return new EmrAddStep(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task that using JSONata to add a Step to an EMR Cluster
+   *
+   * The StepConfiguration is defined as Parameters in the state machine definition.
+   *
+   * OUTPUT: the StepId
+   *
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrAddStepJsonataProps) {
+    return new EmrAddStep(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -132,10 +173,11 @@ export class EmrAddStep extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'addStep', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ClusterId: this.props.clusterId,
         ExecutionRoleArn: this.props.executionRoleArn,
         Step: {
@@ -155,13 +197,10 @@ export class EmrAddStep extends sfn.TaskStateBase {
               ),
           },
         },
-      }),
+      }, queryLanguage),
     };
   }
 
-  /**
-   * This generates the PolicyStatements required by the Task to call AddStep.
-   */
   private createPolicyStatements(): iam.PolicyStatement[] {
     const stack = Stack.of(this);
 

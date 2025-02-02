@@ -5,6 +5,7 @@ import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { Model } from '../model';
@@ -150,14 +151,14 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     if (this.stateMachine instanceof sfn.StateMachine) {
       const stateMachineType = (this.stateMachine as sfn.StateMachine).stateMachineType;
       if (stateMachineType !== sfn.StateMachineType.EXPRESS) {
-        throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
+        throw new ValidationError('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', method);
       }
 
-      //if not imported, extract the name from the CFN layer to reach the
-      //literal value if it is given (rather than a token)
+      // if not imported, extract the name from the CFN layer to reach the
+      // literal value if it is given (rather than a token)
       stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
     } else {
-      //imported state machine
+      // imported state machine
       stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
     }
 
@@ -246,9 +247,6 @@ function integrationResponse() {
 
 /**
  * Defines the request template that will be used for the integration
- * @param stateMachine
- * @param options
- * @returns requestTemplate
  */
 function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
   const templateStr = templateString(stateMachine, options);
@@ -264,11 +262,6 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
 /**
  * Reads the VTL template and returns the template string to be used
  * for the request template.
- *
- * @param stateMachine
- * @param includeRequestContext
- * @param options
- * @reutrns templateString
  */
 function templateString(
   stateMachine: sfn.IStateMachine,

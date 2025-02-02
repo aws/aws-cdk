@@ -4,6 +4,7 @@ import { CfnSubscriptionFilter } from './logs.generated';
 import * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -57,6 +58,8 @@ export class SubscriptionFilter extends Resource {
     super(scope, id, {
       physicalName: props.filterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (
       props.distribution &&

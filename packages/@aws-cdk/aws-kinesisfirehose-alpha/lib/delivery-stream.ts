@@ -10,6 +10,7 @@ import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfire
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { StreamEncryption } from './encryption';
 import { ISource } from './source';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 const PUT_RECORD_ACTIONS = [
   'firehose:PutRecord',
@@ -91,7 +92,6 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
  * Base class for new and imported Kinesis Data Firehose delivery streams.
  */
 abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
-
   public abstract readonly deliveryStreamName: string;
 
   public abstract readonly deliveryStreamArn: string;
@@ -319,6 +319,8 @@ export class DeliveryStream extends DeliveryStreamBase {
     super(scope, id, {
       physicalName: props.deliveryStreamName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._role = props.role;
 

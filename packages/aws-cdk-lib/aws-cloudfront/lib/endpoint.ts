@@ -7,7 +7,6 @@ import { PhysicalName } from '../../core';
  * Represents the endpoints available for targetting within a realtime log config resource
  */
 export abstract class Endpoint {
-
   /**
    * Configure a Kinesis Stream Endpoint for Realtime Log Config
    *

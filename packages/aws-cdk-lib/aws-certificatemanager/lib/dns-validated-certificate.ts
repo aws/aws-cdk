@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
@@ -71,9 +72,9 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   public readonly certificateArn: string;
 
   /**
-  * Resource Tags.
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
-  */
+   * Resource Tags.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
+   */
 
   public readonly tags: cdk.TagManager;
   protected readonly region?: string;
@@ -84,6 +85,8 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.keyAlgorithm) {
       cdk.Annotations.of(this)

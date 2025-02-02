@@ -35,7 +35,7 @@ export * from './expiration';
 export * from './size';
 export * from './stack-trace';
 export { Element } from './deps';
-export { Errors } from './errors';
+export * from './errors';
 
 export * from './app';
 export * from './context-provider';

@@ -3,6 +3,7 @@ import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnRoute } from './ec2.generated';
 import { ISubnet } from './vpc';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a ClientVpnRoute
@@ -62,17 +63,16 @@ export abstract class ClientVpnRouteTarget {
  * Properties for a ClientVpnRoute
  */
 export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
-
   /**
    * The client VPN endpoint to which to add the route.
    * @default clientVpnEndpoint is required
    */
   readonly clientVpnEndpoint?: IClientVpnEndpoint;
+
   /**
    * The client VPN endpoint to which to add the route.
    * @deprecated Use `clientVpnEndpoint` instead
    * @default clientVpnEndpoint is required
-
    */
   readonly clientVpnEndoint?: IClientVpnEndpoint;
 }
@@ -95,6 +95,8 @@ export class ClientVpnRoute extends Resource {
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const route = new CfnClientVpnRoute(this, 'Resource', {
       clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       description: props.description,

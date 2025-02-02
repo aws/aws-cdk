@@ -33,7 +33,6 @@ describe('receipt filter', () => {
         },
       },
     });
-
   });
 
   test('can create an allow list filter', () => {
@@ -86,6 +85,5 @@ describe('receipt filter', () => {
         },
       },
     });
-
   });
 });

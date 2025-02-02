@@ -16,7 +16,6 @@ import { Aws, Duration, Names, Stack } from '../../core';
  * Corresponds to the image tag of 'amazon/aws-load-balancer-controller' image.
  */
 export class AlbControllerVersion {
-
   /**
    * v2.0.0
    */

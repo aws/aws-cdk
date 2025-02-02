@@ -91,7 +91,7 @@ class RollbacktestStack extends cdk.Stack {
 
 const app = new cdk.App({
   context: {
-    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
+    '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID ?? process.env.GITHUB_RUN_ID, // Force all assets to be unique, but consistent in one build
   },
 });
 

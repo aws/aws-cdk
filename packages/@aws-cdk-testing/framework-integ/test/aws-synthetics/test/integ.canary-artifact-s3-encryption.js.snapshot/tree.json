@@ -27,8 +27,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Policy": {
@@ -91,14 +91,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -109,28 +109,28 @@
                     "id": "Default",
                     "path": "canary-artifact-s3-encryption/MyTestBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
             "path": "canary-artifact-s3-encryption/LatestNodeRuntimeMap",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
@@ -141,51 +141,51 @@
                 "id": "Staging",
                 "path": "canary-artifact-s3-encryption/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "canary-artifact-s3-encryption/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "canary-artifact-s3-encryption/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
-          "CanarySseS3": {
-            "id": "CanarySseS3",
-            "path": "canary-artifact-s3-encryption/CanarySseS3",
+          "CanarySseS3Puppeteer": {
+            "id": "CanarySseS3Puppeteer",
+            "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "canary-artifact-s3-encryption/CanarySseS3/ServiceRole",
+                "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "canary-artifact-s3-encryption/CanarySseS3/ServiceRole/ImportServiceRole",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "canary-artifact-s3-encryption/CanarySseS3/ServiceRole/Resource",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -285,19 +285,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "canary-artifact-s3-encryption/CanarySseS3/Resource",
+                "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
                   "aws:cdk:cloudformation:props": {
@@ -324,11 +324,11 @@
                     },
                     "executionRoleArn": {
                       "Fn::GetAtt": [
-                        "CanarySseS3ServiceRoleC3DFF4A1",
+                        "CanarySseS3PuppeteerServiceRoleDD7268F4",
                         "Arn"
                       ]
                     },
-                    "name": "canaryartifactseee471",
+                    "name": "canaryartifacts8fb57c",
                     "runtimeVersion": "syn-nodejs-puppeteer-7.0",
                     "schedule": {
                       "durationInSeconds": "0",
@@ -344,32 +344,32 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "AutoDeleteUnderlyingResourcesCustomResource": {
                 "id": "AutoDeleteUnderlyingResourcesCustomResource",
-                "path": "canary-artifact-s3-encryption/CanarySseS3/AutoDeleteUnderlyingResourcesCustomResource",
+                "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/AutoDeleteUnderlyingResourcesCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "canary-artifact-s3-encryption/CanarySseS3/AutoDeleteUnderlyingResourcesCustomResource/Default",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3Puppeteer/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_synthetics.Canary",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider": {
@@ -380,30 +380,264 @@
                 "id": "Staging",
                 "path": "canary-artifact-s3-encryption/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "canary-artifact-s3-encryption/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "canary-artifact-s3-encryption/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CanarySseS3PlayWright": {
+            "id": "CanarySseS3PlayWright",
+            "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "canaryPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:ListAllMyBuckets",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetBucketLocation",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyTestBucket81062429",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyTestBucket81062429",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/integ/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "cloudwatch:PutMetricData",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "cloudwatch:namespace": "CloudWatchSynthetics"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/lambda/cwsyn-*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Synthetics::Canary",
+                  "aws:cdk:cloudformation:props": {
+                    "artifactConfig": {
+                      "s3Encryption": {
+                        "encryptionMode": "SSE_S3"
+                      }
+                    },
+                    "artifactS3Location": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "s3://",
+                          {
+                            "Ref": "MyTestBucket81062429"
+                          },
+                          "/integ"
+                        ]
+                      ]
+                    },
+                    "code": {
+                      "handler": "canary.handler",
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "5178413cfe8db00b2d5dcfa9be417e934c64601d0da3031d88c145c8293bc27f.zip"
+                    },
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "CanarySseS3PlayWrightServiceRole3656FB16",
+                        "Arn"
+                      ]
+                    },
+                    "name": "canaryartifacts87760a",
+                    "runtimeVersion": "syn-nodejs-playwright-1.0",
+                    "schedule": {
+                      "durationInSeconds": "0",
+                      "expression": "rate(1 minute)"
+                    },
+                    "startCanaryAfterCreation": true,
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-underlying-resources",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "AutoDeleteUnderlyingResourcesCustomResource": {
+                "id": "AutoDeleteUnderlyingResourcesCustomResource",
+                "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/AutoDeleteUnderlyingResourcesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "canary-artifact-s3-encryption/CanarySseS3PlayWright/AutoDeleteUnderlyingResourcesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CanarySseKmsWithoutKeySetting": {
@@ -418,8 +652,8 @@
                     "id": "ImportServiceRole",
                     "path": "canary-artifact-s3-encryption/CanarySseKmsWithoutKeySetting/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -524,8 +758,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -567,20 +801,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Key": {
@@ -625,14 +859,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.Key",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -690,8 +924,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "AutoDeleteUnderlyingResourcesCustomResource": {
@@ -702,20 +936,20 @@
                     "id": "Default",
                     "path": "canary-artifact-s3-encryption/CanarySseKmsWithoutKeySetting/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_synthetics.Canary",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "Key": {
@@ -759,14 +993,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CanarySseKmsWith": {
@@ -781,8 +1015,8 @@
                     "id": "ImportServiceRole",
                     "path": "canary-artifact-s3-encryption/CanarySseKmsWith/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -887,8 +1121,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -930,20 +1164,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -1001,8 +1235,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "AutoDeleteUnderlyingResourcesCustomResource": {
@@ -1013,42 +1247,42 @@
                     "id": "Default",
                     "path": "canary-artifact-s3-encryption/CanarySseKmsWith/AutoDeleteUnderlyingResourcesCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_synthetics.Canary",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "canary-artifact-s3-encryption/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "canary-artifact-s3-encryption/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       },
       "IntegCanaryTest": {
@@ -1064,7 +1298,7 @@
                 "path": "IntegCanaryTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1075,22 +1309,22 @@
                     "id": "BootstrapVersion",
                     "path": "IntegCanaryTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "IntegCanaryTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -1110,13 +1344,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
     }
   }
 }

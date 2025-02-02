@@ -251,7 +251,6 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
 
     (isAgnostic ? agnosticStacks : envAwareStacks).add(stack);
     if (agnosticStacks.size > 0 && envAwareStacks.size > 0) {
-
       const describeStacks = (xs: Set<Stack>) => Array.from(xs).map(s => s.node.path).join(', ');
 
       throw new Error([

@@ -82,7 +82,11 @@ export class Aspects {
    * @param options Options to apply on this aspect.
    */
   public add(aspect: IAspect, options?: AspectOptions) {
-    this._appliedAspects.push(new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT));
+    const newApplication = new AspectApplication(this._scope, aspect, options?.priority ?? AspectPriority.DEFAULT);
+    if (this._appliedAspects.some(a => a.aspect === newApplication.aspect && a.priority === newApplication.priority)) {
+      return;
+    }
+    this._appliedAspects.push(newApplication);
   }
 
   /**

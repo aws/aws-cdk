@@ -542,7 +542,6 @@ describe('cluster resource provider', () => {
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
         });
-
       });
       describe('assessConfig change', () => {
         test('from undefined to a specific value', async () => {
@@ -773,7 +772,6 @@ describe('cluster resource provider', () => {
           }
           expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
         });
-
       });
 
       describe('logging or access change', () => {

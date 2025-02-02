@@ -6,7 +6,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('alias', () => {
-
   describe('new', () => {
     let stack: cdk.Stack;
     let fleet: gamelift.FleetBase;

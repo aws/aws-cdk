@@ -36,7 +36,6 @@ export interface LogGroupTargetInputOptions {
  * The input to send to the CloudWatch LogGroup target
  */
 export abstract class LogGroupTargetInput {
-
   /**
    * Pass a JSON object to the the log group event target
    *
@@ -48,7 +47,7 @@ export abstract class LogGroupTargetInput {
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
     });
-  };
+  }
 
   /**
    * Return the input properties for this input object

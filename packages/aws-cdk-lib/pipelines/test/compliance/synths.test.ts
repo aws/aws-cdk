@@ -31,7 +31,6 @@ afterEach(() => {
 });
 
 test('synth takes arrays of commands', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['install1', 'install2'],
     commands: ['build1', 'build2', 'test1', 'test2', 'cdk synth'],
@@ -67,7 +66,6 @@ test('synth takes arrays of commands', () => {
 });
 
 test('synth sets artifact base-directory to cdk.out', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
   // THEN
@@ -86,7 +84,6 @@ test('synth sets artifact base-directory to cdk.out', () => {
 });
 
 test('synth supports setting subdirectory', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     installCommands: ['cd subdir'],
     commands: ['true'],
@@ -113,7 +110,6 @@ test('synth supports setting subdirectory', () => {
 });
 
 test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     env: {
       NPM_CONFIG_UNSAFE_PERM: 'true',
@@ -135,7 +131,6 @@ test('npm synth sets, or allows setting, UNSAFE_PERM=true', () => {
 });
 
 test('Magic CodePipeline variables passed to synth envvars must be rendered in the action', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     env: {
       VERSION: codepipeline.GlobalVariables.executionId,
@@ -294,7 +289,6 @@ test('install command can be overridden/specified', () => {
 });
 
 test('Synth can output additional artifacts', () => {
-
   // WHEN
   const synth = new cdkp.ShellStep('Synth', {
     input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
@@ -535,7 +529,6 @@ test('Synth CodeBuild project role can be granted permissions', () => {
 });
 
 test('Synth can reference an imported ECR repo', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
       commands: ['build'],
@@ -554,7 +547,6 @@ test('Synth can reference an imported ECR repo', () => {
 });
 
 test('CodeBuild: Can specify additional policy statements', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
@@ -584,7 +576,6 @@ test('CodeBuild: Can specify additional policy statements', () => {
 });
 
 test('Multiple input sources in side-by-side directories', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.ShellStep('Synth', {
@@ -652,7 +643,6 @@ test('Multiple input sources in side-by-side directories', () => {
 });
 
 test('Can easily switch on privileged mode for synth', () => {
-
   // WHEN
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     dockerEnabledForSynth: true,
@@ -678,7 +668,6 @@ test('Can easily switch on privileged mode for synth', () => {
 });
 
 test('can provide custom BuildSpec that is merged with generated one', () => {
-
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     synth: new cdkp.CodeBuildStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),

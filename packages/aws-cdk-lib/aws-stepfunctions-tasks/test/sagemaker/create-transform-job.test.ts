@@ -76,6 +76,62 @@ test('create basic transform job', () => {
   });
 });
 
+test('create basic transform job - using JSONata', () => {
+  // WHEN
+  const task = SageMakerCreateTransformJob.jsonata(stack, 'TransformTask', {
+    transformJobName: 'MyTransformJob',
+    modelName: 'MyModelName',
+    transformInput: {
+      transformDataSource: {
+        s3DataSource: {
+          s3Uri: 's3://inputbucket/prefix',
+        },
+      },
+    },
+    transformOutput: {
+      s3OutputPath: 's3://outputbucket/prefix',
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createTransformJob',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      TransformJobName: 'MyTransformJob',
+      ModelName: 'MyModelName',
+      TransformInput: {
+        DataSource: {
+          S3DataSource: {
+            S3Uri: 's3://inputbucket/prefix',
+            S3DataType: 'S3Prefix',
+          },
+        },
+      },
+      TransformOutput: {
+        S3OutputPath: 's3://outputbucket/prefix',
+      },
+      TransformResources: {
+        InstanceCount: 1,
+        InstanceType: 'ml.m4.xlarge',
+      },
+    },
+  });
+});
+
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new SageMakerCreateTransformJob(stack, 'TransformTask', {

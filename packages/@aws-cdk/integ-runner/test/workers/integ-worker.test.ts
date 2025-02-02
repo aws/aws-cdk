@@ -89,7 +89,6 @@ describe('test runner', () => {
   });
 
   test('legacy test throws', () => {
-
     // WHEN
     const test = {
       fileName: 'test/test-data/xxxxx.integ-test2.js',

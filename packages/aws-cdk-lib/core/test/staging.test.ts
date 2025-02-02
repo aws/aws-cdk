@@ -135,7 +135,6 @@ describe('staging', () => {
     expect(stagingNotArchive.isArchive).toEqual(false);
     expect(stagingDockerFile.packaging).toEqual(FileAssetPackaging.FILE);
     expect(stagingDockerFile.isArchive).toEqual(false);
-
   });
 
   test('asset packaging type is correct when staging is skipped because of memory cache', () => {

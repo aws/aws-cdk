@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, withResolved } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Cache Policy
@@ -141,6 +142,8 @@ export class CachePolicy extends Resource implements ICachePolicy {
     super(scope, id, {
       physicalName: props.cachePolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
 

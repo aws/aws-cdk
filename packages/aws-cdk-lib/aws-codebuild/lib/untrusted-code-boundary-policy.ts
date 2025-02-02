@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for UntrustedCodeBoundaryPolicy
@@ -91,5 +92,7 @@ export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
         ...props.additionalStatements ?? [],
       ],
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

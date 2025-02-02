@@ -3,6 +3,8 @@ import type { SDK } from './aws-auth';
 import { type EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
 import { debug, warning } from '../logging';
 import { Notices } from '../notices';
+import { ToolkitError } from '../toolkit/error';
+import { formatErrorMessage } from '../util/error';
 
 /**
  * Registry class for `EnvironmentResources`.
@@ -94,13 +96,13 @@ export class EnvironmentResources {
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
           warning(
-            `Could not read SSM parameter ${ssmParameterName}: ${e.message}, falling back to version from ${bootstrapStack}`,
+            `Could not read SSM parameter ${ssmParameterName}: ${formatErrorMessage(e)}, falling back to version from ${bootstrapStack}`,
           );
           doValidate(bootstrapStack.version, this.environment);
           return;
         }
 
-        throw new Error(
+        throw new ToolkitError(
           `This CDK deployment requires bootstrap stack version '${expectedVersion}', but during the confirmation via SSM parameter ${ssmParameterName} the following error occurred: ${e}`,
         );
       }
@@ -118,7 +120,7 @@ export class EnvironmentResources {
         notices.addBootstrappedEnvironment({ bootstrapStackVersion: version, environment });
       }
       if (defExpectedVersion > version) {
-        throw new Error(
+        throw new ToolkitError(
           `This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`,
         );
       }
@@ -141,14 +143,14 @@ export class EnvironmentResources {
 
       const asNumber = parseInt(`${result.Parameter?.Value}`, 10);
       if (isNaN(asNumber)) {
-        throw new Error(`SSM parameter ${parameterName} not a number: ${result.Parameter?.Value}`);
+        throw new ToolkitError(`SSM parameter ${parameterName} not a number: ${result.Parameter?.Value}`);
       }
 
       this.cache.ssmParameters.set(parameterName, asNumber);
       return asNumber;
     } catch (e: any) {
       if (e.name === 'ParameterNotFound') {
-        throw new Error(
+        throw new ToolkitError(
           `SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`,
         );
       }
@@ -158,7 +160,7 @@ export class EnvironmentResources {
 
   public async prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo> {
     if (!this.sdk) {
-      throw new Error('ToolkitInfo needs to have been initialized with an sdk to call prepareEcrRepository');
+      throw new ToolkitError('ToolkitInfo needs to have been initialized with an sdk to call prepareEcrRepository');
     }
     const ecr = this.sdk.ecr();
 
@@ -187,7 +189,7 @@ export class EnvironmentResources {
     });
     const repositoryUri = response.repository?.repositoryUri;
     if (!repositoryUri) {
-      throw new Error(`CreateRepository did not return a repository URI for ${repositoryUri}`);
+      throw new ToolkitError(`CreateRepository did not return a repository URI for ${repositoryUri}`);
     }
 
     // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
@@ -210,7 +212,7 @@ export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
    * Look up the toolkit for a given environment, using a given SDK
    */
   public async lookupToolkit(): Promise<ToolkitInfo> {
-    throw new Error(
+    throw new ToolkitError(
       'Trying to perform an operation that requires a bootstrap stack; you should not see this error, this is a bug in the CDK CLI.',
     );
   }

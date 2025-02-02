@@ -29,7 +29,6 @@ export class AssemblyManifestReader {
     try {
       const obj = Manifest.loadAssemblyManifest(fileName);
       return new AssemblyManifestReader(path.dirname(fileName), obj, fileName);
-
     } catch (e: any) {
       throw new Error(`Cannot read integ manifest '${fileName}': ${e.message}`);
     }

@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnRoute } from './appmesh.generated';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * The type returned from the `bind()` method in `HttpRoutePathMatch`.
@@ -66,7 +67,7 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
     super();
 
     if (prefix && prefix[0] !== '/') {
-      throw new Error(`Prefix Path for the match must start with \'/\', got: ${prefix}`);
+      throw new UnscopedValidationError(`Prefix Path for the match must start with \'/\', got: ${prefix}`);
     }
   }
 
@@ -82,7 +83,7 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
     super();
 
     if (match.exact && match.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${match.exact}`);
+      throw new UnscopedValidationError(`Exact Path for the match must start with \'/\', got: ${match.exact}`);
     }
   }
 
@@ -184,17 +185,17 @@ class HttpGatewayRoutePrefixPathMatch extends HttpGatewayRoutePathMatch {
     super();
 
     if (prefixPathMatch[0] !== '/') {
-      throw new Error('Prefix path for the match must start with \'/\', '
+      throw new UnscopedValidationError('Prefix path for the match must start with \'/\', '
         + `got: ${prefixPathMatch}`);
     }
 
     if (rewriteTo) {
       if (prefixPathMatch[prefixPathMatch.length - 1] !== '/') {
-        throw new Error('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
+        throw new UnscopedValidationError('When prefix path for the rewrite is specified, prefix path for the match must end with \'/\', '
           + `got: ${prefixPathMatch}`);
       }
       if (rewriteTo[0] !== '/' || rewriteTo[rewriteTo.length - 1] !== '/') {
-        throw new Error('Prefix path for the rewrite must start and end with \'/\', '
+        throw new UnscopedValidationError('Prefix path for the rewrite must start and end with \'/\', '
           + `got: ${rewriteTo}`);
       }
     }
@@ -221,13 +222,13 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
     super();
 
     if (wholePathMatch.exact && wholePathMatch.exact[0] !== '/') {
-      throw new Error(`Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
+      throw new UnscopedValidationError(`Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
     }
     if (exactPathRewrite === '') {
-      throw new Error('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
+      throw new UnscopedValidationError('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
     }
     if (exactPathRewrite && exactPathRewrite[0] !== '/') {
-      throw new Error(`Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
+      throw new UnscopedValidationError(`Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
     }
   }
 

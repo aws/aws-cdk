@@ -73,7 +73,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -81,7 +81,6 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
  * An EC2 service running on an ECS cluster fronted by an application load balancer.
  */
 export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultipleTargetGroupsServiceBase {
-
   /**
    * The EC2 service in this construct.
    */

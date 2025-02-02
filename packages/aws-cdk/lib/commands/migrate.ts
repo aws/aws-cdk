@@ -19,14 +19,15 @@ import type {
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import * as chalk from 'chalk';
 import { cliInit } from '../../lib/init';
-import { print } from '../../lib/logging';
+import { info } from '../../lib/logging';
 import type { ICloudFormationClient, SdkProvider } from '../api/aws-auth';
-import { CloudFormationStack } from '../api/util/cloudformation';
+import { CloudFormationStack } from '../api/deployments';
+import { ToolkitError } from '../toolkit/error';
 import { zipDirectory } from '../util/archive';
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
 /** The list of languages supported by the built-in noctilucent binary. */
-export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
+const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
 
 /**
  * Generates a CDK app from a yaml or json template.
@@ -78,7 +79,7 @@ export async function generateCdkApp(
         stackFileName = `${resolvedOutputPath}/${formattedStackName}.go`;
         break;
       default:
-        throw new Error(
+        throw new ToolkitError(
           `${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`,
         );
     }
@@ -105,7 +106,7 @@ export function generateStack(template: string, stackName: string, language: str
   try {
     return cdk_from_cfn.transmute(template, language, formattedStackName);
   } catch (e) {
-    throw new Error(`${formattedStackName} could not be generated because ${(e as Error).message}`);
+    throw new ToolkitError(`${formattedStackName} could not be generated because ${(e as Error).message}`);
   }
 }
 
@@ -120,10 +121,10 @@ export function readFromPath(inputPath: string): string {
   try {
     readFile = fs.readFileSync(inputPath, 'utf8');
   } catch (e) {
-    throw new Error(`'${inputPath}' is not a valid path.`);
+    throw new ToolkitError(`'${inputPath}' is not a valid path.`);
   }
   if (readFile == '') {
-    throw new Error(`Cloudformation template filepath: '${inputPath}' is an empty file.`);
+    throw new ToolkitError(`Cloudformation template filepath: '${inputPath}' is an empty file.`);
   }
   return readFile;
 }
@@ -147,7 +148,7 @@ export async function readFromStack(
   if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
     return JSON.stringify(await stack.template());
   } else {
-    throw new Error(
+    throw new ToolkitError(
       `Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`,
     );
   }
@@ -168,7 +169,7 @@ export async function generateTemplate(options: GenerateTemplateOptions): Promis
   // if a customer accidentally ctrl-c's out of the command and runs it again, this will continue the progress bar where it left off
   const curScan = await cfn.describeResourceScan(scanId);
   if (curScan.Status == ScanStatus.IN_PROGRESS) {
-    print('Resource scan in progress. Please wait, this can take 10 minutes or longer.');
+    info('Resource scan in progress. Please wait, this can take 10 minutes or longer.');
     await scanProgressBar(scanId, cfn);
   }
 
@@ -176,23 +177,23 @@ export async function generateTemplate(options: GenerateTemplateOptions): Promis
 
   let resources: ScannedResource[] = await cfn.listResourceScanResources(scanId!, options.filters);
 
-  print('finding related resources.');
+  info('finding related resources.');
   let relatedResources = await cfn.getResourceScanRelatedResources(scanId!, resources);
 
-  print(`Found ${relatedResources.length} resources.`);
+  info(`Found ${relatedResources.length} resources.`);
 
-  print('Generating CFN template from scanned resources.');
+  info('Generating CFN template from scanned resources.');
   const templateArn = (await cfn.createGeneratedTemplate(options.stackName, relatedResources)).GeneratedTemplateId!;
 
   let generatedTemplate = await cfn.describeGeneratedTemplate(templateArn);
 
-  print('Please wait, template creation in progress. This may take a couple minutes.');
+  info('Please wait, template creation in progress. This may take a couple minutes.');
   while (generatedTemplate.Status !== ScanStatus.COMPLETE && generatedTemplate.Status !== ScanStatus.FAILED) {
     await printDots(`[${generatedTemplate.Status}] Template Creation in Progress`, 400);
     generatedTemplate = await cfn.describeGeneratedTemplate(templateArn);
   }
-  print('');
-  print('Template successfully generated!');
+  info('');
+  info('Template successfully generated!');
   return buildGenertedTemplateOutput(
     generatedTemplate,
     (await cfn.getGeneratedTemplate(templateArn)).TemplateBody!,
@@ -207,7 +208,7 @@ async function findLastSuccessfulScan(
   let resourceScanSummaries: ResourceScanSummary[] | undefined = [];
   const clientRequestToken = `cdk-migrate-${options.environment.account}-${options.environment.region}`;
   if (options.fromScan === FromScan.NEW) {
-    print(`Starting new scan for account ${options.environment.account} in region ${options.environment.region}`);
+    info(`Starting new scan for account ${options.environment.account} in region ${options.environment.region}`);
     try {
       await cfn.startResourceScan(clientRequestToken);
       resourceScanSummaries = (await cfn.listResourceScans()).ResourceScanSummaries;
@@ -215,7 +216,7 @@ async function findLastSuccessfulScan(
       // continuing here because if the scan fails on a new-scan it is very likely because there is either already a scan in progress
       // or the customer hit a rate limit. In either case we want to continue with the most recent scan.
       // If this happens to fail for a credential error then that will be caught immediately after anyway.
-      print(`Scan failed to start due to error '${(e as Error).message}', defaulting to latest scan.`);
+      info(`Scan failed to start due to error '${(e as Error).message}', defaulting to latest scan.`);
     }
   } else {
     resourceScanSummaries = (await cfn.listResourceScans()).ResourceScanSummaries;
@@ -281,7 +282,7 @@ function parseFilters(filters: string): {
     if (Object.values(FilterType).includes(filterKey as any)) {
       filterMap[filterKey as keyof typeof filterMap] = filterValue;
     } else {
-      throw new Error(`Invalid filter: ${filterKey}`);
+      throw new ToolkitError(`Invalid filter: ${filterKey}`);
     }
   }
   return filterMap;
@@ -356,10 +357,10 @@ export enum FilterType {
  */
 export function parseSourceOptions(fromPath?: string, fromStack?: boolean, stackName?: string): TemplateSource {
   if (fromPath && fromStack) {
-    throw new Error('Only one of `--from-path` or `--from-stack` may be provided.');
+    throw new ToolkitError('Only one of `--from-path` or `--from-stack` may be provided.');
   }
   if (!stackName) {
-    throw new Error('`--stack-name` is a required field.');
+    throw new ToolkitError('`--stack-name` is a required field.');
   }
   if (!fromPath && !fromStack) {
     return { source: TemplateSourceOptions.SCAN };
@@ -423,8 +424,8 @@ export async function scanProgressBar(scanId: string, cfn: CfnTemplateGeneratorP
     printBar(30, curProgress);
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  print('');
-  print('✅ Scan Complete!');
+  info('');
+  info('✅ Scan Complete!');
 }
 
 /**
@@ -501,7 +502,7 @@ export function displayTimeDiff(time1: Date, time2: Date): void {
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  print(`Using the latest successful scan which is ${days} days, ${hours} hours, and ${minutes} minutes old.`);
+  info(`Using the latest successful scan which is ${days} days, ${hours} hours, and ${minutes} minutes old.`);
 }
 
 /**
@@ -544,7 +545,7 @@ export function getMigrateScanType(scanType: string) {
     case undefined:
       return FromScan.DEFAULT;
     default:
-      throw new Error(`Unknown scan type: ${scanType}`);
+      throw new ToolkitError(`Unknown scan type: ${scanType}`);
   }
 }
 
@@ -679,11 +680,11 @@ export class CfnTemplateGeneratorProvider {
   ) {
     if (!resourceScanSummaries || resourceScanSummaries.length === 0) {
       if (options.fromScan === FromScan.MOST_RECENT) {
-        throw new Error(
+        throw new ToolkitError(
           'No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.',
         );
       } else {
-        print('No scans found. Initiating a new resource scan.');
+        info('No scans found. Initiating a new resource scan.');
         await this.startResourceScan(clientRequestToken);
       }
     }
@@ -772,7 +773,7 @@ export class CfnTemplateGeneratorProvider {
     let resourceScanInputs: ListResourceScanResourcesCommandInput;
 
     if (filters.length > 0) {
-      print('Applying filters to resource scan.');
+      info('Applying filters to resource scan.');
       for (const filter of filters) {
         const filterList = parseFilters(filter);
         resourceScanInputs = {
@@ -795,7 +796,7 @@ export class CfnTemplateGeneratorProvider {
         }
       }
     } else {
-      print('No filters provided. Retrieving all resources from scan.');
+      info('No filters provided. Retrieving all resources from scan.');
       resourceScanInputs = {
         ResourceScanId: scanId,
       };
@@ -812,7 +813,7 @@ export class CfnTemplateGeneratorProvider {
       }
     }
     if (resourceList.length === 0) {
-      throw new Error(`No resources found with filters ${filters.join(' ')}. Please try again with different filters.`);
+      throw new ToolkitError(`No resources found with filters ${filters.join(' ')}. Please try again with different filters.`);
     }
     resourceList = deduplicateResources(resourceList);
 
@@ -845,7 +846,7 @@ export class CfnTemplateGeneratorProvider {
     });
 
     if (generatedTemplate.Status == ScanStatus.FAILED) {
-      throw new Error(generatedTemplate.StatusReason);
+      throw new ToolkitError(generatedTemplate.StatusReason!);
     }
 
     return generatedTemplate;
@@ -878,7 +879,7 @@ export class CfnTemplateGeneratorProvider {
     });
 
     if (createTemplateOutput.GeneratedTemplateId === undefined) {
-      throw new Error('CreateGeneratedTemplate failed to return an Arn.');
+      throw new ToolkitError('CreateGeneratedTemplate failed to return an Arn.');
     }
     return createTemplateOutput;
   }

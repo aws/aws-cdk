@@ -131,7 +131,6 @@ export class KinesisMetrics {
       ...CannedMetrics.incomingRecordsSum(dimensions),
       statistic: 'Average',
     };
-
   }
   public static readProvisionedThroughputExceededAverage(dimensions: { StreamName: string }) {
     return {

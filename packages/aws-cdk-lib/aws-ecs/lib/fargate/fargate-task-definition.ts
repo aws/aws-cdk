@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Tokenization, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -114,7 +115,6 @@ export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAtt
  * @resource AWS::ECS::TaskDefinition
  */
 export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -164,6 +164,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       networkMode: NetworkMode.AWS_VPC,
       pidMode: props.pidMode,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // eslint-disable-next-line max-len
     if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {

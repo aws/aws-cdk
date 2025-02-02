@@ -79,7 +79,6 @@ describe('hosted zone provider', () => {
 
       // THEN
       expect(fakeZoneId).toEqual(zoneId);
-
     });
   });
 });

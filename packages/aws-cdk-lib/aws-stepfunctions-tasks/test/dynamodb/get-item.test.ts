@@ -64,6 +64,53 @@ test('GetItem task', () => {
   });
 });
 
+test('GetItem task - using JSONata', () => {
+  // WHEN
+  const task = tasks.DynamoGetItem.jsonata(stack, 'GetItem', {
+    key: {
+      SOME_KEY: tasks.DynamoAttributeValue.fromString('1234'),
+      OTHER_KEY: tasks.DynamoAttributeValue.fromNumber(4321),
+    },
+    table,
+    consistentRead: true,
+    expressionAttributeNames: { OTHER_KEY: '#OK' },
+    projectionExpression: [
+      new tasks.DynamoProjectionExpression().withAttribute('Messages').atIndex(1).withAttribute('Tags'),
+      new tasks.DynamoProjectionExpression().withAttribute('ID'),
+    ],
+    returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::dynamodb:getItem',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Key: { SOME_KEY: { S: '1234' }, OTHER_KEY: { N: '4321' } },
+      TableName: {
+        Ref: 'mytable0324D45C',
+      },
+      ConsistentRead: true,
+      ExpressionAttributeNames: { OTHER_KEY: '#OK' },
+      ProjectionExpression: 'Messages[1].Tags,ID',
+      ReturnConsumedCapacity: 'TOTAL',
+    },
+  });
+});
+
 test('supports tokens', () => {
   // WHEN
   const task = new tasks.DynamoGetItem(stack, 'GetItem', {

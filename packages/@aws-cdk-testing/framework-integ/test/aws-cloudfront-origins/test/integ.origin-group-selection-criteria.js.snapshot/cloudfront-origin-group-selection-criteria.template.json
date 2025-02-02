@@ -1,0 +1,135 @@
+{
+ "Resources": {
+  "cg1": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "channelGroup1"
+   }
+  },
+  "cg2": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "channelGroup2"
+   }
+  },
+  "Distribution830FAC52": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/video",
+       "TargetOriginId": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+       "ViewerProtocolPolicy": "allow-all"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "OriginGroups": {
+      "Items": [
+       {
+        "FailoverCriteria": {
+         "StatusCodes": {
+          "Items": [
+           404
+          ],
+          "Quantity": 1
+         }
+        },
+        "Id": "cloudfrontorigingroupselectioncriteriaDistributionOriginGroup1518D308D",
+        "Members": {
+         "Items": [
+          {
+           "OriginId": "cloudfrontorigingroupselectioncriteriaDistributionOrigin1AA511FA4"
+          },
+          {
+           "OriginId": "cloudfrontorigingroupselectioncriteriaDistributionOrigin2AFDC8F08"
+          }
+         ],
+         "Quantity": 2
+        },
+        "SelectionCriteria": "media-quality-based"
+       }
+      ],
+      "Quantity": 1
+     },
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "cg1",
+         "EgressDomain"
+        ]
+       },
+       "Id": "cloudfrontorigingroupselectioncriteriaDistributionOrigin1AA511FA4"
+      },
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "cg2",
+         "EgressDomain"
+        ]
+       },
+       "Id": "cloudfrontorigingroupselectioncriteriaDistributionOrigin2AFDC8F08"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

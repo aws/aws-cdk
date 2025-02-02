@@ -9,7 +9,6 @@ import * as cdk from 'aws-cdk-lib';
 import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 
 describe('DatabaseCluster', () => {
-
   test('check that instantiation works', () => {
     // GIVEN
     const stack = testStack();
@@ -641,7 +640,6 @@ describe('DatabaseCluster', () => {
   });
 
   test('autoMinorVersionUpgrade is enabled when configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -657,11 +655,9 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: true,
     });
-
   });
 
   test('autoMinorVersionUpgrade is not enabled when not configured', () => {
-
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -676,7 +672,6 @@ describe('DatabaseCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
       AutoMinorVersionUpgrade: false,
     });
-
   });
 
   test('cloudwatchLogsExports is enabled when configured', () => {
@@ -835,7 +830,7 @@ describe('DatabaseCluster', () => {
           maxCapacity: 200,
         },
       });
-    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived 200/);
+    }).toThrow(/ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received 200/);
 
     expect(() => {
       new DatabaseCluster(stack, 'Database3', {

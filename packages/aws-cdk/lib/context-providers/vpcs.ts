@@ -5,6 +5,7 @@ import type { IEC2Client } from '../api';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
 import { debug } from '../logging';
+import { ContextProviderError } from '../toolkit/error';
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SdkProvider) {}
 
@@ -25,10 +26,10 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const vpcs = response.Vpcs || [];
     if (vpcs.length === 0) {
-      throw new Error(`Could not find any VPCs matching ${JSON.stringify(args)}`);
+      throw new ContextProviderError(`Could not find any VPCs matching ${JSON.stringify(args)}`);
     }
     if (vpcs.length > 1) {
-      throw new Error(`Found ${vpcs.length} VPCs matching ${JSON.stringify(args)}; please narrow the search criteria`);
+      throw new ContextProviderError(`Found ${vpcs.length} VPCs matching ${JSON.stringify(args)}; please narrow the search criteria`);
     }
 
     return vpcs[0];
@@ -82,13 +83,13 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
       if (!isValidSubnetType(type)) {
         // eslint-disable-next-line max-len
-        throw new Error(
+        throw new ContextProviderError(
           `Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`,
         );
       }
 
       if (args.subnetGroupNameTag && !getTag(args.subnetGroupNameTag, subnet.Tags)) {
-        throw new Error(
+        throw new ContextProviderError(
           `Invalid subnetGroupNameTag: Subnet ${subnet.SubnetArn} does not have an associated tag with Key='${args.subnetGroupNameTag}'`,
         );
       }
@@ -97,7 +98,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       const routeTableId = routeTables.routeTableIdForSubnetId(subnet.SubnetId);
 
       if (!routeTableId) {
-        throw new Error(
+        throw new ContextProviderError(
           `Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`,
         );
       }
@@ -280,7 +281,7 @@ function groupSubnets(subnets: Subnet[]): SubnetGroups {
   for (const group of groups) {
     const groupAZs = group.subnets.map((s) => s.az);
     if (!arraysEqual(groupAZs, azs)) {
-      throw new Error(`Not all subnets in VPC have the same AZs: ${groupAZs} vs ${azs}`);
+      throw new ContextProviderError(`Not all subnets in VPC have the same AZs: ${groupAZs} vs ${azs}`);
     }
   }
 

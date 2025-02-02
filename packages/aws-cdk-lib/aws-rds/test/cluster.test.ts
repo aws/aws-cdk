@@ -17,12 +17,34 @@ import {
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
   IClusterEngine,
+  ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
 } from '../lib';
 
 describe('cluster new api', () => {
   describe('errors are thrown', () => {
+    test('when both clusterScalabilityType and clusterScailabilityType (deprecated) props are provided', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          instanceProps: {
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+            vpc,
+          },
+          clusterScalabilityType: ClusterScalabilityType.STANDARD,
+          clusterScailabilityType: ClusterScailabilityType.STANDARD,
+          iamAuthentication: true,
+        });
+        // THEN
+      }).toThrow('You cannot specify both clusterScalabilityType and clusterScailabilityType (deprecated). Use clusterScalabilityType.');
+    });
+
     test('when old and new props are provided', () => {
       // GIVEN
       const stack = testStack();
@@ -165,7 +187,10 @@ describe('cluster new api', () => {
       });
     });
 
-    test('cluster scalability option', () => {
+    test.each([
+      ['clusterScalabilityType', 'clusterScalabilityType', ClusterScalabilityType.STANDARD],
+      ['clusterScailabilityType (deprecated)', 'clusterScailabilityType', ClusterScailabilityType.STANDARD],
+    ])('cluster scalability option with %s', (_, propName, propValue) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -174,8 +199,8 @@ describe('cluster new api', () => {
       new DatabaseCluster(stack, 'Cluster', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
-        clusterScailabilityType: ClusterScailabilityType.STANDARD,
         writer: ClusterInstance.serverlessV2('writer'),
+        [propName]: propValue,
       });
 
       // THEN
@@ -186,7 +211,10 @@ describe('cluster new api', () => {
     });
 
     describe('limitless database', () => {
-      test('with default options', () => {
+      test.each([
+        ['clusterScalabilityType', 'clusterScalabilityType', ClusterScalabilityType.LIMITLESS],
+        ['clusterScailabilityType (deprecated)', 'clusterScailabilityType', ClusterScailabilityType.LIMITLESS],
+      ])('with default options using %s', (_, propName, propValue) => {
         // GIVEN
         const stack = testStack();
         const vpc = new ec2.Vpc(stack, 'VPC');
@@ -197,7 +225,7 @@ describe('cluster new api', () => {
             version: AuroraPostgresEngineVersion.VER_16_4_LIMITLESS,
           }),
           vpc,
-          clusterScailabilityType: ClusterScailabilityType.LIMITLESS,
+          [propName]: propValue,
           enablePerformanceInsights: true,
           performanceInsightRetention: PerformanceInsightRetention.MONTHS_1,
           monitoringInterval: cdk.Duration.minutes(1),
@@ -240,7 +268,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Performance Insights must be enabled for Aurora Limitless Database.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Performance Insights must be enabled for Aurora Limitless Database\n- Performance Insights retention period must be set to at least 31 days for Aurora Limitless Database');
       });
 
       test('throw error for invalid performance insights retention period', () => {
@@ -264,7 +292,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Performance Insights retention period must be set at least 31 days for Aurora Limitless Database.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Performance Insights retention period must be set to at least 31 days for Aurora Limitless Database');
       });
 
       test('throw error for not specifying monitoring interval', () => {
@@ -288,7 +316,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'');
       });
 
       test.each([false, undefined])('throw error for configuring enhanced monitoring at the instance level', (enableClusterLevelEnhancedMonitoring) => {
@@ -313,7 +341,7 @@ describe('cluster new api', () => {
             cloudwatchLogsExports: ['postgresql'],
             instances: 1,
           });
-        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'.');
+        }).toThrow('Cluster level enhanced monitoring must be set for Aurora Limitless Database. Please set \'monitoringInterval\' and enable \'enableClusterLevelEnhancedMonitoring\'');
       });
 
       test('throw error for specifying writer instance', () => {
@@ -338,7 +366,7 @@ describe('cluster new api', () => {
             cloudwatchLogsExports: ['postgresql'],
             writer: ClusterInstance.serverlessV2('writer'),
           });
-        }).toThrow('Aurora Limitless Database does not support readers or writer instances.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database does not support reader or writer instances');
       });
 
       test.each([
@@ -367,7 +395,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports: ['postgresql'],
           });
-        }).toThrow(`Aurora Limitless Database requires an engine version that supports it, got ${engine.engineVersion?.fullVersion}`);
+        }).toThrow(`DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database requires an engine version that supports it, got: ${engine.engineVersion?.fullVersion}`);
       });
 
       test('throw error for invalid storage type', () => {
@@ -415,7 +443,7 @@ describe('cluster new api', () => {
             storageType: DBClusterStorageType.AURORA_IOPT1,
             cloudwatchLogsExports,
           });
-        }).toThrow('Aurora Limitless Database requires CloudWatch Logs exports to be set.');
+        }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- Aurora Limitless Database requires CloudWatch Logs exports to be set');
       });
     });
 
@@ -894,11 +922,11 @@ describe('cluster new api', () => {
 
   describe('instanceIdentifiers', () => {
     test('should contain writer and reader instance IDs', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -907,7 +935,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceIdentifiers).toHaveLength(2);
       expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
         Ref: 'Databasewriter2462CC03',
@@ -917,11 +945,11 @@ describe('cluster new api', () => {
 
   describe('instanceEndpoints', () => {
     test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -930,7 +958,7 @@ describe('cluster new api', () => {
         iamAuthentication: true,
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
       expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
         hostname: {
@@ -964,11 +992,11 @@ describe('cluster new api', () => {
     });
 
     test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
-      //GIVEN
+      // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
 
-      //WHEN
+      // WHEN
       const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -978,7 +1006,7 @@ describe('cluster new api', () => {
         readers: [ClusterInstance.serverlessV2('reader')],
       });
 
-      //THEN
+      // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
       expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
         hostname: {
@@ -2102,7 +2130,7 @@ describe('cluster', () => {
           enablePerformanceInsights: false,
           performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
         });
-      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+      }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- `enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     });
 
     test('throws if performanceInsightEncryptionKey is set but performance insights is disabled', () => {
@@ -2114,7 +2142,7 @@ describe('cluster', () => {
           enablePerformanceInsights: false,
           performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
         });
-      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+      }).toThrow('DatabaseCluster initialization failed due to the following validation error(s):\n- `enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set');
     });
 
     test('warn if performance insights is enabled at cluster level but disabled on writer and reader instances', () => {

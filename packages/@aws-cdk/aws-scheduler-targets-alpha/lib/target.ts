@@ -61,7 +61,6 @@ export interface ScheduleTargetBaseProps {
  * Base class for Schedule Targets
  */
 export abstract class ScheduleTargetBase {
-
   constructor(
     private readonly baseProps: ScheduleTargetBaseProps,
     protected readonly targetArn: string,
@@ -92,7 +91,6 @@ export abstract class ScheduleTargetBase {
 
   /**
    * Create a return a Schedule Target Configuration for the given schedule
-   * @param schedule
    * @returns a Schedule Target Configuration
    */
   bind(schedule: ISchedule): ScheduleTargetConfig {
@@ -164,7 +162,7 @@ export abstract class ScheduleTargetBase {
       if (maxAge < minMaxAge) {
         throw new Error('Minimum event age is 1 minute');
       }
-    };
+    }
     let maxAttempts = 185;
     if (typeof maximumRetryAttempts != 'undefined') {
       if (maximumRetryAttempts < 0) {

@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import { PluginHost } from '../../lib/api/plugin';
 import * as contextproviders from '../../lib/context-providers';
-import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/settings';
+import { Context, TRANSIENT_CONTEXT_KEY } from '../../lib/api/context';
 import { MockSdkProvider, setDefaultSTSMocks } from '../util/mock-sdk';
 
 const mockSDK = new MockSdkProvider();

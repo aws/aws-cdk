@@ -3,7 +3,7 @@ import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
-import { debug, print } from '../../logging';
+import { debug, info } from '../../logging';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
@@ -526,7 +526,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      info(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -559,23 +559,23 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      info(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bucketName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.repositoryName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bootstrapStack.parameters.Qualifier;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 
   private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {

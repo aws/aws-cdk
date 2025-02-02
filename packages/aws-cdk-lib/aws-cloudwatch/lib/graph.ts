@@ -231,7 +231,6 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
  * A dashboard gauge widget that displays metrics
  */
 export class GaugeWidget extends ConcreteWidget {
-
   private readonly props: GaugeWidgetProps;
 
   private readonly metrics: IMetric[];
@@ -258,7 +257,6 @@ export class GaugeWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-
     const metrics = allMetricsGraphJson(this.metrics, []);
     const leftYAxis = {
       ...this.props.leftYAxis,
@@ -426,7 +424,6 @@ export interface GraphWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
-
   private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
 
   private static isIso8601(date: string): boolean {
@@ -749,7 +746,6 @@ export interface TableWidgetProps extends MetricWidgetProps {
  * A dashboard widget that displays metrics
  */
 export class TableWidget extends ConcreteWidget {
-
   private readonly metrics: IMetric[];
 
   constructor(private readonly props: TableWidgetProps) {
@@ -982,7 +978,6 @@ export interface CustomWidgetProps {
  * A CustomWidget shows the result of a AWS lambda function
  */
 export class CustomWidget extends ConcreteWidget {
-
   private readonly props: CustomWidgetProps;
 
   public constructor(props: CustomWidgetProps) {

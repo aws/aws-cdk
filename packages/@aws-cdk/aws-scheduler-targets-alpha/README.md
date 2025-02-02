@@ -34,6 +34,7 @@ The following targets are supported:
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
+12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
 
 ## Invoke a Lambda function
 
@@ -312,3 +313,55 @@ new Schedule(this, 'Schedule', {
   }),
 });
 ```
+
+## Invoke a wider set of AWS API
+
+Use the `Universal` target to invoke AWS API. See https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html
+
+The code snippet below creates an event rule with AWS API as the target which is
+called at midnight every day by EventBridge Scheduler.
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.cron({
+    minute: '0',
+    hour: '0',
+  }),
+  target: new targets.Universal({
+    service: 'rds',
+    action: 'stopDBCluster',
+    input: ScheduleTargetInput.fromObject({
+      DbClusterIdentifier: 'my-db',
+    }),
+  }),
+});
+```
+
+The `service` must be in lowercase and the `action` must be in camelCase.
+
+By default, an IAM policy for the Scheduler is extracted from the API call. The action in the policy is constructed using the `service` and `action` prop.
+Re-using the example above, the action will be `rds:stopDBCluster`. Note that not all IAM actions follow the same pattern. In such scenario, please use the
+`policyStatements` prop to override the policy:
+
+```ts
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.Universal({
+    service: 'sqs',
+    action: 'sendMessage',
+    policyStatements: [
+      new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: ['arn:aws:sqs:us-east-1:123456789012:my_queue'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+        resources: ['arn:aws:kms:us-east-1:123456789012:key/0987dcba-09fe-87dc-65ba-ab0987654321'],
+      }),
+    ],
+  }),
+});
+```
+
+> Note: The default policy uses `*` in the resources field as CDK does not have a straight forward way to auto-discover the resources permission required.
+> It is recommended that you scope the field down to specific resources to have a better security posture.

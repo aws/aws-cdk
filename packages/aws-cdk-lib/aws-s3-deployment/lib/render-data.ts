@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 export interface Content {
   readonly text: string;
@@ -22,7 +23,7 @@ export function renderData(scope: Construct, data: string): Content {
   }
 
   if (typeof(obj) !== 'object') {
-    throw new Error(`Unexpected: after resolve() data must either be a string or a CloudFormation intrinsic. Got: ${JSON.stringify(obj)}`);
+    throw new ValidationError(`Unexpected: after resolve() data must either be a string or a CloudFormation intrinsic. Got: ${JSON.stringify(obj)}`, scope);
   }
 
   let markerIndex = 0;
@@ -35,7 +36,7 @@ export function renderData(scope: Construct, data: string): Content {
     const parts = fnJoin[1];
 
     if (sep !== '') {
-      throw new Error(`Unexpected "Fn::Join", expecting separator to be an empty string but got "${sep}"`);
+      throw new ValidationError(`Unexpected "Fn::Join", expecting separator to be an empty string but got "${sep}"`, scope);
     }
 
     for (const part of parts) {
@@ -49,13 +50,12 @@ export function renderData(scope: Construct, data: string): Content {
         continue;
       }
 
-      throw new Error(`Unexpected "Fn::Join" part, expecting string or object but got ${typeof (part)}`);
+      throw new ValidationError(`Unexpected "Fn::Join" part, expecting string or object but got ${typeof (part)}`, scope);
     }
-
   } else if (obj.Ref || obj['Fn::GetAtt'] || obj['Fn::Select']) {
     addMarker(obj);
   } else {
-    throw new Error('Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"');
+    throw new ValidationError('Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"', scope);
   }
 
   function addMarker(part: Ref | GetAtt | FnSelect) {
@@ -63,7 +63,7 @@ export function renderData(scope: Construct, data: string): Content {
     const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select'];
     if (keys.length !== 1 || !acceptedCfnFns.includes(keys[0])) {
       const stringifiedAcceptedCfnFns = acceptedCfnFns.map((fn) => `"${fn}"`).join(' or ');
-      throw new Error(`Invalid CloudFormation reference. Key must start with any of ${stringifiedAcceptedCfnFns}. Got ${JSON.stringify(part)}`);
+      throw new ValidationError(`Invalid CloudFormation reference. Key must start with any of ${stringifiedAcceptedCfnFns}. Got ${JSON.stringify(part)}`, scope);
     }
 
     const marker = `<<marker:0xbaba:${markerIndex++}>>`;

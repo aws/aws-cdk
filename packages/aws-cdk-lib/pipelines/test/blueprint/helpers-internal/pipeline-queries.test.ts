@@ -14,7 +14,6 @@ afterEach(() => {
 });
 
 describe('pipeline-queries', () => {
-
   describe('stackOutputsReferenced', () => {
     let blueprint: Blueprint;
     let stageDeployment: cdkp.StageDeployment;
@@ -80,14 +79,13 @@ describe('pipeline-queries', () => {
 
     cases.forEach(testCase => {
       test(testCase.description, () => {
-        //WHEN
+        // WHEN
         testCase.additionalSetup();
 
-        //THEN
+        // THEN
         expect(queries.stackOutputsReferenced(stackDeployment)).toEqual(testCase.expectedResultGetter());
       });
     });
-
   });
 });
 

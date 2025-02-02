@@ -651,6 +651,49 @@
               "version": "0.0.0"
             }
           },
+          "SpotFleetRole": {
+            "id": "SpotFleetRole",
+            "path": "batch-stack/SpotFleetRole",
+            "children": {
+              "ImportSpotFleetRole": {
+                "id": "ImportSpotFleetRole",
+                "path": "batch-stack/SpotFleetRole/ImportSpotFleetRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/SpotFleetRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "batch.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "minimalPropsFargate": {
             "id": "minimalPropsFargate",
             "path": "batch-stack/minimalPropsFargate",
@@ -1273,49 +1316,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
-              "version": "0.0.0"
-            }
-          },
-          "SpotFleetRole": {
-            "id": "SpotFleetRole",
-            "path": "batch-stack/SpotFleetRole",
-            "children": {
-              "ImportSpotFleetRole": {
-                "id": "ImportSpotFleetRole",
-                "path": "batch-stack/SpotFleetRole/ImportSpotFleetRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "batch-stack/SpotFleetRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "batch.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },
@@ -2052,6 +2052,218 @@
               "version": "0.0.0"
             }
           },
+          "MinVCpuParameter": {
+            "id": "MinVCpuParameter",
+            "path": "batch-stack/MinVCpuParameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "MaxVCpuParameter": {
+            "id": "MaxVCpuParameter",
+            "path": "batch-stack/MaxVCpuParameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SpotBidPercentageParameter": {
+            "id": "SpotBidPercentageParameter",
+            "path": "batch-stack/SpotBidPercentageParameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ParamertizedManagedCE": {
+            "id": "ParamertizedManagedCE",
+            "path": "batch-stack/ParamertizedManagedCE",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "batch-stack/ParamertizedManagedCE/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/ParamertizedManagedCE/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "batch-stack/ParamertizedManagedCE/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceProfileRole": {
+                "id": "InstanceProfileRole",
+                "path": "batch-stack/ParamertizedManagedCE/InstanceProfileRole",
+                "children": {
+                  "ImportInstanceProfileRole": {
+                    "id": "ImportInstanceProfileRole",
+                    "path": "batch-stack/ParamertizedManagedCE/InstanceProfileRole/ImportInstanceProfileRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-stack/ParamertizedManagedCE/InstanceProfileRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "batch-stack/ParamertizedManagedCE/InstanceProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "roles": [
+                      {
+                        "Ref": "ParamertizedManagedCEInstanceProfileRoleB54B7F8B"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "batch-stack/ParamertizedManagedCE/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
+                  "aws:cdk:cloudformation:props": {
+                    "computeResources": {
+                      "maxvCpus": {
+                        "Ref": "MaxVCpuParameter"
+                      },
+                      "type": "SPOT",
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "ParamertizedManagedCESecurityGroup772BD71B",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "subnets": [
+                        {
+                          "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                        },
+                        {
+                          "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                        }
+                      ],
+                      "minvCpus": {
+                        "Ref": "MinVCpuParameter"
+                      },
+                      "instanceRole": {
+                        "Fn::GetAtt": [
+                          "ParamertizedManagedCEInstanceProfileDF9CB175",
+                          "Arn"
+                        ]
+                      },
+                      "instanceTypes": [
+                        "optimal"
+                      ],
+                      "spotIamFleetRole": {
+                        "Fn::GetAtt": [
+                          "SpotFleetRole6D4F7558",
+                          "Arn"
+                        ]
+                      },
+                      "allocationStrategy": "SPOT_PRICE_CAPACITY_OPTIMIZED",
+                      "bidPercentage": {
+                        "Ref": "SpotBidPercentageParameter"
+                      },
+                      "ec2Configuration": [
+                        {
+                          "imageIdOverride": {
+                            "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "imageType": "ECS_AL2"
+                        }
+                      ]
+                    },
+                    "replaceComputeEnvironment": false,
+                    "state": "ENABLED",
+                    "type": "managed",
+                    "updatePolicy": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_batch.CfnComputeEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_batch.ManagedEc2EcsComputeEnvironment",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "batch-stack/BootstrapVersion",
@@ -2087,7 +2299,7 @@
                 "path": "BatchManagedComputeEnvironmentTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2133,7 +2345,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

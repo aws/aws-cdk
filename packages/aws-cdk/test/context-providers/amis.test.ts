@@ -1,6 +1,6 @@
 import 'aws-sdk-client-mock';
 import { DescribeImagesCommand } from '@aws-sdk/client-ec2';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';
 import { FAKE_CREDENTIAL_CHAIN, MockSdkProvider, mockEC2Client } from '../util/mock-sdk';
 

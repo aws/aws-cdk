@@ -239,7 +239,6 @@ describe('IVS Recording Configuration', () => {
 
   describe('validateRecordingReconnectWindowSeconds test', () => {
     test('throws when recordingReconnectWindow is smaller than 1 second.', () => {
-
       expect(() => {
         new RecordingConfiguration(stack, 'MyRecordingConfiguration', {
           bucket,

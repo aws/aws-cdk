@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import * as acmpca from '../../aws-acmpca';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents the properties needed to define TLS Validation context
@@ -98,9 +99,9 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
     this.certificateAuthorities = certificateAuthorities;
   }
 
-  public bind(_scope: Construct): TlsValidationTrustConfig {
+  public bind(scope: Construct): TlsValidationTrustConfig {
     if (this.certificateAuthorities.length === 0) {
-      throw new Error('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');
+      throw new ValidationError('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy', scope);
     } else {
       return {
         tlsValidationTrust: {

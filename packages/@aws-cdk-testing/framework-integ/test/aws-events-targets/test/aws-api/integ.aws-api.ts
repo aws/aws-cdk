@@ -90,7 +90,6 @@ class AwsApi extends cdk.Stack {
         Plaintext: events.EventField.fromPath('$.detail.Plaintext'),
       },
     }));
-
   }
 }
 

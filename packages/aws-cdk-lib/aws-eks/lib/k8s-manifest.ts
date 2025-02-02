@@ -116,7 +116,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  */
 export class KubernetesManifest extends Construct {
   /**
-   * The CloudFormation reosurce type.
+   * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResource';
 
@@ -189,14 +189,12 @@ export class KubernetesManifest extends Construct {
   }
 
   /**
-   * Inject the necessary ingress annontations if possible (and requested).
+   * Inject the necessary ingress annotations if possible (and requested).
    *
    * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
    */
   private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
-
     for (const resource of manifest) {
-
       // skip resource if it's not an object or if it does not have a "kind"
       if (typeof(resource) !== 'object' || !resource.kind) {
         continue;
@@ -210,6 +208,5 @@ export class KubernetesManifest extends Construct {
         };
       }
     }
-
   }
 }

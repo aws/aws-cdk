@@ -13,6 +13,7 @@ import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Node Types to use in the cluster
@@ -548,6 +549,8 @@ export class Cluster extends ClusterBase {
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? {
@@ -629,7 +632,7 @@ export class Cluster extends ClusterBase {
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
       throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
-    };
+    }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
       throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }

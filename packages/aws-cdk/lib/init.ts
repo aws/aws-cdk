@@ -3,9 +3,10 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import { invokeBuiltinHooks } from './init-hooks';
-import { error, print, warning } from './logging';
+import { error, info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
 import { cdkHomeDir, rootDir } from './util/directories';
+import { formatErrorMessage } from './util/error';
 import { rangeFromSemver } from './util/version-range';
 
 /* eslint-disable @typescript-eslint/no-var-requires */ // Packages don't have @types module
@@ -50,7 +51,7 @@ export async function cliInit(options: CliInitOptions) {
     );
   }
   if (!options.language) {
-    print(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
+    info(`Available languages for ${chalk.green(type)}: ${template.languages.map((l) => chalk.blue(l)).join(', ')}`);
     throw new ToolkitError('No language was selected');
   }
 
@@ -81,8 +82,8 @@ export class InitTemplate {
   public static async fromName(templatesDir: string, name: string) {
     const basePath = path.join(templatesDir, name);
     const languages = await listDirectory(basePath);
-    const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
-    return new InitTemplate(basePath, name, languages, info);
+    const initInfo = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
+    return new InitTemplate(basePath, name, languages, initInfo);
   }
 
   public readonly description: string;
@@ -92,10 +93,10 @@ export class InitTemplate {
     private readonly basePath: string,
     public readonly name: string,
     public readonly languages: string[],
-    info: any,
+    initInfo: any,
   ) {
-    this.description = info.description;
-    for (const alias of info.aliases || []) {
+    this.description = initInfo.description;
+    for (const alias of initInfo.aliases || []) {
       this.aliases.add(alias);
     }
   }
@@ -295,18 +296,18 @@ async function listDirectory(dirPath: string) {
 }
 
 export async function printAvailableTemplates(language?: string) {
-  print('Available templates:');
+  info('Available templates:');
   for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) {
       continue;
     }
-    print(`* ${chalk.green(template.name)}: ${template.description}`);
+    info(`* ${chalk.green(template.name)}: ${template.description}`);
     const languageArg = language
       ? chalk.bold(language)
       : template.languages.length > 1
         ? `[${template.languages.map((t) => chalk.bold(t)).join('|')}]`
         : chalk.bold(template.languages[0]);
-    print(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
+    info(`   └─ ${chalk.blue(`cdk init ${chalk.bold(template.name)} --language=${languageArg}`)}`);
   }
 }
 
@@ -320,14 +321,14 @@ async function initializeProject(
   migrate?: boolean,
 ) {
   await assertIsEmptyDirectory(workDir);
-  print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
+  info(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir, stackName);
   if (migrate) {
     await template.addMigrateContext(workDir);
   }
   if (await fs.pathExists(`${workDir}/README.md`)) {
     const readme = await fs.readFile(`${workDir}/README.md`, { encoding: 'utf-8' });
-    print(chalk.green(readme));
+    info(chalk.green(readme));
   }
 
   if (!generateOnly) {
@@ -335,7 +336,7 @@ async function initializeProject(
     await postInstall(language, canUseNetwork, workDir);
   }
 
-  print('✅ All done!');
+  info('✅ All done!');
 }
 
 async function assertIsEmptyDirectory(workDir: string) {
@@ -349,7 +350,7 @@ async function initializeGitRepository(workDir: string) {
   if (await isInGitRepository(workDir)) {
     return;
   }
-  print('Initializing a new git repository...');
+  info('Initializing a new git repository...');
   try {
     await execute('git', ['init'], { cwd: workDir });
     await execute('git', ['add', '.'], { cwd: workDir });
@@ -384,11 +385,11 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print(`Executing ${chalk.green(`${command} install`)}...`);
+  info(`Executing ${chalk.green(`${command} install`)}...`);
   try {
     await execute(command, ['install'], { cwd });
   } catch (e: any) {
-    warning(`${command} install failed: ` + e.message);
+    warning(`${command} install failed: ` + formatErrorMessage(e));
   }
 }
 
@@ -399,7 +400,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
     return;
   }
 
-  print("Executing 'mvn package'");
+  info("Executing 'mvn package'");
   try {
     await execute('mvn', ['package'], { cwd });
   } catch {
@@ -411,7 +412,7 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
   warning(`Please run '${python} -m venv .venv'!`);
-  print(`Executing ${chalk.green('Creating virtualenv...')}`);
+  info(`Executing ${chalk.green('Creating virtualenv...')}`);
   try {
     await execute(python, ['-m venv', '.venv'], { cwd });
   } catch {
@@ -466,7 +467,7 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
       if (status === 0) {
         return ok(stdout);
       } else {
-        process.stderr.write(stdout);
+        error(stdout);
         return fail(new ToolkitError(`${cmd} exited with status ${status}`));
       }
     });
@@ -494,7 +495,7 @@ async function loadInitVersions(): Promise<Versions> {
   for (const [key, value] of Object.entries(ret)) {
     /* istanbul ignore next */
     if (!value) {
-      throw new Error(`Missing init version from ${recommendedFlagsFile}: ${key}`);
+      throw new ToolkitError(`Missing init version from ${recommendedFlagsFile}: ${key}`);
     }
   }
 

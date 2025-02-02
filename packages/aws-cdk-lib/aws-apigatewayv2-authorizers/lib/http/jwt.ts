@@ -5,6 +5,7 @@ import {
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
 } from '../../../aws-apigatewayv2';
+import { UnscopedValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties to initialize HttpJwtAuthorizer.
@@ -59,7 +60,7 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new Error(
+      throw new UnscopedValidationError(
         'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }

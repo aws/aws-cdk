@@ -163,7 +163,7 @@ describe('rules', () => {
     });
   });
 
-  test('Noncurrent transistion rule with versions to retain', () => {
+  test('Noncurrent transition rule with versions to retain', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -201,7 +201,7 @@ describe('rules', () => {
     });
   });
 
-  test('Noncurrent transistion rule without versions to retain', () => {
+  test('Noncurrent transition rule without versions to retain', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -491,6 +491,5 @@ describe('rules', () => {
         Template.fromStack(stack);
       }).not.toThrow();
     });
-
   });
 });

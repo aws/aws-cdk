@@ -2,6 +2,7 @@ import { Duration, IResource, Resource, Token } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { ScheduleExpression } from './schedule-expression';
@@ -272,6 +273,8 @@ export class Schedule extends Resource implements ISchedule {
     super(scope, id, {
       physicalName: props.scheduleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.group = props.group;
 

@@ -2,7 +2,6 @@ import { Stack } from '../../core';
 import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
 
 describe('IAM policy statement', () => {
-
   describe('from JSON', () => {
     test('parses with no principal', () => {
       // given
@@ -81,7 +80,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notAction', () => {
@@ -97,7 +95,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notActions', () => {
@@ -113,7 +110,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notResource', () => {
@@ -129,7 +125,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('parses with notResources', () => {
@@ -145,7 +140,6 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
-
     });
 
     test('the kitchen sink', () => {

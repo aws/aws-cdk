@@ -1,10 +1,9 @@
+// The main show
 export * from './toolkit';
-export * from './cloud-assembly-source';
-export * from './actions/deploy';
-export * from './actions/destroy';
-export * from './actions/import';
-export * from './actions/synth';
-export * from './actions/watch';
+export * from './actions';
 
-export * from './io-host';
-export * from './types';
+// Supporting acts
+export * from './api/aws-auth';
+export * from './api/cloud-assembly';
+export * from './api/io';
+export * from './api/errors';

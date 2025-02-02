@@ -240,7 +240,6 @@ describeDeprecated('NestedStack', () => {
   test('references to a resource from the parent stack in a nested stack is translated into a cfn parameter', () => {
     // WHEN
     class MyNestedStack extends NestedStack {
-
       constructor(scope: Construct, id: string, resourceFromParent: CfnResource) {
         super(scope, id);
 

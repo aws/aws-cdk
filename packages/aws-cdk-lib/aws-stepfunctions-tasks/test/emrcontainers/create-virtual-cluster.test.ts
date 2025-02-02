@@ -55,6 +55,48 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     });
   });
 
+  test('only required properties - using JSONata', () => {
+  // WHEN
+    const task = EmrContainersCreateVirtualCluster.jsonata(stack, 'Task', {
+      eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:createVirtualCluster',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        Name: "{% States.Format('{}/{}', $states.context.Execution.Name, $states.context.State.Name) %}",
+        ContainerProvider: {
+          Id: clusterId,
+          Info: {
+            EksInfo: {
+              Namespace: 'default',
+            },
+          },
+          Type: 'EKS',
+        },
+      },
+    });
+  });
+
   test('all required/non-required properties', () => {
     // WHEN
     const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {

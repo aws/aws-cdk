@@ -6,6 +6,7 @@ import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an SNS topic
@@ -111,7 +112,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
+      throw new ValidationError(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`, scope);
     }
 
     const subscription = new Subscription(scope, id, {
@@ -132,23 +133,40 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Adds a statement to the IAM resource policy associated with this topic.
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
-   * will be automatically created upon the first call to `addToResourcePolicy`. If
-   * the topic is imported (`Topic.import`), then this is a no-op.
+   * will be automatically created upon the first call to `addToResourcePolicy`.
+   * However, if `enforceSSL` is set to `true`, the policy has already been created
+   * before the first call to this method.
+   *
+   * If the topic is imported (`Topic.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
-    }
+    this.createTopicPolicy();
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
-
-      if (this.enforceSSL) {
-        this.policy.document.addStatements(this.createSSLPolicyDocument());
-      }
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  /**
+   * Adds a SSL policy to the topic resource policy.
+   */
+  protected addSSLPolicy(): void {
+    this.createTopicPolicy();
+
+    if (this.policy) {
+      this.policy.document.addStatements(this.createSSLPolicyDocument());
+    }
+  }
+
+  /**
+   * Creates a topic policy for this topic.
+   */
+  protected createTopicPolicy(): void {
+    if (!this.policy && this.autoCreatePolicy) {
+      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
+    }
   }
 
   /**
@@ -223,5 +241,4 @@ export abstract class TopicBase extends Resource implements ITopic {
     }
     return `TokenSubscription:${nextSuffix}`;
   }
-
 }

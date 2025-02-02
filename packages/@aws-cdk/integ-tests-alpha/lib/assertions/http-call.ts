@@ -64,5 +64,5 @@ export class HttpApiCall extends ApiCallBase {
     this.stateMachineArn = waiter.stateMachineArn;
     this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');
     return this;
-  };
+  }
 }

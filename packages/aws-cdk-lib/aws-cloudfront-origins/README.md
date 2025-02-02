@@ -73,7 +73,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 When creating a standard S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
 
-You can grant read, write or delete access to the OAC using the `originAccessLevels` property:
+You can grant read, list, write or delete access to the OAC using the `originAccessLevels` property:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
@@ -81,6 +81,8 @@ const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
   originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
 });
 ```
+
+For details of list permission, see [Setting up OAC with LIST permission](#setting-up-oac-with-list-permission).
 
 You can also pass in a custom S3 origin access control:
 
@@ -338,6 +340,29 @@ See CloudFront docs on [Giving the origin access control permission to access th
 > Note: If your bucket previously used OAI, you will need to manually remove the policy statement
 that gives the OAI access to your bucket after setting up OAC.
 
+#### Setting up OAC with LIST permission
+
+By default, S3 origin returns 403 Forbidden HTTP response when the requested object does not exist.
+When you want to receive 404 Not Found, specify `AccessLevel.LIST` in `originAccessLevels` to add `s3:ListBucket` permission in the bucket policy.
+
+This is useful to distinguish between responses blocked by WAF (403) and responses where the file does not exist (404).
+
+``` ts
+const myBucket = new s3.Bucket(this, 'myBucket');
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
+  originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+});
+new cloudfront.Distribution(this, 'distribution', {
+  defaultBehavior: {
+    origin: s3Origin,
+  },
+  defaultRootObject: 'index.html', // recommended to specify
+});
+```
+
+When the origin is associated to the default behavior, it is highly recommended to specify `defaultRootObject` distribution property.
+Without it, the root path `https://xxxx.cloudfront.net/` will return the list of the S3 object keys.
+
 #### Setting up an OAI (legacy)
 
 Setup an S3 origin with origin access identity (legacy) as follows:
@@ -593,6 +618,24 @@ new cloudfront.Distribution(this, 'myDist', {
       fallbackOrigin: new origins.HttpOrigin('www.example.com'),
       // optional, defaults to: 500, 502, 503 and 504
       fallbackStatusCodes: [404],
+    }),
+  },
+});
+```
+
+### Selection Criteria: Media Quality Based with AWS Elemental MediaPackageV2
+
+You can setup your origin group to be configured for media quality based failover with your AWS Elemental MediaPackageV2 endpoints.
+You can achieve this behavior in the CDK, again using the `OriginGroup` class:
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 1>"),
+      fallbackOrigin: new origins.HttpOrigin("<AWS Elemental MediaPackageV2 origin 2>"),
+      fallbackStatusCodes: [404],
+      selectionCriteria: cloudfront.OriginSelectionCriteria.MEDIA_QUALITY_BASED,
     }),
   },
 });

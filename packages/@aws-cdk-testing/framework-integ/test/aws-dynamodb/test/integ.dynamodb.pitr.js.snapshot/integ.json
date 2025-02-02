@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "table-pitr-test/DefaultTest": {
+      "stacks": [
+        "table-pitr"
+      ],
+      "assertionStack": "table-pitr-test/DefaultTest/DeployAssert",
+      "assertionStackName": "tablepitrtestDefaultTestDeployAssert8B21EF95"
+    }
+  }
+}

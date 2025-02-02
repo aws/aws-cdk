@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -79,6 +80,8 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
       compatibility: Compatibility.EXTERNAL,
       networkMode: props.networkMode ?? NetworkMode.BRIDGE,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   /**

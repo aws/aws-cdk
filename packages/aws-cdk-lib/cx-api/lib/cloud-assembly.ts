@@ -1,12 +1,18 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+// This is deliberately importing the interface from the external package.
+// We want this, so that jsii language packages can depend on @aws-cdk/cloud-assembly-schema
+// instead of being forced to take a dependency on the much larger aws-cdk-lib.
+import type { ICloudAssembly } from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from './artifacts/cloudformation-artifact';
 import { NestedCloudAssemblyArtifact } from './artifacts/nested-cloud-assembly-artifact';
 import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
 import * as cxschema from '../../cloud-assembly-schema';
+
+const CLOUD_ASSEMBLY_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssembly');
 
 /**
  * The name of the root manifest file of the assembly.
@@ -16,7 +22,16 @@ const MANIFEST_FILE = 'manifest.json';
 /**
  * Represents a deployable cloud application.
  */
-export class CloudAssembly {
+export class CloudAssembly implements ICloudAssembly {
+  /**
+   * Return whether the given object is a CloudAssembly.
+   *
+   * We do attribute detection since we can't reliably use 'instanceof'.
+   */
+  public static isCloudAssembly(x: any): x is CloudAssembly {
+    return x !== null && typeof(x) === 'object' && CLOUD_ASSEMBLY_SYMBOL in x;
+  }
+
   /**
    * The root directory of the cloud assembly.
    */
@@ -53,6 +68,8 @@ export class CloudAssembly {
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts(loadOptions?.topoSort ?? true);
     this.runtime = this.manifest.runtime || { libraries: { } };
+
+    Object.defineProperty(this, CLOUD_ASSEMBLY_SYMBOL, { value: true });
 
     // force validation of deps by accessing 'depends' on all artifacts
     this.validateDeps();
@@ -137,7 +154,7 @@ export class CloudAssembly {
       const [head, ...tail] = assemblies;
       const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
       return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
-    };
+    }
 
     return search([], [this]);
   }
@@ -308,10 +325,8 @@ export class CloudAssemblyBuilder {
   /**
    * Finalizes the cloud assembly into the output directory returns a
    * `CloudAssembly` object that can be used to inspect the assembly.
-   * @param options
    */
   public buildAssembly(options: AssemblyBuildOptions = { }): CloudAssembly {
-
     // explicitly initializing this type will help us detect
     // breaking changes. (For example adding a required property will break compilation).
     let manifest: cxschema.AssemblyManifest = {

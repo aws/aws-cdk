@@ -8,149 +8,149 @@
         "id": "aws-glue-job-python-shell",
         "path": "aws-glue-job-python-shell",
         "children": {
-          "ShellJob": {
-            "id": "ShellJob",
-            "path": "aws-glue-job-python-shell/ShellJob",
+          "IAMServiceRole": {
+            "id": "IAMServiceRole",
+            "path": "aws-glue-job-python-shell/IAMServiceRole",
             "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "aws-glue-job-python-shell/ShellJob/ServiceRole",
+              "ImportIAMServiceRole": {
+                "id": "ImportIAMServiceRole",
+                "path": "aws-glue-job-python-shell/IAMServiceRole/ImportIAMServiceRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job-python-shell/IAMServiceRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "glue.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSGlueServiceRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-glue-job-python-shell/IAMServiceRole/DefaultPolicy",
                 "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "aws-glue-job-python-shell/ShellJob/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-glue-job-python-shell/ShellJob/ServiceRole/Resource",
+                    "path": "aws-glue-job-python-shell/IAMServiceRole/DefaultPolicy/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
+                        "policyDocument": {
                           "Statement": [
                             {
-                              "Action": "sts:AssumeRole",
+                              "Action": [
+                                "s3:GetBucket*",
+                                "s3:GetObject*",
+                                "s3:List*"
+                              ],
                               "Effect": "Allow",
-                              "Principal": {
-                                "Service": "glue.amazonaws.com"
-                              }
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
                             }
                           ],
                           "Version": "2012-10-17"
                         },
-                        "managedPolicyArns": [
+                        "policyName": "IAMServiceRoleDefaultPolicy379D1A0E",
+                        "roles": [
                           {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSGlueServiceRole"
-                              ]
-                            ]
+                            "Ref": "IAMServiceRole61C662C4"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-glue-job-python-shell/ShellJob/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-glue-job-python-shell/ShellJob/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "s3:GetBucket*",
-                                    "s3:GetObject*",
-                                    "s3:List*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::",
-                                          {
-                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          },
-                                          "/*"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::",
-                                          {
-                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          }
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ShellJobServiceRoleDefaultPolicy7F22D315",
-                            "roles": [
-                              {
-                                "Ref": "ShellJobServiceRoleCF97BC4B"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
-              },
-              "Code8835353412338ec0bac0ee05542d1c16": {
-                "id": "Code8835353412338ec0bac0ee05542d1c16",
-                "path": "aws-glue-job-python-shell/ShellJob/Code8835353412338ec0bac0ee05542d1c16",
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "BasicShellJob39": {
+            "id": "BasicShellJob39",
+            "path": "aws-glue-job-python-shell/BasicShellJob39",
+            "children": {
+              "Code2907ea7be4a583708cfffc21b3df1dfa": {
+                "id": "Code2907ea7be4a583708cfffc21b3df1dfa",
+                "path": "aws-glue-job-python-shell/BasicShellJob39/Code2907ea7be4a583708cfffc21b3df1dfa",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job-python-shell/ShellJob/Code8835353412338ec0bac0ee05542d1c16/Stage",
+                    "path": "aws-glue-job-python-shell/BasicShellJob39/Code2907ea7be4a583708cfffc21b3df1dfa/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -158,7 +158,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job-python-shell/ShellJob/Code8835353412338ec0bac0ee05542d1c16/AssetBucket",
+                    "path": "aws-glue-job-python-shell/BasicShellJob39/Code2907ea7be4a583708cfffc21b3df1dfa/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -172,195 +172,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-glue-job-python-shell/ShellJob/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
-                  "aws:cdk:cloudformation:props": {
-                    "command": {
-                      "name": "pythonshell",
-                      "scriptLocation": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "s3://",
-                            {
-                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                            },
-                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-                          ]
-                        ]
-                      },
-                      "pythonVersion": "3"
-                    },
-                    "defaultArguments": {
-                      "--job-language": "python",
-                      "arg1": "value1",
-                      "arg2": "value2"
-                    },
-                    "glueVersion": "1.0",
-                    "maxCapacity": 0.0625,
-                    "name": "ShellJob",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "ShellJobServiceRoleCF97BC4B",
-                        "Arn"
-                      ]
-                    },
-                    "tags": {
-                      "key": "value"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue-alpha.Job",
-              "version": "0.0.0"
-            }
-          },
-          "ShellJob39": {
-            "id": "ShellJob39",
-            "path": "aws-glue-job-python-shell/ShellJob39",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "aws-glue-job-python-shell/ShellJob39/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "aws-glue-job-python-shell/ShellJob39/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-glue-job-python-shell/ShellJob39/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "glue.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSGlueServiceRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-glue-job-python-shell/ShellJob39/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-glue-job-python-shell/ShellJob39/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "s3:GetBucket*",
-                                    "s3:GetObject*",
-                                    "s3:List*"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::",
-                                          {
-                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          },
-                                          "/*"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":s3:::",
-                                          {
-                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                          }
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ShellJob39ServiceRoleDefaultPolicy38A33919",
-                            "roles": [
-                              {
-                                "Ref": "ShellJob39ServiceRole2F6F3768"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-glue-job-python-shell/ShellJob39/Resource",
+                "path": "aws-glue-job-python-shell/BasicShellJob39/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Glue::Job",
                   "aws:cdk:cloudformation:props": {
@@ -382,15 +194,133 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
+                      "library-set": "analytics",
+                      "--enable-continuous-cloudwatch-log": "true",
+                      "--enable-metrics": "",
+                      "--enable-observability-metrics": "true"
+                    },
+                    "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": false,
+                    "maxCapacity": 0.0625,
+                    "maxRetries": 0,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "IAMServiceRole61C662C4",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.PythonShellJob",
+              "version": "0.0.0"
+            }
+          },
+          "BasicShellJob": {
+            "id": "BasicShellJob",
+            "path": "aws-glue-job-python-shell/BasicShellJob",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job-python-shell/BasicShellJob/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+                  "aws:cdk:cloudformation:props": {
+                    "command": {
+                      "name": "pythonshell",
+                      "scriptLocation": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                          ]
+                        ]
+                      },
+                      "pythonVersion": "3"
+                    },
+                    "defaultArguments": {
+                      "--job-language": "python",
+                      "--enable-continuous-cloudwatch-log": "true",
+                      "--enable-metrics": "",
+                      "--enable-observability-metrics": "true"
+                    },
+                    "glueVersion": "1.0",
+                    "jobRunQueuingEnabled": false,
+                    "maxCapacity": 0.0625,
+                    "maxRetries": 0,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "IAMServiceRole61C662C4",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-glue-alpha.PythonShellJob",
+              "version": "0.0.0"
+            }
+          },
+          "DetailedShellJob39": {
+            "id": "DetailedShellJob39",
+            "path": "aws-glue-job-python-shell/DetailedShellJob39",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-glue-job-python-shell/DetailedShellJob39/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+                  "aws:cdk:cloudformation:props": {
+                    "command": {
+                      "name": "pythonshell",
+                      "scriptLocation": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                          ]
+                        ]
+                      },
+                      "pythonVersion": "3.9"
+                    },
+                    "defaultArguments": {
+                      "--job-language": "python",
+                      "library-set": "analytics",
+                      "--enable-continuous-cloudwatch-log": "true",
+                      "--enable-metrics": "",
+                      "--enable-observability-metrics": "true",
                       "arg1": "value1",
                       "arg2": "value2"
                     },
+                    "description": "My detailed Python 3.9 Shell Job",
                     "glueVersion": "3.0",
+                    "jobRunQueuingEnabled": true,
                     "maxCapacity": 1,
-                    "name": "ShellJob39",
+                    "maxRetries": 0,
+                    "name": "My Python 3.9 Shell Job",
                     "role": {
                       "Fn::GetAtt": [
-                        "ShellJob39ServiceRole2F6F3768",
+                        "IAMServiceRole61C662C4",
                         "Arn"
                       ]
                     },
@@ -406,7 +336,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "fqn": "@aws-cdk/aws-glue-alpha.PythonShellJob",
               "version": "0.0.0"
             }
           },
@@ -445,7 +375,7 @@
                 "path": "aws-glue-job-python-shell-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -491,7 +421,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.4.2"
         }
       }
     },

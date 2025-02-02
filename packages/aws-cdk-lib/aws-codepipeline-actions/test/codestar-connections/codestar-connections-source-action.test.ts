@@ -44,7 +44,6 @@ describe('CodeStar Connections source Action', () => {
           },
         ],
       });
-
     });
   });
 
@@ -77,7 +76,6 @@ describe('CodeStar Connections source Action', () => {
         ],
       },
     });
-
   });
 
   test('grant s3 putObjectACL to the following CodeBuild Project', () => {
@@ -106,7 +104,6 @@ describe('CodeStar Connections source Action', () => {
         ]),
       },
     });
-
   });
 
   test('setting triggerOnPush=false reflects in the configuration', () => {
@@ -146,7 +143,6 @@ describe('CodeStar Connections source Action', () => {
         },
       ],
     });
-
   });
 
   test('exposes variables', () => {

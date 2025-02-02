@@ -1,0 +1,361 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "vpc-byoip-ipv6": {
+        "id": "vpc-byoip-ipv6",
+        "path": "vpc-byoip-ipv6",
+        "children": {
+          "VPC-integ-test-1": {
+            "id": "VPC-integ-test-1",
+            "path": "vpc-byoip-ipv6/VPC-integ-test-1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "vpc-byoip-ipv6/VPC-integ-test-1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.1.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "vpc-byoip-ipv6/VPC-integ-test-1"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "MyByoipIpv6Block": {
+                "id": "MyByoipIpv6Block",
+                "path": "vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block",
+                "children": {
+                  "MyByoipIpv6Block": {
+                    "id": "MyByoipIpv6Block",
+                    "path": "vpc-byoip-ipv6/VPC-integ-test-1/MyByoipIpv6Block/MyByoipIpv6Block",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "ipv6CidrBlock": "2600:f0f0:8::/56",
+                        "ipv6Pool": "ipv6pool-ec2-0a95217e154b65493",
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet-integ-test-1": {
+            "id": "Subnet-integ-test-1",
+            "path": "vpc-byoip-ipv6/Subnet-integ-test-1",
+            "children": {
+              "Subnet": {
+                "id": "Subnet",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-1/Subnet",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                  "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "cidrBlock": "10.1.1.0/24",
+                    "ipv6CidrBlock": "2600:f0f0:8:1::/64",
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "VPCintegtest1EBA1CB75",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "Acl": {
+                "id": "Acl",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-1/Acl",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTable": {
+                "id": "RouteTable",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable",
+                "children": {
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "vpc-byoip-ipv6/Subnet-integ-test-1/RouteTable/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTableAssociation": {
+                "id": "RouteTableAssociation",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-1/RouteTableAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "Subnetintegtest1RouteTableD7246BB7",
+                        "RouteTableId"
+                      ]
+                    },
+                    "subnetId": {
+                      "Ref": "Subnetintegtest1Subnet33DEE36B"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
+              "version": "0.0.0"
+            }
+          },
+          "Subnet-integ-test-2": {
+            "id": "Subnet-integ-test-2",
+            "path": "vpc-byoip-ipv6/Subnet-integ-test-2",
+            "children": {
+              "Subnet": {
+                "id": "Subnet",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-2/Subnet",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                  "aws:cdk:cloudformation:props": {
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "cidrBlock": "10.1.0.0/24",
+                    "ipv6CidrBlock": "2600:f0f0:8:0::/64",
+                    "vpcId": {
+                      "Fn::GetAtt": [
+                        "VPCintegtest1EBA1CB75",
+                        "VpcId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "Acl": {
+                "id": "Acl",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-2/Acl",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTable": {
+                "id": "RouteTable",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable",
+                "children": {
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "vpc-byoip-ipv6/Subnet-integ-test-2/RouteTable/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DefaultCDKRouteTable"
+                          }
+                        ],
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "VPCintegtest1EBA1CB75",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
+                  "version": "0.0.0"
+                }
+              },
+              "RouteTableAssociation": {
+                "id": "RouteTableAssociation",
+                "path": "vpc-byoip-ipv6/Subnet-integ-test-2/RouteTableAssociation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableId": {
+                      "Fn::GetAtt": [
+                        "Subnetintegtest2RouteTable2528D856",
+                        "RouteTableId"
+                      ]
+                    },
+                    "subnetId": {
+                      "Ref": "Subnetintegtest2Subnet5A56D422"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "vpc-byoip-ipv6/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "vpc-byoip-ipv6/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integtest-model": {
+        "id": "integtest-model",
+        "path": "integtest-model",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "integtest-model/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "integtest-model/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "integtest-model/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "integtest-model/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "integtest-model/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

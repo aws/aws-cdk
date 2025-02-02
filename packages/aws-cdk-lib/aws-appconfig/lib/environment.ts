@@ -4,9 +4,11 @@ import { IApplication } from './application';
 import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
+import { DeletionProtectionCheck } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -165,6 +167,13 @@ export interface EnvironmentOptions {
    * @default - No monitors.
    */
   readonly monitors?: Monitor[];
+
+  /**
+   * A property to prevent accidental deletion of active environments.
+   *
+   * @default undefined - AppConfig default is ACCOUNT_DEFAULT
+   */
+  readonly deletionProtectionCheck?: DeletionProtectionCheck;
 }
 
 /**
@@ -295,6 +304,8 @@ export class Environment extends EnvironmentBase {
     super(scope, id, {
       physicalName: props.environmentName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,
@@ -309,6 +320,7 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
+      deletionProtectionCheck: props.deletionProtectionCheck,
       monitors: this.monitors?.map((monitor) => {
         return {
           alarmArn: monitor.alarmArn,

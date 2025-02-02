@@ -23,6 +23,7 @@ import {
   Token,
   FeatureFlags,
 } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -48,7 +49,7 @@ export enum CpuCredits {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode.html
    */
   UNLIMITED = 'unlimited',
-};
+}
 
 /**
  * Provides the options for specifying the instance initiated shutdown behavior.
@@ -66,7 +67,7 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
-};
+}
 
 /**
  * Interface for LaunchTemplate-like objects.
@@ -191,7 +192,7 @@ export interface LaunchTemplateSpotOptions {
    * @default The default end date is 7 days from the current date.
    */
   readonly validUntil?: Expiration;
-};
+}
 
 /**
  * The state of token usage for your instance metadata requests.
@@ -597,6 +598,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Basic validation of the provided spot block duration
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
