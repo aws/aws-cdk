@@ -27,4 +27,4 @@ export function getClusterVersionConfig(scope: Construct, version?: eks.Kubernet
     // kubectlLayer: new KubectlV24Layer(scope, 'KubectlLayer') as unknown as lambda.ILayerVersion,
     kubectlLayer: new versionMap[_version.version](scope, 'KubectlLayer') as unknown as lambda.ILayerVersion,
   };
-};
+}

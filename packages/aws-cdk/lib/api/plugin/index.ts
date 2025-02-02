@@ -1,3 +1,3 @@
 export * from './plugin';
+export * from './mode';
 export * from './context-provider-plugin';
-export * from './credential-provider-source';

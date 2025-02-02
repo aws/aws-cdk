@@ -134,7 +134,6 @@ describe('image asset', () => {
         tarballFile: `/does/not/exist/${Math.floor(Math.random() * 9999)}`,
       });
     }).toThrow(/Cannot find file at/);
-
   });
 
   describe('imageTag is correct for different stack synthesizers', () => {
@@ -161,7 +160,6 @@ describe('image asset', () => {
       expect(asset2.imageTag).toEqual('banana95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df');
     });
   });
-
 });
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {

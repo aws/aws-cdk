@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-elbv2-integ-dualstack-without-public-ipv4.assets": {
       "type": "cdk:asset-manifest",

@@ -20,7 +20,12 @@ export enum FlagType {
    * Advertise the presence of this context option in `cdk.json`
    */
   VisibleContext,
-};
+
+  /**
+   * Use this type for flags that are to be removed on a set date
+   */
+  Temporary,
+}
 
 export interface FlagInfoBase {
   /** Single-line description for the flag */
@@ -33,7 +38,7 @@ export interface FlagInfoBase {
   readonly defaults?: { v1?: any; v2?: any };
   /** Default in new projects */
   readonly recommendedValue: any;
-};
+}
 
 /** Flag information, adding required fields if present */
 export type FlagInfo = FlagInfoBase & (
@@ -45,6 +50,8 @@ export type FlagInfo = FlagInfoBase & (
     /** Describe restoring old behavior or dealing with the change (Markdown) */
     readonly compatibilityWithOldBehaviorMd?: string; }
   | { readonly type: FlagType.VisibleContext }
+  | { readonly type: FlagType.Temporary;
+    readonly compatibilityWithOldBehaviorMd?: string; }
 );
 
 /**

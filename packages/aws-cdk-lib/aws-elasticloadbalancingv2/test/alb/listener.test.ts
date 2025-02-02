@@ -7,6 +7,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { SecretValue } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -107,9 +108,12 @@ describe('tests', () => {
     });
   });
 
-  test('Listener default to open - IPv6 (dual stack without public IPV4)', () => {
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag enabled', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: true },
+    });
+    const stack = new cdk.Stack(app);
     const vpc = new ec2.Vpc(stack, 'Stack');
     const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
       vpc,
@@ -136,6 +140,39 @@ describe('tests', () => {
         {
           Description: 'Allow from anyone on port 80',
           CidrIpv6: '::/0',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    });
+  });
+
+  test('Listener default to open - IPv6 (dual stack without public IPv4) with feature flag disabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: false },
+    });
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+    });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          Description: 'Allow from anyone on port 80',
+          CidrIp: '0.0.0.0/0',
           FromPort: 80,
           IpProtocol: 'tcp',
           ToPort: 80,
@@ -1098,7 +1135,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad fixed responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1136,7 +1172,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad redirect responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1741,7 +1776,7 @@ describe('tests', () => {
     interface TestCase {
       readonly removeSuffix?: boolean;
       readonly expectedLogicalId: string;
-    };
+    }
     const nonDefaultTestCases: TestCase[] = [
       { removeSuffix: true, expectedLogicalId: identifierToken },
       { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
@@ -1969,7 +2004,6 @@ describe('tests', () => {
       }),
       ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
     });
-
   });
 
   describe('Mutual Authentication', () => {
@@ -2128,7 +2162,6 @@ describe('tests', () => {
       }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
     });
   });
-
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

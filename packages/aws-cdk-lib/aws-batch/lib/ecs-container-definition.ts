@@ -926,7 +926,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
       privileged: this.privileged,
       resourceRequirements: this._renderResourceRequirements(),
     };
-  };
+  }
 
   /**
    * Add a ulimit to this container
@@ -1099,7 +1099,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     }
 
     return containerDef;
-  };
+  }
 }
 
 function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {
