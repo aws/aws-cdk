@@ -9,7 +9,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
@@ -171,7 +171,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3ObjectsItemReader({
@@ -186,7 +186,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -242,7 +242,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3JsonItemReader({
@@ -256,7 +256,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -312,7 +312,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3CsvItemReader({
@@ -327,7 +327,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -384,7 +384,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3CsvItemReader({
@@ -399,7 +399,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -457,7 +457,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3ManifestItemReader({
@@ -471,7 +471,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -526,7 +526,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemReader: new stepfunctions.S3ManifestItemReader({
         bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
@@ -535,7 +535,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -584,7 +584,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
@@ -599,7 +599,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -652,7 +652,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
@@ -665,7 +665,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -701,7 +701,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
@@ -718,7 +718,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -749,6 +749,53 @@ describe('Distributed Map State', () => {
             MaxItemsPerBatch: 10,
             MaxInputBytesPerBatch: 11,
           },
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State with JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          QueryLanguage: 'JSONata',
+          End: true,
+          Items: '{% $inputForMap %}',
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          MaxConcurrency: 1,
         },
       },
     });
@@ -892,7 +939,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'), {
@@ -900,7 +947,7 @@ describe('Distributed Map State', () => {
       executionType: stepfunctions.ProcessorType.EXPRESS,
     });
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -931,7 +978,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
     });
@@ -940,7 +987,7 @@ describe('Distributed Map State', () => {
       executionType: stepfunctions.ProcessorType.STANDARD,
     });
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -965,7 +1012,6 @@ describe('Distributed Map State', () => {
     });
 
     Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
-
   });
 });
 

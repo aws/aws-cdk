@@ -218,7 +218,7 @@ test('deletes no objects on delete event when bucket has no objects', async () =
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -249,7 +249,7 @@ test('deletes all objects on delete event', async () => {
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -291,7 +291,7 @@ test('deletes all objects on delete event when bucket has no existing policy', a
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
@@ -337,7 +337,7 @@ test('deletes all objects on delete event even when deny policy assignment fails
 
   // THEN
   expect(mockS3Client.getBucketPolicy).toHaveBeenCalledTimes(1);
-  expect(mockS3Client.putBucketPolicy).rejects.toThrow();
+  await expect(mockS3Client.putBucketPolicy).rejects.toThrow();
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(1);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });
   expect(mockS3Client.deleteObjects).toHaveBeenCalledTimes(1);
@@ -453,7 +453,7 @@ test('delete event where bucket has many objects does recurse appropriately', as
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
   expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
     Bucket: 'MyBucket',
-    Policy: BUCKET_DENY_POLICY
+    Policy: BUCKET_DENY_POLICY,
   });
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledTimes(2);
   expect(mockS3Client.listObjectVersions).toHaveBeenCalledWith({ Bucket: 'MyBucket' });

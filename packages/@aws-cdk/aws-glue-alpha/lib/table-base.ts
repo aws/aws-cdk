@@ -163,7 +163,6 @@ export interface TableBaseProps {
  * A Glue table.
  */
 export abstract class TableBase extends Resource implements ITable {
-
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
     const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
 
@@ -227,7 +226,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * The tables' properties associated with the table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
-  */
+   */
   protected readonly parameters: { [key: string]: string };
 
   /**

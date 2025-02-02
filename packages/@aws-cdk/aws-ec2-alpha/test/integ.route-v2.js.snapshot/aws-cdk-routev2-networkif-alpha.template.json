@@ -6,7 +6,13 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-networkif-alpha/nif"
+     }
+    ]
    }
   },
   "nifAmazonIpv675574C2F": {

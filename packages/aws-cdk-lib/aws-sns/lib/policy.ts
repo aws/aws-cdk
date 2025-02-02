@@ -3,6 +3,7 @@ import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
 import { Effect, PolicyDocument, PolicyStatement, StarPrincipal } from '../../aws-iam';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to associate SNS topics with a policy
@@ -57,6 +58,8 @@ export class TopicPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TopicPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.document = props.policyDocument ?? this.document;
 

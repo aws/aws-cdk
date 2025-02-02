@@ -867,7 +867,6 @@ export class Project extends ProjectBase {
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
     validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -1061,6 +1060,8 @@ export class Project extends ProjectBase {
     super(scope, id, {
       physicalName: props.projectName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -1118,8 +1119,8 @@ export class Project extends ProjectBase {
     if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
         throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
-      };
-    };
+      }
+    }
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
@@ -1344,7 +1345,6 @@ export class Project extends ProjectBase {
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -1793,6 +1793,7 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -1841,10 +1842,19 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
+  /** The Amazon Linux 2023 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -2141,7 +2151,6 @@ export class WindowsBuildImage implements IBuildImage {
     name: string,
     options: DockerImageOptions = {},
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2165,7 +2174,6 @@ export class WindowsBuildImage implements IBuildImage {
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2182,7 +2190,6 @@ export class WindowsBuildImage implements IBuildImage {
     id: string,
     props: DockerImageAssetProps,
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,

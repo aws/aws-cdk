@@ -60,7 +60,6 @@ describe('ec2 service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
-
     });
 
     [false, undefined].forEach((value) => {
@@ -354,7 +353,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
 
     test('no logging enabled when logging field is set to NONE', () => {
@@ -413,7 +411,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
 
     test('enables execute command logging when logging field is set to OVERRIDE', () => {
@@ -537,7 +534,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
 
     test('enables only execute command session encryption', () => {
@@ -708,7 +704,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
     });
 
     test('enables encryption for execute command logging', () => {
@@ -954,7 +949,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
     });
 
     test('with custom cloudmap namespace', () => {
@@ -1021,7 +1015,6 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
     });
 
     test('with all properties set', () => {
@@ -1139,7 +1132,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
 
     test('with autoscaling group capacity provider', () => {
@@ -1191,7 +1183,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
 
     test('with multiple security groups, it correctly updates the cfn template', () => {
@@ -1304,7 +1295,6 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
     });
 
     test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
@@ -1384,7 +1374,6 @@ describe('ec2 service', () => {
           vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         });
       }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
-
     });
 
     test('throws when task definition is not EC2 compatible', () => {
@@ -1408,7 +1397,6 @@ describe('ec2 service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with EC2/);
-
     });
 
     test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
@@ -1445,7 +1433,6 @@ describe('ec2 service', () => {
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       });
-
     });
 
     test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
@@ -1475,7 +1462,6 @@ describe('ec2 service', () => {
       // THEN
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
-
     });
 
     test('errors if daemon and desiredCount both specified', () => {
@@ -1499,7 +1485,6 @@ describe('ec2 service', () => {
           desiredCount: 2,
         });
       }).toThrow(/Don't supply desiredCount/);
-
     });
 
     test('errors if daemon and maximumPercent not 100', () => {
@@ -1523,7 +1508,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 300,
         });
       }).toThrow(/Maximum percent must be 100 for daemon mode./);
-
     });
 
     test('errors if minimum not less than maximum', () => {
@@ -1548,7 +1532,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 100,
         });
       }).toThrow(/Minimum healthy percent must be less than maximum healthy percent./);
-
     });
 
     test('errors if no container definitions', () => {
@@ -1568,7 +1551,6 @@ describe('ec2 service', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow(/one essential container/);
-
     });
 
     test('allows adding the default container after creating the service', () => {
@@ -1627,7 +1609,100 @@ describe('ec2 service', () => {
           MinimumHealthyPercent: 0,
         },
       });
+    });
 
+    test('warning if minHealthyPercent not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('warning if minHealthyPercent not set for a daemon service', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]');
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set for a daemon service', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+        daemon: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentDaemon]');
+      Annotations.fromStack(stack).hasNoWarning('/Default/Ec2Service', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
     });
 
     describe('with a TaskDefinition with Bridge network mode', () => {
@@ -1658,7 +1733,6 @@ describe('ec2 service', () => {
         });
 
         // THEN
-
       });
 
       test('it errors if assignPublicIp is true', () => {
@@ -1686,7 +1760,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if vpc subnets is provided', () => {
@@ -1720,7 +1793,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if security group is provided', () => {
@@ -1748,7 +1820,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if multiple security groups is provided', () => {
@@ -1779,7 +1850,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
     });
 
@@ -1828,7 +1898,6 @@ describe('ec2 service', () => {
             },
           },
         });
-
       });
 
       test('it allows vpcSubnets', () => {
@@ -1855,7 +1924,6 @@ describe('ec2 service', () => {
         });
 
         // THEN
-
       });
     });
 
@@ -1884,7 +1952,6 @@ describe('ec2 service', () => {
           Type: 'distinctInstance',
         }],
       });
-
     });
 
     test('with memberOf placement constraints', () => {
@@ -1914,7 +1981,6 @@ describe('ec2 service', () => {
           Type: 'memberOf',
         }],
       });
-
     });
 
     test('with spreadAcross container instances strategy', () => {
@@ -1945,7 +2011,6 @@ describe('ec2 service', () => {
           Type: 'spread',
         }],
       });
-
     });
 
     test('with spreadAcross placement strategy', () => {
@@ -1975,7 +2040,6 @@ describe('ec2 service', () => {
           Type: 'spread',
         }],
       });
-
     });
 
     test('can turn PlacementStrategy into json format', () => {
@@ -1984,7 +2048,6 @@ describe('ec2 service', () => {
         type: 'spread',
         field: 'attribute:ecs.availability-zone',
       }]);
-
     });
 
     test('can turn PlacementConstraints into json format', () => {
@@ -1992,7 +2055,6 @@ describe('ec2 service', () => {
       expect(PlacementConstraint.distinctInstances().toJson()).toEqual([{
         type: 'distinctInstance',
       }]);
-
     });
 
     test('errors when spreadAcross with no input', () => {
@@ -2017,7 +2079,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross());
       }).toThrow('spreadAcross: give at least one field to spread by');
-
     });
 
     test('errors with spreadAcross placement strategy if daemon specified', () => {
@@ -2043,7 +2104,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
-
     });
 
     test('with no placement constraints', () => {
@@ -2116,7 +2176,6 @@ describe('ec2 service', () => {
           propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
         });
       }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
-
     });
 
     test('with no placement strategy if daemon specified', () => {
@@ -2170,7 +2229,6 @@ describe('ec2 service', () => {
           Type: 'random',
         }],
       });
-
     });
 
     test('errors with random placement strategy if daemon specified', () => {
@@ -2196,7 +2254,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
       }).toThrow();
-
     });
 
     test('with packedbyCpu placement strategy', () => {
@@ -2226,7 +2283,6 @@ describe('ec2 service', () => {
           Type: 'binpack',
         }],
       });
-
     });
 
     test('with packedbyMemory placement strategy', () => {
@@ -2256,7 +2312,6 @@ describe('ec2 service', () => {
           Type: 'binpack',
         }],
       });
-
     });
 
     test('with packedBy placement strategy', () => {
@@ -2286,7 +2341,6 @@ describe('ec2 service', () => {
           Type: 'binpack',
         }],
       });
-
     });
 
     test('errors with packedBy placement strategy if daemon specified', () => {
@@ -2816,7 +2870,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
     });
 
     test('allows network mode of task definition to be bridge', () => {
@@ -2839,7 +2892,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
     });
 
     test('throws when network mode of task definition is AwsVpc', () => {
@@ -2864,7 +2916,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2889,7 +2940,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
-
     });
   });
 
@@ -2918,7 +2968,6 @@ describe('ec2 service', () => {
 
       // THEN
       service.attachToApplicationTargetGroup(targetGroup);
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2947,7 +2996,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToApplicationTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
     });
 
     test('throws when the first port mapping added to the container does not expose a single port', () => {
@@ -2979,7 +3027,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToApplicationTargetGroup(targetGroup);
       }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
-
     });
 
     describe('correctly setting ingress and egress port', () => {
@@ -3028,7 +3075,6 @@ describe('ec2 service', () => {
             ToPort: 65535,
           });
         });
-
       });
 
       test('with bridge/NAT network mode and host port other than 0', () => {
@@ -3075,7 +3121,6 @@ describe('ec2 service', () => {
             ToPort: 80,
           });
         });
-
       });
 
       test('with host network mode', () => {
@@ -3120,7 +3165,6 @@ describe('ec2 service', () => {
           FromPort: 8001,
           ToPort: 8001,
         });
-
       });
 
       test('with aws_vpc network mode', () => {
@@ -3165,7 +3209,6 @@ describe('ec2 service', () => {
           FromPort: 8001,
           ToPort: 8001,
         });
-
       });
     });
   });
@@ -3195,7 +3238,6 @@ describe('ec2 service', () => {
 
       // THEN
       service.attachToNetworkTargetGroup(targetGroup);
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -3224,7 +3266,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
     });
 
     test('throws when the first port mapping added to the container does not expose a single port', () => {
@@ -3256,7 +3297,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/The first port mapping of the container MainContainer must expose a single port./);
-
     });
   });
 
@@ -3298,7 +3338,6 @@ describe('ec2 service', () => {
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
       });
-
     });
 
     test('can attach any container and port as a target', () => {
@@ -3336,7 +3375,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
     });
   });
 
@@ -3366,7 +3404,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
-
     });
 
     test('fails to enable Service Discovery with HTTP defaultCloudmapNamespace', () => {
@@ -3396,7 +3433,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable DNS service discovery for HTTP Cloudmap Namespace./);
-
     });
 
     test('throws if network mode is none', () => {
@@ -3426,7 +3462,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with bridge network mode', () => {
@@ -3501,7 +3536,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with host network mode', () => {
@@ -3577,7 +3611,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
     });
 
     test('throws if wrong DNS record type specified with bridge network mode', () => {
@@ -3610,7 +3643,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode', () => {
@@ -3684,7 +3716,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records', () => {
@@ -3761,7 +3792,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
     });
 
     test('user can select any container and port', () => {
@@ -3979,7 +4009,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/another task definition/i);
-
     });
 
     test('throws if SRV and the container port is not mapped', () => {
@@ -4013,7 +4042,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/container port.*not.*mapped/i);
-
     });
   });
 
@@ -4056,7 +4084,6 @@ describe('ec2 service', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
   });
 
   describe('When import an EC2 Service', () => {
@@ -4173,7 +4200,6 @@ describe('ec2 service', () => {
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
     });
 
     test('with serviceArn new format', () => {
@@ -4373,7 +4399,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
     });
 
     test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -4386,7 +4411,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
     });
   });
 });
