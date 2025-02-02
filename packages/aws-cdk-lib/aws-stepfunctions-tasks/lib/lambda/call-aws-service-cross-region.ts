@@ -232,13 +232,13 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
         Resource: integrationResourceArn('lambda', 'invoke', this.props.integrationPattern),
         ...this._renderParametersOrArguments({
           FunctionName: this.lambdaFunction.functionArn,
-          Payload: sfn.FieldUtils.renderObject({
+          Payload: {
             region: this.props.region,
             endpoint: this.props.endpoint,
             action: this.props.action,
             service: this.props.service,
             parameters: this.props.parameters,
-          }),
+          },
         }, queryLanguage),
       };
     }
