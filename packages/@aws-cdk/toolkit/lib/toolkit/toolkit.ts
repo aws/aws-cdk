@@ -56,7 +56,7 @@ export interface ToolkitOptions {
 
   /**
    * Whether to allow ANSI colors and formatting in IoHost messages.
-   * Setting this value to `falsez enforces that no color or style shows up
+   * Setting this value to `false` enforces that no color or style shows up
    * in messages sent to the IoHost.
    * Setting this value to true is a no-op; it is equivalent to the default.
    *
@@ -144,9 +144,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   /**
    * Helper to provide the CloudAssemblySourceBuilder with required toolkit services
    */
-  protected override async toolkitServices(): Promise<ToolkitServices> {
+  protected override async sourceBuilderServices(): Promise<ToolkitServices> {
     return {
-      ioHost: this.ioHost,
+      ioHost: withAction(this.ioHost, 'assembly'),
       sdkProvider: await this.sdkProvider('assembly'),
     };
   }
