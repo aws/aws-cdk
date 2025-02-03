@@ -1138,7 +1138,7 @@ declare const pinpointRole: iam.Role;
 new cognito.UserPoolClient(this, 'Client', {
   userPool,
   analytics: {
-    // The ARN of your Pinpoint project
+    // Your Pinpoint project
     application: pinpointApp,
 
     // Whether to include user data in analytics events
