@@ -39,6 +39,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Resource Servers](#resource-servers)
     - [Domains](#domains)
     - [Deletion protection](#deletion-protection)
+    - [Analytics Configuration](#analytics-configuration)
+      - [When specifying a Pinpoint application from the same account](#when-specifying-a-pinpoint-application-from-the-same-account)
+      - [When specifying an Application ID, External ID, and Role ARN](#when-specifying-an-application-id-external-id-and-role-arn)
 
 ## User Pools
 
