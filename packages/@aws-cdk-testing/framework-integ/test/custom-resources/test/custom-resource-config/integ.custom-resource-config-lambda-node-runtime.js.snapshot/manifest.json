@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "39.0.0",
   "artifacts": {
     "MyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/739f80859474f29a40ee9eb5a9618dafbbf814541d36330fed86fe8d00445fd3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31f9dcef69a720948cc2f2c28572bdaec57caafeb81043681f852d89ac879eae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -82,16 +82,28 @@
             "data": "OnEventHandlerServiceRole15A26729"
           }
         ],
-        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
-          }
-        ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "OnEventHandler42BEBAE0"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole05B1C3796"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole187629D5C"
+          }
+        ],
+        "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventHandlerinlinePolicyAddedToExecutionRole28650F749"
           }
         ],
         "/MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [

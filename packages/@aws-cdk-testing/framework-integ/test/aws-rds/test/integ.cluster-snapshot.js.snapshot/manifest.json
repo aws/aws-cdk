@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94a049b3839eccda570b3c06d2537684d417f05038c6400eed1ecd5120ba59a6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d7a91a0bd9ac4768d2d2984d4f77488355cfa4b7749ed02dfbc86550929b07e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,16 +208,16 @@
             "data": "SnapshoterOnEventHandlerServiceRole7F84B26D"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57"
-          }
-        ],
         "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SnapshoterOnEventHandlerDF82DF85"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerinlinePolicyAddedToExecutionRole0AEE7BA05"
           }
         ],
         "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/Resource": [
@@ -226,16 +226,16 @@
             "data": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222"
-          }
-        ],
         "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SnapshoterIsCompleteHandler93DE2591"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerinlinePolicyAddedToExecutionRole0847096B9"
           }
         ],
         "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource": [
@@ -416,6 +416,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

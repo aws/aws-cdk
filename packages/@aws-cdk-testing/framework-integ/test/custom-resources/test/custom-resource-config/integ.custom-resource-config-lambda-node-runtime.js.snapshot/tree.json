@@ -46,7 +46,8 @@
                 "path": "MyStack/Table/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD5938648": {
@@ -62,7 +63,8 @@
                         "path": "MyStack/Table/SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD5938648/Resource/ImportedResource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -140,13 +142,14 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B4": {
@@ -162,7 +165,8 @@
                         "path": "MyStack/Table/SourceTableAttachedManagedPolicy-MyStackawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole16B7E1B4/Resource/ImportedResource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -221,13 +225,14 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "Replicaus-east-2": {
@@ -245,7 +250,8 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "StackRegionNotEqualsus-east-2": {
@@ -259,7 +265,8 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "@aws-cdk--aws-dynamodb.ReplicaProvider": {
@@ -287,7 +294,8 @@
                         "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -328,96 +336,12 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "iam:CreateServiceLinkedRole",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            ":role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication"
-                                          ]
-                                        ]
-                                      }
-                                    },
-                                    {
-                                      "Action": "dynamodb:DescribeLimits",
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    },
-                                    {
-                                      "Action": [
-                                        "dynamodb:DeleteTable",
-                                        "dynamodb:DeleteTableReplica"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":dynamodb:us-east-2:",
-                                            {
-                                              "Ref": "AWS::AccountId"
-                                            },
-                                            ":table/",
-                                            {
-                                              "Ref": "referencetoMyStackTableA7B7AF97Ref"
-                                            }
-                                          ]
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "OnEventHandlerServiceRoleDefaultPolicyC57085D4",
-                                "roles": [
-                                  {
-                                    "Ref": "OnEventHandlerServiceRole15A26729"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "Code": {
@@ -437,7 +361,8 @@
                         "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -481,11 +406,168 @@
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "iam:CreateServiceLinkedRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "OnEventHandlerinlinePolicyAddedToExecutionRole05B1C3796",
+                            "roles": [
+                              {
+                                "Ref": "OnEventHandlerServiceRole15A26729"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "dynamodb:DescribeLimits",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "OnEventHandlerinlinePolicyAddedToExecutionRole187629D5C",
+                            "roles": [
+                              {
+                                "Ref": "OnEventHandlerServiceRole15A26729"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-2": {
+                    "id": "inlinePolicyAddedToExecutionRole-2",
+                    "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/inlinePolicyAddedToExecutionRole-2/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:DeleteTable",
+                                    "dynamodb:DeleteTableReplica"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":dynamodb:us-east-2:",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":table/",
+                                        {
+                                          "Ref": "referencetoMyStackTableA7B7AF97Ref"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "OnEventHandlerinlinePolicyAddedToExecutionRole28650F749",
+                            "roles": [
+                              {
+                                "Ref": "OnEventHandlerServiceRole15A26729"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "IsCompleteHandler": {
@@ -501,7 +583,8 @@
                         "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -546,7 +629,8 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "Code": {
@@ -566,7 +650,8 @@
                         "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -614,7 +699,8 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "Provider": {
@@ -634,7 +720,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           },
                           "Resource": {
@@ -760,13 +847,15 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Code": {
@@ -786,7 +875,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -805,7 +895,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -854,7 +944,8 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "framework-isComplete": {
@@ -870,7 +961,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           },
                           "Resource": {
@@ -989,13 +1081,15 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Code": {
@@ -1015,7 +1109,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -1034,7 +1129,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1080,7 +1175,8 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "framework-onTimeout": {
@@ -1096,7 +1192,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           },
                           "Resource": {
@@ -1215,13 +1312,15 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Code": {
@@ -1241,7 +1340,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -1260,7 +1360,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1306,7 +1406,8 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "waiter-state-machine": {
@@ -1322,7 +1423,8 @@
                             "path": "MyStack/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           },
                           "Resource": {
@@ -1443,13 +1545,15 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "LogGroup": {
@@ -1485,7 +1589,8 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -1626,7 +1731,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0c3131b847d4db816ed04a49102018fd29194df41b6799fefafa137e44121d44.json"
+                          "/f8a07258c2df758a3ab7911eab5af52712b9fe08f5ca9474936bd58e8ac9c1ef.json"
                         ]
                       ]
                     }
@@ -1640,7 +1745,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "nonCrLambda": {
@@ -1656,7 +1761,8 @@
                     "path": "MyStack/nonCrLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "Resource": {
@@ -1701,7 +1807,8 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "Resource": {
@@ -1731,7 +1838,8 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {
@@ -1769,7 +1877,7 @@
                 "path": "integ-test-custom-resource-config-lambda-node-runtime/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -1815,7 +1923,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
