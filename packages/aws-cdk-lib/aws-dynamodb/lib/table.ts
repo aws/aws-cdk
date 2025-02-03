@@ -1662,8 +1662,20 @@ export class Table extends TableBase {
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
     // Permissions in the source region
-    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions: ['dynamodb:*'], resources: [this.tableArn] }));
-    isCompleteHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions: ['dynamodb:DescribeTable'], resources: [this.tableArn] }));
+    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        this.tableArn + '/index/*',
+      ],
+    }));
+    isCompleteHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        this.tableArn + '/index/*',
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
