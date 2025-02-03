@@ -155,32 +155,6 @@
     ]
    }
   },
-  "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "amplify:ListJobs",
-        "amplify:StartDeployment",
-        "s3:GetObject",
-        "s3:GetSignedUrl"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
-    "Roles": [
-     {
-      "Ref": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
-     }
-    ]
-   }
-  },
   "amplifyassetdeploymentonevent974704DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -208,9 +182,34 @@
     }
    },
    "DependsOn": [
-    "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
     "amplifyassetdeploymentoneventServiceRoleB6658CD9"
    ]
+  },
+  "amplifyassetdeploymentoneventinlinePolicyAddedToExecutionRole0C600B4AD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "amplify:ListJobs",
+        "amplify:StartDeployment",
+        "s3:GetObject",
+        "s3:GetSignedUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymentoneventinlinePolicyAddedToExecutionRole0C600B4AD",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymentiscompleteServiceRole007B2AB6": {
    "Type": "AWS::IAM::Role",
@@ -243,27 +242,6 @@
     ]
    }
   },
-  "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "amplify:GetJob*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
-    "Roles": [
-     {
-      "Ref": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
-     }
-    ]
-   }
-  },
   "amplifyassetdeploymentiscomplete236D9453": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -291,9 +269,29 @@
     }
    },
    "DependsOn": [
-    "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
     "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
    ]
+  },
+  "amplifyassetdeploymentiscompleteinlinePolicyAddedToExecutionRole032FCEDB8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "amplify:GetJob*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymentiscompleteinlinePolicyAddedToExecutionRole032FCEDB8",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F": {
    "Type": "AWS::IAM::Role",
@@ -402,7 +400,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -547,7 +545,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -689,7 +687,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
