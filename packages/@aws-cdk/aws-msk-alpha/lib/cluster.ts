@@ -659,7 +659,6 @@ export class Cluster extends ClusterBase {
         } : undefined,
         tls: tlsProps?.certificateAuthorities ? {
           certificateAuthorityArnList: tlsProps.certificateAuthorities?.map((ca) => ca.certificateAuthorityArn),
-          enabled: true,
         } : undefined,
       };
     }

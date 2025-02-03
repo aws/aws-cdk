@@ -422,7 +422,6 @@ exports[`MSK Cluster Snapshot test with all values set 1`] = `
             "CertificateAuthorityArnList": [
               "arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111",
             ],
-            "Enabled": true,
           },
         },
         "ClusterName": "test-cluster",
@@ -924,7 +923,6 @@ exports[`MSK Cluster created with authentication enabled with combinations of sa
             "CertificateAuthorityArnList": [
               "arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111",
             ],
-            "Enabled": true,
           },
         },
         "ClusterName": "test-cluster",

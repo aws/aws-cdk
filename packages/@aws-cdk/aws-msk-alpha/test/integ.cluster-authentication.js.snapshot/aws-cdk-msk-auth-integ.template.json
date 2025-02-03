@@ -600,8 +600,7 @@
          "Arn"
         ]
        }
-      ],
-      "Enabled": true
+      ]
      }
     },
     "ClusterName": "integ-test-auth",

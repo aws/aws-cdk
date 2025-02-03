@@ -129,7 +129,6 @@ describe('MSK Cluster', () => {
           ClientAuthentication: {
             Tls: {
               CertificateAuthorityArnList: ['arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'],
-              Enabled: true,
             },
           },
         });

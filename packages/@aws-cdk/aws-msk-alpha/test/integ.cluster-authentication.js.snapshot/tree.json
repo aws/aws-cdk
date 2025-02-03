@@ -942,8 +942,7 @@
                               "Arn"
                             ]
                           }
-                        ],
-                        "enabled": true
+                        ]
                       }
                     },
                     "clusterName": "integ-test-auth",
