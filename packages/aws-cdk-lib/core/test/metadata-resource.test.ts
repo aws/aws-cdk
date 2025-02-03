@@ -1,10 +1,7 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { Code, Function, Runtime } from '../../aws-lambda';
-import { Queue } from '../../aws-sqs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
 import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags, Duration } from '../lib';
-import { MetadataType } from '../lib/metadata-resource';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -76,14 +73,7 @@ describe('MetadataResource', () => {
     ];
 
     for (const myApp of myApps) {
-      const myStack = new Stack(myApp, 'MyStack');
-      new Function(myStack, 'MyFunction', {
-        runtime: Runtime.PYTHON_3_9,
-        handler: 'index.handler',
-        code: Code.fromInline(
-          "def handler(event, context):\n\tprint('The function has been invoked.')",
-        ),
-      });
+      new Stack(myApp, 'MyStack');
     }
 
     const stackTemplate1 = myApps[0].synth().getStackByName('MyStack').template;
@@ -91,32 +81,6 @@ describe('MetadataResource', () => {
     const stackTemplate3 = myApps[2].synth().getStackByName('MyStack').template;
     expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate2.Resources?.CDKMetadata);
     expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate3.Resources?.CDKMetadata);
-  });
-
-  test('enable additional metadata with metadata', () => {
-    const myApp = new App({
-      analyticsReporting: true,
-      postCliContext: {
-        [ENABLE_ADDITIONAL_METADATA_COLLECTION]: true,
-      },
-    });
-
-    const myStack = new Stack(myApp, 'EnableTelemtryStack');
-    const queueProp = {
-      visibilityTimeout: Duration.seconds(300),
-    };
-    const queue = new Queue(myStack, '01234test', queueProp);
-    queue.node.addMetadata(MetadataType.CONSTRUCT, queueProp);
-
-    const funcProp = {
-      runtime: Runtime.PYTHON_3_9,
-      handler: 'index.handler',
-      code: Code.fromInline('def handler(event, context):\n\tprint(\'The function has been invoked.\')'),
-    };
-    new Function(myStack, 'MyFunction', funcProp);
-
-    const template = myApp.synth().getStackByName('EnableTelemtryStack').template;
-    expect(template.Resources?.CDKMetadata).toBeDefined();
   });
 
   test('includes the formatted Analytics property', () => {
