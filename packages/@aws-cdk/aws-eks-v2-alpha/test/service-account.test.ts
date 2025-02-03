@@ -18,8 +18,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'ClusterKubectlProviderframeworkonEvent68E0CF80',
+            'Arn',
           ],
         },
         Manifest: {
@@ -83,8 +83,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'ClusterKubectlProviderframeworkonEvent68E0CF80',
+            'Arn',
           ],
         },
         Manifest: {
@@ -141,8 +141,8 @@ describe('service account', () => {
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
+            'ClusterKubectlProviderframeworkonEvent68E0CF80',
+            'Arn',
           ],
         },
         Manifest: {
@@ -179,21 +179,23 @@ describe('service account', () => {
       const oidcProvider = new iam.OpenIdConnectProvider(stack, 'ClusterOpenIdConnectProvider', {
         url: 'oidc_issuer',
       });
+      const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+
+      const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+        serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:myfunc',
+        role: handlerRole,
+      });
+
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'Cluster',
         openIdConnectProvider: oidcProvider,
-        kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
+        kubectlProvider: kubectlProvider,
       });
 
       cluster.addServiceAccount('MyServiceAccount');
 
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'StackClusterF0EB02FAKubectlProviderNestedStackStackClusterF0EB02FAKubectlProviderNestedStackResource739D12C4',
-            'Outputs.StackStackClusterF0EB02FAKubectlProviderframeworkonEvent8377F076Arn',
-          ],
-        },
+        ServiceToken: 'arn:aws:lambda:us-east-2:123456789012:function:myfunc',
         PruneLabel: 'aws.cdk.eks/prune-c8d8e1722a4f3ed332f8ac74cb3d962f01fbb62291',
         Manifest: {
           'Fn::Join': [

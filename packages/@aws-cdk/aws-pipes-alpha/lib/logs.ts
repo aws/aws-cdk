@@ -46,17 +46,17 @@ export enum LogLevel {
  */
 export enum S3OutputFormat {
   /**
-  * Plain text
-  */
+   * Plain text
+   */
   PLAIN = 'plain',
   /**
-  * JSON
-  */
+   * JSON
+   */
   JSON = 'json',
   /**
-  * W3C extended log file format
-  * @see https://www.w3.org/TR/WD-logfile
-  */
+   * W3C extended log file format
+   * @see https://www.w3.org/TR/WD-logfile
+   */
   W3C = 'w3c',
 }
 
@@ -68,7 +68,7 @@ export interface S3LogDestinationProps {
    * The S3 bucket to deliver the log records for the pipe.
    *
    * The bucket can be in the same or a different AWS Account. If the bucket is in
-   * a different acccount, specify `bucketOwner`. You must also allow access to the
+   * a different account, specify `bucketOwner`. You must also allow access to the
    * Pipes role in the bucket policy of the cross-account bucket.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-s3logdestination.html#cfn-pipes-pipe-s3logdestination-bucketname

@@ -41,7 +41,7 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
-};
+}
 
 beforeEach(resetState);
 
@@ -137,7 +137,7 @@ test('empty configs are not rendered', () => {
 });
 
 test('duplicate config arguments not deduplicated', () => {
-  //GIVEN
+  // GIVEN
   const config = new ec2.InitConfig([
     ec2.InitCommand.argvCommand([
       'useradd', '-u', '1001', '-g', '1001', 'eguser',
@@ -388,7 +388,6 @@ const ASSET_STATEMENT = {
 };
 
 describe('assets n buckets', () => {
-
   test.each([
     ['Existing'],
     [''],

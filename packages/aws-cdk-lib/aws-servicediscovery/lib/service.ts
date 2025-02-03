@@ -9,6 +9,7 @@ import { defaultDiscoveryType } from './private/utils';
 import { CfnService } from './servicediscovery.generated';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IService extends IResource {
   /**
@@ -166,7 +167,6 @@ export interface ServiceAttributes {
  * Define a CloudMap Service
  */
 export class Service extends ServiceBase {
-
   public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
       public namespace: INamespace = attrs.namespace;
@@ -218,6 +218,8 @@ export class Service extends ServiceBase {
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const namespaceType = props.namespace.type;
     const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);

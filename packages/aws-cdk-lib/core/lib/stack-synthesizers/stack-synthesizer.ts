@@ -20,7 +20,6 @@ import { Stack } from '../stack';
  * and could not be accessed by external implementors.
  */
 export abstract class StackSynthesizer implements IStackSynthesizer {
-
   /**
    * The qualifier used to bootstrap this stack
    */
@@ -205,7 +204,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
       imageTag: cfnify(dest.imageTag),
     };
   }
-
 }
 
 /**
