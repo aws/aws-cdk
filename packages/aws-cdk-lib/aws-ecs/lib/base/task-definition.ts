@@ -220,6 +220,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * Not supported in Fargate.
    *
    * @default - No inference accelerators.
+   * @deprecated ECS TaskDefinition's inferenceAccelerator is EOL since April 2024
    */
   readonly inferenceAccelerators?: InferenceAccelerator[];
 
@@ -724,6 +725,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   /**
    * Adds an inference accelerator to the task definition.
+   * @deprecated ECS TaskDefinition's inferenceAccelerator is EOL since April 2024
    */
   public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
     if (isFargateCompatible(this.compatibility)) {
