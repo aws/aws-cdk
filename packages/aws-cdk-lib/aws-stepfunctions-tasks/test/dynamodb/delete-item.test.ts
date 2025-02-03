@@ -63,3 +63,50 @@ test('DeleteItem task', () => {
     },
   });
 });
+
+test('DeleteItem task - using JSONata', () => {
+  // WHEN
+  const task = tasks.DynamoDeleteItem.jsonata(stack, 'DeleteItem', {
+    key: { SOME_KEY: tasks.DynamoAttributeValue.fromString('1234') },
+    table,
+    conditionExpression: 'ForumName <> :f and Subject <> :s',
+    expressionAttributeNames: { OTHER_KEY: '#OK' },
+    expressionAttributeValues: {
+      ':val': tasks.DynamoAttributeValue.numberFromString('{% $Item.TotalCount.N %}'),
+    },
+    returnConsumedCapacity: tasks.DynamoConsumedCapacity.TOTAL,
+    returnItemCollectionMetrics: tasks.DynamoItemCollectionMetrics.SIZE,
+    returnValues: tasks.DynamoReturnValues.ALL_NEW,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::dynamodb:deleteItem',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Key: { SOME_KEY: { S: '1234' } },
+      TableName: {
+        Ref: 'mytable0324D45C',
+      },
+      ConditionExpression: 'ForumName <> :f and Subject <> :s',
+      ExpressionAttributeNames: { OTHER_KEY: '#OK' },
+      ExpressionAttributeValues: { ':val': { N: '{% $Item.TotalCount.N %}' } },
+      ReturnConsumedCapacity: 'TOTAL',
+      ReturnItemCollectionMetrics: 'SIZE',
+      ReturnValues: 'ALL_NEW',
+    },
+  });
+});

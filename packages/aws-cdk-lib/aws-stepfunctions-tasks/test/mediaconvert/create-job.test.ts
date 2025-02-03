@@ -48,6 +48,45 @@ describe('MediaConvert Create Job', () => {
     });
   });
 
+  test('REQUEST_RESPONSE Integration Pattern - using JSONata', () => {
+  // WHEN
+    const task = MediaConvertCreateJob.jsonata(stack, 'MediaConvertCreateJob', {
+      createJobRequest: {
+        Role: 'arn:aws:iam::123456789012:role/MediaConvertRole',
+        Settings: {
+          OutputGroups: [],
+          Inputs: [],
+        },
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::mediaconvert:createJob',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        Role: 'arn:aws:iam::123456789012:role/MediaConvertRole',
+        Settings: {
+          OutputGroups: [],
+          Inputs: [],
+        },
+      },
+    });
+  });
+
   test('RUN_JOB Integration Pattern', () => {
     // WHEN
     const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
