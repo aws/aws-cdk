@@ -673,16 +673,16 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   private configureAnalytics(analytics?: AnalyticsConfiguration): CfnUserPoolClient.AnalyticsConfigurationProperty | undefined {
     if (!analytics) return undefined;
 
-    // NOTE: the CloudFormation expects either `ApplicationArn` or all of `ApplicationId`, `ExternalId` and `RoleArn` to be provided. so validate that these are exclusive.
+    // NOTE: CloudFormation expects either `ApplicationArn` or all of `ApplicationId`, `ExternalId`, and `RoleArn` to be provided.
     if (
-      analytics.application?.attrArn &&
+      analytics.application &&
         (analytics.applicationId || analytics.externalId || analytics.role)
     ) {
       throw new ValidationError('Either `application` or all of `applicationId`, `externalId` and `role` must be specified.', this);
     }
 
     if (
-      !analytics.application?.attrArn &&
+      !analytics.application &&
         (!analytics.applicationId || !analytics.externalId || !analytics.role)
     ) {
       throw new ValidationError('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.', this);
