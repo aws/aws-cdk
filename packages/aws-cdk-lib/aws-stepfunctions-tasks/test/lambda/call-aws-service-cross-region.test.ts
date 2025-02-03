@@ -317,6 +317,13 @@ test('can pass additional IAM statements', () => {
           Effect: 'Allow',
           Resource: '*',
         },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 's3:getObject',
           Effect: 'Allow',

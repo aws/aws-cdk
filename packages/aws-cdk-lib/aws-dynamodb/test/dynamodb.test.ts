@@ -678,11 +678,23 @@ test('replica-handler permission check', () => {
             ],
           },
         },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
         {
           'Action': 'dynamodb:DescribeLimits',
           'Effect': 'Allow',
           'Resource': '*',
         },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
         {
           'Action': [
             'dynamodb:DeleteTable',

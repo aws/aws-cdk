@@ -113,20 +113,27 @@ test('assign permissions for rotation schedule with a rotation Lambda', () => {
             Ref: 'SecretA720EF05',
           },
         },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'LambdainlinePolicyAddedToExecutionRole06CEA97D1',
+    Roles: [
+      {
+        Ref: 'LambdaServiceRoleA8ED4D3B',
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 'secretsmanager:GetRandomPassword',
           Effect: 'Allow',
           Resource: '*',
         },
       ],
-      Version: '2012-10-17',
     },
-    PolicyName: 'LambdaServiceRoleDefaultPolicyDAE46E21',
-    Roles: [
-      {
-        Ref: 'LambdaServiceRoleA8ED4D3B',
-      },
-    ],
   });
 });
 
@@ -172,7 +179,7 @@ test('grants correct permissions for secret imported by name', () => {
       ]),
       Version: '2012-10-17',
     },
-    PolicyName: 'LambdaServiceRoleDefaultPolicyDAE46E21',
+    PolicyName: 'LambdainlinePolicyAddedToExecutionRole06CEA97D1',
     Roles: [
       {
         Ref: 'LambdaServiceRoleA8ED4D3B',

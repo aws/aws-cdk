@@ -83,13 +83,20 @@ test('use AwsApi as an event rule target', () => {
           Effect: 'Allow',
           Resource: '*',
         },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 'rds:CreateDBSnapshot',
           Effect: 'Allow',
           Resource: '*',
         },
       ],
-      Version: '2012-10-17',
     },
   });
 });

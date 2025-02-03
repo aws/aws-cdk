@@ -534,7 +534,7 @@ describe('pipeline', () => {
         ],
         'Version': '2012-10-17',
       },
-      'PolicyName': 'FunctionServiceRoleDefaultPolicy2F49994A',
+      'PolicyName': 'FunctioninlinePolicyAddedToExecutionRole0B553FD2F',
       'Roles': [
         {
           'Ref': 'FunctionServiceRole675BB04A',

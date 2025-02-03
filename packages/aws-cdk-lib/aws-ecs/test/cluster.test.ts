@@ -443,6 +443,20 @@ describe('cluster', () => {
               Effect: 'Allow',
               Resource: '*',
             },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole075025F00',
+        Roles: [
+          {
+            Ref: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: 'autoscaling:CompleteLifecycleAction',
               Effect: 'Allow',
@@ -470,6 +484,13 @@ describe('cluster', () => {
                 ],
               },
             },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'ecs:DescribeContainerInstances',
@@ -488,6 +509,13 @@ describe('cluster', () => {
                 },
               },
             },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'ecs:ListContainerInstances',
@@ -502,6 +530,13 @@ describe('cluster', () => {
                 ],
               },
             },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
             {
               Action: [
                 'ecs:UpdateContainerInstancesState',
@@ -521,14 +556,7 @@ describe('cluster', () => {
               Resource: '*',
             },
           ],
-          Version: '2012-10-17',
         },
-        PolicyName: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396',
-        Roles: [
-          {
-            Ref: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA',
-          },
-        ],
       });
     });
 
