@@ -107,9 +107,10 @@ test('cloudwatch dimensions destination', () => {
 });
 
 test('event bridge destination', () => {
+  const bus = events.EventBus.fromEventBusName(stack, 'EventBus', 'default');
   new ConfigurationSetEventDestination(stack, 'Destination', {
     configurationSet,
-    destination: EventDestination.defaultEventBus(),
+    destination: EventDestination.eventBus(bus),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSetEventDestination', {

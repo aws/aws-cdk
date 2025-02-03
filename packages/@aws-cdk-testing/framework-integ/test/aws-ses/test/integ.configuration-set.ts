@@ -1,6 +1,7 @@
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
+import * as events from 'aws-cdk-lib/aws-events';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as sns from 'aws-cdk-lib/aws-sns';
 
@@ -26,8 +27,10 @@ class TestStack extends Stack {
       }]),
     });
 
+    const bus = events.EventBus.fromEventBusName(this, 'EventBus', 'default');
+
     configurationSet.addEventDestination('EventBridge', {
-      destination: ses.EventDestination.defaultEventBus(),
+      destination: ses.EventDestination.eventBus(bus),
     });
   }
 }

@@ -68,10 +68,10 @@ export abstract class EventDestination {
   }
 
   /**
-   * Use default Event Bus as event destination
+   * Use Event Bus as event destination
    */
-  public static defaultEventBus(): EventDestination {
-    return { useDefaultEventBus: true };
+  public static eventBus(eventBus: events.IEventBus): EventDestination {
+    return { bus: eventBus };
   }
   /**
    * A SNS topic to use as event destination
@@ -88,11 +88,11 @@ export abstract class EventDestination {
   public abstract readonly dimensions?: CloudWatchDimension[];
 
   /**
-   * Use default Event Bus as event destination
+   * Use Event Bus as event destination
    *
-   * @default - do not send events to default Event bus
+   * @default - do not send events to Event bus
    */
-  public abstract readonly useDefaultEventBus?: boolean;
+  public abstract readonly bus?: events.IEventBus;
 }
 
 /**
@@ -252,10 +252,8 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
       physicalName: props.configurationSetEventDestinationName,
     });
 
-    let defaultEventBusArn = '';
-    if (props.destination.useDefaultEventBus) {
-      const defaultEventBus = events.EventBus.fromEventBusName(this, 'DefaultEventBus', 'default');
-      defaultEventBusArn = defaultEventBus.eventBusArn;
+    if (props.destination.bus && props.destination.bus.eventBusArn != `arn:${Aws.PARTITION}:events:${this.env.region}:${this.env.account}:event-bus/default`) {
+      throw new Error(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`);
     }
 
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
@@ -274,7 +272,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
             })),
           }
           : undefined,
-        eventBridgeDestination: defaultEventBusArn ? { eventBusArn: defaultEventBusArn } : undefined,
+        eventBridgeDestination: props.destination.bus ? { eventBusArn: props.destination.bus.eventBusArn } : undefined,
       },
     });
 

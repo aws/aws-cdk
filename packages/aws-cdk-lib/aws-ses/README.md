@@ -164,8 +164,10 @@ For EventBridge, only default EventBus can be used:
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;
 
+const bus = events.EventBus.fromEventBusName(this, 'EventBus', 'default');
+
 myConfigurationSet.addEventDestination('ToDefaultEventBus', {
-  destination: ses.EventDestination.defaultEventBus(),
+  destination: ses.EventDestination.eventBus(bus),
 })
 ```
 
