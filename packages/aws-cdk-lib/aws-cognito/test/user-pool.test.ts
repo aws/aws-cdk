@@ -2156,7 +2156,7 @@ describe('User Pool', () => {
         allowedFirstAuthFactors: { emailOtp: true },
         featurePlan: FeaturePlan.LITE,
       });
-    }).toThrow('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+    }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
 
   test('passkeyRelyingPartyId is configured', () => {

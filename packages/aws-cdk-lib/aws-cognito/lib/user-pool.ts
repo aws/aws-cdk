@@ -1422,7 +1422,7 @@ export class UserPool extends UserPoolBase {
     }
 
     if (props.featurePlan === FeaturePlan.LITE) {
-      throw new ValidationError('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 
     // PASSWORD should be configured as one of the allowed first auth factors.
