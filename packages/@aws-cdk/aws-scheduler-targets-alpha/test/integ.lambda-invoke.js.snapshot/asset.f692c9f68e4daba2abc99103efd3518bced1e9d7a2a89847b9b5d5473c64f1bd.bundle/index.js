@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -151,6 +152,7 @@ var init_matcher = __esm({
        */
       toHumanStrings() {
         const failures = new Array();
+        debugger;
         recurse(this, []);
         return failures.map((r) => {
           const loc = r.path.length === 0 ? "" : ` at /${r.path.join("/")}`;
@@ -30075,6 +30077,7 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
+    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -30086,9 +30089,6 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
-  physicalResourceId;
-  timeout;
-  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -30222,7 +30222,6 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
-  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
