@@ -4,21 +4,22 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
-import { AssetBuildTime, DeployOptions, RequireApproval } from '../actions/deploy';
-import { buildParameterMap, removePublishedAssets } from '../actions/deploy/private';
-import { DestroyOptions } from '../actions/destroy';
-import { DiffOptions } from '../actions/diff';
-import { ListOptions } from '../actions/list';
-import { RollbackOptions } from '../actions/rollback';
-import { SynthOptions } from '../actions/synth';
+import { AssetBuildTime, type DeployOptions, RequireApproval } from '../actions/deploy';
+import { type ExtendedDeployOptions, buildParameterMap, createHotswapPropertyOverrides, removePublishedAssets } from '../actions/deploy/private';
+import { type DestroyOptions } from '../actions/destroy';
+import { type DiffOptions } from '../actions/diff';
+import { diffRequiresApproval } from '../actions/diff/private';
+import { type ListOptions } from '../actions/list';
+import { type RollbackOptions } from '../actions/rollback';
+import { type SynthOptions } from '../actions/synth';
 import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
-import { SdkOptions } from '../api/aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode } from '../api/aws-cdk';
+import { type SdkOptions } from '../api/aws-auth';
+import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
-import { CloudAssemblySourceBuilder } from '../api/cloud-assembly/private/source-builder';
+import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, data, error, highlight, info, success, warn, ActionAwareIoHost, debug } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -32,13 +33,36 @@ export type ToolkitAction =
 | 'deploy'
 | 'rollback'
 | 'watch'
-| 'destroy';
+| 'destroy'
+| 'doctor'
+| 'gc'
+| 'import'
+| 'metadata'
+| 'init'
+| 'migrate';
 
 export interface ToolkitOptions {
   /**
    * The IoHost implementation, handling the inline interactions between the Toolkit and an integration.
    */
-  // ioHost: IIoHost;
+  ioHost?: IIoHost;
+
+  /**
+   * Allow emojis in messages sent to the IoHost.
+   *
+   * @default true
+   */
+  emojis?: boolean;
+
+  /**
+   * Whether to allow ANSI colors and formatting in IoHost messages.
+   * Setting this value to `falsez enforces that no color or style shows up
+   * in messages sent to the IoHost.
+   * Setting this value to true is a no-op; it is equivalent to the default.
+   *
+   * @default - detects color from the TTY status of the IoHost
+   */
+  color?: boolean;
 
   /**
    * Configuration options for the SDK.
@@ -70,19 +94,28 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   public readonly toolkitStackName: string;
 
   /**
-   * @todo should probably be public in one way or the other.
+   * The IoHost of this Toolkit
    */
-  private readonly ioHost: IIoHost;
+  public readonly ioHost: IIoHost;
   private _sdkProvider?: SdkProvider;
 
   public constructor(private readonly props: ToolkitOptions = {}) {
     super();
-
-    // @todo open ioHost up
-    this.ioHost = CliIoHost.getIoHost();
-    // this.ioHost = options.ioHost;
-
     this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+
+    // Hacky way to re-use the global IoHost until we have fully removed the need for it
+    const globalIoHost = CliIoHost.instance();
+    if (props.ioHost) {
+      globalIoHost.registerIoHost(props.ioHost as any);
+    }
+    let ioHost = globalIoHost as IIoHost;
+    if (props.emojis === false) {
+      ioHost = withoutEmojis(ioHost);
+    }
+    if (props.color === false) {
+      ioHost = withoutColor(ioHost);
+    }
+    this.ioHost = ioHost;
   }
 
   public async dispose(): Promise<void> {
@@ -121,26 +154,38 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   /**
    * Synth Action
    */
-  public async synth(cx: ICloudAssemblySource, options: SynthOptions): Promise<ICloudAssemblySource> {
+  public async synth(cx: ICloudAssemblySource, options: SynthOptions = {}): Promise<ICloudAssemblySource> {
     const ioHost = withAction(this.ioHost, 'synth');
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = assembly.selectStacksV2(options.stacks);
+    const stacks = assembly.selectStacksV2(options.stacks ?? ALL_STACKS);
     const autoValidateStacks = options.validateStacks ? [assembly.selectStacksForValidation()] : [];
     await this.validateStacksMetadata(stacks.concat(...autoValidateStacks), ioHost);
 
     // if we have a single stack, print it to STDOUT
+    const message = `Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`;
+    const assemblyData = {
+      assemblyDirectory: stacks.assembly.directory,
+      stacksCount: stacks.stackCount,
+      stackIds: stacks.hierarchicalIds,
+    };
+
     if (stacks.stackCount === 1) {
-      const template = stacks.firstStack?.template;
+      const firstStack = stacks.firstStack!;
+      const template = firstStack.template;
       const obscuredTemplate = obscureTemplate(template);
-      await ioHost.notify(info('', 'CDK_TOOLKIT_I0001', {
-        raw: template,
-        json: serializeStructure(obscuredTemplate, true),
-        yaml: serializeStructure(obscuredTemplate, false),
-      },
-      ));
+      await ioHost.notify(result(message, 'CDK_TOOLKIT_I0001', {
+        ...assemblyData,
+        stack: {
+          stackName: firstStack.stackName,
+          hierarchicalId: firstStack.hierarchicalId,
+          template,
+          stringifiedJson: serializeStructure(obscuredTemplate, true),
+          stringifiedYaml: serializeStructure(obscuredTemplate, false),
+        },
+      }));
     } else {
       // not outputting template to stdout, let's explain things to the user a little bit...
-      await ioHost.notify(success(`Successfully synthesized to ${chalk.blue(path.resolve(stacks.assembly.directory))}`));
+      await ioHost.notify(result(chalk.green(message), 'CDK_TOOLKIT_I0002', assemblyData));
       await ioHost.notify(info(`Supply a stack id (${stacks.stackArtifacts.map((s) => chalk.green(s.hierarchicalId)).join(', ')}) to display its template.`));
     }
 
@@ -157,6 +202,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     ioHost;
     assembly;
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
@@ -168,17 +215,26 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const assembly = await this.assemblyFromSource(cx);
     const stacks = await assembly.selectStacksV2(options.stacks);
     await this.validateStacksMetadata(stacks, ioHost);
+    // temporary
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error('Not implemented yet');
   }
 
   /**
    * Deploys the selected stacks into an AWS account
    */
-  public async deploy(cx: ICloudAssemblySource, options: DeployOptions): Promise<void> {
-    const ioHost = withAction(this.ioHost, 'deploy');
-    const timer = Timer.start();
+  public async deploy(cx: ICloudAssemblySource, options: DeployOptions = {}): Promise<void> {
     const assembly = await this.assemblyFromSource(cx);
-    const stackCollection = assembly.selectStacksV2(options.stacks);
+    return this._deploy(assembly, 'deploy', options);
+  }
+
+  /**
+   * Helper to allow deploy being called as part of the watch action.
+   */
+  private async _deploy(assembly: StackAssembly, action: 'deploy' | 'watch', options: ExtendedDeployOptions = {}) {
+    const ioHost = withAction(this.ioHost, action);
+    const timer = Timer.start();
+    const stackCollection = assembly.selectStacksV2(options.stacks ?? ALL_STACKS);
     await this.validateStacksMetadata(stackCollection, ioHost);
 
     const synthTime = timer.end();
@@ -198,25 +254,17 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     });
     await migrator.tryMigrateResources(stackCollection, options);
 
-    // const requireApproval = options.requireApproval ?? RequireApproval.BROADENING;
+    const requireApproval = options.requireApproval ?? RequireApproval.NEVER;
 
     const parameterMap = buildParameterMap(options.parameters?.parameters);
 
-    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
-      await ioHost.notify(warn(
+    const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+    if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
+      await ioHost.notify(warn([
         '⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments',
-      ));
-      await ioHost.notify(warn('⚠️ They should only be used for development - never use them for your production Stacks!\n'));
+        '⚠️ They should only be used for development - never use them for your production Stacks!',
+      ].join('\n')));
     }
-
-    // @TODO
-    // let hotswapPropertiesFromSettings = this.props.configuration.settings.get(['hotswap']) || {};
-
-    // let hotswapPropertyOverrides = new HotswapPropertyOverrides();
-    // hotswapPropertyOverrides.ecsHotswapProperties = new EcsHotswapProperties(
-    //   hotswapPropertiesFromSettings.ecs?.minimumHealthyPercent,
-    //   hotswapPropertiesFromSettings.ecs?.maximumHealthyPercent,
-    // );
 
     const stacks = stackCollection.stackArtifacts;
 
@@ -272,17 +320,16 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         return;
       }
 
-      // @TODO
-      // if (requireApproval !== RequireApproval.NEVER) {
-      //   const currentTemplate = await deployments.readCurrentTemplate(stack);
-      //   if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-      //     await askUserConfirmation(
-      //       concurrency,
-      //       '"--require-approval" is enabled and stack includes security-sensitive updates',
-      //       'Do you wish to deploy these changes',
-      //     );
-      //   }
-      // }
+      if (requireApproval !== RequireApproval.NEVER) {
+        const currentTemplate = await deployments.readCurrentTemplate(stack);
+        if (diffRequiresApproval(currentTemplate, stack, requireApproval)) {
+          const motivation = '"--require-approval" is enabled and stack includes security-sensitive updates.';
+          const question = `${motivation}\nDo you wish to deploy these changes`;
+          // @todo reintroduce concurrency and corked logging in CliHost
+          const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I5060', question, motivation, true, concurrency));
+          if (!confirmed) { throw new ToolkitError('Aborted by user'); }
+        }
+      }
 
       // Following are the same semantics we apply with respect to Notification ARNs (dictated by the SDK)
       //
@@ -325,7 +372,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             stack,
             deployName: stack.stackName,
             roleArn: options.roleArn,
-            toolkitStackName: options.toolkitStackName,
+            toolkitStackName: this.toolkitStackName,
             reuseAssets: options.reuseAssets,
             notificationArns,
             tags,
@@ -336,9 +383,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
             progress,
             ci: options.ci,
             rollback,
-            hotswap: options.hotswap,
-            // hotswapPropertyOverrides: hotswapPropertyOverrides,
-
+            hotswap: hotswapMode,
+            extraUserAgent: options.extraUserAgent,
+            hotswapPropertyOverrides: options.hotswapProperties ? createHotswapPropertyOverrides(options.hotswapProperties) : undefined,
             assetParallelism: options.assetParallelism,
           });
 
@@ -362,7 +409,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
               }
 
               // Perform a rollback
-              await this.rollback(cx, {
+              await this._rollback(assembly, action, {
                 stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
                 orphanFailedResources: options.force,
               });
@@ -385,7 +432,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
                 if (!confirmed) { throw new ToolkitError('Aborted by user'); }
               }
 
-              // Go around through the 'while' loop again but switch rollback to false.
+              // Go around through the 'while' loop again but switch rollback to true.
               rollback = true;
               break;
             }
@@ -416,7 +463,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
 
         await ioHost.notify(info('Stack ARN:'));
 
-        await ioHost.notify(data(deployResult.stackArn));
+        await ioHost.notify(info(deployResult.stackArn));
       } catch (e: any) {
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
@@ -424,15 +471,17 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           [`❌  ${chalk.bold(stack.stackName)} failed:`, ...(e.name ? [`${e.name}:`] : []), e.message].join(' '),
         );
       } finally {
-        // @todo
-        // if (options.cloudWatchLogMonitor) {
-        //   const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
-        //   options.cloudWatchLogMonitor.addLogGroups(
-        //     foundLogGroupsResult.env,
-        //     foundLogGroupsResult.sdk,
-        //     foundLogGroupsResult.logGroupNames,
-        //   );
-        // }
+        if (options.traceLogs) {
+          // deploy calls that originate from watch will come with their own cloudWatchLogMonitor
+          const cloudWatchLogMonitor = options.cloudWatchLogMonitor ?? new CloudWatchLogEventMonitor();
+          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
+          cloudWatchLogMonitor.addLogGroups(
+            foundLogGroupsResult.env,
+            foundLogGroupsResult.sdk,
+            foundLogGroupsResult.logGroupNames,
+          );
+          await ioHost.notify(info(`The following log groups are added: ${foundLogGroupsResult.logGroupNames}`, 'CDK_TOOLKIT_I3001'));
+        }
 
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
@@ -487,6 +536,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
    * Implies hotswap deployments.
    */
   public async watch(cx: ICloudAssemblySource, options: WatchOptions): Promise<void> {
+    const assembly = await this.assemblyFromSource(cx, false);
     const ioHost = withAction(this.ioHost, 'watch');
     const rootDir = options.watchDir ?? process.cwd();
     await ioHost.notify(debug(`root directory used for 'watch' is: ${rootDir}`));
@@ -507,7 +557,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       rootDir,
       returnRootDirIfEmpty: true,
     });
-    await ioHost.notify(debug(`'include' patterns for 'watch': ${watchIncludes}`));
+    await ioHost.notify(debug(`'include' patterns for 'watch': ${JSON.stringify(watchIncludes)}`));
 
     // For the "exclude" subkey under the "watch" key,
     // the behavior is to add some default excludes in addition to the ones specified by the user:
@@ -515,11 +565,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     // 2. Any file whose name starts with a dot.
     // 3. Any directory's content whose name starts with a dot.
     // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const outdir = options.outdir ?? 'cdk.out';
     const watchExcludes = patternsArrayForWatch(options.exclude, {
       rootDir,
       returnRootDirIfEmpty: false,
-    }).concat(`${options.output}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
-    await ioHost.notify(debug(`'exclude' patterns for 'watch': ${watchExcludes}`));
+    }).concat(`${outdir}/**`, '**/.*', '**/.*/**', '**/node_modules/**');
+    await ioHost.notify(debug(`'exclude' patterns for 'watch': ${JSON.stringify(watchExcludes)}`));
 
     // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
     // introduce a concurrency latch that tracks the state.
@@ -534,13 +585,12 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    // @todo
-    // const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
-      // cloudWatchLogMonitor?.deactivate();
+      cloudWatchLogMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(cx, options);
+      await this.invokeDeployFromWatch(assembly, options, cloudWatchLogMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -549,17 +599,16 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         await ioHost.notify(info("Detected file changes during deployment. Invoking 'cdk deploy' again"));
-        await this.invokeDeployFromWatch(cx, options);
+        await this.invokeDeployFromWatch(assembly, options, cloudWatchLogMonitor);
       }
       latch = 'open';
-      // cloudWatchLogMonitor?.activate();
+      cloudWatchLogMonitor?.activate();
     };
 
     chokidar
       .watch(watchIncludes, {
         ignored: watchExcludes,
         cwd: rootDir,
-        // ignoreInitial: true,
       })
       .on('ready', async () => {
         latch = 'open';
@@ -589,17 +638,56 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
    * Rolls back the selected stacks.
    */
   public async rollback(cx: ICloudAssemblySource, options: RollbackOptions): Promise<void> {
-    const ioHost = withAction(this.ioHost, 'rollback');
-    const timer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
-    const stacks = await assembly.selectStacksV2(options.stacks);
+    return this._rollback(assembly, 'rollback', options);
+  }
+
+  /**
+   * Helper to allow rollback being called as part of the deploy or watch action.
+   */
+  private async _rollback(assembly: StackAssembly, action: 'rollback' | 'deploy' | 'watch', options: RollbackOptions): Promise<void> {
+    const ioHost = withAction(this.ioHost, action);
+    const timer = Timer.start();
+    const stacks = assembly.selectStacksV2(options.stacks);
     await this.validateStacksMetadata(stacks, ioHost);
     const synthTime = timer.end();
     await ioHost.notify(info(`\n✨  Synthesis time: ${synthTime.asSec}s\n`, 'CDK_TOOLKIT_I5001', {
       time: synthTime.asMs,
     }));
 
-    throw new Error('Not implemented yet');
+    if (stacks.stackCount === 0) {
+      await ioHost.notify(error('No stacks selected'));
+      return;
+    }
+
+    let anyRollbackable = false;
+
+    for (const stack of stacks.stackArtifacts) {
+      await ioHost.notify(info(`Rolling back ${chalk.bold(stack.displayName)}`));
+      const startRollbackTime = Timer.start();
+      const deployments = await this.deploymentsForAction('rollback');
+      try {
+        const stackResult = await deployments.rollbackStack({
+          stack,
+          roleArn: options.roleArn,
+          toolkitStackName: this.toolkitStackName,
+          force: options.orphanFailedResources,
+          validateBootstrapStackVersion: options.validateBootstrapStackVersion,
+          orphanLogicalIds: options.orphanLogicalIds,
+        });
+        if (!stackResult.notInRollbackableState) {
+          anyRollbackable = true;
+        }
+        const elapsedRollbackTime = startRollbackTime.end();
+        await ioHost.notify(info(`\n✨  Rollback time: ${elapsedRollbackTime.asSec}s\n`));
+      } catch (e: any) {
+        await ioHost.notify(error(`\n ❌  ${chalk.bold(stack.displayName)} failed: ${formatErrorMessage(e)}`));
+        throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
+      }
+    }
+    if (!anyRollbackable) {
+      throw new ToolkitError('No stacks were in a state that could be rolled back');
+    }
   }
 
   /**
@@ -695,25 +783,22 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
   }
 
   private async invokeDeployFromWatch(
-    cx: ICloudAssemblySource,
+    assembly: StackAssembly,
     options: WatchOptions,
+    cloudWatchLogMonitor?: CloudWatchLogEventMonitor,
   ): Promise<void> {
-    const deployOptions: DeployOptions = {
+    // watch defaults hotswap to enabled
+    const hotswap = options.hotswap ?? HotswapMode.HOTSWAP_ONLY;
+    const deployOptions: ExtendedDeployOptions = {
       ...options,
       requireApproval: RequireApproval.NEVER,
-      // if 'watch' is called by invoking 'cdk deploy --watch',
-      // we need to make sure to not call 'deploy' with 'watch' again,
-      // as that would lead to a cycle
-      // watch: false,
-      // cloudWatchLogMonitor,
-      // cacheCloudAssembly: false,
-      hotswap: options.hotswap,
-      // extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
-      concurrency: options.concurrency,
+      cloudWatchLogMonitor,
+      hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap === HotswapMode.FULL_DEPLOYMENT ? 'off' : 'on'}`,
     };
 
     try {
-      await this.deploy(cx, deployOptions);
+      await this._deploy(assembly, 'watch', deployOptions);
     } catch {
       // just continue - deploy will show the error
     }

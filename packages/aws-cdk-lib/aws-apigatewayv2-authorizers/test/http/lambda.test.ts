@@ -7,7 +7,6 @@ import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 
 describe('HttpLambdaAuthorizer', () => {
-
   test('default', () => {
     // GIVEN
     const stack = new Stack();

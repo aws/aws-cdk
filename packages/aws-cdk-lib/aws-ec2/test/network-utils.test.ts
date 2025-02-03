@@ -9,17 +9,14 @@ describe('network utils', () => {
   describe('IP', () => {
     test('should convert a valid IP Address to an integer', () => {
       expect(NetworkUtils.ipToNum('174.66.173.168')).toEqual(2923605416);
-
     });
     test('should throw on invalid IP Address', () => {
       expect(() => {
         NetworkUtils.ipToNum('174.266.173.168');
       }).toThrow('is not valid');
-
     });
     test('should convert a valid IP integer to a staring', () => {
       expect(NetworkUtils.numToIp(2923605416)).toEqual('174.66.173.168');
-
     });
     test('should throw an error for invalid IP', () => {
       expect(() => {
@@ -28,21 +25,18 @@ describe('network utils', () => {
       expect(() => {
         NetworkUtils.numToIp(-1);
       }).toThrow(/is not a valid/);
-
     });
     test('validIp returns true if octect is in 0-255', () => {
       const invalidIps = ['255.255.0.0', '0.0.0.0', '1.2.3.4', '10.0.0.0', '255.01.01.255'];
       for (const ip of invalidIps) {
         expect(true).toEqual(NetworkUtils.validIp(ip));
       }
-
     });
     test('validIp returns false if octect is not in 0-255', () => {
       const invalidIps = ['1.2.3.4.689', '-1.55.22.22', '', ' ', '255.264.1.01'];
       for (const ip of invalidIps) {
         expect(false).toEqual(NetworkUtils.validIp(ip));
       }
-
     });
   });
   describe('CidrBlock', () => {
@@ -50,7 +44,6 @@ describe('network utils', () => {
       const num = NetworkUtils.ipToNum('10.0.1.255');
       const newBlock = new CidrBlock(num, 24);
       expect(newBlock.cidr).toEqual('10.0.2.0/24');
-
     });
     test('nextBlock() returns the next higher CIDR space', () => {
       const testValues = [
@@ -61,7 +54,6 @@ describe('network utils', () => {
         const block = new CidrBlock(value[0]);
         expect(block.nextBlock().cidr).toEqual(value[1]);
       }
-
     });
     test('maxIp() should return the last usable IP from the CidrBlock', () => {
       const testValues = [
@@ -73,7 +65,6 @@ describe('network utils', () => {
         const block = new CidrBlock(value[0]);
         expect(block.maxIp()).toEqual(value[1]);
       }
-
     });
     test('minIp() should return the first usable IP from the CidrBlock', () => {
       const testValues = [
@@ -84,26 +75,21 @@ describe('network utils', () => {
         const block = new CidrBlock(answer[0]);
         expect(block.minIp()).toEqual(answer[1]);
       }
-
     });
     test('containsCidr returns true if fully contained', () => {
       const block = new CidrBlock('10.0.3.0/24');
       const contained = new CidrBlock('10.0.3.0/26');
       expect(block.containsCidr(contained)).toEqual(true);
-
     });
     test('containsCidr returns false if not fully contained', () => {
       const block = new CidrBlock('10.0.3.0/26');
       const notContained = new CidrBlock('10.0.3.0/25');
       expect(block.containsCidr(notContained)).toEqual(false);
-
     });
     test('calculateNetmask returns the ip string mask', () => {
       const netmask = CidrBlock.calculateNetmask(27);
       expect(netmask).toEqual('255.255.255.224');
-
     });
-
   });
   describe('NetworkBuilder', () => {
     test('allows you to carve subnets our of CIDR network', () => {
@@ -143,7 +129,6 @@ describe('network utils', () => {
       for (let i = 0; i < answers.length; i++) {
         expect(answers[i].sort()).toEqual(expected[i]);
       }
-
     });
     test('throws on subnets < 16 or > 28', () => {
       const builder = new NetworkBuilder('192.168.0.0/18');
@@ -153,7 +138,6 @@ describe('network utils', () => {
       expect(() => {
         builder.addSubnet(29);
       }).toThrow(InvalidCidrRangeError);
-
     });
     test('throws if you add a subnet outside of the cidr', () => {
       const builder = new NetworkBuilder('192.168.0.0/18');
@@ -167,7 +151,6 @@ describe('network utils', () => {
       expect(() => {
         builder2.addSubnet(28);
       }).toThrow(/exceeds remaining space/);
-
     });
     test('maskForRemainingSubnets calcs mask for even split of remaining', () => {
       const builder = new NetworkBuilder('10.0.0.0/24');

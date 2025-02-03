@@ -86,8 +86,9 @@ Flags come in three types:
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | (fix) |
 | [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | 2.175.0 | (temporary) |
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | (temporary) |
-| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | V2NEXT | (fix) |
-| [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | V2NEXT | (fix) |
+| [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | (fix) |
+| [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
+| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | V2NEXT | (config) |
 
 <!-- END table -->
 
@@ -163,7 +164,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
-    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true
   }
 }
 ```
@@ -1665,9 +1667,25 @@ thumbprints from unsecure connections.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.177.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
+
+
+### @aws-cdk/core:enableAdditionalMetadataCollection
+
+*When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.* (config)
+
+When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+  * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

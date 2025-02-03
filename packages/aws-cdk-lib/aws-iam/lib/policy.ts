@@ -8,6 +8,7 @@ import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
 import { IResource, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM Policy
@@ -103,7 +104,6 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 export class Policy extends Resource implements IPolicy, IPrincipal {
-
   /**
    * Import a policy in this app based on its name
    */
@@ -144,6 +144,8 @@ export class Policy extends Resource implements IPolicy, IPrincipal {
         // that shouod be sufficient to ensure uniqueness within a principal.
         Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const self = this;
 

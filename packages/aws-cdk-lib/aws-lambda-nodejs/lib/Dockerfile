@@ -47,6 +47,4 @@ RUN mkdir /tmp/bun-cache && \
     chmod -R 777 /tmp/bun-cache && \
     echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
 
-USER nobody
-
 CMD [ "esbuild" ]
