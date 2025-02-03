@@ -733,7 +733,7 @@ export function parseCommandLineArguments(args: Array<string>): any {
           type: 'string',
           alias: 'l',
           desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)',
-          choices: ['csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
+          choices: ['app.iml', 'csharp', 'fsharp', 'go', 'java', 'javascript', 'python', 'typescript'],
         })
         .option('list', {
           default: undefined,
