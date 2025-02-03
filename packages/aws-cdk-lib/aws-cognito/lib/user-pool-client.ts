@@ -4,11 +4,11 @@ import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IRole } from '../../aws-iam';
+import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import { CfnApp } from '../../aws-pinpoint';
 
 /**
  * Types of authentication flow
