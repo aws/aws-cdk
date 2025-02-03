@@ -1,5 +1,5 @@
 import { Stack } from '../../core';
-import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
+import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect, Policy, ManagedPolicy } from '../lib';
 
 describe('IAM policy statement', () => {
   describe('from JSON', () => {
@@ -207,6 +207,28 @@ describe('IAM policy statement', () => {
       .toThrow("Cannot use an IAM Group 'Default/groupId' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
     expect(() => policyStatement.addNotPrincipals(group))
       .toThrow("Cannot use an IAM Group 'Default/groupId' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
+  });
+
+  test('throws error when Policy is specified for \'Principal\' or \'NotPrincipal\'', () => {
+    const stack = new Stack();
+    const policy = new Policy(stack, 'policy');
+    const policyStatement = new PolicyStatement();
+
+    expect(() => policyStatement.addPrincipals(policy))
+      .toThrow("Cannot use a Policy 'Default/policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
+    expect(() => policyStatement.addNotPrincipals(policy))
+      .toThrow("Cannot use a Policy 'Default/policy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
+  });
+
+  test('throws error when ManagedPolicy is specified for \'Principal\' or \'NotPrincipal\'', () => {
+    const stack = new Stack();
+    const managedPolicy = new ManagedPolicy(stack, 'managedPolicy');
+    const policyStatement = new PolicyStatement();
+
+    expect(() => policyStatement.addPrincipals(managedPolicy))
+      .toThrow("Cannot use a ManagedPolicy 'Default/managedPolicy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
+    expect(() => policyStatement.addNotPrincipals(managedPolicy))
+      .toThrow("Cannot use a ManagedPolicy 'Default/managedPolicy' as the 'Principal' or 'NotPrincipal' in an IAM Policy");
   });
 
   test('throws error when an invalid \'Action\' or \'NotAction\' is added', () => {
