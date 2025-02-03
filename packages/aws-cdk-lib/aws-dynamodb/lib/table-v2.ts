@@ -564,6 +564,7 @@ export class TableV2 extends TableBaseV2 {
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
     this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
+    this.resourcePolicy = props.resourcePolicy;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -737,8 +738,8 @@ export class TableV2 extends TableBaseV2 {
     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
     */
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
-      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+      ? (props.region === this.region ? this.tableOptions.resourcePolicy : this.resourcePolicy) || undefined
+      : this.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},
