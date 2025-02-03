@@ -433,7 +433,7 @@ To generate an ARN for Execute API:
 
 ```ts
 const api = new apigwv2.WebSocketApi(this, 'mywsapi');
-const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
+const arn = api.arnForExecuteApiV2('$connect', 'dev');
 ```
 
 For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.

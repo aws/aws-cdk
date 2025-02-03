@@ -89,6 +89,82 @@ test('create basic training job', () => {
   });
 });
 
+test('create basic training job - using JSONata', () => {
+  // WHEN
+  const task = SageMakerCreateTrainingJob.jsonata(stack, 'TrainSagemaker', {
+    trainingJobName: 'MyTrainJob',
+    algorithmSpecification: {
+      algorithmName: 'BlazingText',
+    },
+    inputDataConfig: [
+      {
+        channelName: 'train',
+        dataSource: {
+          s3DataSource: {
+            s3Location: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath'),
+          },
+        },
+      },
+    ],
+    outputDataConfig: {
+      s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+    },
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createTrainingJob',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      AlgorithmSpecification: {
+        AlgorithmName: 'BlazingText',
+        TrainingInputMode: 'File',
+      },
+      InputDataConfig: [
+        {
+          ChannelName: 'train',
+          DataSource: {
+            S3DataSource: {
+              S3DataType: 'S3Prefix',
+              S3Uri: {
+                'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/mytrainpath']],
+              },
+            },
+          },
+        },
+      ],
+      OutputDataConfig: {
+        S3OutputPath: {
+          'Fn::Join': ['', ['https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/mybucket/myoutputpath']],
+        },
+      },
+      ResourceConfig: {
+        InstanceCount: 1,
+        InstanceType: 'ml.m4.xlarge',
+        VolumeSizeInGB: 10,
+      },
+      RoleArn: { 'Fn::GetAtt': ['TrainSagemakerSagemakerRole89E8C593', 'Arn'] },
+      StoppingCondition: {
+        MaxRuntimeInSeconds: 3600,
+      },
+      TrainingJobName: 'MyTrainJob',
+    },
+  });
+});
+
 test('create basic training job without inputDataConfig', () => {
   // WHEN
   const task = new SageMakerCreateTrainingJob(stack, 'TrainSagemaker', {

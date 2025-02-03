@@ -4,11 +4,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
-/**
- * Properties for EmrSetClusterTerminationProtection
- *
- */
-export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps {
+interface EmrSetClusterTerminationProtectionOptions {
   /**
    * The ClusterId to update.
    */
@@ -21,10 +17,41 @@ export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBa
 }
 
 /**
+ * Properties for EmrSetClusterTerminationProtection using JSONPath
+ */
+export interface EmrSetClusterTerminationProtectionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrSetClusterTerminationProtectionOptions { }
+
+/**
+ * Properties for EmrSetClusterTerminationProtection using JSONata
+ */
+export interface EmrSetClusterTerminationProtectionJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrSetClusterTerminationProtectionOptions { }
+
+/**
+ * Properties for EmrSetClusterTerminationProtection
+ */
+export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps, EmrSetClusterTerminationProtectionOptions { }
+
+/**
  * A Step Functions Task to to set Termination Protection on an EMR Cluster.
- *
  */
 export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
+  /**
+   * A Step Functions Task using JSONPath to set Termination Protection on an EMR Cluster.
+   */
+  public static jsonPath(scope: Construct, id: string, props: EmrSetClusterTerminationProtectionJsonPathProps) {
+    return new EmrSetClusterTerminationProtection(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task using JSONata to set Termination Protection on an EMR Cluster.
+   */
+  public static jsonata(scope: Construct, id: string, props: EmrSetClusterTerminationProtectionJsonataProps) {
+    return new EmrSetClusterTerminationProtection(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
 
@@ -48,14 +75,15 @@ export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('elasticmapreduce', 'setClusterTerminationProtection',
         sfn.IntegrationPattern.REQUEST_RESPONSE),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ClusterId: this.props.clusterId,
         TerminationProtected: this.props.terminationProtected,
-      }),
+      }, queryLanguage),
     };
   }
 }
