@@ -24,7 +24,7 @@ class TestStack extends Stack {
     userPool.addClient('Client', {
       generateSecret: true,
       analytics: {
-        applicationArn: pinpointApp.attrArn,
+        application: pinpointApp,
       },
     });
   }

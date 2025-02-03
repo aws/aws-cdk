@@ -54,14 +54,6 @@
      "openid",
      "aws.cognito.signin.user.admin"
     ],
-    "AnalyticsConfiguration": {
-     "ApplicationArn": {
-      "Fn::GetAtt": [
-       "PinpointApp",
-       "Arn"
-      ]
-     }
-    },
     "CallbackURLs": [
      "https://example.com"
     ],

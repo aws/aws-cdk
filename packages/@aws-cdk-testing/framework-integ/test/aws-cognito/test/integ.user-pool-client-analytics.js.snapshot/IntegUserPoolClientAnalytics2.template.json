@@ -92,23 +92,6 @@
      "openid",
      "aws.cognito.signin.user.admin"
     ],
-    "AnalyticsConfiguration": {
-     "ApplicationId": {
-      "Ref": "PinpointApp"
-     },
-     "ExternalId": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "RoleId"
-      ]
-     },
-     "RoleArn": {
-      "Fn::GetAtt": [
-       "Role1ABCC5F0",
-       "Arn"
-      ]
-     }
-    },
     "CallbackURLs": [
      "https://example.com"
     ],

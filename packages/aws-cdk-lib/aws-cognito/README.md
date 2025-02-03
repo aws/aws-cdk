@@ -1123,7 +1123,7 @@ The following example shows how to configure analytics for a user pool client:
 
 #### When specifying an Application ARN
 
-If you specify the `applicationArn` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+If you specify the `application` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
 
 ```ts
 import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
@@ -1136,7 +1136,7 @@ new cognito.UserPoolClient(this, 'Client', {
   userPool,
   analytics: {
     // The ARN of your Pinpoint project
-    applicationArn: pinpointApp.attrArn,
+    application: pinpointApp,
 
     // Whether to include user data in analytics events
     shareUserData: true,
@@ -1146,7 +1146,7 @@ new cognito.UserPoolClient(this, 'Client', {
 
 #### When specifying an Application ID, External ID, and Role ARN
 
-If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `applicationArn` property.  
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `application` property.  
 (In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
 
 Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.

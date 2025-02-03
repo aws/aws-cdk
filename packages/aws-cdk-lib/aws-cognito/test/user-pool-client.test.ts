@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
+import { CfnApp } from '../../aws-pinpoint';
 import { Stack, Duration } from '../../core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes, AnalyticsConfiguration } from '../lib';
 
@@ -1343,16 +1344,19 @@ describe('User Pool Client', () => {
   });
 
   describe('analytics configuration', () => {
-    test('analytics configuration can be added to userPoolClients by specifying applicationArn', () => {
+    test('analytics configuration can be added to userPoolClients by specifying application', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
+      const pinpointApp = new CfnApp(stack, 'PinpointApp', {
+        name: 'SamplePinpointApp',
+      });
 
       // WHEN
       new UserPoolClient(stack, 'Client', {
         userPool: pool,
         analytics: {
-          applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          application: pinpointApp,
           shareUserData: true,
         },
       });
@@ -1360,7 +1364,9 @@ describe('User Pool Client', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
         AnalyticsConfiguration: {
-          ApplicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          ApplicationArn: Match.objectLike({
+            'Fn::GetAtt': ['PinpointApp', 'Arn'],
+          }),
           UserDataShared: true,
         },
       });
@@ -1397,40 +1403,25 @@ describe('User Pool Client', () => {
       });
     });
 
-    test('throws an error when applicationArn is not an ARN', () => {
+    test('throws an error when both application and applicationId are specified', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
-
-      // WHEN
-      const createUserPoolClient = () => new UserPoolClient(stack, 'Client', {
-        userPool: pool,
-        analytics: {
-          applicationArn: 'invalid-arn',
-          shareUserData: true,
-        },
+      const pinpointApp = new CfnApp(stack, 'PinpointApp', {
+        name: 'SamplePinpointApp',
       });
-
-      // THEN
-      expect(() => createUserPoolClient()).toThrow('applicationArn must be start with "arn:"; received invalid-arn');
-    });
-
-    test('throws an error when both applicationArn and applicationId are specified', () => {
-      // GIVEN
-      const stack = new Stack();
-      const pool = new UserPool(stack, 'Pool');
 
       // WHEN
       const createUserPoolClient = () => new UserPoolClient(stack, 'PoolClient', {
         userPool: pool,
         analytics: {
-          applicationArn: 'arn:aws:pinpoint:us-east-1:123456789012:application/abc123',
+          application: pinpointApp,
           applicationId: '12345678-1234-1234-1234-123456789012',
         },
       });
 
       // THEN
-      expect(() => createUserPoolClient()).toThrow('Either `applicationArn` or all of `applicationId`, `externalId` and `role` must be specified.');
+      expect(() => createUserPoolClient()).toThrow('Either `application` or all of `applicationId`, `externalId` and `role` must be specified.');
     });
 
     test('throws an error when either applicationId, externalId or role is not specified', () => {
@@ -1454,21 +1445,21 @@ describe('User Pool Client', () => {
           createUserPoolClient('PoolClient1', {
             applicationId: '12345678-1234-1234-1234-123456789012',
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
 
       expect(
         () =>
           createUserPoolClient('PoolClient2', {
             externalId: 'sample-external-id',
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
 
       expect(
         () =>
           createUserPoolClient('PoolClient3', {
             role,
           }),
-      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `applicationArn` must be specified.');
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
     });
   });
 });

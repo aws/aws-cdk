@@ -85,14 +85,6 @@
                           "openid",
                           "aws.cognito.signin.user.admin"
                         ],
-                        "analyticsConfiguration": {
-                          "applicationArn": {
-                            "Fn::GetAtt": [
-                              "PinpointApp",
-                              "Arn"
-                            ]
-                          }
-                        },
                         "callbackUrLs": [
                           "https://example.com"
                         ],
@@ -113,13 +105,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {
@@ -171,7 +165,8 @@
                 "path": "IntegUserPoolClientAnalytics2/Role/ImportRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "Resource": {
@@ -235,13 +230,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "Pool": {
@@ -307,23 +304,6 @@
                           "openid",
                           "aws.cognito.signin.user.admin"
                         ],
-                        "analyticsConfiguration": {
-                          "applicationId": {
-                            "Ref": "PinpointApp"
-                          },
-                          "externalId": {
-                            "Fn::GetAtt": [
-                              "Role1ABCC5F0",
-                              "RoleId"
-                            ]
-                          },
-                          "roleArn": {
-                            "Fn::GetAtt": [
-                              "Role1ABCC5F0",
-                              "Arn"
-                            ]
-                          }
-                        },
                         "callbackUrLs": [
                           "https://example.com"
                         ],
@@ -344,13 +324,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {
