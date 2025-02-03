@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The interface of the Accelerator
@@ -189,8 +188,6 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.validateAcceleratorName(props.acceleratorName);
     this.validateIpAddresses(props.ipAddresses);

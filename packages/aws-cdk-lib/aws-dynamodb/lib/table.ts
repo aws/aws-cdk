@@ -22,7 +22,6 @@ import {
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -1184,8 +1183,6 @@ export class Table extends TableBase {
     super(scope, id, {
       physicalName: props.tableName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 

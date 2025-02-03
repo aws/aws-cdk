@@ -4,7 +4,6 @@ import { CfnKeySigningKey } from './route53.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for constructing a Key Signing Key.
@@ -135,8 +134,6 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.grantKeyPermissionsForZone(props.kmsKey, props.hostedZone);
 

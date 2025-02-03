@@ -11,7 +11,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * HTTP status code to failover to second origin
@@ -823,8 +822,6 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =

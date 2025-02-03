@@ -1,7 +1,6 @@
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource, Stack } from '../../../core';
 import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -75,8 +74,6 @@ export class PrecreatedRole extends Resource implements IRole {
       account: props.role.env.account,
       region: props.role.env.region,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
     this.role = props.role;
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.policyFragment = this.role.policyFragment;

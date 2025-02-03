@@ -3,7 +3,6 @@ import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -108,8 +107,6 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['openid'];
 

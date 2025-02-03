@@ -5,7 +5,6 @@ import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
@@ -623,8 +622,6 @@ export class Secret extends SecretBase {
     super(scope, id, {
       physicalName: props.secretName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
@@ -858,8 +855,6 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
     this.attachedSecret = props.secret;
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {

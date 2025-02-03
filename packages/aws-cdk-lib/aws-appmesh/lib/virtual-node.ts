@@ -7,7 +7,6 @@ import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -185,8 +184,6 @@ export class VirtualNode extends VirtualNodeBase {
     super(scope, id, {
       physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);

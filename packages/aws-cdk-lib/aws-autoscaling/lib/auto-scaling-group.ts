@@ -25,7 +25,6 @@ import {
   Token,
   Tokenization, withResolved,
 } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -1333,8 +1332,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 

@@ -4,7 +4,6 @@ import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Basic properties for a lifecycle hook
@@ -113,8 +112,6 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, { lifecycleHook: this, role: props.role }) : undefined;
 

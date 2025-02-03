@@ -10,7 +10,6 @@ import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a client VPN endpoint
@@ -293,8 +292,6 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
   constructor(scope: Construct, id: string, props: ClientVpnEndpointProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.vpc.vpcCidrBlock)) {
       const clientCidr = new CidrBlock(props.cidr);

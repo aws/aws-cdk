@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { ITrustStore } from './trust-store';
 import { IBucket } from '../../../aws-s3';
 import { Resource } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -66,8 +65,6 @@ export enum RevocationType {
 export class TrustStoreRevocation extends Resource {
   constructor(scope: Construct, id: string, props: TrustStoreRevocationProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     new CfnTrustStoreRevocation(this, 'Resource', {
       trustStoreArn: props.trustStore.trustStoreArn,

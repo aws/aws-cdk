@@ -5,7 +5,6 @@ import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -284,8 +283,6 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.enforceSSL = props.enforceSSL;
 

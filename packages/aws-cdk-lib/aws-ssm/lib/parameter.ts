@@ -11,7 +11,6 @@ import {
   Tokenization,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An SSM Parameter reference.
@@ -665,8 +664,6 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     super(scope, id, {
       physicalName: props.parameterName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.allowedPattern) {
       _assertValidValue(this, props.stringValue, props.allowedPattern);
@@ -774,8 +771,6 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     super(scope, id, {
       physicalName: props.parameterName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
       throw new ValidationError('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.', this);

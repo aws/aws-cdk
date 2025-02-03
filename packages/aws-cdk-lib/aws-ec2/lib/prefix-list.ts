@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnPrefixList } from './ec2.generated';
 import { IResource, Lazy, Resource, Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A prefix list
@@ -136,8 +135,6 @@ export class PrefixList extends PrefixListBase {
         produce: () => Names.uniqueResourceName(this, { maxLength: 255, allowedSpecialCharacters: '.-_' }),
       }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {

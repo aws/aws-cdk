@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { IKey } from '../../aws-kms';
 import { ISecret, Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -80,8 +79,6 @@ export class DatabaseSecret extends Secret {
         excludeCharacters: excludedCharacters,
       },
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this._excludedCharacters = excludedCharacters;
   }

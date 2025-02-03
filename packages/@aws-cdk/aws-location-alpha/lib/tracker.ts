@@ -5,7 +5,6 @@ import { Construct } from 'constructs';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { IGeofenceCollection } from './geofence-collection';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Tracker
@@ -197,8 +196,6 @@ export class Tracker extends Resource implements ITracker {
     super(scope, id, {
       physicalName: props.trackerName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const tracker = new CfnTracker(this, 'Resource', {
       trackerName: this.physicalName,

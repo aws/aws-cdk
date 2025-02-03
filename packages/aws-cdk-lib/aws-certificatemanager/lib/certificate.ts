@@ -5,7 +5,6 @@ import { apexDomain } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as route53 from '../../aws-route53';
 import { IResource, Token, Tags } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Name tag constant
@@ -271,8 +270,6 @@ export class Certificate extends CertificateBase implements ICertificate {
 
   constructor(scope: Construct, id: string, props: CertificateProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     let validation: CertificateValidation;
     if (props.validation) {

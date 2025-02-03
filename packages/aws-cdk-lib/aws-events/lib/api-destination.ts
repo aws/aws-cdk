@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The event API Destination properties
@@ -132,8 +131,6 @@ export class ApiDestination extends Resource implements IApiDestination {
     super(scope, id, {
       physicalName: props.apiDestinationName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.connection = props.connection;
 

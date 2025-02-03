@@ -4,7 +4,6 @@ import { NamespaceType } from './namespace';
 import { DnsRecordType, IService, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /*
  * Properties for an AliasTargetInstance
@@ -45,8 +44,6 @@ export class AliasTargetInstance extends InstanceBase {
 
   constructor(scope: Construct, id: string, props: AliasTargetInstanceProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');

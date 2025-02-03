@@ -3,7 +3,6 @@ import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -122,8 +121,6 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderSamlProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.validateName(props.name);
 

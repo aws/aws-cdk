@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
 import { Resource, SecretValue } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Creation properties for `GitHubSourceCredentials`.
@@ -25,8 +24,6 @@ export interface GitHubSourceCredentialsProps {
 export class GitHubSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubSourceCredentialsProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB',
@@ -59,8 +56,6 @@ export interface GitHubEnterpriseSourceCredentialsProps {
 export class GitHubEnterpriseSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: GitHubEnterpriseSourceCredentialsProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'GITHUB_ENTERPRISE',
@@ -93,8 +88,6 @@ export interface BitBucketSourceCredentialsProps {
 export class BitBucketSourceCredentials extends Resource {
   constructor(scope: Construct, id: string, props: BitBucketSourceCredentialsProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     new CfnSourceCredential(this, 'Resource', {
       serverType: 'BITBUCKET',

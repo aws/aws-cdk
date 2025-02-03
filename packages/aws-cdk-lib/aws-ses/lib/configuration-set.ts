@@ -4,7 +4,6 @@ import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set
@@ -175,8 +174,6 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     super(scope, id, {
       physicalName: props.configurationSetName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
       throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');

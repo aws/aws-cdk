@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import { IResource, Resource } from 'aws-cdk-lib/core';
 import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of a DataQualityTargetTable.
@@ -123,8 +122,6 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     super(scope, id, {
       physicalName: props.rulesetName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const rulesetResource = new CfnDataQualityRuleset(this, 'Resource', {
       clientToken: props.clientToken,

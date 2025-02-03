@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
@@ -104,7 +103,5 @@ export class LambdaDeploymentConfig extends BaseDeploymentConfig implements ILam
       computePlatform: ComputePlatform.LAMBDA,
       trafficRouting: props?.trafficRouting ?? TrafficRouting.allAtOnce(),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }

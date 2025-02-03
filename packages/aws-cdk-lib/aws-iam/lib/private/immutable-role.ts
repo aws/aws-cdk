@@ -1,6 +1,5 @@
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -35,8 +34,6 @@ export class ImmutableRole extends Resource implements IRole {
       account: role.env.account,
       region: role.env.region,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, role);
 
     // implement IDependable privately
     Dependable.implement(this, {

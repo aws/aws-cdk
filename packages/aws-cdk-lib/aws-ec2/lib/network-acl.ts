@@ -3,7 +3,6 @@ import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } fro
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Name tag constant
@@ -117,8 +116,6 @@ export class NetworkAcl extends NetworkAclBase {
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
 
@@ -277,8 +274,6 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
     super(scope, id, {
       physicalName: props.networkAclEntryName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.networkAcl = props.networkAcl;
 
@@ -378,8 +373,6 @@ export class SubnetNetworkAclAssociation extends SubnetNetworkAclAssociationBase
     super(scope, id, {
       physicalName: props.subnetNetworkAclAssociationName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.association = new CfnSubnetNetworkAclAssociation(this, 'Resource', {
       networkAclId: props.networkAcl.networkAclId,

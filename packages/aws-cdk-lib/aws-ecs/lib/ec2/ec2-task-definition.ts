@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { Stack } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -144,8 +143,6 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       pidMode: props.pidMode,
       inferenceAccelerators: props.inferenceAccelerators,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Validate the placement constraints
     Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints ?? []);

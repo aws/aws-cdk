@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { CfnAccessKey } from './iam.generated';
 import { IUser } from './user';
 import { IResource, Resource, SecretValue } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Valid statuses for an IAM Access Key.
@@ -80,8 +79,6 @@ export class AccessKey extends Resource implements IAccessKey {
 
   constructor(scope: Construct, id: string, props: AccessKeyProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
     const accessKey = new CfnAccessKey(this, 'Resource', {
       userName: props.user.userName,
       serial: props.serial,

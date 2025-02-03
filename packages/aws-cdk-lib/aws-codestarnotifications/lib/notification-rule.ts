@@ -3,7 +3,6 @@ import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -142,8 +141,6 @@ export class NotificationRule extends Resource implements INotificationRule {
 
   constructor(scope: constructs.Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const source = props.source.bindAsNotificationRuleSource(this);
 

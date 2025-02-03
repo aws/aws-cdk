@@ -3,7 +3,6 @@ import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { CfnTagOption } from './servicecatalog.generated';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for TagOptions.
@@ -34,8 +33,6 @@ export class TagOptions extends cdk.Resource {
 
   constructor(scope: Construct, id: string, props: TagOptionsProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this._cfnTagOptions = this.createUnderlyingTagOptions(props.allowedValuesForTags);
   }

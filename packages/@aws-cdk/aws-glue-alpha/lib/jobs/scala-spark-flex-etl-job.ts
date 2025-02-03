@@ -7,7 +7,6 @@ import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '.
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Flex Jobs class
@@ -110,8 +109,6 @@ export class ScalaSparkFlexEtlJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {

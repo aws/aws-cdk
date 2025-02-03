@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Properties to initialize UserPoolAmazonIdentityProvider
@@ -35,8 +34,6 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAmazonProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['profile'];
 

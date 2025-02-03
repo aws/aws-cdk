@@ -7,7 +7,6 @@ import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import { IBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -189,8 +188,6 @@ export class CloudFormationProduct extends Product {
 
   constructor(scope: Construct, id: string, props: CloudFormationProductProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.validateProductProps(props);
 

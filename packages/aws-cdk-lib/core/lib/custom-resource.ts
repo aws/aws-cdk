@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
-import { addConstructMetadata } from './metadata-resource';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -138,8 +137,6 @@ export class CustomResource extends Resource {
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;

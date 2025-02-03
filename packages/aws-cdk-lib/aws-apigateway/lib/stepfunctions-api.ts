@@ -5,7 +5,6 @@ import { StepFunctionsIntegration } from './integrations/stepfunctions';
 import * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for StepFunctionsRestApi
@@ -131,8 +130,6 @@ export class StepFunctionsRestApi extends RestApi {
     });
 
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.root.addMethod('ANY', stepfunctionsIntegration);
   }

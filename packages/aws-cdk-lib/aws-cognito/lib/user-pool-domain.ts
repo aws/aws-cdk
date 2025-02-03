@@ -5,7 +5,6 @@ import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -126,8 +125,6 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
   constructor(scope: Construct, id: string, props: UserPoolDomainProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (!!props.customDomain === !!props.cognitoDomain) {
       throw new ValidationError('One of, and only one of, cognitoDomain or customDomain must be specified', this);

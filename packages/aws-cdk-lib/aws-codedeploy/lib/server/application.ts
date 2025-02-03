@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
@@ -82,8 +81,6 @@ export class ServerApplication extends Resource implements IServerApplication {
     super(scope, id, {
       physicalName: props.applicationName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: this.physicalName,

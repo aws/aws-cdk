@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { CfnVpcLink } from '.././index';
 import * as ec2 from '../../../aws-ec2';
 import { IResource, Lazy, Names, Resource } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Represents an API Gateway VpcLink
@@ -89,8 +88,6 @@ export class VpcLink extends Resource implements IVpcLink {
 
   constructor(scope: Construct, id: string, props: VpcLinkProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
     this.vpc = props.vpc;
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {

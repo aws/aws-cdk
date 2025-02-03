@@ -3,7 +3,6 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 import { DataSource, generateUniqueId } from './util';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Place Index
@@ -151,8 +150,6 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
     super(scope, id, {
       physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,

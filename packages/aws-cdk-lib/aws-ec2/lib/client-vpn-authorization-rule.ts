@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
 import { Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a ClientVpnAuthorizationRule
@@ -66,8 +65,6 @@ export class ClientVpnAuthorizationRule extends Resource {
     }
     const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
     new CfnClientVpnAuthorizationRule(this, 'Resource', {
       clientVpnEndpointId: clientVpnEndpoint!.endpointId,
       targetNetworkCidr: props.cidr,

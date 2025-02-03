@@ -3,7 +3,6 @@ import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface of the Listener
@@ -139,8 +138,6 @@ export class Listener extends cdk.Resource implements IListener {
 
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const resource = new ga.CfnListener(this, 'Resource', {
       acceleratorArn: props.accelerator.acceleratorArn,

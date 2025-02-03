@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { CfnResourcePolicy } from './logs.generated';
 import { PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Resource, Lazy, Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to define Cloudwatch log group resource policy
@@ -46,8 +45,6 @@ export class ResourcePolicy extends Resource {
     super(scope, id, {
       physicalName: props?.resourcePolicyName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const l1 = new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({

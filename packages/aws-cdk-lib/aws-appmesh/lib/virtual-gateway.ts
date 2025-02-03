@@ -7,7 +7,6 @@ import { AccessLog, BackendDefaults } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all Virtual Gateway based classes must implement
@@ -178,8 +177,6 @@ export class VirtualGateway extends VirtualGatewayBase {
     super(scope, id, {
       physicalName: props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.mesh = props.mesh;
 

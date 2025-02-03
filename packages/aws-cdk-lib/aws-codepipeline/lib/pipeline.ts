@@ -36,7 +36,6 @@ import {
   Stage as CdkStage,
   Token,
 } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -473,8 +472,6 @@ export class Pipeline extends PipelineBase {
     super(scope, id, {
       physicalName: props.pipelineName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     validateName('Pipeline', this.physicalName);
 

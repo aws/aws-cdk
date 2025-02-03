@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An API Destination Connection
@@ -342,8 +341,6 @@ export class Connection extends Resource implements IConnection {
     super(scope, id, {
       physicalName: props.connectionName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const authBind = props.authorization._bind();
 
@@ -379,8 +376,6 @@ class ImportedConnection extends Resource {
       account: arnParts.account,
       region: arnParts.region,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, attrs);
 
     this.connectionArn = attrs.connectionArn;
     this.connectionName = attrs.connectionName;

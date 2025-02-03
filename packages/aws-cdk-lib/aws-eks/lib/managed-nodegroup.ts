@@ -6,7 +6,6 @@ import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '.
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -391,8 +390,6 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 

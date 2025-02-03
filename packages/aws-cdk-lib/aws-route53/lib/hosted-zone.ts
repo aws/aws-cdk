@@ -11,7 +11,6 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Common properties to create a Route 53 hosted zone
@@ -201,8 +200,6 @@ export class HostedZone extends Resource implements IHostedZone {
 
   constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     validateZoneName(props.zoneName);
 
@@ -368,8 +365,6 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
@@ -502,8 +497,6 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
 
   constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.addVpc(props.vpc);
   }

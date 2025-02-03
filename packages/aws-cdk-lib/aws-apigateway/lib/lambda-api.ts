@@ -6,7 +6,6 @@ import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -62,8 +61,6 @@ export class LambdaRestApi extends RestApi {
       ...props.options, // deprecated, but we still support
       ...props,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.proxy !== false) {
       this.root.addProxy();

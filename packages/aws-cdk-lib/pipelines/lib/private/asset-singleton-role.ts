@@ -2,7 +2,6 @@ import { Construct, IDependable } from 'constructs';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement } from '../../../aws-iam';
 import { ArnFormat, Stack } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Role which will be reused across asset jobs
@@ -16,8 +15,6 @@ export class AssetSingletonRole extends iam.Role {
 
   constructor(scope: Construct, id: string, props: iam.RoleProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // Logging permissions
     this.addToPolicy(new iam.PolicyStatement({

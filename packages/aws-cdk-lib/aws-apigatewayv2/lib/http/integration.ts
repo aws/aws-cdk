@@ -5,7 +5,6 @@ import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
 import { Aws, Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
@@ -254,8 +253,6 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
       throw new ValidationError('Either `integrationSubtype` or `integrationUri` must be specified.', scope);

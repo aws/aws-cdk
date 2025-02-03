@@ -8,7 +8,6 @@ import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -340,8 +339,6 @@ export class RecordSet extends Resource implements IRecordSet {
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
       throw new ValidationError(`weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
@@ -540,8 +537,6 @@ export class ARecord extends RecordSet {
       recordType: RecordType.A,
       target: props.target,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -585,8 +580,6 @@ export class AaaaRecord extends RecordSet {
       recordType: RecordType.AAAA,
       target: props.target,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -612,8 +605,6 @@ export class CnameRecord extends RecordSet {
       recordType: RecordType.CNAME,
       target: RecordTarget.fromValues(props.domainName),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -639,8 +630,6 @@ export class TxtRecord extends RecordSet {
       recordType: RecordType.TXT,
       target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -710,8 +699,6 @@ export class SrvRecord extends RecordSet {
       recordType: RecordType.SRV,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`)),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -780,8 +767,6 @@ export class CaaRecord extends RecordSet {
       recordType: RecordType.CAA,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.flag} ${v.tag} "${v.value}"`)),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -810,8 +795,6 @@ export class CaaAmazonRecord extends CaaRecord {
         },
       ],
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -852,8 +835,6 @@ export class MxRecord extends RecordSet {
       recordType: RecordType.MX,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`)),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -879,8 +860,6 @@ export class NsRecord extends RecordSet {
       recordType: RecordType.NS,
       target: RecordTarget.fromValues(...props.values),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -906,8 +885,6 @@ export class DsRecord extends RecordSet {
       recordType: RecordType.DS,
       target: RecordTarget.fromValues(...props.values),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 
@@ -935,8 +912,6 @@ export class ZoneDelegationRecord extends RecordSet {
       ),
       ttl: props.ttl || Duration.days(2),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
 

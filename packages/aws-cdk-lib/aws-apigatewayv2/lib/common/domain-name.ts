@@ -4,7 +4,6 @@ import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -172,8 +171,6 @@ export class DomainName extends Resource implements IDomainName {
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.domainName === '') {
       throw new ValidationError('empty string for domainName not allowed', scope);

@@ -8,7 +8,6 @@ import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for creating an api mapping
@@ -139,8 +138,6 @@ export class DomainName extends Resource implements IDomainName {
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = this.endpointType === EndpointType.EDGE;

@@ -3,7 +3,6 @@ import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -140,8 +139,6 @@ export class Fleet extends Resource implements IFleet {
     }
 
     super(scope, id, { physicalName: props.fleetName });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,

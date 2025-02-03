@@ -6,7 +6,6 @@ import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An email identity
@@ -458,8 +457,6 @@ export class EmailIdentity extends EmailIdentityBase {
 
   constructor(scope: Construct, id: string, props: EmailIdentityProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     const dkimIdentity = props.dkimIdentity ?? DkimIdentity.easyDkim();
 

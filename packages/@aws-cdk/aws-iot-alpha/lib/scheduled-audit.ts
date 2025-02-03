@@ -2,7 +2,6 @@ import { Resource, Stack, IResource, Token, ArnFormat } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iot from 'aws-cdk-lib/aws-iot';
 import { IAccountAuditConfiguration } from './audit-configuration';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents AWS IoT Scheduled Audit
@@ -318,8 +317,6 @@ export class ScheduledAudit extends Resource implements IScheduledAudit {
 
   constructor(scope: Construct, id: string, props: ScheduledAuditProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (props.auditChecks.length === 0) {
       throw new Error('At least one \'auditChecks\' must be specified.');

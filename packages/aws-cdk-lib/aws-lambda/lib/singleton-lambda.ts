@@ -10,7 +10,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a newly created singleton Lambda
@@ -69,8 +68,6 @@ export class SingletonFunction extends FunctionBase {
 
   constructor(scope: Construct, id: string, props: SingletonFunctionProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     this.lambdaFunction = this.ensureLambda(props);

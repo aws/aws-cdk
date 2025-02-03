@@ -5,7 +5,6 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface representing an AWS Config rule
@@ -289,8 +288,6 @@ export class ManagedRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.ruleScope = props.ruleScope;
 
@@ -420,8 +417,6 @@ export class CustomRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
@@ -537,8 +532,6 @@ export class CustomPolicy extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
       throw new Error('Policy Text cannot be empty.');

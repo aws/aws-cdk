@@ -6,7 +6,6 @@ import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
 import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * the base properties for AppSync Functions
@@ -158,8 +157,6 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
   public constructor(scope: Construct, id: string, props: AppsyncFunctionProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {

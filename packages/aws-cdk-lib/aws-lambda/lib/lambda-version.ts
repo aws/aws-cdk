@@ -9,7 +9,6 @@ import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IVersion extends IFunction {
   /**
@@ -190,8 +189,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;

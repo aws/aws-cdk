@@ -6,7 +6,6 @@ import { Handler } from './handler';
 import { Runtime } from './runtime';
 import * as ecr from '../../aws-ecr';
 import { Platform } from '../../aws-ecr-assets';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to configure a new DockerImageFunction construct.
@@ -72,7 +71,5 @@ export class DockerImageFunction extends Function {
       runtime: Runtime.FROM_IMAGE,
       code: props.code._bind(props.architecture),
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }

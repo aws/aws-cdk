@@ -7,7 +7,6 @@ import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
 import { renderEnvironmentVariables } from './utils';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * An Amplify Console application
@@ -225,8 +224,6 @@ export class App extends Resource implements IApp, iam.IGrantable {
 
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.customRules = props.customRules || [];
     this.environmentVariables = props.environmentVariables || {};

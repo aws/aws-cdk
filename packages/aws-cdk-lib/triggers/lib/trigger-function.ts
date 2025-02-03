@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { ITrigger, Trigger, TriggerOptions } from '.';
 import * as lambda from '../../aws-lambda';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Props for `InvokeFunction`.
@@ -20,8 +19,6 @@ export class TriggerFunction extends lambda.Function implements ITrigger {
 
   constructor(scope: Construct, id: string, props: TriggerFunctionProps) {
     super(scope, id, props);
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
 
     this.trigger = new Trigger(this, 'Trigger', {
       ...props,

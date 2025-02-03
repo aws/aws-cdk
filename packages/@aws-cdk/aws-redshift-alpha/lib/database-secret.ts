@@ -1,7 +1,6 @@
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Construction properties for a DatabaseSecret.
@@ -43,7 +42,5 @@ export class DatabaseSecret extends secretsmanager.Secret {
         excludeCharacters: props.excludeCharacters ?? '"@/\\\ \'',
       },
     });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
   }
 }
