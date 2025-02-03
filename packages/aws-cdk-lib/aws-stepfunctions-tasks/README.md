@@ -155,20 +155,18 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
-By default, the API endpoint URI will be constructed using the AWS region of 
-the stack in which the provided `api` is created. Passing in a `region` string, 
-such as `us-west-2`, will instead construct the endpoint with the given region:
+By default, the API endpoint URI will be constructed using the AWS region of
+the stack in which the provided `api` is created.
 
+To construct the endpoint with a different region, use the `region` parameter:
 ```ts
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 const restApi = new apigateway.RestApi(this, 'MyRestApi');
-const endpointRegion = 'us-west-2';
-
 const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
   api: restApi,
   stageName: 'prod',
   method: tasks.HttpMethod.GET,
-  region: endpointRegion,
+  region: 'us-west-2',
 });
 ```
 

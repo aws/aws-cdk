@@ -21,9 +21,9 @@ export interface CallApiGatewayRestApiEndpointOptions {
   readonly stageName: string;
 
   /**
-   * AWS region, e.g. 'us-east-1', where the API is deployed. Uses the region of the Stack
-   * containing `api`if no region is provided.
-   * @default the region of the Stack of the `api` in these props
+   * Specify a custom Region where the API is deployed, e.g. 'us-east-1'.
+   *
+   * @default - Uses the Region of the stack containing the `api`.
    */
   readonly region?: string;
 }

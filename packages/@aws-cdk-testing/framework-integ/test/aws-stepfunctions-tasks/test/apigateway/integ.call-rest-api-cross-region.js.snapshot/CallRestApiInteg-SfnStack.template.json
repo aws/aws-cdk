@@ -74,7 +74,7 @@
          "/cdk/exports/CallRestApiInteg-SfnStack/CallRestApiIntegApiStackuswest2RefMyRestApi2D1F47A94BF96318"
         ]
        },
-       ".execute-api.us-east-1.",
+       ".execute-api.us-west-2.",
        {
         "Ref": "AWS::URLSuffix"
        },

@@ -40,6 +40,7 @@ const callEndpointJob = new CallApiGatewayRestApiEndpoint(sfnStack, 'Call APIGW'
   api: importedRestApi,
   stageName: 'prod',
   method: HttpMethod.GET,
+  region: 'us-west-2',
   authType: AuthType.IAM_ROLE,
   outputPath: sfn.JsonPath.stringAt('$.ResponseBody'),
 });

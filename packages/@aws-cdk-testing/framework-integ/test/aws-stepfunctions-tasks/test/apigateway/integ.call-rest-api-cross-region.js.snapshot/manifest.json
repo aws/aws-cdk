@@ -34,10 +34,40 @@
         "CallRestApiInteg-ApiStack.assets"
       ],
       "metadata": {
+        "/CallRestApiInteg-ApiStack/MyRestApi": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cloudWatchRole": "*"
+            }
+          }
+        ],
         "/CallRestApiInteg-ApiStack/MyRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApi2D1F47A9"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole/ImportCloudWatchRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole/Resource": [
@@ -52,10 +82,28 @@
             "data": "MyRestApiAccount2FB6DB7A"
           }
         ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          }
+        ],
         "/CallRestApiInteg-ApiStack/MyRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiDeploymentB555B5824a2dace0b77d6e14d0cc32d4d28422f3"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/CallRestApiInteg-ApiStack/MyRestApi/DeploymentStage.prod/Resource": [
@@ -68,6 +116,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyRestApiEndpoint4C55E4CB"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": "*"
+            }
           }
         ],
         "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY/ApiPermission.CallRestApiIntegApiStackMyRestApiC2593C7A.ANY..": [
@@ -88,6 +153,38 @@
             "data": "MyRestApiANY05143F93"
           }
         ],
+        "/CallRestApiInteg-ApiStack/Hello": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/Hello/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/Hello/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/CallRestApiInteg-ApiStack/Hello/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -98,6 +195,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Hello4A628BD4"
+          }
+        ],
+        "/CallRestApiInteg-ApiStack/ExportsWriteruseast10F67B507/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CallRestApiInteg-ApiStack/ExportsWriteruseast10F67B507/Resource/Default": [
@@ -156,7 +259,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2433e42ae1b4508c1c7fd6e07c37bb4fd69dee68ca495f3a70646d5bf05f9eb3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4b53f3b1f75f7c2c40971f3e37d5448f36e7b39949926864276994f8ec2e0d6d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -173,10 +276,46 @@
         "CallRestApiInteg-SfnStack.assets"
       ],
       "metadata": {
+        "/CallRestApiInteg-SfnStack/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": {
+                "id": "*",
+                "startState": "*",
+                "endStates": "*"
+              },
+              "timeout": "*"
+            }
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/CallRestApiInteg-SfnStack/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/StateMachine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CallRestApiInteg-SfnStack/StateMachine/Role/DefaultPolicy/Resource": [
@@ -195,6 +334,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "stateMachineArn"
+          }
+        ],
+        "/CallRestApiInteg-SfnStack/ExportsReader/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/CallRestApiInteg-SfnStack/ExportsReader/Resource/Default": [
