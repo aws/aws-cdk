@@ -1,6 +1,7 @@
 import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A parameter group
@@ -64,16 +65,18 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
 
   /**
    * The parameters in the parameter group
-  */
+   */
   readonly parameters: { [name: string]: string };
 
   /**
    * The underlying CfnClusterParameterGroup
-  */
+   */
   private readonly resource: CfnClusterParameterGroup;
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.parameters = props.parameters;
     this.resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || 'Cluster parameter group for family redshift-1.0',

@@ -2,6 +2,7 @@ import * as core from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IChannel } from './channel';
 import { CfnStreamKey } from 'aws-cdk-lib/aws-ivs';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an IVS Stream Key
@@ -26,20 +27,22 @@ export interface StreamKeyProps {
 }
 
 /**
-  A new IVS Stream Key
-*/
+ * A new IVS Stream Key
+ */
 export class StreamKey extends core.Resource implements IStreamKey {
   public readonly streamKeyArn: string;
 
   /**
-  * The stream-key value. For example: sk_us-west-2_abcdABCDefgh_567890abcdef
-  *
-  * @attribute
-  */
+   * The stream-key value. For example: sk_us-west-2_abcdABCDefgh_567890abcdef
+   *
+   * @attribute
+   */
   public readonly streamKeyValue: string;
 
   constructor(scope: Construct, id: string, props: StreamKeyProps) {
     super(scope, id, {});
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnStreamKey(this, 'Resource', {
       channelArn: props.channel.channelArn,

@@ -9,6 +9,7 @@ import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -184,6 +185,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       securityGroups: Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
       ipAddressType: props.ipAddressType,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
@@ -265,9 +268,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     /**
-    * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
-    */
+     * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+     */
 
     if (bucket.encryptionKey) {
       throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
@@ -326,9 +329,9 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
-    * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
-    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
-    */
+     * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
+     */
     if (bucket.encryptionKey) {
       throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
@@ -1185,6 +1188,8 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     super(scope, id, {
       environmentFromArn: props.loadBalancerArn,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
@@ -1233,6 +1238,8 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     super(scope, id, {
       environmentFromArn: props.loadBalancerArn,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;

@@ -9,6 +9,7 @@ import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -232,13 +233,13 @@ export interface LogConfig {
   readonly role?: IRole;
 
   /**
-  * The number of days log events are kept in CloudWatch Logs.
-  * By default AppSync keeps the logs infinitely. When updating this property,
-  * unsetting it doesn't remove the log retention policy.
-  * To remove the retention policy, set the value to `INFINITE`
-  *
-  * @default RetentionDays.INFINITE
-  */
+   * The number of days log events are kept in CloudWatch Logs.
+   * By default AppSync keeps the logs infinitely. When updating this property,
+   * unsetting it doesn't remove the log retention policy.
+   * To remove the retention policy, set the value to `INFINITE`
+   *
+   * @default RetentionDays.INFINITE
+   */
   readonly retention?: RetentionDays;
 }
 
@@ -276,7 +277,7 @@ export interface SourceApiOptions {
 
 /**
  * Configuration of source API
-*/
+ */
 export interface SourceApi {
   /**
    * Source API that is associated with the merged API
@@ -608,6 +609,8 @@ export class GraphqlApi extends GraphqlApiBase {
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultMode = props.authorizationConfig?.defaultAuthorization ??
       { authorizationType: AuthorizationType.API_KEY };

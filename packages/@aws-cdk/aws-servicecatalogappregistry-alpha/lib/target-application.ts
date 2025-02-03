@@ -4,8 +4,8 @@ import { IApplication, Application } from './application';
 import { hashValues } from './common';
 
 /**
-  * Properties used to define targetapplication.
-  */
+ * Properties used to define targetapplication.
+ */
 export interface TargetApplicationCommonOptions extends cdk.StackProps {
   /**
    * Stack ID in which application will be created or imported. The id of a stack is also the identifier that you use to
@@ -26,8 +26,8 @@ export interface TargetApplicationCommonOptions extends cdk.StackProps {
 }
 
 /**
-  * Properties used to define New TargetApplication.
-  */
+ * Properties used to define New TargetApplication.
+ */
 export interface CreateTargetApplicationOptions extends TargetApplicationCommonOptions {
   /**
    * Enforces a particular physical application name.
@@ -50,8 +50,8 @@ export interface CreateTargetApplicationOptions extends TargetApplicationCommonO
 }
 
 /**
-  * Properties used to define Existing TargetApplication.
-  */
+ * Properties used to define Existing TargetApplication.
+ */
 export interface ExistingTargetApplicationOptions extends TargetApplicationCommonOptions {
   /**
    * Enforces a particular application arn.
@@ -60,9 +60,9 @@ export interface ExistingTargetApplicationOptions extends TargetApplicationCommo
 }
 
 /**
-  * Contains static factory methods with which you can build the input
-  * needed for application associator to work
-  */
+ * Contains static factory methods with which you can build the input
+ * needed for application associator to work
+ */
 export abstract class TargetApplication {
   /**
    * Factory method to build the input using the provided
@@ -87,8 +87,8 @@ export abstract class TargetApplication {
 }
 
 /**
-  * Properties for Service Catalog AppRegistry Application Associator to work with
-  */
+ * Properties for Service Catalog AppRegistry Application Associator to work with
+ */
 export interface BindTargetApplicationResult {
   /**
    * Created or imported application.
@@ -101,9 +101,9 @@ export interface BindTargetApplicationResult {
 }
 
 /**
-  * Class which constructs the input from provided application name and stack props.
-  * With this input, the construct will create the Application.
-  */
+ * Class which constructs the input from provided application name and stack props.
+ * With this input, the construct will create the Application.
+ */
 class CreateTargetApplication extends TargetApplication {
   constructor(
     private readonly applicationOptions: CreateTargetApplicationOptions) {
@@ -141,8 +141,8 @@ class CreateTargetApplication extends TargetApplication {
 }
 
 /**
-  * Class which constructs the input from provided Application ARN.
-  */
+ * Class which constructs the input from provided Application ARN.
+ */
 class ExistingTargetApplication extends TargetApplication {
   constructor(
     private readonly applicationOptions: ExistingTargetApplicationOptions) {

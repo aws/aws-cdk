@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -319,8 +320,8 @@ export enum MetricType {
  */
 export interface MetricsConfig {
   /**
-  * List of metric types to enable for this event source
-  */
+   * List of metric types to enable for this event source
+   */
   readonly metrics: MetricType[];
 }
 
@@ -399,6 +400,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
       throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);

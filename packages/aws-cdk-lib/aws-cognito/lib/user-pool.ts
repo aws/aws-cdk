@@ -14,6 +14,7 @@ import { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -1045,6 +1046,8 @@ export class UserPool extends UserPoolBase {
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const signIn = this.signInConfiguration(props);
 
