@@ -85,6 +85,14 @@
                           "openid",
                           "aws.cognito.signin.user.admin"
                         ],
+                        "analyticsConfiguration": {
+                          "applicationArn": {
+                            "Fn::GetAtt": [
+                              "PinpointApp",
+                              "Arn"
+                            ]
+                          }
+                        },
                         "callbackUrLs": [
                           "https://example.com"
                         ],
@@ -304,6 +312,23 @@
                           "openid",
                           "aws.cognito.signin.user.admin"
                         ],
+                        "analyticsConfiguration": {
+                          "applicationId": {
+                            "Ref": "PinpointApp"
+                          },
+                          "externalId": {
+                            "Fn::GetAtt": [
+                              "Role1ABCC5F0",
+                              "RoleId"
+                            ]
+                          },
+                          "roleArn": {
+                            "Fn::GetAtt": [
+                              "Role1ABCC5F0",
+                              "Arn"
+                            ]
+                          }
+                        },
                         "callbackUrLs": [
                           "https://example.com"
                         ],
