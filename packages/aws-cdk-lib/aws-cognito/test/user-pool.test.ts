@@ -2091,9 +2091,7 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    new UserPool(stack, 'Pool', {
-      allowedFirstAuthFactors: {},
-    });
+    new UserPool(stack, 'Pool', {});
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
@@ -2139,7 +2137,7 @@ describe('User Pool', () => {
         allowedFirstAuthFactors: { emailOtp: true },
         featurePlan: FeaturePlan.LITE,
       });
-    }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+    }).toThrow('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
   });
 
   test('passkeyRelyingPartyId is configured', () => {

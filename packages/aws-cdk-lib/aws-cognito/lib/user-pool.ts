@@ -1421,6 +1421,10 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
+    if (props.featurePlan === FeaturePlan.LITE) {
+      throw new ValidationError('To enable passwordless sign-in, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+    }
+
     // PASSWORD should be configured as one of the allowed first auth factors.
     const allowedFirstAuthFactors = ['PASSWORD'];
     if (props.allowedFirstAuthFactors.emailOtp) {
@@ -1432,14 +1436,6 @@ export class UserPool extends UserPoolBase {
     if (props.allowedFirstAuthFactors.passkey) {
       allowedFirstAuthFactors.push('WEB_AUTHN');
     }
-    if (allowedFirstAuthFactors.length === 1) {
-      return undefined;
-    }
-
-    if (props.featurePlan === FeaturePlan.LITE) {
-      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
-    }
-
     return { allowedFirstAuthFactors };
   }
 
