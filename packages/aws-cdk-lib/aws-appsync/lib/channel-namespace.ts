@@ -1,3 +1,4 @@
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
@@ -131,6 +132,8 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     super(scope, id, {
       physicalName: props.channelNamespaceName ?? id,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const code = props.code?.bind(this);
 

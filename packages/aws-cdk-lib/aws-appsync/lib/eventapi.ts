@@ -1,3 +1,4 @@
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { IApi, ApiBase } from './api-base';
 import {
@@ -445,6 +446,8 @@ export class EventApi extends EventApiBase {
           }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultAuthType: AppSyncAuthorizationType = AppSyncAuthorizationType.API_KEY;
     const defaultAuthProviders: AppSyncAuthProvider[] = [{ authorizationType: defaultAuthType }];
