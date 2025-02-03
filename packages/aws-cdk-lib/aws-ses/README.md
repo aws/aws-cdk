@@ -162,11 +162,13 @@ myConfigurationSet.addEventDestination('ToSns', {
 
 For EventBridge, only default EventBus can be used:
 ```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
 declare const myConfigurationSet: ses.ConfigurationSet;
 
 const bus = events.EventBus.fromEventBusName(this, 'EventBus', 'default');
 
-myConfigurationSet.addEventDestination('ToDefaultEventBus', {
+myConfigurationSet.addEventDestination('ToEventBus', {
   destination: ses.EventDestination.eventBus(bus),
 })
 ```
