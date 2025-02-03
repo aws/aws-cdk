@@ -1121,7 +1121,7 @@ User pool clients can be configured with Amazon Pinpoint analytics to collect us
 
 The following example shows how to configure analytics for a user pool client:
 
-#### When specifying an Application ARN
+#### When specifying a Pinpoint application from the same account
 
 If you specify the `application` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
 
