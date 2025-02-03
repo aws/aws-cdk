@@ -2099,6 +2099,25 @@ describe('User Pool', () => {
     });
   });
 
+  test('allowFirstAuthFactors contains only PASSWORD when option is blank', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      allowedFirstAuthFactors: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: {
+        SignInPolicy: {
+          AllowedFirstAuthFactors: ['PASSWORD'],
+        },
+      },
+    });
+  });
+
   test('allowFirstAuthFactors are correctly named', () => {
     // GIVEN
     const stack = new Stack();
