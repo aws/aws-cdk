@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/732e8a5a9cd324cd07d828909e63f7f84a234de4ef7a78d8c985f15773a68a38.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5cb6c3d85ed8928a4145baff9ff323871b19a68330b7e0d392b6092ff92bf6f8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -202,6 +202,12 @@
             "data": "ClusterEB0386A7"
           }
         ],
+        "/single-provider-role-integ/Table0/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Table0HandlerinlinePolicyAddedToExecutionRole08FC8B442"
+          }
+        ],
         "/single-provider-role-integ/Table0/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -250,6 +256,12 @@
             "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05"
           }
         ],
+        "/single-provider-role-integ/Table1/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Table1HandlerinlinePolicyAddedToExecutionRole0197820AE"
+          }
+        ],
         "/single-provider-role-integ/Table1/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -260,6 +272,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Table1737A9D79"
+          }
+        ],
+        "/single-provider-role-integ/Table2/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Table2HandlerinlinePolicyAddedToExecutionRole0B2E1D0D0"
           }
         ],
         "/single-provider-role-integ/Table2/Resource/Provider/framework-onEvent/Resource": [

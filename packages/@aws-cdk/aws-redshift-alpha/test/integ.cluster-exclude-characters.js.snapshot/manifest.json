@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26ccc44d51bcdad9595005c4251a2e7f2c4140c8f0c8fc495570c6fdebc2810f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/863dabb5ee23ea7dd2e5dedc658c8594f27344dac78936c3e1e95761c1d2285f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,6 +214,12 @@
             "data": "UserSecretAttachment02022609"
           }
         ],
+        "/redshift-exclude-characters-integ/User/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserHandlerinlinePolicyAddedToExecutionRole0A8003C00"
+          }
+        ],
         "/redshift-exclude-characters-integ/User/Resource/Provider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -272,24 +278,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "UserProviderframeworkonEventServiceRole8FBA2FBD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
