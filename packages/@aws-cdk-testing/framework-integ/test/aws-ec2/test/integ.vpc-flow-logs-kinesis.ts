@@ -3,7 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose/lib';
 
 const app = new App();
 

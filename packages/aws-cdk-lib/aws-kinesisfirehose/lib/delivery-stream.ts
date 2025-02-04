@@ -1,16 +1,16 @@
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib/core';
-import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
-import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose/lib';
 import { StreamEncryption } from './encryption';
+import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import { ISource } from './source';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import * as cloudwatch from '../../aws-cloudwatch';
+import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
+import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { RegionInfo } from '../../region-info';
 
 const PUT_RECORD_ACTIONS = [
   'firehose:PutRecord',

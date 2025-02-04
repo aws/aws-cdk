@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose/lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import * as iam from '../../aws-iam';
+import * as kinesis from '../../aws-kinesis';
 
 /**
  * A Kinesis Data Firehose delivery stream source configuration.
