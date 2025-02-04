@@ -5,7 +5,7 @@ describe('redactMetadata', () => {
   jest.mock('../lib/analytics-data-source/classes', () => ({
     AWS_CDK_CONSTRUCTOR_PROPS: {
       'aws-cdk-lib.aws-lambda': {
-        Function: { key1: '*', key2: '*' },
+        Function: { key1: '*', key2: '*', myMethod: ['*', '*', { foo: 'boolean' }] },
       },
       'aws-cdk-lib.aws-s3': {
         Bucket: { key1: '*', key2: '*' },
@@ -31,6 +31,13 @@ describe('redactMetadata', () => {
     expect(metadata.redactMetadata('aws-cdk-lib.aws-unknown.Function', data)).toBe('*');
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
+  });
+
+  it('should redact method correctly', () => {
+    const data = { addEnvironment: ['foo', 'bar', { removeInEdge: true }] };
+    expect(metadata.redactMetadata('aws-cdk-lib.aws-lambda.Function', data)).toEqual({
+      addEnvironment: ['*', '*', { removeInEdge: true }],
+    });
   });
 
   it('should redact when class name is not found in module', () => {

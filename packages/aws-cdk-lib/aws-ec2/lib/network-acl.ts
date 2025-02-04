@@ -3,7 +3,7 @@ import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } fro
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import { IResource, Resource, Tags } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Name tag constant
@@ -139,6 +139,7 @@ export class NetworkAcl extends NetworkAclBase {
   /**
    * Associate the ACL with a given set of subnets
    */
+  @MethodMetadata()
   public associateWithSubnet(id: string, selection: SubnetSelection) {
     const subnets = this.vpc.selectSubnets(selection);
     for (const subnet of subnets.subnets) {

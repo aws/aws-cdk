@@ -3,7 +3,7 @@ import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The format of the Key Pair
@@ -263,6 +263,7 @@ export class KeyPair extends Resource implements IKeyPair {
    *
    * @internal
    */
+  @MethodMetadata()
   public _isOsCompatible(osType: OperatingSystemType): boolean {
     switch (this.type) {
       case KeyPairType.ED25519:

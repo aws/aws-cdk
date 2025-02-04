@@ -3,7 +3,7 @@ import { IdentitySource } from './identity-source';
 import * as cognito from '../../../aws-cognito';
 import { Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
@@ -104,6 +104,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
    * Attaches this authorizer to a specific REST API.
    * @internal
    */
+  @MethodMetadata()
   public _attachToApi(restApi: IRestApi): void {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
       throw new ValidationError('Cannot attach authorizer to two different rest APIs', restApi);

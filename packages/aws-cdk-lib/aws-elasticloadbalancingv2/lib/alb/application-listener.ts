@@ -10,7 +10,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -337,6 +337,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addCertificates` instead.
    */
+  @MethodMetadata()
   public addCertificateArns(id: string, arns: string[]): void {
     this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
   }
@@ -348,6 +349,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * resources since cloudformation requires the certificates array on the
    * listener resource to have a length of 1.
    */
+  @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
 
@@ -377,6 +379,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * At least one Action must be added without conditions (which becomes the
    * default Action).
    */
+  @MethodMetadata()
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(this, props);
 
@@ -405,6 +408,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * way. At least one TargetGroup must be added without conditions (which will
    * become the default Action for this listener).
    */
+  @MethodMetadata()
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(this, props);
 
@@ -437,6 +441,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @returns The newly created target group
    */
+  @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
       // eslint-disable-next-line max-len
@@ -461,6 +466,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addAction()` instead
    */
+  @MethodMetadata()
   public addFixedResponse(id: string, props: AddFixedResponseProps) {
     checkAddRuleProps(this, props);
 
@@ -503,6 +509,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * @deprecated Use `addAction()` instead
    */
+  @MethodMetadata()
   public addRedirectResponse(id: string, props: AddRedirectResponseProps) {
     checkAddRuleProps(this, props);
     const redirectResponse = {
@@ -551,6 +558,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
+  @MethodMetadata()
   public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     connectable.connections.allowFrom(this.loadBalancer, portRange, 'Load balancer to target');
   }
