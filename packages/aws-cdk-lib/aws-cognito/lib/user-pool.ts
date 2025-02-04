@@ -1450,8 +1450,8 @@ export class UserPool extends UserPoolBase {
      * This check should be placed here to supply the way to disable choice-based authentication explicitly
      * by specifying `allowedFirstAuthFactors: { password: true }`.
      */
-    const isChoiseBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
-    if (isChoiseBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
+    const isChoiceBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
+    if (isChoiceBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
       throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 
