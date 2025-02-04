@@ -135,11 +135,12 @@ A more detailed breakdown of each is provided further down this README.
 
 ## Provisioning clusters
 
-Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required property is the kubernetes `version`.
+Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required properties are the kubernetes `version` and `kubectlLayer`.
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -148,6 +149,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -174,6 +176,7 @@ new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -185,6 +188,7 @@ Additional customizations are available post instantiation. To apply them, set t
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   defaultCapacity: 0,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
@@ -286,6 +290,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   defaultCapacity: 0,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
@@ -400,6 +405,7 @@ successful replacement. Consider this example if you are renaming the cluster fr
 const cluster = new eks.Cluster(this, 'cluster-to-rename', {
   clusterName: 'foo', // rename this to 'bar'
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
 // allow the cluster admin role to delete the cluster 'foo'
@@ -532,6 +538,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -636,6 +643,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_31,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -660,6 +668,7 @@ new eks.Cluster(this, 'HelloEKS', {
   albController: {
     version: eks.AlbControllerVersion.V2_8_2,
   },
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -702,6 +711,7 @@ new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -755,6 +765,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
    * Cluster Handler Lambdas so that it can reach the proxy.
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -792,6 +803,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
   vpcSubnets: [{ subnets: vpc.publicSubnets }],
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -827,6 +839,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com',
   },
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -883,6 +896,7 @@ const cluster1 = new eks.Cluster(this, 'MyCluster', {
   vpc,
   clusterName: 'cluster-name',
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
 // or
@@ -901,6 +915,7 @@ By default, the kubectl provider is configured with 1024MiB of memory. You can u
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
 // or
@@ -941,6 +956,7 @@ declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_31,
   mastersRole: role,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -990,6 +1006,7 @@ const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
   version: eks.KubernetesVersion.V1_31,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -1523,6 +1540,7 @@ when a cluster is defined:
 new eks.Cluster(this, 'MyCluster', {
   version: eks.KubernetesVersion.V1_31,
   prune: false,
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
@@ -1930,6 +1948,7 @@ const cluster = new eks.Cluster(this, 'Cluster', {
     eks.ClusterLoggingTypes.AUTHENTICATOR,
     eks.ClusterLoggingTypes.SCHEDULER,
   ],
+  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
 
