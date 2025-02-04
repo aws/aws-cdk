@@ -1,4 +1,6 @@
 # Amazon Kinesis Data Firehose Destinations Library
+<!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
