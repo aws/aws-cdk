@@ -578,7 +578,7 @@ function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult
 }
 
 function prIsSmall(_pr: GitHubPr, files: GitHubFile[]): TestResult {
-  const folders = ['packages/aws-cdk', 'packages/@aws-cdk-testing/cli-integ'];
+  const folders = ['packages/aws-cdk/', 'packages/@aws-cdk-testing/cli-integ/'];
   const exclude = [/THIRD_PARTY_LICENSES/, /.*.md/];
   const maxLinesAdded = 1000;
   const maxLinesRemoved = 1000;

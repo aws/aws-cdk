@@ -1200,7 +1200,7 @@ describe('integration tests required on features', () => {
             'The number of lines removed (1002) is greater than 1000',
           ]
         }
-      }))
+      }));
     });
 
     test('PR size within bounds', async () => {
@@ -1235,6 +1235,20 @@ describe('integration tests required on features', () => {
 
       await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
         requestChanges: undefined,
+      }));
+    });
+
+    test('Only CLI is subject to verification', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk-lib/foo.ts',
+        additions: 1001,
+        deletions: 1002,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined
       }));
     });
   });
