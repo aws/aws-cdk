@@ -1,8 +1,8 @@
 name: PR Prioritization R2 Check
 on:
-  schedule:
-    - cron: '0 */6 * * 1-5'  # Runs every 6 hours during weekdays
-  workflow_dispatch:        # Manual trigger
+  pull_request_target:
+    types:
+      - dequeued
 
 jobs:
   update_project_status:
