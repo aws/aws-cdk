@@ -592,11 +592,11 @@ function prIsSmall(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(
     sum.additions > maxLinesAdded,
-    `Number of lines added is greater than ${maxLinesAdded}`
+    `The number of lines added (${sum.additions}) is greater than ${maxLinesAdded}`
   );
   result.assessFailure(
     sum.deletions > maxLinesRemoved,
-    `Number of lines removed is greater than ${maxLinesAdded}`
+    `The number of lines removed (${sum.deletions}) is greater than ${maxLinesAdded}`
   );
 
   return result;

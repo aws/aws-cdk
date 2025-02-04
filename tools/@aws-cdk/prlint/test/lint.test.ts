@@ -1196,8 +1196,8 @@ describe('integration tests required on features', () => {
         requestChanges: {
           exemptionRequest: false,
           failures: [
-            'Number of lines added is greater than 1000',
-            'Number of lines removed is greater than 1000',
+            'The number of lines added (1001) is greater than 1000',
+            'The number of lines removed (1002) is greater than 1000',
           ]
         }
       }))
