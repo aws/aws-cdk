@@ -717,3 +717,191 @@ const vpc = new VpcV2(this, 'VPC-integ-test-tag', {
 // Add custom tags if needed
 Tags.of(vpc).add('Environment', 'Production');
 ```
+
+## Transit Gateway
+
+The AWS Transit Gateway construct library allows you to create and configure Transit Gateway resources using AWS CDK.
+
+See [AWS Transit Gateway Docs](docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html) for more info. 
+
+### Overview
+
+The Transit Gateway construct (`TransitGateway`) is the main entry point for creating and managing your Transit Gateway infrastructure. It provides methods to create route tables, attach VPCs, and configure cross-account access.
+
+The Transit Gateway construct library provides four main constructs:
+
+- `TransitGateway`: The central hub for your network connections
+- `TransitGatewayRouteTable`: Manages routing between attached networks  
+- `TransitGatewayVpcAttachment`: Connects VPCs to the Transit Gateway
+- `TransitGatewayRoute`: Defines routing rules within your Transit Gateway
+
+### Basic Usage
+
+To create a minimal deployable `TransitGateway`:
+
+```ts
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+```
+
+### Default Transit Gateway Route Table
+
+By default, `TransitGateway` is created with a default `TransitGatewayRouteTable`, for which automatic Associations and automatic Propagations are enabled. 
+
+> Note: When you create a default Transit Gateway in AWS Console, a default Transit Gateway Route Table is automatically created by AWS. However, when using the CDK Transit Gateway L2 construct, the underlying L1 construct is configured with `defaultRouteTableAssociation` and `defaultRouteTablePropagation` explicitly disabled. This ensures that AWS does not create the default route table, allowing the CDK to define a custom default route table instead.
+>
+> As a result, in the AWS Console, the **Default association route table** and **Default propagation route table** settings will appear as disabled. Despite this, the CDK still provides automatic association and propagation functionality through its internal implementation, which can be controlled using the `defaultRouteTableAssociation` and `defaultRouteTablePropagation` properties within the CDK.
+
+
+You can disable the automatic Association/Propagation on the default `TransitGatewayRouteTable` via the `TransitGateway` properties. This will still create a default route table for you:
+
+```ts
+const transitGateway = new TransitGateway(this, 'MyTransitGateway', {
+  defaultRouteTableAssociation: false,
+  defaultRouteTablePropagation: false,
+});
+```
+
+### Transit Gateway Route Table Management
+
+Add additional Transit Gateway Route Tables using the `addRouteTable()` method:
+
+```ts
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+
+const routeTable = transitGateway.addRouteTable('CustomRouteTable');
+```
+
+### Attaching VPCs to the Transit Gateway
+
+Currently only VPC to Transit Gateway attachments are supported.
+
+Create an attachment from a VPC to the Transit Gateway using the `attachVpc()` method:
+
+```ts
+const myVpc = new VpcV2(this, 'Vpc');
+const subnet1 = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+
+const subnet2 = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.1.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+
+// Create a basic attachment
+const attachment = transitGateway.attachVpc('VpcAttachment', {
+  vpc: myVpc, 
+  subnets: [subnet1, subnet2]
+});
+
+// Create an attachment with optional parameters
+const attachmentWithOptions = transitGateway.attachVpc('VpcAttachmentWithOptions', {
+  vpc: myVpc, 
+  subnets: [subnet1], 
+  vpcAttachmentOptions: {
+    dnsSupport: true,
+    applianceModeSupport: true,
+    ipv6Support: true,
+    securityGroupReferencingSupport: true,
+  }
+});
+```
+
+If you want to automatically associate and propagate routes with transit gateway route tables, you can pass the `associationRouteTable` and `propagationRouteTables` parameters. This will automatically create the necessary associations and propagations based on the provided route tables.
+
+```ts
+const myVpc = new VpcV2(this, 'Vpc');
+const subnet1 = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+
+const subnet2 = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.1.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+const associationRouteTable = transitGateway.addRouteTable('AssociationRouteTable');
+const propagationRouteTable1 = transitGateway.addRouteTable('PropagationRouteTable1');
+const propagationRouteTable2 = transitGateway.addRouteTable('PropagationRouteTable2');
+
+// Create an attachment with automatically created association + propagations
+const attachmentWithRoutes = transitGateway.attachVpc('VpcAttachment', {
+  vpc: myVpc, 
+  subnets: [subnet1, subnet2],
+  associationRouteTable: associationRouteTable,
+  propagationRouteTables: [propagationRouteTable1, propagationRouteTable2],
+});
+```
+
+In this example, the `associationRouteTable` is set to `associationRouteTable`, and `propagationRouteTables` is set to an array containing `propagationRouteTable1` and `propagationRouteTable2`. This triggers the automatic creation of route table associations and route propagations between the Transit Gateway and the specified route tables.
+
+### Adding static routes to the route table
+
+Add static routes using either the `addRoute()` method to add an active route or `addBlackholeRoute()` to add a blackhole route: 
+
+```ts
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+const routeTable = transitGateway.addRouteTable('CustomRouteTable');
+
+const myVpc = new VpcV2(this, 'Vpc');
+const subnet = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+
+const attachment = transitGateway.attachVpc('VpcAttachment', {
+  vpc: myVpc, 
+  subnets: [subnet]
+});
+
+// Add a static route to direct traffic
+routeTable.addRoute('StaticRoute', attachment, '10.0.0.0/16');
+
+// Block unwanted traffic with a blackhole route
+routeTable.addBlackholeRoute('BlackholeRoute', '172.16.0.0/16');
+```
+
+### Route Table Associations and Propagations
+
+Configure route table associations and enable route propagation:
+
+```ts
+const transitGateway = new TransitGateway(this, 'MyTransitGateway');
+const routeTable = transitGateway.addRouteTable('CustomRouteTable');
+const myVpc = new VpcV2(this, 'Vpc');
+const subnet = new SubnetV2(this, 'Subnet', {  
+  vpc: myVpc,
+  availabilityZone: 'eu-west-2a',
+  ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
+  subnetType: SubnetType.PUBLIC 
+});
+const attachment = transitGateway.attachVpc('VpcAttachment', {
+  vpc: myVpc, 
+  subnets: [subnet]
+});
+
+// Associate an attachment with a route table
+routeTable.addAssociation('Association', attachment);
+
+// Enable route propagation for an attachment
+routeTable.enablePropagation('Propagation', attachment);
+```
+
+**Associations** — The linking of a Transit Gateway attachment to a specific route table, which determines which routes that attachment will use for routing decisions.
+
+**Propagation** — The automatic advertisement of routes from an attachment to a route table, allowing the route table to learn about available network destinations.

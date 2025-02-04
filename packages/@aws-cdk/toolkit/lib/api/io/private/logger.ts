@@ -79,6 +79,28 @@ function stripEmojis(msg: string): string {
   return msg.replace(/\p{Emoji_Presentation}/gu, '');
 }
 
+/**
+ * An IoHost wrapper that trims whitespace at the beginning and end of messages.
+ * This is required, since after removing emojis and ANSI colors,
+ * we might end up with floating whitespace at either end.
+ */
+export function withTrimmedWhitespace(ioHost: IIoHost): IIoHost {
+  return {
+    notify: async <T>(msg: IoMessage<T>) => {
+      await ioHost.notify({
+        ...msg,
+        message: msg.message.trim(),
+      });
+    },
+    requestResponse: async <T, U>(msg: IoRequest<T, U>) => {
+      return ioHost.requestResponse({
+        ...msg,
+        message: msg.message.trim(),
+      });
+    },
+  };
+}
+
 // @todo these cannot be awaited WTF
 export function asSdkLogger(ioHost: IIoHost, action: ToolkitAction): Logger {
   return new class implements Logger {

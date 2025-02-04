@@ -45,7 +45,7 @@ describe('synth', () => {
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'result',
-      code: 'CDK_TOOLKIT_I0001',
+      code: 'CDK_TOOLKIT_I1901',
       message: expect.stringContaining('Successfully synthesized'),
       data: expect.objectContaining({
         stacksCount: 1,
@@ -66,7 +66,7 @@ describe('synth', () => {
     expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
       action: 'synth',
       level: 'result',
-      code: 'CDK_TOOLKIT_I0002',
+      code: 'CDK_TOOLKIT_I1902',
       message: expect.stringContaining('Successfully synthesized'),
       data: expect.objectContaining({
         stacksCount: 2,

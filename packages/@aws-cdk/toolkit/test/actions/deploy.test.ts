@@ -148,7 +148,7 @@ describe('deploy', () => {
       expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
         action: 'deploy',
         level: 'info',
-        code: 'CDK_TOOLKIT_I3001',
+        code: 'CDK_TOOLKIT_I5031',
         message: expect.stringContaining('The following log groups are added: /aws/lambda/lambda-function-name'),
       }));
     });
