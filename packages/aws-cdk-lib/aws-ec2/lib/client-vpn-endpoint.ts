@@ -265,7 +265,7 @@ export interface ClientVpnEndpointAttributes {
 }
 
 /**
- * A client VPN connnection
+ * A client VPN connection
  */
 export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
