@@ -490,7 +490,7 @@ To reserve an LCU, you must specify a `minimumCapacityUnit`.
 ```ts
 declare const vpc: ec2.Vpc;
 
-const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   minimumCapacityUnit: 5500,
 });
