@@ -6,10 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 
-/**
- * Properties for DynamoPutItem Task
- */
-export interface DynamoPutItemProps extends sfn.TaskStateBaseProps {
+interface DynamoPutItemOptions {
   /**
    * A map of attribute name/value pairs, one for each attribute.
    * Only the primary key attributes are required;
@@ -81,9 +78,38 @@ export interface DynamoPutItemProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for DynamoPutItem Task using JSONPath
+ */
+export interface DynamoPutItemJsonPathProps extends sfn.TaskStateJsonPathBaseProps, DynamoPutItemOptions {}
+
+/**
+ * Properties for DynamoPutItem Task using JSONata
+ */
+export interface DynamoPutItemJsonataProps extends sfn.TaskStateJsonataBaseProps, DynamoPutItemOptions {}
+
+/**
+ * Properties for DynamoPutItem Task
+ */
+export interface DynamoPutItemProps extends sfn.TaskStateBaseProps, DynamoPutItemOptions {}
+
+/**
  * A StepFunctions task to call DynamoPutItem
  */
 export class DynamoPutItem extends sfn.TaskStateBase {
+  /**
+   * A StepFunctions task using JSONPath to call DynamoPutItem
+   */
+  public static jsonPath(scope: Construct, id: string, props: DynamoPutItemJsonPathProps) {
+    return new DynamoPutItem(scope, id, props);
+  }
+
+  /**
+   * A StepFunctions task using JSONata to call DynamoPutItem
+   */
+  public static jsonata(scope: Construct, id: string, props: DynamoPutItemJsonataProps) {
+    return new DynamoPutItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -107,10 +133,11 @@ export class DynamoPutItem extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: getDynamoResourceArn(DynamoMethod.PUT),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Item: transformAttributeValueMap(this.props.item),
         TableName: this.props.table.tableName,
         ConditionExpression: this.props.conditionExpression,
@@ -119,7 +146,7 @@ export class DynamoPutItem extends sfn.TaskStateBase {
         ReturnConsumedCapacity: this.props.returnConsumedCapacity,
         ReturnItemCollectionMetrics: this.props.returnItemCollectionMetrics,
         ReturnValues: this.props.returnValues,
-      }),
+      }, queryLanguage),
     };
   }
 }

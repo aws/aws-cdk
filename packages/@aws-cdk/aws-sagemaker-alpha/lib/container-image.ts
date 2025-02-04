@@ -92,7 +92,6 @@ class AssetImage extends ContainerImage {
 }
 
 class DlcEcrImage extends ContainerImage {
-
   constructor(private readonly repositoryName: string, private readonly tag: string, private readonly accountId?: string) {
     super();
   }

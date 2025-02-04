@@ -53,7 +53,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       SourceDestCheck: false,
     });
-
   });
   test('instance is grantable', () => {
     // GIVEN
@@ -107,7 +106,6 @@ describe('instance', () => {
         Version: '2012-10-17',
       },
     });
-
   });
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
@@ -123,7 +121,6 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
-
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
@@ -136,24 +133,23 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
     }
-
   });
 
   test('sameInstanceClassAs compares InstanceTypes contains dashes', () => {
     // GIVEN
     const comparitor = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.LARGE);
-    //WHEN
+    // WHEN
     const largerInstanceType = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.XLARGE);
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
   test('sameInstanceClassAs compares InstanceSize contains dashes', () => {
     // GIVEN
     const comparitor = new InstanceType('c7a.metal-48xl');
-    //WHEN
+    // WHEN
     const largerInstanceType = new InstanceType('c7a.xlarge');
-    //THEN
+    // THEN
     expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
@@ -197,7 +193,6 @@ describe('instance', () => {
       // THEN
       expect(() => instanceType.architecture).toThrow('Malformed instance type identifier');
     }
-
   });
   test('can propagate EBS volume tags', () => {
     // WHEN
@@ -350,7 +345,6 @@ describe('instance', () => {
           },
         ],
       });
-
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
@@ -366,7 +360,6 @@ describe('instance', () => {
           }],
         });
       }).toThrow(/volumeIndex must be a number starting from 0/);
-
     });
 
     test('throws if volumeType === IO1 without iops', () => {
@@ -500,7 +493,6 @@ describe('instance', () => {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
     });
-
   });
 
   test('instance can be created with Private IP Address AND Associate Public IP Address', () => {
@@ -551,7 +543,6 @@ describe('instance', () => {
         'VPCPublicSubnet2RouteTableAssociation5A808732',
       ],
     });
-
   });
 
   test('instance requires IMDSv2', () => {
@@ -864,27 +855,27 @@ test('ssm permissions adds right managed policy', () => {
 test('sameInstanceClassAs compares identical InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const sameInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //THEN
+  // THEN
   expect(sameInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares InstanceTypes correctly regardless of size', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.T3, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const largerInstanceType = InstanceType.of(InstanceClass.T3, InstanceSize.XLARGE);
-  //THEN
+  // THEN
   expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
 });
 
 test('sameInstanceClassAs compares different InstanceTypes correctly', () => {
   // GIVEN
   const comparitor = InstanceType.of(InstanceClass.C4, InstanceSize.LARGE);
-  //WHEN
+  // WHEN
   const instanceType = new InstanceType('t3.large');
-  //THEN
+  // THEN
   expect(instanceType.sameInstanceClassAs(comparitor)).toBeFalsy();
 });
 

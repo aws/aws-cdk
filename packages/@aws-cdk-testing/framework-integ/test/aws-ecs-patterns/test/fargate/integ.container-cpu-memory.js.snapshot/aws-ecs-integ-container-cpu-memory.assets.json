@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "1dc1a7c794acca48436ad02ee22281f5f96bb6899c5d611b68067225a068e5c7": {
+      "source": {
+        "path": "aws-ecs-integ-container-cpu-memory.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1dc1a7c794acca48436ad02ee22281f5f96bb6899c5d611b68067225a068e5c7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -82,7 +82,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
-  */
+   */
   readonly placementStrategies?: PlacementStrategy[];
 }
 
@@ -90,7 +90,6 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
  * Class to create a queue processing EC2 service.
  */
 export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
-
   /**
    * The EC2 service in this construct.
    */
