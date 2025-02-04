@@ -2099,23 +2099,16 @@ describe('User Pool', () => {
     });
   });
 
-  test('allowFirstAuthFactors contains only PASSWORD when option is blank', () => {
+  test('allowFirstAuthFactors throws when password is false', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new UserPool(stack, 'Pool', {
-      allowedFirstAuthFactors: {},
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      Policies: {
-        SignInPolicy: {
-          AllowedFirstAuthFactors: ['PASSWORD'],
-        },
-      },
-    });
+    expect(() => {
+      new UserPool(stack, 'Pool', {
+        allowedFirstAuthFactors: { password: false },
+      });
+    }).toThrow('The password authentication cannot be disabled.');
   });
 
   test('allowFirstAuthFactors are correctly named', () => {
@@ -2157,6 +2150,26 @@ describe('User Pool', () => {
         featurePlan: FeaturePlan.LITE,
       });
     }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
+  });
+
+  test('allowFirstAuthFactors can specify only password when the feature plan is Lite', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      allowedFirstAuthFactors: { password: true },
+      featurePlan: FeaturePlan.LITE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Policies: {
+        SignInPolicy: {
+          AllowedFirstAuthFactors: ['PASSWORD'],
+        },
+      },
+    });
   });
 
   test('passkeyRelyingPartyId is configured', () => {

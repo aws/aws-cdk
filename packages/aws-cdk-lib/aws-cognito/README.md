@@ -231,7 +231,7 @@ const userPool = new cognito.UserPool(this, 'myuserpool', {
   },
 });
 
-// You should also configure the user pool client to allow USER_AUTH authentication flow
+// You should also configure the user pool client with USER_AUTH authentication flow allowed
 userPool.addClient('myclient', {
   authFlows: { user: true },
 });
@@ -264,6 +264,15 @@ new cognito.UserPool(this, 'myuserpool', {
   allowedFirstAuthFactors: { passkey: true },
   passkeyRelyingPartyId: 'auth.example.com',
   passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+});
+```
+
+To disable choice-based authentication explicitly, specify `{ password: true }`.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  allowedFirstAuthFactors: { password: true },
+  featurePlan: cognito.FeaturePlan.LITE,
 });
 ```
 

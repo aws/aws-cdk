@@ -476,17 +476,23 @@ export interface PasswordPolicy {
  */
 export interface AuthFactor {
   /**
-   * Whether the email message one-time password is allowed
+   * Whether the password authentication is allowed.
+   * This must be true when specified.
+   * @default true
+   */
+  readonly password?: boolean;
+  /**
+   * Whether the email message one-time password is allowed.
    * @default false
    */
   readonly emailOtp?: boolean;
   /**
-   * Whether the SMS message one-time password is allowed
+   * Whether the SMS message one-time password is allowed.
    * @default false
    */
   readonly smsOtp?: boolean;
   /**
-   * Whether the Passkey (WebAuthn) is allowed
+   * Whether the Passkey (WebAuthn) is allowed.
    * @default false
    */
   readonly passkey?: boolean;
@@ -1421,11 +1427,11 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    if (props.featurePlan === FeaturePlan.LITE) {
-      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+    // PASSWORD should be configured as one of the allowed first auth factors.
+    if (props.allowedFirstAuthFactors.password === false) {
+      throw new ValidationError('The password authentication cannot be disabled.', this);
     }
 
-    // PASSWORD should be configured as one of the allowed first auth factors.
     const allowedFirstAuthFactors = ['PASSWORD'];
     if (props.allowedFirstAuthFactors.emailOtp) {
       allowedFirstAuthFactors.push('EMAIL_OTP');
@@ -1436,6 +1442,17 @@ export class UserPool extends UserPoolBase {
     if (props.allowedFirstAuthFactors.passkey) {
       allowedFirstAuthFactors.push('WEB_AUTHN');
     }
+
+    /*
+     * Choice-based authentication is enabled when built allowedFirstAuthFactors contains any factor but PASSWORD.
+     * This check should be placed here to supply the way to disable choice-based authentication explicitly
+     * by specifying `allowedFirstAuthFactors: { password: true }`.
+     */
+    const isChouseBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
+    if (isChouseBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
+      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+    }
+
     return { allowedFirstAuthFactors };
   }
 
