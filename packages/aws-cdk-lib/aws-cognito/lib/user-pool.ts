@@ -477,10 +477,9 @@ export interface PasswordPolicy {
 export interface AuthFactor {
   /**
    * Whether the password authentication is allowed.
-   * This must be true when specified.
-   * @default true
+   * This must be true.
    */
-  readonly password?: boolean;
+  readonly password: boolean;
   /**
    * Whether the email message one-time password is allowed.
    * @default false
@@ -1428,11 +1427,14 @@ export class UserPool extends UserPoolBase {
     }
 
     // PASSWORD should be configured as one of the allowed first auth factors.
-    if (props.allowedFirstAuthFactors.password === false) {
+    if (!props.allowedFirstAuthFactors.password) {
       throw new ValidationError('The password authentication cannot be disabled.', this);
     }
 
-    const allowedFirstAuthFactors = ['PASSWORD'];
+    const allowedFirstAuthFactors = [];
+    if (props.allowedFirstAuthFactors.password) {
+      allowedFirstAuthFactors.push('PASSWORD');
+    }
     if (props.allowedFirstAuthFactors.emailOtp) {
       allowedFirstAuthFactors.push('EMAIL_OTP');
     }
@@ -1448,8 +1450,8 @@ export class UserPool extends UserPoolBase {
      * This check should be placed here to supply the way to disable choice-based authentication explicitly
      * by specifying `allowedFirstAuthFactors: { password: true }`.
      */
-    const isChouseBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
-    if (isChouseBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
+    const isChoiseBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
+    if (isChoiseBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
       throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 

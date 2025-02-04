@@ -225,6 +225,7 @@ The following code configures a user pool with choice-based authentication enabl
 ```ts
 const userPool = new cognito.UserPool(this, 'myuserpool', {
   allowedFirstAuthFactors: {
+    password: true, // password authentication must be enabled
     emailOtp: true, // enables email message one-time password
     smsOtp: true,   // enables SMS message one-time password
     passkey: true,  // enables passkey sign-in
@@ -246,13 +247,13 @@ Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cog
 ```ts
 // Use the hosted Amazon Cognito domain as the relying party ID
 new cognito.UserPool(this, 'myuserpool', {
-  allowedFirstAuthFactors: { passkey: true },
+  allowedFirstAuthFactors: { password: true, passkey: true },
   passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
 });
 
 // Use the custom domain as the relying party ID
 new cognito.UserPool(this, 'myuserpool', {
-  allowedFirstAuthFactors: { passkey: true },
+  allowedFirstAuthFactors: { password: true, passkey: true },
   passkeyRelyingPartyId: 'auth.example.com',
 });
 ```
@@ -261,13 +262,13 @@ You can configure user verification to be preferred (default) or required. When 
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
-  allowedFirstAuthFactors: { passkey: true },
+  allowedFirstAuthFactors: { password: true, passkey: true },
   passkeyRelyingPartyId: 'auth.example.com',
   passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
 });
 ```
 
-To disable choice-based authentication explicitly, specify `{ password: true }`.
+To disable choice-based authentication explicitly, specify `password` only.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {

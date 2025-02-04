@@ -2118,6 +2118,7 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       allowedFirstAuthFactors: {
+        password: true,
         emailOtp: true,
         smsOtp: true,
         passkey: true,
@@ -2146,7 +2147,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       new UserPool(stack, 'Pool', {
-        allowedFirstAuthFactors: { emailOtp: true },
+        allowedFirstAuthFactors: { password: true, emailOtp: true },
         featurePlan: FeaturePlan.LITE,
       });
     }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
