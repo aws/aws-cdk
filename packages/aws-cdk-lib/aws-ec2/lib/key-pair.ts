@@ -3,7 +3,7 @@ import { CfnKeyPair } from './ec2.generated';
 import { OperatingSystemType } from './machine-image';
 import { StringParameter, IStringParameter } from '../../aws-ssm';
 import { Resource, ResourceProps, Names, Lazy, IResource } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The format of the Key Pair
