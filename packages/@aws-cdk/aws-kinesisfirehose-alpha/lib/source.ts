@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose/lib';
+import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 

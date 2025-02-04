@@ -1,20 +1,4 @@
 # Amazon Data Firehose Construct Library
-<!--BEGIN STABILITY BANNER-->
-
----
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
-
----
-
-<!--END STABILITY BANNER-->
-
 
 [Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html), [formerly known as Amazon Kinesis Data Firehose](https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-data-firehose-formerly-kinesis-data-firehose/),
 is a service for fully-managed delivery of real-time streaming data to storage services
@@ -39,6 +23,8 @@ In order to define a Delivery Stream, you must specify a destination. An S3 buck
 used as a destination. Currently the CDK supports only S3 as a destination which is covered [below](#destinations).
 
 ```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose'
+
 const bucket = new s3.Bucket(this, 'Bucket');
 new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: new firehose.S3Bucket(bucket),
@@ -435,7 +421,7 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
-[Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations-alpha/test/integ.s3-bucket.lit.ts)
+[Example Lambda data processor performing the identity transformation.](../../@aws-cdk-testing/framework-integ/test/aws-kinesisfirehose/test/integ.s3-bucket.lit.ts)
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Amazon Data Firehose Developer Guide*.
@@ -515,8 +501,7 @@ The following write permissions are provided to a service principal by the
 Conversely to the above, Amazon Data Firehose requires permissions in order for delivery
 streams to interact with resources that you own. For example, if an S3 bucket is specified
 as a destination of a delivery stream, the delivery stream must be granted permissions to
-put and get objects from the bucket. When using the built-in AWS service destinations
-found in the `@aws-cdk/aws-kinesisfirehose-destinations-alpha` module, the CDK grants the
+put and get objects from the bucket. When using the built-in AWS service destinations, the CDK grants the
 permissions automatically. However, custom or third-party destinations may require custom
 permissions. In this case, use the delivery stream as an `IGrantable`, as follows:
 

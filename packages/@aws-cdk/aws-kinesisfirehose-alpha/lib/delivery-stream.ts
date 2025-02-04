@@ -7,7 +7,7 @@ import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
 import { FirehoseMetrics } from 'aws-cdk-lib/aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated';
-import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose/lib';
+import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { StreamEncryption } from './encryption';
 import { ISource } from './source';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
