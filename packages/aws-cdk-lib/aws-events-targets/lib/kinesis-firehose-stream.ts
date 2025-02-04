@@ -1,7 +1,7 @@
 import { singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose/lib';
+import * as firehose from '../../aws-kinesisfirehose';
 import { IResource } from '../../core';
 
 /**
