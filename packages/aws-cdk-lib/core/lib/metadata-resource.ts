@@ -61,7 +61,7 @@ export function addMethodMetadata(scope: Construct, methodName: string, props: a
      * Without this, it will just fall back to the previous metadata
      * collection strategy.
      */
-    Annotations.of(scope).addWarningV2('@aws-cdk/core:addMethodMetadata', `Failed to add method metadata for node [${scope.node.id}], method name ${methodName}. Reason: ${e}`);
+    Annotations.of(scope).addWarningV2('@aws-cdk/core:addMethodMetadataFailed', `Failed to add method metadata for node [${scope.node.id}], method name ${methodName}. Reason: ${e}`);
   }
 }
 
@@ -90,7 +90,7 @@ export function MethodMetadata(): MethodDecorator {
   };
 }
 
-function addMetadata(scope: Construct, type: MetadataType, props: any): void {
+export function addMetadata(scope: Construct, type: MetadataType, props: any): void {
   const telemetryEnabled = FeatureFlags.of(scope).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
   if (!telemetryEnabled) {
     return;

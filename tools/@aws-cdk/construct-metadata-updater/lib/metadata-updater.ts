@@ -573,6 +573,7 @@ export class MethodsUpdater extends MetadataUpdater {
 
   /**
    * Add the import statement for MetadataType to the file.
+   * Add decorators @MetadataMethod() to public non-static methods
    */
   private addImportsAndDecorators(sourceFile: any, filePath: string, node: any) {
     const ret = this.addDecorators(sourceFile, node);
@@ -628,6 +629,9 @@ export class MethodsUpdater extends MetadataUpdater {
     sourceFile.saveSync();
   }
 
+  /**
+   * Add decorators @MetadataMethod() to public non-static methods
+   */
   private addDecorators(sourceFile: any, classDeclaration: ClassDeclaration): boolean {
     let updated = false;
 

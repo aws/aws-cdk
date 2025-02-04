@@ -1,3 +1,5 @@
+import { Construct } from 'constructs';
+import { Annotations } from '../lib/annotations';
 import * as metadata from '../lib/metadata-resource';
 import { Token } from '../lib/token';
 
@@ -154,5 +156,68 @@ describe('isEnumValue', () => {
 
   test('returns true for another valid enum value', () => {
     expect(metadata.isEnumValue('AnotherEnum', 'OPTION_A')).toBe(true);
+  });
+});
+
+// Mock Annotations
+jest.mock('../lib/annotations', () => ({
+  Annotations: {
+    of: jest.fn(),
+  },
+}));
+
+describe('addMethodMetadata & addConstructMetadata', () => {
+  let mockScope: Construct;
+  let mockAnnotations: { addWarningV2: jest.Mock };
+
+  beforeEach(() => {
+    jest.clearAllMocks(); // Reset mocks before each test
+
+    // Create a mock Construct
+    mockScope = {
+      node: {
+        id: 'TestConstruct',
+        addMetadata: jest.fn(),
+      },
+    } as unknown as Construct;
+
+    mockAnnotations = { addWarningV2: jest.fn() };
+    (Annotations.of as jest.Mock).mockReturnValue(mockAnnotations);
+  });
+
+  it('addMethodMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
+    // Mock addMetadata to throw an error
+    jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
+      // eslint-disable-next-line @cdklabs/no-throw-default-error
+      throw new Error('Test Error');
+    });
+
+    // Act
+    metadata.addMethodMetadata(mockScope, 'testMethod', { key: 'value' });
+
+    // Assert
+    expect(Annotations.of).toHaveBeenCalledWith(mockScope);
+    expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
+      '@aws-cdk/core:addMethodMetadataFailed',
+      'Failed to add method metadata for node [TestConstruct], method name testMethod. Reason: TypeError: constructs_1.Node.of(...).tryGetContext is not a function',
+    );
+  });
+
+  it('addConstructMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
+    // Mock addMetadata to throw an error
+    jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
+      // eslint-disable-next-line @cdklabs/no-throw-default-error
+      throw new Error('Test Error');
+    });
+
+    // Act
+    metadata.addConstructMetadata(mockScope, { key: 'value' });
+
+    // Assert
+    expect(Annotations.of).toHaveBeenCalledWith(mockScope);
+    expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
+      '@aws-cdk/core:addConstructMetadataFailed',
+      'Failed to add construct metadata for node [TestConstruct]. Reason: TypeError: constructs_1.Node.of(...).tryGetContext is not a function',
+    );
   });
 });
