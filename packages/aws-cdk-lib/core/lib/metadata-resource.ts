@@ -71,6 +71,10 @@ export function addMethodMetadata(scope: Construct, methodName: string, props: a
  */
 export function MethodMetadata(): MethodDecorator {
   return function (_: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    // Ensure the Decorator is Only Applied to Methods
+    if (!descriptor || typeof descriptor.value !== 'function') {
+      return descriptor;
+    }
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
