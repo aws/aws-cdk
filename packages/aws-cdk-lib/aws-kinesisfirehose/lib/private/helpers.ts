@@ -1,8 +1,8 @@
 import { Construct, IDependable, Node } from 'constructs';
-import * as kms from '../../..//aws-kms';
-import * as logs from '../../..//aws-logs';
-import * as s3 from '../../..//aws-s3';
-import * as cdk from '../../..//core';
+import * as kms from '../../../aws-kms';
+import * as logs from '../../../aws-logs';
+import * as s3 from '../../../aws-s3';
+import * as cdk from '../../../core';
 import * as iam from '../../../aws-iam';
 import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
