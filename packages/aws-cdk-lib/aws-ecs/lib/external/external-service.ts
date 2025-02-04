@@ -31,10 +31,11 @@ export interface ExternalServiceProps extends BaseServiceOptions {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Specifies whether the service will use the daemon scheduling strategy.
+   * By default, service use REPLICA scheduling strategy, this parameter enable DAEMON scheduling strategy.
    * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
    *
    * When you are using this strategy, do not specify a desired number of tasks or any task placement strategies.
+   * Tasks using the Fargate launch type or the CODE_DEPLOY or EXTERNAL deployment controller types don't support the DAEMON scheduling strategy.
    *
    * @default false
    */
@@ -100,14 +101,18 @@ export class ExternalService extends BaseService implements IExternalService {
    * Constructs a new instance of the ExternalService class.
    */
   constructor(scope: Construct, id: string, props: ExternalServiceProps) {
-   if (props.daemon) {
-     if (props.desiredCount !== undefined){
-       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
-     }
-     if (props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
-       throw new Error('Maximum percent must be 100 for daemon mode.');
-     }
-   }
+    if (props.daemon) {
+      if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
+        props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+        throw new Error('CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy.');
+      }
+      if (props.desiredCount !== undefined) {
+        throw new Error('Daemon mode launches one task on every instance. Cannot specify desiredCount when daemon mode is enabled.');
+      }
+      if (props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
+        throw new Error('Maximum percent must be 100 when daemon mode is enabled.');
+      }
+    }
 
     if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
@@ -134,8 +139,8 @@ export class ExternalService extends BaseService implements IExternalService {
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount,
-      maxHealthyPercent: props.daemon || props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
-      minHealthyPercent: props.daemon || props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
+      maxHealthyPercent: props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EXTERNAL,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
