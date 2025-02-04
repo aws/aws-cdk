@@ -1,5 +1,5 @@
 import { IStage } from './stage';
-import * as firehose from '../../aws-kinesisfirehose/lib';
+import * as firehose from '../../aws-kinesisfirehose';
 import { ILogGroup } from '../../aws-logs';
 import { ValidationError } from '../../core/lib/errors';
 
