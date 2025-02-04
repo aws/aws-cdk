@@ -26,7 +26,27 @@ queue_rules:
     conditions:
       - base!=release
       - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
+
+  - name: priority-squash
+    update_method: merge
+    merge_method: squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
