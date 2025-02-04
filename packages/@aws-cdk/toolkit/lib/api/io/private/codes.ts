@@ -1,20 +1,27 @@
 import { IoMessageCode } from '../io-message';
 
 export const CODES = {
-  // Toolkit Info codes
-  CDK_TOOLKIT_I0001: 'Display stack data',
-  CDK_TOOLKIT_I0002: 'Successfully deployed stacks',
-  CDK_TOOLKIT_I3001: 'Informs about any log groups that are traced as part of the deployment',
-  CDK_TOOLKIT_I5001: 'Display synthesis times',
-  CDK_TOOLKIT_I5050: 'Confirm rollback',
+  // Synth
+  CDK_TOOLKIT_I1000: 'Provides synthesis times',
+  CDK_TOOLKIT_I1901: 'Provides stack data',
+  CDK_TOOLKIT_I1902: 'Successfully deployed stacks',
+
+  // Deploy
+  CDK_TOOLKIT_I5000: 'Provides deployment times',
+  CDK_TOOLKIT_I5001: 'Provides total time in deploy action, including synth and rollback',
+  CDK_TOOLKIT_I5031: 'Informs about any log groups that are traced as part of the deployment',
+  CDK_TOOLKIT_I5050: 'Confirm rollback during deployment',
   CDK_TOOLKIT_I5060: 'Confirm deploy security sensitive changes',
+  CDK_TOOLKIT_I5900: 'Deployment results on success',
+
+  // Rollback
+  CDK_TOOLKIT_I6000: 'Provides rollback times',
+
+  // Destroy
+  CDK_TOOLKIT_I7000: 'Provides destroy times',
   CDK_TOOLKIT_I7010: 'Confirm destroy stacks',
 
-  // Toolkit Warning codes
-
-  // Toolkit Error codes
-
-  // Assembly Info codes
+  // Assembly codes
   CDK_ASSEMBLY_I0042: 'Writing updated context',
   CDK_ASSEMBLY_I0241: 'Fetching missing context',
   CDK_ASSEMBLY_I1000: 'Cloud assembly output starts',
