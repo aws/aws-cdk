@@ -19,7 +19,7 @@ export { execProgram } from './api/cxapp/exec';
 export { RequireApproval } from './diff';
 export { leftPad } from './api/util/string-manipulation';
 export { formatAsBanner } from './cli/util/console-formatters';
-export { enableTracing } from './util/tracing';
+export { setSdkTracing as enableTracing } from './api/aws-auth/tracing';
 export { aliases, command, describe } from './commands/docs';
 export { lowerCaseFirstCharacter } from './api/hotswap/common';
 export { deepMerge } from './util/objects';
