@@ -19,7 +19,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor, withTrimmedWhitespace } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -115,7 +115,9 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     if (props.color === false) {
       ioHost = withoutColor(ioHost);
     }
-    this.ioHost = ioHost;
+    // After removing emojis and color, we might end up with floating whitespace at either end of the message
+    // This also removes newlines that we currently emit for CLI backwards compatibility.
+    this.ioHost = withTrimmedWhitespace(ioHost);
   }
 
   public async dispose(): Promise<void> {
