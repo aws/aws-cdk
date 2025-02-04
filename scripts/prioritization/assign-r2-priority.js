@@ -68,7 +68,7 @@ module.exports = async ({ github }) => {
      console.log(`Processing PR #${pr.number}....`);
 
       // Check PR status
-      const approvals = pr.reviews.nodes.find(
+      const approvals = pr.reviews.nodes.filter(
         (review) => review.state === "APPROVED"
       );
 
