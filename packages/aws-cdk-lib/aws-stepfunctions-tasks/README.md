@@ -513,34 +513,34 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
 
 const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob2', {
   baseModel: model,
-  clientRequestToken: 'MyToken', // optional
-  customizationType: tasks.CustomizationType.FINE_TUNING, // optional
-  customModelKmsKey: kmsKey, // optional
-  customModelName: 'MyCustomModel',
-  customModelTags: [{ key: 'key1', value: 'value1' }], // optional
+  clientRequestToken: 'MyToken',
+  customizationType: tasks.CustomizationType.FINE_TUNING,
+  customModelKmsKey: kmsKey,
+  customModelName: 'MyCustomModel', // required
+  customModelTags: [{ key: 'key1', value: 'value1' }],
   hyperParameters: {
     batchSize: '10',
-  }, // optional
-  jobName: 'MyCustomizationJob',
-  jobTags: [{ key: 'key2', value: 'value2' }], // optional
+  },
+  jobName: 'MyCustomizationJob', // required
+  jobTags: [{ key: 'key2', value: 'value2' }],
   outputData: {
-    bucket: outputBucket,
-    prefix: 'output-data', // optional
+    bucket: outputBucket, // required
+    prefix: 'output-data',
   },
   trainingData: {
-    bucket: trainingBucket,
-    prefix: 'training-data', // optional
+    bucket: trainingBucket, // required
+    prefix: 'training-data',
   },
   validationData: [
     {
-      bucket: validationBucket,
-      prefix: 'validation-data1', // optional
+      bucket: validationBucket, // required
+      prefix: 'validation-data1',
     },
   ],
   vpcConfig: {
     securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
     subnets: vpc.privateSubnets,
-  }, // optional
+  },
 });
 ```
 
