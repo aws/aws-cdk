@@ -10,6 +10,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -138,6 +139,13 @@ export interface MutualAuthentication {
    * @default false
    */
   readonly ignoreClientCertificateExpiry?: boolean;
+
+  /**
+   * Indicates whether trust store CA names are advertised
+   *
+   * @default false
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
 }
 
 /**
@@ -236,7 +244,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
   /**
    * The port of the listener.
-  */
+   */
   public readonly port: number;
 
   /**
@@ -257,6 +265,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     validateMutualAuthentication(scope, props.mutualAuthentication);
 
+    let advertiseTrustStoreCaNames: string | undefined;
+    if (props.mutualAuthentication?.advertiseTrustStoreCaNames !== undefined) {
+      advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
@@ -264,11 +277,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       port,
       sslPolicy: props.sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
+        advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
         trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
       } : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
@@ -775,6 +791,8 @@ class ImportedApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
@@ -792,6 +810,8 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerListenerContextResponse) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.listenerArn = props.listenerArn;
     this.connections = new ec2.Connections({
@@ -1067,6 +1087,10 @@ function validateMutualAuthentication(scope: Construct, mutualAuthentication?: M
 
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
       throw new ValidationError(`You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+    }
+
+    if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
+      throw new ValidationError(`You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
   }
 }

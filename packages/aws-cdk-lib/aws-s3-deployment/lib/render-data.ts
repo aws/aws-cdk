@@ -52,7 +52,6 @@ export function renderData(scope: Construct, data: string): Content {
 
       throw new ValidationError(`Unexpected "Fn::Join" part, expecting string or object but got ${typeof (part)}`, scope);
     }
-
   } else if (obj.Ref || obj['Fn::GetAtt'] || obj['Fn::Select']) {
     addMarker(obj);
   } else {

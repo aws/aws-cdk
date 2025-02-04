@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import { Code } from '../code';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -84,6 +85,8 @@ export class PySparkStreamingJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -144,7 +147,6 @@ export class PySparkStreamingJob extends Job {
   /**
    * Set the executable arguments with best practices enabled by default
    *
-   * @param props
    * @returns An array of arguments for Glue to use on execution
    */
   private executableArguments(props: PySparkStreamingJobProps) {

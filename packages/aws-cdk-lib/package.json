@@ -136,7 +136,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.50",
+    "@aws-cdk/aws-service-spec": "^0.1.51",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -499,6 +499,7 @@
     "./cloudformation-include": "./cloudformation-include/index.js",
     "./core": "./core/index.js",
     "./core/lib/helpers-internal": "./core/lib/helpers-internal/index.js",
+    "./core/lib/metadata-resource": "./core/lib/metadata-resource.js",
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",

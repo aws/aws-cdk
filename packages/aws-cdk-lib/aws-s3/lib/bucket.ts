@@ -27,6 +27,7 @@ import {
   Annotations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -1333,11 +1334,11 @@ export interface Inventory {
   readonly optionalFields?: string[];
 }
 /**
-   * The ObjectOwnership of the bucket.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
-   *
-   */
+ * The ObjectOwnership of the bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+ *
+ */
 export enum ObjectOwnership {
   /**
    * ACLs are disabled, and the bucket owner automatically owns
@@ -1654,11 +1655,11 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
-  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
-  *
-  * @default false
-  */
+   * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+   *
+   * @default false
+   */
   readonly enforceSSL?: boolean;
 
   /**
@@ -1912,14 +1913,14 @@ export interface BucketProps {
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 
   /**
-  * Enforces minimum TLS version for requests.
-  *
-  * Requires `enforceSSL` to be enabled.
-  *
-  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
-  *
-  * @default No minimum TLS version is enforced.
-  */
+   * Enforces minimum TLS version for requests.
+   *
+   * Requires `enforceSSL` to be enabled.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
+   *
+   * @default No minimum TLS version is enforced.
+   */
   readonly minimumTLSVersion?: number;
 
   /**
@@ -2184,6 +2185,8 @@ export class Bucket extends BucketBase {
     super(scope, id, {
       physicalName: props.bucketName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;
@@ -2401,7 +2404,6 @@ export class Bucket extends BucketBase {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty;
     encryptionKey?: kms.IKey;
   } {
-
     // default based on whether encryptionKey is specified
     let encryptionType = props.encryption;
     if (encryptionType === undefined) {
@@ -2757,7 +2759,6 @@ export class Bucket extends BucketBase {
   }
 
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
-
     if (!props.replicationRules || props.replicationRules.length === 0) {
       return undefined;
     }
@@ -3271,7 +3272,6 @@ export enum EventType {
   /**
    * The s3:ObjectTagging:Put event type notifies you when a tag is PUT on an
    * object or an existing tag is updated.
-
    */
   OBJECT_TAGGING_PUT = 's3:ObjectTagging:Put',
 

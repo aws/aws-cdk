@@ -19,6 +19,7 @@ import { IVpcEndpoint } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -620,7 +621,6 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
-
       this._latestDeployment = new Deployment(this, 'Deployment', {
         description: props.deployOptions?.description ?? props.description ?? 'Automatically created by the RestApi construct',
         api: this,
@@ -701,6 +701,8 @@ export class SpecRestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
       name: this.restApiName,
@@ -819,6 +821,8 @@ export class RestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
       throw new ValidationError('both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
@@ -983,6 +987,8 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, resourceId);
 
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
