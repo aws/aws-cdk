@@ -100,13 +100,14 @@ export class ExternalService extends BaseService implements IExternalService {
    * Constructs a new instance of the ExternalService class.
    */
   constructor(scope: Construct, id: string, props: ExternalServiceProps) {
-    if (props.daemon && props.desiredCount !== undefined) {
-      throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
-    }
-
-    if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
-      throw new Error('Maximum percent must be 100 for daemon mode.');
-    }
+   if (props.daemon) {
+     if (props.desiredCount !== undefined){
+       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
+     }
+     if (props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
+       throw new Error('Maximum percent must be 100 for daemon mode.');
+     }
+   }
 
     if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
