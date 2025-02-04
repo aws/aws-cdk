@@ -187,7 +187,6 @@ export class SingletonFunction extends FunctionBase {
   }
 
   /** @internal */
-  @MethodMetadata()
   public _checkEdgeCompatibility() {
     return this.lambdaFunction._checkEdgeCompatibility();
   }

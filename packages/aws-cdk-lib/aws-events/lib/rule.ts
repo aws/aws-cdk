@@ -298,7 +298,6 @@ export class Rule extends Resource implements IRule {
    *
    * @internal
    */
-  @MethodMetadata()
   public _renderEventPattern(): any {
     return renderEventPattern(this.eventPattern);
   }
@@ -501,7 +500,6 @@ class MirrorRule extends Rule {
     addConstructMetadata(this, props);
   }
 
-  @MethodMetadata()
   public _renderEventPattern(): any {
     return this.source._renderEventPattern();
   }

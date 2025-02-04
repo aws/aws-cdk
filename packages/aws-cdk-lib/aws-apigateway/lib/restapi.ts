@@ -887,7 +887,6 @@ export class RestApi extends RestApiBase {
    *
    * @internal
    */
-  @MethodMetadata()
   public _attachMethod(method: Method) {
     this.methods.push(method);
 
@@ -904,7 +903,6 @@ export class RestApi extends RestApiBase {
    *
    * @internal
    */
-  @MethodMetadata()
   public _attachDeployment(deployment: Deployment) {
     this.deployments.push(deployment);
 

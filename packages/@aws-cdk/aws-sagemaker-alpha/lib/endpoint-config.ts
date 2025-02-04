@@ -262,7 +262,6 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    *
    * @internal
    */
-  @MethodMetadata()
   public _findInstanceProductionVariant(name: string): InstanceProductionVariant {
     const ret = this.instanceProductionVariantsByName[name];
     if (!ret) {

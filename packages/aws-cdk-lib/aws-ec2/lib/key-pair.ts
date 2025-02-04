@@ -263,7 +263,6 @@ export class KeyPair extends Resource implements IKeyPair {
    *
    * @internal
    */
-  @MethodMetadata()
   public _isOsCompatible(osType: OperatingSystemType): boolean {
     switch (this.type) {
       case KeyPairType.ED25519:

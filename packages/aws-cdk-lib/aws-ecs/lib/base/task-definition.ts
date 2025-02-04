@@ -595,7 +595,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    * @internal
    */
-  @MethodMetadata()
   public _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget {
     const targetContainer = this.findContainer(options.containerName);
     if (targetContainer === undefined) {
@@ -619,7 +618,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    * @internal
    */
-  @MethodMetadata()
   public _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port {
     if (portMapping.hostPort !== undefined && portMapping.hostPort !== 0) {
       return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.hostPort) : ec2.Port.tcp(portMapping.hostPort);
@@ -675,7 +673,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Links a container to this task definition.
    * @internal
    */
-  @MethodMetadata()
   public _linkContainer(container: ContainerDefinition) {
     if (this._cpu) {
       const taskCpu = Number(this._cpu);

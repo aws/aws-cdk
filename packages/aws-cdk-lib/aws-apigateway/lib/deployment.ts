@@ -132,7 +132,6 @@ export class Deployment extends Resource {
    * @see https://github.com/aws/aws-cdk/pull/6165
    * @internal
    */
-  @MethodMetadata()
   public _addMethodDependency(method: Method) {
     // adding a dependency between the constructs using `node.addDependency()`
     // will create additional dependencies between `AWS::ApiGateway::Deployment`

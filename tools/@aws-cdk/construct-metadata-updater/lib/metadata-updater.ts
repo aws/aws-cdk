@@ -635,7 +635,9 @@ export class MethodsUpdater extends MetadataUpdater {
       if (method.hasModifier(SyntaxKind.PublicKeyword) && !method.hasModifier(SyntaxKind.StaticKeyword)) {
         // Check if the decorator already exists
         const hasDecorator = method.getDecorators().some(decorator => decorator.getName() === "MethodMetadata");
-        if (!hasDecorator) {
+
+        // If method doesn't have decorator and the method doesn't start with '_' (assuming it's internal method)
+        if (!hasDecorator && !method.getName().startsWith('_')) {
           method.addDecorator({
             name: "MethodMetadata",
             arguments: [],

@@ -1394,7 +1394,6 @@ export class Function extends FunctionBase {
   }
 
   /** @internal */
-  @MethodMetadata()
   public _checkEdgeCompatibility(): void {
     // Check env vars
     const envEntries = Object.entries(this.environment);

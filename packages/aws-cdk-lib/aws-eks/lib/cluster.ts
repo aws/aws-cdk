@@ -2050,7 +2050,6 @@ export class Cluster extends ClusterBase {
    * @returns the list of FargateProfiles attached to this cluster, including the one just attached.
    * @internal
    */
-  @MethodMetadata()
   public _attachFargateProfile(fargateProfile: FargateProfile): FargateProfile[] {
     this._fargateProfiles.push(fargateProfile);
 
@@ -2072,7 +2071,6 @@ export class Cluster extends ClusterBase {
    *
    * @internal
    */
-  @MethodMetadata()
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
     Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;

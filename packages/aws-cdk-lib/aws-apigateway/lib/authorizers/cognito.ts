@@ -104,7 +104,6 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
    * Attaches this authorizer to a specific REST API.
    * @internal
    */
-  @MethodMetadata()
   public _attachToApi(restApi: IRestApi): void {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
       throw new ValidationError('Cannot attach authorizer to two different rest APIs', restApi);

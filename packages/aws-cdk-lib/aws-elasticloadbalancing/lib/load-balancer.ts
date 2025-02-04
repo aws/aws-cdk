@@ -410,7 +410,6 @@ export class LoadBalancer extends Resource implements IConnectable {
    * Add instance to the load balancer.
    * @internal
    */
-  @MethodMetadata()
   public _addInstanceId(instanceId: string) {
     this.instanceIds.push(instanceId);
   }

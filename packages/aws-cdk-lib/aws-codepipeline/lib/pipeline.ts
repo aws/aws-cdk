@@ -709,7 +709,6 @@ export class Pipeline extends PipelineBase {
   }
 
   /** @internal */
-  @MethodMetadata()
   public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
     const richAction = new RichAction(action, this);
 
