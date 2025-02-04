@@ -79,6 +79,7 @@ export const levelPriority: Record<IoMessageLevel, number> = {
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
 export type ToolkitAction =
+| 'assembly'
 | 'bootstrap'
 | 'synth'
 | 'list'
