@@ -282,7 +282,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     const minimumCapacityUnit = props.minimumCapacityUnit;
 
     if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
-      const capacityUnitPerAz = minimumCapacityUnit / (props.vpc?.availabilityZones.length ?? 1);
+      const capacityUnitPerAz = minimumCapacityUnit / (props.vpc.availabilityZones.length);
       if (capacityUnitPerAz < 2750 || capacityUnitPerAz > 45000) {
         throw new ValidationError(`'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
       }
