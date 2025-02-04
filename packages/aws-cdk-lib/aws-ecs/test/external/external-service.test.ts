@@ -25,6 +25,7 @@ beforeEach(() => {
   container = taskDefinition.addContainer('BaseContainer', {
     image: ecs.ContainerImage.fromRegistry('test'),
     memoryReservationMiB: 10,
+    memoryLimitMiB: 512,
   });
 });
 
