@@ -20,7 +20,6 @@ describe('Job', () => {
   });
 
   describe('Create new PySpark ETL Flex Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkFlexEtlJob(stack, 'ImportedJob', { role, script });
     });
@@ -74,11 +73,9 @@ describe('Job', () => {
         JobRunQueuingEnabled: false,
       });
     });
-
   });
 
   describe('Create new PySpark ETL Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         jobName: 'PySparkETLJob',
@@ -112,11 +109,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new PySpark ETL Flex Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.PySparkFlexEtlJob(stack, 'PySparkFlexETLJob', {
         jobName: 'PySparkFlexETLJob',
@@ -137,11 +132,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create pySpark ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
         jobName: 'pySparkEtlJob',
@@ -253,5 +246,4 @@ describe('Job', () => {
       });
     });
   });
-
 });

@@ -17,7 +17,6 @@ describe('ecs deploy action', () => {
           service,
         });
       }).toThrow(/one of 'input' or 'imageFile' is required/);
-
     });
 
     test('can be created just by specifying the inputArtifact', () => {
@@ -31,7 +30,6 @@ describe('ecs deploy action', () => {
           input: artifact,
         });
       }).not.toThrow();
-
     });
 
     test('can be created just by specifying the imageFile', () => {
@@ -45,7 +43,6 @@ describe('ecs deploy action', () => {
           imageFile: artifact.atPath('imageFile.json'),
         });
       }).not.toThrow();
-
     });
 
     test('throws an exception if both inputArtifact and imageFile were provided', () => {
@@ -60,7 +57,6 @@ describe('ecs deploy action', () => {
           imageFile: artifact.atPath('file.json'),
         });
       }).toThrow(/one of 'input' or 'imageFile' can be provided/);
-
     });
 
     test('can be created with deploymentTimeout between 1-60 minutes', () => {
@@ -75,7 +71,6 @@ describe('ecs deploy action', () => {
           deploymentTimeout: cdk.Duration.minutes(30),
         });
       }).not.toThrow();
-
     });
 
     test('throws an exception if deploymentTimeout is out of bounds', () => {
@@ -108,7 +103,6 @@ describe('ecs deploy action', () => {
           deploymentTimeout: cdk.Duration.seconds(30),
         });
       }).toThrow(/cannot be converted into a whole number/);
-
     });
 
     test("sets the target service as the action's backing resource", () => {
@@ -122,7 +116,6 @@ describe('ecs deploy action', () => {
       });
 
       expect(action.actionProperties.resource).toEqual(service);
-
     });
 
     test('can be created by existing service', () => {
@@ -186,7 +179,6 @@ describe('ecs deploy action', () => {
           },
         ],
       });
-
     });
 
     test('can be created by existing service with cluster ARN format', () => {

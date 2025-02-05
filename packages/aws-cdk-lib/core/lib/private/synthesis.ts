@@ -297,7 +297,6 @@ function invokeAspectsV2(root: IConstruct) {
     const allAspectsHere = sortAspectsByPriority(inheritedAspects, localAspects);
 
     for (const aspectApplication of allAspectsHere) {
-
       let invoked = invokedByPath[node.path];
       if (!invoked) {
         invoked = invokedByPath[node.path] = [];
@@ -313,7 +312,7 @@ function invokeAspectsV2(root: IConstruct) {
         throw new Error(
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
-      };
+      }
 
       aspectApplication.aspect.visit(construct);
 

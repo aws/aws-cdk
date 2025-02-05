@@ -372,7 +372,6 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
       throw new Error('Role not found');
     }
     expect(role.Role.PermissionsBoundary).toBeUndefined();
-
   } finally {
     if (policyArn) {
       await fixture.aws.iam.send(new DeletePolicyCommand({ PolicyArn: policyArn }));

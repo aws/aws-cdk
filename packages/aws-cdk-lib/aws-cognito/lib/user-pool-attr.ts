@@ -1,5 +1,6 @@
 import { StandardAttributeNames } from './private/attr-names';
 import { Token } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * The set of standard attributes that can be marked as required or mutable.
@@ -80,7 +81,7 @@ export interface StandardAttributes {
   readonly profilePicture?: StandardAttribute;
 
   /**
-   * The user's preffered username, different from the immutable user name.
+   * The user's preferred username, different from the immutable user name.
    * @default - see the defaults under `StandardAttribute`
    */
   readonly preferredUsername?: StandardAttribute;
@@ -242,10 +243,10 @@ export class StringAttribute implements ICustomAttribute {
 
   constructor(props: StringAttributeProps = {}) {
     if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
-      throw new Error(`minLen cannot be less than 0 (value: ${props.minLen}).`);
+      throw new UnscopedValidationError(`minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
     if (props.maxLen && !Token.isUnresolved(props.maxLen) && props.maxLen > 2048) {
-      throw new Error(`maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
+      throw new UnscopedValidationError(`maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
     }
     this.minLen = props?.minLen;
     this.maxLen = props?.maxLen;
@@ -438,7 +439,7 @@ export interface StandardAttributesMask {
   readonly profilePicture?: boolean;
 
   /**
-   * The user's preffered username, different from the immutable user name.
+   * The user's preferred username, different from the immutable user name.
    * @default false
    */
   readonly preferredUsername?: boolean;

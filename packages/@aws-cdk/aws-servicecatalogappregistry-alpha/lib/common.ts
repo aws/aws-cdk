@@ -14,7 +14,7 @@ export enum SharePermission {
    * Allows principals in the share to associate resources and attribute groups with applications.
    */
   ALLOW_ACCESS,
-};
+}
 
 /**
  * The options that are passed into a share of an Application or Attribute Group.

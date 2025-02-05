@@ -45,7 +45,6 @@ describe('Dashboard', () => {
       { type: 'text', width: 1, height: 4, x: 0, y: 2, properties: { markdown: 'second', background: TextWidgetBackground.TRANSPARENT } },
       { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third' } },
     ]);
-
   });
 
   test('widgets in same add are laid out next to each other', () => {
@@ -81,7 +80,6 @@ describe('Dashboard', () => {
       { type: 'text', width: 1, height: 4, x: 10, y: 0, properties: { markdown: 'second' } },
       { type: 'text', width: 4, height: 1, x: 11, y: 0, properties: { markdown: 'third' } },
     ]);
-
   });
 
   test('tokens in widgets are retained', () => {
@@ -104,7 +102,6 @@ describe('Dashboard', () => {
         ]],
       },
     });
-
   });
 
   test('dashboard body includes non-widget fields', () => {
@@ -133,7 +130,6 @@ describe('Dashboard', () => {
         ]],
       },
     });
-
   });
 
   test('defaultInterval test', () => {
@@ -158,7 +154,6 @@ describe('Dashboard', () => {
         ]],
       },
     });
-
   });
 
   test('throws if both defaultInterval and start are specified', () => {
@@ -204,7 +199,6 @@ describe('Dashboard', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
       DashboardName: 'MyCustomDashboardName',
     });
-
   });
 
   test('DashboardName is not generated if not provided', () => {
@@ -217,7 +211,6 @@ describe('Dashboard', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {});
-
   });
 
   test('throws if DashboardName is not valid', () => {
@@ -293,7 +286,6 @@ describe('Dashboard', () => {
     hasVariables(resources[key].Properties, [
       { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
     ]);
-
   });
 
   test('dashboard has initial and added variable', () => {
@@ -330,7 +322,6 @@ describe('Dashboard', () => {
       { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
       { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
     ]);
-
   });
 
   test('dashboard has property/select search variable', () => {

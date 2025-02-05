@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 import { IResource, RemovalPolicy, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface ILogStream extends IResource {
   /**
@@ -68,6 +69,8 @@ export class LogStream extends Resource implements ILogStream {
     super(scope, id, {
       physicalName: props.logStreamName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,

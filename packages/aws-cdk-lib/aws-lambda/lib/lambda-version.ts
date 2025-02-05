@@ -9,6 +9,7 @@ import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IVersion extends IFunction {
   /**
@@ -189,6 +190,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   constructor(scope: Construct, id: string, props: VersionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
@@ -229,6 +232,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return this.lambda.role;
   }
 
+  @MethodMetadata()
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
@@ -249,6 +253,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param options Alias options
    * @deprecated Calling `addAlias` on a `Version` object will cause the Alias to be replaced on every function update. Call `function.addAlias()` or `new Alias()` instead.
    */
+  @MethodMetadata()
   public addAlias(aliasName: string, options: AliasOptions = {}): Alias {
     return addAlias(this, this, aliasName, options);
   }

@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "e998e361633a2d136fefe60b5f8b0b7d470b749f18963103493144bf545259ef": {
+      "source": {
+        "path": "EventApiApiKeyAuthStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e998e361633a2d136fefe60b5f8b0b7d470b749f18963103493144bf545259ef.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

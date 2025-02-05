@@ -18,7 +18,7 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Delete':
       return onDelete(event.ResourceProperties?.RepositoryName);
   }
-};
+}
 
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;

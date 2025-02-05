@@ -6,6 +6,7 @@ import { CfnRoute, CfnRouteProps } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { IRoute } from '../common';
 
 /**
@@ -183,6 +184,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
@@ -238,12 +241,13 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // path variable and all that follows with a wildcard.
     if (path.length > 1000) {
       throw new ValidationError(`Path is too long: ${path}`, this);
-    };
+    }
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
     return `arn:${Aws.PARTITION}:execute-api:${this.env.region}:${this.env.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
   }
 
+  @MethodMetadata()
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
     if (!this.authBindResult || this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM) {
       throw new ValidationError('To use grantInvoke, you must use IAM authorization', this);

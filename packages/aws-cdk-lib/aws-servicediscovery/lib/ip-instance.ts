@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /*
  * Properties for a IpInstance used for service#registerIpInstance
@@ -76,6 +77,8 @@ export class IpInstance extends InstanceBase {
 
   constructor(scope: Construct, id: string, props: IpInstanceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {

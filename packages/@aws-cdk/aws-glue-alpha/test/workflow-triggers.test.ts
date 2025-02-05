@@ -61,7 +61,6 @@ describe('Workflow and Triggers', () => {
         },
       },
     );
-
   });
 
   test('creates a workflow with conditional trigger', () => {

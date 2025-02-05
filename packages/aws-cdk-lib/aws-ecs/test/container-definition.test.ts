@@ -276,9 +276,7 @@ describe('container definition', () => {
             portMap.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     describe('ServiceConnect class', () => {
@@ -317,7 +315,6 @@ describe('container definition', () => {
           // THEN
           expect(serviceConnect.isServiceConnect()).toEqual(false);
         });
-
       });
 
       describe('validate', () => {
@@ -362,9 +359,7 @@ describe('container definition', () => {
             serviceConnect.validate();
           }).not.toThrow();
         });
-
       });
-
     });
 
     test('port mapping throws an error when appProtocol is set without name', () => {
@@ -2480,7 +2475,6 @@ describe('container definition', () => {
 
       // THEN
       expect(taskDefinition.defaultContainer).toEqual(container);
-
     });
 
     test('when the props passed in is not an essential container', () => {
@@ -2960,5 +2954,109 @@ describe('container definition', () => {
         restartAttemptPeriod: cdk.Duration.seconds(59),
       });
     }).toThrow(/The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got 59 seconds/);
+  });
+
+  test('can specify version consistency', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+      versionConsistency: ecs.VersionConsistency.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          Memory: 2048,
+          VersionConsistency: 'enabled',
+        },
+      ],
+    });
+  });
+
+  test('version consistency will not be set if not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          Memory: 2048,
+          VersionConsistency: Match.absent(),
+        },
+      ],
+    });
+  });
+
+  test('version consistency can be default disabled if appropriate', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+    });
+    container._defaultDisableVersionConsistency();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          Memory: 2048,
+          VersionConsistency: 'disabled',
+        },
+      ],
+    });
+  });
+
+  test('version consistency default disable does not override props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+      versionConsistency: ecs.VersionConsistency.ENABLED,
+    });
+    container._defaultDisableVersionConsistency();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: '/aws/aws-example-app',
+          Name: 'Container',
+          Memory: 2048,
+          VersionConsistency: 'enabled',
+        },
+      ],
+    });
   });
 });

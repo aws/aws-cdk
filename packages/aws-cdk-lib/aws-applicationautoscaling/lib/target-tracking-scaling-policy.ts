@@ -3,6 +3,7 @@ import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Base interface for target tracking props
@@ -123,11 +124,11 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
+      throw new ValidationError('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new Error('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.');
+      throw new ValidationError('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
     }
 
     super(scope, id);
@@ -142,7 +143,7 @@ export class TargetTrackingScalingPolicy extends Construct {
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {
-        customizedMetricSpecification: renderCustomMetric(props.customMetric),
+        customizedMetricSpecification: renderCustomMetric(this, props.customMetric),
         disableScaleIn: props.disableScaleIn,
         predefinedMetricSpecification: predefinedMetric !== undefined ? {
           predefinedMetricType: predefinedMetric,
@@ -158,12 +159,12 @@ export class TargetTrackingScalingPolicy extends Construct {
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new Error(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`);
+    throw new ValidationError(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
   return {
@@ -311,8 +312,8 @@ export enum PredefinedMetric {
   SAGEMAKER_INFERENCE_COMPONENT_CONCURRENT_REQUESTS_PER_COPY_HIGH_RESOLUTION = 'SageMakerInferenceComponentConcurrentRequestsPerCopyHighResolution',
   /**
    * SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION
-    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
-    */
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
   SAGEMAKER_VARIANT_CONCURRENT_REQUESTS_PER_MODEL_HIGH_RESOLUTION = 'SageMakerVariantConcurrentRequestsPerModelHighResolution',
   /**
    * WORKSPACES_AVERAGE_USER_SESSIONS_CAPACITY_UTILIZATION

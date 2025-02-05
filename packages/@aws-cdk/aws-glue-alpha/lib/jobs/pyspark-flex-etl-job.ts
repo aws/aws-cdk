@@ -7,6 +7,7 @@ import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, Execution
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for PySparkFlexEtlJob
@@ -82,6 +83,8 @@ export class PySparkFlexEtlJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -168,7 +171,6 @@ export class PySparkFlexEtlJob extends Job {
    */
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-
     validateSparkUiPrefix(sparkUiProps.prefix);
     const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));

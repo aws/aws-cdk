@@ -23,7 +23,6 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
     id: string,
     private readonly service: servicediscovery.IService,
     private readonly props: HttpServiceDiscoveryIntegrationProps = {}) {
-
     super(id);
   }
 

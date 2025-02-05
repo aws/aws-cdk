@@ -296,7 +296,7 @@ export abstract class S3Location {
   }
 
   /**
-   * An `IS3Location` determined fully by a JSON Path from the task input.
+   * An `IS3Location` determined fully by a JSONata expression or JSON Path from the task input.
    *
    * Due to the dynamic nature of those locations, the IAM grants that will be set by `grantRead` and `grantWrite`
    * apply to the `*` resource.
@@ -304,7 +304,9 @@ export abstract class S3Location {
    * @param expression the JSON expression resolving to an S3 location URI.
    */
   public static fromJsonExpression(expression: string): S3Location {
-    return new StandardS3Location({ uri: sfn.JsonPath.stringAt(expression) });
+    const isJsonata = () => expression.startsWith('{%');
+    const uri = isJsonata() ? expression : sfn.JsonPath.stringAt(expression);
+    return new StandardS3Location({ uri });
   }
 
   /**
@@ -362,7 +364,7 @@ export abstract class DockerImage {
   /**
    * Reference a Docker image which URI is obtained from the task's input.
    *
-   * @param expression           the JSON path expression with the task input.
+   * @param expression           the JSONata or JSON path expression with the task input.
    * @param allowAnyEcrImagePull whether ECR access should be permitted (set to `false` if the image will never be in ECR).
    */
   public static fromJsonExpression(expression: string, allowAnyEcrImagePull = true): DockerImage {
@@ -803,7 +805,7 @@ export class AcceleratorClass {
   /**
    * Custom AcceleratorType
    * @param version - Elastic Inference accelerator generation
-  */
+   */
   public static of(version: string) { return new AcceleratorClass(version); }
   /**
    * @param version - Elastic Inference accelerator generation

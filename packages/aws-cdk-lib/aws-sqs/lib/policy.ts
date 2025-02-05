@@ -4,6 +4,7 @@ import { CfnQueuePolicy } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to associate SQS queues with a policy
@@ -37,6 +38,8 @@ export class QueuePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: QueuePolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,

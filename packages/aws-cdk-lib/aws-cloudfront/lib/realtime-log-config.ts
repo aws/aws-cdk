@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import { Endpoint } from '../';
 import { IResource, Lazy, Names, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents Realtime Log Configuration
@@ -58,6 +59,8 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
     super(scope, id, {
       physicalName: props.realtimeLogConfigName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
       throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);

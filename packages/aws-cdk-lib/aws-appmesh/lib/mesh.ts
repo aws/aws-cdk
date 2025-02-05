@@ -5,6 +5,7 @@ import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import * as cdk from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -188,6 +189,8 @@ export class Mesh extends MeshBase {
     super(scope, id, {
       physicalName: props.meshName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const mesh = new CfnMesh(this, 'Resource', {
       meshName: this.physicalName,

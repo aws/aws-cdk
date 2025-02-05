@@ -491,6 +491,5 @@ describe('rules', () => {
         Template.fromStack(stack);
       }).not.toThrow();
     });
-
   });
 });

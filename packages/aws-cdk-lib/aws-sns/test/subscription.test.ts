@@ -25,7 +25,6 @@ describe('Subscription', () => {
         Ref: 'TopicBFC7AF6E',
       },
     });
-
   });
 
   test('create a subscription with DLQ when client provides DLQ', () => {
@@ -97,7 +96,6 @@ describe('Subscription', () => {
         },
       ],
     });
-
   });
 
   test('with filter policy', () => {
@@ -153,7 +151,6 @@ describe('Subscription', () => {
         ],
       },
     });
-
   });
 
   test('with filter policy and filter policy scope MessageBody', () => {
@@ -237,7 +234,6 @@ describe('Subscription', () => {
         ],
       },
     });
-
   });
 
   test('with existsFilter', () => {
@@ -261,7 +257,6 @@ describe('Subscription', () => {
         size: [{ exists: true }],
       },
     });
-
   });
 
   test('with delivery policy', () => {
@@ -380,7 +375,6 @@ describe('Subscription', () => {
         f: cond,
       },
     })).toThrow(/5 attribute names/);
-
   });
 
   test('throws with more than 150 conditions in a filter policy', () => {
@@ -399,7 +393,6 @@ describe('Subscription', () => {
         c: { conditions: [...Array.from(Array(8).keys())] },
       },
     })).toThrow(/\(160\) must not exceed 150/);
-
   });
 
   test('throws with more than 150 conditions in a filter policy with filter policy scope set to MessageBody', () => {
@@ -417,7 +410,6 @@ describe('Subscription', () => {
         c: sns.Policy.policy({ d: sns.Filter.filter(new sns.SubscriptionFilter([...Array.from(Array(5).keys())])) }),
       },
     })).toThrow(/\(200\) must not exceed 150/);
-
   });
 
   test('throws an error when subscription role arn is not entered with firehose subscription protocol', () => {

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Resource, Fn, Names, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -105,9 +106,10 @@ export class TrustStore extends Resource implements ITrustStore {
         produce: () => Names.uniqueResourceName(this, { maxLength: 32 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
-
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
         throw new ValidationError(`trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
       }
@@ -115,7 +117,6 @@ export class TrustStore extends Resource implements ITrustStore {
       if (!validNameRegex.test(props.trustStoreName)) {
         throw new ValidationError(`trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
       }
-
     }
 
     const resource = new CfnTrustStore(this, 'Resource', {

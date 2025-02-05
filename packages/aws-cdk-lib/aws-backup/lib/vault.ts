@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A backup vault
@@ -269,6 +270,8 @@ export class BackupVault extends BackupVaultBase {
 
   constructor(scope: Construct, id: string, props: BackupVaultProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.backupVaultName && !Token.isUnresolved(props.backupVaultName) && !/^[a-zA-Z0-9\-_]{2,50}$/.test(props.backupVaultName)) {
       throw new Error('Expected vault name to match pattern `^[a-zA-Z0-9\-_]{2,50}$`');
@@ -304,6 +307,7 @@ export class BackupVault extends BackupVaultBase {
   /**
    * Adds a statement to the vault access policy
    */
+  @MethodMetadata()
   public addToAccessPolicy(statement: iam.PolicyStatement) {
     this.accessPolicy.addStatements(statement);
   }
@@ -312,6 +316,7 @@ export class BackupVault extends BackupVaultBase {
    * Adds a statement to the vault access policy that prevents anyone
    * from deleting a recovery point.
    */
+  @MethodMetadata()
   public blockRecoveryPointDeletion() {
     this.addToAccessPolicy(new iam.PolicyStatement({
       effect: iam.Effect.DENY,

@@ -7,10 +7,10 @@ import { ValidationError } from '../errors';
  */
 export type ValidationRule<T> = {
   /**
-  * A function that checks if the validation rule condition is met.
-  * @param {T} props - The props object to validate.
-  * @returns {boolean} True if the condition is met (i.e., validation fails), false otherwise.
-  */
+   * A function that checks if the validation rule condition is met.
+   * @param {T} props - The props object to validate.
+   * @returns {boolean} True if the condition is met (i.e., validation fails), false otherwise.
+   */
   condition: (props: T) => boolean;
 
   /**

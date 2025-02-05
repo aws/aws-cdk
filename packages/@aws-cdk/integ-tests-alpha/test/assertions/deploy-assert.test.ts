@@ -221,7 +221,7 @@ describe('DeployAssert', () => {
       const deplossert = new DeployAssert(app);
       deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(
         ExpectedResult.objectLike({}),
-      );;
+      );
 
       // THEN
       const template = Template.fromStack(deplossert.scope);

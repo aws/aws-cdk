@@ -28,7 +28,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  *     - `yarn integ aws-route53/test/integ.cross-account-zone-delegation.js`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
  *     - `yarn integ aws-route53/test/integ.cross-account-zone-delegation.js --profiles cross-account`
-*/
+ */
 
 const app = new cdk.App();
 

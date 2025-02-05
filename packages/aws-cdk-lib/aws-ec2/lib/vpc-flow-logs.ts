@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
@@ -106,7 +107,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGateway',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The Transit Gateway Attachment to attach the Flow Log to
@@ -116,7 +117,7 @@ export abstract class FlowLogResourceType {
       resourceType: 'TransitGatewayAttachment',
       resourceId: id,
     };
-  };
+  }
 
   /**
    * The type of resource to attach a flow log to.
@@ -854,6 +855,8 @@ export class FlowLog extends FlowLogBase {
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 

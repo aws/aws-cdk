@@ -10,7 +10,6 @@ export abstract class EnvironmentFile {
    * Loads the environment file from a local disk path.
    *
    * @param path Local disk path
-   * @param options
    */
   public static fromAsset(path: string, options?: AssetOptions): AssetEnvironmentFile {
     return new AssetEnvironmentFile(path, options);
@@ -45,7 +44,6 @@ export class AssetEnvironmentFile extends EnvironmentFile {
 
   /**
    * @param path The path to the asset file or directory.
-   * @param options
    */
   constructor(public readonly path: string, private readonly options: AssetOptions = { }) {
     super();

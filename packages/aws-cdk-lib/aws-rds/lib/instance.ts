@@ -19,6 +19,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -263,7 +264,7 @@ export enum LicenseModel {
   LICENSE_INCLUDED = 'license-included',
 
   /**
-   * Bring your own licencse.
+   * Bring your own license.
    */
   BRING_YOUR_OWN_LICENSE = 'bring-your-own-license',
 
@@ -1175,6 +1176,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
@@ -1244,6 +1247,8 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let credentials = props.credentials;
     let secret = credentials?.secret;
@@ -1348,6 +1353,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
@@ -1356,7 +1363,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     }
 
     // The read replica instance always uses the same engine as the source instance
-    // but some CF validations require the engine to be explicitely passed when some
+    // but some CF validations require the engine to be explicitly passed when some
     // properties are specified.
     const shouldPassEngine = props.domain != null;
 

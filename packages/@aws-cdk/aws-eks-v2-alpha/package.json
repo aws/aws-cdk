@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-v2-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::EKS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -100,7 +100,6 @@
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {
-    "semver": "^7.5.1",
     "yaml": "1.10.2"
   },
   "peerDependencies": {
@@ -108,7 +107,6 @@
     "constructs": "^10.0.0"
   },
   "bundledDependencies": [
-    "semver",
     "yaml"
   ],
   "engines": {
@@ -132,5 +130,11 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
+      "cdk8s-plus-25": "^2.7.0"
+    }
   }
 }

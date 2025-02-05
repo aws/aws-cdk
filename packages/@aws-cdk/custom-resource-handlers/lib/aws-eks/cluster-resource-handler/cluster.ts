@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
-import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
+import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -208,14 +208,14 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
       if (updates.updateLogging) {
         config.logging = this.newProps.logging;
-      };
+      }
       if (updates.updateAccess) {
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
-      };
+      }
 
       if (updates.updateAuthMode) {
         // the update path must be
@@ -259,7 +259,7 @@ export class ClusterResourceHandler extends ResourceHandler {
           throw e;
         }
         config.accessConfig = this.newProps.accessConfig;
-      };
+      }
 
       if (updates.updateVpc) {
         config.resourcesVpcConfig = {
@@ -389,7 +389,6 @@ export class ClusterResourceHandler extends ResourceHandler {
 }
 
 function parseProps(props: any): EKS.CreateClusterCommandInput {
-
   const parsed = props?.Config ?? {};
 
   // this is weird but these boolean properties are passed by CFN as a string, and we need them to be booleanic for the SDK.
@@ -408,7 +407,6 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
   }
 
   return parsed;
-
 }
 
 interface UpdateMap {
@@ -481,7 +479,7 @@ function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: 
 
 function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
   const missingKeys: string[] = [];
-  //Get all tag keys to remove
+  // Get all tag keys to remove
   for (const key in oldTags) {
     if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
       missingKeys.push(key);

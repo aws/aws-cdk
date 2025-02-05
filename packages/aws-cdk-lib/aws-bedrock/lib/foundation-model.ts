@@ -281,6 +281,9 @@ export class FoundationModelIdentifier {
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
 
+  /** Base model "luma.ray-v2:0". */
+  public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
+
   /**
    * Base model "meta.llama2-13b-v1".
    * @deprecated use latest version of the model

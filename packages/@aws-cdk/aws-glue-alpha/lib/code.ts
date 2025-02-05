@@ -95,7 +95,7 @@ export class AssetCode extends Code {
    */
   private hashcode(s: string): string {
     return md5hash(s);
-  };
+  }
 }
 
 /**

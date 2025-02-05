@@ -5,7 +5,8 @@ import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType } from '../../core';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -103,37 +104,37 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
  */
 export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
   /**
-  * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
-  * Each vCPU is equivalent to 1024 CPU shares.
-  *
-  * *Note*: if this Compute Environment uses EC2 resources (not Fargate) with either `AllocationStrategy.BEST_FIT_PROGRESSIVE` or
-  * `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`, or `AllocationStrategy.BEST_FIT` with Spot instances,
-  * The scheduler may exceed this number by at most one of the instances specified in `instanceTypes`
-  * or `instanceClasses`.
-  *
-  * @default 256
-  */
+   * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
+   * Each vCPU is equivalent to 1024 CPU shares.
+   *
+   * *Note*: if this Compute Environment uses EC2 resources (not Fargate) with either `AllocationStrategy.BEST_FIT_PROGRESSIVE` or
+   * `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`, or `AllocationStrategy.BEST_FIT` with Spot instances,
+   * The scheduler may exceed this number by at most one of the instances specified in `instanceTypes`
+   * or `instanceClasses`.
+   *
+   * @default 256
+   */
   readonly maxvCpus?: number;
 
   /**
-  * Specifies whether this Compute Environment is replaced if an update is made that requires
-  * replacing its instances. To enable more properties to be updated,
-  * set this property to `false`. When changing the value of this property to false,
-  * do not change any other properties at the same time.
-  * If other properties are changed at the same time,
-  * and the change needs to be rolled back but it can't,
-  * it's possible for the stack to go into the UPDATE_ROLLBACK_FAILED state.
-  * You can't update a stack that is in the UPDATE_ROLLBACK_FAILED state.
-  * However, if you can continue to roll it back,
-  * you can return the stack to its original settings and then try to update it again.
-  *
-  * The properties which require a replacement of the Compute Environment are:
-  *
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
-  *
-  * @default false
-  */
+   * Specifies whether this Compute Environment is replaced if an update is made that requires
+   * replacing its instances. To enable more properties to be updated,
+   * set this property to `false`. When changing the value of this property to false,
+   * do not change any other properties at the same time.
+   * If other properties are changed at the same time,
+   * and the change needs to be rolled back but it can't,
+   * it's possible for the stack to go into the UPDATE_ROLLBACK_FAILED state.
+   * You can't update a stack that is in the UPDATE_ROLLBACK_FAILED state.
+   * However, if you can continue to roll it back,
+   * you can return the stack to its original settings and then try to update it again.
+   *
+   * The properties which require a replacement of the Compute Environment are:
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
+   *
+   * @default false
+   */
   readonly replaceComputeEnvironment?: boolean;
 
   /**
@@ -174,27 +175,27 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   readonly vpc: ec2.IVpc;
 
   /**
-  * The security groups this Compute Environment will launch instances in.
-  *
-  * @default new security groups will be created
-  */
+   * The security groups this Compute Environment will launch instances in.
+   *
+   * @default new security groups will be created
+   */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-  * The VPC Subnets this Compute Environment will launch instances in.
-  *
-  * @default new subnets will be created
-  */
+   * The VPC Subnets this Compute Environment will launch instances in.
+   *
+   * @default new subnets will be created
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-  * Whether or not the AMI is updated to the latest one supported by Batch
-  * when an infrastructure update occurs.
-  *
-  * If you specify a specific AMI, this property will be ignored.
-  *
-  * @default true
-  */
+   * Whether or not the AMI is updated to the latest one supported by Batch
+   * when an infrastructure update occurs.
+   *
+   * If you specify a specific AMI, this property will be ignored.
+   *
+   * @default true
+   */
   readonly updateToLatestImageVersion?: boolean;
 }
 
@@ -645,6 +646,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
@@ -715,10 +718,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
+  @MethodMetadata()
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
+  @MethodMetadata()
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
@@ -998,6 +1003,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.kubernetesNamespace = props.kubernetesNamespace;
     this.eksCluster = props.eksCluster;
@@ -1062,10 +1069,12 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
+  @MethodMetadata()
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
+  @MethodMetadata()
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
@@ -1112,6 +1121,8 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1193,10 +1204,14 @@ function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: numb
   if (spotBidPercentage) {
     if (!spot) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
-    } else if (spotBidPercentage > 100) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
-    } else if (spotBidPercentage < 0) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+    }
+
+    if (!Token.isUnresolved(spotBidPercentage)) {
+      if (spotBidPercentage > 100) {
+        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
+      } else if (spotBidPercentage < 0) {
+        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+      }
     }
   }
 
@@ -1208,10 +1223,10 @@ function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: numb
 }
 
 function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
-  if (minvCpus < 0) {
+  if (!Token.isUnresolved(minvCpus) && minvCpus < 0) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`);
   }
-  if (minvCpus > maxvCpus) {
+  if (!Token.isUnresolved(minvCpus) && !Token.isUnresolved(maxvCpus) && minvCpus > maxvCpus) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
   }
 }

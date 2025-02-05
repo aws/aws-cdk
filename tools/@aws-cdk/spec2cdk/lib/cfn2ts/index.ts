@@ -4,6 +4,7 @@ import * as fs from 'fs-extra';
 import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap } from './types';
+import type { ModuleImportLocations } from '../cdk/cdk';
 import { generate as generateModules } from '../generate';
 import { log } from '../util';
 
@@ -56,6 +57,7 @@ export default async function generate(
       importLocations: {
         core: coreImport,
         coreHelpers: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal`,
+        coreErrors: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}errors`,
       },
     },
   );
@@ -132,9 +134,10 @@ export async function generateAll(
   }
 
   const coreModule = 'core';
-  const coreImportLocations = {
+  const coreImportLocations: ModuleImportLocations = {
     core: '.',
     coreHelpers: './helpers-internal',
+    coreErrors: './errors',
   };
 
   const generated = await generateModules(
@@ -159,6 +162,7 @@ export async function generateAll(
       importLocations: {
         core: options.coreImport,
         coreHelpers: `${options.coreImport}/lib/helpers-internal`,
+        coreErrors: `${options.coreImport}/lib/errors`,
         cloudwatch: options.cloudwatchImport,
       },
     },

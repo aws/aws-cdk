@@ -80,11 +80,7 @@ export interface BatchJobDependency {
   readonly type?: string;
 }
 
-/**
- * Properties for RunBatchJob
- *
- */
-export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
+interface BatchSubmitJobOptions {
   /**
    * The arn of the job definition used by this job.
    */
@@ -157,11 +153,44 @@ export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for BatchSubmitJob using JSONPath
+ */
+export interface BatchSubmitJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, BatchSubmitJobOptions {}
+
+/**
+ * Properties for BatchSubmitJob using JSONata
+ */
+export interface BatchSubmitJobJsonataProps extends sfn.TaskStateJsonataBaseProps, BatchSubmitJobOptions {}
+
+/**
+ * Properties for BatchSubmitJob
+ */
+export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps, BatchSubmitJobOptions {}
+
+/**
  * Task to submits an AWS Batch job from a job definition.
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
  */
 export class BatchSubmitJob extends sfn.TaskStateBase {
+  /**
+   * Task to submits an AWS Batch job from a job definition using JSONPath.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
+   */
+  public static jsonPath(scope: Construct, id: string, props: BatchSubmitJobJsonPathProps): BatchSubmitJob {
+    return new BatchSubmitJob(scope, id, props);
+  }
+
+  /**
+   * Task to submits an AWS Batch job from a job definition using JSONata.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
+   */
+  public static jsonata(scope: Construct, id: string, props: BatchSubmitJobJsonataProps): BatchSubmitJob {
+    return new BatchSubmitJob(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -227,7 +256,9 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+
     let timeout: number | undefined = undefined;
     if (this.props.timeout) {
       timeout = this.props.timeout.toSeconds();
@@ -239,7 +270,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
     return {
       Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         JobDefinition: this.props.jobDefinitionArn,
         JobName: this.props.jobName,
         JobQueue: this.props.jobQueueArn,
@@ -268,7 +299,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         Timeout: timeout
           ? { AttemptDurationSeconds: timeout }
           : undefined,
-      }),
+      }, queryLanguage),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
     };

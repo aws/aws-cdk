@@ -3,6 +3,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 import { DataSource, generateUniqueId } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Place Index
@@ -150,6 +151,8 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
     super(scope, id, {
       physicalName: props.placeIndexName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const placeIndex = new CfnPlaceIndex(this, 'Resource', {
       indexName: this.physicalName,
@@ -169,6 +172,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Grant the given principal identity permissions to perform the actions on this place index.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -180,6 +184,7 @@ export class PlaceIndex extends Resource implements IPlaceIndex {
   /**
    * Grant the given identity permissions to search using this index
    */
+  @MethodMetadata()
   public grantSearch(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:SearchPlaceIndexForPosition',

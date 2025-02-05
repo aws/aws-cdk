@@ -3,6 +3,7 @@ import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 
@@ -51,6 +52,8 @@ export class ImportedDeploymentGroupBase extends Resource {
     });
 
     super(scope, id, { environmentFromArn: deploymentGroupArn });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.deploymentGroupName = deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupArn;
   }
@@ -117,6 +120,8 @@ export class DeploymentGroupBase extends Resource {
     super(scope, id, {
       physicalName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._role = props.role || new iam.Role(this, props.roleConstructId, {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),

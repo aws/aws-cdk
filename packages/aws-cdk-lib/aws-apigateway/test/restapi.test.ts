@@ -1,7 +1,10 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { cx_api } from '../..';
 import { Template } from '../../assertions';
+import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
 import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as apigw from '../lib';
 
 describe('restapi', () => {
@@ -1473,5 +1476,68 @@ describe('SpecRestApi', () => {
       HttpMethod: 'POST',
       ApiKeyRequired: false,
     });
+  });
+});
+
+describe('telemetry metadata', () => {
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new App();
+    app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const api = new apigw.RestApi(stack, 'myapi', {
+      defaultMethodOptions: {
+        apiKeyRequired: true,
+        authorizer: new apigw.CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
+          cognitoUserPools: [new UserPool(stack, 'myuserpool')],
+        }),
+      },
+    });
+
+    expect(api.node.metadata).toStrictEqual([{
+      data: {
+        defaultMethodOptions: {
+          apiKeyRequired: true,
+          authorizer: '*',
+        },
+      },
+      trace: undefined,
+      type: 'aws:cdk:analytics:construct',
+    }]);
+  });
+
+  it('redaction happens when feature flag is disabled', () => {
+    const app = new App();
+    app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
+    const stack = new Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const api = new apigw.RestApi(stack, 'myapi', {
+      defaultMethodOptions: {
+        apiKeyRequired: true,
+        authorizer: new apigw.CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
+          cognitoUserPools: [new UserPool(stack, 'myuserpool')],
+        }),
+      },
+    });
+
+    expect(api.node.metadata).toStrictEqual([]);
   });
 });

@@ -506,23 +506,23 @@ export enum PipelineNotificationEvents {
   STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
 
   /**
-  * Trigger notification when pipeline stage execution succeeded
-  */
+   * Trigger notification when pipeline stage execution succeeded
+   */
   STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
 
   /**
-  * Trigger notification when pipeline stage execution resumed
-  */
+   * Trigger notification when pipeline stage execution resumed
+   */
   STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
 
   /**
-  * Trigger notification when pipeline stage execution canceled
-  */
+   * Trigger notification when pipeline stage execution canceled
+   */
   STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
 
   /**
-  * Trigger notification when pipeline stage execution failed
-  */
+   * Trigger notification when pipeline stage execution failed
+   */
   STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 
   /**

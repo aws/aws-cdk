@@ -156,7 +156,6 @@ class EksClusterStack extends Stack {
             clusterName: cluster.clusterName,
           },
         });
-
       }
     }
     const app = new cdk8s.App();

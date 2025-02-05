@@ -23,7 +23,6 @@ describe('Job', () => {
   });
 
   describe('Create new Scala Spark ETL Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ImportedJob', { role, script, className });
     });
@@ -80,7 +79,6 @@ describe('Job', () => {
   });
 
   describe('Create new Scala ETL Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
         jobName: 'ScalaSparkEtlJob',
@@ -115,11 +113,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Scala ETL Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
         jobName: 'ScalaSparkEtlJob',
@@ -141,11 +137,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create ScalaSpark ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
         jobName: 'ScalaSparkEtlJob',
@@ -260,7 +254,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark ETL Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
         jobName: 'ScalaSparkEtlJob',
@@ -382,7 +375,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark ETL Job with extraJars', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {
         role,
@@ -438,7 +430,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for ScalaSpark ETL Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkEtlJob', {

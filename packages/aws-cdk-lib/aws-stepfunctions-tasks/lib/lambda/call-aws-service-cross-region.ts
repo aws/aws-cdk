@@ -5,11 +5,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Token, Duration } from '../../../core';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';
 
-/**
- * Properties for calling an AWS service's API action from your
- * state machine across regions.
- */
-export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
+interface CallAwsServiceCrossRegionOptions {
   /**
    * The AWS service to call in AWS SDK for JavaScript v3 format.
    *
@@ -92,11 +88,48 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
 }
 
 /**
+ * Properties for calling an AWS service's API action using JSONPath from your
+ * state machine across regions.
+ */
+export interface CallAwsServiceCrossRegionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, CallAwsServiceCrossRegionOptions {}
+
+/**
+ * Properties for calling an AWS service's API action using JSONata from your
+ * state machine across regions.
+ */
+export interface CallAwsServiceCrossRegionJsonataProps extends sfn.TaskStateJsonataBaseProps, CallAwsServiceCrossRegionOptions {}
+
+/**
+ * Properties for calling an AWS service's API action from your
+ * state machine across regions.
+ */
+export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps, CallAwsServiceCrossRegionOptions {}
+
+/**
  * A Step Functions task to call an AWS service API across regions.
  *
  * This task creates a Lambda function to call cross-region AWS API and invokes it.
  */
 export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
+  /**
+   * A Step Functions task using JSONPath to call an AWS service API across regions.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonPath(scope: Construct, id: string, props: CallAwsServiceCrossRegionJsonPathProps) {
+    return new CallAwsServiceCrossRegion(scope, id, props);
+  }
+  /**
+   * A Step Functions task using JSONata to call an AWS service API across regions.
+   *
+   * This task creates a Lambda function to call cross-region AWS API and invokes it.
+   */
+  public static jsonata(scope: Construct, id: string, props: CallAwsServiceCrossRegionJsonataProps) {
+    return new CallAwsServiceCrossRegion(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly lambdaFunction: IFunction;
@@ -161,16 +194,17 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
    *
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: this.lambdaFunction.functionArn,
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         region: this.props.region,
         endpoint: this.props.endpoint,
         action: this.props.action,
         service: this.props.service,
         parameters: this.props.parameters,
-      }),
+      }, queryLanguage),
     };
   }
 }

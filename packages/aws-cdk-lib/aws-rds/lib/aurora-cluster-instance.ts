@@ -12,6 +12,7 @@ import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
@@ -145,7 +146,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
    *
    * For serverless v2 instances this means:
    * - true: The serverless v2 reader will scale to match the writer instance (provisioned or serverless)
-   * - false: The serverless v2 reader will scale with the read workfload on the instance
+   * - false: The serverless v2 reader will scale with the read workload on the instance
    *
    * @default false
    */
@@ -475,6 +476,8 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       {
         physicalName: props.instanceIdentifier,
       });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
       throw new ValidationError('promotionTier must be between 0-15', this);

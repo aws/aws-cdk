@@ -530,7 +530,6 @@ describe('IAM role', () => {
         },
       ],
     });
-
   });
 
   test('managed policy arns can be supplied upon initialization and also added later', () => {
@@ -565,7 +564,6 @@ describe('IAM role', () => {
          },
       },
     });
-
   });
 
   test('federated principal can change AssumeRoleAction', () => {
@@ -661,7 +659,6 @@ describe('IAM role', () => {
   });
 
   describe('maxSessionDuration', () => {
-
     test('is not specified by default', () => {
       const stack = new Stack();
       new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
@@ -1183,7 +1180,6 @@ describe('permissions boundary', () => {
       },
     });
   });
-
 });
 
 test('managed policy ARNs are deduplicated', () => {
@@ -1406,7 +1402,6 @@ describe('roleName validation', () => {
       }).toThrow('Invalid roleName');
     });
   });
-
 });
 
 test('roleName validation with Tokens', () =>{

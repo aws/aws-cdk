@@ -326,7 +326,6 @@ async function changeDir(block: () => Promise<any>, workingDir?: string) {
     }
 
     return await block();
-
   } finally {
     if (workingDir) {
       process.chdir(originalWorkingDir);
@@ -346,7 +345,6 @@ async function withEnv(block: () => Promise<any>, env: Record<string, string> = 
     };
 
     return await block();
-
   } finally {
     process.env = originalEnv;
   }

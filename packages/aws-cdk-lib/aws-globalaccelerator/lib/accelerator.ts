@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The interface of the Accelerator
@@ -82,12 +83,12 @@ export interface AcceleratorProps {
   readonly ipAddresses?: string[];
 
   /**
-  * The IP address type that an accelerator supports.
-  *
-  * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
-  *
-  * @default - "IPV4"
-  */
+   * The IP address type that an accelerator supports.
+   *
+   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   *
+   * @default - "IPV4"
+   */
   readonly ipAddressType?: IpAddressType;
 }
 
@@ -188,6 +189,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAcceleratorName(props.acceleratorName);
     this.validateIpAddresses(props.ipAddresses);
@@ -212,6 +215,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * Add a listener to the accelerator
    */
+  @MethodMetadata()
   public addListener(id: string, options: ListenerOptions) {
     return new Listener(this, id, {
       accelerator: this,

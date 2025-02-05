@@ -19,7 +19,9 @@ const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsights: true,
   tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+  },
 });
 ```
 
@@ -66,7 +68,7 @@ globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 The following properties are configurable on a per-replica basis, but will be inherited from the `TableV2` properties if not specified:
 * contributorInsights
 * deletionProtection
-* pointInTimeRecovery
+* pointInTimeRecoverySpecification
 * tableClass
 * readCapacity (only configurable if the `TableV2` billing mode is `PROVISIONED`)
 * globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
@@ -82,12 +84,16 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   contributorInsights: true,
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+      pointInTimeRecoveryEnabled: true,
+  },
   replicas: [
     {
       region: 'us-east-1',
       tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
-      pointInTimeRecovery: false,
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: false,
+      },
     },
     {
       region: 'us-east-2',
@@ -622,12 +628,17 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
 
 ## Point-in-Time Recovery
 
-`pointInTimeRecovery` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+`pointInTimeRecoverySpecifcation` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+
+You can also choose to set `recoveryPeriodInDays` to a value between `1` and `35` which dictates how many days of recoverable data is stored. If no value is provided, the recovery period defaults to `35` days.
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  pointInTimeRecovery: true,
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+    recoveryPeriodInDays: 4,
+  },
 });
 ```
 

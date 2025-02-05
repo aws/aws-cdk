@@ -1,0 +1,371 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsecsintegavailabilityzonerebalancingAvailabilityZoneRebalancingDefaultTestDeployAssert8F80E41A.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-availability-zone-rebalancing/AvailabilityZoneRebalancing/DefaultTest/DeployAssert"
+    },
+    "aws-ecs-integ-availability-zone-rebalancing.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-availability-zone-rebalancing.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ-availability-zone-rebalancing": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ-availability-zone-rebalancing.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80389954ddc853fe88b467b9c719bf3ad69591e71d704a541535576f86e378c0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-availability-zone-rebalancing.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ-availability-zone-rebalancing.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsCluster97242B84"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegavailabilityzonerebalancingEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic34AF3231": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegavailabilityzonerebalancingEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic34AF32310ADB24A1"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/FrontendService": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/FrontendService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FrontendServiceBC94BA93"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-availability-zone-rebalancing/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-availability-zone-rebalancing"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

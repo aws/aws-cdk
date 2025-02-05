@@ -55,5 +55,4 @@ new TestjsStack(app, 'TestjsStack');
   await fs.writeJson(path.join(context.integTestDir, 'cdk.json'), cdkJson);
 
   await shell.shell(['cdk', 'synth']);
-
 })));

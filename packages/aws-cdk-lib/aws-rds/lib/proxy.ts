@@ -9,6 +9,7 @@ import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -447,6 +448,8 @@ export class DatabaseProxy extends DatabaseProxyBase
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const physicalName = props.dbProxyName || (
       cdk.FeatureFlags.of(this).isEnabled(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME) ?
@@ -556,6 +559,7 @@ export class DatabaseProxy extends DatabaseProxyBase
   /**
    * Renders the secret attachment target specifications.
    */
+  @MethodMetadata()
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.dbProxyName,
@@ -563,6 +567,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     };
   }
 
+  @MethodMetadata()
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (this.secrets.length > 1) {

@@ -1,0 +1,171 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EventApiIamAuthStack": {
+        "id": "EventApiIamAuthStack",
+        "path": "EventApiIamAuthStack",
+        "children": {
+          "EventApiIamAuth": {
+            "id": "EventApiIamAuth",
+            "path": "EventApiIamAuthStack/EventApiIamAuth",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiIamAuthStack/EventApiIamAuth/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "eventConfig": {
+                      "authProviders": [
+                        {
+                          "authType": "AWS_IAM"
+                        }
+                      ],
+                      "connectionAuthModes": [
+                        {
+                          "authType": "AWS_IAM"
+                        }
+                      ],
+                      "defaultPublishAuthModes": [
+                        {
+                          "authType": "AWS_IAM"
+                        }
+                      ],
+                      "defaultSubscribeAuthModes": [
+                        {
+                          "authType": "AWS_IAM"
+                        }
+                      ]
+                    },
+                    "name": "api-iam-auth-test"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "EventApiIamAuthStack/EventApiIamAuth/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.EventApi",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events HTTP endpoint": {
+            "id": "AWS AppSync Events HTTP endpoint",
+            "path": "EventApiIamAuthStack/AWS AppSync Events HTTP endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events Realtime endpoint": {
+            "id": "AWS AppSync Events Realtime endpoint",
+            "path": "EventApiIamAuthStack/AWS AppSync Events Realtime endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EventApiIamAuthStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EventApiIamAuthStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "appsync-event-api-iam-auth": {
+        "id": "appsync-event-api-iam-auth",
+        "path": "appsync-event-api-iam-auth",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appsync-event-api-iam-auth/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appsync-event-api-iam-auth/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appsync-event-api-iam-auth/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appsync-event-api-iam-auth/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appsync-event-api-iam-auth/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

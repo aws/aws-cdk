@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { Tokenization, Token } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -152,17 +153,35 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   public readonly ephemeralStorageGiB?: number;
 
   /**
+   * The number of cpu units used by the task.
+   */
+  public readonly cpu: number;
+
+  /**
+   * The amount (in MiB) of memory used by the task.
+   */
+  public readonly memoryMiB: number;
+
+  /**
    * Constructs a new instance of the FargateTaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
+    const cpu = props.cpu ?? 256;
+    const memoryMiB = props.memoryLimitMiB ?? 512;
+
     super(scope, id, {
       ...props,
-      cpu: props.cpu !== undefined ? Tokenization.stringifyNumber(props.cpu) : '256',
-      memoryMiB: props.memoryLimitMiB !== undefined ? Tokenization.stringifyNumber(props.memoryLimitMiB) : '512',
+      cpu: Tokenization.stringifyNumber(cpu),
+      memoryMiB: Tokenization.stringifyNumber(memoryMiB),
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
       pidMode: props.pidMode,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.cpu = cpu;
+    this.memoryMiB = memoryMiB;
 
     // eslint-disable-next-line max-len
     if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {

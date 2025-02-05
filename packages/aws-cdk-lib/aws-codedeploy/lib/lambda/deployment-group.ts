@@ -5,6 +5,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -164,6 +165,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
       role: props.role,
       roleConstructId: 'ServiceRole',
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = this._role;
 
     this.application = props.application || new LambdaApplication(this, 'Application');
@@ -224,6 +227,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
+  @MethodMetadata()
   public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
@@ -233,6 +237,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    * @param preHook function to run before deployment beings
    * @throws an error if a pre-hook function is already configured
    */
+  @MethodMetadata()
   public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
       throw new Error('A pre-hook function is already defined for this deployment group');
@@ -247,6 +252,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    * @param postHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
+  @MethodMetadata()
   public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
       throw new Error('A post-hook function is already defined for this deployment group');
@@ -261,6 +267,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    * on this deployment group resource.
    * @param grantee to grant permission to
    */
+  @MethodMetadata()
   public grantPutLifecycleEventHookExecutionStatus(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -305,6 +312,8 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.application = props.application;
     this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);

@@ -3,7 +3,6 @@ import * as cdk from '../../../core';
 import { GlueDataBrewStartJobRun } from '../../lib/databrew/start-job-run';
 
 describe('Start Job Run', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -30,6 +29,38 @@ describe('Start Job Run', () => {
       },
       End: true,
       Parameters: {
+        Name: 'jobName',
+      },
+    });
+  });
+
+  test('default settings - using JSONata', () => {
+  // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = GlueDataBrewStartJobRun.jsonata(stack, 'JobRun', {
+      name: 'jobName',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::databrew:startJobRun',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
         Name: 'jobName',
       },
     });

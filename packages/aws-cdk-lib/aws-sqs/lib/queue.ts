@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for creating a new Queue
@@ -382,6 +383,8 @@ export class Queue extends QueueBase {
     super(scope, id, {
       physicalName: props.queueName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     validateQueueProps(this, props);
 

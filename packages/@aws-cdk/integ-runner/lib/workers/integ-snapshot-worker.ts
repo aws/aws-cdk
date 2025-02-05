@@ -36,5 +36,4 @@ export async function runSnapshotTests(
   logger.highlight('\nSnapshot Results: \n');
   printSummary(tests.length, testsToRun.length);
   return testsToRun;
-
 }

@@ -235,7 +235,6 @@ export class CdkCliWrapper implements ICdk {
       verbose: this.showOutput,
       env: this.env,
     });
-
   }
 
   /**

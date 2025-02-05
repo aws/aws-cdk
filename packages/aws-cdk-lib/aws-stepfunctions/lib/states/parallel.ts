@@ -1,48 +1,11 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { renderJsonPath, State } from './state';
+import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, renderJsonPath, State, StateBaseProps } from './state';
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
-/**
- * Properties for defining a Parallel state
- */
-export interface ParallelProps {
-  /**
-   * Optional name for this state
-   *
-   * @default - The construct ID will be used as state name
-   */
-  readonly stateName?: string;
-
-  /**
-   * An optional description for this state
-   *
-   * @default No comment
-   */
-  readonly comment?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the input to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * input to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly inputPath?: string;
-
-  /**
-   * JSONPath expression to select part of the state to be the output to this state.
-   *
-   * May also be the special value JsonPath.DISCARD, which will cause the effective
-   * output to be the empty object {}.
-   *
-   * @default $
-   */
-  readonly outputPath?: string;
-
+interface ParallelJsonPathOptions extends JsonPathCommonOptions {
   /**
    * JSONPath expression to indicate where to inject the state's output
    *
@@ -67,6 +30,32 @@ export interface ParallelProps {
    */
   readonly resultSelector?: { [key: string]: any };
 }
+interface ParallelJsonataOptions extends JsonataCommonOptions {
+  /**
+   * Parameters pass a collection of key-value pairs, either static values or JSONata expressions that select from the input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html
+   *
+   * @default No arguments
+   */
+  readonly arguments?: { [name: string]: any };
+}
+
+/**
+ * Properties for defining a Parallel state that using JSONPath
+ */
+export interface ParallelJsonPathProps extends StateBaseProps, AssignableStateOptions, ParallelJsonPathOptions {}
+
+/**
+ * Properties for defining a Parallel state that using JSONata
+ */
+export interface ParallelJsonataProps extends StateBaseProps, AssignableStateOptions, ParallelJsonataOptions {}
+
+/**
+ * Properties for defining a Parallel state
+ */
+export interface ParallelProps extends StateBaseProps, AssignableStateOptions, ParallelJsonPathOptions, ParallelJsonataOptions {}
 
 /**
  * Define a Parallel state in the state machine
@@ -77,6 +66,31 @@ export interface ParallelProps {
  * The Result of a Parallel state is an array of the results of its substatemachines.
  */
 export class Parallel extends State implements INextable {
+  /**
+   * Define a Parallel state using JSONPath in the state machine
+   *
+   * A Parallel state can be used to run one or more state machines at the same
+   * time.
+   *
+   * The Result of a Parallel state is an array of the results of its substatemachines.
+   */
+  public static jsonPath(scope: Construct, id: string, props: ParallelJsonPathProps = {}) {
+    return new Parallel(scope, id, props);
+  }
+  /**
+   * Define a Parallel state using JSONata in the state machine
+   *
+   * A Parallel state can be used to run one or more state machines at the same
+   * time.
+   *
+   * The Result of a Parallel state is an array of the results of its substatemachines.
+   */
+  public static jsonata(scope: Construct, id: string, props: ParallelJsonataProps = {}) {
+    return new Parallel(scope, id, {
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
   public readonly endStates: INextable[];
   private readonly _branches: IChainable[] = [];
 
@@ -142,9 +156,10 @@ export class Parallel extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       Type: StateType.PARALLEL,
+      ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ResultPath: renderJsonPath(this.resultPath),
       ...this.renderNextEnd(),
@@ -152,6 +167,7 @@ export class Parallel extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
       ...this.renderResultSelector(),
+      ...this.renderAssign(topLevelQueryLanguage),
     };
   }
 

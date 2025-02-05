@@ -137,7 +137,6 @@ function renderFirelensConfig(firelensConfig: FirelensConfig): CfnTaskDefinition
       },
     };
   }
-
 }
 
 /**

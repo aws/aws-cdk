@@ -1,6 +1,7 @@
 import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The DB parameter group family that a DB parameter group is compatible with
@@ -107,6 +108,8 @@ export class ClusterParameterGroup extends Resource implements IClusterParameter
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       name: props.clusterParameterGroupName,
@@ -152,6 +155,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
       name: props.parameterGroupName,

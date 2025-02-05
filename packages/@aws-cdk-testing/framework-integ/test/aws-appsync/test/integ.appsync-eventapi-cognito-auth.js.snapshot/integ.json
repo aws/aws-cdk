@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api-cognito-auth/DefaultTest": {
+      "stacks": [
+        "EventApiCognitoAuthStack"
+      ],
+      "assertionStack": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapicognitoauthDefaultTestDeployAssertE181F852"
+    }
+  }
+}

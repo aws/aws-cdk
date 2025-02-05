@@ -3,6 +3,8 @@ import { UserPoolIdentityProviderProps } from './base';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Properties to initialize UserPoolAppleIdentityProvider
@@ -50,13 +52,15 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderAppleProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const scopes = props.scopes ?? ['name'];
 
     // Exactly one of the properties must be configured
     if ((!props.privateKey && !props.privateKeyValue) ||
       (props.privateKey && props.privateKeyValue)) {
-      throw new Error('Exactly one of "privateKey" or "privateKeyValue" must be configured.');
+      throw new ValidationError('Exactly one of "privateKey" or "privateKeyValue" must be configured.', this);
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {

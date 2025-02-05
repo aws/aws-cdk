@@ -6,7 +6,6 @@ import { TestSource } from './test-classes';
 import { StateMachineInvocationType, SfnStateMachine } from '../lib/stepfunctions';
 
 describe('step-function', () => {
-
   it('should have only target arn', () => {
     // ARRANGE
     const app = new App();
@@ -332,5 +331,4 @@ describe('step-function', () => {
       new SfnStateMachine(stateMachine, { invocationType: StateMachineInvocationType.REQUEST_RESPONSE });
     }).toThrow(new Error('STANDARD state machine workflows do not support the REQUEST_RESPONSE invocation type. Use FIRE_AND_FORGET instead.'));
   });
-
 });

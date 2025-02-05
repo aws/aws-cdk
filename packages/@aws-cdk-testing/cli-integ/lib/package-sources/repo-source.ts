@@ -7,9 +7,10 @@ import { shell, addToShellPath } from '../shell';
 
 export class RepoPackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'repo';
-  readonly description = `repo(${this.repoRoot})`;
+  readonly description: string;
 
   constructor(private readonly repoRoot: string) {
+    this.description = `repo(${this.repoRoot})`;
   }
 
   public async prepare(): Promise<void> {
@@ -75,10 +76,10 @@ async function writePackageMap(repoRoot: string): Promise<string> {
 const YARN_MONOREPO_CACHE: Record<string, any> = {};
 
 /**
-  * Return a { name -> directory } packages found in a Yarn monorepo
-  *
-  * Cached in YARN_MONOREPO_CACHE.
-  */
+ * Return a { name -> directory } packages found in a Yarn monorepo
+ *
+ * Cached in YARN_MONOREPO_CACHE.
+ */
 export async function findYarnPackages(root: string): Promise<Record<string, string>> {
   if (!(root in YARN_MONOREPO_CACHE)) {
     const outputDataString: string = JSON.parse(await shell(['yarn', 'workspaces', '--json', 'info'], {

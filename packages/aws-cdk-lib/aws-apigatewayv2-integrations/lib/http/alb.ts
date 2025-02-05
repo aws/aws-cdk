@@ -24,7 +24,6 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
     id: string,
     private readonly listener: elbv2.IApplicationListener,
     private readonly props: HttpAlbIntegrationProps = {}) {
-
     super(id);
   }
 

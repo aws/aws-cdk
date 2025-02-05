@@ -233,7 +233,6 @@ describe('helm chart', () => {
       // THEN
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
       expect(Object.keys(charts).length).toEqual(0);
-
     });
 
     test('should timeout only after 10 minutes', () => {

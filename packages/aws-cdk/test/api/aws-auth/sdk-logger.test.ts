@@ -1,22 +1,24 @@
 import { formatSdkLoggerContent, SdkToCliLogger } from '../../../lib/api/aws-auth/sdk-logger';
-import * as logging from '../../../lib/logging';
 
 describe(SdkToCliLogger, () => {
-  const logger = new SdkToCliLogger();
-  const trace = jest.spyOn(logging, 'trace');
+  const ioHost = {
+    notify: jest.fn(),
+    requestResponse: jest.fn(),
+  };
+  const logger = new SdkToCliLogger(ioHost);
 
   beforeEach(() => {
-    trace.mockReset();
+    ioHost.notify.mockReset();
   });
 
-  test.each(['trace', 'debug'] as Array<keyof SdkToCliLogger>)('%s method does not call trace', (meth) => {
-    logger[meth]('test');
-    expect(trace).not.toHaveBeenCalled();
+  test.each(['trace', 'debug'] as Array<keyof SdkToCliLogger>)('%s method does not call notify', (method) => {
+    logger[method]('test');
+    expect(ioHost.notify).not.toHaveBeenCalled();
   });
 
-  test.each(['info', 'warn', 'error'] as Array<keyof SdkToCliLogger>)('%s method logs to trace', (meth) => {
-    logger[meth]('test');
-    expect(trace).toHaveBeenCalled();
+  test.each(['info', 'warn', 'error'] as Array<keyof SdkToCliLogger>)('%s method logs to notify', (method) => {
+    logger[method]('test');
+    expect(ioHost.notify).toHaveBeenCalled();
   });
 });
 

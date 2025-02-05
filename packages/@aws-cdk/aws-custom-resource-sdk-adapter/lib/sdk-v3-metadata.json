@@ -195,7 +195,7 @@
     "iamPrefix": "logs"
   },
   "cloudwatch": {
-    "iamPrefix": "monitoring"
+    "iamPrefix": "cloudwatch"
   },
   "codeartifact": {
     "iamPrefix": "codeartifact"

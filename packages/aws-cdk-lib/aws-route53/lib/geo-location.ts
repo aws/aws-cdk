@@ -87,7 +87,7 @@ export class GeoLocation {
 export enum Continent {
   /**
    * Africa
-  */
+   */
   AFRICA = 'AF',
   /**
    * Antarctica

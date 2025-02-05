@@ -4,6 +4,7 @@ import { IUser } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Cloud9 Environment
@@ -197,6 +198,8 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
 
   constructor(scope: Construct, id: string, props: Ec2EnvironmentProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     if (!props.subnetSelection && this.vpc.publicSubnets.length === 0) {

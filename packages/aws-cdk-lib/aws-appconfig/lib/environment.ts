@@ -8,6 +8,7 @@ import { DeletionProtectionCheck } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -303,6 +304,8 @@ export class Environment extends EnvironmentBase {
     super(scope, id, {
       physicalName: props.environmentName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,

@@ -38,10 +38,11 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask() {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage) {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.baseProps.queryLanguage);
     return {
       Resource: integrationResourceArn('apigateway', 'invoke', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         ApiEndpoint: this.apiEndpoint,
         Method: this.baseProps.method,
         Headers: this.baseProps.headers?.value,
@@ -50,7 +51,7 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
         QueryParameters: this.baseProps.queryParameters?.value,
         RequestBody: this.baseProps.requestBody?.value,
         AuthType: this.baseProps.authType ? this.baseProps.authType : 'NO_AUTH',
-      }),
+      }, queryLanguage),
     };
   }
 

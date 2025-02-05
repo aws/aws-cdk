@@ -36,6 +36,7 @@ describe('Custom State', () => {
     expect(customState.toStateJson()).toStrictEqual({
       ...stateJson,
       ...{ Catch: undefined, Retry: undefined },
+      QueryLanguage: undefined,
       End: true,
     });
   });

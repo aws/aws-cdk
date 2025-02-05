@@ -1,0 +1,125 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "EventApiIamAuthStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiIamAuthStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiIamAuthStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiIamAuthStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f006c8845a2df8c95feb9d66666d8d4ce0c5cac6a46e800b7230f7299f69ba1e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiIamAuthStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiIamAuthStack.assets"
+      ],
+      "metadata": {
+        "/EventApiIamAuthStack/EventApiIamAuth/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiIamAuthD8D2DC98"
+          }
+        ],
+        "/EventApiIamAuthStack/AWS AppSync Events HTTP endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsHTTPendpoint"
+          }
+        ],
+        "/EventApiIamAuthStack/AWS AppSync Events Realtime endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsRealtimeendpoint"
+          }
+        ],
+        "/EventApiIamAuthStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiIamAuthStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiIamAuthStack"
+    },
+    "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsynceventapiiamauthDefaultTestDeployAssertC0FF0265.assets"
+      ],
+      "metadata": {
+        "/appsync-event-api-iam-auth/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-event-api-iam-auth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-event-api-iam-auth/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -110,7 +110,6 @@ describe('instance engine', () => {
   });
 
   describe('Oracle engine bindToInstance', () => {
-
     test('returns s3 integration feature', () => {
       const engine = rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 });
 
@@ -302,7 +301,6 @@ describe('instance engine', () => {
       ['11.4.3', rds.MariaDbEngineVersion.VER_11_4_3],
       ['11.4.4', rds.MariaDbEngineVersion.VER_11_4_4],
     ])('is passed correctly for %s', (engineVersion, version) => {
-
       // WHEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');

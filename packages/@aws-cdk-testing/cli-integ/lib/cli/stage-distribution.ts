@@ -52,7 +52,6 @@ async function main() {
         type: 'string',
         requiresArg: true,
       }), async (args) => {
-
       await validateDirectory(args);
       const repo = await (args.name ? TestRepository.newWithName(args.name) : TestRepository.newRandom());
       const usageDir = UsageDir.default();
@@ -71,7 +70,6 @@ async function main() {
         requiresArg: true,
         demandOption: true,
       }), async (args) => {
-
       const repo = TestRepository.existing(args.name);
       const usageDir = UsageDir.default();
 
@@ -99,7 +97,6 @@ async function main() {
         default: true,
         requiresArg: false,
       }), async (args) => {
-
       await validateDirectory(args);
       const repo = await TestRepository.newRandom();
       const usageDir = UsageDir.default();
@@ -114,7 +111,6 @@ async function main() {
           shell: true,
           show: 'always',
         });
-
       } finally {
         if (args.cleanup) {
           await repo.delete();
@@ -128,7 +124,6 @@ async function main() {
         type: 'string',
         requiresArg: true,
       }), async (args) => {
-
       const usageDir = UsageDir.default();
 
       let repositoryName = args.name;

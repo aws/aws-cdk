@@ -16,21 +16,21 @@ export abstract class SubnetFilter {
 
   /**
    * Chooses subnets which are in one of the given availability zones.
-  */
+   */
   public static availabilityZones(availabilityZones: string[]): SubnetFilter {
     return new AvailabilityZoneSubnetFilter(availabilityZones);
   }
 
   /**
    * Chooses subnets such that there is at most one per availability zone.
-  */
+   */
   public static onePerAz(): SubnetFilter {
     return new OnePerAZSubnetFilter();
   }
 
   /**
    * Chooses subnets which contain any of the specified IP addresses.
-  */
+   */
   public static containsIpAddresses(ipv4addrs: string[]): SubnetFilter {
     return new ContainsIpAddressesSubnetFilter(ipv4addrs);
   }
@@ -174,8 +174,8 @@ class CidrMaskSubnetFilter extends SubnetFilter {
 }
 
 /**
-  * Chooses subnets which are inside any of the specified CIDR range.
-  */
+ * Chooses subnets which are inside any of the specified CIDR range.
+ */
 class CidrRangesSubnetFilter extends SubnetFilter {
   private readonly cidrRanges: string[];
 

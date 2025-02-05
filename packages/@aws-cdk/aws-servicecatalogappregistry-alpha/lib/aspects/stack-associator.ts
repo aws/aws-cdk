@@ -7,11 +7,11 @@ import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
 
 export interface StackAssociatorBaseProps {
   /**
-  * Indicates if the target Application should be shared with the cross-account stack owners and then
-  * associated with the cross-account stacks.
-  *
-  * @default - false
-  */
+   * Indicates if the target Application should be shared with the cross-account stack owners and then
+   * associated with the cross-account stacks.
+   *
+   * @default - false
+   */
   readonly associateCrossAccountStacks?: boolean;
 }
 

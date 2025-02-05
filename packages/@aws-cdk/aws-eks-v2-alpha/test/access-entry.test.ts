@@ -131,6 +131,6 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryName).toEqual(importedAccessEntryName);
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
   });
 });

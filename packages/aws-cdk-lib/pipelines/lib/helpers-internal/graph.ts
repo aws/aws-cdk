@@ -477,8 +477,8 @@ export class GraphNodeCollection<A> {
   }
 
   /**
-  * Returns the graph node that's shared between these nodes
-  */
+   * Returns the graph node that's shared between these nodes
+   */
   public commonAncestor() {
     const paths = new Array<GraphNode<A>[]>();
     for (const x of this.nodes) {

@@ -1,8 +1,8 @@
 import { IResolvable, IResolveContext, captureStackTrace } from 'aws-cdk-lib';
 
 /** Reserved pipe variables
-* @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-input-transformation.html#input-transform-reserved
-*/
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-input-transformation.html#input-transform-reserved
+ */
 export enum PipeVariable {
   /**
    * The Amazon Resource Name (ARN) of the pipe.
@@ -112,7 +112,7 @@ export class DynamicInput implements IResolvable {
 
   /**
    * Value from one of the provided Pipe variables.
-  */
+   */
   private static fromPipeVariable(variable: PipeVariable): DynamicInput {
     return new DynamicInput(variable);
   }

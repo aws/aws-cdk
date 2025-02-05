@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "39.0.0",
+  "testCases": {
+    "appsync-event-api/DefaultTest": {
+      "stacks": [
+        "appsync-event-api-stack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "appsync-event-api/DefaultTest/DeployAssert",
+      "assertionStackName": "appsynceventapiDefaultTestDeployAssertFB25AF14"
+    }
+  }
+}

@@ -110,7 +110,7 @@ describe('render', () => {
         /**
          * plugins to load
          *
-         * @default - []
+         * @default - undefined
          */
         readonly plugin?: Array<string>;
       }
@@ -205,7 +205,7 @@ describe('render', () => {
         /**
          * Other array
          *
-         * @default - []
+         * @default - undefined
          */
         readonly otherArray?: Array<string>;
       }

@@ -39,7 +39,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * For example, if the reference is to `"$(NAME1)"` and the `NAME1` environment variable doesn't exist,
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
-
+   *
    * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
@@ -315,7 +315,7 @@ export interface EksContainerDefinitionProps {
    * For example, if the reference is to `"$(NAME1)"` and the `NAME1` environment variable doesn't exist,
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
-
+   *
    * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
@@ -631,7 +631,7 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
         },
       }),
     };
-  };
+  }
 }
 
 /**

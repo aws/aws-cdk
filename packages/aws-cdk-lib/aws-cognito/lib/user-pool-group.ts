@@ -3,6 +3,8 @@ import { CfnUserPoolGroup } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { IRole } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a user pool group.
@@ -20,10 +22,10 @@ export interface IUserPoolGroup extends IResource {
  */
 export interface UserPoolGroupOptions {
   /**
-    * A string containing the description of the group.
-    *
-    * @default - no description
-    */
+   * A string containing the description of the group.
+   *
+   * @default - no description
+   */
   readonly description?: string;
 
   /**
@@ -86,17 +88,19 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new Error(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`);
+      throw new ValidationError(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
       (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
-      throw new Error(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`);
+      throw new ValidationError(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
     }
 
     if (
@@ -104,7 +108,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new Error('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.');
+      throw new ValidationError('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {

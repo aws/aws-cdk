@@ -64,7 +64,7 @@ const awsIpamVpc = new Vpc(stack, 'AwsIpamVpc', {
 
 /**
  * Testing That the Vpc is Deployed with the correct Cidrs.
-**/
+ **/
 const integ = new IntegTest(app, 'Vpc-Ipam', {
   testCases: [stack],
   allowDestroy: ['EC2::IPAM'],

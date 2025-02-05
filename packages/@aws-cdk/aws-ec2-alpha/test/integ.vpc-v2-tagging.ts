@@ -53,7 +53,7 @@ const natgw = vpc.addNatGateway({
 natgw.node.addDependency(vpnGateway);
 
 const ipam = new Ipam(stack, 'IpamIntegTest', {
-  operatingRegion: ['us-west-2'],
+  operatingRegions: ['us-west-2'],
   ipamName: 'CDKIpamTestTag',
 });
 

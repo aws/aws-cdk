@@ -62,7 +62,6 @@ export async function changeDir<T>(block: () => Promise<T>, workingDir?: string)
     }
 
     return await block();
-
   } finally {
     if (workingDir) {
       process.chdir(originalWorkingDir);
@@ -82,7 +81,6 @@ export async function withEnv<T>(env: Env = {}, block: () => Promise<T>) {
     };
 
     return await block();
-
   } finally {
     process.env = originalEnv;
   }
@@ -157,7 +155,6 @@ export async function assemblyFromDirectory(assemblyDir: string, ioHost: ActionA
     });
     await checkContextOverflowSupport(assembly, ioHost);
     return assembly;
-
   } catch (err: any) {
     if (err.message.includes(cxschema.VERSION_MISMATCH)) {
       // this means the CLI version is too old.
