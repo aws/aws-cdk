@@ -88,7 +88,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | (temporary) |
 | [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | (fix) |
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
-| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | V2NEXT | (config) |
+| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 
 <!-- END table -->
 
@@ -1685,7 +1685,7 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.178.0 | `false` | `true` |
 
 
 <!-- END details -->
