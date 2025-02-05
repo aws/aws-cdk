@@ -4,7 +4,7 @@ import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An option group
@@ -145,6 +145,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
     this.optionGroupName = optionGroup.ref;
   }
 
+  @MethodMetadata()
   public addConfiguration(configuration: OptionConfiguration) {
     this.configurations.push(configuration);
 

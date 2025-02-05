@@ -1506,7 +1506,7 @@ describe('telemetry metadata', () => {
     expect(api.node.metadata).toStrictEqual([{
       data: {
         defaultMethodOptions: {
-          apiKeyRequired: '*',
+          apiKeyRequired: true,
           authorizer: '*',
         },
       },

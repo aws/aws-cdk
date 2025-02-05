@@ -5,7 +5,7 @@ import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface DeploymentProps {
   /**
@@ -111,6 +111,7 @@ export class Deployment extends Resource {
    * invalidate the deployment when their settings change. The component will
    * be resolved during synthesis so tokens are welcome.
    */
+  @MethodMetadata()
   public addToLogicalId(data: any) {
     this.resource.addToLogicalId(data);
   }
