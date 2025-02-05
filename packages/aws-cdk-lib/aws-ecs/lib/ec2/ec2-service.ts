@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import { Lazy, Resource, Stack } from '../../../core';
+import { Lazy, Resource, Stack, Annotations } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -121,7 +122,6 @@ export interface Ec2ServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class Ec2Service extends BaseService implements IEc2Service {
-
   /**
    * Imports from the specified service ARN.
    */
@@ -183,6 +183,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.constraints = undefined;
     this.strategies = [];
@@ -220,12 +222,17 @@ export class Ec2Service extends BaseService implements IEc2Service {
     });
 
     this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
+
+    if (props.minHealthyPercent === undefined && props.daemon) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentDaemon', 'minHealthyPercent has not been configured so the default value of 0% for a daemon service is used. See https://github.com/aws/aws-cdk/issues/31705');
+    }
   }
 
   /**
    * Adds one or more placement strategies to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
+  @MethodMetadata()
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
       throw new Error("Can't configure placement strategies when daemon=true");
@@ -240,6 +247,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
+  @MethodMetadata()
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     this.constraints = [];
     for (const constraint of constraints) {

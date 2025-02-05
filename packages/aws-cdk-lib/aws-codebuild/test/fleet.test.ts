@@ -137,7 +137,6 @@ test('can import with a concrete ARN', () => {
     'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
   );
   expect(fleet.fleetName).toEqual('MyFleet');
-
 });
 
 test('throws if fleet name is longer than 128 characters', () => {

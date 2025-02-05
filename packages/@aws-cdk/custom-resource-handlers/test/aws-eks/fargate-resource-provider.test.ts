@@ -173,7 +173,6 @@ describe('fargate resource provider', () => {
   });
 
   describe('delete', () => {
-
     test('calls deleteFargateProfile', async () => {
       // GIVEN
       const client = newEksClientMock();

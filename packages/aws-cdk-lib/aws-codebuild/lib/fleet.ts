@@ -3,6 +3,7 @@ import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Size, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -192,6 +193,9 @@ export class Fleet extends Resource implements IFleet {
 
   constructor(scope: Construct, id: string, props: FleetProps) {
     super(scope, id, { ...props, physicalName: props.fleetName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
         throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);

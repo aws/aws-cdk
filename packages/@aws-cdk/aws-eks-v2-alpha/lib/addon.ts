@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an Amazon EKS Add-On.
@@ -28,7 +29,7 @@ export interface AddonProps {
    */
   readonly addonName: string;
   /**
-   * Version of the Add-On. You can check all available versions with describe-addon-versons.
+   * Version of the Add-On. You can check all available versions with describe-addon-versions.
    * For example, this lists all available versions for the `eks-pod-identity-agent` addon:
    * $ aws eks describe-addon-versions --addon-name eks-pod-identity-agent \
    * --query 'addons[*].addonVersions[*].addonVersion'
@@ -127,6 +128,8 @@ export class Addon extends Resource implements IAddon {
     super(scope, id, {
       physicalName: props.addonName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.clusterName = props.cluster.clusterName;
     this.addonName = props.addonName;
