@@ -315,6 +315,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    *
    * @override
    */
+  @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
       throw new Error('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer');
