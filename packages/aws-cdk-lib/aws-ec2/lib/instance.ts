@@ -17,7 +17,7 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, AspectPriority, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -680,6 +680,7 @@ export class Instance extends Resource implements IInstance {
    *
    * @param securityGroup: The security group to add
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
   }
@@ -688,6 +689,7 @@ export class Instance extends Resource implements IInstance {
    * Add command to the startup script of the instance.
    * The command must be in the scripting language supported by the instance's OS (i.e. Linux/Windows).
    */
+  @MethodMetadata()
   public addUserData(...commands: string[]) {
     this.userData.addCommands(...commands);
   }
@@ -695,6 +697,7 @@ export class Instance extends Resource implements IInstance {
   /**
    * Adds a statement to the IAM role assumed by the instance.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -708,6 +711,7 @@ export class Instance extends Resource implements IInstance {
    * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
    * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
    */
+  @MethodMetadata()
   public applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     init.attach(this.instance, {
       platform: this.osType,

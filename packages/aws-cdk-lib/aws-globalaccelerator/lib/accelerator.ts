@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { Listener, ListenerOptions } from './listener';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The interface of the Accelerator
@@ -215,6 +215,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * Add a listener to the accelerator
    */
+  @MethodMetadata()
   public addListener(id: string, options: ListenerOptions) {
     return new Listener(this, id, {
       accelerator: this,

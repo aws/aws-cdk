@@ -10,7 +10,7 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for Alarms
@@ -245,6 +245,7 @@ export class Alarm extends AlarmBase {
    *
    * - You want to show an Alarm line in a graph with multiple metrics in it.
    */
+  @MethodMetadata()
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
   }
@@ -254,6 +255,7 @@ export class Alarm extends AlarmBase {
    *
    * Typically SnsAction or AutoScalingAction.
    */
+  @MethodMetadata()
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];

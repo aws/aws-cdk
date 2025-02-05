@@ -15,7 +15,7 @@ import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 const MAX_INLINE_SIZE = 10000;
 const MAX_MANAGEDPOL_SIZE = 6000;
@@ -521,6 +521,7 @@ export class Role extends Resource implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param statement The permission statement to add to the policy document
    */
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (this._precreatedRole) {
       return this._precreatedRole.addToPrincipalPolicy(statement);
@@ -540,6 +541,7 @@ export class Role extends Resource implements IRole {
     }
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     if (this._precreatedRole) {
       return this._precreatedRole.addToPolicy(statement);
@@ -552,6 +554,7 @@ export class Role extends Resource implements IRole {
    * Attaches a managed policy to this role.
    * @param policy The the managed policy to attach.
    */
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this._precreatedRole) {
       return this._precreatedRole.addManagedPolicy(policy);
@@ -565,6 +568,7 @@ export class Role extends Resource implements IRole {
    * Attaches a policy to this role.
    * @param policy The policy to attach
    */
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy) {
     if (this._precreatedRole) {
       this._precreatedRole.attachInlinePolicy(policy);
@@ -577,6 +581,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]) {
     return Grant.addToPrincipal({
       grantee,
@@ -589,6 +594,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant permissions to the given principal to pass this role.
    */
+  @MethodMetadata()
   public grantPassRole(identity: IPrincipal) {
     return this.grant(identity, 'iam:PassRole');
   }
@@ -596,6 +602,7 @@ export class Role extends Resource implements IRole {
   /**
    * Grant permissions to the given principal to assume this role.
    */
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
@@ -626,6 +633,7 @@ export class Role extends Resource implements IRole {
    * If you do, you are responsible for adding the correct statements to the
    * Role's policies yourself.
    */
+  @MethodMetadata()
   public withoutPolicyUpdates(options: WithoutPolicyUpdatesOptions = {}): IRole {
     if (!this.immutableRole) {
       this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this, options.addGrantsToResources ?? false);
@@ -640,6 +648,7 @@ export class Role extends Resource implements IRole {
    * @override
    * @param policy RemovalPolicy
    */
+  @MethodMetadata()
   public applyRemovalPolicy(policy: RemovalPolicy): void {
     const config = this.getPrecreatedRoleConfig();
     if (!config.preventSynthesis) {

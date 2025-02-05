@@ -11,7 +11,7 @@ import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 import { IAutoScalingConfiguration } from './auto-scaling-configuration';
 import { IObservabilityConfiguration } from './observability-configuration';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The image repository types
@@ -1373,6 +1373,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * Adds a statement to the instance role.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.instanceRole.addToPrincipalPolicy(statement);
   }
@@ -1380,6 +1381,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * This method adds an environment variable to the App Runner service.
    */
+  @MethodMetadata()
   public addEnvironmentVariable(name: string, value: string) {
     if (name.startsWith('AWSAPPRUNNER')) {
       throw new Error(`Environment variable key ${name} with a prefix of AWSAPPRUNNER is not allowed`);
@@ -1390,6 +1392,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
   /**
    * This method adds a secret as environment variable to the App Runner service.
    */
+  @MethodMetadata()
   public addSecret(name: string, secret: Secret) {
     if (name.startsWith('AWSAPPRUNNER')) {
       throw new Error(`Environment secret key ${name} with a prefix of AWSAPPRUNNER is not allowed`);

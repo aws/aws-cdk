@@ -23,7 +23,7 @@ import {
   Token,
   FeatureFlags,
 } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -863,6 +863,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    *
    * @param securityGroup: The security group to add
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
       throw new Error('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.');

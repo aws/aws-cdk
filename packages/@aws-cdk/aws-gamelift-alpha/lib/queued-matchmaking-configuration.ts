@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { IGameSessionQueue } from './game-session-queue';
 import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for a new queued matchmaking configuration
@@ -194,6 +194,7 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
    *
    * @param gameSessionQueue A game session queue
    */
+  @MethodMetadata()
   public addGameSessionQueue(gameSessionQueue: IGameSessionQueue) {
     this.gameSessionQueues.push(gameSessionQueue);
   }

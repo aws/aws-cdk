@@ -9,7 +9,7 @@ import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -233,6 +233,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Add a new listener to this load balancer
    */
+  @MethodMetadata()
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     const listener = new ApplicationListener(this, id, {
       loadBalancer: this,
@@ -245,6 +246,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Add a redirection listener to this load balancer
    */
+  @MethodMetadata()
   public addRedirect(props: ApplicationLoadBalancerRedirectConfig = {}): ApplicationListener {
     const sourcePort = props.sourcePort ?? 80;
     const targetPort = (props.targetPort ?? 443).toString();
@@ -266,6 +268,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * A region must be specified on the stack containing the load balancer; you cannot enable logging on
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
+  @MethodMetadata()
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     /**
      * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
@@ -327,6 +330,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
+  @MethodMetadata()
   public logConnectionLogs(bucket: s3.IBucket, prefix?: string) {
     /**
      * KMS key encryption is not supported on Connection Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
@@ -384,6 +388,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Add a security group to this load balancer
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
   }
@@ -394,6 +399,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Average over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.custom`` instead
    */
+  @MethodMetadata()
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metrics.custom(metricName, props);
   }
@@ -405,6 +411,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.activeConnectionCount`` instead
    */
+  @MethodMetadata()
   public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.activeConnectionCount(props);
   }
@@ -417,6 +424,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.clientTlsNegotiationErrorCount`` instead
    */
+  @MethodMetadata()
   public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.clientTlsNegotiationErrorCount(props);
   }
@@ -427,6 +435,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.consumedLCUs`` instead
    */
+  @MethodMetadata()
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metrics.consumedLCUs(props);
   }
@@ -437,6 +446,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.httpFixedResponseCount`` instead
    */
+  @MethodMetadata()
   public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.httpFixedResponseCount(props);
   }
@@ -447,6 +457,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.httpRedirectCount`` instead
    */
+  @MethodMetadata()
   public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.httpRedirectCount(props);
   }
@@ -458,6 +469,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.httpRedirectUrlLimitExceededCount`` instead
    */
+  @MethodMetadata()
   public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.httpRedirectUrlLimitExceededCount(props);
   }
@@ -470,6 +482,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.httpCodeElb`` instead
    */
+  @MethodMetadata()
   public metricHttpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions) {
     return this.metrics.httpCodeElb(code, props);
   }
@@ -483,6 +496,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.httpCodeTarget`` instead
    */
+  @MethodMetadata()
   public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metrics.httpCodeTarget(code, props);
   }
@@ -493,6 +507,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.ipv6ProcessedBytes`` instead
    */
+  @MethodMetadata()
   public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metrics.ipv6ProcessedBytes(props);
   }
@@ -503,6 +518,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.ipv6RequestCount`` instead
    */
+  @MethodMetadata()
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.ipv6RequestCount(props);
   }
@@ -514,6 +530,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.newConnectionCount`` instead
    */
+  @MethodMetadata()
   public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.newConnectionCount(props);
   }
@@ -524,6 +541,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.processedBytes`` instead
    */
+  @MethodMetadata()
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metrics.processedBytes(props);
   }
@@ -535,6 +553,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.rejectedConnectionCount`` instead
    */
+  @MethodMetadata()
   public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.rejectedConnectionCount(props);
   }
@@ -547,6 +566,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.requestCount`` instead
    */
+  @MethodMetadata()
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.requestCount(props);
   }
@@ -557,6 +577,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.ruleEvaluations`` instead
    */
+  @MethodMetadata()
   public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
     return this.metrics.ruleEvaluations(props);
   }
@@ -567,6 +588,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.targetConnectionErrorCount`` instead
    */
+  @MethodMetadata()
   public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.targetConnectionErrorCount(props);
   }
@@ -577,6 +599,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Average over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.targetResponseTime`` instead
    */
+  @MethodMetadata()
   public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metrics.targetResponseTime(props);
   }
@@ -589,6 +612,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.targetTLSNegotiationErrorCount`` instead
    */
+  @MethodMetadata()
   public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.targetTLSNegotiationErrorCount(props);
   }
@@ -603,6 +627,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthError`` instead
    */
+  @MethodMetadata()
   public metricElbAuthError(props?: cloudwatch.MetricOptions) {
     return this.metrics.elbAuthError(props);
   }
@@ -615,6 +640,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthFailure`` instead
    */
+  @MethodMetadata()
   public metricElbAuthFailure(props?: cloudwatch.MetricOptions) {
     return this.metrics.elbAuthFailure(props);
   }
@@ -627,6 +653,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Average over 5 minutes
    * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthLatency`` instead
    */
+  @MethodMetadata()
   public metricElbAuthLatency(props?: cloudwatch.MetricOptions) {
     return this.metrics.elbAuthLatency(props);
   }
@@ -641,6 +668,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @deprecated Use ``ApplicationLoadBalancer.metrics.elbAuthSuccess`` instead
    *
    */
+  @MethodMetadata()
   public metricElbAuthSuccess(props?: cloudwatch.MetricOptions) {
     return this.metrics.elbAuthSuccess(props);
   }
@@ -1201,6 +1229,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
     this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
   }
 
+  @MethodMetadata()
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     return new ApplicationListener(this, id, {
       loadBalancer: this,
@@ -1265,6 +1294,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
     this.metrics = new ApplicationLoadBalancerMetrics(this, parseLoadBalancerFullName(this.loadBalancerArn));
   }
 
+  @MethodMetadata()
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
     return new ApplicationListener(this, id, {
       ...props,

@@ -7,7 +7,7 @@ import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -121,6 +121,7 @@ export class Activity extends Resource implements IActivity {
    * @param identity The principal
    * @param actions The list of desired actions
    */
+  @MethodMetadata()
   public grant(identity: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee: identity,
@@ -134,6 +135,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
@@ -149,6 +151,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activityRunTimeAverage, props);
   }
@@ -158,6 +161,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activityScheduleTimeAverage, props);
   }
@@ -167,6 +171,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activityTimeAverage, props);
   }
@@ -176,6 +181,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesScheduledSum, props);
   }
@@ -185,6 +191,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesTimedOutSum, props);
   }
@@ -194,6 +201,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesStartedSum, props);
   }
@@ -203,6 +211,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesSucceededSum, props);
   }
@@ -212,6 +221,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesFailedSum, props);
   }
@@ -221,6 +231,7 @@ export class Activity extends Resource implements IActivity {
    *
    * @default sum over 5 minutes
    */
+  @MethodMetadata()
   public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(StatesMetrics.activitiesHeartbeatTimedOutSum, props);
   }

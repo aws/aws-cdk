@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -914,6 +914,7 @@ export class FileSystem extends FileSystemBase {
   /**
    * create access point from this filesystem
    */
+  @MethodMetadata()
   public addAccessPoint(id: string, accessPointOptions: AccessPointOptions = {}): AccessPoint {
     return new AccessPoint(this, id, {
       fileSystem: this,

@@ -4,7 +4,7 @@ import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -165,6 +165,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Add a new route
    */
+  @MethodMetadata()
   public addRoute(routeKey: string, options: WebSocketRouteOptions) {
     return new WebSocketRoute(this, `${routeKey}-Route`, {
       webSocketApi: this,
@@ -179,6 +180,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    *
    * @param identity The principal
    */
+  @MethodMetadata()
   public grantManageConnections(identity: IGrantable): Grant {
     const arn = Stack.of(this).formatArn({
       service: 'execute-api',
@@ -197,6 +199,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    *
    * @deprecated Use `arnForExecuteApiV2()` instead.
    */
+  @MethodMetadata()
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
       throw new UnscopedValidationError(`Path must start with '/': ${path}`);
@@ -222,6 +225,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    * Specifically, if 'route' is not specified, it defaults to '*', representing all routes.
    * If 'stage' is not specified, it also defaults to '*', representing all stages.
    */
+  @MethodMetadata()
   public arnForExecuteApiV2(route?: string, stage?: string): string {
     return Stack.of(this).formatArn({
       service: 'execute-api',

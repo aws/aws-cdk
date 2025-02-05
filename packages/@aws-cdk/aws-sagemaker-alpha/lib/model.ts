@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
 import { ModelData } from './model-data';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface that defines a Model resource.
@@ -349,6 +349,7 @@ export class Model extends ModelBase {
    *
    * @param container The container definition to add.
    */
+  @MethodMetadata()
   public addContainer(container: ContainerDefinition): void {
     this.containers.push(this.renderContainer(container));
   }

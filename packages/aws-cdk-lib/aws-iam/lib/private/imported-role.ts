@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
 import { IManagedPolicy, ManagedPolicy } from '../managed-policy';
@@ -42,10 +42,12 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     this.principalAccount = props.account;
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME);
@@ -66,6 +68,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     return { statementAdded: true, policyDependable: this.defaultPolicy };
   }
 
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy): void {
     const thisAndPolicyAccountComparison = Token.compareStrings(this.env.account, policy.env.account);
     const equalOrAnyUnresolved = thisAndPolicyAccountComparison === TokenComparison.SAME ||
@@ -77,6 +80,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     }
   }
 
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy): void {
     // Using "Type Predicate" to confirm x is ManagedPolicy, which allows to avoid
     // using try ... catch and throw error.
@@ -94,14 +98,17 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     }
   }
 
+  @MethodMetadata()
   public grantPassRole(identity: IPrincipal): Grant {
     return this.grant(identity, 'iam:PassRole');
   }
 
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.grant(identity, 'sts:AssumeRole');
   }
 
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
@@ -111,6 +118,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
     });
   }
 
+  @MethodMetadata()
   public dedupeString(): string | undefined {
     return `ImportedRole:${this.roleArn}`;
   }

@@ -11,7 +11,7 @@ import { InstanceType } from './instance-type';
 import { sameEnv } from './private/util';
 import { CfnEndpoint } from 'aws-cdk-lib/aws-sagemaker';
 import { ScalableInstanceCount } from './scalable-instance-count';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /*
  * Amazon SageMaker automatic scaling doesn't support automatic scaling for burstable instances such
@@ -451,6 +451,7 @@ export class Endpoint extends EndpointBase {
    * Find instance production variant based on variant name
    * @param name Variant name from production variant
    */
+  @MethodMetadata()
   public findInstanceProductionVariant(name: string): IEndpointInstanceProductionVariant {
     if (this.endpointConfig instanceof EndpointConfig) {
       const variant = this.endpointConfig._findInstanceProductionVariant(name);

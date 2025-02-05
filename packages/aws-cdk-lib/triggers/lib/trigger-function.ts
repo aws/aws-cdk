@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ITrigger, Trigger, TriggerOptions } from '.';
 import * as lambda from '../../aws-lambda';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Props for `InvokeFunction`.
@@ -29,10 +29,12 @@ export class TriggerFunction extends lambda.Function implements ITrigger {
     });
   }
 
+  @MethodMetadata()
   public executeAfter(...scopes: Construct[]): void {
     this.trigger.executeAfter(...scopes);
   }
 
+  @MethodMetadata()
   public executeBefore(...scopes: Construct[]): void {
     this.trigger.executeBefore(...scopes);
   }

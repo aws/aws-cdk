@@ -1,7 +1,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -373,6 +373,7 @@ class IpamPool extends Resource implements IIpamPool {
    * @param options Either a CIDR or netmask length must be provided
    * @returns AWS::EC2::IPAMPoolCidr
    */
+  @MethodMetadata()
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr {
     const cidr = new CfnIPAMPoolCidr(this, id, {
       ...options,
@@ -549,6 +550,7 @@ export class Ipam extends Resource {
    * Function to add custom scope to an existing IPAM
    * Custom scopes can only be private
    */
+  @MethodMetadata()
   public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
     const ipamScope = new IpamScope(scope, id, {
       ...options,

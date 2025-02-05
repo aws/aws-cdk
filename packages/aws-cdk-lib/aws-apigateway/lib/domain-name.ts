@@ -8,7 +8,7 @@ import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for creating an api mapping
@@ -209,7 +209,8 @@ export class DomainName extends Resource implements IDomainName {
    * @param targetApi That target API endpoint, requests will be mapped to the deployment stage.
    * @param options Options for mapping to base path with or without a stage
    */
-  public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = { }): BasePathMapping {
+  @MethodMetadata()
+  public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = {}): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -238,6 +239,7 @@ export class DomainName extends Resource implements IDomainName {
    * @param targetStage the target API stage.
    * @param options Options for mapping to a stage
    */
+  @MethodMetadata()
   public addApiMapping(targetStage: IStage, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);

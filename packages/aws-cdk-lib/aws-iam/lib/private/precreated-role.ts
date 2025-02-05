@@ -1,7 +1,7 @@
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource, Stack } from '../../../core';
 import { PolicySynthesizer } from '../../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -101,6 +101,7 @@ export class PrecreatedRole extends Resource implements IRole {
     });
   }
 
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy): void {
     const statements = policy.document.toJSON()?.Statement;
     if (statements && Array.isArray(statements)) {
@@ -110,15 +111,18 @@ export class PrecreatedRole extends Resource implements IRole {
     }
   }
 
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy): void {
     this.managedPolicies.push(policy);
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     this.policyStatements.push(statement.toStatementJson());
     return false;
   }
 
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     this.addToPolicy(statement);
     // If we return `false`, the grants will try to add the statement to the resource
@@ -126,14 +130,17 @@ export class PrecreatedRole extends Resource implements IRole {
     return { statementAdded: true, policyDependable: new DependencyGroup() };
   }
 
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return this.role.grant(grantee, ...actions);
   }
 
+  @MethodMetadata()
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
   }
 
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.role.grantAssumeRole(identity);
   }

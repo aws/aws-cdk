@@ -5,7 +5,7 @@ import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -387,6 +387,7 @@ export class Topic extends TopicBase {
   /**
    * Adds a delivery status logging configuration to the topic.
    */
+  @MethodMetadata()
   public addLoggingConfig(config: LoggingConfig) {
     this.loggingConfigs.push(config);
   }

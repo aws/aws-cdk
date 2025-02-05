@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import { Lazy, Resource, Stack, Annotations } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -232,6 +232,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Adds one or more placement strategies to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
+  @MethodMetadata()
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
       throw new Error("Can't configure placement strategies when daemon=true");
@@ -246,6 +247,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
+  @MethodMetadata()
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     this.constraints = [];
     for (const constraint of constraints) {

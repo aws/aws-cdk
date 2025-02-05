@@ -7,7 +7,7 @@ import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
 import { Domain, DomainOptions } from './domain';
 import { renderEnvironmentVariables } from './utils';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * An Amplify Console application
@@ -280,6 +280,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
   /**
    * Adds a custom rewrite/redirect rule to this application
    */
+  @MethodMetadata()
   public addCustomRule(rule: CustomRule) {
     this.customRules.push(rule);
     return this;
@@ -291,6 +292,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
    * All environment variables that you add are encrypted to prevent rogue
    * access so you can use them to store secret information.
    */
+  @MethodMetadata()
   public addEnvironment(name: string, value: string) {
     this.environmentVariables[name] = value;
     return this;
@@ -302,6 +304,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
    * All environment variables that you add are encrypted to prevent rogue
    * access so you can use them to store secret information.
    */
+  @MethodMetadata()
   public addAutoBranchEnvironment(name: string, value: string) {
     this.autoBranchEnvironmentVariables[name] = value;
     return this;
@@ -310,6 +313,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
   /**
    * Adds a branch to this application
    */
+  @MethodMetadata()
   public addBranch(id: string, options: BranchOptions = {}): Branch {
     return new Branch(this, id, {
       ...options,
@@ -320,6 +324,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
   /**
    * Adds a domain to this application
    */
+  @MethodMetadata()
   public addDomain(id: string, options: DomainOptions = {}): Domain {
     return new Domain(this, id, {
       ...options,

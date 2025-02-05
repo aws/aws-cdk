@@ -33,7 +33,7 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -635,6 +635,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the replica table to add
    */
+  @MethodMetadata()
   public addReplica(props: ReplicaTableProps) {
     this.validateReplica(props);
 
@@ -659,6 +660,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the global secondary index
    */
+  @MethodMetadata()
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
@@ -672,6 +674,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the local secondary index
    */
+  @MethodMetadata()
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
@@ -685,6 +688,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param region the region of the replica table
    */
+  @MethodMetadata()
   public replica(region: string): ITableV2 {
     if (Token.isUnresolved(this.stack.region)) {
       throw new Error('Replica tables are not supported in a region agnostic stack');

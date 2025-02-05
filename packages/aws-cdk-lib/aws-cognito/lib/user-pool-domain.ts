@@ -5,7 +5,7 @@ import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -197,6 +197,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    *
    * @param options options to customize baseUrl
    */
+  @MethodMetadata()
   public baseUrl(options?: BaseUrlOptions): string {
     if (this.isCognitoDomain) {
       const authDomain = 'auth' + (options?.fips ? '-fips' : '');
@@ -210,6 +211,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
    * @param client [disable-awslint:ref-via-interface] the user pool client that the UI will use to interact with the UserPool
    * @param options options to customize signInUrl.
    */
+  @MethodMetadata()
   public signInUrl(client: UserPoolClient, options: SignInUrlOptions): string {
     let responseType: string;
     if (client.oAuthFlows.authorizationCodeGrant) {

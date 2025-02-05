@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { IFirewallDomainList } from './firewall-domain-list';
 import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Firewall Rule Group
@@ -251,6 +251,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /**
    * Adds a rule to this group
    */
+  @MethodMetadata()
   public addRule(rule: FirewallRule): FirewallRuleGroup {
     this.rules.push(rule);
     return this;
@@ -259,6 +260,7 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /**
    * Associates this Firewall Rule Group with a VPC
    */
+  @MethodMetadata()
   public associate(id: string, props: FirewallRuleGroupAssociationOptions): FirewallRuleGroupAssociation {
     return new FirewallRuleGroupAssociation(this, id, {
       ...props,

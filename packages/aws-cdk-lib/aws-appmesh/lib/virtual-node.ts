@@ -7,7 +7,7 @@ import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -234,6 +234,7 @@ export class VirtualNode extends VirtualNodeBase {
    *
    * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
+  @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
       throw new cdk.ValidationError('Service discovery information is required for a VirtualNode with a listener.', this);
@@ -244,6 +245,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
+  @MethodMetadata()
   public addBackend(backend: Backend) {
     this.backends.push(backend.bind(this).virtualServiceBackend);
   }

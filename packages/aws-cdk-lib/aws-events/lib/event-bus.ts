@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -404,6 +404,7 @@ export class EventBus extends EventBusBase {
   /**
    * Adds a statement to the IAM resource policy associated with this event bus.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.sid == null) {
       throw new Error('Event Bus policy statements must have a sid');
