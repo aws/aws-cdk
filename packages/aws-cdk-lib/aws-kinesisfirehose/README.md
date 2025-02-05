@@ -23,8 +23,6 @@ In order to define a Delivery Stream, you must specify a destination. An S3 buck
 used as a destination. Currently the CDK supports only S3 as a destination which is covered [below](#destinations).
 
 ```ts
-import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose'
-
 const bucket = new s3.Bucket(this, 'Bucket');
 new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: new firehose.S3Bucket(bucket),
