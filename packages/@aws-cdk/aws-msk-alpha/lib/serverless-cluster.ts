@@ -3,6 +3,7 @@ import { Fn, Lazy, Names } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import { ClusterBase, ICluster } from '.';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  *  Properties for a MSK Serverless Cluster
@@ -82,6 +83,8 @@ export class ServerlessCluster extends ClusterBase {
           produce: () => Names.uniqueResourceName(this, { maxLength: 64 }),
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.vpcConfigs.length < 1 || props.vpcConfigs.length > 5) {
       throw Error(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`);

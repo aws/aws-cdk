@@ -4,7 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
 import { ArnFormat, Resource, Stack, Annotations } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
@@ -169,22 +169,25 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
+  @MethodMetadata()
   public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    throw new Error ('Application load balancer cannot be attached to an external service');
+    throw new Error('Application load balancer cannot be attached to an external service');
   }
 
   /**
    * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
    */
+  @MethodMetadata()
   public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
-    throw new Error ('External service cannot be attached as load balancer targets');
+    throw new Error('External service cannot be attached as load balancer targets');
   }
 
   /**
    * Overriden method to throw error as `registerLoadBalancerTargets` is not supported for external service
    */
+  @MethodMetadata()
   public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
-    throw new Error ('External service cannot be registered as load balancer targets');
+    throw new Error('External service cannot be registered as load balancer targets');
   }
 
   /**
@@ -198,21 +201,24 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overriden method to throw error as `autoScaleTaskCount` is not supported for external service
    */
+  @MethodMetadata()
   public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
-    throw new Error ('Autoscaling not supported for external service');
+    throw new Error('Autoscaling not supported for external service');
   }
 
   /**
    * Overriden method to throw error as `enableCloudMap` is not supported for external service
    */
+  @MethodMetadata()
   public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
-    throw new Error ('Cloud map integration not supported for an external service');
+    throw new Error('Cloud map integration not supported for an external service');
   }
 
   /**
    * Overriden method to throw error as `associateCloudMapService` is not supported for external service
    */
+  @MethodMetadata()
   public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
-    throw new Error ('Cloud map service association is not supported for an external service');
+    throw new Error('Cloud map service association is not supported for an external service');
   }
 }

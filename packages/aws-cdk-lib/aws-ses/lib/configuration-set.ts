@@ -4,7 +4,7 @@ import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set
@@ -225,6 +225,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   /**
    * Adds an event destination to this configuration set
    */
+  @MethodMetadata()
   public addEventDestination(id: string, options: ConfigurationSetEventDestinationOptions): ConfigurationSetEventDestination {
     return new ConfigurationSetEventDestination(this, id, {
       ...options,

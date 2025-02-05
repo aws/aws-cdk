@@ -5,7 +5,7 @@ import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from '.
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a CrossAccountDestination
@@ -93,10 +93,12 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatements(statement);
   }
 
+  @MethodMetadata()
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }
