@@ -2052,3 +2052,23 @@ const service = new ecs.FargateService(this, 'FargateService', {
   },
 });
 ```
+
+## Daemon scheduling strategy
+You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.Ec2Service(this, 'Ec2Service', {
+  cluster,
+  taskDefinition,
+  daemon: true,
+});
+
+new ecs.ExternalService(this, 'ExternalService', {
+  cluster,
+  taskDefinition,
+  daemon: true,
+});
+```
