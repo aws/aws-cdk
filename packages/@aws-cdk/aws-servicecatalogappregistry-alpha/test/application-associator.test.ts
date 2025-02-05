@@ -75,7 +75,6 @@ describe('Associate attribute group with Application', () => {
   });
 
   test('Associate Attribute Group with application created by ApplicationAssociator', () => {
-
     const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
 
     const appAssociator = new appreg.ApplicationAssociator(app, 'TestApplication', {
@@ -91,7 +90,6 @@ describe('Associate attribute group with Application', () => {
       Application: 'TestAssociatedApplication',
       AttributeGroup: { 'Fn::GetAtt': ['MyFirstAttributeGroupDBC21379', 'Id'] },
     });
-
   });
 });
 

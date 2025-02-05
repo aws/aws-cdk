@@ -11,7 +11,7 @@ import { IPackageSource } from './package-sources/source';
 import { packageSourceInSubprocess } from './package-sources/subprocess';
 import { RESOURCES_DIR } from './resources';
 import { shell, ShellOptions, ShellHelper, rimraf } from './shell';
-import { AwsContext, withAws } from './with-aws';
+import { AwsContext, atmosphereEnabled, withAws } from './with-aws';
 import { withTimeout } from './with-timeout';
 
 export const DEFAULT_TEST_TIMEOUT_S = 20 * 60;
@@ -321,7 +321,7 @@ export interface CdkGarbageCollectionCommandOptions {
 }
 
 export class TestFixture extends ShellHelper {
-  public readonly qualifier = this.randomString.slice(0, 10);
+  public readonly qualifier: string;
   private readonly bucketsToDelete = new Array<string>();
   public readonly packages: IPackageSource;
 
@@ -331,9 +331,9 @@ export class TestFixture extends ShellHelper {
     public readonly output: NodeJS.WritableStream,
     public readonly aws: AwsClients,
     public readonly randomString: string) {
-
     super(integTestDir, output);
 
+    this.qualifier = this.randomString.slice(0, 10);
     this.packages = packageSourceInSubprocess();
   }
 
@@ -342,16 +342,21 @@ export class TestFixture extends ShellHelper {
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
-    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
+    return this.cdk(this.cdkDeployCommandLine(stackNames, options, skipStackRename), options);
+  }
 
+  public cdkDeployCommandLine(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
+    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
     const neverRequireApproval = options.neverRequireApproval ?? true;
 
-    return this.cdk(['deploy',
+    return [
+      'deploy',
       ...(neverRequireApproval ? ['--require-approval=never'] : []), // Default to no approval in an unattended test
       ...(options.options ?? []),
       // use events because bar renders bad in tests
       '--progress', 'events',
-      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames)),
+    ];
   }
 
   public async cdkSynth(options: CdkCliOptions = {}) {
@@ -501,13 +506,33 @@ export class TestFixture extends ShellHelper {
     return this.shell(['cdk', ...(verbose ? ['-v'] : []), ...args], {
       ...options,
       modEnv: {
-        AWS_REGION: this.aws.region,
-        AWS_DEFAULT_REGION: this.aws.region,
-        STACK_NAME_PREFIX: this.stackNamePrefix,
-        PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        ...this.cdkShellEnv(),
         ...options.modEnv,
       },
     });
+  }
+
+  /**
+   * Return the environment variables with which to execute CDK
+   */
+  public cdkShellEnv() {
+    // if tests are using an explicit aws identity already (i.e creds)
+    // force every cdk command to use the same identity.
+    const awsCreds: Record<string, string> = this.aws.identity ? {
+      AWS_ACCESS_KEY_ID: this.aws.identity.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: this.aws.identity.secretAccessKey,
+      AWS_SESSION_TOKEN: this.aws.identity.sessionToken!,
+    } : {};
+
+    return {
+      AWS_REGION: this.aws.region,
+      AWS_DEFAULT_REGION: this.aws.region,
+      STACK_NAME_PREFIX: this.stackNamePrefix,
+      PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+      // In these tests we want to make a distinction between stdout and sterr
+      CI: 'false',
+      ...awsCreds,
+    };
   }
 
   public template(stackName: string): any {
@@ -555,43 +580,50 @@ export class TestFixture extends ShellHelper {
    * Cleanup leftover stacks and bootstrapped resources
    */
   public async dispose(success: boolean) {
-    const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+    // when using the atmosphere service, it does resource cleanup on our behalf
+    // so we don't have to wait for it.
+    if (!atmosphereEnabled()) {
+      const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
 
-    this.sortBootstrapStacksToTheEnd(stacksToDelete);
+      this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
-    // Bootstrap stacks have buckets that need to be cleaned
-    const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
-    // Parallelism will be reasonable
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
-    // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
-    this.bucketsToDelete.push(...bucketNames);
+      // Bootstrap stacks have buckets that need to be cleaned
+      const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(bucketNames.map(b => this.aws.emptyBucket(b)));
+      // The bootstrap bucket has a removal policy of RETAIN by default, so add it to the buckets to be cleaned up.
+      this.bucketsToDelete.push(...bucketNames);
 
-    // Bootstrap stacks have ECR repositories with images which should be deleted
-    const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
-    // Parallelism will be reasonable
-    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-    await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
+      // Bootstrap stacks have ECR repositories with images which should be deleted
+      const imageRepositoryNames = stacksToDelete.map(stack => outputFromStack('ImageRepositoryName', stack)).filter(defined);
+      // Parallelism will be reasonable
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+      await Promise.all(imageRepositoryNames.map(r => this.aws.deleteImageRepository(r)));
 
-    await this.aws.deleteStacks(
-      ...stacksToDelete.map((s) => {
-        if (!s.StackName) {
-          throw new Error('Stack name is required to delete a stack.');
-        }
-        return s.StackName;
-      }),
-    );
+      await this.aws.deleteStacks(
+        ...stacksToDelete.map((s) => {
+          if (!s.StackName) {
+            throw new Error('Stack name is required to delete a stack.');
+          }
+          return s.StackName;
+        }),
+      );
 
-    // We might have leaked some buckets by upgrading the bootstrap stack. Be
-    // sure to clean everything.
-    for (const bucket of this.bucketsToDelete) {
-      await this.aws.deleteBucket(bucket);
+      // We might have leaked some buckets by upgrading the bootstrap stack. Be
+      // sure to clean everything.
+      for (const bucket of this.bucketsToDelete) {
+        await this.aws.deleteBucket(bucket);
+      }
     }
 
     // If the tests completed successfully, happily delete the fixture
     // (otherwise leave it for humans to inspect)
     if (success) {
-      rimraf(this.integTestDir);
+      const cleaned = rimraf(this.integTestDir);
+      if (!cleaned) {
+        console.error(`Failed to clean up ${this.integTestDir} due to permissions issues (Docker running as root?)`);
+      }
     }
   }
 
@@ -623,7 +655,6 @@ export class TestFixture extends ShellHelper {
 
   private sortBootstrapStacksToTheEnd(stacks: Stack[]) {
     stacks.sort((a, b) => {
-
       if (!a.StackName || !b.StackName) {
         throw new Error('Stack names do not exists. These are required for sorting the bootstrap stacks.');
       }
@@ -662,7 +693,11 @@ export async function ensureBootstrapped(fixture: TestFixture) {
     },
   });
 
-  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+  // when using the atmosphere service, every test needs to bootstrap
+  // its own environment.
+  if (!atmosphereEnabled()) {
+    ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
+  }
 }
 
 function defined<A>(x: A): x is NonNullable<A> {

@@ -270,7 +270,6 @@ describe('Legacy Integration test cases', () => {
     expect(context).toEqual({
       '@aws-cdk/core:newStyleStackSynthesis': 'true',
     });
-
   });
 
   test('invalid pragma context throws', () => {

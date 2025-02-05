@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties of the App Runner Auto Scaling Configuration.
@@ -154,6 +155,8 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     super(scope, id, {
       physicalName: props.autoScalingConfigurationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateAutoScalingConfiguration(props);
 
@@ -171,7 +174,6 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
 
   private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
     if (props.autoScalingConfigurationName !== undefined && !cdk.Token.isUnresolved(props.autoScalingConfigurationName)) {
-
       if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
         throw new Error(
           `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`,

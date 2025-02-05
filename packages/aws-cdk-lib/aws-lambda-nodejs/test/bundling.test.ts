@@ -859,7 +859,6 @@ test('throws with pre compilation and not found tsconfig', () => {
       architecture: Architecture.X86_64,
     });
   }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
-
 });
 
 test('with custom hash', () => {

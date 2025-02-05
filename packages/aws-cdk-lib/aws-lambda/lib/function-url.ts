@@ -6,6 +6,7 @@ import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The auth types for a function url
@@ -219,6 +220,8 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
   constructor(scope: Construct, id: string, props: FunctionUrlProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (this.instanceOfVersion(props.function)) {
       throw new ValidationError('FunctionUrl cannot be used with a Version', this);
@@ -258,6 +261,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
   }
 
+  @MethodMetadata()
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     return this.function.grantInvokeUrl(grantee);
   }

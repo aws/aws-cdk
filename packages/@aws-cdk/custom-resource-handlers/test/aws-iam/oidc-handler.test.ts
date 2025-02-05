@@ -289,7 +289,6 @@ describe('custom resource provider handler', () => {
       Url: 'https://new-url',
     });
   });
-
 });
 
 describe('arrayDiff', () => {
