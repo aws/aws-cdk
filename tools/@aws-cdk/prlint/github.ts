@@ -47,19 +47,12 @@ export function sumChanges(files: GitHubFile[]) {
     };
   }
 
-  function fromGitHubFile(file: GitHubFile): Delta {
-    return {
-      additions: file.additions,
-      deletions: file.deletions,
-    };
-  }
-
   const identity = {
     additions: 0,
     deletions: 0
   };
 
-  return files.map(fromGitHubFile).reduce(add, identity);
+  return files.reduce(add, identity);
 }
 
 
