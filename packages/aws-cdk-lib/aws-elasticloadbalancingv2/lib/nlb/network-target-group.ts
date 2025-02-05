@@ -172,7 +172,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       this.setAttribute('deregistration_delay.connection_termination.enabled', props.connectionTermination ? 'true' : 'false');
     }
     this.addTarget(...(props.targets || []));
-
   }
 
   public get metrics(): INetworkTargetGroupMetrics {

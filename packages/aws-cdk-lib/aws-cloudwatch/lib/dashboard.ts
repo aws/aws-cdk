@@ -4,6 +4,7 @@ import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
 import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Specify the period for graphs when the CloudWatch dashboard loads
@@ -102,7 +103,7 @@ export class Dashboard extends Resource {
    * The name of this dashboard
    *
    * @attribute
-  */
+   */
   public readonly dashboardName: string;
 
   /**
@@ -120,6 +121,8 @@ export class Dashboard extends Resource {
     super(scope, id, {
       physicalName: props.dashboardName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     {
       const { dashboardName } = props;
@@ -181,6 +184,7 @@ export class Dashboard extends Resource {
    * Multiple widgets added in the same call to add() will be laid out next
    * to each other.
    */
+  @MethodMetadata()
   public addWidgets(...widgets: IWidget[]) {
     if (widgets.length === 0) {
       return;
@@ -205,6 +209,7 @@ export class Dashboard extends Resource {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html
    */
+  @MethodMetadata()
   public addVariable(variable: IVariable) {
     this.variables.push(variable);
   }

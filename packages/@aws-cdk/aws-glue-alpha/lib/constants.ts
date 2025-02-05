@@ -8,7 +8,7 @@ export enum WorkerType {
   /**
    * Standard Worker Type
    * 4 vCPU, 16 GB of memory and a 50GB disk, and 2 executors per worker.
-  */
+   */
   STANDARD = 'Standard',
 
   /**
@@ -28,7 +28,7 @@ export enum WorkerType {
    * 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker.
    * We recommend this worker type for jobs whose workloads contain your most demanding transforms,
    * aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
-  */
+   */
   G_4X = 'G.4X',
 
   /**
@@ -36,7 +36,7 @@ export enum WorkerType {
    * 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker
    * type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries.
    * This worker type is available only for AWS Glue version 3.0 or later jobs.
-  */
+   */
   G_8X = 'G.8X',
 
   /**
@@ -270,13 +270,13 @@ export enum MaxCapacity {
  */
 export enum PredicateLogical {
   /**
-  * All conditions must be true for the predicate to be true.
-  */
+   * All conditions must be true for the predicate to be true.
+   */
   AND = 'AND',
 
   /**
-  * At least one condition must be true for the predicate to be true.
-  */
+   * At least one condition must be true for the predicate to be true.
+   */
   ANY = 'ANY',
 }
 

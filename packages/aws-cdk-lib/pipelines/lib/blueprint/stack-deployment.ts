@@ -333,7 +333,6 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/VirtualHosting.html#virtual-hosted-style-access
  */
 function s3UrlFromUri(uri: string, region: string | undefined) {
-
   // will return something like this
   // [
   //  's3:',

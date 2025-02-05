@@ -239,8 +239,12 @@ export class PullRequestLinter extends PullRequestLinterBase {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
-      testRuleSet: [{ test: noMetadataChanges }],
+      exemption: shouldExemptAnalyticsMetadataChange,
+      testRuleSet: [
+        { test: noMetadataChanges },
+        { test: noAnalyticsClassesChanges },
+        { test: noAnalyticsEnumsChanges },
+      ],
     });
 
     validationCollector.validateRuleSet({
@@ -417,6 +421,10 @@ function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
 }
 
+function shouldExemptAnalyticsMetadataChange(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.ANALYTICS_METADATA_CHANGE) || pr.user?.login === 'aws-cdk-automation');
+}
+
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
@@ -545,6 +553,20 @@ function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
   result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsClassesChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/classes.ts');
+  result.assessFailure(condition, 'Manual changes to the classes.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts');
+  result.assessFailure(condition, 'Manual changes to the enums.ts file are not allowed.');
   return result;
 }
 
