@@ -58,11 +58,11 @@
     }
   },
   "scripts": {
-    "build": "yarn gen && cdk-build --skip-lint",
+    "build": "cdk-build",
     "gen": "cdk-copy cx-api",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
-    "test": "jest",
+    "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
