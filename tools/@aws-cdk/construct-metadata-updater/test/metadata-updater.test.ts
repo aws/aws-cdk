@@ -1,5 +1,5 @@
 import { ConstructsUpdater, PropertyUpdater } from '../lib/metadata-updater';
-import { Project, ClassDeclaration, SourceFile, QuoteKind } from 'ts-morph';
+import { Project, ClassDeclaration, SourceFile, QuoteKind, IndentationText } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -41,6 +41,7 @@ describe('ResourceMetadataUpdater', () => {
       expect(Project).toHaveBeenCalledWith({
         tsConfigFilePath: expect.stringMatching(/tsconfig\.json$/),
         manipulationSettings: {
+          indentationText: IndentationText.TwoSpaces,
           quoteKind: QuoteKind.Single
         }
       });
@@ -208,7 +209,8 @@ describe('PropertyUpdater', () => {
         node: {
           getConstructors: () => [{
             getParameters: () => []
-          }]
+          }],
+          getMethods: () => [],
         },
         className: 'Function'
       }];
@@ -336,12 +338,14 @@ describe('PropertyUpdater', () => {
   });
 
   describe('getPropertyType', () => {
-    it('should handle union types', () => {
+    it('should handle union types of boolean', () => {
       const mockType = {
         isUnion: () => true,
+        isBoolean: () => false,
         getUnionTypes: () => [{
           getText: () => 'true',
           isLiteral: () => true,
+          isBoolean: () => false,
           isArray: () => false,
           isClass: () => false,
           isInterface: () => false,
@@ -349,6 +353,33 @@ describe('PropertyUpdater', () => {
           getText: () => 'undefined',
           isLiteral: () => true,
           isArray: () => false,
+          isBoolean: () => false,
+          isClass: () => false,
+          isInterface: () => false,
+        }],
+      };
+
+      const result = propertyUpdater['getPropertyType'](mockType);
+      expect(result).toBe('boolean');
+    });
+
+    it('should handle union types of string', () => {
+      const mockType = {
+        isUnion: () => true,
+        isBoolean: () => false,
+        getUnionTypes: () => [{
+          getText: () => 'string',
+          isLiteral: () => true,
+          isBoolean: () => false,
+          getSymbol: () => undefined,
+          isArray: () => false,
+          isClass: () => false,
+          isInterface: () => false,
+        }, {
+          getText: () => 'undefined',
+          isLiteral: () => true,
+          isArray: () => false,
+          isBoolean: () => false,
           isClass: () => false,
           isInterface: () => false,
         }],
@@ -362,10 +393,12 @@ describe('PropertyUpdater', () => {
       const mockType = {
         isUnion: () => false,
         isArray: () => true,
+        isBoolean: () => false,
         getSymbol: () => false,
         getArrayElementType: () => ({
           getText: () => 'string',
           isUnion: () => false,
+          isBoolean: () => false,
           getSymbol: () => false,
           isLiteral: () => false,
           isArray: () => false,
@@ -384,6 +417,7 @@ describe('PropertyUpdater', () => {
         isUnion: () => false,
         isArray: () => false,
         isClass: () => true,
+        isBoolean: () => false,
         getSymbol: () => ({
           getFullyQualifiedName: () => 'TestType',
           getDeclarations: () => []
