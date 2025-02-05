@@ -3,7 +3,7 @@ import { IOpenIdConnectProvider, ISamlProvider, Role, FederatedPrincipal, IRole 
 import { Resource, IResource, Stack, ArnFormat, Lazy, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Cognito Identity Pool
@@ -514,6 +514,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Add a User Pool to the Identity Pool and configure the User Pool client to handle identities
    */
+  @MethodMetadata()
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
     const providers = userPool.bind(this, this);
     this.cognitoIdentityProviders = this.cognitoIdentityProviders.concat(providers);

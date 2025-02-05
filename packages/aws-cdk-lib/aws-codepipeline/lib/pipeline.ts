@@ -36,7 +36,7 @@ import {
   Stage as CdkStage,
   Token,
 } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -600,6 +600,7 @@ export class Pipeline extends PipelineBase {
    * @param props the creation properties of the new Stage
    * @returns the newly created Stage
    */
+  @MethodMetadata()
   public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this._stages.find(s => s.stageName === props.stageName)) {
@@ -620,6 +621,7 @@ export class Pipeline extends PipelineBase {
   /**
    * Adds a statement to the pipeline role.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -630,6 +632,7 @@ export class Pipeline extends PipelineBase {
    * @param variable Variable instance to add to this Pipeline
    * @returns the newly created variable
    */
+  @MethodMetadata()
   public addVariable(variable: Variable): Variable {
     // check for duplicate variables and names
     if (this.variables.find(v => v.variableName === variable.variableName)) {
@@ -646,6 +649,7 @@ export class Pipeline extends PipelineBase {
    * @param props Trigger property to add to this Pipeline
    * @returns the newly created trigger
    */
+  @MethodMetadata()
   public addTrigger(props: TriggerProps): Trigger {
     const trigger = new Trigger(props);
     const actionName = props.gitConfiguration?.sourceAction.actionProperties.actionName;
@@ -681,6 +685,7 @@ export class Pipeline extends PipelineBase {
   /**
    * Access one of the pipeline's stages by stage name
    */
+  @MethodMetadata()
   public stage(stageName: string): IStage {
     for (const stage of this._stages) {
       if (stage.stageName === stageName) {
