@@ -1184,6 +1184,8 @@ export abstract class BaseService extends Resource
    * Registers the service as a target of a Classic Load Balancer (CLB).
    *
    * Don't call this. Call `loadBalancer.addTarget()` instead.
+   *
+   * @param loadBalancer [disable-awslint:ref-via-interface]
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     return this.defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);
