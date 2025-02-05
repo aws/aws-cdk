@@ -201,7 +201,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
    *
    * List selected stacks and their dependencies
    */
-  public async list(cx: ICloudAssemblySource, options: ListOptions): Promise<StackDetails[]> {
+  public async list(cx: ICloudAssemblySource, options: ListOptions = {}): Promise<StackDetails[]> {
     const ioHost = withAction(this.ioHost, 'list');
     const synthTimer = Timer.start();
     const assembly = await this.assemblyFromSource(cx);
