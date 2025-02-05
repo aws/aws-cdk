@@ -9,7 +9,7 @@ import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -814,6 +814,7 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @param construct the dependee
    */
+  @MethodMetadata()
   public addSchemaDependency(construct: CfnResource): boolean {
     if (this.schemaResource) {
       construct.addDependency(this.schemaResource);
@@ -824,6 +825,7 @@ export class GraphqlApi extends GraphqlApiBase {
   /**
    * Add an environment variable to the construct.
    */
+  @MethodMetadata()
   public addEnvironmentVariable(key: string, value: string) {
     if (this.definition.sourceApiOptions) {
       throw new ValidationError('Environment variables are not supported for merged APIs', this);

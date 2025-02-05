@@ -7,6 +7,7 @@ import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './trans
 import { getFeatureStatus } from './util';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { Annotations } from 'aws-cdk-lib';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options for Transit Gateway VPC Attachment.
@@ -131,6 +132,8 @@ export class TransitGatewayVpcAttachment extends TransitGatewayAttachmentBase im
 
   constructor(scope: Construct, id: string, props: TransitGatewayVpcAttachmentProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this._resource = new CfnTransitGatewayAttachment(this, id, {
       subnetIds: props.subnets.map((subnet) => subnet.subnetId),
