@@ -158,6 +158,5 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     if (isAlwaysSigning && isAuthTypeIsNone) {
       throw new Error('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
     }
-
   }
 }

@@ -1,0 +1,191 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "EventApiChannelNamespaceStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiChannelNamespaceStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiChannelNamespaceStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiChannelNamespaceStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bc1560eaa5c9c92068e8af834c4a3de2b9772797d50465d25cc22e6d6f28e46.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiChannelNamespaceStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiChannelNamespaceStack.assets"
+      ],
+      "metadata": {
+        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionServiceRole5B2A061B"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionB4DBAA43"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AuthorizerFunction/EventApi-appsync": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerFunctionEventApiappsyncE4B8E11D"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiLogsRoleED9A8150"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiE141E6C0"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiLogRetention68604E65"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/EventApi/AnotherChannelNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiAnotherChannelNamespace5BC7F3A5"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/ChannelNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ChannelNamespace5873C25D"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AWS AppSync Events HTTP endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsHTTPendpoint"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/AWS AppSync Events Realtime endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsRealtimeendpoint"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiChannelNamespaceStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiChannelNamespaceStack"
+    },
+    "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets"
+      ],
+      "metadata": {
+        "/appsync-event-api-channel-namespace/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-event-api-channel-namespace/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-event-api-channel-namespace/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -4,11 +4,13 @@ import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
 import { ArnFormat, Resource, Stack, Annotations } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+
 /**
  * The properties for defining a service using the External launch type.
  */
@@ -66,7 +68,6 @@ export interface ExternalServiceAttributes {
  * @resource AWS::ECS::Service
  */
 export class ExternalService extends BaseService implements IExternalService {
-
   /**
    * Imports from the specified service ARN.
    */
@@ -124,6 +125,8 @@ export class ExternalService extends BaseService implements IExternalService {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
     }, props.taskDefinition);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.node.addValidation({
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
@@ -136,28 +139,30 @@ export class ExternalService extends BaseService implements IExternalService {
     if (props.minHealthyPercent === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercentExternal', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
     }
-
   }
 
   /**
    * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
+  @MethodMetadata()
   public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    throw new Error ('Application load balancer cannot be attached to an external service');
+    throw new Error('Application load balancer cannot be attached to an external service');
   }
 
   /**
    * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
    */
+  @MethodMetadata()
   public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
-    throw new Error ('External service cannot be attached as load balancer targets');
+    throw new Error('External service cannot be attached as load balancer targets');
   }
 
   /**
    * Overriden method to throw error as `registerLoadBalancerTargets` is not supported for external service
    */
+  @MethodMetadata()
   public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
-    throw new Error ('External service cannot be registered as load balancer targets');
+    throw new Error('External service cannot be registered as load balancer targets');
   }
 
   /**
@@ -171,21 +176,24 @@ export class ExternalService extends BaseService implements IExternalService {
   /**
    * Overriden method to throw error as `autoScaleTaskCount` is not supported for external service
    */
+  @MethodMetadata()
   public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
-    throw new Error ('Autoscaling not supported for external service');
+    throw new Error('Autoscaling not supported for external service');
   }
 
   /**
    * Overriden method to throw error as `enableCloudMap` is not supported for external service
    */
+  @MethodMetadata()
   public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
-    throw new Error ('Cloud map integration not supported for an external service');
+    throw new Error('Cloud map integration not supported for an external service');
   }
 
   /**
    * Overriden method to throw error as `associateCloudMapService` is not supported for external service
    */
+  @MethodMetadata()
   public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
-    throw new Error ('Cloud map service association is not supported for an external service');
+    throw new Error('Cloud map service association is not supported for an external service');
   }
 }

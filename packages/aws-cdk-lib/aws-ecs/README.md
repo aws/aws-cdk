@@ -1922,6 +1922,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## Disable service container image version consistency
+
+You can disable the
+[container image "version consistency"](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)
+feature of ECS service deployments on a per-container basis.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  versionConsistency: ecs.VersionConsistency.DISABLED,
+});
+```
+
 ## Specify a container ulimit
 
 You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
@@ -1936,5 +1950,42 @@ taskDefinition.addContainer('TheContainer', {
     name: ecs.UlimitName.RSS,
     softLimit: 128,
   }],
+});
+```
+
+## Service Connect TLS
+
+Service Connect TLS is a feature that allows you to secure the communication between services using TLS.
+
+You can specify the `tls` option in the `services` array of the `serviceConnectConfiguration` property.
+
+The `tls` property is an object with the following properties:
+
+- `role`: The IAM role that's associated with the Service Connect TLS.
+- `awsPcaAuthorityArn`: The ARN of the certificate root authority that secures your service.
+- `kmsKey`: The KMS key used for encryption and decryption.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const kmsKey: kms.IKey;
+declare const role: iam.IRole;
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        tls: {
+          role,
+          kmsKey,
+          awsPcaAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/123456789012',
+        },
+        portMappingName: 'api',
+      },
+    ],
+    namespace: 'sample namespace',
+  },
 });
 ```
