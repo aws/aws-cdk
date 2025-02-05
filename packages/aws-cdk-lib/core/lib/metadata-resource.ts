@@ -47,7 +47,50 @@ export function addConstructMetadata(scope: Construct, props: any): void {
   }
 }
 
-function addMetadata(scope: Construct, type: MetadataType, props: any): void {
+export function addMethodMetadata(scope: Construct, methodName: string, props: any): void {
+  try {
+    addMetadata(scope, MetadataType.METHOD, {
+      [methodName]: props,
+    });
+  } catch (e) {
+    /**
+     * Errors are ignored here.
+     * We do not want the metadata parsing to block users to synth or
+     * deploy their CDK application.
+     *
+     * Without this, it will just fall back to the previous metadata
+     * collection strategy.
+     */
+    Annotations.of(scope).addWarningV2('@aws-cdk/core:addMethodMetadataFailed', `Failed to add method metadata for node [${scope.node.id}], method name ${methodName}. Reason: ${e}`);
+  }
+}
+
+/**
+ * Method decorator for tracking analytics metadata.
+ * This decorator is used to track method calls in the CDK.
+ */
+export function MethodMetadata(): MethodDecorator {
+  return function (_: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    // Ensure the Decorator is Only Applied to Methods
+    if (!descriptor || typeof descriptor.value !== 'function') {
+      return descriptor;
+    }
+    const originalMethod = descriptor.value;
+
+    descriptor.value = function (...args: any[]) {
+      const scope = this as Construct;
+      if (scope instanceof Construct) {
+        addMethodMetadata(scope, propertyKey.toString(), args);
+      }
+
+      return originalMethod.apply(this, args);
+    };
+
+    return descriptor;
+  };
+}
+
+export function addMetadata(scope: Construct, type: MetadataType, props: any): void {
   const telemetryEnabled = FeatureFlags.of(scope).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
   if (!telemetryEnabled) {
     return;
@@ -120,7 +163,14 @@ export function redactTelemetryDataHelper(allowedKeys: any, data: any): any {
 
   if (Array.isArray(data)) {
     // Handle arrays by recursively redacting each element
-    return data.map((item) => redactTelemetryDataHelper(allowedKeys, item));
+    return data.map((item, index) => {
+      // If the 'allowedKeys' is an array of items, use the index
+      // to get the allowed key
+      if (Array.isArray(allowedKeys)) {
+        return redactTelemetryDataHelper(allowedKeys[index], item);
+      }
+      return redactTelemetryDataHelper(allowedKeys, item);
+    });
   }
 
   // Handle objects by iterating over their key-value pairs
