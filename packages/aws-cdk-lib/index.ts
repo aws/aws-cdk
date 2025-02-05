@@ -150,7 +150,7 @@ export * as aws_kendraranking from './aws-kendraranking';
 export * as aws_kinesis from './aws-kinesis';
 export * as aws_kinesisanalytics from './aws-kinesisanalytics';
 export * as aws_kinesisanalyticsv2 from './aws-kinesisanalyticsv2';
-export * as aws_kinesisfirehose from './aws-kinesisfirehose/lib';
+export * as aws_kinesisfirehose from './aws-kinesisfirehose';
 export * as aws_kinesisvideo from './aws-kinesisvideo';
 export * as aws_kms from './aws-kms';
 export * as aws_lakeformation from './aws-lakeformation';
