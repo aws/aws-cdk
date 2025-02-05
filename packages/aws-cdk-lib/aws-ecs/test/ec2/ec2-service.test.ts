@@ -57,6 +57,7 @@ describe('ec2 service', () => {
         LaunchType: LaunchType.EC2,
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
+        AvailabilityZoneRebalancing: Match.absent(),
       });
 
       expect(service.node.defaultChild).toBeDefined();
@@ -1064,6 +1065,7 @@ describe('ec2 service', () => {
         })],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
@@ -1131,6 +1133,7 @@ describe('ec2 service', () => {
             },
           },
         ],
+        AvailabilityZoneRebalancing: 'ENABLED',
       });
     });
 
@@ -1295,6 +1298,50 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
+    });
+
+    test('throws when availability zone rebalancing is enabled and maxHealthyPercent is 100', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+          maxHealthyPercent: 100,
+        });
+      }).toThrow(/requires maxHealthyPercent > 100/);
+    });
+
+    test('throws when availability zone rebalancing is enabled and daemon is true', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+          daemon: true,
+        });
+      }).toThrow(/cannot be used with daemon mode/);
     });
 
     test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
@@ -1983,6 +2030,59 @@ describe('ec2 service', () => {
       });
     });
 
+    test('throws with AvailabilityZoneBalancing.ENABLED and placement constraint uses memberOf attribute:ecs.availability-zone', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      // THEN
+      expect(() => {
+        service.addPlacementConstraints(
+          PlacementConstraint.memberOf(`${ecs.BuiltInAttributes.AVAILABILITY_ZONE} =~ us-east-1a`),
+        );
+      }).toThrow(/AvailabilityZoneBalancing.ENABLED disallows usage of "attribute:ecs.availability-zone"/);
+    });
+
+    test('does not throw with AvailabilityZoneBalancing.ENABLED and placement constraints that don\'t use memberOf attribute:ecs.availability-zone', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      // WHEN
+      service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
+
+      // THEN
+      // did not throw
+    });
+
     test('with spreadAcross container instances strategy', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2040,6 +2140,58 @@ describe('ec2 service', () => {
           Type: 'spread',
         }],
       });
+    });
+
+    test('throws with AvailabilityZoneBalancing.ENABLED and first placement strategy is not spread-across-AZ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      // THEN
+      expect(() => {
+        service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
+      }).toThrow(/requires that the first placement strategy, if any, be 'spread across "attribute:ecs.availability-zone"'/);
+    });
+
+    test('does not throw with AvailabilityZoneBalancing.ENABLED and first placement strategy is spread-across-AZ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      // WHEN
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
+
+      // THEN
+      // did not throw
     });
 
     test('can turn PlacementStrategy into json format', () => {
@@ -2940,6 +3092,30 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
+    });
+
+    test('throws when AvailabilityZoneRebalancing.ENABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const service = new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+
+      // THEN
+      expect(() => {
+        lb.addTarget(service);
+      }).toThrow('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer');
     });
   });
 
