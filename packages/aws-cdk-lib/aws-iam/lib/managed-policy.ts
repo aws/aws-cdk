@@ -336,7 +336,8 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a resource-based policy.
     // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    // I32795: Restoring a previous feature where a grant for a managed policy would generate policy document with actions as a CDK feature. This managed policy needs to be attached to a role or principal for it to be used meaningfully.
+    // I32795: Restoring a previous feature where a grant for a managed policy would generate policy document with actions as a CDK feature.
+    // This managed policy needs to be attached to a role or principal for it to be used meaningfully.
     return new PrincipalPolicyFragment({});
   }
 
