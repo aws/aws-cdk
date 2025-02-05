@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-tests/DefaultTest": {
+      "stacks": [
+        "aws-cdk-firehose-delivery-stream-source-stream"
+      ],
+      "assertionStack": "integ-tests/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
+    }
+  }
+}
