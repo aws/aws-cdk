@@ -8,6 +8,63 @@
         "id": "aws-stepfunctions-tasks-emr-containers-start-job-run",
         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run",
         "children": {
+          "KubectlLayer": {
+            "id": "KubectlLayer",
+            "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+                    },
+                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "licenseInfo": "Apache-2.0"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
+              "version": "2.0.0"
+            }
+          },
           "integration-test-eks-cluster": {
             "id": "integration-test-eks-cluster",
             "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster",
@@ -1119,7 +1176,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "KubectlReadyBarrier": {
@@ -1421,7 +1478,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "22de69e75b55e15d4d49905d8a4901edd66d1367f617c2a01ac6e86ca2b7eb84.zip"
+                          "s3Key": "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1542,7 +1599,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1682,7 +1739,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1eaf141d4012ab0977a33bdf864ebbc6aa869a607e97fab6cd231fe6ef503aec.zip"
+                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1913,7 +1970,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2142,7 +2199,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2368,7 +2425,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2721,7 +2778,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/89a0adef78ece6c87a85a286e4270dac2a3299c7ececf29729771b28beea0859.json"
+                          "/bbdb3dee17383bf771c36a7268157411f43a524cffd279fa37655e6c496ea19d.json"
                         ]
                       ]
                     }
@@ -2735,7 +2792,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
@@ -2782,7 +2839,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "abc70c90ded969d12235ca11768293cb20557cff54518518480c0d9fb344a098.zip"
+                          "s3Key": "024d0b8c5d7cf69ece484efe22f1647e273f484175ef3b79df543b7538da9c81.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -2796,7 +2853,7 @@
                             "Ref": "AwsCliLayerF44AAF94"
                           },
                           {
-                            "Ref": "KubectlLayer600207B5"
+                            "Ref": "referencetoawsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref"
                           }
                         ],
                         "memorySize": 1024,
@@ -2873,7 +2930,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2886,62 +2943,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
-                }
-              },
-              "KubectlLayer": {
-                "id": "KubectlLayer",
-                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "7e5f48d1e79c915595d938c932b6f0101715a162780d01a55845367e014fbcda.zip"
-                        },
-                        "description": "/opt/kubectl/kubectl and /opt/helm/helm"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_kubectl.KubectlLayer",
                   "version": "0.0.0"
                 }
               },
@@ -3134,7 +3135,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3214,6 +3215,14 @@
                   "version": "0.0.0"
                 }
               },
+              "reference-to-awsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref": {
+                "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref",
+                "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
               "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn": {
                 "id": "reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn",
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn",
@@ -3263,6 +3272,9 @@
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
                     "parameters": {
+                      "referencetoawsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
                       "referencetoawsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn": {
                         "Fn::GetAtt": [
                           "integrationtesteksclusterKubectlHandlerRole9A4C37D2",
@@ -3298,7 +3310,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/db17d4f429860e38ff73349adc27c59c00dc5c6f8a7a98370e215e5d679569b3.json"
+                          "/3a82ffc3d75e250a56aa9843e596d445790706aed93fc877618e1f2f8e698b6c.json"
                         ]
                       ]
                     }
@@ -3312,7 +3324,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "Virtual Cluster": {
@@ -3554,7 +3566,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3739,7 +3751,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "46fb886516825167db3571f1ed91110fc6163ce20ee26fdb097c2c983f25fcd6.zip"
+                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider)",
                             "environment": {
@@ -3917,7 +3929,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -4402,7 +4414,7 @@
                 "path": "aws-stepfunctions-tasks-emr-containers-start-job-run-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -4448,7 +4460,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
