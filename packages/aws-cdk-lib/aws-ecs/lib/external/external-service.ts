@@ -148,7 +148,7 @@ export class ExternalService extends BaseService implements IExternalService {
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
+      schedulingStrategy: props.daemon ? 'DAEMON' : undefined,
     }, props.taskDefinition);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
