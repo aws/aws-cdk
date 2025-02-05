@@ -6,7 +6,7 @@ import { IRestApi } from './restapi';
 import { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import { FeatureFlags, IResource, Lazy, Names, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '../../cx-api';
 
 /**
@@ -265,6 +265,7 @@ export class UsagePlan extends UsagePlanBase {
   /**
    * Adds an apiStage.
    */
+  @MethodMetadata()
   public addApiStage(apiStage: UsagePlanPerApiStage) {
     this.apiStages.push(apiStage);
   }

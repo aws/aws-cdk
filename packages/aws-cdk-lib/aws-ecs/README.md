@@ -1922,6 +1922,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## Disable service container image version consistency
+
+You can disable the
+[container image "version consistency"](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability)
+feature of ECS service deployments on a per-container basis.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  versionConsistency: ecs.VersionConsistency.DISABLED,
+});
+```
+
 ## Specify a container ulimit
 
 You can specify a container `ulimits` by specifying them in the `ulimits` option while adding the container
@@ -1973,5 +1987,25 @@ const service = new ecs.FargateService(this, 'FargateService', {
     ],
     namespace: 'sample namespace',
   },
+});
+```
+
+## Daemon scheduling strategy
+You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.Ec2Service(this, 'Ec2Service', {
+  cluster,
+  taskDefinition,
+  daemon: true,
+});
+
+new ecs.ExternalService(this, 'ExternalService', {
+  cluster,
+  taskDefinition,
+  daemon: true,
 });
 ```
