@@ -388,7 +388,7 @@ export interface AnalyticsConfiguration {
   readonly applicationId?: string;
 
   /**
-   * The [external ID](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html) of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint.
+   * The external ID of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint. More info here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
    * @default - no configuration, you need to specify either this property along with `applicationId` and `role` or `application`.
    */
   readonly externalId?: string;
