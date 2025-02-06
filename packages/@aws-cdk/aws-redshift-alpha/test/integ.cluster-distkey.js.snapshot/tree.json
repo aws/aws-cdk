@@ -56,7 +56,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Vpc": {
@@ -135,7 +138,8 @@
                     "path": "aws-cdk-redshift-distkey-create/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -250,7 +254,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -302,7 +330,8 @@
                     "path": "aws-cdk-redshift-distkey-create/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -417,7 +446,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -469,7 +522,8 @@
                     "path": "aws-cdk-redshift-distkey-create/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -536,7 +590,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -588,7 +661,8 @@
                     "path": "aws-cdk-redshift-distkey-create/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -655,7 +729,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -699,7 +792,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "Cluster": {
@@ -735,7 +833,10 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "SecurityGroup": {
@@ -769,7 +870,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Secret": {
@@ -822,13 +929,23 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "secret": "*",
+                          "target": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -921,13 +1038,20 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.ClusterParameterGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*"
+              ]
             }
           },
           "Table": {
@@ -943,7 +1067,17 @@
                     "path": "aws-cdk-redshift-distkey-create/Table/Resource/Handler",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "code": "*",
+                          "runtime": "*",
+                          "handler": "*",
+                          "timeout": "*",
+                          "uuid": "*",
+                          "lambdaPurpose": "*"
+                        }
+                      ]
                     }
                   },
                   "Provider": {
@@ -971,7 +1105,8 @@
                                 "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                                  "version": "0.0.0"
+                                  "version": "0.0.0",
+                                  "metadata": []
                                 }
                               }
                             },
@@ -990,7 +1125,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                                  "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                                 },
                                 "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-create/Table/Resource/Provider)",
                                 "environment": {
@@ -1030,7 +1165,29 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "code": "*",
+                              "description": "*",
+                              "runtime": "*",
+                              "handler": "*",
+                              "timeout": "*",
+                              "logGroup": "*",
+                              "vpc": "*",
+                              "vpcSubnets": "*",
+                              "securityGroups": "*",
+                              "role": "*",
+                              "functionName": "*",
+                              "environmentEncryption": "*"
+                            },
+                            {
+                              "addEnvironment": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
@@ -1054,7 +1211,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
@@ -1090,7 +1250,10 @@
                     "path": "aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1181,13 +1344,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -1207,7 +1426,8 @@
                     "path": "aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1255,7 +1475,15 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "runtime": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": {
@@ -1267,7 +1495,10 @@
                 "path": "aws-cdk-redshift-distkey-create/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -1346,6 +1577,16 @@
                                   ]
                                 }
                               ]
+                            },
+                            {
+                              "Action": "lambda:GetFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                  "Arn"
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -1366,13 +1607,69 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "managedPolicies": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "BootstrapVersion": {
@@ -1449,7 +1746,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Vpc": {
@@ -1528,7 +1828,8 @@
                     "path": "aws-cdk-redshift-distkey-update/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -1643,7 +1944,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -1695,7 +2020,8 @@
                     "path": "aws-cdk-redshift-distkey-update/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -1810,7 +2136,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -1862,7 +2212,8 @@
                     "path": "aws-cdk-redshift-distkey-update/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -1929,7 +2280,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -1981,7 +2351,8 @@
                     "path": "aws-cdk-redshift-distkey-update/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -2048,7 +2419,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -2092,7 +2482,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "Cluster": {
@@ -2128,7 +2523,10 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.ClusterSubnetGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "SecurityGroup": {
@@ -2162,7 +2560,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Secret": {
@@ -2215,13 +2619,23 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "secret": "*",
+                          "target": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.DatabaseSecret",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -2314,13 +2728,20 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-redshift-alpha.ClusterParameterGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-redshift-alpha.Cluster",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                "*"
+              ]
             }
           },
           "Table": {
@@ -2336,7 +2757,17 @@
                     "path": "aws-cdk-redshift-distkey-update/Table/Resource/Handler",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "code": "*",
+                          "runtime": "*",
+                          "handler": "*",
+                          "timeout": "*",
+                          "uuid": "*",
+                          "lambdaPurpose": "*"
+                        }
+                      ]
                     }
                   },
                   "Provider": {
@@ -2364,7 +2795,8 @@
                                 "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                                  "version": "0.0.0"
+                                  "version": "0.0.0",
+                                  "metadata": []
                                 }
                               }
                             },
@@ -2383,7 +2815,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                                  "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                                 },
                                 "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-distkey-update/Table/Resource/Provider)",
                                 "environment": {
@@ -2423,7 +2855,29 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "code": "*",
+                              "description": "*",
+                              "runtime": "*",
+                              "handler": "*",
+                              "timeout": "*",
+                              "logGroup": "*",
+                              "vpc": "*",
+                              "vpcSubnets": "*",
+                              "securityGroups": "*",
+                              "role": "*",
+                              "functionName": "*",
+                              "environmentEncryption": "*"
+                            },
+                            {
+                              "addEnvironment": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
@@ -2447,7 +2901,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
@@ -2483,7 +2940,10 @@
                     "path": "aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -2574,13 +3034,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -2600,7 +3116,8 @@
                     "path": "aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2648,7 +3165,15 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "runtime": "*",
+                  "handler": "*",
+                  "timeout": "*"
+                }
+              ]
             }
           },
           "Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": {
@@ -2660,7 +3185,10 @@
                 "path": "aws-cdk-redshift-distkey-update/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -2739,6 +3267,16 @@
                                   ]
                                 }
                               ]
+                            },
+                            {
+                              "Action": "lambda:GetFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                  "Arn"
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -2759,13 +3297,69 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "managedPolicies": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "BootstrapVersion": {
