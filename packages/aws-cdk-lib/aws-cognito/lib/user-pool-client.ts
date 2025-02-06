@@ -369,7 +369,7 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
  * The settings for Amazon Pinpoint analytics configuration.
  * With an analytics configuration, your application can collect user-activity metrics for user notifications with an Amazon Pinpoint campaign.
  * Amazon Pinpoint isn't available in all AWS Regions.
- * For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+ * For a list of available Regions, see Amazon Cognito and Amazon Pinpoint Region availability: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings.
  */
 export interface AnalyticsConfiguration {
   /**
