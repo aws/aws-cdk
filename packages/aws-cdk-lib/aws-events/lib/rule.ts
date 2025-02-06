@@ -9,7 +9,7 @@ import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -140,6 +140,7 @@ export class Rule extends Resource implements IRule {
    *
    * No-op if target is undefined.
    */
+  @MethodMetadata()
   public addTarget(target?: IRuleTarget): void {
     if (!target) { return; }
 
@@ -284,6 +285,7 @@ export class Rule extends Resource implements IRule {
    *    }
    *
    */
+  @MethodMetadata()
   public addEventPattern(eventPattern?: EventPattern) {
     if (!eventPattern) {
       return;

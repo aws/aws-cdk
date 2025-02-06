@@ -6,6 +6,7 @@ import { Code } from './code';
 import { IEventApi } from './eventapi';
 import { IGrantable } from '../../aws-iam';
 import { IResource, Resource, Token, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An AppSync channel namespace
@@ -131,6 +132,8 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     super(scope, id, {
       physicalName: props.channelNamespaceName ?? id,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const code = props.code?.bind(this);
 
@@ -161,6 +164,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    *
    * @param grantee The principal
    */
+  @MethodMetadata()
   public grantSubscribe(grantee: IGrantable) {
     return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventSubscribe');
   }
@@ -171,6 +175,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    *
    * @param grantee The principal
    */
+  @MethodMetadata()
   public grantPublish(grantee: IGrantable) {
     return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish');
   }
@@ -181,6 +186,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
    *
    * @param grantee The principal
    */
+  @MethodMetadata()
   public grantPublishAndSubscribe(grantee: IGrantable) {
     return this.api.grant(grantee, AppSyncEventResource.ofChannelNamespace(this.channelNamespace.name), 'appsync:EventPublish', 'appsync:EventSubscribe');
   }

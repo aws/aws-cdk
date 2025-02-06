@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnTransitGatewayRoute } from 'aws-cdk-lib/aws-ec2';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Transit Gateway Route.
@@ -87,6 +88,8 @@ export class TransitGatewayRoute extends TransitGatewayRouteBase {
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.resource = new CfnTransitGatewayRoute(this, 'TransitGatewayRoute', {
       blackhole: false,
@@ -112,6 +115,8 @@ export class TransitGatewayBlackholeRoute extends TransitGatewayRouteBase {
 
   constructor(scope: Construct, id: string, props: TransitGatewayBlackholeRouteProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnTransitGatewayRoute(this, id, {
       blackhole: true,

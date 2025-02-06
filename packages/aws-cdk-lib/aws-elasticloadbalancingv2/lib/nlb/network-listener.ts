@@ -6,7 +6,7 @@ import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } f
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -253,6 +253,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * resources since cloudformation requires the certificates array on the
    * listener resource to have a length of 1.
    */
+  @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
     if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
@@ -275,6 +276,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * All target groups will be load balanced to with equal weight and without
    * stickiness. For a more complex configuration than that, use `addAction()`.
    */
+  @MethodMetadata()
   public addTargetGroups(_id: string, ...targetGroups: INetworkTargetGroup[]): void {
     this.setDefaultAction(NetworkListenerAction.forward(targetGroups));
   }
@@ -286,6 +288,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    * including weighted forwarding. See the `NetworkListenerAction` class for
    * all options.
    */
+  @MethodMetadata()
   public addAction(_id: string, props: AddNetworkActionProps): void {
     this.setDefaultAction(props.action);
   }
@@ -304,6 +307,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    *
    * @returns The newly created target group
    */
+  @MethodMetadata()
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
       // eslint-disable-next-line max-len

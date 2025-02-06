@@ -8,7 +8,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -345,6 +345,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    * [disable-awslint:ref-via-interface] is needed in order to install the code
    * deploy agent by updating the ASGs user data.
    */
+  @MethodMetadata()
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
     this.addCodeDeployAgentInstallUserData(asg);
@@ -355,6 +356,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
+  @MethodMetadata()
   public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }

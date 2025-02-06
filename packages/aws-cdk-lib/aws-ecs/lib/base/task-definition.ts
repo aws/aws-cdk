@@ -3,7 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -635,6 +635,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds a policy statement to the task IAM role.
    */
+  @MethodMetadata()
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
     this.taskRole.addToPrincipalPolicy(statement);
   }
@@ -642,6 +643,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds a policy statement to the task execution IAM role.
    */
+  @MethodMetadata()
   public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
     this.obtainExecutionRole().addToPrincipalPolicy(statement);
   }
@@ -649,6 +651,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds a new container to the task definition.
    */
+  @MethodMetadata()
   public addContainer(id: string, props: ContainerDefinitionOptions) {
     return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
   }
@@ -656,6 +659,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds a firelens log router to the task definition.
    */
+  @MethodMetadata()
   public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
     // only one firelens log router is allowed in each task.
     if (this.containers.find(x => x instanceof FirelensLogRouter)) {
@@ -687,6 +691,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds a volume to the task definition.
    */
+  @MethodMetadata()
   public addVolume(volume: Volume) {
     this.validateVolume(volume);
     this.volumes.push(volume);
@@ -706,6 +711,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Adds the specified placement constraint to the task definition.
    */
+  @MethodMetadata()
   public addPlacementConstraint(constraint: PlacementConstraint) {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
@@ -719,6 +725,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Extension can be used to apply a packaged modification to
    * a task definition.
    */
+  @MethodMetadata()
   public addExtension(extension: ITaskDefinitionExtension) {
     extension.extend(this);
   }
@@ -727,6 +734,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds an inference accelerator to the task definition.
    * @deprecated ECS TaskDefinition's inferenceAccelerator is EOL since April 2024
    */
+  @MethodMetadata()
   public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
@@ -744,6 +752,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    * @param grantee Principal to grant consume rights to
    */
+  @MethodMetadata()
   public grantRun(grantee: iam.IGrantable) {
     grantee.grantPrincipal.addToPrincipalPolicy(this.passRoleStatement);
     return iam.Grant.addToPrincipal({
@@ -756,6 +765,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Creates the task execution IAM role if it doesn't already exist.
    */
+  @MethodMetadata()
   public obtainExecutionRole(): iam.IRole {
     if (!this._executionRole) {
       this._executionRole = new iam.Role(this, 'ExecutionRole', {
@@ -839,6 +849,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * @param name: port mapping name
    * @returns PortMapping for the provided name, if it exists.
    */
+  @MethodMetadata()
   public findPortMappingByName(name: string): PortMapping | undefined {
     let portMapping;
 
@@ -855,6 +866,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Returns the container that match the provided containerName.
    */
+  @MethodMetadata()
   public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }

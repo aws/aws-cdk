@@ -239,7 +239,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
+      exemption: shouldExemptAnalyticsMetadataChange,
       testRuleSet: [
         { test: noMetadataChanges },
         { test: noAnalyticsClassesChanges },
@@ -419,6 +419,10 @@ function shouldExemptBreakingChange(pr: GitHubPr): boolean {
 
 function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
+}
+
+function shouldExemptAnalyticsMetadataChange(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.ANALYTICS_METADATA_CHANGE) || pr.user?.login === 'aws-cdk-automation');
 }
 
 function hasLabel(pr: GitHubPr, labelName: string): boolean {

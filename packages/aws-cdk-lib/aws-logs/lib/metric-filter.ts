@@ -3,7 +3,7 @@ import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
 import { Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a MetricFilter
@@ -65,6 +65,7 @@ export class MetricFilter extends Resource {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metric(props?: MetricOptions): Metric {
     return new Metric({
       metricName: this.metricName,

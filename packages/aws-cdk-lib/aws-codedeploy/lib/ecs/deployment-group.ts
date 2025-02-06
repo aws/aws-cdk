@@ -6,7 +6,7 @@ import * as ecs from '../../../aws-ecs';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -295,6 +295,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
+  @MethodMetadata()
   public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }

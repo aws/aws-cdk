@@ -10,7 +10,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a newly created singleton Lambda
@@ -137,6 +137,7 @@ export class SingletonFunction extends FunctionBase {
    * @param value The environment variable's value.
    * @param options Environment variable options.
    */
+  @MethodMetadata()
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions) {
     return this.lambdaFunction.addEnvironment(key, value, options);
   }
@@ -148,10 +149,12 @@ export class SingletonFunction extends FunctionBase {
    *
    * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
    */
+  @MethodMetadata()
   public addLayers(...layers: ILayerVersion[]) {
     return this.lambdaFunction.addLayers(...layers);
   }
 
+  @MethodMetadata()
   public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
@@ -160,6 +163,7 @@ export class SingletonFunction extends FunctionBase {
    * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
+  @MethodMetadata()
   public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
   }
@@ -168,6 +172,7 @@ export class SingletonFunction extends FunctionBase {
    * Use this method to write to the construct tree.
    * The metadata entries are written to the Cloud Assembly Manifest if the `treeMetadata` property is specified in the props of the App that contains this Construct.
    */
+  @MethodMetadata()
   public addMetadata(type: string, data: any, options?: MetadataOptions) {
     this.lambdaFunction.node.addMetadata(type, data, options);
   }
@@ -176,6 +181,7 @@ export class SingletonFunction extends FunctionBase {
    * The SingletonFunction construct cannot be added as a dependency of another construct using
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
+  @MethodMetadata()
   public dependOn(down: IConstruct) {
     down.node.addDependency(this.lambdaFunction);
   }

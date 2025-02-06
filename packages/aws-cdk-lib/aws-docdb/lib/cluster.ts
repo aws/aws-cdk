@@ -12,7 +12,7 @@ import * as logs from '../../aws-logs';
 import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 
@@ -673,6 +673,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
+  @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
@@ -698,6 +699,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
@@ -718,6 +720,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Adds security groups to this cluster.
    * @param securityGroups The security groups to add.
    */
+  @MethodMetadata()
   public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
     if (this.cluster.vpcSecurityGroupIds === undefined) {
       this.cluster.vpcSecurityGroupIds = [];

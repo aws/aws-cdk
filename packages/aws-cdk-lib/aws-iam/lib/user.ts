@@ -8,7 +8,7 @@ import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM user
@@ -293,6 +293,7 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Adds this user to a group.
    */
+  @MethodMetadata()
   public addToGroup(group: IGroup) {
     this.groups.push(group.groupName);
   }
@@ -301,6 +302,7 @@ export class User extends Resource implements IIdentity, IUser {
    * Attaches a managed policy to the user.
    * @param policy The managed policy to attach.
    */
+  @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
     if (this.managedPolicies.find(mp => mp === policy)) { return; }
     this.managedPolicies.push(policy);
@@ -309,6 +311,7 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Attaches a policy to this user.
    */
+  @MethodMetadata()
   public attachInlinePolicy(policy: Policy) {
     this.attachedPolicies.attach(policy);
     policy.attachToUser(this);
@@ -319,6 +322,7 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @returns true
    */
+  @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
@@ -329,6 +333,7 @@ export class User extends Resource implements IIdentity, IUser {
     return { statementAdded: true, policyDependable: this.defaultPolicy };
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }

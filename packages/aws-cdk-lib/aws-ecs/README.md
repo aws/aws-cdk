@@ -1141,6 +1141,69 @@ const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsServic
 const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
+### Availability Zone rebalancing
+
+ECS services running in AWS can be launched in multiple VPC subnets that are
+each in different Availability Zones (AZs) to achieve high availability. Fargate
+services launched this way will automatically try to achieve an even spread of
+service tasks across AZs, and EC2 services can be instructed to do the same with
+placement strategies. This ensures that the service has equal availability in
+each AZ.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  // Fargate will try to ensure an even spread of newly launched tasks across
+  // all AZs corresponding to the public subnets of the VPC.
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+});
+```
+
+However, those approaches only affect how newly launched tasks are placed.
+Service tasks can still become unevenly spread across AZs if there is an
+infrastructure event, like an AZ outage or a lack of available compute capacity
+in an AZ. During such events, newly launched tasks may be placed in AZs in such
+a way that tasks are not evenly spread across all AZs. After the infrastructure
+event is over, the service will remain imbalanced until new tasks are launched
+for some other reason, such as a service deployment.
+
+Availability Zone rebalancing is a feature whereby ECS actively tries to correct
+service AZ imbalances whenever they exist, by moving service tasks from
+overbalanced AZs to underbalanced AZs. When an imbalance is detected, ECS will
+launch new tasks in underbalanced AZs, then stop existing tasks in overbalanced
+AZs, to ensure an even spread.
+
+You can enabled Availability Zone rebalancing when creating your service:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
+Availability Zone rebalancing works in the following configurations:
+- Services that use the Replica strategy.
+- Services that specify Availability Zone spread as the first task placement
+  strategy, or do not specify a placement strategy.
+
+You can't use Availability Zone rebalancing with services that meet any of the
+following criteria:
+- Uses the Daemon strategy.
+- Uses the EXTERNAL launch type (ECSAnywhere).
+- Uses 100% for the maximumPercent value.
+- Uses a Classic Load Balancer.
+- Uses the `attribute:ecs.availability-zone` as a task placement constraint.
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
@@ -1987,5 +2050,25 @@ const service = new ecs.FargateService(this, 'FargateService', {
     ],
     namespace: 'sample namespace',
   },
+});
+```
+
+## Daemon scheduling strategy
+You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.Ec2Service(this, 'Ec2Service', {
+  cluster,
+  taskDefinition,
+  daemon: true,
+});
+
+new ecs.ExternalService(this, 'ExternalService', {
+  cluster,
+  taskDefinition,
+  daemon: true,
 });
 ```

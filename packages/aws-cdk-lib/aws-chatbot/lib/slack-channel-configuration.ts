@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new Slack channel configuration
@@ -329,6 +329,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
   /**
    * Adds a SNS topic that deliver notifications to AWS Chatbot.
    */
+  @MethodMetadata()
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
     this.notificationTopics.push(notificationTopic);
   }

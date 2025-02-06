@@ -27,7 +27,7 @@ import {
   AspectPriority,
   FeatureFlags, Annotations,
 } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -373,6 +373,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Enable the Fargate capacity providers for this cluster.
    */
+  @MethodMetadata()
   public enableFargateCapacityProviders() {
     for (const provider of ['FARGATE', 'FARGATE_SPOT']) {
       if (!this._capacityProviderNames.includes(provider)) {
@@ -395,6 +396,7 @@ export class Cluster extends Resource implements ICluster {
    *   }
    * ]
    */
+  @MethodMetadata()
   public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
       throw new Error('Cluster default capacity provider strategy is already set.');
@@ -453,6 +455,7 @@ export class Cluster extends Resource implements ICluster {
    * NOTE: HttpNamespaces are supported only for use cases involving Service Connect. For use cases involving both Service-
    * Discovery and Service Connect, customers should manage the HttpNamespace outside of the Cluster.addDefaultCloudMapNamespace method.
    */
+  @MethodMetadata()
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
       throw new Error('Can only add default namespace once.');
@@ -522,6 +525,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
+  @MethodMetadata()
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
     // Otherwise, determine the machineImageType from the given AMI.
@@ -553,6 +557,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
+  @MethodMetadata()
   public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
@@ -580,6 +585,7 @@ export class Cluster extends Resource implements ICluster {
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
    */
+  @MethodMetadata()
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
@@ -743,6 +749,7 @@ export class Cluster extends Resource implements ICluster {
    * @deprecated Use `enableFargateCapacityProviders` instead.
    * @see `addAsgCapacityProvider` to add an Auto Scaling Group capacity provider to the cluster.
    */
+  @MethodMetadata()
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
       throw new Error('CapacityProvider not supported');
@@ -759,6 +766,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param keyPattern Task id pattern
    */
+  @MethodMetadata()
   public arnForTasks(keyPattern: string): string {
     return Stack.of(this).formatArn({
       service: 'ecs',
@@ -775,6 +783,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
    */
+  @MethodMetadata()
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
@@ -847,6 +856,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.cpuReservationAverage, props);
   }
@@ -856,6 +866,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.cpuUtilizationAverage, props);
   }
@@ -865,6 +876,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.memoryReservationAverage, props);
   }
@@ -874,6 +886,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
+  @MethodMetadata()
   public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ECSMetrics.memoryUtilizationAverage, props);
   }
@@ -881,6 +894,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * This method returns the specified CloudWatch metric for this cluster.
    */
+  @MethodMetadata()
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',

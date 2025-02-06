@@ -6,7 +6,7 @@ import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } fr
 import * as iam from '../../aws-iam';
 import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -140,6 +140,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * Add a policy statement to the role's policy
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -147,6 +148,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * Scale out or in based on time
    */
+  @MethodMetadata()
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
       throw new ValidationError(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
@@ -171,6 +173,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * Scale out or in, in response to a metric
    */
+  @MethodMetadata()
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
     return new StepScalingPolicy(this, id, { ...props, scalingTarget: this });
   }
@@ -178,6 +181,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /**
    * Scale out or in in order to keep a metric around a target value
    */
+  @MethodMetadata()
   public scaleToTrackMetric(id: string, props: BasicTargetTrackingScalingPolicyProps) {
     return new TargetTrackingScalingPolicy(this, id, { ...props, scalingTarget: this });
   }

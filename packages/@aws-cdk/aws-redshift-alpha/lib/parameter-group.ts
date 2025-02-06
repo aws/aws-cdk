@@ -1,7 +1,7 @@
 import { IResource, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A parameter group
@@ -98,6 +98,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    * @param name the parameter name
    * @param value the parameter name
    */
+  @MethodMetadata()
   public addParameter(name: string, value: string): void {
     const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
     if (existingValue === undefined) {

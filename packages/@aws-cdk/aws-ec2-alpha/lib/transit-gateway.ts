@@ -7,6 +7,7 @@ import { IRouteTarget } from './route';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { getFeatureStatus, TransitGatewayFeatureStatus } from './util';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Transit Gateway.
@@ -222,6 +223,8 @@ export class TransitGateway extends TransitGatewayBase {
 
   constructor(scope: Construct, id: string, props: TransitGatewayProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnTransitGateway(this, id, {
       amazonSideAsn: props.amazonSideAsn ?? undefined,
