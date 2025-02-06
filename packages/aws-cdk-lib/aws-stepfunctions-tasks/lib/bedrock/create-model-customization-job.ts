@@ -7,7 +7,6 @@ import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack, Token, ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { Input } from '../../../../@aws-cdk/aws-iotevents-alpha/lib/input';
 
 /**
  * The customization type.
