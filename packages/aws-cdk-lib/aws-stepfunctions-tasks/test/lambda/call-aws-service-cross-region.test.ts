@@ -328,23 +328,6 @@ test('can pass additional IAM statements', () => {
   });
 });
 
-test('throws if integrationPattern is WAIT_FOR_TASK_TOKEN but payloadResponseOnly=true', () => {
-  expect(
-    () =>
-      new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
-        service: 's3',
-        action: 'GetObject',
-        parameters: {
-          Bucket: 'my-bucket',
-          Key: sfn.JsonPath.stringAt('$.key'),
-        },
-        region: 'us-east-1',
-        iamResources: ['*'],
-        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      }),
-  ).toThrow(/The 'payloadResponseOnly' property cannot be true/);
-});
-
 test('integrationPattern is WAIT_FOR_TASK_TOKEN', () => {
   // WHEN
   const task = new tasks.CallAwsServiceCrossRegion(stack, 'StartExecution', {
@@ -360,7 +343,6 @@ test('integrationPattern is WAIT_FOR_TASK_TOKEN', () => {
       }),
     },
     iamResources: ['*'],
-    payloadResponseOnly: false,
   });
   new sfn.StateMachine(stack, 'StateMachine', {
     definitionBody: sfn.DefinitionBody.fromChainable(task),

@@ -74,16 +74,6 @@ interface CallAwsServiceCrossRegionOptions {
   readonly endpoint?: string;
 
   /**
-   * Invoke the Lambda in a way that only returns the payload response without additional metadata.
-   *
-   * The `payloadResponseOnly` property cannot be true if `integrationPattern` is specified.
-   * If true, it always uses the REQUEST_RESPONSE behavior.
-   *
-   * @default true
-   */
-  readonly payloadResponseOnly?: boolean;
-
-  /**
    * Whether to retry on the backend Lambda service exceptions.
    *
    * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException`,
@@ -145,19 +135,15 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly lambdaFunction: IFunction;
 
-  private readonly payloadResponseOnly: boolean;
+  private readonly integrationPattern: sfn.IntegrationPattern | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: CallAwsServiceCrossRegionProps) {
     super(scope, id, props);
 
-    this.payloadResponseOnly = props.payloadResponseOnly ?? true;
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
-    }
-
-    if (this.payloadResponseOnly && props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
-      throw new Error("The 'payloadResponseOnly' property cannot be true if integrationPattern is set to WAIT_FOR_TASK_TOKEN");
+      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion');
     }
 
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
@@ -216,7 +202,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
     const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
-    if (this.payloadResponseOnly) {
+    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
       return {
         Resource: this.lambdaFunction.functionArn,
         ...this._renderParametersOrArguments({
