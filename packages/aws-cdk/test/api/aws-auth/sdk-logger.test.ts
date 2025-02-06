@@ -12,13 +12,16 @@ describe(SdkToCliLogger, () => {
   });
 
   test.each(['trace', 'debug'] as Array<keyof SdkToCliLogger>)('%s method does not call notify', (method) => {
-    logger[method]('test');
+    logger[method]('SDK Logger test message');
     expect(ioHost.notify).not.toHaveBeenCalled();
   });
 
   test.each(['info', 'warn', 'error'] as Array<keyof SdkToCliLogger>)('%s method logs to notify', (method) => {
-    logger[method]('test');
-    expect(ioHost.notify).toHaveBeenCalled();
+    logger[method]('SDK Logger test message');
+    expect(ioHost.notify).toHaveBeenCalledWith(expect.objectContaining({
+      level: 'trace',
+      message: `[SDK ${method}] SDK Logger test message`,
+    }));
   });
 });
 
