@@ -184,7 +184,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin {
         httpsPort: props.httpsPort,
         name: props.vpcOriginName ?? Names.uniqueResourceName(this, {}),
         originProtocolPolicy: props.protocolPolicy,
-        originSslProtocols: props.originSslProtocols,
+        originSslProtocols: props.originSslProtocols ?? [OriginSslPolicy.TLS_V1_2],
       },
     });
 

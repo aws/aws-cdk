@@ -44,6 +44,7 @@ test('VPC origin from an EC2 instance', () => {
         ],
       },
       Name: 'StackVpcOrigin17D434EE',
+      OriginSSLProtocols: ['TLSv1.2'],
     },
   });
 });
@@ -64,6 +65,7 @@ test('VPC origin from an Application Load Balancer', () => {
     VpcOriginEndpointConfig: {
       Arn: { Ref: 'ALBAEE750D2' },
       Name: 'StackVpcOrigin17D434EE',
+      OriginSSLProtocols: ['TLSv1.2'],
     },
   });
 });
@@ -84,6 +86,7 @@ test('VPC origin from a Network Load Balancer', () => {
     VpcOriginEndpointConfig: {
       Arn: { Ref: 'NLB55158F82' },
       Name: 'StackVpcOrigin17D434EE',
+      OriginSSLProtocols: ['TLSv1.2'],
     },
   });
 });
@@ -100,6 +103,7 @@ test('VPC origin from an opaque endpoint ARN', () => {
     VpcOriginEndpointConfig: {
       Arn: 'arn:opaque',
       Name: 'StackVpcOrigin17D434EE',
+      OriginSSLProtocols: ['TLSv1.2'],
     },
   });
 });
