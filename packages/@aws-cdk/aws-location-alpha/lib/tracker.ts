@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { IGeofenceCollection } from './geofence-collection';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Tracker
@@ -225,6 +225,7 @@ export class Tracker extends Resource implements ITracker {
   /**
    * Add Geofence Collections which are associated to the tracker resource.
    */
+  @MethodMetadata()
   public addGeofenceCollections(...geofenceCollections: IGeofenceCollection[]) {
     geofenceCollections.forEach((collection) => {
       new CfnTrackerConsumer(this, `TrackerConsumer${collection.node.id}`, {
@@ -237,6 +238,7 @@ export class Tracker extends Resource implements ITracker {
   /**
    * Grant the given principal identity permissions to perform the actions on this tracker.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -250,6 +252,7 @@ export class Tracker extends Resource implements ITracker {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
+  @MethodMetadata()
   public grantUpdateDevicePositions(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:BatchUpdateDevicePosition',
@@ -261,6 +264,7 @@ export class Tracker extends Resource implements ITracker {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,

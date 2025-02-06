@@ -1704,7 +1704,7 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.178.0 | `false` | `true` |
 
 
 <!-- END details -->

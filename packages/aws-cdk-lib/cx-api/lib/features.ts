@@ -1384,7 +1384,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
 
