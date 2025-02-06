@@ -5,7 +5,6 @@
       "stacks": [
         "cdk-amplify-app-asset-deployment"
       ],
-      "diffAssets": true,
       "assertionStack": "cdk-amplify-app-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkamplifyappintegtestDefaultTestDeployAssert8ED3E8A4"
     }

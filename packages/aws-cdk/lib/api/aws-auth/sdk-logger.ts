@@ -13,7 +13,7 @@ export class SdkToCliLogger implements Logger {
   private notify(level: 'debug' | 'info' | 'warn' | 'error', ...content: any[]) {
     void this.ioHost.notify({
       time: new Date(),
-      level,
+      level: 'trace', // always log all SDK logs at trace level, no matter what level they are coming from the SDK
       action: 'none' as any,
       code: 'CDK_SDK_I0000',
       message: format('[SDK %s] %s', level, formatSdkLoggerContent(content)),
@@ -87,7 +87,7 @@ export class SdkToCliLogger implements Logger {
    * ```
    */
   public error(...content: any[]) {
-    this.notify('info', ...content);
+    this.notify('error', ...content);
   }
 }
 

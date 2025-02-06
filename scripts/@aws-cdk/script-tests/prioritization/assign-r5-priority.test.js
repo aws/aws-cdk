@@ -1,6 +1,5 @@
 const { PRIORITIES, LABELS, STATUS, ...PROJECT_CONFIG } = require('../../../../scripts/prioritization/project-config');
 const { 
-    createMockPR, 
     createMockGithubForR5,
     OPTION_IDS
 } = require('./helpers/mock-data');

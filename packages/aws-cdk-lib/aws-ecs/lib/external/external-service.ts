@@ -29,6 +29,17 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    * @default - A new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * By default, service use REPLICA scheduling strategy, this parameter enable DAEMON scheduling strategy.
+   * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
+   *
+   * When you are using this strategy, do not specify a desired number of tasks or any task placement strategies.
+   * Tasks using the Fargate launch type or the CODE_DEPLOY or EXTERNAL deployment controller types don't support the DAEMON scheduling strategy.
+   *
+   * @default false
+   */
+  readonly daemon?: boolean;
 }
 
 /**
@@ -90,6 +101,19 @@ export class ExternalService extends BaseService implements IExternalService {
    * Constructs a new instance of the ExternalService class.
    */
   constructor(scope: Construct, id: string, props: ExternalServiceProps) {
+    if (props.daemon) {
+      if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
+        props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+        throw new Error('CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy.');
+      }
+      if (props.desiredCount !== undefined) {
+        throw new Error('Daemon mode launches one task on every instance. Cannot specify desiredCount when daemon mode is enabled.');
+      }
+      if (props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
+        throw new Error('Maximum percent must be 100 when daemon mode is enabled.');
+      }
+    }
+
     if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
       throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
     }
@@ -124,6 +148,7 @@ export class ExternalService extends BaseService implements IExternalService {
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
+      schedulingStrategy: props.daemon ? 'DAEMON' : undefined,
     }, props.taskDefinition);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

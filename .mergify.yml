@@ -20,13 +20,14 @@ queue_rules:
       {{ title }} (#{{ number }})
       {{ body }}
 
-  - name: default-squash
+  - name: priority-squash
     update_method: merge
     merge_method: squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
-      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
+      - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
@@ -39,14 +40,13 @@ queue_rules:
       {{ title }} (#{{ number }})
       {{ body }}
 
-  - name: priority-squash
+  - name: default-squash
     update_method: merge
     merge_method: squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
-      - -label~=(blocked|do-not-merge|no-squash)
-      - label~=priority-pr
+      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
