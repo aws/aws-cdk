@@ -56,40 +56,56 @@ stack.lambdaFunctions.forEach(func=> {
 const assembly = app.synth();
 
 stack.lambdaFunctions.forEach((func) => {
-  // Find the S3 bucket and key from the stack's template
   const template = assembly.getStackArtifact(stack.artifactId).template;
   const resourceName = stack.getLogicalId(func.node.defaultChild as lambda.CfnFunction);
   const resource = template.Resources[resourceName];
-
+  
   if (!resource || resource.Type !== 'AWS::Lambda::Function') {
-    throw new ValidationError(`Could not find Lambda function resource for ${func.functionName}`, stack);
+    throw new Error(`Could not find Lambda function resource for ${func.functionName}`);
   }
 
   const s3Bucket = resource.Properties.Code.S3Bucket;
   const s3Key = resource.Properties.Code.S3Key;
 
   if (!s3Bucket || !s3Key) {
-    throw new ValidationError(`Could not find S3 location for function ${func.functionName}`, stack);
+    throw new Error(`Could not find S3 location for function ${func.functionName}`);
   }
 
-  const assetId = s3Key.split('.')[0]; // The format is "<hash>.zip"
-  const fullAssetPath = path.join(assembly.directory, `asset.${assetId}`);
+  const assetId = s3Key.split('.')[0]; // S3Key format is <hash>.zip"
+  const assetDir = path.join(assembly.directory, `asset.${assetId}`);
 
-  if (!fs.existsSync(fullAssetPath)) {
-    throw new ValidationError(`Asset file does not exist for function ${func.functionName}`, stack);
+  try {
+    if (!fs.existsSync(assetDir) || !fs.statSync(assetDir).isDirectory()) {
+      throw new Error(`Asset directory does not exist for function ${func.functionName}: ${assetDir}`);
+    }
+
+    const indexPath = path.join(assetDir, 'index.js');
+    if (!fs.existsSync(indexPath)) {
+      throw new Error(`index.js not found in asset directory for function ${func.functionName}`);
+    }
+
+    verifyBundledContent(indexPath, func.functionName);
+
+    console.log(`Bundling verification passed for function ${func.functionName}`);
+  } catch (error) {
+    console.error(`Error verifying bundled content for function ${func.functionName}:`, error);
+    throw error;
   }
+});
 
-  const bundledContent = fs.readFileSync(fullAssetPath, 'utf-8');
+
+function verifyBundledContent(filePath: string, functionName: string) {
+  const bundledContent = fs.readFileSync(filePath, 'utf-8');
 
   if (!bundledContent.includes('exports.handler =')) {
-    throw new ValidationError(`Bundled content does not contain expected handler export for function ${func.functionName}`, stack);
+    throw new Error(`Bundled content does not contain expected handler export for function ${functionName}`);
   }
 
   if (bundledContent.includes('import ')) {
-    throw new ValidationError(`Bundled content contains unexpected import statement for function ${func.functionName}`, stack);
+    throw new Error(`Bundled content contains unexpected import statement for function ${functionName}`);
   }
 
   if (!bundledContent.includes('//# sourceMappingURL=')) {
-    throw new ValidationError(`Bundled content does not contain source map for function ${func.functionName}`, stack);
+    throw new Error(`Bundled content does not contain source map for function ${functionName}`);
   }
-});
+}
