@@ -72,7 +72,7 @@ stack.lambdaFunctions.forEach((func) => {
     throw new ValidationError(`Could not find S3 location for function ${func.functionName}`, stack);
   }
 
-  const assetId = s3Key.split('.')[1]; // The format is "asset.<hash>.zip"
+  const assetId = s3Key.split('.')[0]; // The format is "<hash>.zip"
   const fullAssetPath = path.join(assembly.directory, `asset.${assetId}`);
 
   if (!fs.existsSync(fullAssetPath)) {
