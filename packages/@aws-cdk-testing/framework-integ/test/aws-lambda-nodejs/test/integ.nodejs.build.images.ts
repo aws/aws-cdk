@@ -61,14 +61,14 @@ stack.lambdaFunctions.forEach((func) => {
   const resource = template.Resources[resourceName];
   
   if (!resource || resource.Type !== 'AWS::Lambda::Function') {
-    throw new Error(`Could not find Lambda function resource for ${func.functionName}`);
+    throw new ValidationError(`Could not find Lambda function resource for ${func.functionName}`, stack);
   }
 
   const s3Bucket = resource.Properties.Code.S3Bucket;
   const s3Key = resource.Properties.Code.S3Key;
 
   if (!s3Bucket || !s3Key) {
-    throw new Error(`Could not find S3 location for function ${func.functionName}`);
+    throw new ValidationError(`Could not find S3 location for function ${func.functionName}`, stack);
   }
 
   const assetId = s3Key.split('.')[0]; // S3Key format is <hash>.zip"
@@ -76,15 +76,15 @@ stack.lambdaFunctions.forEach((func) => {
 
   try {
     if (!fs.existsSync(assetDir) || !fs.statSync(assetDir).isDirectory()) {
-      throw new Error(`Asset directory does not exist for function ${func.functionName}: ${assetDir}`);
+      throw new ValidationError(`Asset directory does not exist for function ${func.functionName}: ${assetDir}`, stack);
     }
 
     const indexPath = path.join(assetDir, 'index.js');
     if (!fs.existsSync(indexPath)) {
-      throw new Error(`index.js not found in asset directory for function ${func.functionName}`);
+      throw new ValidationError(`index.js not found in asset directory for function ${func.functionName}`, stack);
     }
 
-    verifyBundledContent(indexPath, func.functionName);
+    verifyBundledContent(stack, indexPath, func.functionName);
 
     console.log(`Bundling verification passed for function ${func.functionName}`);
   } catch (error) {
@@ -94,18 +94,18 @@ stack.lambdaFunctions.forEach((func) => {
 });
 
 
-function verifyBundledContent(filePath: string, functionName: string) {
+function verifyBundledContent(scope: Construct, filePath: string, functionName: string) {
   const bundledContent = fs.readFileSync(filePath, 'utf-8');
 
   if (!bundledContent.includes('exports.handler =')) {
-    throw new Error(`Bundled content does not contain expected handler export for function ${functionName}`);
+    throw new ValidationError(`Bundled content does not contain expected handler export for function ${functionName}`, scope);
   }
 
   if (bundledContent.includes('import ')) {
-    throw new Error(`Bundled content contains unexpected import statement for function ${functionName}`);
+    throw new ValidationError(`Bundled content contains unexpected import statement for function ${functionName}`, scope);
   }
 
   if (!bundledContent.includes('//# sourceMappingURL=')) {
-    throw new Error(`Bundled content does not contain source map for function ${functionName}`);
+    throw new ValidationError(`Bundled content does not contain source map for function ${functionName}`, scope);
   }
 }
