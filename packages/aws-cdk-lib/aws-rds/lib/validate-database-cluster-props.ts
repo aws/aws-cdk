@@ -13,7 +13,8 @@ const standardDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
     message: () => '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to \'${DatabaseInsightsMode.ADVANCED}\'',
   },
   {
-    condition: (props) => props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED && props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15,
+    condition: (props) => props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED &&
+      props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15,
     message: () => '`performanceInsightRetention` must be set to \'${PerformanceInsightRetention.MONTHS_15}\' when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
   },
   {
