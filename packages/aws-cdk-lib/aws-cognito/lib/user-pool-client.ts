@@ -519,7 +519,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
-      analyticsConfiguration: this.configureAnalytics(props.analytics),
+      analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
@@ -670,9 +670,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
   }
 
-  private configureAnalytics(analytics?: AnalyticsConfiguration): CfnUserPoolClient.AnalyticsConfigurationProperty | undefined {
-    if (!analytics) return undefined;
-
+  private configureAnalytics(analytics: AnalyticsConfiguration): CfnUserPoolClient.AnalyticsConfigurationProperty {
     // NOTE: CloudFormation expects either `ApplicationArn` or all of `ApplicationId`, `ExternalId`, and `RoleArn` to be provided.
     if (
       analytics.application &&
