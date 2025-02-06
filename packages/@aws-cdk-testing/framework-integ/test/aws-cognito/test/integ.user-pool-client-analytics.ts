@@ -85,6 +85,7 @@ const resp1 = integ.assertions.awsApiCall('CognitoIdentityServiceProvider', 'des
 });
 resp1.assertAtPath('UserPoolClient.AnalyticsConfiguration.ApplicationArn', ExpectedResult.stringLikeRegexp('.*:apps/.*'));
 
+// NOTE: assertion test for TestStack2
 const resp2 = integ.assertions.awsApiCall('CognitoIdentityServiceProvider', 'describeUserPoolClient', {
   UserPoolId: testCase2.userPool.userPoolId,
   ClientId: testCase2.client.userPoolClientId,
