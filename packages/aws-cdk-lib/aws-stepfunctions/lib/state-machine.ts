@@ -5,12 +5,13 @@ import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
-import { IChainable } from './types';
+import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -128,6 +129,15 @@ export interface StateMachineProps {
    * @default - No comment
    */
   readonly comment?: string;
+
+  /**
+   * The name of the query language used by the state machine.
+   * If the state does not contain a `queryLanguage` field,
+   * then it will use the query language specified in this `queryLanguage` field.
+   *
+   * @default - JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
 
   /**
    * Type of the state machine
@@ -433,6 +443,8 @@ export class StateMachine extends StateMachineBase {
     super(scope, id, {
       physicalName: props.stateMachineName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
       throw new Error('Cannot specify definition and definitionBody at the same time');
@@ -544,6 +556,7 @@ export class StateMachine extends StateMachineBase {
   /**
    * Add the given statement to the role's policy
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -786,9 +799,13 @@ export class ChainDefinitionBody extends DefinitionBody {
   }
 
   public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
-    const graphJson = graph!.toGraphJson();
+    const graphJson = graph!.toGraphJson(sfnProps.queryLanguage);
     return {
-      definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
+      definitionString: Stack.of(scope).toJsonString({
+        ...graphJson,
+        Comment: sfnProps.comment,
+        QueryLanguage: sfnProps.queryLanguage,
+      }),
     };
   }
 }

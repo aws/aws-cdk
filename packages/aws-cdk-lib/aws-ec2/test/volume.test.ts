@@ -1516,5 +1516,4 @@ describe('volume', () => {
       });
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
-
 });

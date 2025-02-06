@@ -1215,7 +1215,7 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 
 You can access your Aurora DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
-The following example shows granting Data API access to a Lamba function.
+The following example shows granting Data API access to a Lambda function.
 
 ```ts
 declare const vpc: ec2.Vpc;

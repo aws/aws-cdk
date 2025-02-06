@@ -987,6 +987,7 @@ lb.addListener('Listener', {
   certificates: [certificate],
   // mTLS settings
   mutualAuthentication: {
+    advertiseTrustStoreCaNames: true,
     ignoreClientCertificateExpiry: false,
     mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
     trustStore,

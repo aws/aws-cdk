@@ -3,6 +3,7 @@ import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { Metric, MetricOptions } from '../../aws-cloudwatch';
 import { Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a MetricFilter
@@ -18,7 +19,6 @@ export interface MetricFilterProps extends MetricFilterOptions {
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends Resource {
-
   private readonly metricName: string;
   private readonly metricNamespace: string;
 
@@ -26,6 +26,8 @@ export class MetricFilter extends Resource {
     super(scope, id, {
       physicalName: props.filterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.metricName = props.metricName;
     this.metricNamespace = props.metricNamespace;
@@ -63,6 +65,7 @@ export class MetricFilter extends Resource {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metric(props?: MetricOptions): Metric {
     return new Metric({
       metricName: this.metricName,

@@ -7,6 +7,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
 import {
   Annotations,
@@ -254,6 +255,39 @@ export interface ServiceConnectService {
    * @default - Duration.seconds(15)
    */
   readonly perRequestTimeout?: Duration;
+
+  /**
+   * A reference to an object that represents a Transport Layer Security (TLS) configuration.
+   *
+   * @default - none
+   */
+  readonly tls?: ServiceConnectTlsConfiguration;
+}
+
+/**
+ * TLS configuration for Service Connect service
+ */
+export interface ServiceConnectTlsConfiguration {
+  /**
+   * The ARN of the certificate root authority that secures your service.
+   *
+   * @default - none
+   */
+  readonly awsPcaAuthorityArn?: string;
+
+  /**
+   * The KMS key used for encryption and decryption.
+   *
+   * @default - none
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The IAM role that's associated with the Service Connect TLS.
+   *
+   * @default - none
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -895,7 +929,7 @@ export abstract class BaseService extends Resource
      * Resolve which namespace to use by picking:
      * 1. The namespace defined in service connect config.
      * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
-    */
+     */
     let namespace;
     if (this.cluster.defaultCloudMapNamespace) {
       namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
@@ -920,12 +954,21 @@ export abstract class BaseService extends Resource
         dnsName: svc.dnsName,
       };
 
+      const tls: CfnService.ServiceConnectTlsConfigurationProperty | undefined = svc.tls ? {
+        issuerCertificateAuthority: {
+          awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
+        },
+        kmsKey: svc.tls.kmsKey?.keyArn,
+        roleArn: svc.tls.role?.roleArn,
+      } : undefined;
+
       return {
         portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
         timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
+        tls,
       } as CfnService.ServiceConnectServiceProperty;
     });
 
@@ -942,7 +985,7 @@ export abstract class BaseService extends Resource
       namespace: namespace,
       services: services,
     };
-  };
+  }
 
   /**
    * Validate Service Connect Configuration
@@ -970,7 +1013,7 @@ export abstract class BaseService extends Resource
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
-      };
+      }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
@@ -995,6 +1038,12 @@ export abstract class BaseService extends Resource
       if (serviceConnectService.port &&
         !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
+      }
+
+      // tls.awsPcaAuthorityArn should be an ARN
+      const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
+      if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
+        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`);
       }
     });
   }
@@ -1135,6 +1184,8 @@ export abstract class BaseService extends Resource
    * Registers the service as a target of a Classic Load Balancer (CLB).
    *
    * Don't call this. Call `loadBalancer.addTarget()` instead.
+   *
+   * @param loadBalancer [disable-awslint:ref-via-interface]
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     return this.defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);
