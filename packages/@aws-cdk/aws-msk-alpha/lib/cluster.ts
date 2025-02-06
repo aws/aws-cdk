@@ -13,7 +13,7 @@ import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a MSK Cluster
@@ -893,6 +893,7 @@ export class Cluster extends ClusterBase {
    *
    * @param usernames - username(s) to register with the cluster
    */
+  @MethodMetadata()
   public addUser(...usernames: string[]): void {
     if (this.saslScramAuthenticationKey) {
       const MSK_SECRET_PREFIX = 'AmazonMSK_'; // Required

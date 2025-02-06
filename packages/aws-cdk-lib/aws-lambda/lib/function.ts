@@ -31,7 +31,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
 
 /**
@@ -1180,6 +1180,7 @@ export class Function extends FunctionBase {
    * @param value The environment variable's value.
    * @param options Environment variable options.
    */
+  @MethodMetadata()
   public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
     // Reserved environment variables will fail during cloudformation deploy if they're set.
     // This check is just to allow CDK to fail faster when these are specified.
@@ -1269,6 +1270,7 @@ export class Function extends FunctionBase {
    *
    * This method may be called more than once.
    */
+  @MethodMetadata()
   public invalidateVersionBasedOn(x: string) {
     if (Token.isUnresolved(x)) {
       throw new ValidationError('invalidateVersionOn: input may not contain unresolved tokens', this);
@@ -1283,6 +1285,7 @@ export class Function extends FunctionBase {
    *
    * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
    */
+  @MethodMetadata()
   public addLayers(...layers: ILayerVersion[]): void {
     for (const layer of layers) {
       if (this._layers.length === 5) {
@@ -1326,6 +1329,7 @@ export class Function extends FunctionBase {
    * `this.currentVersion` to obtain a reference to a version resource that gets
    * automatically recreated when the function configuration (or code) changes.
    */
+  @MethodMetadata()
   public addVersion(
     name: string,
     codeSha256?: string,
@@ -1363,6 +1367,7 @@ export class Function extends FunctionBase {
    * @param aliasName The name of the alias
    * @param options Alias options
    */
+  @MethodMetadata()
   public addAlias(aliasName: string, options?: AliasOptions): Alias {
     return addAlias(this, this.currentVersion, aliasName, options);
   }
