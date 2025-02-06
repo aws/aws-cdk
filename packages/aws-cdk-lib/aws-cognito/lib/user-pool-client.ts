@@ -4,6 +4,8 @@ import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -376,7 +378,6 @@ export interface IUserPoolClient extends IResource {
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource implements IUserPoolClient {
-
   /**
    * Import a user pool client given its id.
    */
@@ -384,7 +385,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     class Import extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
-        throw new Error('UserPool Client Secret is not available for imported Clients');
+        throw new ValidationError('UserPool Client Secret is not available for imported Clients', this);
       }
     }
 
@@ -413,9 +414,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.disableOAuth && props.oAuth) {
-      throw new Error('OAuth settings cannot be specified when disableOAuth is set.');
+      throw new ValidationError('OAuth settings cannot be specified when disableOAuth is set.', this);
     }
 
     this.oAuthFlows = props.oAuth?.flows ?? {
@@ -428,23 +431,23 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls === undefined) {
         callbackUrls = ['https://example.com'];
       } else if (callbackUrls.length === 0) {
-        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
+        throw new ValidationError('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.', this);
       }
     }
 
     if (props.oAuth?.defaultRedirectUri && !Token.isUnresolved(props.oAuth.defaultRedirectUri)) {
       if (callbackUrls && !callbackUrls.includes(props.oAuth.defaultRedirectUri)) {
-        throw new Error('defaultRedirectUri must be included in callbackUrls.');
+        throw new ValidationError('defaultRedirectUri must be included in callbackUrls.', this);
       }
 
       const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u;
       if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
-        throw new Error(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`);
+        throw new ValidationError(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`, this);
       }
     }
 
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
-      throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+      throw new ValidationError('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.', this);
     }
 
     this._generateSecret = props.generateSecret;
@@ -481,16 +484,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
    */
   public get userPoolClientName(): string {
     if (this._userPoolClientName === undefined) {
-      throw new Error('userPoolClientName is available only if specified on the UserPoolClient during initialization');
+      throw new ValidationError('userPoolClientName is available only if specified on the UserPoolClient during initialization', this);
     }
     return this._userPoolClientName;
   }
 
   public get userPoolClientSecret(): SecretValue {
     if (!this._generateSecret) {
-      throw new Error(
-        'userPoolClientSecret is available only if generateSecret is set to true.',
-      );
+      throw new ValidationError('userPoolClientSecret is available only if generateSecret is set to true.', this);
     }
 
     // Create the Custom Resource that assists in resolving the User Pool Client secret
@@ -541,7 +542,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   private configureOAuthFlows(): string[] | undefined {
     if ((this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) && this.oAuthFlows.clientCredentials) {
-      throw new Error('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.');
+      throw new ValidationError('clientCredentials OAuth flow cannot be selected along with codeGrant or implicitGrant.', this);
     }
     const oAuthFlows: string[] = [];
     if (this.oAuthFlows.clientCredentials) { oAuthFlows.push('client_credentials'); }
@@ -605,7 +606,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         accessToken: props.accessTokenValidity ? 'minutes' : undefined,
         refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
       };
-    };
+    }
 
     resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
     resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
@@ -615,7 +616,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
     if (value === undefined) { return; }
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
-      throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+      throw new ValidationError(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`, this);
     }
   }
 }

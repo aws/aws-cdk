@@ -5,6 +5,7 @@ import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -99,6 +100,34 @@ export interface TopicProps {
    * @default TracingConfig.PASS_THROUGH
    */
   readonly tracingConfig?: TracingConfig;
+
+  /**
+   * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
+   *
+   * You can only set this property when `fifo` is `true`.
+   *
+   * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
+   */
+  readonly fifoThroughputScope?: FifoThroughputScope;
+}
+
+/**
+ * The throughput quota and deduplication behavior to apply for the FIFO topic.
+ */
+export enum FifoThroughputScope {
+  /**
+   * Topic scope
+   * - Throughput: 3000 messages per second and a bandwidth of 20MB per second.
+   * - Deduplication: Message deduplication is verified on the entire FIFO topic.
+   */
+  TOPIC = 'Topic',
+
+  /**
+   * Message group scope
+   * - Throughput: Maximum regional limits.
+   * - Deduplication: Message deduplication is only verified within a message group.
+   */
+  MESSAGE_GROUP = 'MessageGroup',
 }
 
 /**
@@ -203,7 +232,6 @@ export interface TopicAttributes {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
-
   /**
    * Import an existing SNS topic provided an ARN
    *
@@ -213,7 +241,7 @@ export class Topic extends TopicBase {
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     return Topic.fromTopicAttributes(scope, id, { topicArn });
-  };
+  }
 
   /**
    * Import an existing SNS topic provided a topic attributes
@@ -256,6 +284,8 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enforceSSL = props.enforceSSL;
 
@@ -264,6 +294,9 @@ export class Topic extends TopicBase {
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
       throw new ValidationError('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
+    }
+    if (props.fifoThroughputScope && !props.fifo) {
+      throw new ValidationError('`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
     }
     if (
       props.messageRetentionPeriodInDays !== undefined
@@ -316,6 +349,7 @@ export class Topic extends TopicBase {
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
       tracingConfig: props.tracingConfig,
+      fifoThroughputScope: props.fifoThroughputScope,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {
@@ -325,6 +359,10 @@ export class Topic extends TopicBase {
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
+
+    if (this.enforceSSL) {
+      this.addSSLPolicy();
+    }
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
@@ -349,6 +387,7 @@ export class Topic extends TopicBase {
   /**
    * Adds a delivery status logging configuration to the topic.
    */
+  @MethodMetadata()
   public addLoggingConfig(config: LoggingConfig) {
     this.loggingConfigs.push(config);
   }

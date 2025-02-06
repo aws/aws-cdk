@@ -6,13 +6,13 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
  * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
  */
 export class SourceAccessConfigurationType {
-
   /**
    * (MQ) The Secrets Manager secret that stores your broker credentials.
    */
@@ -320,8 +320,8 @@ export enum MetricType {
  */
 export interface MetricsConfig {
   /**
-  * List of metric types to enable for this event source
-  */
+   * List of metric types to enable for this event source
+   */
   readonly metrics: MetricType[];
 }
 
@@ -372,7 +372,6 @@ export interface IEventSourceMapping extends cdk.IResource {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Resource implements IEventSourceMapping {
-
   /**
    * Import an event source into this stack from its event source id.
    */
@@ -401,6 +400,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
       throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);

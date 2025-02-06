@@ -27,7 +27,7 @@ export type { Account } from './api/aws-auth';
 export type { ContextProviderPlugin } from './api/plugin';
 export type { BootstrapEnvironmentOptions, BootstrapSource } from './api/bootstrap';
 export type { StackSelector } from './api/cxapp/cloud-assembly';
-export type { DeployStackResult } from './api/deploy-stack';
+export type { DeployStackResult } from './api/deployments';
 export type { Component } from './notices';
 export type { LoggerFunction } from './legacy-logging-source';
 

@@ -3,6 +3,8 @@ import { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { Stack } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -64,11 +66,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new Error('url is not available for imported stages.');
+        throw new ValidationError('url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new Error('callback url is not available for imported stages.');
+        throw new ValidationError('callback url is not available for imported stages.', scope);
       }
     }
     return new Import(scope, id);
@@ -82,6 +84,8 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     super(scope, id, {
       physicalName: props.stageName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;
@@ -127,6 +131,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
    *
    * @param identity The principal
    */
+  @MethodMetadata()
   public grantManagementApiAccess(identity: IGrantable): Grant {
     const arn = Stack.of(this.api).formatArn({
       service: 'execute-api',

@@ -1,4 +1,7 @@
+import * as util from 'node:util';
 import * as chalk from 'chalk';
+import * as promptly from 'promptly';
+import { ToolkitError } from './error';
 
 export type IoMessageCodeCategory = 'TOOLKIT' | 'SDK' | 'ASSETS';
 export type IoCodeLevel = 'E' | 'W' | 'I';
@@ -49,14 +52,6 @@ export interface IoMessage<T> {
   readonly message: string;
 
   /**
-   * If true, the message will be written to stdout
-   * regardless of any other parameters.
-   *
-   * @default false
-   */
-  readonly forceStdout?: boolean;
-
-  /**
    * The data attached to the message.
    */
   readonly data?: T;
@@ -69,20 +64,22 @@ export interface IoRequest<T, U> extends IoMessage<T> {
   readonly defaultResponse: U;
 }
 
-export type IoMessageLevel = 'error' | 'warn' | 'info' | 'debug' | 'trace';
+export type IoMessageLevel = 'error' | 'result' | 'warn' | 'info' | 'debug' | 'trace';
 
 export const levelPriority: Record<IoMessageLevel, number> = {
   error: 0,
-  warn: 1,
-  info: 2,
-  debug: 3,
-  trace: 4,
+  result: 1,
+  warn: 2,
+  info: 3,
+  debug: 4,
+  trace: 5,
 };
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
 export type ToolkitAction =
+| 'assembly'
 | 'bootstrap'
 | 'synth'
 | 'list'
@@ -175,11 +172,16 @@ export class CliIoHost implements IIoHost {
    */
   private static _instance: CliIoHost | undefined;
 
+  // internal state for getters/setter
   private _currentAction: ToolkitAction;
   private _isCI: boolean;
   private _isTTY: boolean;
   private _logLevel: IoMessageLevel;
   private _internalIoHost?: IIoHost;
+
+  // Corked Logging
+  private corkedCounter = 0;
+  private readonly corkedLoggingBuffer: IoMessage<any>[] = [];
 
   private constructor(props: CliIoHostProps = {}) {
     this._currentAction = props.currentAction ?? 'none' as ToolkitAction;
@@ -260,6 +262,31 @@ export class CliIoHost implements IIoHost {
   }
 
   /**
+   * Executes a block of code with corked logging. All log messages during execution
+   * are buffered and only written when all nested cork blocks complete (when CORK_COUNTER reaches 0).
+   * The corking is bound to the specific instance of the CliIoHost.
+   *
+   * @param block - Async function to execute with corked logging
+   * @returns Promise that resolves with the block's return value
+   */
+  public async withCorkedLogging<T>(block: () => Promise<T>): Promise<T> {
+    this.corkedCounter++;
+    try {
+      return await block();
+    } finally {
+      this.corkedCounter--;
+      if (this.corkedCounter === 0) {
+        // Process each buffered message through notify
+        for (const ioMessage of this.corkedLoggingBuffer) {
+          await this.notify(ioMessage);
+        }
+        // remove all buffered messages in-place
+        this.corkedLoggingBuffer.splice(0);
+      }
+    }
+  }
+
+  /**
    * Notifies the host of a message.
    * The caller waits until the notification completes.
    */
@@ -272,34 +299,35 @@ export class CliIoHost implements IIoHost {
       return;
     }
 
-    const output = this.formatMessage(msg);
-    const stream = this.stream(msg.level, msg.forceStdout ?? false);
+    if (this.corkedCounter > 0) {
+      this.corkedLoggingBuffer.push(msg);
+      return;
+    }
 
-    return new Promise((resolve, reject) => {
-      stream.write(output, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    const output = this.formatMessage(msg);
+    const stream = this.selectStream(msg.level);
+    stream.write(output);
   }
 
   /**
-   * Determines which output stream to use based on log level and configuration.
+   * Determines the output stream, based on message level and configuration.
    */
-  private stream(level: IoMessageLevel, forceStdout: boolean) {
-    // For legacy purposes all log streams are written to stderr by default, unless
-    // specified otherwise, by passing `forceStdout`, which is used by the `data()` logging function, or
-    // if the CDK is running in a CI environment. This is because some CI environments will immediately
-    // fail if stderr is written to. In these cases, we detect if we are in a CI environment and
-    // write all messages to stdout instead.
-    if (forceStdout) {
-      return process.stdout;
+  private selectStream(level: IoMessageLevel) {
+    // The stream selection policy for the CLI is the following:
+    //
+    //   (1) Messages of level `result` always go to `stdout`
+    //   (2) Messages of level `error` always go to `stderr`.
+    //   (3a) All remaining messages go to `stderr`.
+    //   (3b) If we are in CI mode, all remaining messages go to `stdout`.
+    //
+    switch (level) {
+      case 'error':
+        return process.stderr;
+      case 'result':
+        return process.stdout;
+      default:
+        return this.isCI ? process.stdout : process.stderr;
     }
-    if (level == 'error') return process.stderr;
-    return CliIoHost.instance().isCI ? process.stdout : process.stderr;
   }
 
   /**
@@ -308,13 +336,61 @@ export class CliIoHost implements IIoHost {
    * If the host does not return a response the suggested
    * default response from the input message will be used.
    */
-  public async requestResponse<T, U>(msg: IoRequest<T, U>): Promise<U> {
+  public async requestResponse<DataType, ResponseType>(msg: IoRequest<DataType, ResponseType>): Promise<ResponseType> {
+    // First call out to a registered instance if we have one
     if (this._internalIoHost) {
       return this._internalIoHost.requestResponse(msg);
     }
 
-    await this.notify(msg);
-    return msg.defaultResponse;
+    // If the request cannot be prompted for by the CliIoHost, we just accept the default
+    if (!isPromptableRequest(msg)) {
+      await this.notify(msg);
+      return msg.defaultResponse;
+    }
+
+    const response = await this.withCorkedLogging(async (): Promise<string | number | true> => {
+      // prepare prompt data
+      // @todo this format is not defined anywhere, probably should be
+      const data: {
+        motivation?: string;
+        concurrency?: number;
+      } = msg.data ?? {};
+
+      const motivation = data.motivation ?? 'User input is needed';
+      const concurrency = data.concurrency ?? 0;
+
+      // only talk to user if STDIN is a terminal (otherwise, fail)
+      if (!this.isTTY) {
+        throw new ToolkitError(`${motivation}, but terminal (TTY) is not attached so we are unable to get a confirmation from the user`);
+      }
+
+      // only talk to user if concurrency is 1 (otherwise, fail)
+      if (concurrency > 1) {
+        throw new ToolkitError(`${motivation}, but concurrency is greater than 1 so we are unable to get a confirmation from the user`);
+      }
+
+      // Basic confirmation prompt
+      // We treat all requests with a boolean response as confirmation prompts
+      if (isConfirmationPrompt(msg)) {
+        const confirmed = await promptly.confirm(`${chalk.cyan(msg.message)} (y/n)`);
+        if (!confirmed) {
+          throw new ToolkitError('Aborted by user');
+        }
+        return confirmed;
+      }
+
+      // Asking for a specific value
+      const prompt = extractPromptInfo(msg);
+      const answer = await promptly.prompt(`${chalk.cyan(msg.message)} (${prompt.default})`, {
+        default: prompt.default,
+      });
+      return prompt.convertAnswer(answer);
+    });
+
+    // We need to cast this because it is impossible to narrow the generic type
+    // isPromptableRequest ensures that the response type is one we can prompt for
+    // the remaining code ensure we are indeed returning the correct type
+    return response as ResponseType;
   }
 
   /**
@@ -341,9 +417,43 @@ export class CliIoHost implements IIoHost {
   }
 }
 
+/**
+ * This IoHost implementation considers a request promptable, if:
+ * - it's a yes/no confirmation
+ * - asking for a string or number value
+ */
+function isPromptableRequest(msg: IoRequest<any, any>): msg is IoRequest<any, string | number | boolean> {
+  return isConfirmationPrompt(msg)
+    || typeof msg.defaultResponse === 'string'
+    || typeof msg.defaultResponse === 'number';
+}
+
+/**
+ * Check if the request is a confirmation prompt
+ * We treat all requests with a boolean response as confirmation prompts
+ */
+function isConfirmationPrompt(msg: IoRequest<any, any>): msg is IoRequest<any, boolean> {
+  return typeof msg.defaultResponse === 'boolean';
+}
+
+/**
+ * Helper to extract information for promptly from the request
+ */
+function extractPromptInfo(msg: IoRequest<any, any>): {
+  default: string;
+  convertAnswer: (input: string) => string | number;
+} {
+  const isNumber = (typeof msg.defaultResponse === 'number');
+  return {
+    default: util.format(msg.defaultResponse),
+    convertAnswer: isNumber ? (v) => Number(v) : (v) => String(v),
+  };
+}
+
 const styleMap: Record<IoMessageLevel, (str: string) => string> = {
   error: chalk.red,
   warn: chalk.yellow,
+  result: chalk.white,
   info: chalk.white,
   debug: chalk.gray,
   trace: chalk.gray,

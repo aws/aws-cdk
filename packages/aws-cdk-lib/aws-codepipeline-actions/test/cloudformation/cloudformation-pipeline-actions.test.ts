@@ -194,7 +194,6 @@ describe('CloudFormation Pipeline Actions', () => {
         'Name': 'prod',
       }],
     });
-
   });
 
   test('fullPermissions leads to admin role and full IAM capabilities with pipeline bucket+key read permissions', () => {
@@ -263,7 +262,6 @@ describe('CloudFormation Pipeline Actions', () => {
       },
       Roles: [{ Ref: roleId }],
     });
-
   });
 
   test('outputFileName leads to creation of output artifact', () => {
@@ -294,7 +292,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('replaceOnFailure switches action type', () => {
@@ -327,7 +324,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('parameterOverrides are serialized as a string', () => {
@@ -368,7 +364,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('Action service role is passed to template', () => {
@@ -418,7 +413,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('Single capability is passed to template', () => {
@@ -460,7 +454,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('Multiple capabilities are passed to template', () => {
@@ -503,7 +496,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('Empty capabilities is not passed to template', () => {
@@ -544,7 +536,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   test('can use CfnCapabilities from the core module', () => {
@@ -585,7 +576,6 @@ describe('CloudFormation Pipeline Actions', () => {
         },
       ],
     });
-
   });
 
   describe('cross-account CFN Pipeline', () => {
@@ -709,7 +699,6 @@ describe('CloudFormation Pipeline Actions', () => {
       Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Role', {
         'RoleName': 'pipelinestack-support-123fndeploymentrole4668d9b5a30ce3dc4508',
       });
-
     });
   });
 });

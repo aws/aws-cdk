@@ -21,6 +21,8 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
 }
 
 const isRunningOnCodeBuild = !!process.env.CODEBUILD_BUILD_ID;
+const isRunningOnGitHubActions = !!process.env.GITHUB_RUN_ID;
+const isRunningOnCi = isRunningOnCodeBuild || isRunningOnGitHubActions;
 
 class CDKSupportDemoRootStack extends Stack{
   constructor(scope, id, props) {
@@ -102,7 +104,7 @@ class CDKSupportDemoRootStack extends Stack{
       bundling: {
         forcedDockerBundling: true,
         // Only use Google proxy in the CI tests, as it is blocked on workstations
-        goProxies: isRunningOnCodeBuild ? [GoFunction.GOOGLE_GOPROXY, 'direct'] : undefined,
+        goProxies: isRunningOnCi ? [GoFunction.GOOGLE_GOPROXY, 'direct'] : undefined,
       },
     });
 

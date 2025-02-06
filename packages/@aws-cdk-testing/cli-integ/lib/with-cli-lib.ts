@@ -131,10 +131,11 @@ __EOS__`], {
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        // In these tests we want to make a distinction between stdout and sterr
+        CI: 'false',
         ...options.modEnv,
       },
     });
   }
-
 }
 

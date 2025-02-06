@@ -1,6 +1,6 @@
 import type { Export, ListExportsCommandOutput, StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import type { SDK } from './aws-auth';
-import type { NestedStackTemplates } from './nested-stack-helpers';
+import type { NestedStackTemplates } from './deployments';
 import { ToolkitError } from '../toolkit/error';
 
 export interface ListStackResources {

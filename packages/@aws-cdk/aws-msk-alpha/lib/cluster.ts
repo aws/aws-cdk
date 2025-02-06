@@ -13,6 +13,7 @@ import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a MSK Cluster
@@ -36,7 +37,7 @@ export interface ICluster extends core.IResource, ec2.IConnectable {
 /**
  * A new or imported MSK Cluster.
  */
-abstract class ClusterBase extends core.Resource implements ICluster {
+export abstract class ClusterBase extends core.Resource implements ICluster {
   public abstract readonly clusterArn: string;
   public abstract readonly clusterName: string;
   /** @internal */
@@ -467,6 +468,8 @@ export class Cluster extends ClusterBase {
     super(scope, id, {
       physicalName: props.clusterName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const subnetSelection = props.vpc.selectSubnets(props.vpcSubnets);
 
@@ -837,7 +840,6 @@ export class Cluster extends ClusterBase {
       });
     }
     return this._clusterBootstrapBrokers.getResponseField(responseField);
-
   }
   /**
    * Get the list of brokers that a client application can use to bootstrap
@@ -891,6 +893,7 @@ export class Cluster extends ClusterBase {
    *
    * @param usernames - username(s) to register with the cluster
    */
+  @MethodMetadata()
   public addUser(...usernames: string[]): void {
     if (this.saslScramAuthenticationKey) {
       const MSK_SECRET_PREFIX = 'AmazonMSK_'; // Required
