@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
+import * as fs from 'fs-extra';
 import { toSymlinkFollow } from './compat';
 import { CopyOptions } from '../../assets';
 import * as iam from '../../aws-iam';
@@ -8,7 +9,6 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import * as cxapi from '../../cx-api';
-
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -149,44 +149,62 @@ export class Asset extends Construct implements cdk.IAsset {
 
     this.isBundled = props.bundling != null;
 
-    // stage the asset source (conditionally).
-    const staging = new cdk.AssetStaging(this, 'Stage', {
-      ...props,
-      sourcePath: path.resolve(props.path),
-      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
-      assetHash: props.assetHash ?? props.sourceHash,
-    });
+    if (!fs.existsSync(path.resolve(props.path))) {
+      if (process.env.CDK_COMMAND !== 'destroy') {
+        throw new ValidationError(`Cannot find asset at ${path.resolve(props.path)}`, this);
+      } else {
+        this.s3BucketName = '';
+        this.s3ObjectKey = '';
+        this.s3Url = '';
+        this.httpUrl = '';
+        this.s3ObjectUrl = '';
+        this.assetPath = '';
+        this.bucket = new s3.Bucket(this, 'AssetBucket', {});
+        this.isFile = false;
+        this.isZipArchive = false;
+        this.sourceHash = '';
+        this.assetHash = '';
+      }
+    } else {
+      // stage the asset source (conditionally).
+      const staging = new cdk.AssetStaging(this, 'Stage', {
+        ...props,
+        sourcePath: path.resolve(props.path),
+        follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
+        assetHash: props.assetHash ?? props.sourceHash,
+      });
 
-    this.assetHash = staging.assetHash;
-    this.sourceHash = this.assetHash;
+      this.assetHash = staging.assetHash;
+      this.sourceHash = this.assetHash;
 
-    const stack = cdk.Stack.of(this);
+      const stack = cdk.Stack.of(this);
 
-    this.assetPath = staging.relativeStagedPath(stack);
+      this.assetPath = staging.relativeStagedPath(stack);
 
-    this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
+      this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
 
-    this.isZipArchive = staging.isArchive;
+      this.isZipArchive = staging.isArchive;
 
-    const location = stack.synthesizer.addFileAsset({
-      packaging: staging.packaging,
-      sourceHash: this.sourceHash,
-      fileName: this.assetPath,
-      deployTime: props.deployTime,
-    });
+      const location = stack.synthesizer.addFileAsset({
+        packaging: staging.packaging,
+        sourceHash: this.sourceHash,
+        fileName: this.assetPath,
+        deployTime: props.deployTime,
+      });
 
-    this.s3BucketName = location.bucketName;
-    this.s3ObjectKey = location.objectKey;
-    this.s3ObjectUrl = location.s3ObjectUrl;
-    this.httpUrl = location.httpUrl;
-    this.s3Url = location.httpUrl; // for backwards compatibility
+      this.s3BucketName = location.bucketName;
+      this.s3ObjectKey = location.objectKey;
+      this.s3ObjectUrl = location.s3ObjectUrl;
+      this.httpUrl = location.httpUrl;
+      this.s3Url = location.httpUrl; // for backwards compatibility
 
-    const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
+      const kmsKey = location.kmsKeyArn ? kms.Key.fromKeyArn(this, 'Key', location.kmsKeyArn) : undefined;
 
-    this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
-      bucketName: this.s3BucketName,
-      encryptionKey: kmsKey,
-    });
+      this.bucket = s3.Bucket.fromBucketAttributes(this, 'AssetBucket', {
+        bucketName: this.s3BucketName,
+        encryptionKey: kmsKey,
+      });
+    }
 
     for (const reader of (props.readers ?? [])) {
       this.grantRead(reader);
