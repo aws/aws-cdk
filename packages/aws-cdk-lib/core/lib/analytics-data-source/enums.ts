@@ -555,20 +555,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
-  'SynthesisMessageLevel': [
-    'info',
-    'warning',
-    'error'
-  ],
-  'Partition': [
-    'aws',
-    'aws-cn',
-    'aws-us-gov',
-    'aws-iso',
-    'aws-iso-b',
-    'aws-iso-f',
-    'aws-iso-e'
-  ],
   'AccessScopeType': [
     'namespace',
     'cluster'
@@ -2567,6 +2553,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'aws-ecs-2',
     'aws-ecs-2-nvidia'
   ],
+  'AvailabilityZoneRebalancing': [
+    'ENABLED',
+    'DISABLED'
+  ],
   'ContainerInsights': [
     'enabled',
     'disabled',
@@ -3449,10 +3439,24 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'number',
     'string-list'
   ],
+  'SynthesisMessageLevel': [
+    'info',
+    'warning',
+    'error'
+  ],
   'DockerCredentialUsage': [
     'SYNTH',
     'SELF_UPDATE',
     'ASSET_PUBLISHING'
+  ],
+  'Partition': [
+    'aws',
+    'aws-cn',
+    'aws-us-gov',
+    'aws-iso',
+    'aws-iso-b',
+    'aws-iso-f',
+    'aws-iso-e'
   ],
   'InvocationType': [
     'RequestResponse',
@@ -3486,22 +3490,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SingletonFunction',
     'CustomResourceProvider',
     'NoOp'
-  ],
-  'LoadBalancerIpAddressType': [
-    'ipv4',
-    'dualstack',
-    'dualstack-without-public-ipv4'
-  ],
-  'VpcSubnetGroupType': [
-    'Public',
-    'Private',
-    'Isolated'
-  ],
-  'FlagType': [
-    0,
-    1,
-    2,
-    3
   ],
   'DiagnosticReason': [
     'NO_SNAPSHOT',
@@ -4000,6 +3988,22 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'PolicyValidationReportStatusBeta1': [
     'success',
     'failure'
+  ],
+  'LoadBalancerIpAddressType': [
+    'ipv4',
+    'dualstack',
+    'dualstack-without-public-ipv4'
+  ],
+  'VpcSubnetGroupType': [
+    'Public',
+    'Private',
+    'Isolated'
+  ],
+  'FlagType': [
+    0,
+    1,
+    2,
+    3
   ],
   'AssetType': [
     'file',

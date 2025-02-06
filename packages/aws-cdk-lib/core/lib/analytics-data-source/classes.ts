@@ -9025,27 +9025,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         },
         'launchTemplateOverrides': {
-          'instanceRequirements': {
-            'acceleratorCount': {
-              'creationStack': '*',
-              'typeHint': 'ResolutionTypeHint'
-            },
-            'acceleratorManufacturers': '*',
-            'acceleratorNames': '*',
-            'acceleratorTypes': '*',
-            'allowedInstanceTypes': '*',
-            'bareMetal': '*',
-            'burstablePerformance': '*',
-            'cpuManufacturers': '*',
-            'excludedInstanceTypes': '*',
-            'instanceGenerations': '*',
-            'localStorage': '*',
-            'localStorageTypes': '*',
-            'maxSpotPriceAsPercentageOfOptimalOnDemandPrice': '*',
-            'onDemandMaxPricePercentageOverLowestPrice': '*',
-            'requireHibernateSupport': 'boolean',
-            'spotMaxPricePercentageOverLowestPrice': '*'
-          },
+          'instanceRequirements': '*',
           'instanceType': '*',
           'weightedCapacity': '*'
         }
@@ -9484,10 +9464,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'logDriverConfig': {
           'logDriver': '*',
           'options': '*',
-          'secretOptions': {
-            'name': '*',
-            'valueFrom': '*'
-          }
+          'secretOptions': '*'
         },
         'readonlyRootFilesystem': 'boolean',
         'secrets': '*',
@@ -10045,10 +10022,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'logDriverConfig': {
               'logDriver': '*',
               'options': '*',
-              'secretOptions': {
-                'name': '*',
-                'valueFrom': '*'
-              }
+              'secretOptions': '*'
             },
             'readonlyRootFilesystem': 'boolean',
             'secrets': '*',
@@ -10865,15 +10839,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'allowedMethods': 'CloudFrontAllowedMethods',
           'pathPattern': '*',
           'cachedMethods': 'CloudFrontAllowedCachedMethods',
-          'forwardedValues': {
-            'cookies': {
-              'creationStack': '*',
-              'typeHint': 'ResolutionTypeHint'
-            },
-            'headers': '*',
-            'queryString': 'boolean',
-            'queryStringCacheKeys': '*'
-          },
+          'forwardedValues': '*',
           'lambdaFunctionAssociations': {
             'eventType': 'LambdaEdgeEventType',
             'lambdaFunction': {
@@ -10939,12 +10905,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'includeCookies': 'boolean',
         'prefix': '*'
       },
-      'errorConfigurations': {
-        'errorCachingMinTtl': '*',
-        'errorCode': '*',
-        'responseCode': '*',
-        'responsePagePath': '*'
-      },
+      'errorConfigurations': '*',
       'webACLId': '*',
       'viewerCertificate': '*',
       'geoRestriction': '*',
@@ -15976,12 +15937,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
-      'accessLoggingPolicy': {
-        'emitInterval': '*',
-        'enabled': 'boolean',
-        's3BucketName': '*',
-        's3BucketPrefix': '*'
-      },
+      'accessLoggingPolicy': '*',
       'addListener': [
         {
           'externalPort': '*',
@@ -17059,6 +17015,31 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'streamMode': 'StreamMode',
       'removalPolicy': 'RemovalPolicy'
+    }
+  },
+  'aws-cdk-lib.aws-kinesisfirehose': {
+    'DeliveryStream': {
+      'destination': '*',
+      'deliveryStreamName': '*',
+      'source': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'encryption': '*'
     }
   },
   'aws-cdk-lib.aws-kms': {
@@ -26887,6 +26868,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'placementConstraints': '*',
       'placementStrategies': '*',
       'daemon': 'boolean',
+      'availabilityZoneRebalancing': 'AvailabilityZoneRebalancing',
       'cluster': {
         'clusterName': '*',
         'clusterArn': '*',
@@ -27047,6 +27029,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'addPlacementConstraints': [
         '*'
+      ],
+      'attachToClassicLB': [
+        '*'
       ]
     },
     'Ec2TaskDefinition': {
@@ -27135,6 +27120,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'uniqueId': '*',
         'connections': '*'
       },
+      'daemon': 'boolean',
       'cluster': {
         'clusterName': '*',
         'clusterArn': '*',
@@ -27494,6 +27480,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'connections': '*'
       },
       'platformVersion': 'FargatePlatformVersion',
+      'availabilityZoneRebalancing': 'AvailabilityZoneRebalancing',
       'cluster': {
         'clusterName': '*',
         'clusterArn': '*',
@@ -27648,7 +27635,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'logDriver': '*'
       },
       'taskDefinitionRevision': '*',
-      'volumeConfigurations': '*'
+      'volumeConfigurations': '*',
+      'attachToClassicLB': [
+        '*'
+      ]
     },
     'FargateTaskDefinition': {
       'cpu': '*',
@@ -27784,7 +27774,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'node': '*'
         },
-        'ignoreClientCertificateExpiry': 'boolean'
+        'ignoreClientCertificateExpiry': 'boolean',
+        'advertiseTrustStoreCaNames': 'boolean'
       },
       'addCertificateArns': [
         '*',
@@ -28020,7 +28011,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                 'region': '*'
               }
             },
-            'ignoreClientCertificateExpiry': 'boolean'
+            'ignoreClientCertificateExpiry': 'boolean',
+            'advertiseTrustStoreCaNames': 'boolean'
           }
         }
       ],
@@ -28506,7 +28498,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                 'region': '*'
               }
             },
-            'ignoreClientCertificateExpiry': 'boolean'
+            'ignoreClientCertificateExpiry': 'boolean',
+            'advertiseTrustStoreCaNames': 'boolean'
           }
         }
       ]
@@ -28549,7 +28542,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                 'region': '*'
               }
             },
-            'ignoreClientCertificateExpiry': 'boolean'
+            'ignoreClientCertificateExpiry': 'boolean',
+            'advertiseTrustStoreCaNames': 'boolean'
           }
         }
       ]
