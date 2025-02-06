@@ -34,7 +34,6 @@ class TestStack extends cdk.Stack {
       region: targetRegion,
       resultPath: sfn.JsonPath.DISCARD,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      payloadResponseOnly: false,
     });
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
