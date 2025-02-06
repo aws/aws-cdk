@@ -112,7 +112,6 @@ class LiteralMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: any,
     options: LiteralMatchOptions = {}) {
-
     super();
     this.partialObjects = options.partialObjects ?? false;
 
@@ -184,7 +183,6 @@ class ArrayMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: any[],
     options: ArrayMatchOptions = {}) {
-
     super();
     this.subsequence = options.subsequence ?? true;
     this.partialObjects = options.partialObjects ?? false;
@@ -334,7 +332,6 @@ class ObjectMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: {[key: string]: any},
     options: ObjectMatchOptions = {}) {
-
     super();
     this.partial = options.partial ?? true;
   }
@@ -387,7 +384,7 @@ class SerializedJson extends Matcher {
     private readonly pattern: any,
   ) {
     super();
-  };
+  }
 
   public test(actual: any): MatchResult {
     if (getType(actual) !== 'string') {
@@ -429,7 +426,6 @@ class NotMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: {[key: string]: any}) {
-
     super();
   }
 
@@ -471,7 +467,6 @@ class StringLikeRegexpMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: string) {
-
     super();
   }
 
@@ -498,5 +493,4 @@ class StringLikeRegexpMatch extends Matcher {
 
     return result;
   }
-
 }

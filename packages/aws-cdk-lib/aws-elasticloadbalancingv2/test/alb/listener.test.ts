@@ -1135,7 +1135,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad fixed responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1173,7 +1172,6 @@ describe('tests', () => {
   });
 
   describeDeprecated('Throws with bad redirect responses', () => {
-
     test('status code', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1778,7 +1776,7 @@ describe('tests', () => {
     interface TestCase {
       readonly removeSuffix?: boolean;
       readonly expectedLogicalId: string;
-    };
+    }
     const nonDefaultTestCases: TestCase[] = [
       { removeSuffix: true, expectedLogicalId: identifierToken },
       { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
@@ -2006,7 +2004,6 @@ describe('tests', () => {
       }),
       ).toThrow('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
     });
-
   });
 
   describe('Mutual Authentication', () => {
@@ -2027,6 +2024,7 @@ describe('tests', () => {
         protocol: elbv2.ApplicationProtocol.HTTPS,
         certificates: [importedCertificate(stack)],
         mutualAuthentication: {
+          advertiseTrustStoreCaNames: true,
           ignoreClientCertificateExpiry: true,
           mutualAuthenticationMode: elbv2.MutualAuthenticationMode.VERIFY,
           trustStore,
@@ -2038,9 +2036,35 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
         MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: 'on',
           IgnoreClientCertificateExpiry: true,
           Mode: 'verify',
           TrustStoreArn: stack.resolve(trustStore.trustStoreArn),
+        },
+      });
+    });
+
+    test('Mutual Authentication settings when advertiseTrustStoreCaNames is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        mutualAuthentication: {
+          advertiseTrustStoreCaNames: false,
+        },
+        defaultAction: elbv2.ListenerAction.fixedResponse(200,
+          { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: 'off',
         },
       });
     });
@@ -2089,6 +2113,7 @@ describe('tests', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
         MutualAuthentication: {
+          AdvertiseTrustStoreCaNames: Match.absent(),
           IgnoreClientCertificateExpiry: Match.absent(),
           Mode: Match.absent(),
           TrustStoreArn: Match.absent(),
@@ -2164,8 +2189,28 @@ describe('tests', () => {
         });
       }).toThrow('You cannot set \'ignoreClientCertificateExpiry\' when \'mode\' is \'off\' or \'passthrough\'');
     });
-  });
 
+    test.each([elbv2.MutualAuthenticationMode.OFF, elbv2.MutualAuthenticationMode.PASS_THROUGH])('Throw an error when mode is %s with advertiseTrustStoreCaNames', (mutualAuthenticationMode) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      expect(() => {
+        lb.addListener('Listener', {
+          protocol: elbv2.ApplicationProtocol.HTTPS,
+          certificates: [importedCertificate(stack)],
+          mutualAuthentication: {
+            advertiseTrustStoreCaNames: true,
+            mutualAuthenticationMode,
+          },
+          defaultAction: elbv2.ListenerAction.fixedResponse(200,
+            { contentType: 'text/plain', messageBody: 'Success mTLS' }),
+        });
+      }).toThrow('You cannot set \'advertiseTrustStoreCaNames\' when \'mode\' is \'off\' or \'passthrough\'');
+    });
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

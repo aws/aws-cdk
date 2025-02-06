@@ -5,13 +5,10 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { DeploymentMethod } from './api';
-import { assertIsSuccessfulDeployStackResult } from './api/deploy-stack';
-import { Deployments } from './api/deployments';
-import { ResourceIdentifierProperties, ResourcesToImport } from './api/util/cloudformation';
+import { assertIsSuccessfulDeployStackResult, Deployments, DeploymentMethod, ResourceIdentifierProperties, ResourcesToImport } from './api/deployments';
+import { Tag } from './api/tags';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { error, info, success, warning } from './logging';
-import { Tag } from './tags';
 import { ToolkitError } from './toolkit/error';
 
 export interface ImportDeploymentOptions extends DeployOptions {

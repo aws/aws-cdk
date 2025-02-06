@@ -47,7 +47,7 @@ export async function createRelease(opts: ReleaseOptions): Promise<void> {
     ...changelogResults.map(r => r.filePath),
     ...bumpHookedFiles,
   ]);
-};
+}
 
 function getProjectPackageInfos(): PackageInfo[] {
   const packages = lerna_project.Project.getPackagesSync();

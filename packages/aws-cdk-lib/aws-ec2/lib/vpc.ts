@@ -18,6 +18,7 @@ import {
   Arn, Annotations, ContextProvider,
   IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
@@ -408,7 +409,6 @@ export interface SelectedSubnets {
  * A new or imported VPC
  */
 abstract class VpcBase extends Resource implements IVpc {
-
   /**
    * Identifier for this VPC
    */
@@ -594,7 +594,6 @@ abstract class VpcBase extends Resource implements IVpc {
 
     if (selection.subnetGroupName !== undefined) { // Select by name
       subnets = this.selectSubnetObjectsByName(selection.subnetGroupName);
-
     } else { // Or specify by type
       const type = selection.subnetType || SubnetType.PRIVATE_WITH_EGRESS;
       subnets = this.selectSubnetObjectsByType(type);
@@ -657,7 +656,6 @@ abstract class VpcBase extends Resource implements IVpc {
    * PUBLIC (in that order) that has any subnets.
    */
   private reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-
     if (placement.subnetName !== undefined) {
       if (placement.subnetGroupName !== undefined) {
         throw new Error('Please use only \'subnetGroupName\' (\'subnetName\' is deprecated and has the same behavior)');
@@ -1498,6 +1496,8 @@ export class Vpc extends VpcBase {
    */
   constructor(scope: Construct, id: string, props: VpcProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const stack = Stack.of(this);
 
@@ -1701,6 +1701,7 @@ export class Vpc extends VpcBase {
    *
    * @deprecated use `addGatewayEndpoint()` instead
    */
+  @MethodMetadata()
   public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.S3,
@@ -1714,6 +1715,7 @@ export class Vpc extends VpcBase {
    *
    * @deprecated use `addGatewayEndpoint()` instead
    */
+  @MethodMetadata()
   public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.DYNAMODB,
@@ -1742,7 +1744,6 @@ export class Vpc extends VpcBase {
    * array or creates the `DEFAULT_SUBNETS` configuration
    */
   private createSubnets() {
-
     const requestedSubnets: RequestedSubnet[] = [];
 
     this.subnetConfiguration.forEach((configuration)=> (
@@ -1831,7 +1832,6 @@ export class Vpc extends VpcBase {
 
   private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[]) {
     allocatedSubnets.forEach((allocated, i) => {
-
       const { configuration: subnetConfig, subnetConstructId, availabilityZone } = requestedSubnets[i];
 
       if (subnetConfig.reserved === true) {
@@ -2005,7 +2005,6 @@ export interface SubnetProps {
  * @resource AWS::EC2::Subnet
  */
 export class Subnet extends Resource implements ISubnet {
-
   public static isVpcSubnet(x: any): x is Subnet {
     return VPC_SUBNET_SYMBOL in x;
   }
@@ -2081,6 +2080,8 @@ export class Subnet extends Resource implements ISubnet {
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
@@ -2130,6 +2131,7 @@ export class Subnet extends Resource implements ISubnet {
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
    * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
+  @MethodMetadata()
   public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: IDependable) {
     const route = new CfnRoute(this, 'DefaultRoute', {
       routeTableId: this.routeTable.routeTableId,
@@ -2148,6 +2150,7 @@ export class Subnet extends Resource implements ISubnet {
    *
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
    */
+  @MethodMetadata()
   public addIpv6DefaultInternetRoute(gatewayId: string) {
     this.addRoute('DefaultRoute6', {
       routerType: RouterType.GATEWAY,
@@ -2162,6 +2165,7 @@ export class Subnet extends Resource implements ISubnet {
    *
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
    */
+  @MethodMetadata()
   public addIpv6DefaultEgressOnlyInternetRoute(gatewayId: string) {
     this.addRoute('DefaultRoute6', {
       routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
@@ -2189,6 +2193,7 @@ export class Subnet extends Resource implements ISubnet {
    * Adds an entry to this subnets route table that points to the passed NATGatewayId
    * @param natGatewayId The ID of the NAT gateway
    */
+  @MethodMetadata()
   public addDefaultNatRoute(natGatewayId: string) {
     this.addRoute('DefaultRoute', {
       routerType: RouterType.NAT_GATEWAY,
@@ -2202,6 +2207,7 @@ export class Subnet extends Resource implements ISubnet {
    * Uses the known 64:ff9b::/96 prefix.
    * @param natGatewayId The ID of the NAT gateway
    */
+  @MethodMetadata()
   public addIpv6Nat64Route(natGatewayId: string) {
     this.addRoute('Nat64', {
       routerType: RouterType.NAT_GATEWAY,
@@ -2214,6 +2220,7 @@ export class Subnet extends Resource implements ISubnet {
   /**
    * Adds an entry to this subnets route table
    */
+  @MethodMetadata()
   public addRoute(id: string, options: AddRouteOptions) {
     if (options.destinationCidrBlock && options.destinationIpv6CidrBlock) {
       throw new Error('Cannot specify both \'destinationCidrBlock\' and \'destinationIpv6CidrBlock\'');
@@ -2231,6 +2238,7 @@ export class Subnet extends Resource implements ISubnet {
     }
   }
 
+  @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
 
@@ -2366,13 +2374,14 @@ export interface PublicSubnetAttributes extends SubnetAttributes { }
  * Represents a public VPC subnet resource
  */
 export class PublicSubnet extends Subnet implements IPublicSubnet {
-
   public static fromPublicSubnetAttributes(scope: Construct, id: string, attrs: PublicSubnetAttributes): IPublicSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
   constructor(scope: Construct, id: string, props: PublicSubnetProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   /**
@@ -2380,6 +2389,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * Also adds the EIP for the managed NAT.
    * @returns A ref to the the NAT Gateway ID
    */
+  @MethodMetadata()
   public addNatGateway(eipAllocationId?: string) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
@@ -2405,13 +2415,14 @@ export interface PrivateSubnetAttributes extends SubnetAttributes { }
  * Represents a private VPC subnet resource
  */
 export class PrivateSubnet extends Subnet implements IPrivateSubnet {
-
   public static fromPrivateSubnetAttributes(scope: Construct, id: string, attrs: PrivateSubnetAttributes): IPrivateSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
   constructor(scope: Construct, id: string, props: PrivateSubnetProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
 
@@ -2433,6 +2444,8 @@ class ImportedVpc extends VpcBase {
     super(scope, id, {
       region: props.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
@@ -2486,6 +2499,8 @@ class LookedUpVpc extends VpcBase {
       region: props.region,
       account: props.ownerAccountId,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpcId = props.vpcId;
     this.vpcArn = Arn.format({
@@ -2589,6 +2604,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!attrs.routeTableId) {
       // The following looks a little weird, but comes down to:
@@ -2637,6 +2654,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     return this._ipv4CidrBlock;
   }
 
+  @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl): void {
     const scope = networkAcl instanceof Construct ? networkAcl : this;
     const other = networkAcl instanceof Construct ? this : networkAcl;
