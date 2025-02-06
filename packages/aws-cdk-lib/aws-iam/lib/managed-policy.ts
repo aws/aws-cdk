@@ -7,7 +7,7 @@ import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFrag
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
+import { Annotations, ArnFormat, Resource, Stack, Arn, Aws } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 
 /**
@@ -334,10 +334,8 @@ class ManagedPolicyGrantPrincipal implements IPrincipal {
 
   public get policyFragment(): PrincipalPolicyFragment {
     // This property is referenced to add policy statements as a resource-based policy.
-    // We should fail because a managed policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    // I32795: Restoring a previous feature where a grant for a managed policy would generate policy document with actions as a CDK feature.
-    // This managed policy needs to be attached to a role or principal for it to be used meaningfully.
+    Annotations.of(Stack.of(this._managedPolicy)).addWarningV2('@aws-cdk-lib/aws-iam', 'ManagedPolicies should not be used as principals of a policy document');
     return new PrincipalPolicyFragment({});
   }
 
