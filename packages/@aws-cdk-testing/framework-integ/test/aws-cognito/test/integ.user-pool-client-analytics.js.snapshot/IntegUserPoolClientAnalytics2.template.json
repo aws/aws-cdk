@@ -122,6 +122,24 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefPoolD3F588B86FF122B2": {
+   "Value": {
+    "Ref": "PoolD3F588B8"
+   },
+   "Export": {
+    "Name": "IntegUserPoolClientAnalytics2:ExportsOutputRefPoolD3F588B86FF122B2"
+   }
+  },
+  "ExportsOutputRefPoolclient49CF16E539FEBCFA": {
+   "Value": {
+    "Ref": "Poolclient49CF16E5"
+   },
+   "Export": {
+    "Name": "IntegUserPoolClientAnalytics2:ExportsOutputRefPoolclient49CF16E539FEBCFA"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
