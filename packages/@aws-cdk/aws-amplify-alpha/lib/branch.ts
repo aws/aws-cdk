@@ -17,7 +17,7 @@ import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A branch
@@ -206,6 +206,7 @@ export class Branch extends Resource implements IBranch {
    * All environment variables that you add are encrypted to prevent rogue
    * access so you can use them to store secret information.
    */
+  @MethodMetadata()
   public addEnvironment(name: string, value: string) {
     this.environmentVariables[name] = value;
     return this;
