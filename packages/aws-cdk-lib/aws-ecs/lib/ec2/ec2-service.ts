@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import { Lazy, Resource, Stack, Annotations } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import * as elb from '../../../aws-elasticloadbalancing';
+import { Lazy, Resource, Stack, Annotations, Token } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
@@ -83,6 +85,19 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default false
    */
   readonly daemon?: boolean;
+
+  /**
+   * Whether to use Availability Zone rebalancing for the service.
+   *
+   * If enabled: `maxHealthyPercent` must be greater than 100; `daemon` must be false; if there
+   * are any `placementStrategies`, the first must be "spread across Availability Zones"; there
+   * must be no `placementConstraints` using `attribute:ecs.availability-zone`, and the
+   * service must not be a target of a Classic Load Balancer.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
+   * @default AvailabilityZoneRebalancing.DISABLED
+   */
+  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
 
 /**
@@ -143,6 +158,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   private constraints?: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
+  private readonly availabilityZoneRebalancingEnabled: boolean;
 
   /**
    * Constructs a new instance of the Ec2Service class.
@@ -168,6 +184,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
+    if (props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED) {
+      if (props.daemon) {
+        throw new Error('AvailabilityZoneRebalancing.ENABLED cannot be used with daemon mode');
+      }
+      if (!Token.isUnresolved(props.maxHealthyPercent) && props.maxHealthyPercent === 100) {
+        throw new Error('AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100');
+      }
+    }
+
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount,
@@ -182,6 +207,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementConstraints: Lazy.any({ produce: () => this.constraints }),
       placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     }, props.taskDefinition);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -189,6 +215,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.constraints = undefined;
     this.strategies = [];
     this.daemon = props.daemon || false;
+    this.availabilityZoneRebalancingEnabled = props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED;
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
@@ -232,9 +259,17 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Adds one or more placement strategies to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
+  @MethodMetadata()
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
       throw new Error("Can't configure placement strategies when daemon=true");
+    }
+
+    if (strategies.length > 0 && this.strategies.length === 0 && this.availabilityZoneRebalancingEnabled) {
+      const [placement] = strategies[0].toJson();
+      if (placement.type !== 'spread' || placement.field !== BuiltInAttributes.AVAILABILITY_ZONE) {
+        throw new Error(`AvailabilityZoneBalancing.ENABLED requires that the first placement strategy, if any, be 'spread across "${BuiltInAttributes.AVAILABILITY_ZONE}"'`);
+      }
     }
 
     for (const strategy of strategies) {
@@ -246,10 +281,19 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
+  @MethodMetadata()
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     this.constraints = [];
     for (const constraint of constraints) {
-      this.constraints.push(...constraint.toJson());
+      const items = constraint.toJson();
+      if (this.availabilityZoneRebalancingEnabled) {
+        for (const item of items) {
+          if (item.type === 'memberOf' && item.expression?.includes(BuiltInAttributes.AVAILABILITY_ZONE)) {
+            throw new Error(`AvailabilityZoneBalancing.ENABLED disallows usage of "${BuiltInAttributes.AVAILABILITY_ZONE}"`);
+          }
+        }
+      }
+      this.constraints.push(...items);
     }
   }
 
@@ -262,6 +306,20 @@ export class Ec2Service extends BaseService implements IEc2Service {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
     return ret;
+  }
+
+  /**
+   * Registers the service as a target of a Classic Load Balancer (CLB).
+   *
+   * Don't call this. Call `loadBalancer.addTarget()` instead.
+   *
+   * @override
+   */
+  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
+    if (this.availabilityZoneRebalancingEnabled) {
+      throw new Error('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer');
+    }
+    super.attachToClassicLB(loadBalancer);
   }
 }
 

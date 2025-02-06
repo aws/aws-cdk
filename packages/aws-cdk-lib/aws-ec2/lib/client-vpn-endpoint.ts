@@ -10,7 +10,7 @@ import { IVpc, SubnetSelection } from './vpc';
 import { ISamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Options for a client VPN endpoint
@@ -400,6 +400,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds an authorization rule to this endpoint
    */
+  @MethodMetadata()
   public addAuthorizationRule(id: string, props: ClientVpnAuthorizationRuleOptions): ClientVpnAuthorizationRule {
     return new ClientVpnAuthorizationRule(this, id, {
       ...props,
@@ -410,6 +411,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
   /**
    * Adds a route to this endpoint
    */
+  @MethodMetadata()
   public addRoute(id: string, props: ClientVpnRouteOptions): ClientVpnRoute {
     return new ClientVpnRoute(this, id, {
       ...props,
