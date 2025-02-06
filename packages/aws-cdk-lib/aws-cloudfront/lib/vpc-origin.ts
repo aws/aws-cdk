@@ -3,10 +3,13 @@ import { CfnVpcOrigin } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { Names, Resource, Stack } from '../../core';
+import { IResource, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
-export interface IVpcOrigin {
+/**
+ * Represents a VPC origin.
+ */
+export interface IVpcOrigin extends IResource {
   /**
    * The VPC origin ARN.
    * @attribute
@@ -23,6 +26,9 @@ export interface IVpcOrigin {
   readonly domainName?: string;
 }
 
+/**
+ * VPC origin endpoint configuration.
+ */
 export interface VpcOriginOptions {
   /**
    * The HTTP port for the CloudFront VPC origin endpoint configuration.
@@ -36,7 +42,7 @@ export interface VpcOriginOptions {
   readonly httpsPort?: number;
   /**
    * The name of the CloudFront VPC origin endpoint configuration.
-   * @default - CDK will generate
+   * @default - generated from the `id`
    */
   readonly vpcOriginName?: string;
   /**
@@ -51,6 +57,9 @@ export interface VpcOriginOptions {
   readonly originSslProtocols?: OriginSslPolicy[];
 }
 
+/**
+ * VPC origin endpoint configuration.
+ */
 export interface VpcOriginProps extends VpcOriginOptions {
   /**
    * The VPC origin endpoint.
@@ -58,19 +67,27 @@ export interface VpcOriginProps extends VpcOriginOptions {
   readonly endpoint: VpcOriginEndpoint;
 }
 
+/**
+ * Properties for the VPC origin endpoint configuration.
+ */
 export interface VpcOriginEndpointProps {
   /**
    * The ARN of the CloudFront VPC origin endpoint configuration.
    */
   readonly endpointArn: string;
-  /*
+  /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
+   * @default - No domain name configured
    */
   readonly domainName?: string;
 }
 
+/**
+ * Represents the VPC origin endpoint.
+ */
 export class VpcOriginEndpoint {
   /**
+   * A VPC origin endpoint from an EC2 instance.
    * @param instance The EC2 instance as the CloudFront VPC origin endpoint.
    */
   public static fromEc2Instance(instance: IInstance): VpcOriginEndpoint {
@@ -83,6 +100,7 @@ export class VpcOriginEndpoint {
   }
 
   /**
+   * A VPC origin endpoint from an Application Load Balancer.
    * @param loadBalancer The Application Load Balancer as the CloudFront VPC origin endpoint.
    */
   public static fromApplicationLoadBalancer(loadBalancer: IApplicationLoadBalancer): VpcOriginEndpoint {
@@ -90,6 +108,7 @@ export class VpcOriginEndpoint {
   }
 
   /**
+   * A VPC origin endpoint from an Network Load Balancer.
    * @param loadBalancer The Network Load Balancer as the CloudFront VPC origin endpoint.
    */
   public static fromNetworkLoadBalancer(loadBalancer: INetworkLoadBalancer): VpcOriginEndpoint {
@@ -100,22 +119,27 @@ export class VpcOriginEndpoint {
    * The ARN of the CloudFront VPC origin endpoint configuration.
    */
   readonly endpointArn: string;
-  /*
+  /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
+   * @default - No domain name configured
    */
   readonly domainName?: string;
 
-  /**
-   * @param endpointArn The ARN of the CloudFront VPC origin endpoint configuration.
-   * @param defaultDomainName The default domain name of the CloudFront VPC origin endpoint configuration.
-   */
   constructor(props: VpcOriginEndpointProps) {
     this.endpointArn = props.endpointArn;
     this.domainName = props.domainName;
   }
 }
 
+/**
+ * A CloudFront VPC Origin configuration.
+ *
+ * @resource AWS::CloudFront::VpcOrigin
+ */
 export class VpcOrigin extends Resource implements IVpcOrigin {
+  /**
+   * Import an existing VPC origin from its ID.
+   */
   public static fromVpcOriginId(scope: Construct, id: string, vpcOriginId: string): IVpcOrigin {
     const vpcOriginArn = Stack.of(scope).formatArn({
       service: 'cloudfront',
@@ -148,7 +172,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin {
    */
   readonly domainName?: string;
 
-  constructor(scope: Construct, id:string, props: VpcOriginProps) {
+  constructor(scope: Construct, id: string, props: VpcOriginProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
