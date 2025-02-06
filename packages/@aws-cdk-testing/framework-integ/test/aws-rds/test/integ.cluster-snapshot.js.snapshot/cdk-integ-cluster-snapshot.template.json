@@ -832,24 +832,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "SnapshoterOnEventHandlerDF82DF85",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -918,6 +900,58 @@
     "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686",
     "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
    ]
+  },
+  "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole079D50682": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterOnEventHandlerDF82DF85",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole079D50682",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+     }
+    ]
+   }
+  },
+  "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterIsCompleteHandler93DE2591",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+     }
+    ]
+   }
   },
   "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB": {
    "Type": "AWS::IAM::Role",
@@ -1000,24 +1034,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "SnapshoterOnEventHandlerDF82DF85",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1078,6 +1094,58 @@
     "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478",
     "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
    ]
+  },
+  "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole060DC0CFE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterOnEventHandlerDF82DF85",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole060DC0CFE",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+     }
+    ]
+   }
+  },
+  "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterIsCompleteHandler93DE2591",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+     }
+    ]
+   }
   },
   "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD": {
    "Type": "AWS::IAM::Role",
@@ -1160,24 +1228,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SnapshoterIsCompleteHandler93DE2591",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "SnapshoterOnEventHandlerDF82DF85",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1238,6 +1288,58 @@
     "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30",
     "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
    ]
+  },
+  "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0D9321580": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterOnEventHandlerDF82DF85",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0D9321580",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+     }
+    ]
+   }
+  },
+  "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SnapshoterIsCompleteHandler93DE2591",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D",
+    "Roles": [
+     {
+      "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+     }
+    ]
+   }
   },
   "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5": {
    "Type": "AWS::IAM::Role",

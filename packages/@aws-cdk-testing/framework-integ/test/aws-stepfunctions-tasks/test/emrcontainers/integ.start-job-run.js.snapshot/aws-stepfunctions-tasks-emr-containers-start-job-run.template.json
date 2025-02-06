@@ -1053,7 +1053,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/757510d1fbadbc86f88f5dc9754c42d6ab831bfd524ea2029dcdc9d7714edcc9.json"
+       "/82a5ed3304a122be2637363a5727a2c7067dc2a55fdad0755258e5434d376bf0.json"
       ]
      ]
     }
@@ -1100,7 +1100,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2918955b16fede002f9130a1e91f05198cd57dee0fbd7dc2f48c159d8ab332eb.json"
+       "/e5a33c18a1c8a65fe0b30cc03450bbe44fedc7285f53643d10ea2dab857b6ce9.json"
       ]
      ]
     }
@@ -1398,16 +1398,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -1462,6 +1452,32 @@
     "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565",
     "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
    ]
+  },
+  "StartaJobRunCustomResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F0978F29": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StartaJobRunCustomResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F0978F29",
+    "Roles": [
+     {
+      "Ref": "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
+     }
+    ]
+   }
   },
   "StartaJobRunCustomResource3BD90664": {
    "Type": "AWS::CloudFormation::CustomResource",
