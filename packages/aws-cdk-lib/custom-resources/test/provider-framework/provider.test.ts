@@ -474,12 +474,56 @@ describe('role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           'MyRoleF48FFE04',
           'Arn',
         ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -498,12 +542,56 @@ describe('role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           'MyProviderframeworkonEventServiceRole8761E48D',
           'Arn',
         ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
