@@ -3,7 +3,7 @@ import { CfnVpcOrigin } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, ITaggableV2, Names, Resource, Stack, TagManager } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -136,7 +136,7 @@ export class VpcOriginEndpoint {
  *
  * @resource AWS::CloudFront::VpcOrigin
  */
-export class VpcOrigin extends Resource implements IVpcOrigin {
+export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
   /**
    * Import an existing VPC origin from its ID.
    */
@@ -172,6 +172,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin {
    */
   readonly domainName?: string;
 
+  readonly cdkTagManager: TagManager;
+
   constructor(scope: Construct, id: string, props: VpcOriginProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -196,5 +198,6 @@ export class VpcOrigin extends Resource implements IVpcOrigin {
     });
     this.vpcOriginId = resource.attrId;
     this.domainName = props.endpoint.domainName;
+    this.cdkTagManager = resource.cdkTagManager;
   }
 }
