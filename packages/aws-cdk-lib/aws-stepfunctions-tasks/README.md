@@ -494,7 +494,6 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
 
 The [CreateModelCustomizationJob](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_CreateModelCustomizationJob.html) API creates a fine-tuning job to customize a base model.
 
-
 ```ts
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -511,7 +510,7 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
   bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
 );
 
-const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob2', {
+const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob', {
   baseModel: model,
   clientRequestToken: 'MyToken',
   customizationType: tasks.CustomizationType.FINE_TUNING,
@@ -525,16 +524,16 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
   jobTags: [{ key: 'key2', value: 'value2' }],
   outputData: {
     bucket: outputBucket, // required
-    prefix: 'output-data',
+    prefix: 'output-data/',
   },
   trainingData: {
-    bucket: trainingBucket, // required
-    prefix: 'training-data',
-  },
+    bucket: trainingBucket,
+    prefix: 'training-data/data.json',
+  }, // required
   validationData: [
     {
-      bucket: validationBucket, // required
-      prefix: 'validation-data1',
+      bucket: validationBucket,
+      prefix: 'validation-data/data.json',
     },
   ],
   vpcConfig: {

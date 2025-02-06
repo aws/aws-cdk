@@ -5,8 +5,9 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Token } from '../../../core';
+import { Stack, Token, ValidationError } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { Input } from '../../../../@aws-cdk/aws-iotevents-alpha/lib/input';
 
 /**
  * The customization type.
@@ -55,18 +56,33 @@ export interface ITag {
 /**
  * S3 bucket configuration for data storage destination.
  */
-export interface BucketConfiguration {
+export interface DataBucketConfiguration {
   /**
    * The S3 bucket.
    */
   readonly bucket: s3.IBucket;
   /**
-   * The prefix for the S3 bucket.
+   * Path to file or directory within the bucket.
    *
-   * @default - no prefix
+   * @default - root of the bucket
    */
-  readonly prefix?: string;
+  readonly path?: string;
 }
+
+/**
+ * S3 bucket configuration for the output data.
+ */
+export interface OutputBucketConfiguration extends DataBucketConfiguration {}
+
+/**
+ * S3 bucket configuration for the training data.
+ */
+export interface TrainingBucketConfiguration extends DataBucketConfiguration {}
+
+/**
+ * S3 bucket configuration for the validation data.
+ */
+export interface ValidationBucketConfiguration extends DataBucketConfiguration {}
 
 /**
  * VPC configuration
@@ -122,7 +138,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/encryption-custom-job.html
    *
-   * @default - no encryption
+   * @default - encrypted with the AWS owned key
    */
   readonly customModelKmsKey?: kms.IKey;
 
@@ -171,7 +187,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_OutputDataConfig.html
    */
-  readonly outputData: BucketConfiguration;
+  readonly outputData: OutputBucketConfiguration;
 
   /**
    * The IAM role that Amazon Bedrock can assume to perform tasks on your behalf.
@@ -189,7 +205,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_TrainingDataConfig.html
    */
-  readonly trainingData: BucketConfiguration;
+  readonly trainingData: TrainingBucketConfiguration;
 
   /**
    * The S3 bucket configuration where the validation data is stored.
@@ -198,7 +214,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
    */
-  readonly validationData: BucketConfiguration[];
+  readonly validationData: ValidationBucketConfiguration[];
 
   /**
    * The VPC configuration.
@@ -450,19 +466,19 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private validateStringLength(name: string, min: number, max: number, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && (value.length < min || value.length > max)) {
-      throw new Error(`${name} must be between ${min} and ${max} characters long, got: ${value.length}`);
+      throw new ValidationError(`${name} must be between ${min} and ${max} characters long, got: ${value.length}.`, this);
     }
   }
 
   private validatePattern(name: string, pattern: RegExp, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && !pattern.test(value)) {
-      throw new Error(`${name} must match the pattern ${pattern.toString()}, got: ${value}`);
+      throw new ValidationError(`${name} must match the pattern ${pattern.toString()}, got: ${value}.`, this);
     }
   }
 
   private validateArrayLength(name: string, min: number, max: number, value?: any[]): void {
     if (value !== undefined && (value.length < min || value.length > max)) {
-      throw new Error(`${name} must be between ${min} and ${max} items long, got: ${value.length}`);
+      throw new ValidationError(`${name} must be between ${min} and ${max} items long, got: ${value.length}.`, this);
     }
   }
 
@@ -485,15 +501,15 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         JobName: this.props.jobName,
         JobTags: this.props.jobTags?.map((tag) => ({ Key: tag.key, Value: tag.value })),
         OutputDataConfig: {
-          S3Uri: this.props.outputData.bucket.s3UrlForObject(this.props.outputData.prefix),
+          S3Uri: this.props.outputData.bucket.s3UrlForObject(this.props.outputData.path),
         },
         RoleArn: this._role.roleArn,
         TrainingDataConfig: {
-          S3Uri: this.props.trainingData.bucket.s3UrlForObject(this.props.trainingData.prefix),
+          S3Uri: this.props.trainingData.bucket.s3UrlForObject(this.props.trainingData.path),
         },
         ValidationDataConfig: {
           Validators: this.props.validationData.map(
-            (bucketConfig) => ({ S3Uri: bucketConfig.bucket.s3UrlForObject(bucketConfig.prefix) }),
+            (bucketConfig) => ({ S3Uri: bucketConfig.bucket.s3UrlForObject(bucketConfig.path) }),
           ),
         },
         VpcConfig: this.props.vpcConfig ? {
