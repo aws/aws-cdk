@@ -35,6 +35,7 @@ import * as regionInformation from '../../region-info';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+var s3BucketDefaultBlockPublicAccessPropertiesToTrueFeatureFlag: boolean = false;
 
 export interface IBucket extends IResource {
   /**
@@ -1094,10 +1095,11 @@ export class BlockPublicAccess {
   public restrictPublicBuckets: boolean | undefined;
 
   constructor(options: BlockPublicAccessOptions) {
-    this.blockPublicAcls = options.blockPublicAcls ?? true;
-    this.blockPublicPolicy = options.blockPublicPolicy ?? true;
-    this.ignorePublicAcls = options.ignorePublicAcls ?? true;
-    this.restrictPublicBuckets = options.restrictPublicBuckets ?? true;
+    const defaultToTrue = s3BucketDefaultBlockPublicAccessPropertiesToTrueFeatureFlag;
+    this.blockPublicAcls = defaultToTrue ? options.blockPublicAcls ?? true : options.blockPublicAcls;
+    this.blockPublicPolicy = defaultToTrue ? options.blockPublicPolicy ?? true : options.blockPublicPolicy;
+    this.ignorePublicAcls = defaultToTrue ? options.ignorePublicAcls ?? true : options.ignorePublicAcls;
+    this.restrictPublicBuckets = defaultToTrue ? options.restrictPublicBuckets ?? true : options.restrictPublicBuckets;
   }
 }
 
@@ -2187,6 +2189,10 @@ export class Bucket extends BucketBase {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    // Set the S3_BUCKET_DEFAULT_BLOCK_PUBLIC_ACCESS_PROPERTIES_TO_TRUE feature flag
+    s3BucketDefaultBlockPublicAccessPropertiesToTrueFeatureFlag = FeatureFlags.of(this)
+      .isEnabled(cxapi.S3_BUCKET_DEFAULT_BLOCK_PUBLIC_ACCESS_PROPERTIES_TO_TRUE) ?? false;
 
     this.notificationsHandlerRole = props.notificationsHandlerRole;
     this.notificationsSkipDestinationValidation = props.notificationsSkipDestinationValidation;

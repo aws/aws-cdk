@@ -1682,15 +1682,17 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
   * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
   * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
-  
+
+
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.178.0 | `false` | `true` |
-  
+
+
 ### @aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue
 
-*When enabled, the properties of class `BlockPublicAccess` will default to `true`* (fix)
+*When enabled, the properties of class BlockPublicAccess will default to true* (fix)
 
 Without this flag, the `blockPublicAccess` property has a counter-intuitive and inconsistent behavior.
 When the property value is not specified, then all the 4 member properties (`blockPublicAcls`,

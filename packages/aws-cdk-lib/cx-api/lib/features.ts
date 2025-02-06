@@ -1387,8 +1387,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
-  
-  
+
   //////////////////////////////////////////////////////////////////////
   [S3_BUCKET_DEFAULT_BLOCK_PUBLIC_ACCESS_PROPERTIES_TO_TRUE]: {
     type: FlagType.BugFix,
