@@ -1,0 +1,109 @@
+import { Construct } from 'constructs';
+import * as cloudfront from '../../aws-cloudfront';
+import { IInstance } from '../../aws-ec2';
+import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
+import * as cdk from '../../core';
+
+export interface VpcOriginProps extends cloudfront.OriginProps {
+  /**
+   * The domain name associated with your VPC origin.
+   * @default - The default domain name of the endpoint.
+   */
+  readonly domainName?: string;
+
+  /**
+   * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
+   * The valid range is from 1 to 180 seconds, inclusive.
+   *
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly readTimeout?: cdk.Duration;
+
+  /**
+   * Specifies how long, in seconds, CloudFront persists its connection to the origin.
+   * The valid range is from 1 to 180 seconds, inclusive.
+   *
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
+   *
+   * @default Duration.seconds(5)
+   */
+  readonly keepaliveTimeout?: cdk.Duration;
+}
+
+export interface VpcOriginWithEndpointProps extends VpcOriginProps, cloudfront.VpcOriginOptions {
+}
+
+export abstract class VpcOrigin extends cloudfront.OriginBase {
+  public static withVpcOrigin(origin: cloudfront.VpcOrigin, props?: VpcOriginProps) {
+    return new VpcOriginWithVpcOrigin(origin, props);
+  }
+
+  public static withEc2Instance(instance: IInstance, props?: VpcOriginWithEndpointProps) {
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromEc2Instance(instance), props);
+  }
+
+  public static withApplicationLoadBalancer(loadBalancer: IApplicationLoadBalancer, props?: VpcOriginWithEndpointProps) {
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromApplicationLoadBalancer(loadBalancer), props);
+  }
+
+  public static withNetworkLoadBalancer(loadBalancer: INetworkLoadBalancer, props?: VpcOriginWithEndpointProps) {
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromNetworkLoadBalancer(loadBalancer), props);
+  }
+}
+
+class VpcOriginWithVpcOrigin extends VpcOrigin {
+  constructor(private readonly origin: cloudfront.VpcOrigin, private readonly props?: VpcOriginProps) {
+    const domainName = props?.domainName ?? origin.domainName;
+    if (!domainName) {
+      throw new cdk.UnscopedValidationError('`domainName` must be supplied.');
+    }
+    super(domainName, { ...props });
+  }
+
+  protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty {
+    return {
+      vpcOriginId: this.origin.vpcOriginId,
+      originReadTimeout: this.props?.readTimeout?.toSeconds(),
+      originKeepaliveTimeout: this.props?.keepaliveTimeout?.toSeconds(),
+    };
+  }
+}
+
+class VpcOriginWithEndpoint extends VpcOrigin {
+  private vpcOrigin?: cloudfront.VpcOrigin;
+
+  constructor(private readonly vpcOriginEndpoint: cloudfront.VpcOriginEndpoint, private readonly props?: VpcOriginWithEndpointProps) {
+    const domainName = props?.domainName ?? vpcOriginEndpoint.domainName;
+    if (!domainName) {
+      throw new cdk.UnscopedValidationError('`domainName` must be supplied.');
+    }
+    super(domainName, { ...props });
+  }
+
+  public bind(_scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    this.vpcOrigin ??= new cloudfront.VpcOrigin(_scope, 'VpcOrigin', {
+      endpoint: this.vpcOriginEndpoint,
+      vpcOriginName: this.props?.vpcOriginName,
+      httpPort: this.props?.httpPort,
+      httpsPort: this.props?.httpsPort,
+      protocolPolicy: this.props?.protocolPolicy,
+      originSslProtocols: this.props?.originSslProtocols,
+    });
+    return super.bind(_scope, options);
+  }
+
+  protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty {
+    if (!this.vpcOrigin) {
+      throw new Error('vpcOrigin cannot be undefined');
+    }
+    return {
+      vpcOriginId: this.vpcOrigin.vpcOriginId,
+      originReadTimeout: this.props?.readTimeout?.toSeconds(),
+      originKeepaliveTimeout: this.props?.keepaliveTimeout?.toSeconds(),
+    };
+  }
+}
