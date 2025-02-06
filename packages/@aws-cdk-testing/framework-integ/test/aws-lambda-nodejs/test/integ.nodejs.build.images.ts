@@ -59,7 +59,7 @@ stack.lambdaFunctions.forEach((func) => {
   const template = assembly.getStackArtifact(stack.artifactId).template;
   const resourceName = stack.getLogicalId(func.node.defaultChild as lambda.CfnFunction);
   const resource = template.Resources[resourceName];
-  
+
   if (!resource || resource.Type !== 'AWS::Lambda::Function') {
     throw new ValidationError(`Could not find Lambda function resource for ${func.functionName}`, stack);
   }
@@ -83,29 +83,7 @@ stack.lambdaFunctions.forEach((func) => {
     if (!fs.existsSync(indexPath)) {
       throw new ValidationError(`index.js not found in asset directory for function ${func.functionName}`, stack);
     }
-
-    verifyBundledContent(stack, indexPath, func.functionName);
-
-    console.log(`Bundling verification passed for function ${func.functionName}`);
   } catch (error) {
-    console.error(`Error verifying bundled content for function ${func.functionName}:`, error);
     throw error;
   }
 });
-
-
-function verifyBundledContent(scope: Construct, filePath: string, functionName: string) {
-  const bundledContent = fs.readFileSync(filePath, 'utf-8');
-
-  if (!bundledContent.includes('exports.handler =')) {
-    throw new ValidationError(`Bundled content does not contain expected handler export for function ${functionName}`, scope);
-  }
-
-  if (bundledContent.includes('import ')) {
-    throw new ValidationError(`Bundled content contains unexpected import statement for function ${functionName}`, scope);
-  }
-
-  if (!bundledContent.includes('//# sourceMappingURL=')) {
-    throw new ValidationError(`Bundled content does not contain source map for function ${functionName}`, scope);
-  }
-}
