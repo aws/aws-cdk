@@ -258,4 +258,46 @@ exports.createMockGithubForR2 = ({
   return { graphql };
 };
 
+/**
+ * Creates mock GitHub GraphQL client with predefined responses for Needs Attention Status field assignment
+ */
+exports.createMockGithubForNeedsAttention = ({ 
+  status = STATUS.READY,
+  daysInStatus = 0,
+  items = null
+}) => {
+  const graphql = jest.fn();
+
+  const createItem = (itemStatus, days) => ({
+      id: `item-${Math.random()}`,
+      fieldValues: {
+          nodes: [
+              {
+                  field: { name: 'Status' },
+                  name: itemStatus,
+                  updatedAt: new Date(Date.now() - (days * 24 * 60 * 60 * 1000)).toISOString()
+              }
+          ]
+      }
+  });
+
+  // First call - fetch project items
+  graphql.mockResolvedValueOnce({
+      organization: {
+          projectV2: {
+              items: {
+                  nodes: items ? items.map(item => createItem(item.status, item.daysInStatus))
+                              : [createItem(status, daysInStatus)],
+                  pageInfo: {
+                      hasNextPage: false,
+                      endCursor: null
+                  }
+              }
+          }
+      }
+  });
+
+  return { graphql };
+};
+
 exports.OPTION_IDS = OPTION_IDS;

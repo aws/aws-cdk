@@ -4,13 +4,13 @@
  * - Extended (7-14 days): Taking longer than expected
  * - Aging (14-21 days): Requires immediate attention
  * - Stalled (>21 days): Critical attention required
- * 
+ *
  * Only monitors PRs in specific statuses:
  * - Ready: Awaiting assignment
  * - Assigned: Awaiting start
  * - In Progress: Under review
  * - Paused: Blocked/On hold
- * 
+ *
  * This helps maintain visibility of PRs that may need intervention to progress.
  */
 const { STATUS, NEEDS_ATTENTION_STATUS, ...PROJECT_CONFIG } = require('./project-config');
@@ -40,7 +40,7 @@ module.exports = async ({ github }) => {
     let cursor = null;
 
     while (hasNextPage) {
-      const result = await fetchProjectItems({ 
+      const result = await fetchProjectItems({
         github,
         org: PROJECT_CONFIG.org,
         number: PROJECT_CONFIG.projectNumber,
