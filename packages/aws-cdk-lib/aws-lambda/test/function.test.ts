@@ -16,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -2801,7 +2802,6 @@ describe('function', () => {
   });
 
   describe('filesystem', () => {
-
     test('mount efs filesystem', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3490,7 +3490,7 @@ describe('function', () => {
 
     test('function using SnapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3498,7 +3498,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
@@ -3524,7 +3524,7 @@ describe('function', () => {
 
     test('arm64 function using snapStart', () => {
       const stack = new cdk.Stack();
-      //WHEN
+      // WHEN
       new lambda.Function(stack, 'MyLambda', {
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'example.Handler::handleRequest',
@@ -3533,7 +3533,7 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
             {
@@ -3725,14 +3725,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:3'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:4'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3754,14 +3754,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_29_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-25-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-29-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3778,7 +3778,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_25_0),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_29_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3797,7 +3797,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0_1),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -4334,10 +4334,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'cn-north-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'cn-northwest-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'eu-central-1': {
         value: 'nodejs20.x',
@@ -4382,10 +4382,10 @@ describe('latest Lambda node runtime', () => {
         value: 'nodejs20.x',
       },
       'us-gov-east-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-gov-west-1': {
-        value: 'nodejs18.x',
+        value: 'nodejs20.x',
       },
       'us-iso-east-1': {
         value: 'nodejs18.x',
@@ -4451,7 +4451,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });
@@ -4489,7 +4489,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
       },
     });
   });
@@ -4740,6 +4740,69 @@ describe('CMCMK', () => {
       },
     });
     bockfs.restore();
+  });
+});
+
+describe('telemetry metadata', () => {
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    fn.addEnvironment('foo', '1234567890', {
+      removeInEdge: true,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([
+      {
+        data: { code: '*', handler: '*', runtime: '*' },
+        trace: undefined,
+        type: 'aws:cdk:analytics:construct',
+      },
+      {
+        data: { addEnvironment: ['*', '*', { removeInEdge: true }] },
+        trace: undefined,
+        type: 'aws:cdk:analytics:method',
+      },
+    ]);
+  });
+
+  it('redaction happens when feature flag is disabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([]);
   });
 });
 

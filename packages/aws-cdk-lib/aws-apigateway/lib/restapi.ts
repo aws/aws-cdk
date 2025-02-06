@@ -18,6 +18,8 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -391,7 +393,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    */
   public urlForPath(path: string = '/'): string {
     if (!this.deploymentStage) {
-      throw new Error('Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"');
+      throw new ValidationError('Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"', this);
     }
 
     return this.deploymentStage.urlForPath(path);
@@ -422,7 +424,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new Error(`"path" must begin with a "/": '${path}'`);
+      throw new ValidationError(`"path" must begin with a "/": '${path}'`, this);
     }
 
     if (method.toUpperCase() === 'ANY') {
@@ -459,6 +461,8 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   /**
    * Add a resource policy that only allows API execution from a VPC Endpoint to create a private API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-source-vpc-example
    *
    * @param vpcEndpoint the interface VPC endpoint to grant access to
    */
@@ -606,7 +610,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
     cloudWatchRole = cloudWatchRole ?? cloudWatchRoleDefault;
     if (!cloudWatchRole) {
       if (cloudWatchRoleRemovalPolicy) {
-        throw new Error('\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.');
+        throw new ValidationError('\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.', this);
       }
       return;
     }
@@ -647,7 +651,6 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
   protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
-
       this._latestDeployment = new Deployment(this, 'Deployment', {
         description: props.deployOptions?.description ?? props.description ?? 'Automatically created by the RestApi construct',
         api: this,
@@ -666,7 +669,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
-        throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
+        throw new ValidationError('Cannot set \'deployOptions\' if \'deploy\' is disabled', this);
       }
     }
   }
@@ -676,7 +679,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    */
   protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+      throw new ValidationError('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
     }
     if (props.endpointConfiguration) {
       return {
@@ -728,6 +731,8 @@ export class SpecRestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     this.resourcePolicy = props.policy;
     const resource = new CfnRestApi(this, 'Resource', {
@@ -804,7 +809,6 @@ export interface RestApiAttributes {
  * public endpoint.
  */
 export class RestApi extends RestApiBase {
-
   /**
    * Return whether the given object is a `RestApi`
    */
@@ -824,11 +828,11 @@ export class RestApi extends RestApiBase {
       }
 
       public get root(): IResource {
-        throw new Error('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+        throw new ValidationError('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
       }
 
       public get restApiRootResourceId(): string {
-        throw new Error('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.');
+        throw new ValidationError('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
       }
     }
 
@@ -871,9 +875,11 @@ export class RestApi extends RestApiBase {
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
-      throw new Error('both properties minCompressionSize and minimumCompressionSize cannot be set at once.');
+      throw new ValidationError('both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
     this.resourcePolicy = props.policy;
@@ -927,6 +933,7 @@ export class RestApi extends RestApiBase {
   /**
    * Adds a new model.
    */
+  @MethodMetadata()
   public addModel(id: string, props: ModelOptions): Model {
     return new Model(this, id, {
       ...props,
@@ -937,6 +944,7 @@ export class RestApi extends RestApiBase {
   /**
    * Adds a new request validator.
    */
+  @MethodMetadata()
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
       ...props,
@@ -1052,6 +1060,8 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, resourceId);
 
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
@@ -1076,7 +1086,7 @@ class RootResource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this._restApi) {
-      throw new Error('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead');
+      throw new ValidationError('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead', this);
     }
     return this._restApi;
   }

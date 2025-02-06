@@ -353,7 +353,6 @@ describe('tests', () => {
   });
 
   describe('logAccessLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -391,7 +390,7 @@ describe('tests', () => {
       // WHEN
       lb.logAccessLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -533,7 +532,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
@@ -542,7 +541,6 @@ describe('tests', () => {
       // THEN
       // verify failure in case the access log bucket is encrypted with KMS
       expect(logAccessLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
     });
 
     test('access logging on imported bucket', () => {
@@ -691,7 +689,6 @@ describe('tests', () => {
   });
 
   describe('logConnectionLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -729,7 +726,7 @@ describe('tests', () => {
       // WHEN
       lb.logConnectionLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -871,7 +868,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
@@ -880,7 +877,6 @@ describe('tests', () => {
       // THEN
       // verify failure in case the connection log bucket is encrypted with KMS
       expect(logConnectionLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
     });
 
     test('connection logging on imported bucket', () => {
@@ -1286,7 +1282,6 @@ describe('tests', () => {
           crossZoneEnabled: false,
         });
       }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
-
     });
   });
 

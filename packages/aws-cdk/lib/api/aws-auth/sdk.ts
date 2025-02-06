@@ -317,10 +317,11 @@ import { WaiterResult } from '@smithy/util-waiter';
 import { AccountAccessKeyCache } from './account-cache';
 import { cachedAsync } from './cached';
 import { Account } from './sdk-provider';
+import { traceMemberMethods } from './tracing';
 import { defaultCliUserAgent } from './user-agent';
 import { debug } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
-import { traceMethods } from '../../util/tracing';
+import { formatErrorMessage } from '../../util/error';
 
 export interface S3ClientOptions {
   /**
@@ -520,13 +521,15 @@ export interface IStepFunctionsClient {
 /**
  * Base functionality of SDK without credential fetching
  */
-@traceMethods
+@traceMemberMethods
 export class SDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 
   public readonly currentRegion: string;
 
   public readonly config: ConfigurationOptions;
+
+  protected readonly logger?: Logger;
 
   /**
    * STS is used to check credential validity, don't do too many retries.
@@ -556,6 +559,7 @@ export class SDK {
       customUserAgent: defaultCliUserAgent(),
       logger,
     };
+    this.logger = logger;
     this.currentRegion = region;
   }
 
@@ -903,7 +907,7 @@ export class SDK {
 
           return upload.done();
         } catch (e: any) {
-          throw new AuthenticationError(`Upload failed: ${e.message}`);
+          throw new AuthenticationError(`Upload failed: ${formatErrorMessage(e)}`);
         }
       },
     };

@@ -329,7 +329,6 @@ describe('resource', () => {
   });
 
   test('addDependency adds all dependencyElements of dependent constructs', () => {
-
     class C1 extends Construct {
       public readonly r1: CfnResource;
       public readonly r2: CfnResource;
