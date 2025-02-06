@@ -1158,11 +1158,11 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"]},{\"Name\":\"group-name\",\"Values\":[\"CloudFront-VPCOrigins-Service-SG\"]}]},\"physicalResourceId\":{\"id\":\"CloudFront-VPCOrigins-Service-SG\"},\"logApiResponseData\":true}"
+       "\"]},{\"Name\":\"group-name\",\"Values\":[\"CloudFront-VPCOrigins-Service-SG\"]}]},\"physicalResourceId\":{\"id\":\"CloudFront-VPCOrigins-Service-SG\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DistributionOrigin1VpcOrigin1389D846",
