@@ -3,6 +3,7 @@ import { CfnTransitGatewayRouteTablePropagation } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents a Transit Gateway Route Table Propagation.
@@ -50,6 +51,8 @@ export class TransitGatewayRouteTablePropagation extends Resource implements ITr
 
   constructor(scope: Construct, id: string, props: TransitGatewayRouteTablePropagationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnTransitGatewayRouteTablePropagation(this, id, {
       transitGatewayAttachmentId: props.transitGatewayVpcAttachment.transitGatewayAttachmentId,

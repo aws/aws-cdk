@@ -5,7 +5,7 @@ import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The interface of the EndpointGroup
@@ -209,6 +209,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * Add an endpoint
    */
+  @MethodMetadata()
   public addEndpoint(endpoint: IEndpoint) {
     this.endpoints.push(endpoint);
   }
@@ -226,6 +227,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    * use this security group as a Peer in Connections rules on other
    * constructs.
    */
+  @MethodMetadata()
   public connectionsPeer(id: string, vpc: ec2.IVpc): ec2.IPeer {
     return AcceleratorSecurityGroupPeer.fromVpc(this, id, vpc, this);
   }

@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Common properties to create a Route 53 hosted zone
@@ -230,10 +230,12 @@ export class HostedZone extends Resource implements IHostedZone {
    *
    * @param vpc the other VPC to add.
    */
+  @MethodMetadata()
   public addVpc(vpc: ec2.IVpc) {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
+  @MethodMetadata()
   public grantDelegation(grantee: iam.IGrantable): iam.Grant {
     return makeGrantDelegation(grantee, this.hostedZoneArn);
   }
@@ -244,6 +246,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * This will create a key signing key with the given options and enable DNSSEC signing
    * for the hosted zone.
    */
+  @MethodMetadata()
   public enableDnssec(options: ZoneSigningOptions): IKeySigningKey {
     if (this.keySigningKey) {
       throw new ValidationError('DNSSEC is already enabled for this hosted zone', this);
@@ -409,6 +412,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     }
   }
 
+  @MethodMetadata()
   public addVpc(_vpc: ec2.IVpc) {
     throw new ValidationError('Cannot associate public hosted zones with a VPC', this);
   }
@@ -419,6 +423,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param delegate the zone being delegated to.
    * @param opts     options for creating the DNS record, if any.
    */
+  @MethodMetadata()
   public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,

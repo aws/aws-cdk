@@ -3,7 +3,7 @@ import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import { IResource, Resource, Names } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -173,6 +173,7 @@ export class NotificationRule extends Resource implements INotificationRule {
    * Adds target to notification rule
    * @param target The SNS topic or AWS Chatbot Slack target
    */
+  @MethodMetadata()
   public addTarget(target: INotificationRuleTarget): boolean {
     this.targets.push(target.bindAsNotificationRuleTarget(this));
     return true;

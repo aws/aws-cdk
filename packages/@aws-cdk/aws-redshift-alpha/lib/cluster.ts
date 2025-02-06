@@ -13,7 +13,7 @@ import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Node Types to use in the cluster
@@ -705,6 +705,7 @@ export class Cluster extends ClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
+  @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
@@ -729,6 +730,7 @@ export class Cluster extends ClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
@@ -769,6 +771,7 @@ export class Cluster extends ClusterBase {
    * @param name the parameter name
    * @param value the parameter name
    */
+  @MethodMetadata()
   public addToParameterGroup(name: string, value: string): void {
     if (!this.parameterGroup) {
       const param: { [name: string]: string } = {};
@@ -788,6 +791,7 @@ export class Cluster extends ClusterBase {
   /**
    * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
    */
+  @MethodMetadata()
   public enableRebootForParameterChanges(): void {
     if (this.node.tryFindChild('RedshiftClusterRebooterCustomResource')) {
       return;
@@ -855,6 +859,7 @@ export class Cluster extends ClusterBase {
    *
    * @param defaultIamRole the IAM role to be set as the default role
    */
+  @MethodMetadata()
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
     const clusterRoleList = this.roles ?? [];
@@ -909,6 +914,7 @@ export class Cluster extends ClusterBase {
    *
    * @param role the role to add
    */
+  @MethodMetadata()
   public addIamRole(role: iam.IRole): void {
     const clusterRoleList = this.roles;
 
