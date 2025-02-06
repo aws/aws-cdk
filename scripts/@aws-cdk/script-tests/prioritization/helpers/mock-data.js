@@ -101,11 +101,11 @@ exports.createMockGithub = () => {
 /**
  * Creates mock GitHub GraphQL client with predefined responses for R5 priority
  */
-exports.createMockGithubForR5 = ({ 
-  draft = false, 
-  labels = [], 
+exports.createMockGithubForR5 = ({
+  draft = false,
+  labels = [],
   updatedAt = new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
-  existingPriority = null 
+  existingPriority = null
 }) => {
   const graphql = jest.fn();
 
@@ -167,8 +167,8 @@ exports.createMockGithubForR5 = ({
 /**
  * Creates mock GitHub GraphQL client with predefined responses for R2 priority
  */
-exports.createMockGithubForR2 = ({ 
-  approved = false,
+exports.createMockGithubForR2 = ({
+  approvalCount = 0,
   checksState = 'SUCCESS',
   existingPriority = null,
   existingStatus = STATUS.READY
@@ -186,9 +186,7 @@ exports.createMockGithubForR2 = ({
                 id: 'PR_123',
                 number: 123,
                 reviews: {
-                  nodes: approved ? [
-                    { state: 'APPROVED' }
-                  ] : []
+                  nodes: Array.from({ length: approvalCount }, () => ({ state: 'APPROVED' }))
                 },
                 commits: {
                   nodes: [{
