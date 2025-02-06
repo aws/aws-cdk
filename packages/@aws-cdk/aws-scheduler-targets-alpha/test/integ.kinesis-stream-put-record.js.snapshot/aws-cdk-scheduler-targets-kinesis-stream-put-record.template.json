@@ -19,8 +19,8 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",
@@ -106,7 +106,6 @@
      "Statement": [
       {
        "Action": [
-        "kinesis:ListShards",
         "kinesis:PutRecord",
         "kinesis:PutRecords"
        ],

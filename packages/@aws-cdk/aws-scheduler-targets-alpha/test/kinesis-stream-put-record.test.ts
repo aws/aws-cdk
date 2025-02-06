@@ -3,6 +3,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { KinesisStreamPutRecord } from '../lib';
 
@@ -48,7 +49,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -126,7 +127,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -189,7 +190,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -274,7 +275,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -315,7 +316,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: 'arn:aws:kinesis:us-east-1:123456789012:stream/Foo',
           },
@@ -357,7 +358,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
@@ -400,7 +401,7 @@ describe('schedule target', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['kinesis:ListShards', 'kinesis:PutRecord', 'kinesis:PutRecords'],
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
             Effect: 'Allow',
             Resource: 'arn:aws:kinesis:us-east-1:123456789012:stream/Foo',
           },
@@ -410,37 +411,7 @@ describe('schedule target', () => {
     });
   });
 
-  test.each([
-    ['account', 'arn:aws:kinesis:us-east-1:999999999999:stream/Foo', /Both the schedule and the stream must be in the same account./],
-    ['region', 'arn:aws:kinesis:eu-central-1:123456789012:stream/Foo', /Both the schedule and the stream must be in the same region./],
-  ])('throws when Kinesis Data Stream is imported from different %s', (_, arn: string, expectedError: RegExp) => {
-    const importedStream = kinesis.Stream.fromStreamArn(stack, 'ImportedStream', arn);
-    const streamTarget = new KinesisStreamPutRecord(importedStream, {
-      partitionKey: 'key',
-    });
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(expectedError);
-  });
-
-  test('throws when IAM role is imported from different account', () => {
-    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::234567890123:role/someRole');
-
-    const streamTarget = new KinesisStreamPutRecord(stream, {
-      partitionKey: 'key',
-      role: importedRole,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(/Both the target and the execution role must be in the same account/);
-  });
-
-  test('adds permissions to DLQ', () => {
+  test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
     const streamTarget = new KinesisStreamPutRecord(stream, {
@@ -453,14 +424,18 @@ describe('schedule target', () => {
       target: streamTarget,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'sqs:SendMessage',
-            Principal: {
-              Service: 'scheduler.amazonaws.com',
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
             },
+          },
+          {
+            Action: 'sqs:SendMessage',
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': ['DummyDeadLetterQueueCEBF3463', 'Arn'],
@@ -468,35 +443,11 @@ describe('schedule target', () => {
           },
         ],
       },
-      Queues: [
-        {
-          Ref: 'DummyDeadLetterQueueCEBF3463',
-        },
-      ],
+      Roles: [{ Ref: roleId }],
     });
   });
 
-  test('throws when adding permissions to DLQ from a different region', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'eu-west-2',
-      },
-    });
-    const dlq = new sqs.Queue(stack2, 'DummyDeadLetterQueue');
-
-    const streamTarget = new KinesisStreamPutRecord(stream, {
-      partitionKey: 'key',
-      deadLetterQueue: dlq,
-    });
-
-    expect(() =>
-      new Schedule(stack, 'MyScheduleDummy', {
-        schedule: expr,
-        target: streamTarget,
-      })).toThrow(/Both the queue and the schedule must be in the same region./);
-  });
-
-  test('does not create a queue policy when DLQ is imported', () => {
+  test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:somequeue1');
 
     const streamTarget = new KinesisStreamPutRecord(stream, {
@@ -509,32 +460,61 @@ describe('schedule target', () => {
       target: streamTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
+            },
+          },
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: importedQueue.queueArn,
+          },
+        ],
+      },
+      Roles: [{ Ref: roleId }],
+    });
   });
 
-  test('does not create a queue policy when DLQ is created in a different account', () => {
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-1',
-        account: '234567890123',
-      },
+  test('adds kms permissions to execution role when stream uses customer-managed key for encryption', () => {
+    const key = new kms.Key(stack, 'MyKey');
+    const ssekmsstream = new kinesis.Stream(stack, 'MySSEKMSStream', {
+      encryptionKey: key,
     });
-
-    const dlq = new sqs.Queue(stack2, 'DummyDeadLetterQueue', {
-      queueName: 'DummyDeadLetterQueue',
-    });
-
-    const streamTarget = new KinesisStreamPutRecord(stream, {
+    const streamTarget = new KinesisStreamPutRecord(ssekmsstream, {
       partitionKey: 'key',
-      deadLetterQueue: dlq,
     });
-
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
       target: streamTarget,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MySSEKMSStreamB597D4E1', 'Arn'],
+            },
+          },
+          {
+            Action: 'kms:GenerateDataKey*',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'SchedulerRoleForTargeta736fbE883CED5' }],
+    });
   });
 
   test('renders expected retry policy', () => {
@@ -581,17 +561,17 @@ describe('schedule target', () => {
       })).toThrow(/Maximum event age is 1 day/);
   });
 
-  test('throws when retry policy max age is less than 15 minutes', () => {
+  test('throws when retry policy max age is less than 1 minute', () => {
     const streamTarget = new KinesisStreamPutRecord(stream, {
       partitionKey: 'key',
-      maxEventAge: Duration.minutes(5),
+      maxEventAge: Duration.seconds(59),
     });
 
     expect(() =>
       new Schedule(stack, 'MyScheduleDummy', {
         schedule: expr,
         target: streamTarget,
-      })).toThrow(/Minimum event age is 15 minutes/);
+      })).toThrow(/Minimum event age is 1 minute/);
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {

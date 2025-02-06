@@ -1781,3 +1781,42 @@ test.each([true, false])('isPubliclyAccessible is set %s', (isPubliclyAccessible
     },
   });
 });
+
+test.each([
+  ['tes'],
+  ['test-service-name-over-limitation-apprunner'],
+])('serviceName length is invalid (name: %s)', (serviceName: string) => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: { port: 8000 },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      serviceName,
+    });
+  }).toThrow(`\`serviceName\` must be between 4 and 40 characters, got: ${serviceName.length} characters.`);
+});
+
+test.each([
+  ['-test'],
+  ['test-?'],
+  ['test-\\'],
+])('serviceName includes invalid characters (name: %s)', (serviceName: string) => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  expect(() => {
+    new apprunner.Service(stack, 'DemoService', {
+      source: apprunner.Source.fromEcrPublic({
+        imageConfiguration: { port: 8000 },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+      serviceName,
+    });
+  }).toThrow(`\`serviceName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${serviceName}.`);
+});

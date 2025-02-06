@@ -76,6 +76,30 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 ```
 
+## Availability Zone Relocation
+
+By using [relocation in Amazon Redshift](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-recovery.html), you allow Amazon Redshift to move a cluster to another Availability Zone (AZ) without any loss of data or changes to your applications.
+This feature can be applied to both new and existing clusters.
+
+To enable this feature, set the `availabilityZoneRelocation` property to `true`.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  nodeType: NodeType.RA3_XLPLUS,
+  availabilityZoneRelocation: true,
+});
+```
+
+**Note**: The `availabilityZoneRelocation` property is only available for RA3 node types.
+
 ## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Redshift Clusters have
@@ -448,6 +472,48 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 cluster.enableRebootForParameterChanges()
 ```
 
+## Resource Action
+
+You can perform various actions on the Redshift resource by specifying the `resourceAction` property,
+including [pausing and resuming the cluster](https://docs.aws.amazon.com/redshift/latest/mgmt/rs-mgmt-pause-resume-cluster.html), as well as initiating [failover for Multi-AZ clusters](https://docs.aws.amazon.com/redshift/latest/mgmt/test-cluster-multi-az.html).
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ResourceAction } from '@aws-cdk/aws-redshift-alpha';
+
+declare const vpc: ec2.IVpc;
+
+// Pause the cluster
+new Cluster(this, 'PausedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.PAUSE,
+});
+
+// Resume the cluster
+new Cluster(this, 'ResumedCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  resourceAction: ResourceAction.RESUME,
+});
+
+// Failover the cluster
+new Cluster(this, 'FailOverCluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  // VPC must have 3 AZs for the cluster which executes failover action
+  vpc,
+  // Must be a multi-AZ cluster to failover
+  multiAz: true,
+  resourceAction: ResourceAction.FAILOVER_PRIMARY_COMPUTE,
+});
+```
+
 ## Elastic IP
 
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
@@ -634,6 +700,7 @@ as it's a fast operation and typically completes in minutes. Elastic resize is o
   * dc2.8xlarge
   * ds2.xlarge
   * ds2.8xlarge
+  * ra3.large
   * ra3.xlplus
   * ra3.4xlarge
   * ra3.16xlarge

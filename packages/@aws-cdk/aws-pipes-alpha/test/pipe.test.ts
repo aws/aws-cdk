@@ -4,24 +4,7 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
-import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
-
-class TestLogDestination implements ILogDestination {
-
-  logDestinationArn = 'log-destination-arn';
-  parameters = {
-    cloudwatchLogsLogDestination: {
-      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-    },
-  };
-  public grantPush = jest.fn();
-  bind(_pipe: IPipe): LogDestinationConfig {
-    return {
-      parameters: this.parameters,
-    };
-  }
-
-}
+import { DesiredState, IEnrichment, ISource, ITarget, Pipe } from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -106,7 +89,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
 
     it('should add filter criteria to the source parameters', () => {
@@ -141,7 +123,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
     it('should merge filter criteria and source parameters', () => {
       // GIVEN
@@ -185,7 +166,6 @@ describe('Pipe', () => {
         },
       },
       );
-
     });
 
     test('grantPush is called for sources with an SNS topic DLQ', () => {
@@ -259,7 +239,6 @@ describe('Pipe', () => {
   });
 
   describe('target', () => {
-
     it('should grant push permissions to the target', () => {
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
@@ -389,7 +368,6 @@ describe('Pipe', () => {
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(role);
-
     });
 
     it('should call grant on the provided role', () => {
@@ -424,53 +402,6 @@ describe('Pipe', () => {
       expect(pipe.pipeRole).toBe(role);
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
-    });
-  });
-
-  describe('logs', () => {
-    const logDestination = new TestLogDestination();
-    it('should pass along log configuration', () => {
-      // WHEN
-      new Pipe(stack, 'TestPipe', {
-        pipeName: 'TestPipe',
-        source,
-        target,
-        logLevel: LogLevel.INFO,
-        logIncludeExecutionData: [IncludeExecutionData.ALL],
-        logDestinations: [
-          logDestination,
-        ],
-      });
-
-      const template = Template.fromStack(stack);
-
-      // THEN
-      template.hasResource('AWS::Pipes::Pipe', {
-        Properties: {
-          LogConfiguration: {
-            CloudwatchLogsLogDestination: {
-
-              LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-            },
-            Level: 'INFO',
-            IncludeExecutionData: ['ALL'],
-          },
-        },
-      },
-      );
-    } );
-
-    it('should call grantPush of the log destination with pipe role', () => {
-      // WHEN
-      const pipe = new Pipe(stack, 'TestPipe', {
-        pipeName: 'TestPipe',
-        source,
-        target,
-        logDestinations: [logDestination],
-      });
-
-      // THEN
-      expect(logDestination.grantPush).toHaveBeenCalledWith(pipe.pipeRole);
     });
   });
 });

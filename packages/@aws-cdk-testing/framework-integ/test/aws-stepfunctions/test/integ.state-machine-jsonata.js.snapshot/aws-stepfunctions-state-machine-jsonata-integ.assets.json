@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "27f3dacce50e891237faa2930a3704423699947aeaaba4a6cd5d8958f0512e50": {
+      "source": {
+        "path": "aws-stepfunctions-state-machine-jsonata-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "27f3dacce50e891237faa2930a3704423699947aeaaba4a6cd5d8958f0512e50.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

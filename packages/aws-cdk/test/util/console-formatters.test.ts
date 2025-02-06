@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
 import * as chalk from 'chalk';
-import { formatAsBanner } from '../../lib/util/console-formatters';
+import { formatAsBanner } from '../../lib/cli/util/console-formatters';
 
 test('no banner on empty msg list', () =>
   expect(formatAsBanner([])).toEqual([]));
