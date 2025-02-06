@@ -407,16 +407,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -473,6 +463,34 @@
     "ClusterResourceProviderframeworkonEventServiceRoleDefaultPolicy525CDD86",
     "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SingletonLambda511e207f13df4b8bb632c32b30b65ac281740AC5",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F6158EFC",
+    "Roles": [
+     {
+      "Ref": "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE"
+     }
+    ]
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
