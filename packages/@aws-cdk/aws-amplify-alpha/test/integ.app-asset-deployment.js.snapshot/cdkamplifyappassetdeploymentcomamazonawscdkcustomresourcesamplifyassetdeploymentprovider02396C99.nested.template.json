@@ -376,6 +376,24 @@
        ]
       },
       {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentiscomplete236D9453",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentonevent974704DA",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -526,6 +544,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentiscomplete236D9453",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentonevent974704DA",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -665,6 +701,24 @@
            },
            ":*"
           ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentiscomplete236D9453",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymentonevent974704DA",
+          "Arn"
          ]
         }
        ]
