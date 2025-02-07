@@ -43,6 +43,37 @@ describe('SqsSendMessage', () => {
     });
   });
 
+  test('default settings - using JSONata', () => {
+  // WHEN
+    const task = SqsSendMessage.jsonata(stack, 'SendMessage', {
+      queue,
+      messageBody: sfn.TaskInput.fromText('a simple message'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::sqs:sendMessage',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        QueueUrl: { Ref: 'Queue4A7E3555' },
+        MessageBody: 'a simple message',
+      },
+    });
+  });
+
   test('send message with deduplication and delay', () => {
     // WHEN
     const task = new SqsSendMessage(stack, 'Send', {
@@ -235,5 +266,4 @@ describe('SqsSendMessage', () => {
       });
     }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,WAIT_FOR_TASK_TOKEN. Received: RUN_JOB/);
   });
-
 });

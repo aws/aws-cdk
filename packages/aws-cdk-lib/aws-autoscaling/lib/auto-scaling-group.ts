@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization, withResolved,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
@@ -411,6 +412,12 @@ export interface CommonAutoScalingGroupProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * The strategy for distributing instances across Availability Zones.
+   * @default None
+   */
+  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
 }
 
 /**
@@ -856,7 +863,6 @@ export abstract class Signals {
       },
     };
   }
-
 }
 
 /**
@@ -1020,7 +1026,6 @@ export interface RollingUpdateOptions {
  * A set of group metrics
  */
 export class GroupMetrics {
-
   /**
    * Report all group metrics.
    */
@@ -1042,7 +1047,6 @@ export class GroupMetrics {
  * Group metrics that an Auto Scaling group sends to Amazon CloudWatch.
  */
 export class GroupMetric {
-
   /**
    * The minimum size of the Auto Scaling group
    */
@@ -1098,8 +1102,21 @@ export class GroupMetric {
   }
 }
 
-abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
+/**
+ * The strategies for when launches fail in an Availability Zone.
+ */
+export enum CapacityDistributionStrategy {
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+   */
+  BALANCED_ONLY = 'balanced-only',
+  /**
+   * If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+   */
+  BALANCED_BEST_EFFORT = 'balanced-best-effort',
+}
 
+abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
   public abstract readonly osType: ec2.OperatingSystemType;
@@ -1253,7 +1270,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget,
   elbv2.INetworkLoadBalancerTarget {
-
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
@@ -1317,6 +1333,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 
@@ -1530,6 +1548,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
+      availabilityZoneDistribution: props.azCapacityDistributionStrategy
+        ? { capacityDistributionStrategy: props.azCapacityDistributionStrategy }
+        : undefined,
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
@@ -1586,6 +1607,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    *
    * @param securityGroup: The security group to add
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
       this.launchTemplate?.addSecurityGroup(securityGroup);
@@ -1600,6 +1622,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to a classic load balancer
    */
+  @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     this.loadBalancerNames.push(loadBalancer.loadBalancerName);
   }
@@ -1607,6 +1630,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
+  @MethodMetadata()
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
@@ -1622,11 +1646,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Attach to ELBv2 Application Target Group
    */
+  @MethodMetadata()
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
+  @MethodMetadata()
   public addUserData(...commands: string[]): void {
     this.userData.addCommands(...commands);
   }
@@ -1634,6 +1660,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -1648,6 +1675,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * - Update the instance's CreationPolicy to wait for `cfn-init` to finish
    *   before reporting success.
    */
+  @MethodMetadata()
   public applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     if (!this.autoScalingGroup.cfnOptions.creationPolicy?.resourceSignal) {
       throw new Error('When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.');
@@ -1669,6 +1697,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Ensures newly-launched instances are protected from scale-in.
    */
+  @MethodMetadata()
   public protectNewInstancesFromScaleIn() {
     this.newInstancesProtectedFromScaleIn = true;
   }
@@ -1676,6 +1705,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Returns `true` if newly-launched instances are protected from scale-in.
    */
+  @MethodMetadata()
   public areNewInstancesProtectedFromScaleIn(): boolean {
     return this.newInstancesProtectedFromScaleIn === true;
   }
@@ -2534,11 +2564,11 @@ export interface ApplyCloudFormationInitOptions {
   readonly includeUrl?: boolean;
 
   /**
-  * Include --role argument when running cfn-init and cfn-signal commands
-  *
-  * This will be the IAM instance profile attached to the EC2 instance
-  *
-  * @default false
-  */
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
   readonly includeRole?: boolean;
 }

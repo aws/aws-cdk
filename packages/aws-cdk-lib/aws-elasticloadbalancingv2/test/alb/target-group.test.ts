@@ -450,7 +450,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -472,7 +472,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(

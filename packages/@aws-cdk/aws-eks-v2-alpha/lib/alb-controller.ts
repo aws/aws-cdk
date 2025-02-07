@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { Cluster, AuthenticationMode } from './cluster';
+import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -16,7 +16,6 @@ import { Aws, Duration, Names, Stack } from 'aws-cdk-lib/core';
  * Corresponds to the image tag of 'amazon/aws-load-balancer-controller' image.
  */
 export class AlbControllerVersion {
-
   /**
    * v2.0.0
    */
@@ -359,10 +358,6 @@ export class AlbController extends Construct {
     // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);
     chart.node.addDependency(props.cluster.openIdConnectProvider);
-    if (props.cluster.authenticationMode != AuthenticationMode.API) {
-      // ensure the dependency only when ConfigMap is supported
-      chart.node.addDependency(props.cluster.awsAuth);
-    }
   }
 
   private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {

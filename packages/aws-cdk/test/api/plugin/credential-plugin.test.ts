@@ -1,6 +1,7 @@
+import { CredentialProviderSource, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import { CredentialPlugins } from '../../../lib/api/aws-auth/credential-plugins';
 import { credentialsAboutToExpire } from '../../../lib/api/aws-auth/provider-caching';
-import { CredentialProviderSource, Mode, SDKv3CompatibleCredentials } from '../../../lib/api/plugin/credential-provider-source';
+import { Mode } from '../../../lib/api/plugin/mode';
 import { PluginHost, markTesting } from '../../../lib/api/plugin/plugin';
 
 markTesting();

@@ -354,7 +354,7 @@ describe('repository', () => {
     // THEN
     expect(() => {
       ecr.Repository.fromRepositoryArn(stack, 'repo', invalidArn);
-    }).toThrowError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
+    }).toThrow(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${invalidArn}.`);
   });
 
   test('fails if importing with token arn and no name', () => {
@@ -1217,7 +1217,7 @@ describe('repository', () => {
           autoDeleteImages: true,
           removalPolicy: cdk.RemovalPolicy.RETAIN,
         });
-      }).toThrowError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }).toThrow('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
     });
   });
 
