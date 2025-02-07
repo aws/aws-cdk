@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../core/lib/errors';
+
 /**
  * After this point, S3 website domains look like `s3-website.REGION.s3.amazonaws.com`
  *
@@ -88,7 +90,7 @@ export const AWS_REGIONS = AWS_REGIONS_AND_RULES
 export function before(region: string, ruleOrRegion: string | symbol) {
   const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
   if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
+    throw new UnscopedValidationError(`Unknown rule: ${String(ruleOrRegion)}`);
   }
   const regionIx = AWS_REGIONS_AND_RULES.indexOf(region);
   return regionIx === -1 ? false : regionIx < ruleIx;
@@ -100,7 +102,7 @@ export function before(region: string, ruleOrRegion: string | symbol) {
 export function regionsBefore(ruleOrRegion: string | symbol): string[] {
   const ruleIx = AWS_REGIONS_AND_RULES.indexOf(ruleOrRegion);
   if (ruleIx === -1) {
-    throw new Error(`Unknown rule: ${String(ruleOrRegion)}`);
+    throw new UnscopedValidationError(`Unknown rule: ${String(ruleOrRegion)}`);
   }
   return AWS_REGIONS_AND_RULES.slice(0, ruleIx)
     .filter((entry) => typeof entry === 'string')

@@ -25,7 +25,6 @@ const noThrowDefaultErrorNotYetSupported = [
   'aws-servicecatalog',
   'core',
   'custom-resources',
-  'region-info',
 ];
 baseConfig.overrides.push({
   files: [
