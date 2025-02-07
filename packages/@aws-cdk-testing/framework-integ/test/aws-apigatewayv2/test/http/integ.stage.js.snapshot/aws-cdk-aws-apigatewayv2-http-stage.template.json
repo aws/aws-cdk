@@ -14,6 +14,7 @@
      "Ref": "HttpApiF5A9A8A7"
     },
     "DefaultRouteSettings": {
+     "DetailedMetricsEnabled": true,
      "ThrottlingBurstLimit": 1000,
      "ThrottlingRateLimit": 1000
     },
