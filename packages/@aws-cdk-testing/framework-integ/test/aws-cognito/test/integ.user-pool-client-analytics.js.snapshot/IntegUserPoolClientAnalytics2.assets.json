@@ -1,15 +1,15 @@
 {
   "version": "39.0.0",
   "files": {
-    "f395ca0d527831a9bb9efb9f8596f28402b0cdf892c286ff1597977eb5faf167": {
+    "94daf9d929c0440b15cac98160ed22e1146416901827edaa8f7ffc1b16373977": {
       "source": {
-        "path": "aws-cdk-aws-apigatewayv2-websocket-stage.template.json",
+        "path": "IntegUserPoolClientAnalytics2.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f395ca0d527831a9bb9efb9f8596f28402b0cdf892c286ff1597977eb5faf167.json",
+          "objectKey": "94daf9d929c0440b15cac98160ed22e1146416901827edaa8f7ffc1b16373977.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
