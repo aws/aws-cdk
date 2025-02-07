@@ -465,7 +465,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-source-vpc-example
    *
-   * @param vpcEndpoint the interface VPC endpoint to grant access to
+   * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
   public grantInvokeFromVpcEndpointOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
     const denyPolicySid = 'DenyNonVPCEndpointAccess';
