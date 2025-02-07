@@ -674,7 +674,7 @@ The security group is not provided by CloudFormation currently.
 You can retrieve it dynamically using custom resource.
 
 ``` ts
-import * as cr from 'aws-cdk-lib/custom-resource';
+import * as cr from 'aws-cdk-lib/custom-resources';
 
 declare const vpc: ec2.Vpc;
 declare const distribution: cloudfront.Distribution;
