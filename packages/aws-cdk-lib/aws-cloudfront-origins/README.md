@@ -555,9 +555,6 @@ An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In or
 accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
@@ -573,8 +570,6 @@ new cloudfront.Distribution(this, 'myDist', {
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
@@ -639,12 +634,12 @@ It is not needed to be publicly accessible.
 // Creates a distribution from a Network Load Balancer
 declare const vpc: ec2.Vpc;
 // Create a network load balancer in a VPC. 'internetFacing' can be 'false'.
-const nlb = new elbv2.INetworkLoadBalancer(this, 'NLB', {
+const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', {
   vpc,
   internetFacing: false,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   securityGroups: [new ec2.SecurityGroup(this, 'NLB-SG', { vpc })],
-})
+});
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: origins.VpcOrigin.withNetworkLoadBalancer(nlb) },
 });
@@ -686,7 +681,7 @@ declare const distribution: cloudfront.Distribution;
 declare const alb: elbv2.ApplicationLoadBalancer;
 
 // Call ec2:DescribeSecurityGroups API to retrieve the VPC origins security group.
-const getSg = new cr.AwsCustomResource(stack, 'GetSecurityGroup', {
+const getSg = new cr.AwsCustomResource(this, 'GetSecurityGroup', {
   onCreate: {
     service: 'ec2',
     action: 'describeSecurityGroups',
@@ -703,7 +698,7 @@ const getSg = new cr.AwsCustomResource(stack, 'GetSecurityGroup', {
 // The security group may be available after the distributon is deployed
 getSg.node.addDependency(distribution);
 const sgVpcOrigins = ec2.SecurityGroup.fromSecurityGroupId(
-  stack,
+  this,
   'VpcOriginsSecurityGroup',
   getSg.getResponseField('SecurityGroups.0.GroupId'),
 );
