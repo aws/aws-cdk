@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallS3putObject54e25cd6439f0c5e1e44ce4ab2338ba0": {
-   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+  "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinestartPipelineExecuti",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,27 +9,24 @@
       "Arn"
      ]
     },
-    "service": "S3",
-    "api": "putObject",
+    "service": "CodePipeline",
+    "api": "startPipelineExecution",
     "parameters": {
-     "Bucket": {
+     "name": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-commands:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+         "Fn::ImportValue": "aws-cdk-codepipeline-commands:ExportsOutputRefPipelineC660917DEB540586"
         },
         "\""
        ]
       ]
-     },
-     "Key": "\"nodejs.zip\"",
-     "Body": "\"/Users/goto/pc/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/assets/nodejs.zip\"",
-     "ContentType": "\"application/zip\""
+     }
     },
     "flattenResponse": "false",
-    "salt": "1729865973343"
+    "salt": "1738914678081"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -62,18 +59,9 @@
        "Statement": [
         {
          "Action": [
-          "s3:PutObject"
+          "codepipeline:StartPipelineExecution"
          ],
          "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Effect": "Allow",
-         "Action": [
-          "kms:GenerateDataKey"
-         ],
          "Resource": [
           "*"
          ]
@@ -127,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.zip"
+     "S3Key": "b98abee59e034ed29eeb601684dc34752baa86509a7d457d72305d4e19ecc80b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -166,7 +154,7 @@
      "Key": "\"my-key/my-dir/file.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1729865973343"
+    "salt": "1738914678081"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -174,7 +162,7 @@
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForC3FB32C5",
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForRole44AD3905",
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225eWaitForTimeoutProviderInvoke2F043504",
-    "AwsApiCallS3putObject54e25cd6439f0c5e1e44ce4ab2338ba0"
+    "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -209,7 +197,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1729865973343"
+    "salt": "1738914678081"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -388,7 +376,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.zip"
+     "S3Key": "b98abee59e034ed29eeb601684dc34752baa86509a7d457d72305d4e19ecc80b.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -438,7 +426,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.zip"
+     "S3Key": "b98abee59e034ed29eeb601684dc34752baa86509a7d457d72305d4e19ecc80b.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -499,10 +487,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -553,10 +541,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

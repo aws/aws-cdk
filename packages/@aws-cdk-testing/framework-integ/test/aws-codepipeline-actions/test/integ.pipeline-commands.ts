@@ -6,6 +6,7 @@ import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import * as path from 'path';
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 
 const app = new cdk.App();
 
@@ -20,12 +21,21 @@ const bucket = new s3.Bucket(stack, 'SourceBucket', {
   versioned: true,
   encryptionKey: sourceBucketKey,
 });
+
+// To start the pipeline
+const bucketDeployment = new BucketDeployment(stack, 'BucketDeployment', {
+  sources: [Source.asset(path.join(__dirname, 'assets', 'nodejs.zip'))],
+  destinationBucket: bucket,
+  extract: false,
+});
+const zipKey = cdk.Fn.select(0, bucketDeployment.objectKeys);
+
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
   output: sourceOutput,
   bucket,
-  bucketKey: 'nodejs.zip',
+  bucketKey: zipKey,
 });
 
 const commandsOutput = new codepipeline.Artifact('CommandsArtifact', ['my-dir/**/*']);
@@ -87,17 +97,8 @@ const integ = new IntegTest(app, 'aws-cdk-codepipeline-commands-test', {
   diffAssets: true,
 });
 
-const putObjectCall = integ.assertions.awsApiCall('S3', 'putObject', {
-  Bucket: bucket.bucketName,
-  Key: 'nodejs.zip',
-  Body: path.join(__dirname, 'assets', 'nodejs.zip'),
-  ContentType: 'application/zip',
-});
-
-putObjectCall.provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['kms:GenerateDataKey'],
-  Resource: ['*'],
+const startPipelineCall = integ.assertions.awsApiCall('CodePipeline', 'startPipelineExecution', {
+  name: pipeline.pipelineName,
 });
 
 const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {
@@ -105,7 +106,7 @@ const getObjectCall = integ.assertions.awsApiCall('S3', 'getObject', {
   Key: 'my-key/my-dir/file.txt',
 });
 
-putObjectCall.next(
+startPipelineCall.next(
   integ.assertions.awsApiCall('CodePipeline', 'getPipelineState', {
     name: pipeline.pipelineName,
   }).expect(ExpectedResult.objectLike({
@@ -121,5 +122,3 @@ putObjectCall.next(
     totalTimeout: Duration.minutes(5),
   }).next(getObjectCall),
 );
-
-app.synth();
