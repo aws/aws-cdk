@@ -111,5 +111,3 @@ integ.assertions.awsApiCall('@aws-sdk/client-sfn', 'DescribeExecution', {
   totalTimeout: cdk.Duration.seconds(10),
   interval: cdk.Duration.seconds(3),
 });
-
-app.synth();

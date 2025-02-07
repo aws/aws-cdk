@@ -29,5 +29,3 @@ new FlowLog(stack, 'TransitGatewayAttachmentFlowLogs', {
 new IntegTest(app, 'FlowLogs', {
   testCases: [stack],
 });
-
-app.synth();

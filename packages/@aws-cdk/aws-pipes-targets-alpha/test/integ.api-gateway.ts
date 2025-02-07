@@ -84,5 +84,3 @@ message.assertAtPath('events.1.message', ExpectedResult.stringLikeRegexp('START 
   totalTimeout: cdk.Duration.minutes(1),
   interval: cdk.Duration.seconds(15),
 });
-
-app.synth();

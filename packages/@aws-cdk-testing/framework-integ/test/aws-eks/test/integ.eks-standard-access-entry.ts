@@ -53,4 +53,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
     },
   },
 });
-app.synth();

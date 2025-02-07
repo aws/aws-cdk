@@ -23,5 +23,3 @@ const crossAccountStack = new cdk.Stack(app, 'integ-servicecatalogappregistry-cr
 new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [localStack, crossAccountStack],
 });
-
-app.synth();

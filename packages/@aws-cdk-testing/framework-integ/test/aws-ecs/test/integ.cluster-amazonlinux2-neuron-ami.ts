@@ -34,5 +34,3 @@ cluster.addAsgCapacityProvider(cp);
 new integ.IntegTest(app, 'ClusterNeuronAmi', {
   testCases: [stack],
 });
-
-app.synth();

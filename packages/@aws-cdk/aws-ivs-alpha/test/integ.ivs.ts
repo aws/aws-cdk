@@ -68,5 +68,3 @@ new AllProperties(stack, 'AllProperties');
 new IntegTest(app, 'ivs-test', {
   testCases: [stack],
 });
-
-app.synth();

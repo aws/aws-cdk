@@ -51,5 +51,3 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
-
-app.synth();

@@ -31,5 +31,3 @@ const stack = new Cloud9Env(app, 'C9automaticStopStack');
 new integ.IntegTest(app, 'cloud-9-automatic-stop-time-mintues', {
   testCases: [stack],
 });
-
-app.synth();

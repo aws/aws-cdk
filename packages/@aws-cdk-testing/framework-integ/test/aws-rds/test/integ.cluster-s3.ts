@@ -44,5 +44,3 @@ cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 new IntegTest(app, 'test-rds-cluster-s3', {
   testCases: [stack],
 });
-
-app.synth();

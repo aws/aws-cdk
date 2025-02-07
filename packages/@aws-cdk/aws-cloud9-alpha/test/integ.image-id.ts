@@ -30,5 +30,3 @@ const app = new App();
 new integ.IntegTest(app, 'ImageIdInteg', {
   testCases: [new Cloud9Env(app, 'cloud9-imageid-integ')],
 });
-
-app.synth();

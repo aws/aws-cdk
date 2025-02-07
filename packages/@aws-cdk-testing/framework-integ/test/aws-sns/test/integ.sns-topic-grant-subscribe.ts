@@ -31,5 +31,3 @@ const stack = new SNSInteg(app, 'sns-grant-subscribe-stack');
 new IntegTest(app, 'sns-grant-subscribe-test', {
   testCases: [stack],
 });
-
-app.synth();

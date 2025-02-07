@@ -43,5 +43,3 @@ const stack = new ExposeMetricIntegStack(app, 'aws-cdk-expose-metric-integ');
 new IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
-
-app.synth();

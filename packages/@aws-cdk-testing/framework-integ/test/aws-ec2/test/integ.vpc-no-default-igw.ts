@@ -19,5 +19,3 @@ new ec2.Vpc(stack, 'MyVpc', {
 new integ.IntegTest(app, 'VpcNoDefaultIgw', {
   testCases: [stack],
 });
-
-app.synth();

@@ -41,5 +41,3 @@ const stack = new TestStack(app, 'aws-gamelift-game-server-group');
 new IntegTest(app, 'GameServerGroup', {
   testCases: [stack],
 });
-
-app.synth();

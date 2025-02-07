@@ -34,4 +34,3 @@ const testCase = new SfnRestApiWithoutDefaultMethodResponsesStack(app);
 new IntegTest(app, 'sfn-restapi-without-default-method-responses', {
   testCases: [testCase],
 });
-app.synth();

@@ -22,5 +22,3 @@ new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
 new integ.IntegTest(app, 'LambdaDeploymentConfigTest', {
   testCases: [stack],
 });
-
-app.synth();

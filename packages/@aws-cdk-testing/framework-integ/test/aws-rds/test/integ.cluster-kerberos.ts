@@ -42,5 +42,3 @@ new rds.DatabaseCluster(stack, 'Database', {
 new integ.IntegTest(app, 'integ-cluster-kerberos', {
   testCases: [stack],
 });
-
-app.synth();

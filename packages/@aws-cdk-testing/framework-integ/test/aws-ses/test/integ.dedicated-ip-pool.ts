@@ -13,5 +13,3 @@ new ses.DedicatedIpPool(stack, 'Pool', {
 new integ.IntegTest(app, 'DedicatedIpPoolInteg', {
   testCases: [stack],
 });
-
-app.synth();

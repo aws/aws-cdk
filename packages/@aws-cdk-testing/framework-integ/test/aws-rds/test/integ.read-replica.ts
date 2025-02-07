@@ -82,5 +82,3 @@ const stack = new TestStack(app, 'cdk-rds-read-replica');
 new IntegTest(app, 'instance-dual-test', {
   testCases: [stack],
 });
-
-app.synth();

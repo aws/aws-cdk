@@ -75,5 +75,3 @@ new IntegTest(app, 'iam-instance-profile-test', {
   testCases: [stack],
 });
 
-app.synth();
-

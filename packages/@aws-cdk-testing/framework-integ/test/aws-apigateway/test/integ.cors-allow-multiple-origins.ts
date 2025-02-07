@@ -27,5 +27,3 @@ resource.addMethod('GET', lambdaInteg);
 new IntegTest(app, 'integ-cors-allow-multiple-origins', {
   testCases: [stack],
 });
-
-app.synth();

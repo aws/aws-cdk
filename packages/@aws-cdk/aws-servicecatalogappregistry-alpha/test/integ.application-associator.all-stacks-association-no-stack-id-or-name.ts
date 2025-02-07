@@ -16,5 +16,3 @@ new cdk.Stack(stack, 'resourcesStack');
 new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [stack],
 });
-
-app.synth();

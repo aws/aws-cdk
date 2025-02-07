@@ -34,4 +34,3 @@ new IntegTest(app, 'OpenSearchIpAddressTypeInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

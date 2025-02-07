@@ -33,5 +33,3 @@ const stack = new TestStack(app, 'cdk-integ-secret-lambda-rotation');
 new integ.IntegTest(app, 'cdk-integ-secret-lambda-rotation-test', {
   testCases: [stack],
 });
-
-app.synth();

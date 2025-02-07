@@ -75,5 +75,3 @@ message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.string
   totalTimeout: cdk.Duration.minutes(2),
   interval: cdk.Duration.seconds(15),
 });
-
-app.synth();

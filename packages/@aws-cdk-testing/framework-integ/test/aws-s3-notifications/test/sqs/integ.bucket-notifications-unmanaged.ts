@@ -75,5 +75,3 @@ integTest.assertions
       WaitTimeSeconds: 20,
     })
     .assertAtPath('Messages.0.Body.Records.0.s3.object.key', integ.ExpectedResult.stringLikeRegexp('bucket2\/image\\.png')));
-
-app.synth();

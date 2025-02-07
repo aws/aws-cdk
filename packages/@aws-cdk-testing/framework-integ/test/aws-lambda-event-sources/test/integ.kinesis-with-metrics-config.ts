@@ -32,5 +32,3 @@ fn2.addEventSource(new KinesisEventSource(stream, {
 new integ.IntegTest(app, 'lambda-event-source-kinesis-with-metrics', {
   testCases: [stack],
 });
-
-app.synth();

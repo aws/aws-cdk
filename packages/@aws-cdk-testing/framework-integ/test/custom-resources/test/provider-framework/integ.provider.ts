@@ -52,5 +52,3 @@ new integ.IntegTest(app, 'IntegProviderFrameworkTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

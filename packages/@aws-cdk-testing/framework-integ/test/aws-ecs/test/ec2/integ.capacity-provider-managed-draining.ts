@@ -62,5 +62,3 @@ service.node.addDependency(cluster);
 new integ.IntegTest(app, 'CapacityProviders', {
   testCases: [stack],
 });
-
-app.synth();

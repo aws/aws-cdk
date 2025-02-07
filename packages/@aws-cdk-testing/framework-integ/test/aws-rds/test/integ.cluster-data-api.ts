@@ -27,5 +27,3 @@ cluster.grantDataApiAccess(fucntion);
 new integ.IntegTest(app, 'integ-cluster-data-api', {
   testCases: [stack],
 });
-
-app.synth();

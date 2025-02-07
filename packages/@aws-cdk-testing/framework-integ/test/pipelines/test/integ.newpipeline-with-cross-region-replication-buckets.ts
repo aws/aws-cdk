@@ -14,7 +14,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const regionalBuckets: {[key: string]: string} = {
+const regionalBuckets: { [key: string]: string } = {
   'us-east-1': 'us-east-1-newpipeline-with-cross-region-replication-buckets',
   'us-west-2': 'us-west-2-newpipeline-with-cross-region-replication-buckets',
 };
@@ -109,5 +109,3 @@ new integ.IntegTest(
     testCases: [pipelineStack, usEast1S3Stack, usWest2S3Stack],
   },
 );
-
-app.synth();

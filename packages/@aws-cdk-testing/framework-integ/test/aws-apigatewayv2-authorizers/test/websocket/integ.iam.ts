@@ -57,5 +57,3 @@ new cdk.CfnOutput(stack, 'TESTSECRETACCESSKEY', {
 new cdk.CfnOutput(stack, 'TESTREGION', {
   value: stack.region,
 });
-
-app.synth();

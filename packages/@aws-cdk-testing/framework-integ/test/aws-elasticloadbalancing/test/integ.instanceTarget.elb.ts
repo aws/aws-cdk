@@ -50,5 +50,3 @@ elbalancer.addListener({ externalPort: 80, internalPort: 8080 });
 new integ.IntegTest(app, 'InstanceTargetTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -49,4 +49,3 @@ const message = integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
 message.expect(ExpectedResult.objectLike({
   Messages: [{ Body: '{color: "green", price: 200}' }],
 }));
-app.synth();

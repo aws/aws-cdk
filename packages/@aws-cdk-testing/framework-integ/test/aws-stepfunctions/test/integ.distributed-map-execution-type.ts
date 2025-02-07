@@ -28,5 +28,3 @@ const stack = new DistributedMapStack(app, 'aws-stepfunctions-map-integ-executio
 new IntegTest(app, 'DistributedMap', {
   testCases: [stack],
 });
-
-app.synth();

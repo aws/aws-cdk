@@ -149,5 +149,3 @@ new integ.IntegTest(app, 'codepipeline-elastic-beanstalk-deploy', {
   diffAssets: true,
   stackUpdateWorkflow: false,
 });
-
-app.synth();

@@ -46,7 +46,7 @@ class EksClusterStack extends Stack {
     // connect the ipv6 cidr to all vpc subnets
     let subnetcount = 0;
     let subnets = [...this.vpc.publicSubnets, ...this.vpc.privateSubnets];
-    for ( let subnet of subnets) {
+    for (let subnet of subnets) {
       // Wait for the ipv6 cidr to complete
       subnet.node.addDependency(ipv6cidr);
       this._associate_subnet_with_v6_cidr(subnetcount, subnet);
@@ -389,5 +389,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-ipv6', {
     },
   },
 });
-
-app.synth();

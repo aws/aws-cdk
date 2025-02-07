@@ -48,5 +48,3 @@ new appsync.GraphqlApi(stack, 'MergedAPI', {
 new IntegTest(app, 'api', {
   testCases: [stack],
 });
-
-app.synth();

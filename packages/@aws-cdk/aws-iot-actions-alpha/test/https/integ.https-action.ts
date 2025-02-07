@@ -32,5 +32,3 @@ const stack = new TestStack(app, 'IoTHttpsActionTestStack');
 new IntegTest(app, 'IoTHttpsAction', {
   testCases: [stack],
 });
-
-app.synth();

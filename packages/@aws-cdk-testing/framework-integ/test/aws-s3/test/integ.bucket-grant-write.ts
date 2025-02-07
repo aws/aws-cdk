@@ -20,5 +20,3 @@ bucket.grantWrite(user, '*', ['s3:PutObject', 's3:DeleteObject*']);
 new integ.IntegTest(app, 'BucketGrantWriteTest', {
   testCases: [stack],
 });
-
-app.synth();

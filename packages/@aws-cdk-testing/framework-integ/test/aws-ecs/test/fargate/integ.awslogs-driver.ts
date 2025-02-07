@@ -47,5 +47,3 @@ test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   'events.0.message',
   ExpectedResult.stringLikeRegexp('.+'),
 ).waitForAssertions();
-
-app.synth();

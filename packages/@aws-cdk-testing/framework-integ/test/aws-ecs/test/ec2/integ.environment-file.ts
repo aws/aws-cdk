@@ -80,5 +80,3 @@ new IntegTest(app, 'Integ', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

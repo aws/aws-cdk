@@ -34,5 +34,3 @@ new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotEnabled', {
 new integ.IntegTest(app, 'ClusterTest', {
   testCases: [stack],
 });
-
-app.synth();

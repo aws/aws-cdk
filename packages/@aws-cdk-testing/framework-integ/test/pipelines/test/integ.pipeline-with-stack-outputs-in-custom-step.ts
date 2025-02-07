@@ -89,5 +89,3 @@ const stack = new PipelineStack(app, 'StackOutputPipelineStack');
 new integ.IntegTest(app, 'PipelineWithCustomStepStackOutputTest', {
   testCases: [stack],
 });
-
-app.synth();

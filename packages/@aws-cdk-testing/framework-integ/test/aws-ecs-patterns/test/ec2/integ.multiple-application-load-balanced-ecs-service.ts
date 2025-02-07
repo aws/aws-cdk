@@ -41,5 +41,3 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
 new integ.IntegTest(app, 'applicationMultipleTargetGroupsEc2ServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -53,4 +53,3 @@ httpApi.addRoutes({
 new integ.IntegTest(app, 'stepfunctions-integration-integ-test', {
   testCases: [stack],
 });
-app.synth();

@@ -65,4 +65,3 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 new integ.IntegTest(app, 'enable-execute-command-test', {
   testCases: [stack],
 });
-app.synth();

@@ -32,5 +32,3 @@ new fsx.LustreFileSystem(stack, 'FsxLustreFileSystem', {
 new integ.IntegTest(app, 'FsxLustreWithS3Test', {
   testCases: [stack],
 });
-
-app.synth();

@@ -46,5 +46,3 @@ timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, 
 new IntegTest(app, 'LogGroup', {
   testCases: [stack],
 });
-
-app.synth();

@@ -65,5 +65,3 @@ applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(secu
 new integ.IntegTest(app, 'AlbEc2ServiceWithCommandAndEntryPoint', {
   testCases: [stack],
 });
-
-app.synth();

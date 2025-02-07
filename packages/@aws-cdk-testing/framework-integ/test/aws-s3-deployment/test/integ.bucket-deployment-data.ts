@@ -28,5 +28,3 @@ new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });
 new IntegTest(app, 'integ-test-bucket-deployment-data', {
   testCases: [stack],
 });
-
-app.synth();

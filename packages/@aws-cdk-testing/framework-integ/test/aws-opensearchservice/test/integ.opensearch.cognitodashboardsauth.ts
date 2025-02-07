@@ -52,5 +52,3 @@ const stack = new TestStack(app, 'cdk-integ-opensearch-cognitodashboardsauth');
 new IntegTest(app, 'CognitoAuthForOpenSearchDashboards', {
   testCases: [stack],
 });
-
-app.synth();

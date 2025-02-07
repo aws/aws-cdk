@@ -59,5 +59,3 @@ const testCase = new Test(app, 'test-globalvpcendpoint');
 new IntegTest(app, 'globalvpcendpoint', {
   testCases: [testCase],
 });
-
-app.synth();

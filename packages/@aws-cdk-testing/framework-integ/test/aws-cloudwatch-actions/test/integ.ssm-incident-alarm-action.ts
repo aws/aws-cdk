@@ -60,5 +60,3 @@ const stack = new SsmIncidentAlarmActionIntegrationTestStack(app, 'SsmIncidentAl
 new integ.IntegTest(app, 'SsmIncidentManagerAlarmActionTest', {
   testCases: [stack],
 });
-
-app.synth();

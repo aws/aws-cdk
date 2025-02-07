@@ -102,5 +102,3 @@ test.assertions.awsApiCall('Emr', 'ListInstances', {
   'Instances.0.Ec2InstanceId',
   ExpectedResult.stringLikeRegexp('.+'),
 );
-
-app.synth();

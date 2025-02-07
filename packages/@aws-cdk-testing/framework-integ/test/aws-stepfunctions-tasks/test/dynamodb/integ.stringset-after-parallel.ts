@@ -42,5 +42,3 @@ new sfn.StateMachine(stack, 'StateMachine', {
 new integ.IntegTest(app, 'StringSetAfterParallel', {
   testCases: [stack],
 });
-
-app.synth();

@@ -20,5 +20,3 @@ const app = new cdk.App();
 new IntegTest(app, 'iam-integ-composite-principal-test', {
   testCases: [new TestStack(app, 'iam-integ-composite-principal')],
 });
-
-app.synth();

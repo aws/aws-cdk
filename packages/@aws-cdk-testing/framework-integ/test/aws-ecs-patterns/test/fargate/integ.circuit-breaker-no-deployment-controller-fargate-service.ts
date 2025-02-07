@@ -21,5 +21,3 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
 new integ.IntegTest(app, 'circuitBreakerNoDeploymentControllerFargateTest', {
   testCases: [stack],
 });
-
-app.synth();

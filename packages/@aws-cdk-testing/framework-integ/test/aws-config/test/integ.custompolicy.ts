@@ -39,4 +39,3 @@ new config.CustomPolicy(stack, 'Custom-lazy', {
 new integ.IntegTest(app, 'aws-cdk-config-custompolicy-integ', {
   testCases: [stack],
 });
-app.synth();

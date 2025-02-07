@@ -27,5 +27,3 @@ const invoke = integ.assertions.invokeFunction({
 invoke.expect(ExpectedResult.objectLike({
   Payload: Match.serializedJson({ statusCode: 200 }),
 }));
-
-app.synth();

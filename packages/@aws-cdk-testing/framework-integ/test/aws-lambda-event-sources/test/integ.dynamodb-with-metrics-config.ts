@@ -40,5 +40,3 @@ fn2.addEventSource(new DynamoEventSource(table, {
 new integ.IntegTest(app, 'lambda-event-source-dynamodb-with-metrics', {
   testCases: [stack],
 });
-
-app.synth();

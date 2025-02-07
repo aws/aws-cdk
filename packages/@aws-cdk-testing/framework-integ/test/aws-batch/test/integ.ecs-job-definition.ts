@@ -107,5 +107,3 @@ new batch.EcsJobDefinition(stack, 'WindowsJobDefinitio', {
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

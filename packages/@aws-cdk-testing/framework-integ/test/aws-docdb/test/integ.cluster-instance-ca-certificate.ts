@@ -26,5 +26,3 @@ new DatabaseCluster(stack, 'Database', {
 new integ.IntegTest(app, 'ClusterInstanceCACertificateTest', {
   testCases: [stack],
 });
-
-app.synth();

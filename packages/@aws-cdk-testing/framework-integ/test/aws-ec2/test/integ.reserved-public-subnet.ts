@@ -30,5 +30,3 @@ const stack = new VpcReservedPublicSubnetStack(app, 'aws-cdk-ec2-vpc-reserved-pu
 new IntegTest(app, 'integ-aws-cdk-ec2-vpc-reserved-public-subnet', {
   testCases: [stack],
 });
-
-app.synth();

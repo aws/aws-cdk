@@ -71,5 +71,3 @@ new appsync.SourceApiAssociation(stack, 'SourceApiAssociation3', {
 new IntegTest(app, 'api', {
   testCases: [stack],
 });
-
-app.synth();

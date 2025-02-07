@@ -36,5 +36,3 @@ new IntegTest(app, 'LogRetentionIntegRetries', {
     },
   },
 });
-
-app.synth();

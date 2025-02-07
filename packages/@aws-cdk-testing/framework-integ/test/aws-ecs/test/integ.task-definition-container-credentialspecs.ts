@@ -47,5 +47,3 @@ taskDefinition.addContainer('DomainlessContainer', {
 new IntegTest(app, 'TaskDefinitionContainerCredSpecs', {
   testCases: [stack],
 });
-
-app.synth();

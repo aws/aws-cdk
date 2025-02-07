@@ -66,5 +66,3 @@ fn2.addEventSource(new DynamoEventSource(table, {
 new integ.IntegTest(app, 'DynamoDBFilterCriteria', {
   testCases: [stack],
 });
-
-app.synth();

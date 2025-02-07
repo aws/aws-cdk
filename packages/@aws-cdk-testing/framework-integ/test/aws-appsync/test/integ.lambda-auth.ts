@@ -59,5 +59,3 @@ const testCase = new GraphQLApiLambdaAuthStack(app);
 new IntegTest(app, 'GraphQlApiLambdaAuth', {
   testCases: [testCase],
 });
-
-app.synth();

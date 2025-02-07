@@ -27,5 +27,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();

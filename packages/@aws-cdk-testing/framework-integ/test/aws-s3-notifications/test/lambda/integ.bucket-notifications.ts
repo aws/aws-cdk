@@ -102,4 +102,3 @@ getNotifications.expect(integ.ExpectedResult.objectLike({
     },
   ],
 }));
-app.synth();

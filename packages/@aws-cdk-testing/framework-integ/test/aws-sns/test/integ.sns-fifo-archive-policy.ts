@@ -20,5 +20,3 @@ const stack = new SNSFifoArchivePolicyStack(app, 'SNSFifoArchivePolicyStack');
 new integ.IntegTest(app, 'SqsTest', {
   testCases: [stack],
 });
-
-app.synth();

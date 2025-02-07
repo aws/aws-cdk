@@ -78,5 +78,3 @@ test.assertions
   .awsApiCall('IAM', 'listAttachedRolePolicies', { RoleName: roleToBeImported.roleName })
   .assertAtPath('AttachedPolicies.0.PolicyName', integ.ExpectedResult.stringLikeRegexp('^MyCustomManagedPolicy[0-9]$'))
   .assertAtPath('AttachedPolicies.1.PolicyName', integ.ExpectedResult.stringLikeRegexp('^MyCustomManagedPolicy[0-9]$'));
-
-app.synth();

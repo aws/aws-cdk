@@ -33,4 +33,3 @@ const stack = new ALBListenerStack(app, 'nlb-alb-listner-stack');
 new IntegTest(app, 'Integ', {
   testCases: [stack],
 });
-app.synth();

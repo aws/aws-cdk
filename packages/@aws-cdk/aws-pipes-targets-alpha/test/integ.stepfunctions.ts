@@ -53,7 +53,7 @@ const putParameterStep = new tasks.CallAwsService(stack, 'PutParameter', {
 });
 
 const targetStateMachine = new sfn.StateMachine(stack, 'TargetStateMachine', {
-  definitionBody: sfn.DefinitionBody.fromChainable( putParameterStep),
+  definitionBody: sfn.DefinitionBody.fromChainable(putParameterStep),
 });
 
 new Pipe(stack, 'Pipe', {
@@ -78,12 +78,10 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SSM', 'getParameter',
   {
     Name: parameterName,
   })).expect(ExpectedResult.objectLike({
-  Parameter: {
-    Name: parameterName,
-    Value: rainbow,
-  },
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(10),
-});
-
-app.synth();
+    Parameter: {
+      Name: parameterName,
+      Value: rainbow,
+    },
+  })).waitForAssertions({
+    totalTimeout: cdk.Duration.seconds(10),
+  });

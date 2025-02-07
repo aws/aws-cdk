@@ -52,5 +52,3 @@ const stack = new TestStack(app, 'aws-gamelift-alias');
 new IntegTest(app, 'Alias', {
   testCases: [stack],
 });
-
-app.synth();

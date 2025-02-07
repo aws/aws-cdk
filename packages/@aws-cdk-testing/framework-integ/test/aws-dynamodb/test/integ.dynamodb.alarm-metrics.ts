@@ -38,5 +38,3 @@ const stack = new TestStack(app, 'alarm-metrics');
 new IntegTest(app, 'alarm-metrics-integ', {
   testCases: [stack],
 });
-
-app.synth();

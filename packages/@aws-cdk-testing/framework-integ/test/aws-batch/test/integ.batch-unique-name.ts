@@ -37,5 +37,3 @@ rule.addTarget(new targets.BatchJob(
 new integ.IntegTest(app, 'BatchUniqueNameTest', {
   testCases: [stack],
 });
-
-app.synth();

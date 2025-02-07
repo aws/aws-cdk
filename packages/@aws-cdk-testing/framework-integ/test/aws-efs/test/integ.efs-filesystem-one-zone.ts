@@ -24,4 +24,3 @@ new FileSystem(stack, 'FileSystem2', {
 new integ.IntegTest(app, 'test-efs-one-zone-integ-test', {
   testCases: [stack],
 });
-app.synth();

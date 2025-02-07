@@ -29,5 +29,3 @@ lambdaDS.createFunction('TestFunction', {
 new IntegTest(app, 'AppSyncFunctionMaxBatchSize', {
   testCases: [stack],
 });
-
-app.synth();

@@ -24,7 +24,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-glue-job-scalaspark-etl');
 
 const jar_file = glue.Code.fromAsset(path.join(__dirname, 'job-jar', 'helloworld.jar'));
-const job_class ='com.example.HelloWorld';
+const job_class = 'com.example.HelloWorld';
 
 const iam_role = new iam.Role(stack, 'IAMServiceRole', {
   assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
@@ -60,5 +60,3 @@ new glue.ScalaSparkEtlJob(stack, 'OverrideScalaSparkETLJob', {
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-etl-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

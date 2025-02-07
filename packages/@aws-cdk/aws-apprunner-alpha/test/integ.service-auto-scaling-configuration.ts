@@ -29,5 +29,3 @@ new cdk.CfnOutput(stack, 'URL', { value: `https://${service.serviceUrl}` });
 new integ.IntegTest(app, 'AppRunnerAutoScalingConfiguration', {
   testCases: [stack],
 });
-
-app.synth();

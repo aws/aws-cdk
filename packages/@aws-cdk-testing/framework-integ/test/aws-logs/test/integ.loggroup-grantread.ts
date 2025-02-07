@@ -12,4 +12,3 @@ logGroup.grantRead(new ServicePrincipal('es.amazonaws.com'));
 new IntegTest(app, 'loggroup-grantreads', {
   testCases: [stack],
 });
-app.synth();

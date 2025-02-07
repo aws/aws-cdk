@@ -29,5 +29,3 @@ cluster.grantDataApiAccess(new iam.ServicePrincipal('ecs-tasks.amazonaws.com'));
 new IntegTest(app, 'cdk-rds-integ-secret-rotation', {
   testCases: [stack],
 });
-
-app.synth();

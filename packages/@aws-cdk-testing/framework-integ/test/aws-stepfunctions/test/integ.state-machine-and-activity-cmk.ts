@@ -73,5 +73,3 @@ start.next(getActivityTask);
 getActivityTask.next(sendTaskSuccess);
 
 getActivityTask.assertAtPath('input.Hello', ExpectedResult.stringLikeRegexp('World'));
-
-app.synth();

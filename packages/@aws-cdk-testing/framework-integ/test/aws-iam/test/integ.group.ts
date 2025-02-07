@@ -13,5 +13,3 @@ new Group(stack, 'MyGroup');
 new IntegTest(app, 'iam-role-1', {
   testCases: [stack],
 });
-
-app.synth();

@@ -33,5 +33,3 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
 new integ.IntegTest(app, 'vpcOnlyFargateTest', {
   testCases: [stack],
 });
-
-app.synth();

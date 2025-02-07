@@ -36,4 +36,3 @@ const stack = new FargateWithEfsStack(app, 'aws-ecs-fargate-efs');
 new integ.IntegTest(app, 'aws-ecs-fargate-test', {
   testCases: [stack],
 });
-app.synth();

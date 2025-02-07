@@ -37,5 +37,3 @@ instance.grantConnect(role);
 new integ.IntegTest(app, 'rds-integ-instance-create-grant', {
   testCases: [stack],
 });
-
-app.synth();

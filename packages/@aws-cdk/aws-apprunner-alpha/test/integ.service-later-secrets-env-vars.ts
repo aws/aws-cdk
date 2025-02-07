@@ -32,5 +32,3 @@ new cdk.CfnOutput(stack, 'URL9', { value: `https://${service9.serviceUrl}` });
 new integ.IntegTest(app, 'AppRunnerLaterSecretsEnvVars', {
   testCases: [stack],
 });
-
-app.synth();

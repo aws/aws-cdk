@@ -58,5 +58,3 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 new integ.IntegTest(app, 'ClusterWindowsServer', {
   testCases: [stack],
 });
-
-app.synth();

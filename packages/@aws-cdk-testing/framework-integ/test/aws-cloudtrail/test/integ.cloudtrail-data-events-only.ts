@@ -23,5 +23,3 @@ trail.addS3EventSelector([{ bucket }]);
 new integ.IntegTest(app, 'CloudTrailDataEventsOnlyTest', {
   testCases: [stack],
 });
-
-app.synth();

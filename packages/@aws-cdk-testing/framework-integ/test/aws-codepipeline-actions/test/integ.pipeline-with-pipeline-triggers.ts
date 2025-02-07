@@ -119,5 +119,3 @@ awsApiCall1.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pi
 
 const awsApiCall2 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline2' });
 awsApiCall2.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline2'));
-
-app.synth();

@@ -25,7 +25,7 @@ class TestBucketDeployment extends cdk.Stack {
     for (let i = 0; i < numFiles; i++) {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmpcdk'));
       fs.mkdirSync(tempDir, { recursive: true });
-      const fileName = `${i+1}.txt`;
+      const fileName = `${i + 1}.txt`;
       const filePath = path.join(tempDir, fileName);
       fs.writeFileSync(filePath, `This is file number ${i + 1}`);
       sources.push(s3deploy.Source.asset(tempDir));
@@ -59,7 +59,7 @@ const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
 for (let i = 0; i < numFiles; i++) {
   const apiCall = integTest.assertions.awsApiCall('S3', 'getObject', {
     Bucket: testCase.destinationBucket.bucketName,
-    Key: `${i+1}.txt`,
+    Key: `${i + 1}.txt`,
   });
   apiCall.provider.addToRolePolicy({
     Effect: 'Allow',
@@ -76,5 +76,3 @@ const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStac
 
 describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', ExpectedResult.stringLikeRegexp('customResourceData'));
 describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', ExpectedResult.stringLikeRegexp('Object Keys are'));
-
-app.synth();

@@ -24,5 +24,3 @@ const app = new App();
 new IntegTest(app, 'saml-provider-test', {
   testCases: [new TestStack(app, 'cdk-saml-provider')],
 });
-
-app.synth();

@@ -83,5 +83,3 @@ const logEvents = integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents
 putEvent.next(logEvents);
 
 logEvents.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(expectedValue));
-
-app.synth();

@@ -115,5 +115,3 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
 new integ.IntegTest(app, 'BatchManagedComputeEnvironmentTest', {
   testCases: [stack],
 });
-
-app.synth();

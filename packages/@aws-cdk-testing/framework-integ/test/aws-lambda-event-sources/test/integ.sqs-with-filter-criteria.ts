@@ -47,5 +47,3 @@ fn2.addEventSource(new SqsEventSource(queue, {
 new integ.IntegTest(app, 'SQSFilterCriteria', {
   testCases: [stack],
 });
-
-app.synth();

@@ -120,5 +120,3 @@ describeEngineDefaultParams.expect(integ.ExpectedResult.objectLike({
     Match.objectLike({ ParameterName: 'wlm_json_configuration', ParameterValue: '[{"auto_wlm":true}]' }),
   ]),
 }));
-
-app.synth();

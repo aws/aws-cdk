@@ -19,4 +19,3 @@ new FileSystem(stack, 'FileSystem', {
 new integ.IntegTest(app, 'test-efs-protection-integ-test', {
   testCases: [stack],
 });
-app.synth();

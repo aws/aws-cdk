@@ -15,5 +15,3 @@ new DockerImageFunction(stack, 'MyLambda', {
 new integ.IntegTest(app, 'lambda-docker-arm64', {
   testCases: [stack],
 });
-
-app.synth();

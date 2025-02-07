@@ -65,5 +65,3 @@ new IntegTest(app, 'AwsSfnIntegTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

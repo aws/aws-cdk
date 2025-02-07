@@ -33,5 +33,3 @@ new ecs.Ec2Service(stack, 'Ec2Service', {
 new IntegTest(stack, 'TaskDefinitionPlacementConstraints', {
   testCases: [stack],
 });
-
-app.synth();

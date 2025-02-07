@@ -41,5 +41,3 @@ new DatabaseCluster(stack, 'Database', {
 new integ.IntegTest(app, 'ClusterServerlessTest', {
   testCases: [stack],
 });
-
-app.synth();

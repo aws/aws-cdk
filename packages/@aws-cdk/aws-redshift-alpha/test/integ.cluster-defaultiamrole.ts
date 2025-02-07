@@ -51,5 +51,3 @@ const app = new App();
 new integ.IntegTest(app, 'DefaultIamRoleInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-defaultiamrole-integ')],
 });
-
-app.synth();

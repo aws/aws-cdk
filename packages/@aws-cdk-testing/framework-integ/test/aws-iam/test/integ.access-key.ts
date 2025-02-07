@@ -13,5 +13,3 @@ new CfnOutput(stack, 'AccessKeyId', { value: accessKey.accessKeyId });
 new IntegTest(app, 'iam-access-key-1', {
   testCases: [stack],
 });
-
-app.synth();

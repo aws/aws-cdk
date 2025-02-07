@@ -42,5 +42,3 @@ new rds.DatabaseInstance(stack, 'Database', {
 new integ.IntegTest(app, 'integ-instance-kerberos', {
   testCases: [stack],
 });
-
-app.synth();

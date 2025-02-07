@@ -36,5 +36,3 @@ const stack = new TestStack(app, 'aws-cdk-rds-integ-cluster-performance-insights
 new IntegTest(app, 'integ-cluster-performance-insights', {
   testCases: [stack],
 });
-
-app.synth();

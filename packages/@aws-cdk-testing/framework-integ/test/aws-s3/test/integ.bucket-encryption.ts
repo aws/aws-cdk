@@ -27,5 +27,3 @@ kmsBucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 new integ.IntegTest(app, 'IntegTestDSSEBucket', {
   testCases: [stack],
 });
-
-app.synth();

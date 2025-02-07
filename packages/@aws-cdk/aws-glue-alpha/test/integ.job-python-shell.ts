@@ -61,5 +61,3 @@ new glue.PythonShellJob(stack, 'DetailedShellJob39', {
 new integ.IntegTest(app, 'aws-glue-job-python-shell-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

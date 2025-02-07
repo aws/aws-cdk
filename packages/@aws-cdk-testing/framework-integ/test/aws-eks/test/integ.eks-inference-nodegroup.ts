@@ -49,4 +49,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-nodegroup-integ', {
     },
   },
 });
-app.synth();

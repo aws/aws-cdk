@@ -45,5 +45,3 @@ const testCase = new Test(app, 'test-apigateway-vpcendpoint');
 new IntegTest(app, 'apigateway-vpcendpoint', {
   testCases: [testCase],
 });
-
-app.synth();

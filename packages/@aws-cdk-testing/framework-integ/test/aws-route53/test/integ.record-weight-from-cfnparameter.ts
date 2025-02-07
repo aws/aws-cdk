@@ -41,4 +41,3 @@ const stack = new TestStack(app, 'record-weight-from-cfnparameter');
 new IntegTest(app, 'Route53RecordWeightFromCfnParameterInteg', {
   testCases: [stack],
 });
-app.synth();

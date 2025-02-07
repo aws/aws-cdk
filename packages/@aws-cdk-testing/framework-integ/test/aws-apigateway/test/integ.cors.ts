@@ -35,4 +35,3 @@ const testCase = new TestStack(app, 'cors-twitch-test');
 new IntegTest(app, 'cors', {
   testCases: [testCase],
 });
-app.synth();

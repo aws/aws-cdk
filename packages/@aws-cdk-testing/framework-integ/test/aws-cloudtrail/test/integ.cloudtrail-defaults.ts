@@ -10,5 +10,3 @@ new cloudtrail.Trail(stack, 'Trail');
 new integ.IntegTest(app, 'CloudTrailDefaultsTest', {
   testCases: [stack],
 });
-
-app.synth();

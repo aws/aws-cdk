@@ -52,4 +52,3 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 new integ.IntegTest(app, 'CapacityProviders', {
   testCases: [stack],
 });
-app.synth();

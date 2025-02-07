@@ -166,5 +166,3 @@ message.assertAtPath('PipelineExecutionSummaries.0.PipelineExecutionArn', Expect
     totalTimeout: cdk.Duration.minutes(2),
     interval: cdk.Duration.seconds(10),
   });
-
-app.synth();

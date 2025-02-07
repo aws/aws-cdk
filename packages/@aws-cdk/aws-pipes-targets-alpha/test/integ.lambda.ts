@@ -88,5 +88,3 @@ putMessageOnQueue
   .waitForAssertions({
     totalTimeout: cdk.Duration.seconds(10),
   });
-
-app.synth();

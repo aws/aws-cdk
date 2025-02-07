@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 
 class TestStack extends cdk.Stack {
-  constructor(scope:cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
@@ -26,5 +26,3 @@ const stack = new TestStack(app, 'TestStackLoadBalancer');
 new integ.IntegTest(app, 'VpcEndpointservice', {
   testCases: [stack],
 });
-
-app.synth();

@@ -16,5 +16,3 @@ new sfn.StateMachine(stack, 'StateMachine', {
 new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
-
-app.synth();

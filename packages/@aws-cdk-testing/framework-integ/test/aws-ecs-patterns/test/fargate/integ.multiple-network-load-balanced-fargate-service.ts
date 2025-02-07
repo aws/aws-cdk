@@ -49,5 +49,3 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
 new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

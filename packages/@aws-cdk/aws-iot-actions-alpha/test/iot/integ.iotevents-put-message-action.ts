@@ -48,5 +48,3 @@ class TestStack extends cdk.Stack {
 const app = new cdk.App();
 const stack = new TestStack(app, 'iotevents-put-message-action-test-stack');
 new IntegTest(app, 'iotevents', { testCases: [stack] });
-
-app.synth();

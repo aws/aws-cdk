@@ -19,4 +19,3 @@ class LogGroupIntegStack extends Stack {
 const app = new App();
 const stack = new LogGroupIntegStack(app, 'aws-cdk-log-group-resource-policy-any-integ');
 new IntegTest(app, 'LogGroupResourcePolicyAnyPrincialInteg', { testCases: [stack] });
-app.synth();

@@ -42,5 +42,3 @@ const stack = new Cloud9Env(app, 'C9ConnectionTypeStack');
 new integ.IntegTest(app, 'cloud-9-connection-type', {
   testCases: [stack],
 });
-
-app.synth();

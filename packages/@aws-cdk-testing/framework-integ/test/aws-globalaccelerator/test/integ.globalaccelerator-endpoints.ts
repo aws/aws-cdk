@@ -12,12 +12,12 @@ const stack = new Stack(app, 'global-accelerator-endpoints2');
 const vpc = new Vpc(stack, 'Vpc');
 const accelerator = new ga.Accelerator(stack, 'Accelerator');
 const listener =
-accelerator.addListener('Listener', {
-  portRanges: [
-    { fromPort: 80 },
-    { fromPort: 443 },
-  ],
-});
+  accelerator.addListener('Listener', {
+    portRanges: [
+      { fromPort: 80 },
+      { fromPort: 443 },
+    ],
+  });
 
 const alb = new ApplicationLoadBalancer(stack, 'ALB', { vpc });
 alb.applyRemovalPolicy(RemovalPolicy.DESTROY);
@@ -33,5 +33,3 @@ group.connectionsPeer('Peer', vpc);
 new IntegTest(app, 'GlobalAcceleratorEndpoints', {
   testCases: [stack],
 });
-
-app.synth();

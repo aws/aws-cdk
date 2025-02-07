@@ -31,4 +31,3 @@ class KafkaStorageModeTest extends Stack {
 const app = new App();
 const testCase = new KafkaStorageModeTest(app, 'KafkaStorageModeTestStack');
 new IntegTest(app, 'KafkaStorageModeIntegTest', { testCases: [testCase] });
-app.synth();

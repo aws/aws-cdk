@@ -13,5 +13,3 @@ new cloudfront.Function(stack, 'function', {
 new IntegTest(app, 'AutoPublishTest', {
   testCases: [stack],
 });
-
-app.synth();

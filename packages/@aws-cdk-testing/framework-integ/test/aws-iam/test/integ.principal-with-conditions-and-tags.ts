@@ -19,5 +19,3 @@ new iam.Role(stack, 'TestRole2', {
 new IntegTest(app, 'PrincipalWithConditionAndTags', {
   testCases: [stack],
 });
-
-app.synth();

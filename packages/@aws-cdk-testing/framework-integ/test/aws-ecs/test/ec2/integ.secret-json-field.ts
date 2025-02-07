@@ -28,5 +28,3 @@ container.addSecret('APIKEY', ecs.Secret.fromSecretsManager(secret, 'apikey'));
 new integ.IntegTest(app, 'aws-ecs-ec2-integ-secret-json-field', {
   testCases: [stack],
 });
-
-app.synth();

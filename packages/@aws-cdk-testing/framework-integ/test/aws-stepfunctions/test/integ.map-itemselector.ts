@@ -35,5 +35,3 @@ testCase.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
 }).expect(ExpectedResult.objectLike({
   status: 'ACTIVE',
 }));
-
-app.synth();

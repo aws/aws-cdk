@@ -31,4 +31,3 @@ const testCase = new TestStack(app, 'aws-cdk-metricfilter-unit-integ');
 new IntegTest(app, 'metricfilter-unit', {
   testCases: [testCase],
 });
-app.synth();

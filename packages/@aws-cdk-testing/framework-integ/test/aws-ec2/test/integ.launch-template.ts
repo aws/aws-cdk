@@ -48,5 +48,3 @@ new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

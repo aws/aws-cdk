@@ -46,5 +46,3 @@ multinodeJob.addContainer({
 new integ.IntegTest(app, 'BatchMultiNodeJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

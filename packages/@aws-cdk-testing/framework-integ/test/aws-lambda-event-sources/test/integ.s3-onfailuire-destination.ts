@@ -67,4 +67,3 @@ const stack = new S3OnFailureDestinationStack(app, 'lambda-event-source-s3ofd');
 new IntegTest(app, 'LambdaEventSourceS3OnFailureDestinationInteg', {
   testCases: [stack],
 });
-app.synth();

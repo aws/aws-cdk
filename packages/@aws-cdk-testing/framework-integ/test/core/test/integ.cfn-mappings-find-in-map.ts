@@ -45,5 +45,3 @@ new Bucket(stack, 'CfnMappingFindInMapBucket');
 new IntegTest(app, 'CfnMappingFindInMapTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -56,5 +56,3 @@ const stack = new TestStack(app, 'custom-resource-test-node-18-stack');
 new IntegTest(app, 'custom-resource-test-node-18-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

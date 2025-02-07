@@ -26,5 +26,3 @@ dataSource.createResolver('EventResolver', {
 new IntegTest(app, 'api', {
   testCases: [stack],
 });
-
-app.synth();

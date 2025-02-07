@@ -34,5 +34,3 @@ new cdk.CfnOutput(stack, 'NlbDnsName', { value: fargateNlbService.loadBalancer.l
 new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

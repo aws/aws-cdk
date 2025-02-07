@@ -70,5 +70,3 @@ call.expect(integ.ExpectedResult.objectLike({
   interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(3),
 });
-
-app.synth();

@@ -21,5 +21,3 @@ fn.addEventSource(new KinesisEventSource(stream, {
 new integ.IntegTest(app, 'AtTimestamp', {
   testCases: [stack],
 });
-
-app.synth();

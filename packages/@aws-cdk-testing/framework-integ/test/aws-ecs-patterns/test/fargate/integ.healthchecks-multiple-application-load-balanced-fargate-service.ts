@@ -67,5 +67,3 @@ applicationMultipleTargetGroupsFargateService.targetGroups[1].configureHealthChe
 });
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
-
-app.synth();

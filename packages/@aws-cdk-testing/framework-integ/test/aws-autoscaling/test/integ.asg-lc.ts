@@ -99,4 +99,3 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
 new IntegTest(app, 'AsgFromLaunchConfigTest', {
   testCases: [stack],
 });
-app.synth();

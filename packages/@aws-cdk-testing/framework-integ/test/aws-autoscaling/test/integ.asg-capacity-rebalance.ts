@@ -22,5 +22,3 @@ new autoscaling.AutoScalingGroup(stack, 'CapacityRebalance', {
 new integ.IntegTest(app, 'CapacityRebalanceTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -52,5 +52,3 @@ new glue.RayJob(stack, 'RayJob5Workers', {
 new integ.IntegTest(app, 'aws-glue-ray-job-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

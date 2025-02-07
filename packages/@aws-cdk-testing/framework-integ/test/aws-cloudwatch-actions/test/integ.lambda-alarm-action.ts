@@ -73,7 +73,6 @@ const stack = new LambdaAlarmActionIntegrationTestStack(app, 'LambdaAlarmActionI
 new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
   testCases: [stack],
 });
-app.synth();
 
 const appWithFeatureFlag = new App({
   context: { [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true },

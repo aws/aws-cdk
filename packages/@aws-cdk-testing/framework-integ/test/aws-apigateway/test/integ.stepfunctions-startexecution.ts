@@ -47,5 +47,3 @@ new IntegTest(app, 'aws-apigateway-stepfunctions-startexecution', {
     stack,
   ],
 });
-
-app.synth();

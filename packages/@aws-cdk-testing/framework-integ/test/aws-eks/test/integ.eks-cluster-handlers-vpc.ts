@@ -25,5 +25,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-handlers-in-vpc', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();

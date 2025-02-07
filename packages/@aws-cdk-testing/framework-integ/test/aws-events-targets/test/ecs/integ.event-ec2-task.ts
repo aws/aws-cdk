@@ -62,5 +62,3 @@ rule.addTarget(new targets.EcsTask({
 new integ.IntegTest(app, 'EcsTest', {
   testCases: [stack],
 });
-
-app.synth();

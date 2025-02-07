@@ -22,5 +22,3 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 new integ.IntegTest(app, 'AutoScalingUpdatePolicyTest', {
   testCases: [stack],
 });
-
-app.synth();

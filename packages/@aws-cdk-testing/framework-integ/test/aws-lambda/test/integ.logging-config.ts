@@ -74,5 +74,3 @@ new Function(stack, 'LambdaWithLogLevelV2', {
 new integ.IntegTest(app, 'lambda-logging-config', {
   testCases: [stack],
 });
-
-app.synth();

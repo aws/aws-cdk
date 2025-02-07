@@ -38,5 +38,3 @@ new IntegTest(app, 'cdk-dynamodb-global-20191121-test', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

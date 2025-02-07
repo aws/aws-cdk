@@ -64,5 +64,3 @@ new integ.IntegTest(app, 'aws-stepfunctions-tasks-eks-call-integ', {
     },
   },
 });
-
-app.synth();

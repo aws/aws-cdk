@@ -50,5 +50,3 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroupMultipleLoadBalancer
 new integ.IntegTest(app, 'ServerDeploymentGroupMultipleLB', {
   testCases: [stack],
 });
-
-app.synth();

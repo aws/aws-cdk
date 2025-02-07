@@ -13,5 +13,3 @@ new s3.Bucket(stack, 'Bucket', {
 new integ.IntegTest(app, 'aws-cdk-s3-minimum-tls-version-integration', {
   testCases: [stack],
 });
-
-app.synth();

@@ -34,5 +34,3 @@ new DatabaseCluster(stack, 'Database', {
 new IntegTest(app, 'cdk-rds-cluster-instance-ca-certificate-test', {
   testCases: [stack],
 });
-
-app.synth();

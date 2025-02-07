@@ -44,8 +44,6 @@ new integ.IntegTest(app, 'InstanceTerminationPolicyTest', {
   testCases: [stack],
 });
 
-app.synth();
-
 function asgHandler(_event: any, _context: any, callback: any) {
   let json = JSON.parse(JSON.stringify(_event));
   let instanceIds: string[] = [];

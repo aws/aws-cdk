@@ -72,5 +72,3 @@ new ec2.Instance(stack, 'Instance2', {
 new integ.IntegTest(app, 'EnableSumTimeoutInstanceTest', {
   testCases: [stack],
 });
-
-app.synth();

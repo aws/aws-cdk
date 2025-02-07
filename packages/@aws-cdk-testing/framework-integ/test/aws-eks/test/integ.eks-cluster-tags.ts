@@ -37,4 +37,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-tags-integ', {
     },
   },
 });
-app.synth();

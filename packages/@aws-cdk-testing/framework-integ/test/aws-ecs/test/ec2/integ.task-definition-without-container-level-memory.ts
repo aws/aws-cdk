@@ -19,5 +19,3 @@ taskDefinition.addContainer('Container', {
 new IntegTest(app, 'TaskDefinitionWithoutContainerLevelMemory', {
   testCases: [stack],
 });
-
-app.synth();

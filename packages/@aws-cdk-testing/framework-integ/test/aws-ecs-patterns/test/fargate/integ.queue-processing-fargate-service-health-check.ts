@@ -28,5 +28,3 @@ new QueueProcessingFargateService(stack, 'HealthCheckQueueService', {
 new integ.IntegTest(app, 'healthCheckQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

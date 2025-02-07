@@ -14,5 +14,3 @@ api.addRoute('test', {
 });
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
-
-app.synth();

@@ -43,5 +43,3 @@ queue.addComputeEnvironment(
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

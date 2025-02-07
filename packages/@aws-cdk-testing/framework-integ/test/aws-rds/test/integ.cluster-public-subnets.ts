@@ -48,5 +48,3 @@ const stack = new TestStack(app, 'integ-aurora-pub-sn-cluster');
 new IntegTest(app, 'test-aurora-pub-sn-cluster', {
   testCases: [stack],
 });
-
-app.synth();

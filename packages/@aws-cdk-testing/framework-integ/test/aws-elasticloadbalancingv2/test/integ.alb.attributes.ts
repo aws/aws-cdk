@@ -48,5 +48,3 @@ new elbv2.ApplicationLoadBalancer(stack, 'Http2EnabledTrue', {
 new integ.IntegTest(app, 'Elbv2Test', {
   testCases: [stack],
 });
-
-app.synth();

@@ -31,4 +31,3 @@ const stack = new KinesisEnv(app, 'kinesis-logsubscription-integ');
 new IntegTest(app, 'KinesisInteg', {
   testCases: [stack],
 });
-app.synth();

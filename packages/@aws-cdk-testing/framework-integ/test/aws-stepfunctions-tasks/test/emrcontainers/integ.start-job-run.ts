@@ -68,7 +68,7 @@ const emrRoleBind = eksCluster.addManifest('emrRoleBind', {
 
 emrRoleBind.node.addDependency(emrRole);
 
-const emrServiceRole = iam.Role.fromRoleArn(stack, 'emrServiceRole', 'arn:aws:iam::'+Aws.ACCOUNT_ID+':role/AWSServiceRoleForAmazonEMRContainers');
+const emrServiceRole = iam.Role.fromRoleArn(stack, 'emrServiceRole', 'arn:aws:iam::' + Aws.ACCOUNT_ID + ':role/AWSServiceRoleForAmazonEMRContainers');
 const authMapping: AwsAuthMapping = { groups: [], username: 'emr-containers' };
 eksCluster.awsAuth.addRoleMapping(emrServiceRole, authMapping);
 
@@ -111,5 +111,3 @@ new integ.IntegTest(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-i
     },
   },
 });
-
-app.synth();

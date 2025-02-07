@@ -74,5 +74,3 @@ testCase.functionNames.forEach(functionName => {
     Payload: '200',
   }));
 });
-
-app.synth();

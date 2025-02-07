@@ -56,5 +56,3 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -75,5 +75,3 @@ ruleDescription.expect(ExpectedResult.objectLike({
     },
   ],
 }));
-
-app.synth();

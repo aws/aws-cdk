@@ -117,5 +117,3 @@ new integ.IntegTest(app, 'elbv2-integ', {
   testCases: [stackLookup],
   enableLookups: true,
 });
-
-app.synth();

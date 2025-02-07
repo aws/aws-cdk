@@ -42,5 +42,3 @@ new IntegTest(app, 'TestBucketDeploymentInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

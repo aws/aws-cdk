@@ -91,4 +91,3 @@ describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
   output: '"\\"Hello JSONata!\\""',
 }));
-app.synth();

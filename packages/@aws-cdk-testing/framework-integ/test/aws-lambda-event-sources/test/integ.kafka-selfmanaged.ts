@@ -121,4 +121,3 @@ const stack = new KafkaSelfManagedEventSourceTest(
 new integ.IntegTest(app, 'LambdaEventSourceKafkaSelfManagedTest', {
   testCases: [stack],
 });
-app.synth();

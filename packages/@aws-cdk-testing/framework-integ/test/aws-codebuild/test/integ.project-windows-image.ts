@@ -29,5 +29,3 @@ new IntegTest(app, 'integ-project-windows-images', {
     /* new ImageTestStack(app, 'WinCore2022-3', WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0), */
   ],
 });
-
-app.synth();

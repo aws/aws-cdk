@@ -217,5 +217,3 @@ assertionProvider.addPolicyStatementFromSdkCall('kafka', 'GetBootstrapBrokers', 
 objects.expect(ExpectedResult.objectLike({
   KeyCount: 1,
 }));
-
-app.synth();

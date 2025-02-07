@@ -82,11 +82,9 @@ const receiveMessage = integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 
 // TODO: Replace with `receiveMessage.assertAtPath('Messages.0.Body', ExpectedResult.objectLike({...`
 // when issue #24215 is addressed
-receiveMessage.expect(ExpectedResult.objectLike( {
+receiveMessage.expect(ExpectedResult.objectLike({
   Messages:
-  [{
-    Body: Match.stringLikeRegexp( '"responsePayload":"success"' ),
-  }],
+    [{
+      Body: Match.stringLikeRegexp('"responsePayload":"success"'),
+    }],
 }));
-
-app.synth();

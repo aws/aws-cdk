@@ -53,5 +53,3 @@ new glue.ExternalTable(stack, 'MyTableWithCustomLocation', {
 new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
   testCases: [stack],
 });
-
-app.synth();

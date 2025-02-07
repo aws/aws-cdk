@@ -27,4 +27,3 @@ new IntegTest(app, 'OpenSearchColdStorageInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

@@ -63,5 +63,3 @@ new IntegTest(app, 'VariablePipelineTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

@@ -141,5 +141,3 @@ assertionProvider.addPolicyStatementFromSdkCall('s3', 'GetObject', [`${featureFl
 objects.expect(ExpectedResult.objectLike({
   KeyCount: 1,
 }));
-
-app.synth();

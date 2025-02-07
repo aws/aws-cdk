@@ -26,4 +26,3 @@ const stack = new TestStack(app, 'multi-value-answer-routing');
 new IntegTest(app, 'Route53MultiValueAnswerRoutingInteg', {
   testCases: [stack],
 });
-app.synth();

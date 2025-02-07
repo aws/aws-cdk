@@ -34,5 +34,3 @@ new ecs.FargateService(stack, 'Service', {
 new integ.IntegTest(app, 'aws-ecs-fargate-integ-external-deploy-controller', {
   testCases: [stack],
 });
-
-app.synth();

@@ -21,5 +21,3 @@ new DatabaseInstance(stack, 'Instance', {
 new integ.IntegTest(app, 'InstanceCACertificateTest', {
   testCases: [stack],
 });
-
-app.synth();

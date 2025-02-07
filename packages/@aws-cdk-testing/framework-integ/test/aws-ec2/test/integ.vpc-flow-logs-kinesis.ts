@@ -57,5 +57,3 @@ new IntegTest(app, 'FlowLogs', {
   ],
   diffAssets: true,
 });
-
-app.synth();

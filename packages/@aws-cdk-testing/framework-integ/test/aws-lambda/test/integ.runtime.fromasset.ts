@@ -23,8 +23,6 @@ invoke.expect(integ.ExpectedResult.objectLike({
   Payload: '"123"',
 }));
 
-app.synth();
-
 /* Code for the Lambda Function above:
 
 package com.mycompany.app;

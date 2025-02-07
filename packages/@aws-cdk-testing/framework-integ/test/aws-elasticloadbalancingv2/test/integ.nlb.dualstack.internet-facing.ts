@@ -95,5 +95,3 @@ vpc.publicSubnets.forEach((subnet, idx) => {
 new integ.IntegTest(app, 'NlbDualstackInternetFacingInteg', {
   testCases: [stack],
 });
-
-app.synth();

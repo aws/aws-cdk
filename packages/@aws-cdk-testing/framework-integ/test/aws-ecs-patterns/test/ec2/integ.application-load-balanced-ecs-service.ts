@@ -69,5 +69,3 @@ applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(secu
 new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

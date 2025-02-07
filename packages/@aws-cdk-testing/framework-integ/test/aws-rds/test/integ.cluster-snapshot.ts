@@ -128,4 +128,3 @@ new IntegTest(app, 'ClusterSnapshotInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

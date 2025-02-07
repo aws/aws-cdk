@@ -56,5 +56,3 @@ new integ.IntegTest(app, 'IntegProviderWithWaiterStateMachine', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

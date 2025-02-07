@@ -57,5 +57,3 @@ new glue.PySparkStreamingJob(stack, 'OverridePySparkStreamingJob', {
 new integ.IntegTest(app, 'aws-glue-job-pyspark-streaming-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

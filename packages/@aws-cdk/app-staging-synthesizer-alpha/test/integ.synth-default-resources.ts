@@ -28,7 +28,7 @@ new lambda.Function(stack, 'lambda-s3', {
   runtime: lambda.Runtime.PYTHON_3_10,
 });
 
-for (let i = 1; i < IMAGE_COPIES+1; i++) {
+for (let i = 1; i < IMAGE_COPIES + 1; i++) {
   new lambda.Function(stack, `lambda-ecr-${i}`, {
     code: lambda.EcrImageCode.fromAssetImage(path.join(__dirname, 'assets'), {
       assetName: `ecr-asset/${i}`,
@@ -64,5 +64,3 @@ if (!defaultStagingStack) {
 new integ.IntegTest(app, 'integ-tests', {
   testCases: [stack, defaultStagingStack],
 });
-
-app.synth();

@@ -27,5 +27,3 @@ new cdk.CfnOutput(stack, 'URL', { value: `https://${service.serviceUrl}` });
 new integ.IntegTest(app, 'AppRunnerObservabilityConfiguration', {
   testCases: [stack],
 });
-
-app.synth();

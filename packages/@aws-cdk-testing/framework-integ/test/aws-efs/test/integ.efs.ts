@@ -30,4 +30,3 @@ fileSystem.addAccessPoint('AccessPoint', {
 new integ.IntegTest(app, 'test-efs-integ-test', {
   testCases: [stack],
 });
-app.synth();

@@ -71,5 +71,3 @@ const nestedStack = new TestNestedStack(app, 'nested-stack-depends-test');
 new integ.IntegTest(app, 'DependsOnTest', {
   testCases: [stack, nestedStack],
 });
-
-app.synth();

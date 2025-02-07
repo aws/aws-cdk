@@ -28,5 +28,3 @@ apigw.root.addMethod('POST', new LambdaIntegration(fn), {
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
-
-app.synth();

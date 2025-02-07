@@ -21,5 +21,3 @@ new lambda.Function(stack, 'Lambda_with_IPv6_VPC', {
 new IntegTest(app, 'lambda-allow-all-ipv6-outbound', {
   testCases: [stack],
 });
-
-app.synth();

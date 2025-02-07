@@ -25,5 +25,3 @@ policy.addStatements(new PolicyStatement({
 new IntegTest(app, 'iam-role-test', {
   testCases: [stack],
 });
-
-app.synth();

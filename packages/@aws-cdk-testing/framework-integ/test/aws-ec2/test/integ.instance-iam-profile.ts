@@ -36,5 +36,3 @@ describeDefault.assertAtPath(
   'Reservations.0.Instances.0.IamInstanceProfile.Arn',
   ExpectedResult.stringLikeRegexp(instanceProfile.instanceProfileArn),
 );
-
-app.synth();

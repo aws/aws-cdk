@@ -40,4 +40,3 @@ const testCase = new TestStack(app, 'cdk-integ-opensearch-vpc');
 new integ.IntegTest(app, 'cdk-integ-opensearch-vpc-test', {
   testCases: [testCase],
 });
-app.synth();

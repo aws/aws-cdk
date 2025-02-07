@@ -71,5 +71,3 @@ new sfn.StateMachine(stack, 'StateMachine', {
 new IntegTest(app, 'SfnTasksEcsEc2TaskTest', {
   testCases: [stack],
 });
-
-app.synth();

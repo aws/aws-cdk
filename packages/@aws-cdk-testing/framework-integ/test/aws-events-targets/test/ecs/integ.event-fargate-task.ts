@@ -85,5 +85,3 @@ rule.addTarget(
 new integ.IntegTest(app, 'EcsFargateTest', {
   testCases: [stack],
 });
-
-app.synth();

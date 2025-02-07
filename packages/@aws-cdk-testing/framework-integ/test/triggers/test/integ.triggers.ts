@@ -82,5 +82,3 @@ testCase.assertions.awsApiCall('SQS', 'receiveMessage', {
   interval: Duration.seconds(15),
   backoffRate: 3,
 });
-
-app.synth();

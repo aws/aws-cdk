@@ -32,5 +32,3 @@ integ.assertions
     "Attributes.QueueArn",
     ExpectedResult.stringLikeRegexp(".*\\.fifo$")
   );
-
-app.synth();

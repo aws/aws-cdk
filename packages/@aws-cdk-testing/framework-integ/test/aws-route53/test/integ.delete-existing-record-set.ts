@@ -36,4 +36,3 @@ new IntegTest(app, 'Rooute53DeleteExistingRecordSetInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

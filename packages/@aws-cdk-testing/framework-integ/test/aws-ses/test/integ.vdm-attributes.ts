@@ -16,5 +16,3 @@ const app = new App();
 new integ.IntegTest(app, 'VdmAttribtuesInteg', {
   testCases: [new TestStack(app, 'cdk-integ-ses-vdm-attributes')],
 });
-
-app.synth();

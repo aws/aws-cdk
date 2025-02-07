@@ -30,5 +30,3 @@ new ecs.Cluster(stack, 'named-cluster', {
 new integ.IntegTest(app, 'aws-ecs-cluster-encrypt-ephemeral-storage', {
   testCases: [stack],
 });
-
-app.synth();

@@ -17,5 +17,3 @@ new cloudfront.Distribution(stack, 'Dist', {
 new IntegTest(app, 'DistributionOriginShield', {
   testCases: [stack],
 });
-
-app.synth();

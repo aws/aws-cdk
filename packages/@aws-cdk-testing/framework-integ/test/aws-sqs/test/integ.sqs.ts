@@ -47,5 +47,3 @@ new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 new integ.IntegTest(app, 'SqsTest', {
   testCases: [stack],
 });
-
-app.synth();

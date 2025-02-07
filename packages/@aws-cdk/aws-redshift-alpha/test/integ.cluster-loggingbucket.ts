@@ -34,5 +34,3 @@ const app = new App();
 new integ.IntegTest(app, 'LoggingBucketInteg', {
   testCases: [new RedshiftEnv(app, 'redshift-loggingbucket-integ')],
 });
-
-app.synth();

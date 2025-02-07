@@ -95,5 +95,3 @@ new sfn.StateMachine(stack, 'StateMachine', {
 new IntegTest(app, 'MediaConvertCreateJobTest', {
   testCases: [stack],
 });
-
-app.synth();

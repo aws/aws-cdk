@@ -73,5 +73,3 @@ const stack = new TestStack(app, 'aws-gamelift-gameSessionQueue');
 new IntegTest(app, 'GameSessionQueue', {
   testCases: [stack],
 });
-
-app.synth();

@@ -46,5 +46,3 @@ const stack = new TestStack(app, 'cdk-integ-assets-bundling');
 new IntegTest(app, 'IntegTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -30,5 +30,3 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'L3', {
 new integ.IntegTest(app, 'executionRoleAlbFargateTest', {
   testCases: [stack],
 });
-
-app.synth();

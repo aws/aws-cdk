@@ -68,5 +68,3 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

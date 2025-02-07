@@ -36,5 +36,3 @@ new cdk.CfnOutput(stack, 'StateMachineARN', {
 new IntegTest(app, 'cdk-stepfunctions-map-distributed-integ', {
   testCases: [stack],
 });
-
-app.synth();

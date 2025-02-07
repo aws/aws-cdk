@@ -40,5 +40,3 @@ cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 new IntegTest(app, 'cluster-dual-test', {
   testCases: [stack],
 });
-
-app.synth();

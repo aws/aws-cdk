@@ -38,5 +38,3 @@ reportGroupTest.grantWrite(project);
 new integ.IntegTest(app, 'ReportGroupDeleteReportsIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

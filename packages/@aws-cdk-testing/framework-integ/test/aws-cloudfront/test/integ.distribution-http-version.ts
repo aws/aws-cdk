@@ -26,5 +26,3 @@ new cloudfront.Distribution(stack, 'Http3', {
 new IntegTest(app, 'DistributionHttpVersion', {
   testCases: [stack],
 });
-
-app.synth();

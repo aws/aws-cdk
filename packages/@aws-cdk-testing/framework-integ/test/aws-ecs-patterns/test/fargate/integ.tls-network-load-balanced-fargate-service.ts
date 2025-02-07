@@ -30,5 +30,3 @@ new NetworkLoadBalancedFargateService(stack, 'myServiceWithTls', {
 new integ.IntegTest(app, 'networkLoadBalancedFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

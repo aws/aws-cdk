@@ -41,5 +41,3 @@ new IntegTest(app, 'deletion-protection-integ-test', {
     ],
   },
 });
-
-app.synth();

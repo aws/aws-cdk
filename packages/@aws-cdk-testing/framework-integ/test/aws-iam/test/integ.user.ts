@@ -37,5 +37,3 @@ new CfnOutput(stack, 'NameForUserImportedByName', { value: userImportedByName.us
 new IntegTest(app, 'iam-user-test', {
   testCases: [stack],
 });
-
-app.synth();

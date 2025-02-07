@@ -63,5 +63,3 @@ const myStack = new EventStack(app, 'aws-fargate-integ');
 new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
   testCases: [myStack],
 });
-
-app.synth();

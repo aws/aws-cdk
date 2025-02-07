@@ -35,5 +35,3 @@ const stack = new TestStack(app, 'aws-gamelift-standalone-matchmaking-configurat
 new IntegTest(app, 'StandaloneMatchmakingConfiguration', {
   testCases: [stack],
 });
-
-app.synth();

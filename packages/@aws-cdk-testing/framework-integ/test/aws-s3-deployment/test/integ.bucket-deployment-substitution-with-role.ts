@@ -17,12 +17,10 @@ const executionRole = new iam.Role(stack, 'execution-role', {
 new DeployTimeSubstitutedFile(stack, 'Deployment', {
   source: path.join(__dirname, 'sample-file.yaml'),
   destinationBucket: bucket,
-  substitutions: { },
+  substitutions: {},
   role: executionRole,
 });
 
 new IntegTest(app, 'test-s3-deploy-substitution-with-role', {
   testCases: [stack],
 });
-
-app.synth();

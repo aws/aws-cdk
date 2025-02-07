@@ -26,5 +26,3 @@ const testCase = new TestStack(app, 'topic-rule-test-stack');
 new integ.IntegTest(app, 'TopicRule', {
   testCases: [testCase],
 });
-
-app.synth();

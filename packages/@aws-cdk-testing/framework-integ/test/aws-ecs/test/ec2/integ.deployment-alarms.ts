@@ -65,4 +65,3 @@ svc.enableDeploymentAlarms([alarmName], {
 new integ.IntegTest(app, 'DeploymentAlarms', {
   testCases: [stack],
 });
-app.synth();

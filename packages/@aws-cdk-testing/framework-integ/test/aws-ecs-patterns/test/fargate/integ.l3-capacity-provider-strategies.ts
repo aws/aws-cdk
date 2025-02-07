@@ -59,5 +59,3 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
 new integ.IntegTest(app, 'l3CapacityProviderStrategiesTest', {
   testCases: [stack],
 });
-
-app.synth();

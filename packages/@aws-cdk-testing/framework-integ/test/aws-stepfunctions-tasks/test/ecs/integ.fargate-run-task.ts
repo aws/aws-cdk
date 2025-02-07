@@ -92,5 +92,3 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 new IntegTest(app, 'SfnTasksEcsFargateRunTaskTest', {
   testCases: [stack],
 });
-
-app.synth();

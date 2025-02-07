@@ -32,4 +32,3 @@ new ec2.PlacementGroup(stack, 'PlacementSpreadRack', {
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
     testCases: [stack],
 });
-app.synth();

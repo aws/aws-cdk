@@ -64,5 +64,3 @@ message.assertAtPath('Messages.0.Body.detail.body', ExpectedResult.stringLikeReg
   totalTimeout: cdk.Duration.minutes(1),
   interval: cdk.Duration.seconds(10),
 });
-
-app.synth();

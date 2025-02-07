@@ -22,5 +22,3 @@ new IntegTest(app, 'aws-cdk-dynamodb-global-replicas-provisioned-test', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

@@ -165,4 +165,3 @@ class S3JsonItemReaderTest {
 const app = new App();
 const s3OJsonItemReaderPathTest = new S3JsonItemReaderTest(app);
 s3OJsonItemReaderPathTest.test();
-app.synth();
