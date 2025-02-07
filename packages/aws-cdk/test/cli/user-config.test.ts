@@ -2,7 +2,14 @@
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '../../lib/cli/user-configuration';
+import {
+  Configuration,
+  PROJECT_CONFIG,
+  PROJECT_CONTEXT,
+  Command,
+  BUNDLING_COMMANDS,
+  NON_BUNDLING_COMMANDS,
+} from '../../lib/cli/user-configuration';
 import { parseCommandLineArguments } from '../../lib/cli/parse-command-line-arguments';
 
 // mock fs deeply
@@ -142,4 +149,12 @@ test('array settings are not overridden by yarg defaults', async () => {
   // THEN
   expect(configWithPlugin.settings.get(['plugin'])).toEqual(['[]']);
   expect(configWithoutPlugin.settings.get(['plugin'])).toEqual(['dummy']);
+});
+
+test('fail if bundling behavior is not explicitly defined for every command', () => {
+  // GIVEN
+  const bundlingDefinedCommands = new Set([...BUNDLING_COMMANDS, ...NON_BUNDLING_COMMANDS]);
+
+  // THEN
+  expect(bundlingDefinedCommands.size).toEqual(Object.keys(Command).length);
 });
