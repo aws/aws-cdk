@@ -3,7 +3,7 @@ import { CfnVpcOrigin } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { IResource, ITaggableV2, Names, Resource, Stack, TagManager } from '../../core';
+import { IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -179,12 +179,19 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    for (const key of ['httpPort', 'httpsPort'] as const) {
+      const port = props[key];
+      if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
+        throw new ValidationError(`'${key}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
+      }
+    }
+
     const resource = new CfnVpcOrigin(this, 'Resource', {
       vpcOriginEndpointConfig: {
         arn: props.endpoint.endpointArn,
         httpPort: props.httpPort,
         httpsPort: props.httpsPort,
-        name: props.vpcOriginName ?? Names.uniqueResourceName(this, {}),
+        name: props.vpcOriginName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
         originProtocolPolicy: props.protocolPolicy,
         originSslProtocols: props.originSslProtocols ?? [OriginSslPolicy.TLS_V1_2],
       },

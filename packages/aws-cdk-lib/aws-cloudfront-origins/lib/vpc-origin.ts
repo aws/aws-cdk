@@ -3,6 +3,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
+import { validateSecondsInRangeOrUndefined } from './private/utils';
 
 /**
  * Properties to define a VPC origin.
@@ -74,57 +75,56 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
   public static withNetworkLoadBalancer(loadBalancer: INetworkLoadBalancer, props?: VpcOriginWithEndpointProps): VpcOrigin {
     return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromNetworkLoadBalancer(loadBalancer), props);
   }
-}
 
-class VpcOriginWithVpcOrigin extends VpcOrigin {
-  constructor(private readonly origin: cloudfront.VpcOrigin, private readonly props?: VpcOriginProps) {
-    const domainName = props?.domainName ?? origin.domainName;
-    if (!domainName) {
-      throw new cdk.UnscopedValidationError('`domainName` must be supplied.');
-    }
-    super(domainName, { ...props });
+  protected vpcOrigin?: cloudfront.VpcOrigin;
+
+  protected constructor(domainName: string, protected readonly props: VpcOriginProps) {
+    super(domainName, props);
+
+    validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
+    validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
   protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty {
+    if (!this.vpcOrigin) {
+      throw new cdk.UnscopedValidationError('VPC origin cannot be undefined.');
+    }
     return {
-      vpcOriginId: this.origin.vpcOriginId,
-      originReadTimeout: this.props?.readTimeout?.toSeconds(),
-      originKeepaliveTimeout: this.props?.keepaliveTimeout?.toSeconds(),
+      vpcOriginId: this.vpcOrigin.vpcOriginId,
+      originReadTimeout: this.props.readTimeout?.toSeconds(),
+      originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
     };
   }
 }
 
-class VpcOriginWithEndpoint extends VpcOrigin {
-  private vpcOrigin?: cloudfront.VpcOrigin;
-
-  constructor(private readonly vpcOriginEndpoint: cloudfront.VpcOriginEndpoint, private readonly props?: VpcOriginWithEndpointProps) {
-    const domainName = props?.domainName ?? vpcOriginEndpoint.domainName;
+class VpcOriginWithVpcOrigin extends VpcOrigin {
+  constructor(protected vpcOrigin: cloudfront.VpcOrigin, props: VpcOriginProps = {}) {
+    const domainName = props.domainName ?? vpcOrigin.domainName;
     if (!domainName) {
-      throw new cdk.UnscopedValidationError('`domainName` must be supplied.');
+      throw new cdk.UnscopedValidationError("'domainName' must be specified when no default domain name is defined.");
     }
-    super(domainName, { ...props });
+    super(domainName, props);
+  }
+}
+
+class VpcOriginWithEndpoint extends VpcOrigin {
+  constructor(private readonly vpcOriginEndpoint: cloudfront.VpcOriginEndpoint, protected readonly props: VpcOriginWithEndpointProps = {}) {
+    const domainName = props.domainName ?? vpcOriginEndpoint.domainName;
+    if (!domainName) {
+      throw new cdk.UnscopedValidationError("'domainName' must be specified when no default domain name is defined.");
+    }
+    super(domainName, props);
   }
 
   public bind(_scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     this.vpcOrigin ??= new cloudfront.VpcOrigin(_scope, 'VpcOrigin', {
       endpoint: this.vpcOriginEndpoint,
-      vpcOriginName: this.props?.vpcOriginName,
-      httpPort: this.props?.httpPort,
-      httpsPort: this.props?.httpsPort,
-      protocolPolicy: this.props?.protocolPolicy,
-      originSslProtocols: this.props?.originSslProtocols,
+      vpcOriginName: this.props.vpcOriginName,
+      httpPort: this.props.httpPort,
+      httpsPort: this.props.httpsPort,
+      protocolPolicy: this.props.protocolPolicy,
+      originSslProtocols: this.props.originSslProtocols,
     });
     return super.bind(_scope, options);
-  }
-
-  protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty {
-    if (!this.vpcOrigin) {
-      throw new cdk.UnscopedValidationError('vpcOrigin cannot be undefined');
-    }
-    return {
-      vpcOriginId: this.vpcOrigin.vpcOriginId,
-      originReadTimeout: this.props?.readTimeout?.toSeconds(),
-      originKeepaliveTimeout: this.props?.keepaliveTimeout?.toSeconds(),
-    };
   }
 }

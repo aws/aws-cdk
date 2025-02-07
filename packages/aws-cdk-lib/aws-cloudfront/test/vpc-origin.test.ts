@@ -131,3 +131,21 @@ test('VPC origin with options configureed', () => {
     },
   });
 });
+
+test.each([88, 444, 65536])('VPC origins throws when httpPort is %s', (port) => {
+  expect(() => {
+    new VpcOrigin(stack, 'VpcOrigin', {
+      endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+      httpPort: port,
+    });
+  }).toThrow(`'httpPort' must be 80, 443, or a value between 1024 and 65535, got ${port}`);
+});
+
+test.each([88, 444, 65536])('VPC origins throws when httpsPort is %s', (port) => {
+  expect(() => {
+    new VpcOrigin(stack, 'VpcOrigin', {
+      endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+      httpsPort: port,
+    });
+  }).toThrow(`'httpsPort' must be 80, 443, or a value between 1024 and 65535, got ${port}`);
+});

@@ -172,7 +172,37 @@ test('VPC origin from a VpcOrigin resource', () => {
   });
 });
 
-test('VPC origin throws if no domainName is specified', () => {
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(181),
+  Duration.minutes(5),
+])('VPC origin throws when readTimeout is %s - out of bounds', (readTimeout) => {
+  // GIVEN
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+
+  // WHEN
+  expect(() => {
+    VpcOrigin.withApplicationLoadBalancer(loadBalancer, { readTimeout });
+  }).toThrow(`readTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${readTimeout.toSeconds()}`);
+});
+
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(181),
+  Duration.minutes(5),
+])('VPC origin throws when keepaliveTimeout is %s - out of bounds', (keepaliveTimeout) => {
+  // GIVEN
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+
+  // WHEN
+  expect(() => {
+    VpcOrigin.withApplicationLoadBalancer(loadBalancer, { keepaliveTimeout });
+  }).toThrow(`keepaliveTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}`);
+});
+
+test('VPC origin throws when no domainName is specified', () => {
   // GIVEN
   const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
     endpoint: new cloudfront.VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
@@ -181,7 +211,7 @@ test('VPC origin throws if no domainName is specified', () => {
   // WHEN
   expect(() => {
     VpcOrigin.withVpcOrigin(vpcOrigin);
-  }).toThrow('`domainName` must be supplied.');
+  }).toThrow("'domainName' must be specified when no default domain name is defined.");
 });
 
 test('VPC origin with options configured', () => {
