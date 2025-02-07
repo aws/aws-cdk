@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "testing-destroy-synth/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-s3-assets"
+      ],
+      "assertionStack": "testing-destroy-synth/DefaultTest/DeployAssert",
+      "assertionStackName": "testingdestroysynthDefaultTestDeployAssert8E59A9C9"
+    }
+  }
+}
