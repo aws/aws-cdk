@@ -896,40 +896,99 @@
                       "version": "0.0.0"
                     }
                   },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchConfig",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                      "aws:cdk:cloudformation:props": {
-                        "iamInstanceProfile": {
-                          "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-                        },
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "t2.micro",
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LaunchTemplate": {
+                    "id": "LaunchTemplate",
+                    "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "iamInstanceProfile": {
+                                "arn": {
+                                  "Fn::GetAtt": [
+                                    "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "imageId": {
+                                "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                              },
+                              "instanceType": "t2.micro",
+                              "monitoring": {
+                                "enabled": false
+                              },
+                              "securityGroupIds": [
                                 {
-                                  "Ref": "ClusterEB0386A7"
+                                  "Fn::GetAtt": [
+                                    "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
+                                    "GroupId"
+                                  ]
+                                }
+                              ],
+                              "tagSpecifications": [
+                                {
+                                  "resourceType": "instance",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                    }
+                                  ]
                                 },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                              ]
+                                {
+                                  "resourceType": "volume",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "userData": {
+                                "Fn::Base64": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "#!/bin/bash\necho ECS_CLUSTER=",
+                                      {
+                                        "Ref": "ClusterEB0386A7"
+                                      },
+                                      " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "tagSpecifications": [
+                              {
+                                "resourceType": "launch-template",
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                  }
+                                ]
+                              }
                             ]
                           }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                          "version": "0.0.0"
                         }
                       }
                     },
@@ -944,8 +1003,16 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
-                        "launchConfigurationName": {
-                          "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+                        "launchTemplate": {
+                          "launchTemplateId": {
+                            "Ref": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D",
+                              "LatestVersionNumber"
+                            ]
+                          }
                         },
                         "maxSize": "1",
                         "minSize": "1",
@@ -2227,7 +2294,7 @@
                         ],
                         "schedulingStrategy": "REPLICA",
                         "taskDefinition": {
-                          "Ref": "myServiceTaskDef7FB8322A"
+                          "Ref": "TaskDef54694570"
                         }
                       }
                     },

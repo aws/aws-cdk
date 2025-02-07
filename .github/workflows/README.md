@@ -73,6 +73,11 @@ Owner: CDK support team
 [issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
 Owner: CDK support team
 
+### P1 Bug Priority Assignment
+
+[project-prioritization-bug.yml](project-prioritization-bug.yml): Github action for automatically adding P1 bugs to the prioritization project board
+Owner: CDK support team
+
 ## Scheduled Actions
 
 ### Issue Lifecycle Handling
@@ -117,4 +122,9 @@ Owner: CDK Support team
 ### R5 Priority Assignment
 
 [project-prioritization-r5-assignment.yml](project-prioritization-r5-assignment.yml): GitHub action that runs every day to add PR's to the priority project board that satisfies R5 Priority.
+Owner: CDK Support team
+
+### Needs Attention Status Update
+
+[project-prioritization-needs-attention.yml](project-prioritization-needs-attention.yml): GitHub action that runs every day to update Needs Attention field in the prioritization project board.
 Owner: CDK Support team

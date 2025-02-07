@@ -229,10 +229,10 @@
             "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
           }
         ],
-        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+            "data": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
           }
         ],
         "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/ASG": [
@@ -323,6 +323,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRoleDefaultPolicyA592CB18"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
           }
         ],
         "/aws-ecs-integ-multiple-alb/myService/LB/Resource": [
