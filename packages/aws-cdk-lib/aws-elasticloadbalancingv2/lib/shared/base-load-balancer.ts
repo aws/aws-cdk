@@ -251,22 +251,13 @@ export abstract class BaseLoadBalancer extends Resource {
       throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
     }
 
-    const minimumCapacityUnit = baseProps.minimumCapacityUnit;
-    if (
-      minimumCapacityUnit &&
-      !Token.isUnresolved(minimumCapacityUnit) &&
-      (minimumCapacityUnit < 0 || !Number.isInteger(minimumCapacityUnit))
-    ) {
-      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer, got ${minimumCapacityUnit}.`, this);
-    }
-
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
-      minimumLoadBalancerCapacity: minimumCapacityUnit ? {
-        capacityUnits: minimumCapacityUnit,
+      minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
+        capacityUnits: baseProps.minimumCapacityUnit,
       } : undefined,
       ...additionalProps,
     });
