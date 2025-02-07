@@ -51,7 +51,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
   /**
    * Create a VPC origin with an existing VPC origin resource.
    */
-  public static withVpcOrigin(origin: cloudfront.VpcOrigin, props?: VpcOriginProps): VpcOrigin {
+  public static withVpcOrigin(origin: cloudfront.IVpcOrigin, props?: VpcOriginProps): VpcOrigin {
     return new VpcOriginWithVpcOrigin(origin, props);
   }
 
@@ -76,7 +76,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
     return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromNetworkLoadBalancer(loadBalancer), props);
   }
 
-  protected vpcOrigin?: cloudfront.VpcOrigin;
+  protected vpcOrigin?: cloudfront.IVpcOrigin;
 
   protected constructor(domainName: string, protected readonly props: VpcOriginProps) {
     super(domainName, props);
@@ -98,7 +98,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
 }
 
 class VpcOriginWithVpcOrigin extends VpcOrigin {
-  constructor(protected vpcOrigin: cloudfront.VpcOrigin, props: VpcOriginProps = {}) {
+  constructor(protected vpcOrigin: cloudfront.IVpcOrigin, props: VpcOriginProps = {}) {
     const domainName = props.domainName ?? vpcOrigin.domainName;
     if (!domainName) {
       throw new cdk.UnscopedValidationError("'domainName' must be specified when no default domain name is defined.");
