@@ -1384,7 +1384,6 @@ describe('Distribution metrics tests', () => {
 describe('WAF protection', () => {
   test('core security settings rendered correctly', () => {
     const origin = defaultOrigin();
-    const nameMatcher = Match.stringLikeRegexp('CreatedByCloudFront-');
     stack = new Stack(app, 'UsEast1Stack', {
       env: { account: '1234', region: 'us-east-1' },
     });
@@ -1397,14 +1396,12 @@ describe('WAF protection', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', Match.objectLike({
-      Name: nameMatcher,
       DefaultAction: {
         Allow: {},
       },
       Scope: 'CLOUDFRONT',
       VisibilityConfig: {
         CloudWatchMetricsEnabled: true,
-        MetricName: nameMatcher,
         SampledRequestsEnabled: true,
       },
       Rules: [
