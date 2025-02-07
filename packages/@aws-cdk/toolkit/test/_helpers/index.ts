@@ -4,6 +4,7 @@ import { Toolkit, ToolkitError } from '../../lib';
 import { determineOutputDirectory } from '../../lib/api/cloud-assembly/private';
 
 export * from './test-io-host';
+export * from './test-cloud-assembly-source';
 
 function fixturePath(...parts: string[]): string {
   return path.normalize(path.join(__dirname, '..', '_fixtures', ...parts));
