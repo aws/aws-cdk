@@ -14,12 +14,20 @@ export const CODES = {
   CDK_TOOLKIT_I5060: 'Confirm deploy security sensitive changes',
   CDK_TOOLKIT_I5900: 'Deployment results on success',
 
+  CDK_TOOLKIT_E5001: 'No stacks found',
+
   // Rollback
   CDK_TOOLKIT_I6000: 'Provides rollback times',
+
+  CDK_TOOLKIT_E6001: 'No stacks found',
+  CDK_TOOLKIT_E6900: 'Rollback failed',
 
   // Destroy
   CDK_TOOLKIT_I7000: 'Provides destroy times',
   CDK_TOOLKIT_I7010: 'Confirm destroy stacks',
+
+  CDK_TOOLKIT_E7010: 'Action was aborted due to negative confirmation of request',
+  CDK_TOOLKIT_E7900: 'Stack deletion failed',
 
   // Assembly codes
   CDK_ASSEMBLY_I0042: 'Writing updated context',
