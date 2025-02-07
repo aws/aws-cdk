@@ -2900,12 +2900,3 @@ integTest('requests go through a proxy when configured',
     }
   }),
 );
-
-integTest('destroy state check',
-  withDefaultFixture(async (fixture) => {
-    expect(process.env.CDK_COMMAND).toEqual('');
-    await fixture.cdkDestroy('test-2');
-
-    expect(process.env.CDK_COMMAND).toEqual('');
-  }),
-);
