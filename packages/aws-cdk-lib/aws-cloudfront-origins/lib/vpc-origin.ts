@@ -85,7 +85,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
   }
 
-  protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty {
+  protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty | undefined {
     if (!this.vpcOrigin) {
       throw new cdk.UnscopedValidationError('VPC origin cannot be undefined.');
     }
