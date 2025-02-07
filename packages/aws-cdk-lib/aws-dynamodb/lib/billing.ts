@@ -62,7 +62,7 @@ export abstract class Billing {
   /**
    * Specify the number of reads and writes per second that you need for your application.
    *
-   * @param props specifiy read and write capacity configurations.
+   * @param props specify read and write capacity configurations.
    */
   public static provisioned(props: ThroughputProps): Billing {
     return new (class extends Billing {

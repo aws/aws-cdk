@@ -366,7 +366,6 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
     template.hasResourceProperties('AWS::Lambda::Function', {
       Runtime: lambda.Runtime.PYTHON_3_11.toString(),
     });
-
   });
 
   test('addLambdaRuntime does not set custom resource lambda runtime in a different runtime family', () => {

@@ -1,10 +1,12 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
+import { Cluster, ICluster, IpFamily } from './cluster';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
+import { isGpuInstanceType } from './private/nodegroup';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -390,6 +392,8 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 
@@ -442,7 +446,7 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
-      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
         throw new Error('The specified instanceType does not support Windows workloads. '
@@ -471,7 +475,7 @@ export class Nodegroup extends Resource implements INodegroup {
             'ec2:UnassignIpv6Addresses',
           ],
         }));
-      };
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -523,21 +527,7 @@ export class Nodegroup extends Resource implements INodegroup {
       } : undefined,
     });
 
-    // managed nodegroups update the `aws-auth` on creation, but we still need to track
-    // its state for consistency.
     if (this.cluster instanceof Cluster) {
-      // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      // only when ConfigMap is supported
-      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
-      if (supportConfigMap) {
-        this.cluster.awsAuth.addRoleMapping(this.role, {
-          username: 'system:node:{{EC2PrivateDNSName}}',
-          groups: [
-            'system:bootstrappers',
-            'system:nodes',
-          ],
-        });
-      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
@@ -610,25 +600,13 @@ const gpuAmiTypes: NodegroupAmiType[] = [
 ];
 
 /**
- * This function check if the instanceType is GPU instance.
- * @param instanceType The EC2 instance type
- */
-function isGpuInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to known GPU InstanceTypes
-  const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
-    InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1, InstanceClass.INF2];
-  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
-}
-
-/**
  * This function check if the instanceType is supported by Windows AMI.
  * https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
-  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  // compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  // NOTE: i2 instance class is not present in the InstanceClass enum.
   const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
     InstanceClass.M6A, InstanceClass.R3];
   return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||

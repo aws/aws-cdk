@@ -63,7 +63,7 @@ test('can set confirmation url', () => {
     }),
   );
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
@@ -97,7 +97,7 @@ test('can set http headers', () => {
     new actions.HttpsAction(expectedUrl, { headers: headers }),
   );
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
@@ -134,7 +134,7 @@ test('can set http auth', () => {
     new actions.HttpsAction(expectedUrl, { auth: expectedAuth }),
   );
 
-  //THEN
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
