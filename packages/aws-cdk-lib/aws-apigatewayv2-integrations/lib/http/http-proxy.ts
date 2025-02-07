@@ -7,6 +7,7 @@ import {
   ParameterMapping,
   PayloadFormatVersion,
 } from '../../../aws-apigatewayv2';
+import { Duration } from '../../../core';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.
@@ -24,6 +25,14 @@ export interface HttpUrlIntegrationProps {
    * @default undefined requests are sent to the backend unmodified
    */
   readonly parameterMapping?: ParameterMapping;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -46,6 +55,7 @@ export class HttpUrlIntegration extends HttpRouteIntegration {
       type: HttpIntegrationType.HTTP_PROXY,
       uri: this.url,
       parameterMapping: this.props.parameterMapping,
+      timeout: this.props.timeout,
     };
   }
 }

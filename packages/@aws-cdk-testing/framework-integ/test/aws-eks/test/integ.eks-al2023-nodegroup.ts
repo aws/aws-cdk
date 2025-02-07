@@ -8,7 +8,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
@@ -28,7 +27,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_29),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
@@ -39,6 +38,16 @@ class EksClusterStack extends Stack {
     // create nodegroup with AL2023_ARM_64_STANDARD
     this.cluster.addNodegroupCapacity('MNG_AL2023_ARM_64_STANDARD', {
       amiType: NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    });
+
+    // create nodegroup with AL2023_X86_64_NEURON
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NEURON', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NEURON,
+    });
+
+    // create nodegroup with AL2023_X86_64_NVIDIA
+    this.cluster.addNodegroupCapacity('MNG_AL2023_X86_64_NVIDIA', {
+      amiType: NodegroupAmiType.AL2023_X86_64_NVIDIA,
     });
   }
 }

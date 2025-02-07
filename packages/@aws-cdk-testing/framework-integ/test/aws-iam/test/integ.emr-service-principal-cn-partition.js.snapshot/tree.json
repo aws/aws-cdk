@@ -1,0 +1,397 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EmrServicePrincipalTestingStack": {
+        "id": "EmrServicePrincipalTestingStack",
+        "path": "EmrServicePrincipalTestingStack",
+        "children": {
+          "EMRServiceRole": {
+            "id": "EMRServiceRole",
+            "path": "EmrServicePrincipalTestingStack/EMRServiceRole",
+            "children": {
+              "ImportEMRServiceRole": {
+                "id": "ImportEMRServiceRole",
+                "path": "EmrServicePrincipalTestingStack/EMRServiceRole/ImportEMRServiceRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EmrServicePrincipalTestingStack/EMRServiceRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "elasticmapreduce.amazonaws.com.cn"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AmazonElasticMapReduceRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "EMRJobFlowRole": {
+            "id": "EMRJobFlowRole",
+            "path": "EmrServicePrincipalTestingStack/EMRJobFlowRole",
+            "children": {
+              "ImportEMRJobFlowRole": {
+                "id": "ImportEMRJobFlowRole",
+                "path": "EmrServicePrincipalTestingStack/EMRJobFlowRole/ImportEMRJobFlowRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EmrServicePrincipalTestingStack/EMRJobFlowRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "EMRJobFlowProfile": {
+            "id": "EMRJobFlowProfile",
+            "path": "EmrServicePrincipalTestingStack/EMRJobFlowProfile",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+              "aws:cdk:cloudformation:props": {
+                "instanceProfileName": "EMRJobFlowProfile_",
+                "roles": [
+                  {
+                    "Ref": "EMRJobFlowRole209C81EE"
+                  }
+                ]
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+              "version": "0.0.0"
+            }
+          },
+          "SSHKey": {
+            "id": "SSHKey",
+            "path": "EmrServicePrincipalTestingStack/SSHKey",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::KeyPair",
+              "aws:cdk:cloudformation:props": {
+                "keyName": "TestingSSHKey"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.CfnKeyPair",
+              "version": "0.0.0"
+            }
+          },
+          "EMRCluster": {
+            "id": "EMRCluster",
+            "path": "EmrServicePrincipalTestingStack/EMRCluster",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EMR::Cluster",
+              "aws:cdk:cloudformation:props": {
+                "applications": [
+                  {
+                    "name": "Spark"
+                  }
+                ],
+                "instances": {
+                  "coreInstanceGroup": {
+                    "instanceCount": 1,
+                    "instanceType": "m5.xlarge"
+                  },
+                  "ec2SubnetId": "subnet-0dff1a399d8f6f92c",
+                  "hadoopVersion": "Amazon",
+                  "keepJobFlowAliveWhenNoSteps": false,
+                  "ec2KeyName": {
+                    "Ref": "SSHKey"
+                  },
+                  "terminationProtected": false,
+                  "masterInstanceGroup": {
+                    "instanceCount": 1,
+                    "instanceType": "m5.xlarge"
+                  }
+                },
+                "jobFlowRole": {
+                  "Ref": "EMRJobFlowProfile"
+                },
+                "name": "My first cluster",
+                "releaseLabel": "emr-6.4.0",
+                "serviceRole": {
+                  "Ref": "EMRServiceRole2CF24E74"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_emr.CfnCluster",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "EmrServicePrincipalTestingStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"EMRCluster\"}": {
+                "id": "Output{\"Ref\":\"EMRCluster\"}",
+                "path": "EmrServicePrincipalTestingStack/Exports/Output{\"Ref\":\"EMRCluster\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EmrServicePrincipalTestingStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EmrServicePrincipalTestingStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EmrServicePrincipalAssertionStack": {
+        "id": "EmrServicePrincipalAssertionStack",
+        "path": "EmrServicePrincipalAssertionStack",
+        "children": {
+          "AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf": {
+            "id": "AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf",
+            "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "0.0.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/Default/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/AssertionResults",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+              "version": "0.0.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EmrServicePrincipalAssertionStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EmrServicePrincipalAssertionStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EmrServicePrincipalIntegTesting": {
+        "id": "EmrServicePrincipalIntegTesting",
+        "path": "EmrServicePrincipalIntegTesting",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EmrServicePrincipalIntegTesting/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EmrServicePrincipalIntegTesting/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

@@ -9,6 +9,7 @@ import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -60,7 +61,6 @@ export interface RuleProps extends EventCommonOptions {
  * @resource AWS::Events::Rule
  */
 export class Rule extends Resource implements IRule {
-
   /**
    * Import an existing EventBridge Rule provided an ARN
    *
@@ -95,6 +95,8 @@ export class Rule extends Resource implements IRule {
     super(determineRuleScope(scope, props), id, {
       physicalName: props.ruleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.eventBus && props.schedule) {
       throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
@@ -138,6 +140,7 @@ export class Rule extends Resource implements IRule {
    *
    * No-op if target is undefined.
    */
+  @MethodMetadata()
   public addTarget(target?: IRuleTarget): void {
     if (!target) { return; }
 
@@ -238,6 +241,7 @@ export class Rule extends Resource implements IRule {
       deadLetterConfig: targetProps.deadLetterConfig,
       retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
+      redshiftDataParameters: targetProps.redshiftDataParameters,
       appSyncParameters: targetProps.appSyncParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
@@ -281,6 +285,7 @@ export class Rule extends Resource implements IRule {
    *    }
    *
    */
+  @MethodMetadata()
   public addEventPattern(eventPattern?: EventPattern) {
     if (!eventPattern) {
       return;
@@ -312,6 +317,10 @@ export class Rule extends Resource implements IRule {
 
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
+    }
+
+    if (this.targets.length > 5) {
+      errors.push('Event rule cannot have more than 5 targets.');
     }
 
     return errors;
@@ -487,6 +496,8 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
 class MirrorRule extends Rule {
   constructor(scope: Construct, id: string, props: RuleProps, private readonly source: Rule) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   public _renderEventPattern(): any {

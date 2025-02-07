@@ -5,6 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { IResource, Lazy, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface representing an AWS Config rule
@@ -32,6 +33,29 @@ export interface IRule extends IResource {
    * Defines a EventBridge event rule which triggers for rule re-evaluation status events.
    */
   onReEvaluationStatus(id: string, options?: events.OnEventOptions): events.Rule;
+}
+
+/**
+ * The mode of evaluation for the rule.
+ */
+export class EvaluationMode {
+  /**
+   * Evaluate resources that have already been deployed
+   */
+  public static readonly DETECTIVE = new EvaluationMode(['DETECTIVE']);
+  /**
+   * Evaluate resources before they have been deployed
+   */
+  public static readonly PROACTIVE = new EvaluationMode(['PROACTIVE']);
+  /**
+   * Evaluate resources that have already been deployed and before they have been deployed
+   */
+  public static readonly DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
+
+  /**
+   * @param modes The modes of evaluation for the rule
+   */
+  protected constructor(public readonly modes: string[]) {}
 }
 
 /**
@@ -222,6 +246,13 @@ export interface RuleProps {
    * @default - evaluations for the rule are triggered when any resource in the recording group changes.
    */
   readonly ruleScope?: RuleScope;
+
+  /**
+   * The modes the AWS Config rule can be evaluated in. The valid values are distinct objects.
+   *
+   * @default - Detective evaluation mode only
+   */
+  readonly evaluationModes?: EvaluationMode;
 }
 
 /**
@@ -258,6 +289,8 @@ export class ManagedRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.ruleScope = props.ruleScope;
 
@@ -271,6 +304,9 @@ export class ManagedRule extends RuleNew {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -384,6 +420,8 @@ export class CustomRule extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
@@ -422,7 +460,7 @@ export class CustomRule extends RuleNew {
         principal: new iam.ServicePrincipal('config.amazonaws.com'),
         sourceAccount: this.env.account,
       });
-    };
+    }
 
     if (props.lambdaFunction.role) {
       props.lambdaFunction.role.addManagedPolicy(
@@ -444,6 +482,9 @@ export class CustomRule extends RuleNew {
         sourceDetails,
         sourceIdentifier: props.lambdaFunction.functionArn,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -496,6 +537,8 @@ export class CustomPolicy extends RuleNew {
     super(scope, id, {
       physicalName: props.configRuleName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
       throw new Error('Policy Text cannot be empty.');
@@ -529,6 +572,9 @@ export class CustomPolicy extends RuleNew {
           policyText: props.policyText,
         },
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -786,7 +832,7 @@ export class ManagedRuleIdentifiers {
    * greater for viewer connections.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudfront-security-policy-check.html
    */
-  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK'
+  public static readonly CLOUDFRONT_SECURITY_POLICY_CHECK = 'CLOUDFRONT_SECURITY_POLICY_CHECK';
   /**
    * Checks if Amazon CloudFront distributions are using a custom SSL certificate and are configured
    * to use SNI to serve HTTPS requests.
@@ -1280,9 +1326,9 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly EKS_CLUSTER_OLDEST_SUPPORTED_VERSION = 'EKS_CLUSTER_OLDEST_SUPPORTED_VERSION';
   /**
-    * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
-    * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
-    */
+   * Checks if an Amazon Elastic Kubernetes Service (EKS) cluster is running a supported Kubernetes version.
+   * @see https://docs.aws.amazon.com/config/latest/developerguide/eks-cluster-supported-version.html
+   */
   public static readonly EKS_CLUSTER_SUPPORTED_VERSION = 'EKS_CLUSTER_SUPPORTED_VERSION';
   /**
    * Checks whether Amazon Elastic Kubernetes Service (Amazon EKS) endpoint is not publicly accessible.
@@ -2449,7 +2495,7 @@ export class ResourceType {
   /** AWS IoT mitigation action */
   public static readonly IOT_MITIGATION_ACTION = new ResourceType('AWS::IoT::MitigationAction');
   /** AWS IoT TwinMaker workspace */
-  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTwinMaker::Workspace');
+  public static readonly IOT_TWINMAKER_WORKSPACE = new ResourceType('AWS::IoTTwinMaker::Workspace');
   /** AWS IoT TwinMaker entity */
   public static readonly IOT_TWINMAKER_ENTITY = new ResourceType('AWS::IoTTwinMaker::Entity');
   /** AWS IoT Analytics datastore */
@@ -2486,7 +2532,7 @@ export class ResourceType {
   public static readonly NETWORK_FIREWALL_RULE_GROUP = new ResourceType('AWS::NetworkFirewall::RuleGroup');
   /** AWS ResilienceHub resiliency policy */
   public static readonly RESILIENCEHUB_RESILIENCY_POLICY = new ResourceType('AWS::ResilienceHub::ResiliencyPolicy');
-  /**AWS Secrets Manager secret */
+  /** AWS Secrets Manager secret */
   public static readonly SECRETS_MANAGER_SECRET = new ResourceType('AWS::SecretsManager::Secret');
   /** AWS Service Catalog CloudFormation product */
   public static readonly SERVICE_CATALOG_CLOUDFORMATION_PRODUCT = new ResourceType('AWS::ServiceCatalog::CloudFormationProduct');
@@ -2887,7 +2933,6 @@ export class ResourceType {
   private constructor(type: string) {
     this.complianceResourceType = type;
   }
-
 }
 
 function renderScope(ruleScope?: RuleScope): CfnConfigRule.ScopeProperty | undefined {

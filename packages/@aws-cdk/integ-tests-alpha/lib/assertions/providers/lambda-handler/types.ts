@@ -150,7 +150,7 @@ export interface AwsApiCallRequest {
    *
    * If you are using the SdkRequest to perform more of a query to return
    * a single value to use, then this should be set to 'true'. For example,
-   * you could make a StepFunctions.startExecution api call and retreive the
+   * you could make a StepFunctions.startExecution api call and retrieve the
    * `executionArn` from the response.
    *
    * @default 'false'
@@ -232,9 +232,9 @@ export interface AssertionRequest {
  * Needed to access the whole message via getAtt() on the custom resource.
  */
 export interface AssertionResult {
-/**
- * The result of an assertion
- */
+  /**
+   * The result of an assertion
+   */
   readonly assertion: string;
 
   /**

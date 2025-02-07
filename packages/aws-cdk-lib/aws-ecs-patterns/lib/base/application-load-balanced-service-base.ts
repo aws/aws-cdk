@@ -8,6 +8,8 @@ import {
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  IpAddressType,
+  ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
@@ -276,6 +278,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
   readonly idleTimeout?: Duration;
+
+  /**
+   * The type of IP address to use
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -366,29 +375,29 @@ export interface ApplicationLoadBalancedTaskImageOptions {
   readonly dockerLabels?: { [key: string]: string };
 
   /**
-  * The entry point that's passed to the container.
-  *
-  * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
-  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
-  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
-  *
-  * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
-  *
-  * @default none
-  */
+   * The entry point that's passed to the container.
+   *
+   * This parameter maps to `Entrypoint` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+   * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `--entrypoint` option to
+   * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+   *
+   * For more information about the Docker `ENTRYPOINT` parameter, see https://docs.docker.com/engine/reference/builder/#entrypoint.
+   *
+   * @default none
+   */
   readonly entryPoint?: string[];
 
   /**
-  * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
-  *
-  * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
-  * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
-  * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
-  *
-  * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
-  *
-  * @default none
-  */
+   * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
+   *
+   * This parameter maps to `Cmd` in the [Create a container](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate) section
+   * of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the `COMMAND` parameter to
+   * [docker run](https://docs.docker.com/engine/reference/commandline/run/).
+   *
+   * For more information about the Docker `CMD` parameter, see https://docs.docker.com/engine/reference/builder/#cmd.
+   *
+   * @default none
+   */
   readonly command?: string[];
 }
 
@@ -396,7 +405,6 @@ export interface ApplicationLoadBalancedTaskImageOptions {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends Construct {
-
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    * @deprecated - Use `internalDesiredCount` instead.
@@ -474,11 +482,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       }
     }
 
-    const lbProps = {
+    const lbProps: ApplicationLoadBalancerProps = {
       vpc: this.cluster.vpc,
       loadBalancerName: props.loadBalancerName,
       internetFacing,
       idleTimeout: props.idleTimeout,
+      ipAddressType: props.ipAddressType,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
@@ -506,7 +515,6 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {

@@ -1,3 +1,3 @@
 export * from './sdk';
 export * from './sdk-provider';
-export * from './credentials';
+export * from './sdk-logger';

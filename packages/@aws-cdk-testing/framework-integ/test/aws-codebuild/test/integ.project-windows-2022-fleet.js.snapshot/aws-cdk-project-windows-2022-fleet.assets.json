@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "4544fc538a6522c0f8bd304a9c28b7cf61115602c5d5566d0df2e956a35645fa": {
+      "source": {
+        "path": "aws-cdk-project-windows-2022-fleet.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4544fc538a6522c0f8bd304a9c28b7cf61115602c5d5566d0df2e956a35645fa.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

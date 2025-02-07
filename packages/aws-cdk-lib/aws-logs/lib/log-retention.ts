@@ -74,7 +74,6 @@ export interface LogRetentionRetryOptions {
  * specifying `logGroupRegion`
  */
 export class LogRetention extends Construct {
-
   /**
    * The ARN of the LogGroup.
    */
@@ -170,7 +169,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs18.x',
+        Runtime: cdk.determineLatestNodeRuntimeName(this),
         Timeout: cdk.Duration.minutes(15).toSeconds(),
         Code: {
           S3Bucket: asset.s3BucketName,
@@ -201,7 +200,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public grantDeleteLogGroup(logGroupName: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
-      //Only allow deleting the specific log group.
+      // Only allow deleting the specific log group.
       resources: [cdk.Stack.of(this).formatArn({
         service: 'logs',
         resource: 'log-group',

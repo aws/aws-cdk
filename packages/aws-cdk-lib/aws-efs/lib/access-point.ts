@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
-import { ArnFormat, IResource, Resource, Stack, Tags } from '../../core';
+import { ArnFormat, IResource, Resource, Stack, Tags, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an EFS AccessPoint
@@ -29,7 +30,7 @@ export interface IAccessPoint extends IResource {
 
 /**
  * Permissions as POSIX ACL
-*/
+ */
 export interface Acl {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
@@ -102,6 +103,15 @@ export interface AccessPointOptions {
    * @default - user identity not enforced
    */
   readonly posixUser?: PosixUser;
+
+  /**
+   * The opaque string specified in the request to ensure idempotent creation.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-accesspoint.html#cfn-efs-accesspoint-clienttoken
+   *
+   * @default - No client token
+   */
+  readonly clientToken?: string;
 }
 
 /**
@@ -200,6 +210,13 @@ export class AccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const clientToken = props.clientToken;
+    if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {
+      throw new Error(`The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`);
+    }
 
     const resource = new CfnAccessPoint(this, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,
@@ -216,6 +233,7 @@ export class AccessPoint extends AccessPointBase {
         gid: props.posixUser.gid,
         secondaryGids: props.posixUser.secondaryGids,
       } : undefined,
+      clientToken,
     });
 
     Tags.of(this).add('Name', this.node.path);
@@ -237,6 +255,8 @@ class ImportedAccessPoint extends AccessPointBase {
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!attrs.accessPointId) {
       if (!attrs.accessPointArn) {

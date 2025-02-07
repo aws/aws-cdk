@@ -40,7 +40,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   }),
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
 });
 
@@ -49,7 +49,7 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
     handler: 'canary.handler',
     code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   environmentVariables: {
     URL: api.url,
   },
@@ -61,7 +61,7 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
     handler: 'folder/canary.functionName',
     code: Code.fromAsset(path.join(__dirname, 'canaries')),
   }),
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   environmentVariables: {
     URL: api.url,
   },
@@ -78,15 +78,15 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
       expiration: cdk.Duration.days(30),
     },
   ],
-  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0,
+  runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
 });
 
-const kebabToPascal = (text:string) => text.replace(/(^\w|-\w)/g, (v) => v.replace(/-/, '').toUpperCase());
-const createCanaryByRuntimes = (runtime: Runtime) =>
-  new Canary(stack, kebabToPascal(runtime.name).replace('.', ''), {
+const kebabToPascal = (text:string) => text.replace(/(^\w|[-./]\w)/g, (v) => v.replace(/[-./]/, '').toUpperCase());
+const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
+  new Canary(stack, kebabToPascal(runtime.name + (handler ?? '')), {
     test: Test.custom({
-      handler: 'canary.handler',
+      handler: handler ?? 'canary.handler',
       code: Code.fromAsset(path.join(__dirname, 'canaries')),
     }),
     environmentVariables: {
@@ -96,11 +96,19 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
     cleanup: Cleanup.LAMBDA,
   });
 
-const puppeteer40 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0);
+const puppeteer52 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_5_2);
 const puppeteer62 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2);
-const selenium13 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3);
-const selenium20 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0);
+const puppeteer70 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0);
+const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0);
+const puppeteer90 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_0);
+const puppeteer91 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1);
+const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0);
+const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
+
 const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
+const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
+const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0);
+const selenium41 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_1);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -112,16 +120,21 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   directoryAsset,
   folderAsset,
   zipAsset,
-  puppeteer40,
+  puppeteer52,
   puppeteer62,
-  selenium13,
-  selenium20,
+  puppeteer70,
+  puppeteer80,
+  puppeteer90,
+  puppeteer91,
+  playwright10,
+  playwright10_with_handler_name,
   selenium21,
+  selenium30,
+  selenium40,
+  selenium41,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,
   })
   .assertAtPath('CanaryRuns.0.Status.State', ExpectedResult.stringLikeRegexp('PASSED'))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5) }));
-
-app.synth();

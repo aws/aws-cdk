@@ -2,13 +2,13 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents the function's source code
  */
 export abstract class FunctionCode {
-
   /**
    * Inline code for function
    * @returns code object with inline code.
@@ -47,7 +47,6 @@ export interface FileCodeOptions {
  * Represents the function's source code as inline code
  */
 class InlineCode extends FunctionCode {
-
   constructor(private code: string) {
     super();
   }
@@ -61,7 +60,6 @@ class InlineCode extends FunctionCode {
  * Represents the function's source code loaded from an external file
  */
 class FileCode extends FunctionCode {
-
   constructor(private options: FileCodeOptions) {
     super();
   }
@@ -161,7 +159,6 @@ export interface FunctionProps {
  * @resource AWS::CloudFront::Function
  */
 export class Function extends Resource implements IFunction {
-
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     return new class extends Resource implements IFunction {
@@ -194,6 +191,8 @@ export class Function extends Resource implements IFunction {
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.functionName = props.functionName ?? this.generateName();
 
@@ -222,11 +221,17 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const name = Stack.of(this).region + Names.uniqueId(this);
-    if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
+    /**
+     * Since token string can be single- or double-digit region name, it may
+     * lead to non-deterministic behaviour.
+     */
+    const idLength = 64 - '${Token[AWS.Region.00]}'.length;
+    if (Names.uniqueId(this).length <= idLength) {
+      return Stack.of(this).region + Names.uniqueId(this);
     }
-    return name;
+    return Stack.of(this).region + Lazy.string({
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
+    });
   }
 }
 

@@ -23,6 +23,7 @@ new UserPoolIdentityProviderApple(stack, 'apple', {
   attributeMapping: {
     familyName: ProviderAttribute.APPLE_LAST_NAME,
     givenName: ProviderAttribute.APPLE_FIRST_NAME,
+    emailVerified: ProviderAttribute.APPLE_EMAIL_VERIFIED,
   },
 });
 

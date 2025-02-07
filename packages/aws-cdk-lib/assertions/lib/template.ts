@@ -17,7 +17,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
@@ -54,7 +53,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+    if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
     }
   }
@@ -168,7 +167,7 @@ export class Template {
    * Assert that a Parameter with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the parameter, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param logicalId the name of the parameter, provide `'*'` to match all parameters in the template.
    * @param props the parameter as should be expected in the template.
    */
   public hasParameter(logicalId: string, props: any): void {
@@ -180,7 +179,7 @@ export class Template {
 
   /**
    * Get the set of matching Parameters that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the parameter. Provide `'*'` to match all parameters in the template.
+   * @param logicalId the name of the parameter, provide `'*'` to match all parameters in the template.
    * @param props by default, matches all Parameters in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -193,7 +192,7 @@ export class Template {
    * Assert that an Output with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param logicalId the name of the output, provide `'*'` to match all outputs in the template.
    * @param props the output as should be expected in the template.
    */
   public hasOutput(logicalId: string, props: any): void {
@@ -205,7 +204,7 @@ export class Template {
 
   /**
    * Get the set of matching Outputs that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param logicalId the name of the output, provide `'*'` to match all outputs in the template.
    * @param props by default, matches all Outputs in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -218,7 +217,7 @@ export class Template {
    * Assert that a Mapping with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all mappings in the template.
    * @param props the output as should be expected in the template.
    */
   public hasMapping(logicalId: string, props: any): void {
@@ -230,7 +229,7 @@ export class Template {
 
   /**
    * Get the set of matching Mappings that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all mappings in the template.
    * @param props by default, matches all Mappings in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
@@ -243,7 +242,7 @@ export class Template {
    * Assert that a Condition with the given properties exists in the CloudFormation template.
    * By default, performs partial matching on the resource, via the `Match.objectLike()`.
    * To configure different behavior, use other matchers in the `Match` class.
-   * @param logicalId the name of the mapping. Provide `'*'` to match all conditions in the template.
+   * @param logicalId the name of the mapping, provide `'*'` to match all conditions in the template.
    * @param props the output as should be expected in the template.
    */
   public hasCondition(logicalId: string, props: any): void {
@@ -255,7 +254,7 @@ export class Template {
 
   /**
    * Get the set of matching Conditions that match the given properties in the CloudFormation template.
-   * @param logicalId the name of the condition. Provide `'*'` to match all conditions in the template.
+   * @param logicalId the name of the condition, provide `'*'` to match all conditions in the template.
    * @param props by default, matches all Conditions in the template.
    * When a literal object is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.

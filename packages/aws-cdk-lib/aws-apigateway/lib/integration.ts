@@ -2,6 +2,7 @@ import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
 import * as iam from '../../aws-iam';
 import { Lazy, Duration } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 export interface IntegrationOptions {
   /**
@@ -82,7 +83,13 @@ export interface IntegrationOptions {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
-   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * By default, the value must be between 50 milliseconds and 29 seconds.
+   * The upper bound can be increased for regional and private Rest APIs only,
+   * via a quota increase request for your acccount.
+   * This increase might require a reduction in your account-level throttle quota limit.
+   *
+   * See {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html Amazon API Gateway quotas} for more details.
    *
    * @default Duration.seconds(29)
    */
@@ -193,23 +200,23 @@ export class Integration {
   constructor(private readonly props: IntegrationProps) {
     const options = this.props.options || { };
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new Error('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+      throw new UnscopedValidationError('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new Error('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+      throw new UnscopedValidationError('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+      throw new UnscopedValidationError('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
-    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
+      throw new UnscopedValidationError('Integration timeout must be greater than 50 milliseconds.');
     }
 
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
-      throw new Error('integrationHttpMethod is required for non-mock integration types.');
+      throw new UnscopedValidationError('integrationHttpMethod is required for non-mock integration types.');
     }
   }
 
@@ -217,7 +224,7 @@ export class Integration {
    * Can be overridden by subclasses to allow the integration to interact with the method
    * being integrated, access the REST API object, method ARNs, etc.
    */
-  public bind(_method: Method): IntegrationConfig {
+  public bind(method: Method): IntegrationConfig {
     let uri = this.props.uri;
     const options = this.props.options;
 
@@ -229,12 +236,12 @@ export class Integration {
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
-              throw new Error("'uri' is required when there are more than one NLBs in the VPC Link");
+              throw new ValidationError("'uri' is required when there are more than one NLBs in the VPC Link", method);
             } else {
               return `http://${targets[0]}`;
             }
           } else {
-            throw new Error("'uri' is required when the 'connectionType' is VPC_LINK");
+            throw new ValidationError("'uri' is required when the 'connectionType' is VPC_LINK", method);
           }
         },
       });

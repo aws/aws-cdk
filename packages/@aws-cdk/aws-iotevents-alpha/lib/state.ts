@@ -51,7 +51,7 @@ interface TransitionEvent {
   readonly actions?: IAction[];
 
   /**
-   * The next state to transit to. When the resuld of condition expression is `true`, the state is transited.
+   * The next state to transit to. When the result of condition expression is `true`, the state is transited.
    */
   readonly nextState: State;
 }
@@ -127,7 +127,7 @@ export class State {
   }
 
   /**
-   * Collect states in dependency gragh that constructed by state transitions,
+   * Collect states in dependency graph that constructed by state transitions,
    * and return the JSONs of the states.
    * This function is called recursively and collect the states.
    *

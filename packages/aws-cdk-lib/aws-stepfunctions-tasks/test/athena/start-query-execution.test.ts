@@ -4,7 +4,6 @@ import * as cdk from '../../../core';
 import { AthenaStartQueryExecution, EncryptionOption } from '../../lib/athena/start-query-execution';
 
 describe('Start Query Execution', () => {
-
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -44,6 +43,61 @@ describe('Start Query Execution', () => {
       },
       End: true,
       Parameters: {
+        QueryString: 'CREATE DATABASE database',
+        ClientRequestToken: 'unique-client-request-token',
+        QueryExecutionContext: {
+          Database: 'mydatabase',
+          Catalog: 'AwsDataCatalog',
+        },
+        ResultConfiguration: {
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
+          OutputLocation: 's3://query-results-bucket/folder/',
+        },
+        WorkGroup: 'primary',
+      },
+    });
+  });
+
+  test('default settings - using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = AthenaStartQueryExecution.jsonata(stack, 'Query', {
+      queryString: 'CREATE DATABASE database',
+      clientRequestToken: 'unique-client-request-token',
+      queryExecutionContext: {
+        databaseName: 'mydatabase',
+        catalogName: 'AwsDataCatalog',
+      },
+      resultConfiguration: {
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+        outputLocation: {
+          bucketName: 'query-results-bucket',
+          objectKey: 'folder',
+        },
+      },
+      workGroup: 'primary',
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
         QueryString: 'CREATE DATABASE database',
         ClientRequestToken: 'unique-client-request-token',
         QueryExecutionContext: {
@@ -409,5 +463,86 @@ describe('Start Query Execution', () => {
       });
       // THEN
     }).toThrow(/must be a non-empty list/);
+  });
+
+  test('task with valid resultReuseConfigurationMaxAge', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'SELECT 1',
+      workGroup: 'primary',
+      resultConfiguration: {
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+      },
+      resultReuseConfigurationMaxAge: cdk.Duration.minutes(60),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueryString: 'SELECT 1',
+        WorkGroup: 'primary',
+        ResultConfiguration: {
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        ResultReuseConfiguration: {
+          ResultReuseByAgeConfiguration: {
+            Enabled: true,
+            MaxAgeInMinutes: 60,
+          },
+        },
+      },
+    });
+  });
+
+  test('invalid resultReuseConfigurationMaxAge', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'SELECT 1',
+        workGroup: 'primary',
+        resultConfiguration: {
+          encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        resultReuseConfigurationMaxAge: cdk.Duration.millis(200),
+      });
+    }).toThrow('resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got 200 ms');
+  });
+
+  test('resultReuseConfigurationMaxAge exceeds max 10080 minutes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'SELECT 1',
+        workGroup: 'primary',
+        resultConfiguration: {
+          encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        resultReuseConfigurationMaxAge: cdk.Duration.minutes(10090),
+      });
+    }).toThrow('resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got 10090',
+    );
   });
 });

@@ -1,10 +1,12 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
+import { isGpuInstanceType } from './private/nodegroup';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -75,6 +77,14 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (x86-64)
    */
   AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  /**
+   * Amazon Linux 2023 with AWS Neuron drivers (x86-64)
+   */
+  AL2023_X86_64_NEURON = 'AL2023_x86_64_NEURON',
+  /**
+   * Amazon Linux 2023 with NVIDIA drivers (x86-64)
+   */
+  AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
   /**
    * Amazon Linux 2023 (ARM-64)
    */
@@ -245,7 +255,7 @@ export interface NodegroupOptions {
   /**
    * The instance types to use for your node group.
    * @default t3.medium will be used according to the cloudformation document.
-   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
    */
   readonly instanceTypes?: InstanceType[];
   /**
@@ -293,7 +303,7 @@ export interface NodegroupOptions {
   readonly tags?: { [name: string]: string };
   /**
    * Launch template specification used for the nodegroup
-   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
    * @default - no launch template
    */
   readonly launchTemplateSpec?: LaunchTemplateSpec;
@@ -381,6 +391,8 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 
@@ -433,7 +445,7 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
-      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
         throw new Error('The specified instanceType does not support Windows workloads. '
@@ -455,14 +467,14 @@ export class Nodegroup extends Resource implements INodegroup {
       // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
       if (props.cluster.ipFamily == IpFamily.IP_V6) {
         ngRole.addToPrincipalPolicy(new PolicyStatement({
-          // eslint-disable-next-line @aws-cdk/no-literal-partition
+          // eslint-disable-next-line @cdklabs/no-literal-partition
           resources: ['arn:aws:ec2:*:*:network-interface/*'],
           actions: [
             'ec2:AssignIpv6Addresses',
             'ec2:UnassignIpv6Addresses',
           ],
         }));
-      };
+      }
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
@@ -518,14 +530,17 @@ export class Nodegroup extends Resource implements INodegroup {
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(this.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-
+      // only when ConfigMap is supported
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      if (supportConfigMap) {
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups: [
+            'system:bootstrappers',
+            'system:nodes',
+          ],
+        });
+      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
@@ -591,21 +606,11 @@ const windowsAmiTypes: NodegroupAmiType[] = [
 ];
 const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.AL2023_X86_64_NEURON,
+  NodegroupAmiType.AL2023_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];
-
-/**
- * This function check if the instanceType is GPU instance.
- * @param instanceType The EC2 instance type
- */
-function isGpuInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to known GPU InstanceTypes
-  const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
-    InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1, InstanceClass.INF2];
-  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
-}
 
 /**
  * This function check if the instanceType is supported by Windows AMI.
@@ -613,8 +618,8 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
-  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  // compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  // NOTE: i2 instance class is not present in the InstanceClass enum.
   const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
     InstanceClass.M6A, InstanceClass.R3];
   return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||

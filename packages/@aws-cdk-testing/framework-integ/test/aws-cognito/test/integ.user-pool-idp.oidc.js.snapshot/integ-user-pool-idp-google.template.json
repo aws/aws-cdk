@@ -34,9 +34,6 @@
   "poolclient2623294C": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,7 +54,10 @@
       "Ref": "cdk52888317"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
    }
   },
   "pooldomain430FA744": {
@@ -72,13 +72,9 @@
   "cdk52888317": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "cdk",
-    "ProviderType": "OIDC",
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AttributeMapping": {
-     "phone_number": "phone_number"
+     "phone_number": "phone_number",
+     "email_verified": "email_verified"
     },
     "ProviderDetails": {
      "client_id": "client-id",
@@ -90,6 +86,11 @@
      "token_url": "https://www.issuer-url.com/token",
      "attributes_url": "https://www.issuer-url.com/userinfo",
      "jwks_uri": "https://www.issuer-url.com/jwks"
+    },
+    "ProviderName": "cdk",
+    "ProviderType": "OIDC",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
     }
    }
   }

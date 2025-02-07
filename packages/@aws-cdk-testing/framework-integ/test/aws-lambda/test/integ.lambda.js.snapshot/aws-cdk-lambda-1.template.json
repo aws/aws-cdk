@@ -201,6 +201,66 @@
    "DependsOn": [
     "MySnapStartLambdaServiceRoleE0F04324"
    ]
+  },
+  "MySnapStartLambdaArmServiceRole731A8472": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MySnapStartLambdaArmEDD3F420": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
+    },
+    "Description": "version-hash:522e22f485651f1644be7e317c07836f",
+    "Handler": "example.Handler::handleRequest",
+    "Role": {
+     "Fn::GetAtt": [
+      "MySnapStartLambdaArmServiceRole731A8472",
+      "Arn"
+     ]
+    },
+    "Runtime": "java21",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "MySnapStartLambdaArmServiceRole731A8472"
+   ]
   }
  },
  "Parameters": {

@@ -6,10 +6,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for starting a Query Execution
- */
-export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
+interface AthenaStartQueryExecutionOptions {
   /**
    * Query that will be started
    */
@@ -52,7 +49,29 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
    * @default - No parameters
    */
   readonly executionParameters?: string[];
+
+  /**
+   * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
+   *
+   * @default - Query results are not reused
+   */
+  readonly resultReuseConfigurationMaxAge?: cdk.Duration;
 }
+
+/**
+ * Properties for starting a Query Execution using JSONPath
+ */
+export interface AthenaStartQueryExecutionJsonPathProps extends sfn.TaskStateJsonPathBaseProps, AthenaStartQueryExecutionOptions { }
+
+/**
+ * Properties for starting a Query Execution using JSONata
+ */
+export interface AthenaStartQueryExecutionJsonataProps extends sfn.TaskStateJsonataBaseProps, AthenaStartQueryExecutionOptions { }
+
+/**
+ * Properties for starting a Query Execution
+ */
+export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps, AthenaStartQueryExecutionOptions { }
 
 /**
  * Start an Athena Query as a Task
@@ -60,6 +79,19 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
  */
 export class AthenaStartQueryExecution extends sfn.TaskStateBase {
+  /**
+   * Start an Athena Query as a Task using JSONPath
+   */
+  public static jsonPath(scope: Construct, id: string, props: AthenaStartQueryExecutionJsonPathProps) {
+    return new AthenaStartQueryExecution(scope, id, props);
+  }
+
+  /**
+   * Start an Athena Query as a Task using JSONata
+   */
+  public static jsonata(scope: Construct, id: string, props: AthenaStartQueryExecutionJsonataProps) {
+    return new AthenaStartQueryExecution(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  }
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -77,6 +109,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
     this.validateExecutionParameters(props.executionParameters);
+    this.validateMaxAgeInMinutes(props.resultReuseConfigurationMaxAge);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -89,6 +122,18 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     const invalidExecutionParameters = executionParameters.some(p => p.length < 1 || p.length > 1024);
     if (invalidExecutionParameters) {
       throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
+    }
+  }
+
+  private validateMaxAgeInMinutes(resultReuseConfigurationMaxAge?: cdk.Duration) {
+    if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
+    const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
+    if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
+      throw new Error(`resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or be equal to 0, got ${maxAgeInMillis} ms`);
+    }
+    const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
+    if (maxAgeInMinutes > 10080) {
+      throw new Error(`resultReuseConfigurationMaxAge must either be 0 or between 1 and 10080 minutes, got ${maxAgeInMinutes}`);
     }
   }
 
@@ -216,10 +261,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('athena', 'startQueryExecution', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         QueryString: this.props.queryString,
         ClientRequestToken: this.props.clientRequestToken,
         QueryExecutionContext: (this.props.queryExecutionContext?.catalogName || this.props.queryExecutionContext?.databaseName) ? {
@@ -232,7 +278,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         },
         WorkGroup: this.props.workGroup,
         ExecutionParameters: this.props.executionParameters,
-      }),
+        ResultReuseConfiguration: this.props.resultReuseConfigurationMaxAge ? {
+          ResultReuseByAgeConfiguration: {
+            Enabled: true,
+            MaxAgeInMinutes: this.props.resultReuseConfigurationMaxAge.toMinutes(),
+          },
+        } : undefined,
+      }, queryLanguage),
     };
   }
 }
@@ -250,7 +302,7 @@ export interface ResultConfiguration {
    * Example value: `s3://query-results-bucket/folder/`
    *
    * @default - Query Result Location set in Athena settings for this workgroup
-  */
+   */
   readonly outputLocation?: s3.Location;
 
   /**

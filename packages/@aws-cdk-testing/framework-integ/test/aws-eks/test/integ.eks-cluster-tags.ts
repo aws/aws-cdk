@@ -6,7 +6,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 class EksClusterTagsStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -14,7 +13,7 @@ class EksClusterTagsStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
     new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_29),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
       tags: {
         foo: 'bar',

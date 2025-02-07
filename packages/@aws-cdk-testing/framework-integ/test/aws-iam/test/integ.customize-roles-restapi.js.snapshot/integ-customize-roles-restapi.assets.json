@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "f692d0500df97f81556e1e1627880690167cd1d83aecfb1f9c16ed86c73797f9": {
+      "source": {
+        "path": "integ-customize-roles-restapi.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f692d0500df97f81556e1e1627880690167cd1d83aecfb1f9c16ed86c73797f9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

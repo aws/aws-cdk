@@ -98,6 +98,22 @@ describe('When instantiating SageMaker Model', () => {
     expect(Object.entries(manifest.dockerImages)).toHaveLength(1);
   });
 
+  test('set network isolation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [{ image: sagemaker.ContainerImage.fromEcrRepository(new ecr.Repository(stack, 'Repo')) }],
+      networkIsolation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      EnableNetworkIsolation: true,
+    });
+  });
+
   describe('with a VPC', () => {
     test('and security groups, no security group is created', () => {
       // GIVEN

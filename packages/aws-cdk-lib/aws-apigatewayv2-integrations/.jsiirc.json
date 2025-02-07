@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AwsApigatewayv2Integrations"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.aws_apigatewayv2_integrations"
+    },
+    "python": {
+      "module": "aws_cdk.aws_apigatewayv2_integrations"
+    }
+  }
+}

@@ -817,8 +817,6 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const installSuffix = this.cliVersion ? `@${this.cliVersion}` : '';
-
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
       return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
@@ -834,13 +832,13 @@ export class CodePipeline extends PipelineBase {
     for (const roleArn of assets.flatMap(a => a.assetPublishingRoleArn ? [a.assetPublishingRoleArn] : [])) {
       // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
       role.addAssumeRole(this.cachedFnSub.fnSub(roleArn));
-    };
+    }
 
     // The base commands that need to be run
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        `npm install -g cdk-assets${installSuffix}`,
+        'npm install -g cdk-assets@latest',
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {
@@ -927,7 +925,6 @@ export class CodePipeline extends PipelineBase {
     account: string | undefined, arn: string | undefined): iam.IRole | undefined;
   private roleFromPlaceholderArn(scope: Construct, region: string | undefined,
     account: string | undefined, arn: string | undefined): iam.IRole | undefined {
-
     if (!arn) { return undefined; }
 
     // Use placeholder arn as construct ID.
@@ -1008,7 +1005,6 @@ export class CodePipeline extends PipelineBase {
     this.assetCodeBuildRoles.set(assetType, assetRole);
     return assetRole;
   }
-
 }
 
 function dockerUsageFromCodeBuild(cbt: CodeBuildProjectType): DockerCredentialUsage | undefined {

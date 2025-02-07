@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "lambda-event-source-kinesis-with-metrics/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-metrics-config-kinesis"
+      ],
+      "assertionStack": "lambda-event-source-kinesis-with-metrics/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaeventsourcekinesiswithmetricsDefaultTestDeployAssert312685CA"
+    }
+  }
+}

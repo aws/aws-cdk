@@ -3,13 +3,13 @@
   "Function76856677": {
    "Type": "AWS::CloudFront::Function",
    "Properties": {
-    "Name": "eu-west-1integdistributionfunctionFunctionDCD62A02",
     "AutoPublish": true,
     "FunctionCode": "function handler(event) { return event.request }",
     "FunctionConfig": {
      "Comment": "eu-west-1integdistributionfunctionFunctionDCD62A02",
      "Runtime": "cloudfront-js-1.0"
-    }
+    },
+    "Name": "eu-west-1integdistributionfunctionFunctionDCD62A02"
    }
   },
   "DistB3B78991": {

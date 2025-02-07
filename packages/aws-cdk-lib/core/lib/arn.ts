@@ -15,7 +15,7 @@ export enum ArnFormat {
    * even if it contains slashes,
    * like in 'arn:aws:s3:::bucket/object.zip'.
    */
-  // eslint-disable-next-line @aws-cdk/no-literal-partition
+  // eslint-disable-next-line @cdklabs/no-literal-partition
   NO_RESOURCE_NAME = 'arn:aws:service:region:account:resource',
 
   /**
@@ -26,7 +26,7 @@ export enum ArnFormat {
    * even if it contains slashes,
    * like in 'arn:aws:apigateway:region:account:resource:/test/mydemoresource/*'.
    */
-  // eslint-disable-next-line @aws-cdk/no-literal-partition
+  // eslint-disable-next-line @cdklabs/no-literal-partition
   COLON_RESOURCE_NAME = 'arn:aws:service:region:account:resource:resourceName',
 
   /**
@@ -37,7 +37,7 @@ export enum ArnFormat {
    * even if it contains colons,
    * like in 'arn:aws:cognito-sync:region:account:identitypool/us-east-1:1a1a1a1a-ffff-1111-9999-12345678:bla'.
    */
-  // eslint-disable-next-line @aws-cdk/no-literal-partition
+  // eslint-disable-next-line @cdklabs/no-literal-partition
   SLASH_RESOURCE_NAME = 'arn:aws:service:region:account:resource/resourceName',
 
   /**
@@ -47,7 +47,7 @@ export enum ArnFormat {
    * Like in: 'arn:aws:service:region:account:/resource/resourceName'.
    * Note that the leading slash is _not_ included in the parsed 'resource' part.
    */
-  // eslint-disable-next-line @aws-cdk/no-literal-partition
+  // eslint-disable-next-line @cdklabs/no-literal-partition
   SLASH_RESOURCE_SLASH_RESOURCE_NAME = 'arn:aws:service:region:account:/resource/resourceName',
 }
 
@@ -64,7 +64,7 @@ export interface ArnComponents {
 
   /**
    * The service namespace that identifies the AWS product (for example,
-   * 's3', 'iam', 'codepipline').
+   * 's3', 'iam', 'codepipeline').
    */
   readonly service: string;
 

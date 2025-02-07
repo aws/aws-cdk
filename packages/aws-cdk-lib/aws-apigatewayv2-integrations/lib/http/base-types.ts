@@ -1,4 +1,5 @@
 import { HttpMethod, IVpcLink, ParameterMapping } from '../../../aws-apigatewayv2';
+import { Duration } from '../../../core';
 
 /**
  * Base options for private integration
@@ -18,17 +19,24 @@ export interface HttpPrivateIntegrationOptions {
   readonly method?: HttpMethod;
 
   /**
-  * Specifies the server name to verified by HTTPS when calling the backend integration
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
-  * @default undefined private integration traffic will use HTTP protocol
-  */
+   * Specifies the server name to verified by HTTPS when calling the backend integration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+   * @default undefined private integration traffic will use HTTP protocol
+   */
 
   readonly secureServerName?: string;
 
   /**
-  * Specifies how to transform HTTP requests before sending them to the backend
-  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
-  * @default undefined requests are sent to the backend unmodified
-  */
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
   readonly parameterMapping?: ParameterMapping;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 }

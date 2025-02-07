@@ -4,6 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { App, Stack } from '../../../core';
+import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from '../../../cx-api';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
@@ -25,11 +26,13 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       physicalResourceId: PhysicalResourceId.of('loggroup'),
     },
     onDelete: {
-      service: 'CloudWatchLogs',
-      action: 'deleteRetentionPolicy',
+      service: 'CloudWatch',
+      action: 'tagResource',
       parameters: {
-        logGroupName: '/aws/lambda/loggroup',
+        ResourceARN: 'dummy',
+        Tags: [{ Key: 'Name', Value: 'prod' }],
       },
+      physicalResourceId: PhysicalResourceId.of('add_tag'),
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   });
@@ -46,15 +49,17 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'physicalResourceId': {
         'id': 'loggroup',
       },
-      'logApiResponseData': true,
     }),
     'Delete': JSON.stringify({
-      'service': 'CloudWatchLogs',
-      'action': 'deleteRetentionPolicy',
+      'service': 'CloudWatch',
+      'action': 'tagResource',
       'parameters': {
-        'logGroupName': '/aws/lambda/loggroup',
+        'ResourceARN': 'dummy',
+        'Tags': [{ 'Key': 'Name', 'Value': 'prod' }],
       },
-      'logApiResponseData': true,
+      'physicalResourceId': {
+        'id': 'add_tag',
+      },
     }),
     'InstallLatestAwsSdk': true,
   });
@@ -68,7 +73,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
           'Resource': '*',
         },
         {
-          'Action': 'logs:DeleteRetentionPolicy',
+          'Action': 'cloudwatch:TagResource',
           'Effect': 'Allow',
           'Resource': '*',
         },
@@ -111,7 +116,6 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-      'logApiResponseData': true,
     }),
     'Update': JSON.stringify({
       'service': 's3',
@@ -124,7 +128,6 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-      'logApiResponseData': true,
     }),
   });
 });
@@ -228,7 +231,6 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
-        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -240,7 +242,6 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
-        logApiResponseData: true,
       }),
     });
   });
@@ -285,7 +286,6 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
-        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -294,7 +294,6 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
-        logApiResponseData: true,
       }),
     });
   });
@@ -392,7 +391,6 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
-        logApiResponseData: true,
       }),
     });
   });
@@ -450,7 +448,6 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
-        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -462,7 +459,6 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
-        logApiResponseData: true,
       }),
     });
   });
@@ -525,7 +521,6 @@ test('booleans are encoded in the stringified parameters object', () => {
       'physicalResourceId': {
         'id': 'id',
       },
-      'logApiResponseData': true,
     }),
   });
 });
@@ -583,7 +578,6 @@ test('encodes physical resource id reference', () => {
       'physicalResourceId': {
         'id': 'id',
       },
-      'logApiResponseData': true,
     }),
   });
 });
@@ -801,7 +795,6 @@ test('getData', () => {
 });
 
 test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -819,11 +812,9 @@ test('fails when getData is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseFieldReference('ShouldFail')).toThrow(/`getData`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
-
   const stack = new cdk.Stack();
 
   const resource = new AwsCustomResource(stack, 'AwsSdk', {
@@ -841,11 +832,9 @@ test('fails when getDataString is used with `ignoreErrorCodesMatching`', () => {
   });
 
   expect(() => resource.getResponseField('ShouldFail')).toThrow(/`getDataString`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodesMatching', () => {
-
   const stack = new cdk.Stack();
   expect(() => new AwsCustomResource(stack, 'AwsSdkOnUpdate', {
     onUpdate: {
@@ -888,7 +877,6 @@ test('fail when `PhysicalResourceId.fromResponse` is used with `ignoreErrorCodes
     },
     policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
   })).toThrow(/`PhysicalResourceId.fromResponse`.+`ignoreErrorCodesMatching`/);
-
 });
 
 test('getDataString', () => {
@@ -929,7 +917,7 @@ test('getDataString', () => {
               'Data',
             ],
           },
-          '"},"physicalResourceId":{"id":"id"},"logApiResponseData":true}',
+          '"},"physicalResourceId":{"id":"id"}}',
         ],
       ],
     },
@@ -1124,7 +1112,7 @@ test('tokens can be used as dictionary keys', () => {
               'Foorz',
             ],
           },
-          '"}},"logApiResponseData":true}',
+          '"}}}',
         ],
       ],
     },
@@ -1404,8 +1392,130 @@ test('can specify removal policy', () => {
   });
 });
 
+test('set serviceTimeout', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    serviceTimeout: cdk.Duration.seconds(60),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+    ServiceTimeout: '60',
+  });
+});
+
 describe('logging configuration', () => {
-  test('all logging is set by default', () => {
+  test('without logging configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::S3PutObject',
+      onUpdate: {
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
+        },
+        physicalResourceId: PhysicalResourceId.fromResponse('ETag'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
+      'Create': JSON.stringify({
+        'service': 's3',
+        'action': 'putObject',
+        'parameters': {
+          'Bucket': 'my-bucket',
+          'Key': 'my-key',
+          'Body': 'my-body',
+        },
+        'physicalResourceId': {
+          'responsePath': 'ETag',
+        },
+      }),
+      'Update': JSON.stringify({
+        'service': 's3',
+        'action': 'putObject',
+        'parameters': {
+          'Bucket': 'my-bucket',
+          'Key': 'my-key',
+          'Body': 'my-body',
+        },
+        'physicalResourceId': {
+          'responsePath': 'ETag',
+        },
+      }),
+    });
+  });
+
+  test('without logging configured and feature flag enabled', () => {
+    // GIVEN
+    const app = new cdk.App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::S3PutObject',
+      onUpdate: {
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
+        },
+        physicalResourceId: PhysicalResourceId.fromResponse('ETag'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::S3PutObject', {
+      'Create': JSON.stringify({
+        'service': 's3',
+        'action': 'putObject',
+        'parameters': {
+          'Bucket': 'my-bucket',
+          'Key': 'my-key',
+          'Body': 'my-body',
+        },
+        'physicalResourceId': {
+          'responsePath': 'ETag',
+        },
+        'logApiResponseData': true,
+      }),
+      'Update': JSON.stringify({
+        'service': 's3',
+        'action': 'putObject',
+        'parameters': {
+          'Bucket': 'my-bucket',
+          'Key': 'my-key',
+          'Body': 'my-body',
+        },
+        'physicalResourceId': {
+          'responsePath': 'ETag',
+        },
+        'logApiResponseData': true,
+      }),
+    });
+  });
+
+  test('with Logging.all() configured', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1420,6 +1530,7 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging: Logging.all(),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
     });
@@ -1436,14 +1547,14 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        logApiResponseData: true,
       }),
     });
   });
 
-  test('with all logging set explicitly', () => {
+  test('with Logging.all() configured and feature flag enabled', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
+    const stack = new Stack(app);
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
@@ -1478,9 +1589,47 @@ describe('logging configuration', () => {
     });
   });
 
-  test('with hidden data logging', () => {
+  test('with Logging.withDataHidden() configured', () => {
     // GIVEN
     const stack = new Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging: Logging.withDataHidden(),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+        logApiResponseData: false,
+      }),
+    });
+  });
+
+  test('with Logging.withDataHidden() configured and feature flag enabled', () => {
+    // GIVEN
+    const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
+    const stack = new Stack(app);
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {

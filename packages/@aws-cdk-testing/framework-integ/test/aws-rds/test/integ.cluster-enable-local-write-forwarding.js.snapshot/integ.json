@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "EnableLocalWriteForwardingClusterStackInteg/DefaultTest": {
+      "stacks": [
+        "EnableLocalWriteForwardingClusterStack"
+      ],
+      "assertionStack": "EnableLocalWriteForwardingClusterStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26"
+    }
+  }
+}

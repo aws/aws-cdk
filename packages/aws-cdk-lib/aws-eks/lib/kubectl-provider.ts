@@ -61,7 +61,6 @@ export interface IKubectlProvider extends IConstruct {
  * Implementation of Kubectl Lambda
  */
 export class KubectlProvider extends NestedStack implements IKubectlProvider {
-
   /**
    * Take existing provider or create new based on cluster
    *
@@ -136,7 +135,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
-      environment: cluster.kubectlEnvironment,
+      environment: {
+        // required and recommended for boto3
+        AWS_STS_REGIONAL_ENDPOINTS: 'regional',
+        ...cluster.kubectlEnvironment,
+      },
       role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
 
       // defined only when using private access
@@ -196,11 +199,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
-
 }
 
 class ImportedKubectlProvider extends Construct implements IKubectlProvider {
-
   /**
    * The custom resource provider's service token.
    */

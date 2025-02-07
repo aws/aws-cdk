@@ -3,6 +3,7 @@ import { Node, IConstruct } from 'constructs';
 import { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Stack } from '../stack';
+import { Token } from '../token';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -19,11 +20,27 @@ export function addStackArtifactToAssembly(
   stack: Stack,
   stackProps: Partial<cxschema.AwsCloudFormationStackProperties>,
   additionalStackDependencies: string[]) {
+  const stackTags = stack.tags.tagValues();
 
   // nested stack tags are applied at the AWS::CloudFormation::Stack resource
   // level and are not needed in the cloud assembly.
-  if (stack.tags.hasTags()) {
-    stack.node.addMetadata(cxschema.ArtifactMetadataEntryType.STACK_TAGS, stack.tags.renderTags());
+  if (Object.entries(stackTags).length > 0) {
+    const resolvedTags = Object.entries(stackTags).filter(([k, v]) => !(Token.isUnresolved(k) || Token.isUnresolved(v)));
+    const unresolvedTags = Object.entries(stackTags).filter(([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v));
+
+    if (unresolvedTags.length > 0) {
+      const rendered = unresolvedTags.map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>': k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`).join(', ');
+      stack.node.addMetadata(
+        cxschema.ArtifactMetadataEntryType.WARN,
+        `Ignoring stack tags that contain deploy-time values (found: ${rendered}). Apply tags containing deploy-time values to resources only, avoid tagging stacks (for example using { excludeResourceTypes: ['aws:cdk:stack'] }).`,
+      );
+    }
+
+    if (resolvedTags.length > 0) {
+      stack.node.addMetadata(
+        cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+        resolvedTags.map(([key, value]) => ({ Key: key, Value: value })));
+    }
   }
 
   const deps = [
@@ -46,8 +63,9 @@ export function addStackArtifactToAssembly(
   const properties: cxschema.AwsCloudFormationStackProperties = {
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
-    tags: nonEmptyDict(stack.tags.tagValues()),
+    tags: nonEmptyDict(stackTags),
     validateOnSynth: session.validateOnSynth,
+    notificationArns: stack._notificationArns,
     ...stackProps,
     ...stackNameProperty,
   };

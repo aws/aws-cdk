@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { AwsAuthMapping } from './aws-auth-mapping';
-import { Cluster } from './cluster';
+import { Cluster, AuthenticationMode } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 import * as iam from '../../aws-iam';
 import { Lazy, Stack } from '../../core';
@@ -30,6 +30,23 @@ export class AwsAuth extends Construct {
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
+
+    /**
+     * Throw if the cluster does not support ConfigMap.
+     * AuthenticationMode.API => support API only
+     * AuthenticationMode.API_AND_CONFIG_MAP => support both API and ConfigMap
+     * AuthenticationMode.CONFIG_MAP => support ConfigMap only
+     * AuthenticationMode undefined => support ConfigMap only
+     *
+     * As AwsAuth is designed to handle the ConfigMap by creating the KubernetesManifest.
+     * We should throw when ConfigMap is not supported and that is only when authenticationMode is
+     * AuthenticationMode.API.
+     */
+    const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+
+    if (!supportConfigMap) {
+      throw new Error('ConfigMap not supported in the AuthenticationMode');
+    }
 
     this.stack = Stack.of(this);
 
@@ -99,14 +116,13 @@ export class AwsAuth extends Construct {
   }
 
   private assertSameStack(construct: IConstruct) {
-
     const thisStack = Stack.of(this);
 
     if (Stack.of(construct) !== thisStack) {
       // aws-auth is always part of the cluster stack, and since resources commonly take
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
-      // but we opted for the more causious and restrictive approach for now.
+      // but we opted for the more cautious and restrictive approach for now.
       throw new Error(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
     }
   }

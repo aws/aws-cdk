@@ -1,0 +1,4 @@
+/packages/aws-cdk/ @aws/aws-cdk-core-team
+/packages/@aws-cdk-testing/cli-integ/ @aws/aws-cdk-core-team
+/packages/aws-cdk-lib/core/ @aws/aws-cdk-core-team
+/packages/@aws-cdk/cli-lib-alpha/ @aws/aws-cdk-core-team

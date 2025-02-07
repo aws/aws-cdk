@@ -6,7 +6,7 @@ LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
 # Avoid buffering output to expedite log delivery
 ENV PYTHONUNBUFFERED=TRUE
 
-# Default to port 8080 unless SageMaker has passed in its own port (for use within an inference pipline)
+# Default to port 8080 unless SageMaker has passed in its own port (for use within an inference pipeline)
 ENV SAGEMAKER_BIND_TO_PORT=${SAGEMAKER_BIND_TO_PORT:-8080}
 EXPOSE $SAGEMAKER_BIND_TO_PORT
 

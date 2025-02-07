@@ -163,6 +163,7 @@ test('LookupMachineImage default search', () => {
       key: 'ami:account=1234:filters.image-type.0=machine:filters.name.0=bla*:filters.state.0=available:owners.0=amazon:region=testregion',
       props: {
         account: '1234',
+        dummyValue: 'ami-1234',
         region: 'testregion',
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         owners: ['amazon'],
@@ -198,6 +199,8 @@ test('cached lookups of Amazon Linux', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
       props: {
         account: '1234',
+        dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        ignoreErrorOnMissingContext: false,
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
@@ -221,6 +224,8 @@ test('cached lookups of Amazon Linux 2', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=testregion',
       props: {
         account: '1234',
+        dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
+        ignoreErrorOnMissingContext: false,
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
@@ -245,6 +250,8 @@ test('cached lookups of Amazon Linux 2 with kernel 5.x', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2:region=testregion',
       props: {
         account: '1234',
+        dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
+        ignoreErrorOnMissingContext: false,
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
@@ -288,6 +295,8 @@ test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
       props: {
         account: '1234',
+        dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64',
+        ignoreErrorOnMissingContext: false,
         lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64',
@@ -326,6 +335,8 @@ describe('latest amazon linux', () => {
         key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs:region=testregion',
         props: {
           account: '1234',
+          dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs',
+          ignoreErrorOnMissingContext: false,
           lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs',
@@ -361,6 +372,8 @@ describe('latest amazon linux', () => {
         key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64:region=testregion',
         props: {
           account: '1234',
+          dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64',
+          ignoreErrorOnMissingContext: false,
           lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64',
@@ -396,6 +409,8 @@ describe('latest amazon linux', () => {
         key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64:region=testregion',
         props: {
           account: '1234',
+          dummyValue: 'dummy-value-for-/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64',
+          ignoreErrorOnMissingContext: false,
           lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
           region: 'testregion',
           parameterName: '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64',

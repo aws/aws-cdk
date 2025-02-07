@@ -31,10 +31,10 @@ export abstract class BuildSpec {
   }
 
   /**
-    * Use the contents of a local file as the build spec string
-    *
-    * Use this if you have a local .yml or .json file that you want to use as the buildspec
-    */
+   * Use the contents of a local file as the build spec string
+   *
+   * Use this if you have a local .yml or .json file that you want to use as the buildspec
+   */
   public static fromAsset(path: string): BuildSpec {
     return new AssetBuildSpec(path);
   }
@@ -152,7 +152,7 @@ class YamlBuildSpec extends BuildSpec {
  * In case of multiple outputs they must have identifiers but we won't have that information.
  *
  * In case of test reports we replace the whole object with the RHS (instead of recursively merging)
-*/
+ */
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
     throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
@@ -256,4 +256,4 @@ function mergeDeep(lhs: any, rhs: any): any {
   }
 
   return rhs;
-};
+}

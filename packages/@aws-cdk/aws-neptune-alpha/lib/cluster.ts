@@ -10,6 +10,7 @@ import { InstanceType } from './instance';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -77,6 +78,14 @@ export class EngineVersion {
    */
   public static readonly V1_2_1_0 = new EngineVersion('1.2.1.0');
   /**
+   * Neptune engine version 1.2.1.1
+   */
+  public static readonly V1_2_1_1 = new EngineVersion('1.2.1.1');
+  /**
+   * Neptune engine version 1.2.1.2
+   */
+  public static readonly V1_2_1_2 = new EngineVersion('1.2.1.2');
+  /**
    * Neptune engine version 1.3.0.0
    */
   public static readonly V1_3_0_0 = new EngineVersion('1.3.0.0');
@@ -84,6 +93,22 @@ export class EngineVersion {
    * Neptune engine version 1.3.1.0
    */
   public static readonly V1_3_1_0 = new EngineVersion('1.3.1.0');
+  /**
+   * Neptune engine version 1.3.2.0
+   */
+  public static readonly V1_3_2_0 = new EngineVersion('1.3.2.0');
+  /**
+   * Neptune engine version 1.3.2.1
+   */
+  public static readonly V1_3_2_1 = new EngineVersion('1.3.2.1');
+  /**
+   * Neptune engine version 1.3.3.0
+   */
+  public static readonly V1_3_3_0 = new EngineVersion('1.3.3.0');
+  /**
+   * Neptune engine version 1.3.4.0
+   */
+  public static readonly V1_3_4_0 = new EngineVersion('1.3.4.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -332,6 +357,13 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The port number on which the DB instances in the DB cluster accept connections.
+   *
+   * @default 8182
+   */
+  readonly port?: number;
 }
 
 /**
@@ -423,7 +455,6 @@ export interface DatabaseClusterAttributes {
  * A new or imported database cluster.
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
-
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -515,7 +546,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
  * @resource AWS::Neptune::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
-
   /**
    * The default number of instances in the Neptune cluster if none are
    * specified
@@ -563,6 +593,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
@@ -617,6 +649,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
+      dbPort: props.port,
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
@@ -700,7 +733,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error(`ServerlessScalingConfiguration minCapacity must be greater or equal than 1, received ${serverlessScalingConfiguration.minCapacity}`);
     }
     if (serverlessScalingConfiguration.maxCapacity < 2.5 || serverlessScalingConfiguration.maxCapacity > 128) {
-      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, reveived ${serverlessScalingConfiguration.maxCapacity}`);
+      throw new Error(`ServerlessScalingConfiguration maxCapacity must be between 2.5 and 128, received ${serverlessScalingConfiguration.maxCapacity}`);
     }
     if (serverlessScalingConfiguration.minCapacity >= serverlessScalingConfiguration.maxCapacity) {
       throw new Error(`ServerlessScalingConfiguration minCapacity ${serverlessScalingConfiguration.minCapacity} ` +

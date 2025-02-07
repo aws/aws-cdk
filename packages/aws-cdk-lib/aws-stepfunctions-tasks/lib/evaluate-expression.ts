@@ -19,7 +19,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_18_X
+   * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -101,6 +101,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
+    [lambda.Runtime.NODEJS_20_X.name]: '9757c267-6d7c-45c2-af77-37a30d93d2c6',
     [lambda.Runtime.NODEJS_18_X.name]: '078d40d3-fb4e-4d53-94a7-9c46fc11fe02',
     [lambda.Runtime.NODEJS_16_X.name]: '2a430b68-eb4b-4026-9232-ee39b71c1db8',
     [lambda.Runtime.NODEJS_14_X.name]: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',

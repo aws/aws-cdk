@@ -207,11 +207,15 @@ Resources:
         Status: Enabled
       LifecycleConfiguration:
         Rules:
-          # Exising objects will never be overwritten but Security Hub wants this rule to exist
+          # Objects will only be noncurrent if they are deleted via garbage collection.
           - Id: CleanupOldVersions
             Status: Enabled
             NoncurrentVersionExpiration:
-              NoncurrentDays: 365
+              NoncurrentDays: 30
+          - Id: AbortIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
@@ -277,6 +281,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -300,6 +311,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -323,6 +341,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -377,6 +402,10 @@ Resources:
             Resource:
               - Fn::Sub: "${StagingBucket.Arn}"
               - Fn::Sub: "${StagingBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                aws:ResourceAccount:
+                  - Fn::Sub: ${AWS::AccountId}
             Effect: Allow
           - Action:
               - kms:Decrypt
@@ -427,6 +456,13 @@ Resources:
     Properties:
       AssumeRolePolicyDocument:
         Statement:
+          # allows this role to be assumed with session tags.
+          # see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html#id_session-tags_permissions-required
+          - Action: sts:TagSession
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
@@ -453,6 +489,8 @@ Resources:
                   - cloudformation:ExecuteChangeSet
                   - cloudformation:CreateStack
                   - cloudformation:UpdateStack
+                  - cloudformation:RollbackStack
+                  - cloudformation:ContinueUpdateRollback
                 Resource: "*"
               - Sid: PipelineCrossAccountArtifactsBucket
                 # Read/write buckets in different accounts. Permissions to buckets in
@@ -619,7 +657,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '20'
+      Value: '25'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

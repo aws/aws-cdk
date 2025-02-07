@@ -12,7 +12,7 @@ This framework allows for the creation of three component types:
 Code generating one of these three component types requires adding the component properties to the [config](./config.ts) file by providing `ComponentProps`. The `ComponentProps` are responsible for code generating the specified `ComponentType` with the `handler`, `runtime`, `code`, and `codeDirectory` properties set internally. `ComponentProps` includes the following properties:
 - `type` - the framework component type to generate.
 - `sourceCode` - the source code that will be excuted by the framework component.
-- `runtime` - the runtime that is compatible with the framework component's source code. This is an optional property with a default node runtime maintained by the framework.
+- `runtime` - the runtime that is compatible with the framework component's source code. This is an optional property with a default node runtime that will be the latest available node runtime in the `Stack` deployment region. In general, you should not configure this property unless a `runtime` override is absolutely necessary.
 - `handler` - the name of the method with the source code that the framework component will call. This is an optional property and the default is `index.handler`.
 - `minifyAndBundle` - whether the source code should be minified and bundled. This an optional property and the default is `true`. This should only be set to `false` for python files or for typescript/javascript files with a require import.
 

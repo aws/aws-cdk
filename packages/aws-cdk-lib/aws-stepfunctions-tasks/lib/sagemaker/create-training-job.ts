@@ -5,13 +5,9 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Lazy, Size, Stack, Token } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for creating an Amazon SageMaker training job
- *
- */
-export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps {
+interface SageMakerCreateTrainingJobOptions {
   /**
    * Training Job Name.
    */
@@ -50,8 +46,10 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
 
   /**
    *  Describes the various datasets (e.g. train, validation, test) and the Amazon S3 location where stored.
+   *
+   * @default - No inputDataConfig
    */
-  readonly inputDataConfig: Channel[];
+  readonly inputDataConfig?: Channel[];
 
   /**
    * Tags to be applied to the train job.
@@ -95,10 +93,41 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
 }
 
 /**
+ * Properties for creating an Amazon SageMaker training job using JSONPath
+ */
+export interface SageMakerCreateTrainingJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerCreateTrainingJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker training job using JSONata
+ */
+export interface SageMakerCreateTrainingJobJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerCreateTrainingJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker training job
+ */
+export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps, SageMakerCreateTrainingJobOptions {}
+
+/**
  * Class representing the SageMaker Create Training Job task.
- *
  */
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
+  /**
+   * A Step Functions Task using JSONPath to create a SageMaker training job.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerCreateTrainingJobJsonPathProps) {
+    return new SageMakerCreateTrainingJob(scope, id, props);
+  }
+
+  /**
+   * A Step Functions Task using JSONata to create a SageMaker training job.
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerCreateTrainingJobJsonataProps) {
+    return new SageMakerCreateTrainingJob(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -120,7 +149,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   /**
    * The Input Data Config.
    */
-  private readonly inputDataConfig: Channel[];
+  private readonly inputDataConfig?: Channel[];
 
   /**
    * The resource config for the task.
@@ -177,7 +206,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
       : { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE };
 
     // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
-    this.inputDataConfig = props.inputDataConfig.map((config) => {
+    this.inputDataConfig = props.inputDataConfig?.map((config) => {
       if (!config.dataSource.s3DataSource.s3DataType) {
         return {
           ...config,
@@ -229,10 +258,11 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createTrainingJob', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -266,7 +296,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     };
   }
 
-  private renderInputDataConfig(config: Channel[]): { [key: string]: any } {
+  private renderInputDataConfig(config?: Channel[]): { [key: string]: any } {
+    if (!config) {
+      return {};
+    }
     return {
       InputDataConfig: config.map((channel) => ({
         ChannelName: channel.channelName,
@@ -301,7 +334,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return {
       ResourceConfig: {
         InstanceCount: config.instanceCount,
-        InstanceType: sfn.JsonPath.isEncodedJsonPath(config.instanceType.toString())
+        InstanceType: isJsonPathOrJsonataExpression(config.instanceType.toString())
           ? config.instanceType.toString() : `ml.${config.instanceType}`,
         VolumeSizeInGB: config.volumeSize.toGibibytes(),
         ...(config.volumeEncryptionKey ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {}),
@@ -413,7 +446,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
             service: 'sagemaker',
             resource: 'training-job',
             // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
+            resourceName: isJsonPathOrJsonataExpression(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`,
           }),
         ],
       }),

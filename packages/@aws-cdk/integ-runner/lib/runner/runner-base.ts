@@ -1,13 +1,14 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as path from 'path';
 import { CdkCliWrapper, ICdk } from '@aws-cdk/cdk-cli-wrapper';
 import { TestCase, DefaultCdkOptions } from '@aws-cdk/cloud-assembly-schema';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS, NEW_PROJECT_CONTEXT } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { IntegTestSuite, LegacyIntegTestSuite } from './integ-test-suite';
 import { IntegTest } from './integration-tests';
-import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
+import * as recommendedFlagsFile from '../recommended-feature-flags.json';
 import { flatten } from '../utils';
+import { AssemblyManifestReader, ManifestTrace } from './private/cloud-assembly';
 import { DestructiveChange } from '../workers/common';
 
 const DESTRUCTIVE_CHANGES = '!!DESTRUCTIVE_CHANGES:';
@@ -121,7 +122,7 @@ export abstract class IntegRunner {
     pathMetadata: false,
     assetMetadata: false,
     versionReporting: false,
-  }
+  };
 
   /**
    * The directory where the CDK will be synthed to
@@ -365,7 +366,7 @@ export abstract class IntegRunner {
 
   protected getContext(additionalContext?: Record<string, any>): Record<string, any> {
     return {
-      ...NEW_PROJECT_CONTEXT,
+      ...currentlyRecommendedAwsCdkLibFlags(),
       ...this.legacyContext,
       ...additionalContext,
 
@@ -429,5 +430,17 @@ export const DEFAULT_SYNTH_OPTIONS = {
     CDK_INTEG_HOSTED_ZONE_NAME: 'example.com',
     CDK_INTEG_DOMAIN_NAME: '*.example.com',
     CDK_INTEG_CERT_ARN: 'arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z',
+    CDK_INTEG_SUBNET_ID: 'subnet-0dff1a399d8f6f92c',
   },
 };
+
+/**
+ * Return the currently recommended flags for `aws-cdk-lib`.
+ *
+ * These have been built into the CLI at build time. If this ever gets changed
+ * back to a dynamic load, remember that this source file may be bundled into
+ * a JavaScript bundle, and `__dirname` might not point where you think it does.
+ */
+export function currentlyRecommendedAwsCdkLibFlags() {
+  return recommendedFlagsFile;
+}

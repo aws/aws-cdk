@@ -181,6 +181,32 @@ export interface CatchProps {
    * @default $
    */
   readonly resultPath?: string;
+
+  /**
+   * This option for JSONata only. When you use JSONPath, then the state ignores this property.
+   * Used to specify and transform output from the state.
+   * When specified, the value overrides the state output default.
+   * The output field accepts any JSON value (object, array, string, number, boolean, null).
+   * Any string value, including those inside objects or arrays,
+   * will be evaluated as JSONata if surrounded by {% %} characters.
+   * Output also accepts a JSONata expression directly.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html
+   *
+   * @default - $states.result or $states.errorOutput
+   */
+  readonly outputs?: any;
+
+  /**
+   * Workflow variables to store in this step.
+   * Using workflow variables, you can store data in a step and retrieve that data in future steps.
+   *
+   * @see
+   * https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/workflow-variables.html
+   *
+   * @default - Not assign variables
+   */
+  readonly assign?: { [name: string]: any };
 }
 
 /**
@@ -220,14 +246,17 @@ export interface ProcessorConfig {
   /**
    * Specifies the execution mode for the Map workflow.
    *
-   * @default - ProcessorMode.INLINE
+   * @default - ProcessorMode.INLINE if using the `Map` class, ProcessorMode.DISTRIBUTED if using the `DistributedMap` class
    */
   readonly mode?: ProcessorMode;
 
   /**
    * Specifies the execution type for the Map workflow.
    *
-   * You must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   * If you use the `Map` class, you must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   *
+   * If you use the `DistributedMap` class, this property is ignored.
+   * Use the `mapExecutionType` in the `DistributedMap` class instead.
    *
    * @default - no execution type
    */
@@ -239,3 +268,21 @@ export interface ProcessorConfig {
  * @deprecated use JsonPath.DISCARD
  */
 export const DISCARD = 'DISCARD';
+
+/**
+ * The name of the query language used by the state machine or state.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html
+ *
+ * @default JSON_PATH
+ */
+export enum QueryLanguage {
+  /**
+   * Use JSONPath
+   */
+  JSON_PATH = 'JSONPath',
+  /**
+   * Use JSONata
+   */
+  JSONATA = 'JSONata',
+}

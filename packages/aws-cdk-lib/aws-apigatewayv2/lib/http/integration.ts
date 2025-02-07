@@ -3,7 +3,9 @@ import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Aws, Resource } from '../../../core';
+import { Aws, Duration, Resource } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
@@ -219,6 +221,14 @@ export interface HttpIntegrationProps {
   readonly secureServerName?: string;
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   *  @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * Specifies how to transform HTTP requests before sending them to the backend
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @default undefined requests are sent to the backend unmodified
@@ -244,9 +254,15 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
-      throw new Error('Either `integrationSubtype` or `integrationUri` must be specified.');
+      throw new ValidationError('Either `integrationSubtype` or `integrationUri` must be specified.', scope);
+    }
+
+    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -260,6 +276,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       payloadFormatVersion: props.payloadFormatVersion?.version,
       requestParameters: props.parameterMapping?.mappings,
       credentialsArn: props.credentials?.credentialsArn,
+      timeoutInMillis: props.timeout?.toMilliseconds(),
     });
 
     if (props.secureServerName) {
@@ -308,7 +325,7 @@ export abstract class HttpRouteIntegration {
    */
   public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
-      throw new Error('A single integration cannot be associated with multiple APIs.');
+      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {
@@ -326,6 +343,7 @@ export abstract class HttpRouteIntegration {
         secureServerName: config.secureServerName,
         parameterMapping: config.parameterMapping,
         credentials: config.credentials,
+        timeout: config.timeout,
       });
     }
     this.completeBind(options);
@@ -409,10 +427,18 @@ export interface HttpRouteIntegrationConfig {
   readonly secureServerName?: string;
 
   /**
-  * Specifies how to transform HTTP requests before sending them to the backend
-  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
-  * @default undefined requests are sent to the backend unmodified
-  */
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
   readonly parameterMapping?: ParameterMapping;
 
   /**

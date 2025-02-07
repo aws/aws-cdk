@@ -5,12 +5,10 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for ECS Tasks
- */
-export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
+interface EcsRunTaskOptions {
   /**
    * The ECS cluster to run the task on
    */
@@ -90,6 +88,20 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @default false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Cpu setting override
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+   * @default - No override
+   */
+  readonly cpu?: string;
+
+  /**
+   * Memory setting override
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html
+   * @default - No override
+   */
+  readonly memoryMiB?: string;
 }
 
 /**
@@ -243,9 +255,41 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
 }
 
 /**
+ * Properties for ECS Tasks using JSONPath
+ */
+export interface EcsRunTaskJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EcsRunTaskOptions {}
+
+/**
+ * Properties for ECS Tasks using JSONata
+ */
+export interface EcsRunTaskJsonataProps extends sfn.TaskStateJsonataBaseProps, EcsRunTaskOptions {}
+
+/**
+ * Properties for ECS Tasks
+ */
+export interface EcsRunTaskProps extends sfn.TaskStateBaseProps, EcsRunTaskOptions {}
+
+/**
  * Run a Task on ECS or Fargate
  */
 export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
+  /**
+   * Run a Task that using JSONPath on ECS or Fargate
+   */
+  public static jsonPath(scope: Construct, id: string, props: EcsRunTaskJsonPathProps) {
+    return new EcsRunTask(scope, id, props);
+  }
+
+  /**
+   * Run a Task that using JSONata on ECS or Fargate
+   */
+  public static jsonata(scope: Construct, id: string, props: EcsRunTaskJsonataProps) {
+    return new EcsRunTask(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -303,18 +347,24 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
-        Overrides: renderOverrides(this.props.containerOverrides),
+        Overrides: renderOverrides(
+          {
+            cpu: this.props.cpu,
+            memoryMiB: this.props.memoryMiB,
+            containerOverrides: this.props.containerOverrides,
+          }),
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
-      }),
+      }, queryLanguage),
     };
   }
 
@@ -346,15 +396,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   private makePolicyStatements(): iam.PolicyStatement[] {
     const stack = cdk.Stack.of(this);
 
-    // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-    const taskDefinitionFamilyArn = this.getTaskDefinitionFamilyArn();
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [
-          taskDefinitionFamilyArn,
-          `${taskDefinitionFamilyArn}:*`,
-        ],
+        resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY) ? this.getTaskDefinitionArn() : this.getTaskDefinitionFamilyArn() + ':*'],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -382,6 +427,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  private getTaskDefinitionArn(): string {
+    return this.props.taskDefinition.taskDefinitionArn;
   }
 
   /**
@@ -420,26 +469,40 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   }
 }
 
-function renderOverrides(containerOverrides?: ContainerOverride[]) {
-  if (!containerOverrides || containerOverrides.length === 0) {
+interface OverrideProps {
+  cpu?: string;
+  memoryMiB?: string;
+  containerOverrides?: ContainerOverride[];
+}
+
+function renderOverrides(props: OverrideProps) {
+  const containerOverrides = props.containerOverrides;
+  const noContainerOverrides = !containerOverrides || containerOverrides.length === 0;
+  if (noContainerOverrides && !props.cpu && !props.memoryMiB) {
     return undefined;
   }
 
   const ret = new Array<any>();
-  for (const override of containerOverrides) {
-    ret.push({
-      Name: override.containerDefinition.containerName,
-      Command: override.command,
-      Cpu: override.cpu,
-      Memory: override.memoryLimit,
-      MemoryReservation: override.memoryReservation,
-      Environment:
-        override.environment?.map((e) => ({
-          Name: e.name,
-          Value: e.value,
-        })),
-    });
+  if (!noContainerOverrides) {
+    for (const override of containerOverrides) {
+      ret.push({
+        Name: override.containerDefinition.containerName,
+        Command: override.command,
+        Cpu: override.cpu,
+        Memory: override.memoryLimit,
+        MemoryReservation: override.memoryReservation,
+        Environment:
+          override.environment?.map((e) => ({
+            Name: e.name,
+            Value: e.value,
+          })),
+      });
+    }
   }
 
-  return { ContainerOverrides: ret };
+  return {
+    Cpu: props.cpu,
+    Memory: props.memoryMiB,
+    ContainerOverrides: noContainerOverrides ? undefined : ret,
+  };
 }

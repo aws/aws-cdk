@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "IntegProviderFrameworkNoEchoTest/DefaultTest": {
+      "stacks": [
+        "integ-provider-no-echo"
+      ],
+      "assertionStack": "IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegProviderFrameworkNoEchoTestDefaultTestDeployAssert1DF2B4A0"
+    }
+  }
+}

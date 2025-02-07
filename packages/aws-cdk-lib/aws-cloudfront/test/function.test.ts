@@ -4,7 +4,6 @@ import { App, Stack } from '../../core';
 import { Function, FunctionCode, FunctionRuntime, KeyValueStore } from '../lib';
 
 describe('CloudFront Function', () => {
-
   test('minimal example', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack', {
@@ -201,6 +200,29 @@ describe('CloudFront Function', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
       AutoPublish: false,
+    });
+  });
+
+  test('long name truncates correctly every time', () => {
+    const app = new App();
+    const stack = new Stack(app, 'CdkTestWithALongNameStack');
+
+    new Function(stack, 'MyCloudFrontFunction', {
+      code: FunctionCode.fromInline(''),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+      Name: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              Ref: 'AWS::Region',
+            },
+            'CdkTestWithALongoudFrontFunction302260D0',
+          ],
+        ],
+      },
     });
   });
 

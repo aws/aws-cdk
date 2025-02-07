@@ -1,7 +1,7 @@
+import { testFixtureCluster } from './util';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { App, Stack } from '../../core';
-import { Cluster, KubernetesVersion } from '../lib/cluster';
+import { Cluster } from '../lib/cluster';
 import { renderAmazonLinuxUserData } from '../lib/user-data';
 
 /* eslint-disable max-len */
@@ -22,18 +22,18 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true",
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
+      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
     ]);
   });
 
@@ -58,12 +58,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true',
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
+      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
     ]);
   });
 
@@ -88,12 +88,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true',
           ],
         ],
       },
-      '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
+      '/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ASG46ED3070 --region us-east-1',
     ]);
   });
 
@@ -114,12 +114,12 @@ describe('user data', () => {
         '',
         [
           '/etc/eks/bootstrap.sh ',
-          { Ref: 'clusterC5B25D0D' },
+          { Ref: 'Cluster9EE0221C' },
           ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-          { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+          { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
           "' --b64-cluster-ca '",
           {
-            'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+            'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
           },
           "' --use-max-pods true",
         ],
@@ -145,12 +145,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods false",
           ],
@@ -177,12 +177,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true --aws-api-retry-attempts 123",
           ],
@@ -209,12 +209,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true --dns-cluster-ip 192.0.2.53",
           ],
@@ -241,12 +241,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             '\' --use-max-pods true --docker-config-json \'{"docker":123}\'',
           ],
@@ -273,12 +273,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true --enable-docker-bridge true",
           ],
@@ -305,12 +305,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true",
           ],
@@ -337,12 +337,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --extra-args-for --kubelet" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true",
           ],
@@ -370,12 +370,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true --apiserver-endpoint 1111 --foo-bar",
           ],
@@ -402,12 +402,12 @@ describe('user data', () => {
           '',
           [
             '/etc/eks/bootstrap.sh ',
-            { Ref: 'clusterC5B25D0D' },
+            { Ref: 'Cluster9EE0221C' },
             ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels X=y" --apiserver-endpoint \'',
-            { 'Fn::GetAtt': ['clusterC5B25D0D', 'Endpoint'] },
+            { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] },
             "' --b64-cluster-ca '",
             {
-              'Fn::GetAtt': ['clusterC5B25D0D', 'CertificateAuthorityData'],
+              'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'],
             },
             "' --use-max-pods true",
           ],
@@ -418,14 +418,8 @@ describe('user data', () => {
 });
 
 function newFixtures(spot = false) {
-  const app = new App();
-  const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' } });
-  const vpc = new ec2.Vpc(stack, 'vpc');
-  const cluster = new Cluster(stack, 'cluster', {
-    version: KubernetesVersion.V1_21,
-    clusterName: 'my-cluster-name',
-    vpc,
-  });
+  const { stack, cluster } = testFixtureCluster();
+  const vpc = cluster.vpc;
   const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
     instanceType: new ec2.InstanceType('m4.xlarge'),
     machineImage: new ec2.AmazonLinuxImage(),

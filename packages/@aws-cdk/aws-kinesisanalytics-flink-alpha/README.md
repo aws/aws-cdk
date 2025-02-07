@@ -1,4 +1,4 @@
-# Kinesis Analytics Flink 
+# Kinesis Analytics Flink
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -46,7 +46,7 @@ const flinkApp = new flink.Application(this, 'Application', {
     },
   },
   // ...
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_20,
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
 });
 ```
@@ -59,7 +59,7 @@ snapshotting, monitoring, and parallelism.
 declare const bucket: s3.Bucket;
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_20,
   checkpointingEnabled: true, // default is true
   checkpointInterval: Duration.seconds(30), // default is 1 minute
   minPauseBetweenCheckpoints: Duration.seconds(10), // default is 5 seconds
@@ -80,7 +80,7 @@ declare const bucket: s3.Bucket;
 declare const vpc: ec2.Vpc;
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: flink.Runtime.FLINK_1_18,
+  runtime: flink.Runtime.FLINK_1_20,
   vpc,
 });
 ```

@@ -8,6 +8,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
@@ -67,6 +68,8 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.application = props.application;
     this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
@@ -227,6 +230,15 @@ export interface ServerDeploymentGroupProps {
    * @default - false
    */
   readonly ignoreAlarmConfiguration?: boolean;
+
+  /**
+   * Indicates whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-auto-scaling.html#integrations-aws-auto-scaling-behaviors
+   *
+   * @default - false
+   */
+  readonly terminationHook?: boolean;
 }
 
 /**
@@ -269,6 +281,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       role: props.role,
       roleConstructId: 'Role',
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.role = this._role;
 
     this.application = props.application || new ServerApplication(this, 'Application', {
@@ -318,6 +332,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
         }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      terminationHookEnabled: props.terminationHook,
     });
 
     this._setNameAndArn(resource, this.application);
@@ -330,6 +345,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    * [disable-awslint:ref-via-interface] is needed in order to install the code
    * deploy agent by updating the ASGs user data.
    */
+  @MethodMetadata()
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
     this.addCodeDeployAgentInstallUserData(asg);
@@ -340,6 +356,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
+  @MethodMetadata()
   public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }

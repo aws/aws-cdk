@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.distribution-function": {
+    "DistributionFunction/DefaultTest": {
       "stacks": [
         "integ-distribution-function"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "DistributionFunction/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionFunctionDefaultTestDeployAssert9D427BC1"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

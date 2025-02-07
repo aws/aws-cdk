@@ -34,9 +34,6 @@
   "poolclient2623294C": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,7 +54,10 @@
       "Ref": "amazon2D32744A"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
    }
   },
   "pooldomain430FA744": {
@@ -72,11 +72,6 @@
   "amazon2D32744A": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
-    "ProviderName": "LoginWithAmazon",
-    "ProviderType": "LoginWithAmazon",
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AttributeMapping": {
      "given_name": "name",
      "email": "email",
@@ -86,6 +81,11 @@
      "client_id": "amzn-client-id",
      "client_secret": "amzn-client-secret",
      "authorize_scopes": "profile"
+    },
+    "ProviderName": "LoginWithAmazon",
+    "ProviderType": "LoginWithAmazon",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
     }
    }
   }

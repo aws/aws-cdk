@@ -1,0 +1,173 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "EmrServicePrincipalTestingStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EmrServicePrincipalTestingStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EmrServicePrincipalTestingStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/cn-north-1",
+      "properties": {
+        "templateFile": "EmrServicePrincipalTestingStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-cn-north-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-cn-north-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1/44f1d5ecec2bbf73c1c3e7d61c43c065e553b2c4ae37ff5dad695ea584a60328.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EmrServicePrincipalTestingStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-cn-north-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EmrServicePrincipalTestingStack.assets"
+      ],
+      "metadata": {
+        "/EmrServicePrincipalTestingStack/EMRServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EMRServiceRole2CF24E74"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/EMRJobFlowRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EMRJobFlowRole209C81EE"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/EMRJobFlowProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EMRJobFlowProfile"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/SSHKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SSHKey"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/EMRCluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EMRCluster",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/Exports/Output{\"Ref\":\"EMRCluster\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEMRCluster36C637E3"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EmrServicePrincipalTestingStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EmrServicePrincipalTestingStack"
+    },
+    "EmrServicePrincipalAssertionStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EmrServicePrincipalAssertionStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EmrServicePrincipalAssertionStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/cn-north-1",
+      "properties": {
+        "templateFile": "EmrServicePrincipalAssertionStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "notificationArns": [],
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-cn-north-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-cn-north-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1/dd96d229fa04078c755ff58366e559b691326e0ef6c79419b7e1325b44e47849.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EmrServicePrincipalAssertionStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-cn-north-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EmrServicePrincipalTestingStack",
+        "EmrServicePrincipalAssertionStack.assets"
+      ],
+      "metadata": {
+        "/EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf"
+          }
+        ],
+        "/EmrServicePrincipalAssertionStack/AwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallEmrListInstances7148b2708368b732757abfe94a83ccbf"
+          }
+        ],
+        "/EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/EmrServicePrincipalAssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/EmrServicePrincipalAssertionStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EmrServicePrincipalAssertionStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EmrServicePrincipalAssertionStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

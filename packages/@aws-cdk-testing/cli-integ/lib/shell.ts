@@ -14,22 +14,22 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     throw new Error('Use either env or modEnv but not both');
   }
 
+  const outputs = new Set(options.outputs);
+  const writeToOutputs = (x: string) => {
+    for (const outputStream of outputs) {
+      outputStream.write(x);
+    }
+  };
+
+  const show = options.show ?? 'always';
+  const verbose = Boolean(process.env.VERBOSE);
+
+  if (verbose) {
+    outputs.add(process.stdout);
+  }
+
   // Always output the command
-  (options.output ?? process.stdout).write(`💻 ${command.join(' ')}\n`);
-
-  let output: NodeJS.WritableStream | undefined = options.output ?? process.stdout;
-  switch (options.show ?? 'always') {
-    case 'always':
-      break;
-    case 'never':
-    case 'error':
-      output = undefined;
-      break;
-  }
-
-  if (process.env.VERBOSE) {
-    output = process.stdout;
-  }
+  writeToOutputs(`💻 ${command.join(' ')} (show: ${show}, verbose: ${verbose})\n`);
 
   const env = options.env ?? (options.modEnv ? { ...process.env, ...options.modEnv } : process.env);
 
@@ -46,12 +46,16 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     const stderr = new Array<Buffer>();
 
     child.stdout!.on('data', chunk => {
-      output?.write(chunk);
+      if (show === 'always') {
+        writeToOutputs(chunk);
+      }
       stdout.push(chunk);
     });
 
     child.stderr!.on('data', chunk => {
-      output?.write(chunk);
+      if (show === 'always') {
+        writeToOutputs(chunk);
+      }
       if (options.captureStderr ?? true) {
         stderr.push(chunk);
       }
@@ -66,8 +70,8 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve(out);
       } else {
-        if (options.show === 'error') {
-          (options.output ?? process.stdout).write(out + '\n');
+        if (show === 'error') {
+          writeToOutputs(`${out}\n`);
         }
         reject(new Error(`'${command.join(' ')}' exited with error code ${code}.`));
       }
@@ -79,7 +83,7 @@ export interface ShellOptions extends child_process.SpawnOptions {
   /**
    * Properties to add to 'env'
    */
-  readonly modEnv?: Record<string, string>;
+  readonly modEnv?: Record<string, string | undefined>;
 
   /**
    * Don't fail when exiting with an error
@@ -97,10 +101,8 @@ export interface ShellOptions extends child_process.SpawnOptions {
 
   /**
    * Pass output here
-   *
-   * @default stdout unless quiet=true
    */
-  readonly output?: NodeJS.WritableStream;
+  readonly outputs?: NodeJS.WritableStream[];
 
   /**
    * Only return stderr. For example, this is used to validate
@@ -127,9 +129,9 @@ export class ShellHelper {
     private readonly _cwd: string,
     private readonly _output: NodeJS.WritableStream) { }
 
-  public async shell(command: string[], options: Omit<ShellOptions, 'cwd' | 'output'> = {}): Promise<string> {
+  public async shell(command: string[], options: Omit<ShellOptions, 'cwd' | 'outputs'> = {}): Promise<string> {
     return shell(command, {
-      output: this._output,
+      outputs: [this._output],
       cwd: this._cwd,
       ...options,
     });
@@ -138,22 +140,33 @@ export class ShellHelper {
 
 /**
  * rm -rf reimplementation, don't want to depend on an NPM package for this
+ *
+ * Returns `true` if everything got deleted, or `false` if some files could
+ * not be deleted due to permissions issues.
  */
-export function rimraf(fsPath: string) {
+export function rimraf(fsPath: string): boolean {
   try {
+    let success = true;
     const isDir = fs.lstatSync(fsPath).isDirectory();
 
     if (isDir) {
       for (const file of fs.readdirSync(fsPath)) {
-        rimraf(path.join(fsPath, file));
+        success &&= rimraf(path.join(fsPath, file));
       }
       fs.rmdirSync(fsPath);
     } else {
       fs.unlinkSync(fsPath);
     }
+    return success;
   } catch (e: any) {
-    // We will survive ENOENT
-    if (e.code !== 'ENOENT') { throw e; }
+    // Can happen if some files got generated inside a Docker container and are now inadvertently owned by `root`.
+    // We can't ever clean those up anymore, but since it only happens inside GitHub Actions containers we also don't care too much.
+    if (e.code === 'EACCES' || e.code === 'ENOTEMPTY') { return false; }
+
+    // Already gone
+    if (e.code === 'ENOENT') { return true; }
+
+    throw e;
   }
 }
 

@@ -1,0 +1,117 @@
+{
+ "Resources": {
+  "AutoScalingConfigurationB226C248": {
+   "Type": "AWS::AppRunner::AutoScalingConfiguration",
+   "Properties": {
+    "MaxConcurrency": 150,
+    "MaxSize": 20,
+    "MinSize": 5
+   }
+  },
+  "ServiceInstanceRoleDFA90CEC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServiceDBC79909": {
+   "Type": "AWS::AppRunner::Service",
+   "Properties": {
+    "AutoScalingConfigurationArn": {
+     "Fn::GetAtt": [
+      "AutoScalingConfigurationB226C248",
+      "AutoScalingConfigurationArn"
+     ]
+    },
+    "InstanceConfiguration": {
+     "InstanceRoleArn": {
+      "Fn::GetAtt": [
+       "ServiceInstanceRoleDFA90CEC",
+       "Arn"
+      ]
+     }
+    },
+    "NetworkConfiguration": {
+     "EgressConfiguration": {
+      "EgressType": "DEFAULT"
+     }
+    },
+    "ServiceName": "service",
+    "SourceConfiguration": {
+     "AuthenticationConfiguration": {},
+     "AutoDeploymentsEnabled": false,
+     "ImageRepository": {
+      "ImageConfiguration": {
+       "Port": "8000"
+      },
+      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+      "ImageRepositoryType": "ECR_PUBLIC"
+     }
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "URL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "ServiceDBC79909",
+        "ServiceUrl"
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

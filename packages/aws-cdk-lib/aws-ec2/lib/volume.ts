@@ -5,6 +5,7 @@ import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -70,6 +71,20 @@ export interface EbsDeviceOptionsBase {
    * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
   readonly volumeType?: EbsDeviceVolumeType;
+
+  /**
+   * The throughput to provision for a `gp3` volume.
+   *
+   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   *
+   * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
+   * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html#gp3-performance
+   *
+   * @default - 125 MiB/s.
+   */
+  readonly throughput?: number;
 }
 
 /**
@@ -610,6 +625,8 @@ export class Volume extends VolumeBase {
     super(scope, id, {
       physicalName: props.volumeName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateProps(props);
 
@@ -724,7 +741,6 @@ export class Volume extends VolumeBase {
         if (iopsRatio > maximumThroughputRatio) {
           throw new Error(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`);
         }
-
       }
     }
 

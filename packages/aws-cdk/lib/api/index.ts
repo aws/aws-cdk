@@ -1,5 +1,5 @@
-export * from './aws-auth/credentials';
 export * from './bootstrap';
-export * from './deploy-stack';
+export * from './garbage-collection/garbage-collector';
+export * from './deployments';
 export * from './toolkit-info';
 export * from './aws-auth';

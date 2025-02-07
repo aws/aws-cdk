@@ -19,8 +19,8 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
-Add an SNS Topic to your stack with a specified signature version, which corresponds 
-to the hashing algorithm used while creating the signature of the notifications, 
+Add an SNS Topic to your stack with a specified signature version, which corresponds
+to the hashing algorithm used while creating the signature of the notifications,
 subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
 
 The default signature version is `1` (`SHA1`).
@@ -60,6 +60,16 @@ myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
+
+ The `grantSubscribe` method adds a policy statement to the topic's resource policy, allowing the specified principal to perform the `sns:Subscribe` action.
+ It's useful when you want to allow entities, such as another AWS account or resources created later, to subscribe to the topic at their own pace, separating permission granting from the actual subscription process.
+
+```ts
+declare const accountPrincipal: iam.AccountPrincipal;
+const myTopic = new sns.Topic(this, 'MyTopic');
+
+myTopic.grantSubscribe(accountPrincipal);
+```
 
 ### Filter policy
 
@@ -334,3 +344,23 @@ const topic = new sns.Topic(this, 'MyTopic', {
   tracingConfig: sns.TracingConfig.ACTIVE,
 });
 ```
+
+## High-throughput mode for Amazon SNS FIFO Topics
+
+High throughput FIFO topics in Amazon SNS efficiently manage high message throughput while maintaining strict message order, ensuring reliability and scalability for applications processing numerous messages.
+This solution is ideal for scenarios demanding both high throughput and ordered message delivery.
+
+To improve message throughput using high throughput FIFO topics, increasing the number of message groups is recommended.
+
+For more information, see [High throughput FIFO topics in Amazon SNS](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html).
+
+You can configure high-throughput mode for your FIFO topics by setting the `fifoThroughputScope` property:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  fifo: true,
+  fifoThroughputScope: sns.FifoThroughputScope.TOPIC,
+});
+```
+
+**Note**: The `fifoThroughputScope` property is only available for FIFO topics.

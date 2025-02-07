@@ -2,6 +2,7 @@ import { error } from 'console';
 import { createWriteStream, promises as fs } from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
+import { formatErrorMessage } from './error';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const archiver = require('archiver');
@@ -44,6 +45,8 @@ function writeZipFile(directory: string, outputFile: string): Promise<void> {
     // Append files serially to ensure file order
     for (const file of files) {
       const fullPath = path.resolve(directory, file);
+      // Exactly 2 promises
+      // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
       const [data, stat] = await Promise.all([fs.readFile(fullPath), fs.stat(fullPath)]);
       archive.append(data, {
         name: file,
@@ -74,7 +77,7 @@ async function moveIntoPlace(source: string, target: string) {
       if (e.code !== 'EPERM' || attempts-- <= 0) {
         throw e;
       }
-      error(e.message);
+      error(formatErrorMessage(e));
       await sleep(Math.floor(Math.random() * delay));
       delay *= 2;
     }

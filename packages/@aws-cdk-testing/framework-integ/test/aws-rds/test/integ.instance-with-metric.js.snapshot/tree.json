@@ -803,10 +803,12 @@
                     "dbSubnetGroupName": {
                       "Ref": "InstanceSubnetGroupF2CBA54F"
                     },
-                    "enableCloudwatchLogsExports": ["postgresql"],
+                    "enableCloudwatchLogsExports": [
+                      "postgresql"
+                    ],
                     "enableIamDatabaseAuthentication": true,
                     "engine": "postgres",
-                    "EngineVersion": "16.3",
+                    "engineVersion": "16.3",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -867,9 +869,9 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup${Token[TOKEN.168]}postgresql": {
-                "id": "LogGroup${Token[TOKEN.168]}postgresql",
-                "path": "aws-cdk-rds-instance-with-metric/Instance/LogGroup${Token[TOKEN.168]}postgresql",
+              "LogGroup${Token[TOKEN.162]}postgresql": {
+                "id": "LogGroup${Token[TOKEN.162]}postgresql",
+                "path": "aws-cdk-rds-instance-with-metric/Instance/LogGroup${Token[TOKEN.162]}postgresql",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1022,6 +1024,14 @@
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-rds-instance-with-metric/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
             }
           },
           "MetricFilter": {

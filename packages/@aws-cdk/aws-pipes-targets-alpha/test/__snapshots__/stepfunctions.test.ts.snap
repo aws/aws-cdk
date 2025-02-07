@@ -27,15 +27,7 @@ exports[`step-function should grant pipe role push access (StartAsyncExecution) 
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": {
-                "Fn::FindInMap": [
-                  "ServiceprincipalMap",
-                  {
-                    "Ref": "AWS::Region",
-                  },
-                  "states",
-                ],
-              },
+              "Service": "states.amazonaws.com",
             },
           },
         ],
@@ -74,15 +66,7 @@ exports[`step-function should grant pipe role push access (StartAsyncExecution) 
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": {
-                "Fn::FindInMap": [
-                  "ServiceprincipalMap",
-                  {
-                    "Ref": "AWS::Region",
-                  },
-                  "states",
-                ],
-              },
+              "Service": "states.amazonaws.com",
             },
           },
         ],
@@ -121,15 +105,7 @@ exports[`step-function should grant pipe role push access (StartSyncExecution) w
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": {
-                "Fn::FindInMap": [
-                  "ServiceprincipalMap",
-                  {
-                    "Ref": "AWS::Region",
-                  },
-                  "states",
-                ],
-              },
+              "Service": "states.amazonaws.com",
             },
           },
         ],

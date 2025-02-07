@@ -45,7 +45,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               },
@@ -59,9 +59,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                       "aws:cdk:cloudformation:props": {
-                        "userPoolId": {
-                          "Ref": "pool056F3F7E"
-                        },
                         "allowedOAuthFlows": [
                           "implicit",
                           "code"
@@ -82,17 +79,20 @@
                             "Ref": "googleDB2C5242"
                           },
                           "COGNITO"
-                        ]
+                        ],
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
                   "version": "0.0.0"
                 }
               },
@@ -113,19 +113,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0"
             }
           },
@@ -147,13 +147,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -161,7 +161,7 @@
             "id": "GoogleClientSecretValue2",
             "path": "integ-user-pool-idp-google/GoogleClientSecretValue2",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -175,15 +175,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
                   "aws:cdk:cloudformation:props": {
-                    "providerName": "Google",
-                    "providerType": "Google",
-                    "userPoolId": {
-                      "Ref": "pool056F3F7E"
-                    },
                     "attributeMapping": {
                       "given_name": "given_name",
                       "family_name": "family_name",
                       "email": "email",
+                      "email_verified": "email_verified",
                       "gender": "gender",
                       "names": "names"
                     },
@@ -202,17 +198,22 @@
                         ]
                       },
                       "authorize_scopes": "profile"
+                    },
+                    "providerName": "Google",
+                    "providerType": "Google",
+                    "userPoolId": {
+                      "Ref": "pool056F3F7E"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolIdentityProvider",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogle",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPoolIdentityProviderGoogle",
               "version": "0.0.0"
             }
           },
@@ -220,7 +221,7 @@
             "id": "SignInLink",
             "path": "integ-user-pool-idp-google/SignInLink",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -228,7 +229,7 @@
             "id": "BootstrapVersion",
             "path": "integ-user-pool-idp-google/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -236,13 +237,13 @@
             "id": "CheckBootstrapVersion",
             "path": "integ-user-pool-idp-google/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -251,12 +252,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.161"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
