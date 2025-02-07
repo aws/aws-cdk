@@ -426,6 +426,24 @@ describe('staging', () => {
     const md = Object.values(metadata)[0]![0]!.data as cxschema.AssetMetadataEntry;
     expect(md.path).toBe('asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
   });
+
+  test('if destroy env var is set, complete synth without asset set', () => {
+    // GIVEN
+    process.env.CDK_COMMAND = 'destroy';
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+
+    // WHEN
+    const testAsset = new Asset(stack, 'MyAsset', {
+      path: '/notarealpath',
+    });
+
+    // THEN
+    expect(testAsset.s3BucketName).toEqual('');
+    expect(testAsset.s3ObjectKey).toEqual('');
+
+    delete process.env.CDK_COMMAND;
+  });
 });
 
 function mkdtempSync() {

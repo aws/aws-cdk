@@ -161,7 +161,7 @@ export class Asset extends Construct implements cdk.IAsset {
         this.assetPath = '';
         this.bucket = new s3.Bucket(this, 'AssetBucket', {});
         this.isFile = false;
-        this.isZipArchive = false;
+        this.isZipArchive = true;
         this.sourceHash = '';
         this.assetHash = '';
       }
