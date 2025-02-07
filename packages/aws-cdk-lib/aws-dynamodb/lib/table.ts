@@ -22,6 +22,7 @@ import {
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -253,7 +254,7 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
-     * those will share the table's maximum on-demand throughput.
+   * those will share the table's maximum on-demand throughput.
    *
    * Can only be provided if billingMode is PAY_PER_REQUEST.
    *
@@ -1183,6 +1184,8 @@ export class Table extends TableBase {
     super(scope, id, {
       physicalName: props.tableName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
@@ -1280,6 +1283,7 @@ export class Table extends TableBase {
    *
    * @param props the property of global secondary index
    */
+  @MethodMetadata()
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexProps) {
     this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
@@ -1320,6 +1324,7 @@ export class Table extends TableBase {
    *
    * @param props the property of local secondary index
    */
+  @MethodMetadata()
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
     if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
@@ -1349,6 +1354,7 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings
    */
+  @MethodMetadata()
   public autoScaleReadCapacity(props: EnableScalingProps): IScalableTableAttribute {
     if (this.tableScaling.scalableReadAttribute) {
       throw new Error('Read AutoScaling already enabled for this table');
@@ -1371,6 +1377,7 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
+  @MethodMetadata()
   public autoScaleWriteCapacity(props: EnableScalingProps): IScalableTableAttribute {
     if (this.tableScaling.scalableWriteAttribute) {
       throw new Error('Write AutoScaling already enabled for this table');
@@ -1397,6 +1404,7 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
+  @MethodMetadata()
   public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
@@ -1423,6 +1431,7 @@ export class Table extends TableBase {
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
+  @MethodMetadata()
   public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
@@ -1449,6 +1458,7 @@ export class Table extends TableBase {
    *
    * @returns Schema of table or index.
    */
+  @MethodMetadata()
   public schema(indexName?: string): SchemaOptions {
     if (!indexName) {
       return {

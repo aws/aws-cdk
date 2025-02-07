@@ -4,6 +4,7 @@ import * as jsonSchema from './json-schema';
 import { IRestApi, RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface IModel {
   /**
@@ -164,6 +165,8 @@ export class Model extends Resource implements IModel {
     super(scope, id, {
       physicalName: props.modelName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const modelProps: CfnModelProps = {
       name: this.physicalName,

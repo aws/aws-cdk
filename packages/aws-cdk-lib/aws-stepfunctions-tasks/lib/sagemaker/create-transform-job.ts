@@ -1,3 +1,4 @@
+
 import { Construct } from 'constructs';
 import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
@@ -5,13 +6,9 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Size, Stack, Token } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for creating an Amazon SageMaker transform job task
- *
- */
-export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
+interface SageMakerCreateTransformJobOptions {
   /**
    * Transform Job Name.
    */
@@ -91,10 +88,41 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 }
 
 /**
+ * Properties for creating an Amazon SageMaker transform job task using JSONPath
+ */
+export interface SageMakerCreateTransformJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker transform job task using JSONata
+ */
+export interface SageMakerCreateTransformJobJsonataProps extends sfn.TaskStateJsonataBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
+ * Properties for creating an Amazon SageMaker transform job task
+ */
+export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps, SageMakerCreateTransformJobOptions {}
+
+/**
  * Class representing the SageMaker Create Transform Job task.
- *
  */
 export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
+  /**
+   * Class representing the SageMaker Create Transform Job task using JSONPath.
+   */
+  public static jsonPath(scope: Construct, id: string, props: SageMakerCreateTransformJobJsonPathProps) {
+    return new SageMakerCreateTransformJob(scope, id, props);
+  }
+
+  /**
+   * Class representing the SageMaker Create Transform Job task using JSONata.
+   */
+  public static jsonata(scope: Construct, id: string, props: SageMakerCreateTransformJobJsonataProps) {
+    return new SageMakerCreateTransformJob(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -144,10 +172,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('sagemaker', 'createTransformJob', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+      ...this._renderParametersOrArguments(this.renderParameters(), queryLanguage),
     };
   }
 
@@ -227,7 +256,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
+        InstanceType: isJsonPathOrJsonataExpression(resources.instanceType.toString())
           ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },

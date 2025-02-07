@@ -64,9 +64,10 @@ export const prompt = <T, U>(code: VALID_CODE, message: string, defaultResponse:
 };
 
 /**
- * Logs an error level message.
+ * Creates an error level message.
+ * Errors must always have a unique code.
  */
-export const error = <T>(message: string, code?: VALID_CODE, payload?: T) => {
+export const error = <T>(message: string, code: VALID_CODE, payload?: T) => {
   return formatMessage({
     level: 'error',
     code,
@@ -76,7 +77,23 @@ export const error = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs an warning level message.
+ * Creates a result level message and represents the most important message for a given action.
+ *
+ * They should be used sparsely, with an action usually having no or exactly one result.
+ * However actions that operate on Cloud Assemblies might include a result per Stack.
+ * Unlike other messages, results must always have a code and a payload.
+ */
+export const result = <T>(message: string, code: VALID_CODE, payload: T) => {
+  return formatMessage({
+    level: 'result',
+    code,
+    message,
+    data: payload,
+  });
+};
+
+/**
+ * Creates a warning level message.
  */
 export const warn = <T>(message: string, code?: VALID_CODE, payload?: T) => {
   return formatMessage({
@@ -88,7 +105,7 @@ export const warn = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs an info level message.
+ * Creates an info level message.
  */
 export const info = <T>(message: string, code?: VALID_CODE, payload?: T) => {
   return formatMessage({
@@ -100,20 +117,7 @@ export const info = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs an info level message to stdout.
- * @deprecated
- */
-export const data = <T>(message: string, code?: VALID_CODE, payload?: T) => {
-  return formatMessage({
-    level: 'info',
-    code,
-    message,
-    data: payload,
-  });
-};
-
-/**
- * Logs a debug level message.
+ * Creates a debug level message.
  */
 export const debug = <T>(message: string, code?: VALID_CODE, payload?: T) => {
   return formatMessage({
@@ -125,7 +129,7 @@ export const debug = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs a trace level message.
+ * Creates a trace level message.
  */
 export const trace = <T>(message: string, code?: VALID_CODE, payload?: T) => {
   return formatMessage({
@@ -137,7 +141,7 @@ export const trace = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs an info level success message in green text.
+ * Creates an info level success message in green text.
  * @deprecated
  */
 export const success = <T>(message: string, code?: VALID_CODE, payload?: T) => {
@@ -150,7 +154,7 @@ export const success = <T>(message: string, code?: VALID_CODE, payload?: T) => {
 };
 
 /**
- * Logs an info level message in bold text.
+ * Creates an info level message in bold text.
  * @deprecated
  */
 export const highlight = <T>(message: string, code?: VALID_CODE, payload?: T) => {
