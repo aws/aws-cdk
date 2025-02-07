@@ -1788,43 +1788,177 @@ describe('SpecRestApi', () => {
     });
   });
 
-  test('add appropriate permissions by grantInvokeToVpcEndpoint', () => {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
-    });
-    const api = new apigw.RestApi(stack, 'my-api', {
-      endpointTypes: [apigw.EndpointType.PRIVATE],
-    });
-    api.root.addMethod('GET');
-    api.grantInvokeToVpcEndpoint(vpcEndpoint);
+  describe('grantInvokeFromVpcEndpointOnly', () => {
+    test('called once', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const api = new apigw.RestApi(stack, 'my-api', {
+        endpointTypes: [apigw.EndpointType.PRIVATE],
+      });
+      api.root.addMethod('GET');
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Policy: {
-        Version: '2012-10-17',
-        Statement: [{
-          Action: 'execute-api:Invoke',
-          Effect: 'Deny',
-          Resource: 'execute-api:/*',
-          Condition: {
-            StringNotEquals: {
-              'aws:SourceVpce': {
-                Ref: 'VPCAPIGatewayEndpoint5865ABCA',
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Deny',
+            Resource: 'execute-api:/*',
+            Condition: {
+              StringNotEquals: {
+                'aws:SourceVpce': [{
+                  Ref: 'VPCAPIGatewayEndpoint5865ABCA',
+                }],
               },
             },
-          },
-        }, {
-          Action: 'execute-api:Invoke',
-          Effect: 'Allow',
-          Resource: 'execute-api:/*',
-          Principal: {
-            AWS: '*',
-          },
-        }],
-      },
+          }, {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: 'execute-api:/*',
+            Principal: {
+              AWS: '*',
+            },
+          }],
+        },
+      });
+    });
+
+    test('called once with multiple endpoints', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const vpcEndpoint1 = vpc.addInterfaceEndpoint('APIGatewayEndpoint1', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const vpcEndpoint2 = vpc.addInterfaceEndpoint('APIGatewayEndpoint2', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const api = new apigw.RestApi(stack, 'my-api', {
+        endpointTypes: [apigw.EndpointType.PRIVATE],
+      });
+      api.root.addMethod('GET');
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint1, vpcEndpoint2]);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Deny',
+            Resource: 'execute-api:/*',
+            Condition: {
+              StringNotEquals: {
+                'aws:SourceVpce': [{
+                  Ref: 'VPCAPIGatewayEndpoint1226CF9D3',
+                }, {
+                  Ref: 'VPCAPIGatewayEndpoint2E77DD966',
+                }],
+              },
+            },
+          }, {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: 'execute-api:/*',
+            Principal: {
+              AWS: '*',
+            },
+          }],
+        },
+      });
+    });
+
+    test('called twice with the different endpoints', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const vpcEndpoint1 = vpc.addInterfaceEndpoint('APIGatewayEndpoint1', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const vpcEndpoint2 = vpc.addInterfaceEndpoint('APIGatewayEndpoint2', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const api = new apigw.RestApi(stack, 'my-api', {
+        endpointTypes: [apigw.EndpointType.PRIVATE],
+      });
+      api.root.addMethod('GET');
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint1]);
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint2]);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Deny',
+            Resource: 'execute-api:/*',
+            Condition: {
+              StringNotEquals: {
+                'aws:SourceVpce': [{
+                  Ref: 'VPCAPIGatewayEndpoint1226CF9D3',
+                }, {
+                  Ref: 'VPCAPIGatewayEndpoint2E77DD966',
+                }],
+              },
+            },
+          }, {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: 'execute-api:/*',
+            Principal: {
+              AWS: '*',
+            },
+          }],
+        },
+      });
+    });
+
+    test('called twice with the same endpoint', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const vpcEndpoint = vpc.addInterfaceEndpoint('APIGatewayEndpoint', {
+        service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
+      });
+      const api = new apigw.RestApi(stack, 'my-api', {
+        endpointTypes: [apigw.EndpointType.PRIVATE],
+      });
+      api.root.addMethod('GET');
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
+      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+        Policy: {
+          Version: '2012-10-17',
+          Statement: [{
+            Action: 'execute-api:Invoke',
+            Effect: 'Deny',
+            Resource: 'execute-api:/*',
+            Condition: {
+              StringNotEquals: {
+                'aws:SourceVpce': [{
+                  Ref: 'VPCAPIGatewayEndpoint5865ABCA',
+                }],
+              },
+            },
+          }, {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: 'execute-api:/*',
+            Principal: {
+              AWS: '*',
+            },
+          }],
+        },
+      });
     });
   });
 });
