@@ -99,21 +99,27 @@ export class CommandsAction extends Action {
     const logGroupArn = cdk.Stack.of(scope).formatArn({
       service: 'logs',
       resource: 'log-group',
-      resourceName: `/aws/codepipeline/${stage.pipeline.pipelineName}:*`,
+      resourceName: `/aws/codepipeline/${stage.pipeline.pipelineName}`,
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
+    const logGroupArnWithWildcard = `${logGroupArn}:*`;
 
-    // grant the Pipeline role the required permissions to the log group
+    // grant the Pipeline role the required permissions to put the logs in the log group
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html#action-reference-Commands-policy
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [logGroupArn],
+      resources: [logGroupArn, logGroupArnWithWildcard],
       actions: [
-        // To put the logs in the log group
-        // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html#action-reference-Commands-policy
         'logs:CreateLogGroup',
         'logs:CreateLogStream',
         'logs:PutLogEvents',
-        // To view the logs in the Commands action on the CodePipeline console
-        // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam-permissions-console-logs.html
+      ],
+    }));
+
+    // grant the Pipeline role the required permissions to view the logs in the Commands action on the CodePipeline console
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam-permissions-console-logs.html
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [logGroupArnWithWildcard],
+      actions: [
         'logs:GetLogEvents',
       ],
     }));
