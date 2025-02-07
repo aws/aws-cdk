@@ -1,3 +1,5 @@
+/// !cdk-integ aws-stepfunctions-tasks-http-invoke-json-path-integ
+
 import * as path from 'path';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
