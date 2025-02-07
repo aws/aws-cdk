@@ -16,8 +16,11 @@
                 "id": "ImportAdminRole",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/AdminRole/ImportAdminRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -56,14 +59,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Vpc": {
@@ -89,8 +95,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "PublicSubnet1": {
@@ -137,16 +143,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -171,8 +178,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -190,8 +197,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -210,8 +217,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "EIP": {
@@ -234,8 +241,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "NATGateway": {
@@ -266,14 +273,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -320,16 +333,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -354,8 +368,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -373,8 +387,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -393,14 +407,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -447,16 +466,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -481,8 +501,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -500,8 +520,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -520,14 +540,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -574,16 +599,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -608,8 +634,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "RouteTableAssociation": {
@@ -627,8 +653,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultRoute": {
@@ -647,14 +673,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "IGW": {
@@ -672,8 +703,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "VPCGW": {
@@ -691,14 +722,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "KubectlLayer": {
@@ -713,22 +747,23 @@
                     "id": "Stage",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/KubectlLayer/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/KubectlLayer/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -741,21 +776,24 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+                      "s3Key": "2e670e0c40dc05a34d602c35c948edefcb81afaeea05b9f6240341173af6164e.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.0",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
-              "version": "2.0.0"
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v32.KubectlV32Layer",
+              "version": "2.0.1",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Cluster": {
@@ -770,8 +808,11 @@
                     "id": "ImportKubectlHandlerRole",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -853,8 +894,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -901,20 +942,37 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Role": {
@@ -925,8 +983,11 @@
                     "id": "ImportRole",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -964,14 +1025,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "ControlPlaneSecurityGroup": {
@@ -998,14 +1062,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -1020,8 +1087,11 @@
                         "id": "ImportCreationRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Resource/CreationRole/ImportCreationRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1064,8 +1134,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "DefaultPolicy": {
@@ -1141,20 +1211,49 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1165,14 +1264,24 @@
                         "id": "Default",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Resource/Resource/Default",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   }
                 },
@@ -1185,24 +1294,25 @@
                 "id": "KubectlReadyBarrier",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlReadyBarrier",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ClusterSecurityGroup",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": []
                 }
               },
               "HasEcrPublic": {
                 "id": "HasEcrPublic",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/HasEcrPublic",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "AwsAuth": {
@@ -1221,42 +1331,45 @@
                             "id": "Default",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.AwsAuth",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "ConfigCommand": {
                 "id": "ConfigCommand",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ConfigCommand",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "GetTokenCommand": {
                 "id": "GetTokenCommand",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/GetTokenCommand",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "NodegroupMNG_AL2023_X86_64_STANDARD": {
@@ -1271,8 +1384,11 @@
                         "id": "ImportNodeGroupRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_STANDARD/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1334,14 +1450,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1377,14 +1499,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "NodegroupMNG_AL2023_ARM_64_STANDARD": {
@@ -1399,8 +1524,11 @@
                         "id": "ImportNodeGroupRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_ARM_64_STANDARD/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1462,14 +1590,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1505,14 +1639,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "NodegroupMNG_AL2023_X86_64_NEURON": {
@@ -1527,8 +1664,11 @@
                         "id": "ImportNodeGroupRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NEURON/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1590,14 +1730,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1633,14 +1779,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "NodegroupMNG_AL2023_X86_64_NVIDIA": {
@@ -1655,8 +1804,11 @@
                         "id": "ImportNodeGroupRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NVIDIA/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1718,14 +1870,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1761,20 +1919,30 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_eks.Nodegroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.Cluster",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider": {
@@ -1793,22 +1961,23 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -1827,22 +1996,25 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "LatestNodeRuntimeMap": {
                 "id": "LatestNodeRuntimeMap",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnMapping",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "OnEventHandler": {
@@ -1857,8 +2029,11 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1896,14 +2071,17 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Code": {
@@ -1914,22 +2092,23 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -1942,7 +2121,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+                          "s3Key": "818f9976c0b6e85dd2696d24402c2a177fb2c520d779e1925160a62523c4f20a.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1975,14 +2154,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "IsCompleteHandler": {
@@ -1997,8 +2181,11 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -2036,14 +2223,17 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Code": {
@@ -2054,22 +2244,23 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -2082,7 +2273,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+                          "s3Key": "818f9976c0b6e85dd2696d24402c2a177fb2c520d779e1925160a62523c4f20a.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -2115,14 +2306,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Provider": {
@@ -2141,8 +2337,11 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2180,8 +2379,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "DefaultPolicy": {
@@ -2261,20 +2460,36 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Code": {
@@ -2285,22 +2500,23 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "Resource": {
@@ -2313,7 +2529,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2355,14 +2571,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "framework-isComplete": {
@@ -2377,8 +2599,11 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2416,8 +2641,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "DefaultPolicy": {
@@ -2490,20 +2715,34 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Code": {
@@ -2514,22 +2753,23 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "Resource": {
@@ -2542,7 +2782,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2581,14 +2821,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "framework-onTimeout": {
@@ -2603,8 +2848,11 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2642,8 +2890,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "DefaultPolicy": {
@@ -2716,20 +2964,34 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Code": {
@@ -2740,22 +3002,23 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "Resource": {
@@ -2768,7 +3031,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -2807,14 +3070,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "waiter-state-machine": {
@@ -2829,8 +3097,11 @@
                             "id": "ImportRole",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2854,8 +3125,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "DefaultPolicy": {
@@ -2944,20 +3215,36 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "LogGroup": {
@@ -2986,14 +3273,17 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -3049,50 +3339,50 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.Provider",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole52B34D2CArn": {
                 "id": "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole52B34D2CArn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderOnEventHandlerServiceRole52B34D2CArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleE20DF395Arn": {
                 "id": "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleE20DF395Arn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleE20DF395Arn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderframeworkonEvent164A6D0CArn": {
                 "id": "awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderframeworkonEvent164A6D0CArn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteral2023nodegrouptestawscdkawseksClusterResourceProviderframeworkonEvent164A6D0CArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
@@ -3121,15 +3411,15 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/2ec5004b3297d9e9bbb943ab996249a68fd0e8447d1ac7c76f1d4884fe4bb760.json"
+                          "/7758553ba22b48e16aa702f63f2a911f9c1da94e2c3315d6577f41a8fadedef3.json"
                         ]
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -3154,22 +3444,23 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -3182,7 +3473,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "024d0b8c5d7cf69ece484efe22f1647e273f484175ef3b79df543b7538da9c81.zip"
+                          "s3Key": "fba306965da4b2680dd8b4e6916610efe237162f913f22b10146f647b3f6bce4.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -3223,14 +3514,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "AwsCliLayer": {
@@ -3245,22 +3542,23 @@
                         "id": "Stage",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "Resource": {
@@ -3273,36 +3571,41 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
+                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "ConditionalPolicyArn": {
                 "id": "ConditionalPolicyArn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": []
                 }
               },
               "conditionalPolicy": {
                 "id": "conditionalPolicy",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": []
                 }
               },
               "Provider": {
@@ -3321,8 +3624,11 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -3372,8 +3678,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "DefaultPolicy": {
@@ -3426,20 +3732,32 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Code": {
@@ -3450,22 +3768,23 @@
                             "id": "Stage",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": []
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       },
                       "Resource": {
@@ -3478,7 +3797,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -3526,82 +3845,86 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.Provider",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "LatestNodeRuntimeMap": {
                 "id": "LatestNodeRuntimeMap",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnMapping",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "awscdkeksclusteral2023nodegrouptestawscdkawseksKubectlProviderframeworkonEventF34EE07AArn": {
                 "id": "awscdkeksclusteral2023nodegrouptestawscdkawseksKubectlProviderframeworkonEventF34EE07AArn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusteral2023nodegrouptestawscdkawseksKubectlProviderframeworkonEventF34EE07AArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "reference-to-awscdkeksclusteral2023nodegrouptestKubectlLayer1E2C08B6Ref": {
                 "id": "reference-to-awscdkeksclusteral2023nodegrouptestKubectlLayer1E2C08B6Ref",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteral2023nodegrouptestKubectlLayer1E2C08B6Ref",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "reference-to-awscdkeksclusteral2023nodegrouptestClusterKubectlHandlerRoleEBF8BFAEArn": {
                 "id": "reference-to-awscdkeksclusteral2023nodegrouptestClusterKubectlHandlerRoleEBF8BFAEArn",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteral2023nodegrouptestClusterKubectlHandlerRoleEBF8BFAEArn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet1Subnet9541A699Ref": {
                 "id": "reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet1Subnet9541A699Ref",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet1Subnet9541A699Ref",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet2Subnet229DFC35Ref": {
                 "id": "reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet2Subnet229DFC35Ref",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteral2023nodegrouptestVpcPrivateSubnet2Subnet229DFC35Ref",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               },
               "reference-to-awscdkeksclusteral2023nodegrouptestCluster517CBBE0ClusterSecurityGroupId": {
                 "id": "reference-to-awscdkeksclusteral2023nodegrouptestCluster517CBBE0ClusterSecurityGroupId",
                 "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteral2023nodegrouptestCluster517CBBE0ClusterSecurityGroupId",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_eks.KubectlProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider.NestedStack": {
@@ -3653,15 +3976,15 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/fdfbf7bc48a40004830d6dabdffd9c4b52070063c373ccaaac8e7885c82abe70.json"
+                          "/cff760dc8fdce382a68efa16225b1d7bdc00746d4f9ef540249fe158bebb5df4.json"
                         ]
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -3674,22 +3997,22 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       },
       "aws-cdk-eks-cluster-al2023-nodegroup": {
@@ -3716,22 +4039,22 @@
                     "id": "BootstrapVersion",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -3756,8 +4079,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
     }
   }
 }

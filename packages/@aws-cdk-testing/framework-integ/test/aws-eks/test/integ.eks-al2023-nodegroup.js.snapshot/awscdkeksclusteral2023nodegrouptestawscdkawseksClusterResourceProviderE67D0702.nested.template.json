@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+     "S3Key": "818f9976c0b6e85dd2696d24402c2a177fb2c520d779e1925160a62523c4f20a.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -123,7 +123,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "aea9e78c19375cc11788e490fdd0d8d90a99fc5509f3ade872bff74980f89265.zip"
+     "S3Key": "818f9976c0b6e85dd2696d24402c2a177fb2c520d779e1925160a62523c4f20a.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -265,7 +265,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -410,7 +410,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -552,7 +552,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe4094cd52f099e46f858f05efdde02f5de79288c9c783676b3fa53a494d04b5.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-al2023-nodegroup-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
