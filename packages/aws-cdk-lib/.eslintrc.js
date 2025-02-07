@@ -62,6 +62,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-s3objectlambda',
   'aws-s3outposts',
   'aws-s3tables',
+  'cx-api',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
