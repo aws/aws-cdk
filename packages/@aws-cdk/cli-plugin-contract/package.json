@@ -1,0 +1,57 @@
+{
+  "name": "@aws-cdk/cli-plugin-contract",
+  "description": "Contract between the CLI and authentication plugins, for the exchange of AWS credentials",
+  "version": "0.0.0",
+  "types": "lib/index.d.ts",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "cdk-build",
+    "lint": "cdk-lint",
+    "pkglint": "pkglint -f",
+    "watch": "cdk-watch",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test+extract": "yarn build+test",
+    "package": "cdk-package",
+    "test": "cdk-test"
+  },
+  "ubergen": {
+    "exclude": true
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "ts-node": "^10.9.2"
+  },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/cli-plugin-contract"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "separate-module": true,
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "dependencies": {},
+  "peerDependencies": {}
+}

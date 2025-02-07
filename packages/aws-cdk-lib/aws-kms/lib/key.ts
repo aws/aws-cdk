@@ -19,6 +19,7 @@ import {
   Stack,
   Token,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -73,6 +74,21 @@ export interface IKey extends IResource {
    * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  grantSign(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  grantVerify(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  grantSignVerify(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant permissions to generating MACs to the given principal
@@ -214,6 +230,27 @@ abstract class KeyBase extends Resource implements IKey {
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+  }
+
+  /**
+   * Grant sign permissions using this key to the given principal
+   */
+  public grantSign(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+  }
+
+  /**
+   * Grant verify permissions using this key to the given principal
+   */
+  public grantVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+  }
+
+  /**
+   * Grant sign and verify permissions using this key to the given principal
+   */
+  public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
   }
 
   /**
@@ -730,6 +767,8 @@ export class Key extends KeyBase {
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const denyLists = {
       [KeyUsage.ENCRYPT_DECRYPT]: [
@@ -860,6 +899,7 @@ export class Key extends KeyBase {
    * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
    * to use the key in cryptographic operations (e.g., encrypt, decrypt).
    */
+  @MethodMetadata()
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.ADMIN_ACTIONS);
   }

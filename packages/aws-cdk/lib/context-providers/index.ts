@@ -10,11 +10,13 @@ import { SecurityGroupContextProviderPlugin } from './security-groups';
 import { SSMContextProviderPlugin } from './ssm-parameters';
 import { VpcNetworkContextProviderPlugin } from './vpcs';
 import { SdkProvider } from '../api';
+import { Context, TRANSIENT_CONTEXT_KEY } from '../api/context';
 import { PluginHost } from '../api/plugin';
 import { ContextProviderPlugin } from '../api/plugin/context-provider-plugin';
 import { replaceEnvPlaceholders } from '../api/util/placeholders';
 import { debug } from '../logging';
-import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
+import { ContextProviderError } from '../toolkit/error';
+import { formatErrorMessage } from '../util/error';
 
 export type ContextProviderFactory = ((sdk: SdkProvider) => ContextProviderPlugin);
 export type ProviderMap = {[name: string]: ContextProviderFactory};
@@ -41,14 +43,14 @@ export async function provideContextValues(
       const plugin = PluginHost.instance.contextProviderPlugins[providerName.substring(PLUGIN_PROVIDER_PREFIX.length + 1)];
       if (!plugin) {
         // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
+        throw new ContextProviderError(`Unrecognized plugin context provider name: ${missingContext.provider}.`);
       }
       factory = () => plugin;
     } else {
       factory = availableContextProviders[providerName];
       if (!factory) {
         // eslint-disable-next-line max-len
-        throw new Error(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
+        throw new ContextProviderError(`Unrecognized context provider name: ${missingContext.provider}. You might need to update the toolkit to match the version of the construct library.`);
       }
     }
 
@@ -72,7 +74,7 @@ export async function provideContextValues(
     } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.
-      value = { [cxapi.PROVIDER_ERROR_KEY]: e.message, [TRANSIENT_CONTEXT_KEY]: true };
+      value = { [cxapi.PROVIDER_ERROR_KEY]: formatErrorMessage(e), [TRANSIENT_CONTEXT_KEY]: true };
     }
     context.set(key, value);
     debug(`Setting "${key}" context to ${JSON.stringify(value)}`);

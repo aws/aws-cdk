@@ -3,7 +3,7 @@ import { Stack } from '../../core';
 import { NodeProxyAgentLayer } from '../lib';
 
 test('synthesized to a layer version', () => {
-  //GIVEN
+  // GIVEN
   const stack = new Stack();
 
   // WHEN

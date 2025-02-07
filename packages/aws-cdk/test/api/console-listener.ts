@@ -14,7 +14,7 @@ export interface Inspector {
 
 class ConsoleListener {
   private _stream: NodeJS.WriteStream;
-  private _options?: Options
+  private _options?: Options;
 
   constructor(stream: NodeJS.WriteStream, options?: Options) {
     this._stream = stream;
@@ -59,7 +59,6 @@ class ConsoleListener {
     }
     return inspect.output;
   }
-
 }
 
 export const stdout = new ConsoleListener(process.stdout);

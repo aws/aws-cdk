@@ -74,6 +74,20 @@ describe('aspect', () => {
     expect(root.visitCounter).toEqual(1);
   });
 
+  test('Adding the same aspect twice to the same construct only adds 1', () => {
+    // GIVEN
+    const app = new App();
+    const root = new MyConstruct(app, 'MyConstruct');
+
+    // WHEN
+    const asp = new VisitOnce();
+    Aspects.of(root).add(asp);
+    Aspects.of(root).add(asp);
+
+    // THEN
+    expect(Aspects.of(root).all.length).toEqual(1);
+  });
+
   test('if stabilization is disabled, warn if an Aspect is added via another Aspect', () => {
     const app = new App({ context: { '@aws-cdk/core:aspectStabilization': false } });
     const root = new MyConstruct(app, 'MyConstruct');
@@ -91,7 +105,7 @@ describe('aspect', () => {
     expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
     expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied [ack: @aws-cdk/core:ignoredAspect]');
     // warning is not added to child construct
-    expect(child.node.metadata.length).toEqual(0);
+    expect(child.node.metadata).toEqual([]);
   });
 
   test('Do not warn if an Aspect is added directly (not by another aspect)', () => {
@@ -309,4 +323,24 @@ describe('aspect', () => {
       }
     }
   }
+
+  test.each([
+    { stabilization: true },
+    { stabilization: false },
+  ])('Error is not thrown if Aspects.applied does not exist (stabilization: $stabilization)', ({ stabilization }) => {
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
+    const root = new Stack(app, 'My-Stack');
+
+    Aspects.of(root).add(new Tag('AspectA', 'Visited'));
+
+    // "Monkey patching" - Override `applied` to simulate its absence
+    Object.defineProperty(Aspects.prototype, 'applied', {
+      value: undefined,
+      configurable: true,
+    });
+
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+  });
 });
