@@ -37,7 +37,7 @@
     "DefaultAction": {
      "Allow": {}
     },
-    "Name": "CreatedByCloudFront-cloudfrontwafprotectionDistroB056DD41",
+    "Name": "cloudfrontwafprotectionDistroB056DD41",
     "Rules": [
      {
       "Name": "AWS-AWSManagedRulesAmazonIpReputationList",
@@ -97,7 +97,7 @@
     "Scope": "CLOUDFRONT",
     "VisibilityConfig": {
      "CloudWatchMetricsEnabled": true,
-     "MetricName": "CreatedByCloudFront-cloudfrontwafprotectionDistroB056DD41",
+     "MetricName": "cloudfrontwafprotectionDistroB056DD41",
      "SampledRequestsEnabled": true
     }
    }

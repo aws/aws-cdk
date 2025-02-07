@@ -658,7 +658,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
     }
 
-    const webAclName = `CreatedByCloudFront-${Names.uniqueId(this)}`;
+    const webAclName = Names.uniqueId(this);
 
     const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
 
