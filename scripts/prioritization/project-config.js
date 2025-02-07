@@ -28,21 +28,18 @@ const STATUS = {
 // Time threshold for R5
 const DAYS_THRESHOLD = 21;
 
-const ATTENTION_STATUS = {
+const NEEDS_ATTENTION_STATUS = {
   STALLED: {
     name: '🚨 Stalled',
-    threshold: 21,
-    description: 'Critical attention required'
+    threshold: 21
   },
   AGING: {
     name: '⚠️ Aging',
-    threshold: 14,
-    description: 'Requires immediate attention'
+    threshold: 14
   },
   EXTENDED: {
     name: '🕒 Extended',
-    threshold: 7,
-    description: 'Taking longer than expected'
+    threshold: 7
   }
 };
 
@@ -63,6 +60,6 @@ module.exports = {
   LABELS,
   PRIORITIES,
   STATUS,
-  ATTENTION_STATUS,
+  NEEDS_ATTENTION_STATUS,
   DAYS_THRESHOLD
 };
