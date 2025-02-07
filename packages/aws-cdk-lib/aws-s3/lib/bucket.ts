@@ -27,7 +27,7 @@ import {
   Annotations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -2309,6 +2309,7 @@ export class Bucket extends BucketBase {
    *
    * @param rule The rule to add
    */
+  @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
   }
@@ -2318,6 +2319,7 @@ export class Bucket extends BucketBase {
    *
    * @param metric The metric configuration to add
    */
+  @MethodMetadata()
   public addMetric(metric: BucketMetrics) {
     this.metrics.push(metric);
   }
@@ -2327,6 +2329,7 @@ export class Bucket extends BucketBase {
    *
    * @param rule The CORS configuration rule to add
    */
+  @MethodMetadata()
   public addCorsRule(rule: CorsRule) {
     this.cors.push(rule);
   }
@@ -2336,6 +2339,7 @@ export class Bucket extends BucketBase {
    *
    * @param inventory configuration to add
    */
+  @MethodMetadata()
   public addInventory(inventory: Inventory): void {
     this.inventories.push(inventory);
   }

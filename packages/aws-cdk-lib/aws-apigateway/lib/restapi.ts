@@ -19,7 +19,7 @@ import { IVpcEndpoint } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -862,6 +862,7 @@ export class RestApi extends RestApiBase {
   /**
    * Adds a new model.
    */
+  @MethodMetadata()
   public addModel(id: string, props: ModelOptions): Model {
     return new Model(this, id, {
       ...props,
@@ -872,6 +873,7 @@ export class RestApi extends RestApiBase {
   /**
    * Adds a new request validator.
    */
+  @MethodMetadata()
   public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
       ...props,

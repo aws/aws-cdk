@@ -3,7 +3,7 @@ import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface of the Listener
@@ -159,6 +159,7 @@ export class Listener extends cdk.Resource implements IListener {
   /**
    * Add a new endpoint group to this listener
    */
+  @MethodMetadata()
   public addEndpointGroup(id: string, options: EndpointGroupOptions = {}) {
     return new EndpointGroup(this, id, {
       listener: this,
