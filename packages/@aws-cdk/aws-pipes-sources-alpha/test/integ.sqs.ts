@@ -53,16 +53,15 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: uniqueIdentifier,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
-  {
-    QueueUrl: targetQueue.queueUrl,
-  })).expect(ExpectedResult.objectLike({
-    Messages: [
-      {
-        Body: uniqueIdentifier,
-      },
-    ],
-  })).waitForAssertions({
-    totalTimeout: cdk.Duration.seconds(30),
-  });
+putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: targetQueue.queueUrl,
+})).expect(ExpectedResult.objectLike({
+  Messages: [
+    {
+      Body: uniqueIdentifier,
+    },
+  ],
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(30),
+});
 

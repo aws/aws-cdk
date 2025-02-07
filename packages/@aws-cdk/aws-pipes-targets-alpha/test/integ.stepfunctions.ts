@@ -74,14 +74,13 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
   MessageBody: rainbow,
 });
 
-putMessageOnQueue.next(test.assertions.awsApiCall('SSM', 'getParameter',
-  {
+putMessageOnQueue.next(test.assertions.awsApiCall('SSM', 'getParameter', {
+  Name: parameterName,
+})).expect(ExpectedResult.objectLike({
+  Parameter: {
     Name: parameterName,
-  })).expect(ExpectedResult.objectLike({
-    Parameter: {
-      Name: parameterName,
-      Value: rainbow,
-    },
-  })).waitForAssertions({
-    totalTimeout: cdk.Duration.seconds(10),
-  });
+    Value: rainbow,
+  },
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(10),
+});
