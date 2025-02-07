@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
+    "@types/glob": "7.2.0",
     "@types/node": "18.11.19",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -29,6 +30,7 @@
     "jsii-pacmak": "1.106.0",
     "jsii-reflect": "1.106.0",
     "lerna": "^8.1.8",
+    "minimatch": "3.1.2",
     "nx": "^20",
     "semver": "^7.6.3",
     "standard-version": "^9.5.0",
