@@ -1194,7 +1194,10 @@ test('Imported task definition with revision uses original arn for policy resour
   template.hasResource('AWS::IAM::Policy', { Properties: policyMatch });
 });
 
-test('throws an error when ephemeral storage size is less than 20 GiB', () => {
+test.each([
+  [10, 'less than minimum'],
+  [201, 'greater than maximum'],
+])('throws an error when ephemeral storage size is %s 20 GiB (%s)', (sizeInGiB: number) => {
   // GIVEN
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
@@ -1208,32 +1211,7 @@ test('throws an error when ephemeral storage size is less than 20 GiB', () => {
     cluster,
     taskDefinition,
     ephemeralStorage: {
-      sizeInGiB: 10, // Less than minimum 20 GiB
-    },
-  });
-
-  // WHEN
-  // THEN
-  expect(() => {
-    rule.addTarget(target);
-  }).toThrow(/Ephemeral storage size must be between 20 GiB and 200 GiB/);
-});
-
-test('throws an error when ephemeral storage size is greater than 200 GiB', () => {
-  // GIVEN
-  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
-  taskDefinition.addContainer('TheContainer', {
-    image: ecs.ContainerImage.fromRegistry('henk'),
-  });
-
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(1 min)'),
-  });
-  const target = new targets.EcsTask({
-    cluster,
-    taskDefinition,
-    ephemeralStorage: {
-      sizeInGiB: 201, // Greater than maximum 200 GiB
+      sizeInGiB,
     },
   });
 
