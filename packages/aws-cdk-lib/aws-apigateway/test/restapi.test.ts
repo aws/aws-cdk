@@ -1800,7 +1800,7 @@ describe('SpecRestApi', () => {
         endpointTypes: [apigw.EndpointType.PRIVATE],
       });
       api.root.addMethod('GET');
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint]);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
@@ -1843,7 +1843,7 @@ describe('SpecRestApi', () => {
         endpointTypes: [apigw.EndpointType.PRIVATE],
       });
       api.root.addMethod('GET');
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint1, vpcEndpoint2]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint1, vpcEndpoint2]);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
@@ -1888,8 +1888,8 @@ describe('SpecRestApi', () => {
         endpointTypes: [apigw.EndpointType.PRIVATE],
       });
       api.root.addMethod('GET');
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint1]);
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint2]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint1]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint2]);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
@@ -1931,8 +1931,8 @@ describe('SpecRestApi', () => {
         endpointTypes: [apigw.EndpointType.PRIVATE],
       });
       api.root.addMethod('GET');
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
-      api.grantInvokeFromVpcEndpointOnly([vpcEndpoint]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint]);
+      api.grantInvokeFromVpcEndpointsOnly([vpcEndpoint]);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
