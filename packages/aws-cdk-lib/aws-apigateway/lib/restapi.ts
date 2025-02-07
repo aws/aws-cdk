@@ -467,52 +467,32 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    *
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
-  public grantInvokeFromVpcEndpointOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
-    const denyPolicySid = 'DenyNonVPCEndpointAccess';
-    const allowPolicySid = 'AllowVPCEndpointAccess';
-    const vpcEndpointPolicyIds = [denyPolicySid, allowPolicySid];
-
+  public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
     vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
 
-    const newPolicy = new iam.PolicyDocument();
+    const endpoints = Lazy.string({
+      produce: () => {
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId).join(',');
+      },
+    });
 
-    // If there's an existing policy, copy all statements except VPC endpoint ones
-    if (this.resourcePolicy) {
-      const existingPolicy = this.resourcePolicy.toJSON();
-      existingPolicy.Statement
-        .filter(statement => vpcEndpointPolicyIds.every(policyId => statement.Sid! !== policyId))
-        .forEach(statement => {
-          newPolicy.addStatements(iam.PolicyStatement.fromJson(statement));
-        });
-    }
-
-    const endpoints = Array.from(this._allowedVpcEndpoints);
-    if (endpoints.length > 0) {
-      const denyStatement = new iam.PolicyStatement({
-        sid: denyPolicySid,
-        principals: [new iam.AnyPrincipal()],
-        actions: ['execute-api:Invoke'],
-        resources: ['execute-api:/*'],
-        effect: iam.Effect.DENY,
-        conditions: {
-          StringNotEquals: {
-            'aws:SourceVpce': endpoints.map(endpoint => endpoint.vpcEndpointId),
-          },
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      effect: iam.Effect.DENY,
+      conditions: {
+        StringNotEquals: {
+          'aws:SourceVpce': endpoints,
         },
-      });
-      newPolicy.addStatements(denyStatement);
-
-      const allowStatement = new iam.PolicyStatement({
-        sid: allowPolicySid,
-        principals: [new iam.AnyPrincipal()],
-        actions: ['execute-api:Invoke'],
-        resources: ['execute-api:/*'],
-        effect: iam.Effect.ALLOW,
-      });
-      newPolicy.addStatements(allowStatement);
-    }
-
-    this.resourcePolicy = newPolicy;
+      },
+    }));
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      effect: iam.Effect.ALLOW,
+    }));
   }
 
   /**
