@@ -182,8 +182,60 @@ describe('Commands Action', () => {
                 'logs:CreateLogGroup',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
-                'logs:GetLogEvents',
               ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:/aws/codepipeline/',
+                      {
+                        Ref: 'PipelineC660917D',
+                      },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:/aws/codepipeline/',
+                      {
+                        Ref: 'PipelineC660917D',
+                      },
+                      ':*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              Action: 'logs:GetLogEvents',
               Effect: 'Allow',
               Resource: {
                 'Fn::Join': [
