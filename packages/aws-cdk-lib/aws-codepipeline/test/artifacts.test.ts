@@ -1,7 +1,8 @@
 import { IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
+import { CommandsAction } from '../../aws-codepipeline-actions/lib';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
@@ -260,6 +261,75 @@ describe('artifacts', () => {
           },
         ],
       });
+    });
+
+    test('with artifactFiles', () => {
+      const stack = new cdk.Stack();
+
+      const sourceOutput = new codepipeline.Artifact('SourceOutput');
+      const commandsOutput = new codepipeline.Artifact('CommandsArtifact', ['my-dir/**/*']);
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Compute',
+            actions: [
+              new CommandsAction({
+                actionName: 'Commands',
+                commands: [
+                  'pwd',
+                  'ls -la',
+                ],
+                input: sourceOutput,
+                output: commandsOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: Match.arrayWith([
+          {
+            Name: 'Compute',
+            Actions: [
+              Match.objectLike({
+                Name: 'Commands',
+                InputArtifacts: [
+                  { Name: 'SourceOutput' },
+                ],
+                OutputArtifacts: [
+                  {
+                    Name: 'CommandsArtifact',
+                    Files: ['my-dir/**/*'],
+                  },
+                ],
+              }),
+            ],
+          },
+        ]),
+      });
+    });
+
+    test('throw if artifactFiles length is less than 1', () => {
+      expect(() => {
+        new codepipeline.Artifact('CommandsArtifact', []);
+      }).toThrow(/The length of the artifactFiles array must be between 1 and 10, got: 0/);
+    });
+
+    test('throw if artifactFiles length is greater than 10', () => {
+      expect(() => {
+        new codepipeline.Artifact('CommandsArtifact', [...new Array(11).keys()].map(i => `file${i}`));
+      }).toThrow(/The length of the artifactFiles array must be between 1 and 10, got: 11/);
     });
   });
 });
