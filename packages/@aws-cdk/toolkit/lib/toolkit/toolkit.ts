@@ -243,7 +243,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const synthDuration = await synthTimer.endAs(ioHost, 'synth');
 
     if (stackCollection.stackCount === 0) {
-      await ioHost.notify(error('This app contains no stacks'));
+      await ioHost.notify(error('This app contains no stacks', 'CDK_TOOLKIT_E5001'));
       return;
     }
 
@@ -648,7 +648,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     await synthTimer.endAs(ioHost, 'synth');
 
     if (stacks.stackCount === 0) {
-      await ioHost.notify(error('No stacks selected'));
+      await ioHost.notify(error('No stacks selected', 'CDK_TOOLKIT_E6001'));
       return;
     }
 
@@ -672,7 +672,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         }
         await rollbackTimer.endAs(ioHost, 'rollback');
       } catch (e: any) {
-        await ioHost.notify(error(`\n ❌  ${chalk.bold(stack.displayName)} failed: ${formatErrorMessage(e)}`));
+        await ioHost.notify(error(`\n ❌  ${chalk.bold(stack.displayName)} failed: ${formatErrorMessage(e)}`, 'CDK_TOOLKIT_E6900'));
         throw new ToolkitError('Rollback failed (use --force to orphan failing resources)');
       }
     }
@@ -705,7 +705,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const question = `Are you sure you want to delete: ${chalk.red(stacks.hierarchicalIds.join(', '))}`;
     const confirmed = await ioHost.requestResponse(confirm('CDK_TOOLKIT_I7010', question, motivation, true));
     if (!confirmed) {
-      return ioHost.notify(error('Aborted by user'));
+      return ioHost.notify(error('Aborted by user', 'CDK_TOOLKIT_E7010'));
     }
 
     const destroyTimer = Timer.start();
@@ -722,7 +722,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
           });
           await ioHost.notify(success(`\n ✅  ${chalk.blue(stack.displayName)}: ${action}ed`));
         } catch (e) {
-          await ioHost.notify(error(`\n ❌  ${chalk.blue(stack.displayName)}: ${action} failed ${e}`));
+          await ioHost.notify(error(`\n ❌  ${chalk.blue(stack.displayName)}: ${action} failed ${e}`, 'CDK_TOOLKIT_E7900'));
           throw e;
         }
       }
