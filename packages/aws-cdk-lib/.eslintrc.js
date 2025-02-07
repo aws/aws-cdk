@@ -16,6 +16,8 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
+  'aws-appconfig',
+  'aws-backup',
   'aws-amplify',
   'aws-amplifyuibuilder',
   'aws-apigateway',
