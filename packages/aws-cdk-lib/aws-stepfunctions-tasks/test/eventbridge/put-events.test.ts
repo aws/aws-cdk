@@ -88,6 +88,47 @@ describe('Put Events', () => {
     });
   });
 
+  test('provided detail as object - using JSONata', () => {
+    // WHEN
+    const task = EventBridgePutEvents.jsonata(stack, 'PutEvents', {
+      entries: [{
+        detail: sfn.TaskInput.fromObject({
+          Message: 'MyDetailMessage',
+        }),
+        detailType: 'MyDetailType',
+        source: 'my.source',
+      }],
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      QueryLanguage: 'JSONata',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::events:putEvents',
+          ],
+        ],
+      },
+      End: true,
+      Arguments: {
+        Entries: [{
+          Detail: {
+            Message: 'MyDetailMessage',
+          },
+          DetailType: 'MyDetailType',
+          Source: 'my.source',
+        }],
+      },
+    });
+  });
+
   test('wait for task token', () => {
     // WHEN
     const task = new EventBridgePutEvents(stack, 'PutEvents', {
@@ -143,7 +184,7 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
+    }).toThrow('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
   });
 
   test('fails when RUN_JOB integration pattern is used', () => {
@@ -158,7 +199,7 @@ describe('Put Events', () => {
         }],
       });
       // THEN
-    }).toThrowError('Unsupported service integration pattern');
+    }).toThrow('Unsupported service integration pattern');
   });
 
   test('event source cannot start with "aws."', () => {
@@ -239,7 +280,7 @@ describe('Put Events', () => {
       });
     })
       // THEN
-      .toThrowError('Value for property `entries` must be a non-empty array.');
+      .toThrow('Value for property `entries` must be a non-empty array.');
   });
 
   test('Validate task policy', () => {

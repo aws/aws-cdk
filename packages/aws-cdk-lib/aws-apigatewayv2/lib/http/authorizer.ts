@@ -3,7 +3,8 @@ import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
 import { CfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
-
+import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { IAuthorizer } from '../common';
 
 /**
@@ -157,15 +158,17 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     let authorizerPayloadFormatVersion = props.payloadFormatVersion;
 
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
-      throw new Error('jwtAudience and jwtIssuer are mandatory for JWT authorizers');
+      throw new ValidationError('jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
     }
 
     if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new Error('authorizerUri is mandatory for Lambda authorizers');
+      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     /**

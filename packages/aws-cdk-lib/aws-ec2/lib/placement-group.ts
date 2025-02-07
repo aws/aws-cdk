@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Determines where your instances are placed on the underlying hardware according to the specified PlacementGroupStrategy
@@ -153,7 +154,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
    */
   public static fromPlacementGroupName(scope: Construct, id: string, placementGroupName: string): IPlacementGroup {
     class Import extends Resource implements IPlacementGroup {
-      public readonly placementGroupName = placementGroupName
+      public readonly placementGroupName = placementGroupName;
     }
 
     return new Import(scope, id);
@@ -169,6 +170,8 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
     super(scope, id, {
       physicalName: undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.partitions = props?.partitions;
     this.spreadLevel = props?.spreadLevel;

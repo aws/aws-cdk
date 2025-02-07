@@ -15,7 +15,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(true);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -28,7 +27,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(true);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -41,7 +39,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -54,7 +51,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.ALWAYS, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -69,7 +65,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.notCalled).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -82,7 +77,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(true);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -95,7 +89,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -110,7 +103,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(true);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -123,7 +115,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.calledOnceWith(linkTarget)).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -136,7 +127,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.notCalled).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -151,7 +141,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.notCalled).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }
@@ -164,7 +153,6 @@ describe('utils', () => {
         try {
           expect(util.shouldFollow(SymlinkFollowMode.NEVER, sourceRoot, linkTarget)).toEqual(false);
           expect(mockFsExists.notCalled).toEqual(true);
-          ;
         } finally {
           mockFsExists.restore();
         }

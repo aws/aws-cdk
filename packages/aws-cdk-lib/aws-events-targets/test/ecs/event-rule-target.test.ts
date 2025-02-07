@@ -839,7 +839,7 @@ test('throws an error when trying to pass a disallowed value for propagateTags',
       }],
       propagateTags: ecs.PropagatedTagSource.SERVICE, // propagateTags must be TASK_DEFINITION or NONE
     }));
-  }).toThrowError('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
+  }).toThrow('When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
 });
 
 test('set enableExecuteCommand', () => {
@@ -1026,7 +1026,7 @@ test('throw error when enable assignPublicIp for non-Fargate task', () => {
       subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
       assignPublicIp: true,
     }));
-  }).toThrowError('assignPublicIp is only supported for FARGATE tasks');
+  }).toThrow('assignPublicIp is only supported for FARGATE tasks');
 });
 
 test('throw an error when assignPublicIp is set to true for private subnets', () => {
@@ -1053,7 +1053,7 @@ test('throw an error when assignPublicIp is set to true for private subnets', ()
       subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
       assignPublicIp: true,
     }));
-  }).toThrowError('assignPublicIp should be set to true only for PUBLIC subnets');
+  }).toThrow('assignPublicIp should be set to true only for PUBLIC subnets');
 });
 
 test.each([

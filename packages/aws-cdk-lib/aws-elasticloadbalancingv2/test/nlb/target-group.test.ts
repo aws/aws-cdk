@@ -389,7 +389,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
@@ -412,7 +412,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -437,7 +437,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
@@ -462,7 +462,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
@@ -534,7 +534,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
@@ -558,7 +558,7 @@ describe('tests', () => {
       // THEN
       expect(() => {
         app.synth();
-      }).not.toThrowError();
+      }).not.toThrow();
     });
 
   test('Throws error for invalid health check healthy threshold', () => {

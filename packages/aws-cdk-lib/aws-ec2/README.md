@@ -463,7 +463,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 #### Dual Stack Configurations
 
-Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties in a dual stack VPC:
+Here is a break down of IPv4 and IPv6 specific `subnetConfiguration` properties in a dual stack VPC:
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
@@ -1536,6 +1536,19 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
     }),
   }],
 });
+```
+
+It's recommended to set the `@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) to `true` to use Amazon Linux 2023 as the
+bastion host AMI. Without this flag set, the bastion host will default to Amazon Linux 2, which will be unsupported in
+June 2025.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true
+  }
+}
 ```
 
 ### Placement Group

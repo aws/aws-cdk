@@ -36,6 +36,30 @@ test('Basic canary properties work', () => {
   });
 });
 
+test('Specify handler path for playwright canary', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    canaryName: 'mycanary',
+    test: synthetics.Test.custom({
+      handler: 'playwright/canary.handler',
+      code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Name: 'mycanary',
+    Code: {
+      Handler: 'playwright/canary.handler',
+    },
+    RuntimeVersion: 'syn-nodejs-playwright-1.0',
+  });
+});
+
 test('cleanup.LAMBDA introduces custom resource to delete lambda', () => {
   // GIVEN
   const stack = new Stack();
@@ -104,23 +128,23 @@ test('Throws when name is specified incorrectly', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
+    .toThrow('Canary name must be lowercase, numbers, hyphens, or underscores (got "My Canary")');
 });
 
-test('Throws when name has more than 21 characters', () => {
+test('Throws when name has more than 255 characters', () => {
   // GIVEN
   const stack = new Stack();
 
   // THEN
   expect(() => new synthetics.Canary(stack, 'Canary', {
-    canaryName: 'a'.repeat(22),
+    canaryName: 'a'.repeat(256),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError(`Canary name is too large, must be between 1 and 21 characters, but is 22 (got "${'a'.repeat(22)}")`);
+    .toThrow(`Canary name is too large, must be between 1 and 255 characters, but is 256 (got "${'a'.repeat(256)}")`);
 });
 
 test('An existing role can be specified instead of auto-created', () => {
@@ -260,7 +284,47 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
-test('throws when activeTracing is enabled with an unsupported runtime', () => {
+test.each([true, false])('specify provisioned resource cleanup', (provisionedResourceCleanup: boolean) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    provisionedResourceCleanup,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    ProvisionedResourceCleanup: provisionedResourceCleanup ? 'AUTOMATIC' : 'OFF',
+  });
+});
+
+test('throw error for enabling both cleanup and provisionedResourceCleanup', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // THEN
+  expect(() => new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    cleanup: synthetics.Cleanup.LAMBDA,
+    provisionedResourceCleanup: true,
+  }))
+    .toThrow('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.');
+});
+
+test.each([
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+  synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
+])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
   // GIVEN
   const stack = new Stack();
 
@@ -270,10 +334,10 @@ test('throws when activeTracing is enabled with an unsupported runtime', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('# Synthetics handler code'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+    runtime,
     activeTracing: true,
   }))
-    .toThrow('You can only enable active tracing for canaries that use canary runtime version `syn-nodejs-2.0` or later.');
+    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${runtime.name}.`);
 });
 
 test('environment variables can be specified', () => {
@@ -561,7 +625,7 @@ test('Throws when rate above 60 minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('Schedule duration must be between 1 and 60 minutes');
+    .toThrow('Schedule duration must be between 1 and 60 minutes');
 });
 
 test('Throws when rate above is not a whole number of minutes', () => {
@@ -577,7 +641,7 @@ test('Throws when rate above is not a whole number of minutes', () => {
     }),
     runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0,
   }))
-    .toThrowError('\'59 seconds\' cannot be converted into a whole number of minutes.');
+    .toThrow('\'59 seconds\' cannot be converted into a whole number of minutes.');
 });
 
 test('Can share artifacts bucket between canaries', () => {
@@ -1086,6 +1150,6 @@ describe('artifact encryption test', () => {
         }),
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.');
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got syn-python-selenium-3.0.');
   });
 });

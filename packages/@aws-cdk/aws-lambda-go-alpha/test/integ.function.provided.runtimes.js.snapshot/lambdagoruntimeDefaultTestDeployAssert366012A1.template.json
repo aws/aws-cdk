@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvokef3b58fd2af78e934527e05bc469d07dc": {
+  "LambdaInvoke2b6e8ea895f068736d6c24688beb0ea1": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2633725233CB9A54A"
         },
         "\""
        ]
@@ -27,17 +27,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1732467508037"
+    "salt": "1736374512627"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokef3b58fd2af78e934527e05bc469d07dcInvokeFB39F386": {
+  "LambdaInvoke2b6e8ea895f068736d6c24688beb0ea1InvokeECEDC4C5": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2633725233CB9A54A"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal20A3EC5933F5EA8606"
+              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2633725233CB9A54A"
              }
             ]
            ]
@@ -146,7 +146,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+              "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023FA840EAA50E75800"
              }
             ]
            ]
@@ -175,7 +175,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b98abee59e034ed29eeb601684dc34752baa86509a7d457d72305d4e19ecc80b.zip"
+     "S3Key": "bfcf4228d6660f50e81f19efdb64c6388dda6796296eb239decdff1dbc2f4981.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -187,7 +187,7 @@
     }
    }
   },
-  "LambdaInvokee64be71dc9e61c18c827e4067293abf7": {
+  "LambdaInvokee243f6063740d52875d805d005f0d7bf": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -206,7 +206,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+         "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023FA840EAA50E75800"
         },
         "\""
        ]
@@ -214,17 +214,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1732467508039"
+    "salt": "1736374512629"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvokee64be71dc9e61c18c827e4067293abf7Invoke6B51EA75": {
+  "LambdaInvokee243f6063740d52875d805d005f0d7bfInvoke13D1276D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023182E754E4D088A80B"
+     "Fn::ImportValue": "cdk-integ-lambda-golang-provided-al2023:ExportsOutputRefgohandlerprovidedal2023FA840EAA50E75800"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -236,18 +236,18 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvokef3b58fd2af78e934527e05bc469d07dc": {
+  "AssertionResultsLambdaInvoke2b6e8ea895f068736d6c24688beb0ea1": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokef3b58fd2af78e934527e05bc469d07dc",
+     "LambdaInvoke2b6e8ea895f068736d6c24688beb0ea1",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvokee64be71dc9e61c18c827e4067293abf7": {
+  "AssertionResultsLambdaInvokee243f6063740d52875d805d005f0d7bf": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokee64be71dc9e61c18c827e4067293abf7",
+     "LambdaInvokee243f6063740d52875d805d005f0d7bf",
      "assertion"
     ]
    }
@@ -301,10 +301,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -355,10 +355,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

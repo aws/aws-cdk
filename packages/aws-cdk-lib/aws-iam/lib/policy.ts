@@ -8,6 +8,7 @@ import { generatePolicyName, undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
 import { IResource, Lazy, Resource } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents an IAM Policy
@@ -103,7 +104,6 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 export class Policy extends Resource implements IPolicy, IGrantable {
-
   /**
    * Import a policy in this app based on its name
    */
@@ -137,6 +137,8 @@ export class Policy extends Resource implements IPolicy, IGrantable {
         // that shouod be sufficient to ensure uniqueness within a principal.
         Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const self = this;
 
@@ -190,6 +192,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Adds a statement to the policy document.
    */
+  @MethodMetadata()
   public addStatements(...statement: PolicyStatement[]) {
     this.document.addStatements(...statement);
   }
@@ -197,6 +200,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a user.
    */
+  @MethodMetadata()
   public attachToUser(user: IUser) {
     if (this.users.find(u => u.userArn === user.userArn)) { return; }
     this.users.push(user);
@@ -206,6 +210,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a role.
    */
+  @MethodMetadata()
   public attachToRole(role: IRole) {
     if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
@@ -215,6 +220,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Attaches this policy to a group.
    */
+  @MethodMetadata()
   public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);

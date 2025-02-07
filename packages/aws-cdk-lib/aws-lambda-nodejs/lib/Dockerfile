@@ -9,6 +9,9 @@ RUN npm install --global yarn@1.22.5
 # Install pnpm
 RUN npm install --global pnpm@7.30.5
 
+# Install bun
+RUN npm install --global bun@1.1.30
+
 # Install typescript
 RUN npm install --global typescript
 
@@ -38,5 +41,10 @@ RUN npm config --global set update-notifier false
 
 # create non root user and change allow execute command for non root user
 RUN /sbin/useradd -u 1000 user && chmod 711 /
+
+# Ensure all users can write to bun cache
+RUN mkdir /tmp/bun-cache && \
+    chmod -R 777 /tmp/bun-cache && \
+    echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
 
 CMD [ "esbuild" ]
