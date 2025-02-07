@@ -1,6 +1,8 @@
+import { IConstruct } from 'constructs';
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
+import { ValidationError } from '../../../core';
 
 /**
  * Properties to initialize `HttpSqsIntegration`.
@@ -51,7 +53,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('SQS-')) {
-      throw new Error('Subtype must start with `SQS_`');
+      throw new ValidationError('Subtype must start with `SQS_`', options.scope);
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {
@@ -62,7 +64,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         sid: 'AllowSqsExecution',
-        actions: [this.determineActionBySubtype()],
+        actions: [this.determineActionBySubtype(options.scope)],
         resources: [this.props.queue.queueArn],
       }),
     );
@@ -73,11 +75,11 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       subtype: this.props.subtype ?? apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(),
+      parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope),
     };
   }
 
-  private determineActionBySubtype(): string {
+  private determineActionBySubtype(scope: IConstruct): string {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
         return 'sqs:SendMessage';
@@ -88,11 +90,11 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return 'sqs:PurgeQueue';
       default:
-        throw new Error(`Unsupported subtype: ${this.subtype}`);
+        throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 
-  private createDefaultParameterMapping(): apigwv2.ParameterMapping {
+  private createDefaultParameterMapping(scope: IConstruct): apigwv2.ParameterMapping {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
         return new apigwv2.ParameterMapping()
@@ -109,7 +111,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
         return new apigwv2.ParameterMapping()
           .custom('QueueUrl', this.props.queue.queueUrl);
       default:
-        throw new Error(`Unsupported subtype: ${this.subtype}`);
+        throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 }
