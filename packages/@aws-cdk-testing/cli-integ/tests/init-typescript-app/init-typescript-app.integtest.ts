@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { integTest, withTemporaryDirectory, ShellHelper, withPackages, TemporaryDirectoryContext } from '../../lib';
-import { typescriptVersionsSync } from '../../lib/npm';
+import { typescriptVersionsSync, typescriptVersionsYoungerThanDaysSync } from '../../lib/npm';
 
 ['app', 'sample-app'].forEach(template => {
   integTest(`typescript init ${template}`, withTemporaryDirectory(withPackages(async (context) => {
@@ -19,10 +19,15 @@ import { typescriptVersionsSync } from '../../lib/npm';
   })));
 });
 
+// Same as https://github.com/DefinitelyTyped/DefinitelyTyped?tab=readme-ov-file#support-window
+const TYPESCRIPT_VERSION_AGE_DAYS = 2 * 365;
+
+const TYPESCRIPT_VERSIONS = typescriptVersionsYoungerThanDaysSync(TYPESCRIPT_VERSION_AGE_DAYS, typescriptVersionsSync());
+
 /**
  * Test our generated code with various versions of TypeScript
  */
-typescriptVersionsSync().forEach(tsVersion => {
+TYPESCRIPT_VERSIONS.forEach(tsVersion => {
   integTest(`typescript ${tsVersion} init app`, withTemporaryDirectory(withPackages(async (context) => {
     const shell = ShellHelper.fromContext(context);
     await context.packages.makeCliAvailable();
@@ -37,6 +42,10 @@ typescriptVersionsSync().forEach(tsVersion => {
     await removeDevDependencies(context);
 
     await shell.shell(['npm', 'install', '--save-dev', `typescript@${tsVersion}`]);
+
+    // After we've removed devDependencies we need to re-install ts-node because it's necessary for `cdk synth`
+    await shell.shell(['npm', 'install', '--save-dev', 'ts-node@^10']);
+
     await shell.shell(['npm', 'install']); // Older versions of npm require this to be a separate step from the one above
     await shell.shell(['npx', 'tsc', '--version']);
     await shell.shell(['npm', 'prune']);

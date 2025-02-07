@@ -176,6 +176,55 @@ test('map a branch to the domain root', () => {
   });
 });
 
+test('throw error for invalid domain name length', () => {
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+
+  expect(() => app.addDomain('Domain', {
+    subDomains: [
+      {
+        branch: prodBranch,
+        prefix: 'prod',
+      },
+    ],
+    domainName: 'a'.repeat(256),
+  })).toThrow('Domain name must be 255 characters or less, got: 256 characters.');
+});
+
+test.each([
+  '-example.com',
+  'example..com',
+  'example.com-',
+  'ex@mple.com',
+])('throw error for invalid domain name', (domainName) => {
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+
+  expect(() => app.addDomain('Domain', {
+    subDomains: [
+      {
+        branch: prodBranch,
+        prefix: 'prod',
+      },
+    ],
+    domainName,
+  })).toThrow(`Domain name must be a valid hostname, got: ${domainName}.`);
+});
+
 test('throws at synthesis without subdomains', () => {
   // GIVEN
   const app = new App();

@@ -7,11 +7,12 @@ import { shell, rimraf, addToShellPath } from '../shell';
 
 export class ReleasePackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'release';
-  readonly description = `release @ ${this.version}`;
+  readonly description: string;
 
   private tempDir?: string;
 
   constructor(private readonly version: string, private readonly frameworkVersion?: string) {
+    this.description = `release @ ${this.version}`;
   }
 
   public async prepare(): Promise<void> {
@@ -58,6 +59,10 @@ export class ReleasePackageSource implements IPackageSource {
 
   public majorVersion() {
     return this.version.split('.')[0] as string;
+  }
+
+  public requestedCliVersion() {
+    return this.version;
   }
 
   public requestedFrameworkVersion() {

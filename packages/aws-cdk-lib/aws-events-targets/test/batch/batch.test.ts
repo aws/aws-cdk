@@ -327,7 +327,7 @@ describe('Batch job event target', () => {
           },
         ),
       );
-    }).toThrowError(/must have length between 1 and 128/);
+    }).toThrow(/must have length between 1 and 128/);
     expect(() => {
       rule.addTarget(
         new targets.BatchJob(
@@ -340,6 +340,6 @@ describe('Batch job event target', () => {
           },
         ),
       );
-    }).toThrowError(/must have length between 1 and 128/);
+    }).toThrow(/must have length between 1 and 128/);
   });
 });

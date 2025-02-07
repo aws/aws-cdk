@@ -43,7 +43,6 @@ describe('User Pool Client', () => {
   });
 
   describe('Client with secret', () => {
-
     test('generate secret', () => {
       // GIVEN
       const stack = new Stack();
@@ -255,6 +254,7 @@ describe('User Pool Client', () => {
         custom: true,
         userPassword: true,
         userSrp: true,
+        user: true,
       },
     });
 
@@ -264,6 +264,7 @@ describe('User Pool Client', () => {
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
         'ALLOW_CUSTOM_AUTH',
         'ALLOW_USER_SRP_AUTH',
+        'ALLOW_USER_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
       ],
     });
@@ -281,6 +282,7 @@ describe('User Pool Client', () => {
         custom: false,
         userPassword: false,
         userSrp: false,
+        user: false,
       },
     });
 
@@ -1338,5 +1340,4 @@ describe('User Pool Client', () => {
     }),
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
-
 });

@@ -5,6 +5,7 @@ import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
 import { Aws, Duration, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The Lustre version for the file system.
@@ -86,17 +87,17 @@ export enum DriveCacheType {
 }
 
 /**
-  * The permitted Lustre data compression algorithms
-*/
+ * The permitted Lustre data compression algorithms
+ */
 export enum LustreDataCompressionType {
   /**
-  *
-  * `NONE` - (Default) Data compression is turned off when the file system is created.
-  */
+   *
+   * `NONE` - (Default) Data compression is turned off when the file system is created.
+   */
   NONE = 'NONE',
   /**
-  * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
-  */
+   * `LZ4` - Data compression is turned on with the LZ4 algorithm.  Note: When you turn data compression on for an existing file system, only newly written files are compressed. Existing files are not compressed.
+   */
   LZ4 = 'LZ4',
 }
 
@@ -249,7 +250,6 @@ export interface LustreFileSystemProps extends FileSystemProps {
  * @resource AWS::FSx::FileSystem
  */
 export class LustreFileSystem extends FileSystemBase {
-
   /**
    * Import an existing FSx for Lustre file system from the given properties.
    */
@@ -316,6 +316,8 @@ export class LustreFileSystem extends FileSystemBase {
 
   constructor(scope: Construct, id: string, props: LustreFileSystemProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.validateProps(props);
 
@@ -583,6 +585,5 @@ export class LustreFileSystem extends FileSystemBase {
     if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
       throw new Error('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
     }
-
   }
 }

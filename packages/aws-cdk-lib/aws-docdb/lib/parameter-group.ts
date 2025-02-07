@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup } from './docdb.generated';
 import { IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A parameter group
@@ -74,6 +75,8 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase implements 
 
   constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       name: props.dbClusterParameterGroupName,

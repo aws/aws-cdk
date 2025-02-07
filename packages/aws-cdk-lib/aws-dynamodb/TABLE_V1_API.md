@@ -60,6 +60,25 @@ const table = new dynamodb.Table(this, 'Table', {
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
 
+## Warm Throughput
+Warm throughput refers to the number of read and write operations your DynamoDB table can instantaneously support.
+
+This optional configuration allows you to pre-warm your table or index to handle anticipated throughput, ensuring optimal performance under expected load.
+
+Note: The Warm Throughput feature is not available for Global Table replicas using `Table` construct; use the `TableV2` construct instead to enable this functionality.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  warmThroughput: {
+      readUnitsPerSecond: 15000,
+      writeUnitsPerSecond: 20000,
+    },
+});
+```
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/warm-throughput.html
+
 ## Table Class
 
 DynamoDB supports two table classes:
@@ -203,6 +222,8 @@ const sortKey = schema.sortKey;
 
 A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
 
+You can optionally configure the `kinesisPrecisionTimestamp` parameter to specify the precision level of the approximate creation date and time. The allowed values are `MICROSECOND` and `MILLISECOND`. If this parameter is not specified, the default precision is set to `MICROSECOND`.
+
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
@@ -274,3 +295,22 @@ new dynamodb.Table(this, 'MyTable', {
 ```
 
 If you have a global table replica, note that it does not support the addition of a resource-based policy.
+
+## Point-in-Time Recovery
+
+`pointInTimeRecoverySpecifcation` provides automatic backups of your DynamoDB table data which helps protect your tables from accidental write or delete operations.
+
+You can also choose to set `recoveryPeriodInDays` to a value between `1` and `35` which dictates how many days of recoverable data is stored. If no value is provided, the recovery period defaults to `35` days.
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  pointInTimeRecoverySpecification: {
+    pointInTimeRecoveryEnabled: true,
+    recoveryPeriodInDays: 4,
+  },
+});
+```

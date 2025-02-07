@@ -369,7 +369,7 @@ describe('deprecated ServicePrincipal behavior', () => {
   });
 
   test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+    expect(() => new iam.AccountPrincipal(1234)).toThrow('accountId should be of type string');
   });
 });
 
@@ -397,7 +397,6 @@ describe('standardized Service Principal behavior', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'af-south-1' } });
     expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
   });
-
 });
 
 test('Can enable session tags', () => {

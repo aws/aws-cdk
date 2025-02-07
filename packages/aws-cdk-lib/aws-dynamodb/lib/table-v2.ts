@@ -1,18 +1,39 @@
 import { Construct } from 'constructs';
+
 import { Billing } from './billing';
 import { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import { TableEncryptionV2 } from './encryption';
+
 import {
+  Attribute,
+  BillingMode,
+  LocalSecondaryIndexProps,
+  ProjectionType,
+  SecondaryIndexProps,
   StreamViewType,
-  Attribute, TableClass, LocalSecondaryIndexProps,
-  SecondaryIndexProps, BillingMode, ProjectionType,
+  PointInTimeRecoverySpecification,
+  TableClass,
+  WarmThroughput,
 } from './shared';
-import { TableBaseV2, ITableV2 } from './table-v2-base';
+import { ITableV2, TableBaseV2 } from './table-v2-base';
 import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, CfnTag, FeatureFlags, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
+import {
+  ArnFormat,
+  CfnTag,
+  FeatureFlags,
+  Lazy,
+  PhysicalName,
+  RemovalPolicy,
+  Stack,
+  TagManager,
+  TagType,
+  Token,
+} from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -103,6 +124,13 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    * @default - inherited from the primary table.
    */
   readonly maxWriteRequestUnits?: number;
+
+  /**
+   * The warm throughput configuration for the global secondary index.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -125,10 +153,18 @@ export interface TableOptionsV2 {
 
   /**
    * Whether point-in-time recovery is enabled.
-   *
-   * @default false
+   * @deprecated use `pointInTimeRecoverySpecification` instead
+   * @default false - point in time recovery is not enabled.
    */
   readonly pointInTimeRecovery?: boolean;
+
+  /**
+   * Whether point-in-time recovery is enabled
+   * and recoveryPeriodInDays is set.
+   *
+   * @default - point in time recovery is not enabled.
+   */
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
 
   /**
    * The table class.
@@ -145,7 +181,7 @@ export interface TableOptionsV2 {
   readonly kinesisStream?: IStream;
 
   /**
-   * Tags to be applied to the table or replica table
+   * Tags to be applied to the primary table (default replica table).
    *
    * @default - no tags
    */
@@ -178,7 +214,7 @@ export interface ReplicaTableProps extends TableOptionsV2 {
   readonly readCapacity?: Capacity;
 
   /**
-   * The maxium read request units.
+   * The maximum read request units.
    *
    * Note: This can only be configured if the primary table billing is PAY_PER_REQUEST.
    *
@@ -283,6 +319,13 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default TableEncryptionV2.dynamoOwnedKey()
    */
   readonly encryption?: TableEncryptionV2;
+
+  /**
+   * The warm throughput configuration for the table.
+   *
+   * @default - no warm throughput is configured
+   */
+  readonly warmThroughput?: WarmThroughput;
 }
 
 /**
@@ -483,6 +526,8 @@ export class TableV2 extends TableBaseV2 {
 
   protected readonly region: string;
 
+  protected readonly tags: TagManager;
+
   private readonly billingMode: string;
   private readonly partitionKey: Attribute;
   private readonly hasSortKey: boolean;
@@ -511,11 +556,14 @@ export class TableV2 extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.tableOptions = props;
     this.partitionKey = props.partitionKey;
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
+    this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -525,6 +573,8 @@ export class TableV2 extends TableBaseV2 {
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
     }
+
+    this.validatePitr(props);
 
     if (props.billing?.mode === BillingMode.PAY_PER_REQUEST || props.billing?.mode === undefined) {
       this.maxReadRequestUnits = props.billing?._renderReadCapacity();
@@ -558,6 +608,7 @@ export class TableV2 extends TableBaseV2 {
       timeToLiveSpecification: props.timeToLiveAttribute
         ? { attributeName: props.timeToLiveAttribute, enabled: true }
         : undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -584,6 +635,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the replica table to add
    */
+  @MethodMetadata()
   public addReplica(props: ReplicaTableProps) {
     this.validateReplica(props);
 
@@ -608,6 +660,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the global secondary index
    */
+  @MethodMetadata()
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
@@ -621,6 +674,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param props the properties of the local secondary index
    */
+  @MethodMetadata()
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
@@ -634,6 +688,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param region the region of the replica table
    */
+  @MethodMetadata()
   public replica(region: string): ITableV2 {
     if (Token.isUnresolved(this.stack.region)) {
       throw new Error('Replica tables are not supported in a region agnostic stack');
@@ -663,8 +718,23 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
-    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+
+    // Determine if Point-In-Time Recovery (PITR) is enabled based on the provided property or table options (deprecated options).
+    const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
+
+    /* Construct the PointInTimeRecoverySpecification object to configure PITR settings.
+    * 1. Explicitly provided specification via props.pointInTimeRecoverySpecification.
+    * 2. Fallback to default specification from tableOptions.pointInTimeRecoverySpecification.
+    * 3. Derive the specification based on pointInTimeRecovery if it's defined.
+    */
+    const pointInTimeRecoverySpecification: PointInTimeRecoverySpecification | undefined =
+      props.pointInTimeRecoverySpecification ??
+      this.tableOptions.pointInTimeRecoverySpecification ??
+      (pointInTimeRecovery !== undefined
+        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
+        : undefined);
+
     /*
     * Feature flag set as the following may be a breaking change.
     * @see https://github.com/aws/aws-cdk/pull/31097
@@ -673,6 +743,15 @@ export class TableV2 extends TableBaseV2 {
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
       ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
       : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+
+    const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
+      ({ ...p, [item.key]: item.value }), {},
+    );
+
+    const tags: CfnTag[] = Object.entries({
+      ...this.tags.tagValues(),
+      ...propTags,
+    }).map(([k, v]) => ({ key: k, value: v }));
 
     return {
       region: props.region,
@@ -686,13 +765,11 @@ export class TableV2 extends TableBaseV2 {
       contributorInsightsSpecification: contributorInsights !== undefined
         ? { enabled: contributorInsights }
         : undefined,
-      pointInTimeRecoverySpecification: pointInTimeRecovery !== undefined
-        ? { pointInTimeRecoveryEnabled: pointInTimeRecovery }
-        : undefined,
+      pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       readProvisionedThroughputSettings: props.readCapacity
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
-      tags: props.tags,
+      tags: tags.length === 0 ? undefined : tags,
       readOnDemandThroughputSettings: props.maxReadRequestUnits
         ? { maxReadRequestUnits: props.maxReadRequestUnits }
         : this.maxReadRequestUnits
@@ -713,6 +790,8 @@ export class TableV2 extends TableBaseV2 {
 
     props.maxReadRequestUnits && this.globalSecondaryIndexMaxReadUnits.set(props.indexName, props.maxReadRequestUnits);
 
+    const warmThroughput = props.warmThroughput ?? undefined;
+
     const writeOnDemandThroughputSettings: CfnGlobalTable.WriteOnDemandThroughputSettingsProperty | undefined = props.maxWriteRequestUnits
       ? { maxWriteRequestUnits: props.maxWriteRequestUnits }
       : undefined;
@@ -723,6 +802,7 @@ export class TableV2 extends TableBaseV2 {
       projection,
       writeProvisionedThroughputSettings,
       writeOnDemandThroughputSettings,
+      warmThroughput,
     };
   }
 
@@ -943,6 +1023,22 @@ export class TableV2 extends TableBaseV2 {
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`);
+    }
+  }
+
+  private validatePitr(props: TablePropsV2) {
+    const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
+
+    if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
+      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
+    }
+
+    if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
+      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
+    }
+
+    if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
+      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }
 }

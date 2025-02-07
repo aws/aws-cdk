@@ -28,13 +28,11 @@ module.exports = {
     },
   },
   collectCoverage: true,
-  coverageReporters: ['lcov', 'html', 'text-summary', ['text', { file: 'coverage.txt' }]],
+  coverageReporters: [
+    'text-summary', // for console summary
+    'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript
+    'html' // for local deep dive
+  ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
   reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
-  /**
-   * This will still show us helpful information when running tests but remove console statements.
-   * The exception is when we use our custom logger in the CLI or when other processes are spun up
-   * within tests. It has no impact there.
-   */
-  silent: true,
 };

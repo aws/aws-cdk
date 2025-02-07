@@ -1,11 +1,10 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { IsCompleteResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 // @aws-sdk/* modules available at runtime for lambdas >= Node18
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Amplify } from '@aws-sdk/client-amplify';
 import { S3 } from '@aws-sdk/client-s3';
 import { ResourceEvent } from './common';
 import { AmplifyAssetDeploymentHandler } from './handler';
+import { IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const AMPLIFY_ASSET_DEPLOYMENT_RESOURCE_TYPE = 'Custom::AmplifyAssetDeployment';
 

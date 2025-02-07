@@ -12,6 +12,7 @@ The following destinations are supported
 * SQS queue - Only standard SQS queues are supported for failure destinations, FIFO queues are not supported.
 * SNS topic
 * EventBridge event bus
+* S3 bucket
 
 Example with a SNS topic for successful invocations:
 
@@ -116,6 +117,8 @@ is either 'Lambda Function Invocation Result - Success' or 'Lambda Function Invo
 depending on whether the lambda function invocation succeeded or failed. The event field `resource`
 contains the function and destination ARNs. See [AWS Events](https://docs.aws.amazon.com/eventbridge/latest/userguide/aws-events.html)
 for the different event fields.
+* For S3 (`S3Destination`), the invocation record json is stored as a `File` in the destination bucket. The path of a destination 
+payload file in the configured bucket is `aws/lambda/async/<function-name>/YYYY/MM/DD/YYYY-MM-DDTHH.MM.SS-<Random UUID>`. 
 
 ### Auto-extract response payload with lambda destination
 

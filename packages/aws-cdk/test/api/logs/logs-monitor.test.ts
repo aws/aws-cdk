@@ -1,15 +1,28 @@
-/* eslint-disable import/order */
-import { blue, yellow } from 'chalk';
+import { FilterLogEventsCommand, type FilteredLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 import { sleep } from '../../util';
-import { MockSdk } from '../../util/mock-sdk';
+import { MockSdk, mockCloudWatchClient } from '../../util/mock-sdk';
+
+// Helper function to strip ANSI codes
+const stripAnsi = (str: string): string => {
+  const ansiRegex = /\u001b\[[0-9;]*[a-zA-Z]/g;
+  return str.replace(ansiRegex, '');
+};
 
 let sdk: MockSdk;
 let stderrMock: jest.SpyInstance;
 let monitor: CloudWatchLogEventMonitor;
 beforeEach(() => {
+  CliIoHost.instance().isCI = false;
   monitor = new CloudWatchLogEventMonitor(new Date(T100));
-  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation((chunk: any) => {
+    // Strip ANSI codes when capturing output
+    if (typeof chunk === 'string') {
+      return stripAnsi(chunk) as unknown as boolean;
+    }
+    return stripAnsi(chunk.toString()) as unknown as boolean;
+  });
   sdk = new MockSdk();
 });
 
@@ -21,13 +34,10 @@ afterEach(() => {
 test('process events', async () => {
   // GIVEN
   const eventDate = new Date(T0 + 102 * 1000);
-  sdk.stubCloudWatchLogs({
-    filterLogEvents() {
-      return {
-        events: [event(102, 'message', eventDate)],
-      };
-    },
+  mockCloudWatchClient.on(FilterLogEventsCommand).resolves({
+    events: [event(102, 'message', eventDate)],
   });
+
   monitor.addLogGroups(
     {
       name: 'name',
@@ -45,26 +55,20 @@ test('process events', async () => {
   // THEN
   const expectedLocaleTimeString = eventDate.toLocaleTimeString();
   expect(stderrMock).toHaveBeenCalledTimes(1);
-  expect(stderrMock.mock.calls[0][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
-  );
+  expect(stripAnsi(stderrMock.mock.calls[0][0])).toContain(`[loggroup] ${expectedLocaleTimeString} message`);
 });
 
 test('process truncated events', async () => {
   // GIVEN
   const eventDate = new Date(T0 + 102 * 1000);
-  const events: AWS.CloudWatchLogs.FilteredLogEvents = [];
+  const events: FilteredLogEvent[] = [];
   for (let i = 0; i < 100; i++) {
-    events.push(event(102+i, 'message' + i, eventDate));
+    events.push(event(102 + i, 'message' + i, eventDate));
   }
 
-  sdk.stubCloudWatchLogs({
-    filterLogEvents() {
-      return {
-        events,
-        nextToken: 'some-token',
-      };
-    },
+  mockCloudWatchClient.on(FilterLogEventsCommand).resolves({
+    events,
+    nextToken: 'some-token',
   });
   monitor.addLogGroups(
     {
@@ -83,17 +87,15 @@ test('process truncated events', async () => {
   // THEN
   const expectedLocaleTimeString = eventDate.toLocaleTimeString();
   expect(stderrMock).toHaveBeenCalledTimes(101);
-  expect(stderrMock.mock.calls[0][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} message`,
-  );
-  expect(stderrMock.mock.calls[100][0]).toContain(
-    `[${blue('loggroup')}] ${yellow(expectedLocaleTimeString)} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
+  expect(stripAnsi(stderrMock.mock.calls[0][0])).toContain(`[loggroup] ${expectedLocaleTimeString} message0`);
+  expect(stripAnsi(stderrMock.mock.calls[100][0])).toContain(
+    `[loggroup] ${expectedLocaleTimeString} >>> \`watch\` shows only the first 100 log messages - the rest have been truncated...`,
   );
 });
 
 const T0 = 1597837230504;
 const T100 = T0 + 100 * 1000;
-function event(nr: number, message: string, timestamp: Date): AWS.CloudWatchLogs.FilteredLogEvent {
+function event(nr: number, message: string, timestamp: Date): FilteredLogEvent {
   return {
     eventId: `${nr}`,
     message,

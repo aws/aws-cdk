@@ -82,26 +82,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
+    "@aws-cdk/aws-scheduler-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/aws-scheduler-alpha": "0.0.0",
-    "constructs": "^10.0.0",
-    "@aws-cdk/integ-tests-alpha": "0.0.0"
+    "constructs": "^10.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
-    "aws-cdk-lib": "^0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
     "@aws-cdk/aws-scheduler-alpha": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
   },

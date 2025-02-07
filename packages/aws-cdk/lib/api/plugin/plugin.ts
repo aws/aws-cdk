@@ -1,46 +1,22 @@
 import { inspect } from 'util';
+import type { CredentialProviderSource, IPluginHost, Plugin } from '@aws-cdk/cli-plugin-contract';
+
 import * as chalk from 'chalk';
+import { type ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
+import { error } from '../../logging';
+import { ToolkitError } from '../../toolkit/error';
 
-import { error } from './_env';
-import { ContextProviderPlugin, isContextProviderPlugin } from './context-provider-plugin';
-import { CredentialProviderSource } from './credential-provider-source';
+export let TESTING = false;
 
-/**
- * The basic contract for plug-ins to adhere to::
- *
- *   import { Plugin, PluginHost } from 'aws-cdk';
- *   import { CustomCredentialProviderSource } from './custom-credential-provider-source';
- *
- *   export default class FooCDKPlugIn implements PluginHost {
- *     public readonly version = '1';
- *
- *     public init(host: PluginHost) {
- *     host.registerCredentialProviderSource(new CustomCredentialProviderSource());
- *     }
- *   }
- *
- */
-export interface Plugin {
-  /**
-   * The version of the plug-in interface used by the plug-in. This will be used by
-   * the plug-in host to handle version changes.
-   */
-  version: '1';
-
-  /**
-   * When defined, this function is invoked right after the plug-in has been loaded,
-   * so that the plug-in is able to initialize itself. It may call methods of the
-   * ``PluginHost`` instance it receives to register new ``CredentialProviderSource``
-   * instances.
-   */
-  init?: (host: PluginHost) => void;
+export function markTesting() {
+  TESTING = true;
 }
 
 /**
  * A utility to manage plug-ins.
  *
  */
-export class PluginHost {
+export class PluginHost implements IPluginHost {
   public static instance = new PluginHost();
 
   /**
@@ -52,8 +28,8 @@ export class PluginHost {
   public readonly contextProviderPlugins: Record<string, ContextProviderPlugin> = {};
 
   constructor() {
-    if (PluginHost.instance && PluginHost.instance !== this) {
-      throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
+    if (!TESTING && PluginHost.instance && PluginHost.instance !== this) {
+      throw new ToolkitError('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
     }
   }
 
@@ -69,12 +45,14 @@ export class PluginHost {
       /* eslint-enable */
       if (!isPlugin(plugin)) {
         error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
-        throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
+        throw new ToolkitError(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
-      if (plugin.init) { plugin.init(PluginHost.instance); }
+      if (plugin.init) {
+        plugin.init(this);
+      }
     } catch (e: any) {
       error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
-      throw new Error(`Unable to load plug-in: ${moduleSpec}`);
+      throw new ToolkitError(`Unable to load plug-in: ${moduleSpec}: ${e}`);
     }
 
     function isPlugin(x: any): x is Plugin {
@@ -126,7 +104,7 @@ export class PluginHost {
    */
   public registerContextProviderAlpha(pluginProviderName: string, provider: ContextProviderPlugin) {
     if (!isContextProviderPlugin(provider)) {
-      throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
+      throw new ToolkitError(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
     }
     this.contextProviderPlugins[pluginProviderName] = provider;
   }

@@ -13,7 +13,7 @@ class TestStack extends Stack {
     });
 
     new GeofenceCollection(this, 'GeofenceCollection', {
-      geofenceCollectionName: 'MyGeofenceCollection',
+      geofenceCollectionName: 'my_geofence_collection',
       description: 'test',
       kmsKey,
     });
