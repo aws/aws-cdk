@@ -265,6 +265,8 @@ const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
 
 Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
 
+Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
