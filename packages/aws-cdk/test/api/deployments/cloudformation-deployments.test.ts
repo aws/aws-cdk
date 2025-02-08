@@ -1,17 +1,18 @@
-jest.mock('../../../lib/api/deployments/deploy-stack');
-jest.mock('../../../lib/api/deployments/asset-publishing');
-
+import * as cxapi from '@aws-cdk/cx-api';
 import {
-  DescribeStacksCommand,
-  ListStackResourcesCommand,
-  StackStatus,
-  type StackResourceSummary,
-  RollbackStackCommand,
   ContinueUpdateRollbackCommand,
   DescribeStackEventsCommand,
+  DescribeStacksCommand,
+  ListStackResourcesCommand,
+  RollbackStackCommand,
+  type StackResourceSummary,
+  StackStatus,
+  DescribeChangeSetCommand,
+  ChangeSetStatus,
+  CreateChangeSetCommand,
 } from '@aws-sdk/client-cloudformation';
 import { GetParameterCommand } from '@aws-sdk/client-ssm';
-import { CloudFormationStack, Deployments } from '../../../lib/api/deployments';
+import { CloudFormationStack, createChangeSet, Deployments } from '../../../lib/api/deployments';
 import { deployStack } from '../../../lib/api/deployments/deploy-stack';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { ToolkitInfo } from '../../../lib/api/toolkit-info';
@@ -26,6 +27,9 @@ import {
   setDefaultSTSMocks,
 } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
+
+jest.mock('../../../lib/api/deployments/deploy-stack');
+jest.mock('../../../lib/api/deployments/asset-publishing');
 
 let sdkProvider: MockSdkProvider;
 let sdk: MockSdk;
@@ -1129,6 +1133,33 @@ describe('stackExists', () => {
     expect(mockForEnvironment).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.objectContaining({
       assumeRoleArn: expectedRoleArn,
     }));
+  });
+});
+
+test('tags are passed along to create change set', async () => {
+  mockCloudFormationClient.on(DescribeChangeSetCommand).resolves({
+    Status: ChangeSetStatus.CREATE_COMPLETE,
+  });
+
+  const stack: any = {};
+  stack.tags = { SomeKey: 'SomeValue' };
+  for (const methodName of Object.getOwnPropertyNames(cxapi.CloudFormationStackArtifact.prototype)) {
+    stack[methodName] = jest.fn();
+  }
+
+  await createChangeSet({
+    stack: stack,
+    cfn: new MockSdk().cloudFormation(),
+    changeSetName: 'foo',
+    willExecute: false,
+    exists: true,
+    uuid: '142DF82A-8ED8-4944-8EEB-A5BAE141F13F',
+    bodyParameter: {},
+    parameters: {},
+  });
+
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    Tags: [{ Key: 'SomeKey', Value: 'SomeValue' }],
   });
 });
 
