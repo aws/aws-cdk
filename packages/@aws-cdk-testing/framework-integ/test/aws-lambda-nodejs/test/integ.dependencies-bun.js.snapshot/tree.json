@@ -21,7 +21,10 @@
                     "path": "TestStack/Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -66,7 +69,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -86,7 +102,8 @@
                     "path": "TestStack/Function/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -105,7 +122,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "06377804ec21f3cc33473a6b5853b2a873177c1ebe09b176c3ab1eef45287c97.zip"
+                      "s3Key": "34a0cfe827762d92939af809d39b2595744d7d29328d6ec419935ca5a9fe9116.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -114,7 +131,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs20.x"
+                    "runtime": "nodejs22.x"
                   }
                 },
                 "constructInfo": {
@@ -125,7 +142,31 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "entry": "*",
+                  "runtime": "*",
+                  "bundling": {
+                    "minify": "*",
+                    "nodeModules": "*",
+                    "forceDockerBundling": "*"
+                  },
+                  "depsLockFilePath": "*",
+                  "code": "*",
+                  "handler": "*"
+                },
+                {
+                  "entry": "*",
+                  "runtime": "*",
+                  "bundling": {
+                    "minify": "*",
+                    "nodeModules": "*",
+                    "forceDockerBundling": "*"
+                  },
+                  "depsLockFilePath": "*"
+                }
+              ]
             }
           },
           "Exports": {
@@ -225,7 +266,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
