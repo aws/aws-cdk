@@ -230,6 +230,10 @@ export class Graph<A> extends GraphNode<A> {
     return this.children.get(name);
   }
 
+  public containsId(id: string) {
+    return this.tryGetChild(id) !== undefined;
+  }
+
   public contains(node: GraphNode<A>) {
     return this.nodes.has(node);
   }
@@ -473,8 +477,8 @@ export class GraphNodeCollection<A> {
   }
 
   /**
-  * Returns the graph node that's shared between these nodes
-  */
+   * Returns the graph node that's shared between these nodes
+   */
   public commonAncestor() {
     const paths = new Array<GraphNode<A>[]>();
     for (const x of this.nodes) {

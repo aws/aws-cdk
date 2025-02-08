@@ -10,3 +10,13 @@ export function cached<A extends object, B>(obj: A, sym: symbol, fn: () => B): B
   }
   return (obj as any)[sym];
 }
+
+/**
+ * Like 'cached', but async
+ */
+export async function cachedAsync<A extends object, B>(obj: A, sym: symbol, fn: () => Promise<B>): Promise<B> {
+  if (!(sym in obj)) {
+    (obj as any)[sym] = await fn();
+  }
+  return (obj as any)[sym];
+}

@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "9e08a9a2c681a01a61231bae5c62d06bd23b48774806fd8d207fa89390c74055": {
+      "source": {
+        "path": "aws-cdk-eks-cluster-al2023-nodegroup-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9e08a9a2c681a01a61231bae5c62d06bd23b48774806fd8d207fa89390c74055.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

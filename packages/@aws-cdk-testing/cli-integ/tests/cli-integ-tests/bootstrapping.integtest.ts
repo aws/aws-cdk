@@ -1,4 +1,4 @@
-/* eslint-disable @aws-cdk/no-literal-partition */
+/* eslint-disable @cdklabs/no-literal-partition */
 import * as fs from 'fs';
 import * as path from 'path';
 import { DescribeStackResourcesCommand, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
@@ -79,6 +79,43 @@ integTest('can and deploy if omitting execution policies', withoutBootstrap(asyn
 
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+  });
+}));
+
+integTest('can deploy with session tags on the deploy, lookup, file asset, and image asset publishing roles', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.all-roles-deny-all.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
+    ],
+    modEnv: {
+      ENABLE_VPC_TESTING: 'IMPORT',
+    },
+  });
+}));
+
+integTest('can deploy without execution role and with session tags on deploy role', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    toolkitStackName: bootstrapStackName,
+    bootstrapTemplate: path.join(__dirname, '..', '..', 'resources', 'bootstrap-templates', 'session-tags.deploy-role-deny-sqs.yaml'),
+  });
+
+  await fixture.cdkDeploy('session-tags-with-custom-synthesizer', {
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
@@ -335,7 +372,6 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
       throw new Error('Role not found');
     }
     expect(role.Role.PermissionsBoundary).toBeUndefined();
-
   } finally {
     if (policyArn) {
       await fixture.aws.iam.send(new DeletePolicyCommand({ PolicyArn: policyArn }));
@@ -452,5 +488,30 @@ integTest('create ECR with tag IMMUTABILITY to set on', withoutBootstrap(async (
   );
 
   expect(ecrResponse.repositories?.[0].imageTagMutability).toEqual('IMMUTABLE');
+}));
+
+integTest('can remove trusted account', withoutBootstrap(async (fixture) => {
+  const bootstrapStackName = fixture.bootstrapStackName;
+
+  await fixture.cdkBootstrapModern({
+    verbose: false,
+    toolkitStackName: bootstrapStackName,
+    cfnExecutionPolicy: 'arn:aws:iam::aws:policy/AdministratorAccess',
+    trust: ['599757620138', '730170552321'],
+  });
+
+  await fixture.cdkBootstrapModern({
+    verbose: true,
+    toolkitStackName: bootstrapStackName,
+    cfnExecutionPolicy: ' arn:aws:iam::aws:policy/AdministratorAccess',
+    untrust: ['730170552321'],
+  });
+
+  const response = await fixture.aws.cloudFormation.send(
+    new DescribeStacksCommand({ StackName: bootstrapStackName }),
+  );
+
+  const trustedAccounts = response.Stacks?.[0].Parameters?.find(p => p.ParameterKey === 'TrustedAccounts')?.ParameterValue;
+  expect(trustedAccounts).toEqual('599757620138');
 }));
 

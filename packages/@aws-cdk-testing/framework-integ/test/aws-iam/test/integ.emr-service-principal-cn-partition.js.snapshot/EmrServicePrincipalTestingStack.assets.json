@@ -1,0 +1,20 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "44f1d5ecec2bbf73c1c3e7d61c43c065e553b2c4ae37ff5dad695ea584a60328": {
+      "source": {
+        "path": "EmrServicePrincipalTestingStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-cn-north-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1",
+          "objectKey": "44f1d5ecec2bbf73c1c3e7d61c43c065e553b2c4ae37ff5dad695ea584a60328.json",
+          "region": "cn-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-cn-north-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

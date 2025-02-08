@@ -1,7 +1,7 @@
 {
-  "version": "36.0.5",
+  "version": "38.0.1",
   "files": {
-    "fa2b156112be3f11361259d8aaafcd552d28499bba4cc881642fdc98bc04c924": {
+    "df6444c0b7d3bf378bbb4ad0d0383290e72e77d86f002d1409e8966ef3eb699b": {
       "source": {
         "path": "aws-cdk-routev2-virtualprivategw-alpha.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fa2b156112be3f11361259d8aaafcd552d28499bba4cc881642fdc98bc04c924.json",
+          "objectKey": "df6444c0b7d3bf378bbb4ad0d0383290e72e77d86f002d1409e8966ef3eb699b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

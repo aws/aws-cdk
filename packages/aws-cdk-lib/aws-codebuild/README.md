@@ -61,7 +61,7 @@ Example:
 ```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
-  repo: 'aws-cdk',
+  repo: 'aws-cdk', // optional, default: undefined if unspecified will create organization webhook
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
   webhookTriggersBatchBuild: true, // optional, default is false
   webhookFilters: [
@@ -72,6 +72,21 @@ const gitHubSource = codebuild.Source.gitHub({
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.RELEASED)
       .andBranchIs('main')
+  ], // optional, by default all pushes and Pull Requests will trigger a build
+});
+```
+
+The `GitHubSource` is also able to trigger all repos in GitHub Organizations
+Example:
+```ts
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'aws',
+  webhookTriggersBatchBuild: true, // optional, default is false
+  webhookFilters: [
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED)
+      .andRepositoryNameIs("aws-.*")
+      .andRepositoryNameIsNot("aws-cdk-lib"),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -357,7 +372,7 @@ new codebuild.Project(this, 'Project', {
     buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
     // optional certificate to include in the build image
     certificate: {
-      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket'),
+      bucket: s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket'),
       objectKey: 'path/to/cert.pem',
     },
   },
@@ -467,7 +482,7 @@ new codebuild.Project(this, 'Project', {
   environment: {
     fleet: codebuild.Fleet.fromFleetArn(
       this, 'SharedFleet',
-      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:ed0d0823-e38a-4c10-90a1-1bf25f50fa76', 
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:ed0d0823-e38a-4c10-90a1-1bf25f50fa76',
     ),
     buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
@@ -475,6 +490,27 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
+### Attribute-based compute
+
+You can use [attribute-based compute](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.attribute-compute) for your fleet by setting the `computeType` to `ATTRIBUTE_BASED`.
+This allows you to specify the attributes in `computeConfiguration` such as vCPUs, memory, disk space, and the machineType.
+After specifying some or all of the available attributes, CodeBuild will select the cheapest compute type from available instance types as that at least matches all given criteria.
+
+```ts
+import { Size } from 'aws-cdk-lib';
+
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
+  baseCapacity: 1,
+  computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  computeConfiguration: {
+    vCpu: 2,
+    memory: Size.gibibytes(4),
+    disk: Size.gibibytes(10),
+    machineType: codebuild.MachineType.GENERAL,
+  },
+});
+```
 
 ## Logs
 
@@ -965,5 +1001,18 @@ Examples:
 ```ts
 new codebuild.Project(this, 'MyProject', {
   visibility: codebuild.ProjectVisibility.PUBLIC_READ,
+});
+```
+
+## Auto retry limit
+You can automatically retry your builds in AWS CodeBuild by setting `autoRetryLimit` property.
+
+With auto-retry enabled, CodeBuild will automatically call RetryBuild using the project's service role after a failed build up to a specified limit.
+
+For example, if the auto-retry limit is set to two, CodeBuild will call the RetryBuild API to automatically retry your build for up to two additional times.
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  autoRetryLimit: 2,
 });
 ```

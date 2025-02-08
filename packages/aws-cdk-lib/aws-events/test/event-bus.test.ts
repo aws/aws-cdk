@@ -1,8 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { Effect } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
 import { EventBus } from '../lib';
 
@@ -568,7 +568,7 @@ describe('event bus', () => {
 
     // WHEN
     bus.addToResourcePolicy(new iam.PolicyStatement({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       principals: [new iam.AccountPrincipal('111111111111111')],
       actions: ['events:PutEvents'],
       sid: '123',
@@ -616,7 +616,7 @@ describe('event bus', () => {
     const bus = new EventBus(stack, 'Bus');
 
     const statement1 = new iam.PolicyStatement({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
       sid: 'statement1',
@@ -624,7 +624,7 @@ describe('event bus', () => {
     });
 
     const statement2 = new iam.PolicyStatement({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:DeleteRule'],
       sid: 'statement2',
@@ -649,12 +649,28 @@ describe('event bus', () => {
 
     // THEN
     expect(() => bus.addToResourcePolicy(new iam.PolicyStatement({
-      effect: Effect.ALLOW,
+      effect: iam.Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
     }))).toThrow('Event Bus policy statements must have a sid');
   });
 
+  test('set dead letter queue', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const dlq = new sqs.Queue(stack, 'DLQ');
+    new EventBus(stack, 'Bus', {
+      deadLetterQueue: dlq,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      DeadLetterConfig: {
+        Arn: {
+          'Fn::GetAtt': ['DLQ581697C4', 'Arn'],
+        },
+      },
+    });
+  });
   test('Event Bus with a customer managed key', () => {
     // GIVEN
     const app = new App();
@@ -761,5 +777,4 @@ describe('event bus', () => {
       },
     });
   });
-
 });

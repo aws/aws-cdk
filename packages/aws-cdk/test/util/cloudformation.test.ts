@@ -1,7 +1,8 @@
-/* eslint-disable import/order */
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
-import { MockedObject, MockSdkProvider, SyncHandlerSubsetOf } from './mock-sdk';
-import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
+import { DescribeStacksCommand, GetTemplateCommand, StackStatus } from '@aws-sdk/client-cloudformation';
+import { MockSdk, mockCloudFormationClient } from './mock-sdk';
+import type { ICloudFormationClient } from '../../lib/api/aws-auth';
+import { CloudFormationStack, TemplateParameters } from '../../lib/api/deployments';
 
 const PARAM = 'TheParameter';
 const DEFAULT = 'TheDefault';
@@ -10,27 +11,17 @@ const OVERRIDE = 'TheOverride';
 const USE_OVERRIDE = { ParameterKey: PARAM, ParameterValue: OVERRIDE };
 const USE_PREVIOUS = { ParameterKey: PARAM, UsePreviousValue: true };
 
-let sdkProvider: MockSdkProvider;
-let describeStackMock: jest.Mock;
-let getTemplateMock: jest.Mock;
-let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
-let cfn: AWS.CloudFormation;
-beforeEach(async () => {
-  sdkProvider = new MockSdkProvider();
+let cfn: ICloudFormationClient;
 
-  describeStackMock = jest.fn();
-  getTemplateMock = jest.fn();
-  cfnMocks = {
-    describeStacks: describeStackMock,
-    getTemplate: getTemplateMock,
-  };
-  sdkProvider.stubCloudFormation(cfnMocks as any);
-  cfn = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
+beforeEach(async () => {
+  cfn = new MockSdk().cloudFormation();
 });
 
 test('A non-existent stack pretends to have an empty template', async () => {
   // GIVEN
-  describeStackMock.mockImplementation(() => ({ Stacks: [] })); // No stacks exist
+  mockCloudFormationClient.on(DescribeStacksCommand).resolves({
+    Stacks: [],
+  });
 
   // WHEN
   const stack = await CloudFormationStack.lookup(cfn, 'Dummy');
@@ -41,16 +32,21 @@ test('A non-existent stack pretends to have an empty template', async () => {
 
 test("Retrieving a processed template passes 'Processed' to CloudFormation", async () => {
   // GIVEN
-  describeStackMock.mockImplementation(() => ({
-    Stacks: [
-      {
-        StackName: 'Dummy',
-      },
-    ],
-  }));
-  getTemplateMock.mockImplementation(() => ({
-    TemplateBody: '{}',
-  }));
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolves({
+      Stacks: [
+        {
+          StackName: 'Dummy',
+          StackStatus: StackStatus.CREATE_COMPLETE,
+          CreationTime: new Date(),
+        },
+      ],
+    })
+    .on(GetTemplateCommand)
+    .resolves({
+      TemplateBody: '',
+    });
 
   // WHEN
   const retrieveProcessedTemplate = true;
@@ -58,7 +54,7 @@ test("Retrieving a processed template passes 'Processed' to CloudFormation", asy
   await cloudFormationStack.template();
 
   // THEN
-  expect(getTemplateMock).toHaveBeenCalledWith({
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(GetTemplateCommand, {
     StackName: 'Dummy',
     TemplateStage: 'Processed',
   });
@@ -69,13 +65,15 @@ test.each([
   [false, true],
   [true, false],
   [true, true],
-])('given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
+])(
+  'given override, always use the override (parameter has a default: %p, parameter previously supplied: %p)',
   (haveDefault, havePrevious) => {
     expect(makeParams(haveDefault, havePrevious, true)).toEqual({
       apiParameters: [USE_OVERRIDE],
       changed: true,
     });
-  });
+  },
+);
 
 test('no default, no prev, no override => error', () => {
   expect(() => makeParams(false, false, false)).toThrow(/missing a value: TheParameter/);

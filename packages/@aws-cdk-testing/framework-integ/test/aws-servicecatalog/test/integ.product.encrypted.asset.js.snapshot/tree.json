@@ -1024,7 +1024,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
                     },
                     "environment": {
                       "variables": {
@@ -1062,13 +1062,13 @@
             "id": "TestProduct",
             "path": "integ-servicecatalog-product-encrypted-asset/TestProduct",
             "children": {
-              "Template15af34b9c632": {
-                "id": "Template15af34b9c632",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15af34b9c632",
+              "Template3658552972af": {
+                "id": "Template3658552972af",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template3658552972af",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15af34b9c632/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template3658552972af/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1076,7 +1076,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template15af34b9c632/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template3658552972af/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1088,13 +1088,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Template352ac991d470": {
-                "id": "Template352ac991d470",
-                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template352ac991d470",
+              "Templateb76368c4cf11": {
+                "id": "Templateb76368c4cf11",
+                "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templateb76368c4cf11",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template352ac991d470/Stage",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templateb76368c4cf11/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1102,7 +1102,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Template352ac991d470/AssetBucket",
+                    "path": "integ-servicecatalog-product-encrypted-asset/TestProduct/Templateb76368c4cf11/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"

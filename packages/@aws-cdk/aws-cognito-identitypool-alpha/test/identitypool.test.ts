@@ -1,35 +1,9 @@
-import {
-  Template,
-} from 'aws-cdk-lib/assertions';
-import {
-  UserPool,
-  UserPoolClient,
-  UserPoolIdentityProvider,
-} from 'aws-cdk-lib/aws-cognito';
-import {
-  Role,
-  ServicePrincipal,
-  ArnPrincipal,
-  AnyPrincipal,
-  OpenIdConnectProvider,
-  SamlProvider,
-  SamlMetadataDocument,
-  PolicyStatement,
-  Effect,
-  PolicyDocument,
-} from 'aws-cdk-lib/aws-iam';
-import {
-  Fn,
-  Lazy,
-  Stack,
-} from 'aws-cdk-lib';
-import {
-  IdentityPool,
-  IdentityPoolProviderUrl,
-} from '../lib/identitypool';
-import {
-  RoleMappingMatchType,
-} from '../lib/identitypool-role-attachment';
+import { Template } from 'aws-cdk-lib/assertions';
+import { UserPool, UserPoolClient, UserPoolIdentityProvider } from 'aws-cdk-lib/aws-cognito';
+import { Role, ServicePrincipal, ArnPrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Fn, Lazy, Stack } from 'aws-cdk-lib';
+import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
+import { RoleMappingMatchType } from '../lib/identitypool-role-attachment';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 describe('identity pool', () => {
@@ -459,7 +433,7 @@ describe('role mappings', () => {
         providerUrl: IdentityPoolProviderUrl.custom(providerUrl),
         useToken: true,
       }],
-    })).toThrowError('mappingKey must be provided when providerUrl.value is a token');
+    })).toThrow('mappingKey must be provided when providerUrl.value is a token');
   });
 
   test('mappingKey respected when identity provider is a token', () => {
@@ -543,7 +517,7 @@ describe('role mappings', () => {
       roleMappings: [{
         providerUrl: IdentityPoolProviderUrl.AMAZON,
       }],
-    })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
+    })).toThrow('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
 
   test('role mapping with rules configuration', () => {

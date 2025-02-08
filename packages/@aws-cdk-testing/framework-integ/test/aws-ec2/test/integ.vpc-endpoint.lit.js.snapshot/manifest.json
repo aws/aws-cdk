@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "38.0.1",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-ec2-vpc-endpoint.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-ec2-vpc-endpoint.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/211c13487f1f150aef71cb67b4da3fe4727ea378abaff0cace0f9230b9e65b35.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/439d5705ac8beb9e682bb8e8ff6dd47f22d95f023124a424b7b8d93a4e0e1d0b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,6 +196,18 @@
             "data": "MyVpcEcrDockerEndpoint0385050C"
           }
         ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamoDbInterfaceEndpointSecurityGroupD6D5A6EF"
+          }
+        ],
+        "/aws-cdk-ec2-vpc-endpoint/MyVpc/DynamoDbInterfaceEndpoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcDynamoDbInterfaceEndpointA97B3149"
+          }
+        ],
         "/aws-cdk-ec2-vpc-endpoint/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -215,6 +222,12 @@
         ]
       },
       "displayName": "aws-cdk-ec2-vpc-endpoint"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

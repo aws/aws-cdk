@@ -10,7 +10,6 @@ const args: ChangelogOptions = {
 };
 
 describe('writeChangelogs', () => {
-
   const currentVersion: Versions = { stableVersion: '1.23.0' };
   const newVersion: Versions = { stableVersion: '1.24.0' };
 
@@ -80,7 +79,6 @@ describe('writeChangelogs', () => {
   });
 
   describe('experimentalChangesTreatment is SEPARATE', () => {
-
     const defaultSeparateChangelogOpts = {
       ...defaultWriteChangelogOpts,
       experimentalChangesTreatment: ExperimentalChangesTreatment.SEPARATE,

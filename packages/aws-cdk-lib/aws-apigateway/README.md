@@ -12,9 +12,9 @@ running on AWS Lambda, or any web application.
 - [Amazon API Gateway Construct Library](#amazon-api-gateway-construct-library)
   - [Table of Contents](#table-of-contents)
   - [Defining APIs](#defining-apis)
+    - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
   - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
   - [AWS StepFunctions backed APIs](#aws-stepfunctions-backed-apis)
-    - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
   - [Integration Targets](#integration-targets)
   - [Usage Plan \& API Keys](#usage-plan--api-keys)
     - [Adding an API Key to an imported RestApi](#adding-an-api-key-to-an-imported-restapi)
@@ -75,6 +75,23 @@ declare const user: iam.User;
 const method = api.root.addResource('books').addMethod('GET');
 method.grantExecute(user);
 ```
+
+### Breaking up Methods and Resources across Stacks
+
+It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
+limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 500 resources per
+stack.
+
+To help with this, Resources and Methods for the same REST API can be re-organized across multiple stacks. A common
+way to do this is to have a stack per Resource or groups of Resources, but this is not the only possible way.
+The following example uses sets up two Resources '/pets' and '/books' in separate stacks using nested stacks:
+
+[Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
+
+> **Warning:** In the code above, an API Gateway deployment is created during the initial CDK deployment.
+However, if there are changes to the resources in subsequent CDK deployments, a new API Gateway deployment is not
+automatically created. As a result, the latest state of the resources is not reflected. To ensure the latest state
+of the resources is reflected, a manual deployment of the API Gateway is required after the CDK deployment. See [Controlled triggering of deployments](#controlled-triggering-of-deployments) for more info.
 
 ## AWS Lambda-backed APIs
 
@@ -254,23 +271,6 @@ AWS Step Functions will receive the following execution input:
   "body": {}
 }
 ```
-
-### Breaking up Methods and Resources across Stacks
-
-It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
-limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 500 resources per
-stack.
-
-To help with this, Resources and Methods for the same REST API can be re-organized across multiple stacks. A common
-way to do this is to have a stack per Resource or groups of Resources, but this is not the only possible way.
-The following example uses sets up two Resources '/pets' and '/books' in separate stacks using nested stacks:
-
-[Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
-
-> **Warning:** In the code above, an API Gateway deployment is created during the initial CDK deployment.
-However, if there are changes to the resources in subsequent CDK deployments, a new API Gateway deployment is not
-automatically created. As a result, the latest state of the resources is not reflected. To ensure the latest state
-of the resources is reflected, a manual deployment of the API Gateway is required after the CDK deployment. See [Controlled triggering of deployments](#controlled-triggering-of-deployments) for more info.
 
 ## Integration Targets
 
@@ -1641,10 +1641,13 @@ const latencyMethodMetric = method.metricLatency(stage);
 
 ## APIGateway v2
 
-APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. For backwards compatibility, existing
-APIGateway v2 "CFN resources" (such as `CfnApi`) that were previously exported as part of this package, are still
-exported from here and have been marked deprecated. However, updates to these CloudFormation resources, such as new
-properties and new resource types will not be available.
+APIGateway v2 APIs are now moved to its own package named `aws-apigatewayv2`. Previously, these APIs were marked
+deprecated but retained for backwards compatibility. The deprecated usage of APIGateway v2 APIs within this module
+`aws-apigateway` has now been removed from the codebase.
+
+The reason for the removal of these deprecated Constructs is that CloudFormation team is releasing AWS resources
+like `AWS::APIGateway::DomainNameV2` and this would cause compatibility issue with the deprecated `CfnDomainNameV2`
+resource defined in `apigatewayv2.ts` file during the L1 generation.
 
 Move to using `aws-apigatewayv2` to get the latest APIs and updates.
 

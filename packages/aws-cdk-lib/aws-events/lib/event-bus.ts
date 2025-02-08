@@ -3,7 +3,9 @@ import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as sqs from '../../aws-sqs';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -81,6 +83,15 @@ export interface EventBusProps {
   readonly eventSourceName?: string;
 
   /**
+   * Dead-letter queue for the event bus
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-event-delivery.html#eb-rule-dlq
+   *
+   * @default - no dead-letter queue
+   */
+  readonly deadLetterQueue?: sqs.IQueue;
+
+  /**
    * The event bus description.
    *
    * The description can be up to 512 characters long.
@@ -92,10 +103,10 @@ export interface EventBusProps {
   readonly description?: string;
 
   /**
-  * The customer managed key that encrypt events on this event bus.
-  *
-  * @default - Use an AWS managed key
-  */
+   * The customer managed key that encrypt events on this event bus.
+   *
+   * @default - Use an AWS managed key
+   */
   readonly kmsKey?: kms.IKey;
 }
 
@@ -180,7 +191,6 @@ abstract class EventBusBase extends Resource implements IEventBus {
  * @resource AWS::Events::EventBus
  */
 export class EventBus extends EventBusBase {
-
   /**
    * Import an existing event bus resource
    * @param scope Parent construct
@@ -335,6 +345,8 @@ export class EventBus extends EventBusBase {
     );
 
     super(scope, id, { physicalName: eventBusName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
       throw new Error(`description must be less than or equal to 512 characters, got ${props.description.length}`);
@@ -343,6 +355,9 @@ export class EventBus extends EventBusBase {
     const eventBus = new CfnEventBus(this, 'Resource', {
       name: this.physicalName,
       eventSourceName,
+      deadLetterConfig: props?.deadLetterQueue ? {
+        arn: props.deadLetterQueue.queueArn,
+      } : undefined,
       description: props?.description,
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
@@ -353,8 +368,11 @@ export class EventBus extends EventBusBase {
       resourceName: eventBus.name,
     });
 
-    // Allow EventBridge to use customer managed key
-    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-key-policy.html
+    /**
+     * Allow EventBridge to use customer managed key
+     *
+     * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-key-policy.html#eb-encryption-key-policy-bus
+     */
     if (props?.kmsKey) {
       props?.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
@@ -386,6 +404,7 @@ export class EventBus extends EventBusBase {
   /**
    * Adds a statement to the IAM resource policy associated with this event bus.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.sid == null) {
       throw new Error('Event Bus policy statements must have a sid');
@@ -416,6 +435,8 @@ class ImportedEventBus extends EventBusBase {
       account: arnParts.account,
       region: arnParts.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
@@ -462,6 +483,8 @@ export interface EventBusPolicyProps {
 export class EventBusPolicy extends Resource {
   constructor(scope: Construct, id: string, props: EventBusPolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     new CfnEventBusPolicy(this, 'Resource', {
       statementId: props.statementId!,

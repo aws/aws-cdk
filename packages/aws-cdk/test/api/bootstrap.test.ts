@@ -1,9 +1,19 @@
-/* eslint-disable import/order */
-import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
+import {
+  CreateChangeSetCommand,
+  CreateStackCommand,
+  DeleteStackCommand,
+  DescribeChangeSetCommand,
+  DescribeStacksCommand,
+  ExecuteChangeSetCommand,
+  GetTemplateCommand,
+  StackStatus,
+  UpdateTerminationProtectionCommand,
+} from '@aws-sdk/client-cloudformation';
 import { parse } from 'yaml';
 import { Bootstrapper } from '../../lib/api/bootstrap';
-import { deserializeStructure } from '../../lib/serialize';
-import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+import { legacyBootstrapTemplate } from '../../lib/api/bootstrap/legacy-template';
+import { deserializeStructure, serializeStructure, toYAML } from '../../lib/serialize';
+import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
 
 const env = {
   account: '123456789012',
@@ -11,58 +21,51 @@ const env = {
   name: 'mock',
 };
 
+const templateBody = toYAML(deserializeStructure(serializeStructure(legacyBootstrapTemplate({}), true)));
+const changeSetName = 'cdk-deploy-change-set';
+
+jest.mock('../../lib/api/deployments/checks', () => ({
+  determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
+}));
 let sdk: MockSdkProvider;
-let executed: boolean;
-let protectedTermination: boolean;
-let cfnMocks: jest.Mocked<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 let changeSetTemplate: any | undefined;
 let bootstrapper: Bootstrapper;
 beforeEach(() => {
   sdk = new MockSdkProvider();
-  executed = false;
-  protectedTermination = false;
   bootstrapper = new Bootstrapper({ source: 'legacy' });
-
-  cfnMocks = {
-    describeStackEvents: jest.fn().mockReturnValue({}),
-    describeStacks: jest.fn()
-      // First two calls, no stacks exist (first is for version checking, second is in deploy-stack.ts)
-      .mockImplementationOnce(() => ({ Stacks: [] }))
-      .mockImplementationOnce(() => ({ Stacks: [] }))
-      // Second call, stack has been created
-      .mockImplementationOnce(() => ({
-        Stacks: [
-          {
-            StackStatus: 'CREATE_COMPLETE',
-            StackStatusReason: 'It is magic',
-            EnableTerminationProtection: false,
-          },
-        ],
-      })),
-    createChangeSet: jest.fn((info: CreateChangeSetInput) => {
-      changeSetTemplate = deserializeStructure(info.TemplateBody as string);
-      return {};
-    }),
-    describeChangeSet: jest.fn(() => ({
-      Status: 'CREATE_COMPLETE',
-      Changes: [],
-    })),
-    executeChangeSet: jest.fn(() => {
-      executed = true;
-      return {};
-    }),
-    deleteChangeSet: jest.fn(),
-    getTemplate: jest.fn(() => {
-      executed = true;
-      return {};
-    }),
-    deleteStack: jest.fn(),
-    updateTerminationProtection: jest.fn(() => {
-      protectedTermination = true;
-      return {};
-    }),
-  };
-  sdk.stubCloudFormation(cfnMocks);
+  mockCloudFormationClient.reset();
+  restoreSdkMocksToDefault();
+  // First two calls, no stacks exist (first is for version checking, second is in deploy-stack.ts)
+  mockCloudFormationClient.on(CreateChangeSetCommand).callsFake((input) => {
+    changeSetTemplate = deserializeStructure(input.TemplateBody);
+    return {};
+  });
+  mockCloudFormationClient.on(DescribeChangeSetCommand).callsFake((input) => {
+    return {
+      ChangeSetName: input.ChangeSetName,
+      StackName: input.StackName,
+      Status: StackStatus.CREATE_COMPLETE,
+    };
+  });
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
+      Stacks: [],
+    })
+    .resolvesOnce({
+      Stacks: [],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          StackStatus: StackStatus.CREATE_COMPLETE,
+          StackStatusReason: 'It is magic',
+          EnableTerminationProtection: false,
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
+        },
+      ],
+    });
 });
 
 test('do bootstrap', async () => {
@@ -72,11 +75,14 @@ test('do bootstrap', async () => {
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('do bootstrap using custom bucket name', async () => {
@@ -91,11 +97,14 @@ test('do bootstrap using custom bucket name', async () => {
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBe('foobar');
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('do bootstrap using KMS CMK', async () => {
@@ -110,11 +119,14 @@ test('do bootstrap using KMS CMK', async () => {
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBe('myKmsKey');
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBe('myKmsKey');
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('bootstrap disable bucket Public Access Block Configuration', async () => {
@@ -129,11 +141,14 @@ test('bootstrap disable bucket Public Access Block Configuration', async () => {
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('false');
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('do bootstrap with custom tags for toolkit stack', async () => {
@@ -146,147 +161,183 @@ test('do bootstrap with custom tags for toolkit stack', async () => {
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(changeSetTemplate.Conditions.UsePublicAccessBlockConfiguration['Fn::Equals'][0]).toBe('true');
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('passing trusted accounts to the old bootstrapping results in an error', async () => {
-  await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-    toolkitStackName: 'mockStack',
-    parameters: {
-      trustedAccounts: ['0123456789012'],
-    },
-  }))
-    .rejects
-    .toThrow('--trust can only be passed for the modern bootstrap experience.');
+  await expect(
+    bootstrapper.bootstrapEnvironment(env, sdk, {
+      toolkitStackName: 'mockStack',
+      parameters: {
+        trustedAccounts: ['0123456789012'],
+      },
+    }),
+  ).rejects.toThrow('--trust can only be passed for the modern bootstrap experience.');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
-  await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
-    toolkitStackName: 'mockStack',
-    parameters: {
-      cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
-    },
-  }))
-    .rejects
-    .toThrow('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
+  await expect(
+    bootstrapper.bootstrapEnvironment(env, sdk, {
+      toolkitStackName: 'mockStack',
+      parameters: {
+        cloudFormationExecutionPolicies: ['arn:aws:iam::aws:policy/AdministratorAccess'],
+      },
+    }),
+  ).rejects.toThrow('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
 });
 
 test('even if the bootstrap stack is in a rollback state, can still retry bootstrapping it', async () => {
-  (cfnMocks.describeStacks! as jest.Mock)
-    .mockReset()
-    // First two calls, the stack exists with a 'rollback complete' status
-    // (first is for version checking, second is in deploy-stack.ts)
-    .mockImplementationOnce(() => ({
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
       Stacks: [
         {
-          StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+          StackStatus: StackStatus.UPDATE_ROLLBACK_COMPLETE,
           StackStatusReason: 'It is magic',
           Outputs: [
             { OutputKey: 'BucketName', OutputValue: 'bucket' },
             { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
           ],
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
         },
       ],
-    }))
-    .mockImplementationOnce(() => ({
+    })
+    .resolvesOnce({
       Stacks: [
         {
-          StackStatus: 'UPDATE_ROLLBACK_COMPLETE',
+          StackStatus: StackStatus.UPDATE_ROLLBACK_COMPLETE,
           StackStatusReason: 'It is magic',
           Outputs: [
             { OutputKey: 'BucketName', OutputValue: 'bucket' },
             { OutputKey: 'BucketDomainName', OutputValue: 'aws.com' },
           ],
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
         },
       ],
-    }))
-    // Third call, stack has been created
-    .mockImplementationOnce(() => ({
+    })
+    .resolvesOnce({
       Stacks: [
         {
-          StackStatus: 'CREATE_COMPLETE',
+          StackStatus: StackStatus.CREATE_COMPLETE,
           StackStatusReason: 'It is magic',
           EnableTerminationProtection: false,
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
         },
       ],
-    }));
+    });
 
   // WHEN
-  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
+  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, { toolkitStackName: 'MagicalStack' });
 
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(GetTemplateCommand, {
+    StackName: 'MagicalStack',
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
 });
 
 test('even if the bootstrap stack failed to create, can still retry bootstrapping it', async () => {
-  (cfnMocks.describeStacks! as jest.Mock)
-    .mockReset()
-    // First two calls, the stack exists with a 'rollback complete' status
-    // (first is for version checking, second is in deploy-stack.ts)
-    .mockImplementationOnce(() => ({
+  mockCloudFormationClient
+    .on(DescribeStacksCommand)
+    .resolvesOnce({
       Stacks: [
         {
-          StackStatus: 'ROLLBACK_COMPLETE',
+          StackStatus: StackStatus.ROLLBACK_COMPLETE,
           StackStatusReason: 'It is magic',
-          Outputs: [
-            { OutputKey: 'BucketName', OutputValue: 'bucket' },
-          ],
-        } as AWS.CloudFormation.Stack,
-      ],
-    }))
-    .mockImplementationOnce(() => ({
-      Stacks: [
-        {
-          StackStatus: 'ROLLBACK_COMPLETE',
-          StackStatusReason: 'It is magic',
-          Outputs: [
-            { OutputKey: 'BucketName', OutputValue: 'bucket' },
-          ],
+          Outputs: [{ OutputKey: 'BucketName', OutputValue: 'bucket' }],
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
         },
       ],
-    }))
-    // Third call, we just did a delete and want to see it gone
-    .mockImplementationOnce(() => ({ Stacks: [] }))
-    // Fourth call, stack has been created
-    .mockImplementationOnce(() => ({
+    })
+    .resolvesOnce({
       Stacks: [
         {
-          StackStatus: 'CREATE_COMPLETE',
+          StackStatus: StackStatus.ROLLBACK_COMPLETE,
+          StackStatusReason: 'It is magic',
+          Outputs: [{ OutputKey: 'BucketName', OutputValue: 'bucket' }],
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
+        },
+      ],
+    })
+    .resolvesOnce({
+      Stacks: [],
+    })
+    .resolvesOnce({
+      Stacks: [
+        {
+          StackStatus: StackStatus.CREATE_COMPLETE,
           StackStatusReason: 'It is magic',
           EnableTerminationProtection: false,
+          StackName: 'MagicalStack',
+          CreationTime: new Date(),
         },
       ],
-    }));
+    });
 
   // WHEN
-  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, { toolkitStackName: 'mockStack' });
+  const ret = await bootstrapper.bootstrapEnvironment(env, sdk, { toolkitStackName: 'MagicalStack' });
 
   // THEN
   const bucketProperties = changeSetTemplate.Resources.StagingBucket.Properties;
   expect(bucketProperties.BucketName).toBeUndefined();
-  expect(bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID)
-    .toBeUndefined();
+  expect(
+    bucketProperties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.KMSMasterKeyID,
+  ).toBeUndefined();
   expect(ret.noOp).toBeFalsy();
-  expect(executed).toBeTruthy();
-  expect(cfnMocks.deleteStack).toHaveBeenCalled();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(DeleteStackCommand, {
+    StackName: 'MagicalStack',
+  });
 });
 
 test('stack is not termination protected by default', async () => {
   // WHEN
+  // Seems silly, but we process the template multiple times to get the templateBody that goes into the call
   await bootstrapper.bootstrapEnvironment(env, sdk);
 
   // THEN
-  expect(executed).toBeTruthy();
-  expect(protectedTermination).toBeFalsy();
+  // There are only two ways that termination can be set: either through calling CreateStackCommand
+  // or by calling UpdateTerminationProtectionCommand, which is not done by default
+  expect(mockCloudFormationClient).not.toHaveReceivedCommand(CreateStackCommand);
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
+    StackName: 'CDKToolkit',
+    ChangeSetType: 'CREATE',
+    ClientToken: expect.any(String),
+    Description: expect.any(String),
+    Parameters: [],
+    Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+    ChangeSetName: changeSetName,
+    TemplateBody: templateBody,
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
+  expect(mockCloudFormationClient).not.toHaveReceivedCommandWith(UpdateTerminationProtectionCommand, {
+    EnableTerminationProtection: true,
+    StackName: 'CDKToolkit',
+  });
 });
 
 test('stack is termination protected when set', async () => {
@@ -296,14 +347,22 @@ test('stack is termination protected when set', async () => {
   });
 
   // THEN
-  expect(executed).toBeTruthy();
-  expect(protectedTermination).toBeTruthy();
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(ExecuteChangeSetCommand, {
+    ChangeSetName: changeSetName,
+  });
+  expect(mockCloudFormationClient).toHaveReceivedCommandWith(UpdateTerminationProtectionCommand, {
+    EnableTerminationProtection: true,
+    StackName: 'CDKToolkit',
+  });
 });
 
 test('do showTemplate YAML', async () => {
   process.stdout.write = jest.fn().mockImplementationOnce((template) => {
     // THEN
-    expect(parse(template)).toHaveProperty('Description', 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.');
+    expect(parse(template)).toHaveProperty(
+      'Description',
+      'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
+    );
   });
 
   // WHEN
@@ -313,7 +372,10 @@ test('do showTemplate YAML', async () => {
 test('do showTemplate JSON', async () => {
   process.stdout.write = jest.fn().mockImplementationOnce((template) => {
     // THEN
-    expect(JSON.parse(template)).toHaveProperty('Description', 'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.');
+    expect(JSON.parse(template)).toHaveProperty(
+      'Description',
+      'The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.',
+    );
   });
 
   // WHEN

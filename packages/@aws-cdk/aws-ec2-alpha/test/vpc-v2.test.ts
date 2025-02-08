@@ -56,7 +56,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcSecondaryAddressD76FCD9C: {
+        TestVpcSecondaryAddress72BC831D: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
@@ -69,7 +69,6 @@ describe('Vpc V2 with full control', () => {
         },
       },
     });
-
   });
 
   test('VPC throws error with incorrect cidr range (IPv4)', () => {
@@ -104,10 +103,10 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcAmazonProvided569F7097: {
+        TestVpcAmazonProvided00BF109D: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
-            AmazonProvidedIpv6CidrBlock: true, //Amazon Provided IPv6 address
+            AmazonProvidedIpv6CidrBlock: true, // Amazon Provided IPv6 address
             VpcId: {
               'Fn::GetAtt': [
                 'TestVpcE77CE678',
@@ -118,13 +117,11 @@ describe('Vpc V2 with full control', () => {
         },
       },
     });
-
   });
 
   test('VPC Primary IP from Ipv4 Ipam', () => {
-
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
 
     const pool = ipam.privateScope.addPool('PrivatePool0', {
@@ -178,7 +175,7 @@ describe('Vpc V2 with full control', () => {
 
   test('VPC Secondary IP from Ipv6 Ipam', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
 
     const pool = ipam.publicScope.addPool('PublicPool0', {
@@ -235,7 +232,7 @@ describe('Vpc V2 with full control', () => {
             EnableDnsSupport: true,
           },
         },
-        TestVpcIPv6Ipam178145A5: {
+        TestVpcIPv6Ipam402F1C75: {
           Type: 'AWS::EC2::VPCCidrBlock',
           Properties: {
             VpcId: {
@@ -256,5 +253,115 @@ describe('Vpc V2 with full control', () => {
       },
     });
   });
-});
 
+  test('VPC with secondary IPv6 Pool address', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool({
+        cidrBlockName: 'SecondaryIPv6',
+        ipv6PoolId: 'SecondaryIPv6Pool',
+        ipv6CidrBlock: '2001:db8::/32',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      Ipv6CidrBlock: '2001:db8::/32',
+      Ipv6Pool: 'SecondaryIPv6Pool',
+    });
+  });
+
+  test('VPC with multiple IPv6 Pool addresses', () => {
+    // WHEN
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [
+        vpc.IpAddresses.ipv6ByoipPool({
+          cidrBlockName: 'SecondaryIPv6One',
+          ipv6PoolId: 'Pool1',
+          ipv6CidrBlock: '2001:db8:1::/48',
+        }),
+        vpc.IpAddresses.ipv6ByoipPool({
+          cidrBlockName: 'SecondaryIPv6Two',
+          ipv6PoolId: 'Pool2',
+          ipv6CidrBlock: '2001:db8:2::/48',
+        }),
+      ],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::EC2::VPCCidrBlock', 2);
+  });
+
+  test('Set field `useIpv6` to true if secondary address is defined using IPAM IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6Ipam({
+        ipamPool: new Ipam(stack, 'TestIpam', {
+          operatingRegions: ['us-west-1'],
+        }).publicScope.addPool('PublicPool0', {
+          addressFamily: AddressFamily.IP_V6,
+          awsService: AwsServiceName.EC2,
+          publicIpSource: IpamPoolPublicIpSource.AMAZON,
+          locale: 'us-west-1',
+        }),
+        netmaskLength: 64,
+        cidrBlockName: 'IPv6Ipam',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to true if secondary address is defined using Amazon Provided IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({
+        cidrBlockName: 'Ipv6Amazon',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to true if secondary address is defined using BYOIP IPv6', () => {
+    const ipv6Vpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv6ByoipPool({
+        ipv6PoolId: 'test-Byoip-pool',
+        ipv6CidrBlock: '2001:db8::/32',
+        cidrBlockName: 'BYOIP',
+      })],
+    },
+    );
+    expect(ipv6Vpc.useIpv6).toBe(true);
+  });
+
+  test('Set field `useIpv6` to false if no IPv6 address is attached to VPC', () => {
+    const testVpc = new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16', {
+        cidrBlockName: 'SecondaryAddress',
+      })],
+    },
+    );
+    expect(testVpc.useIpv6).toBe(false);
+  });
+
+  test('VPC throws error is secondary CIDR block name is not provided', () => {
+    expect(() => new vpc.VpcV2(stack, 'TestVPC', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.2.0.0/16')],
+    })).toThrow('Cidr Block Name is required to create secondary IP address');
+  });
+});

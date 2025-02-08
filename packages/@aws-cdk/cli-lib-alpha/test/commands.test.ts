@@ -1,9 +1,9 @@
 import * as core from 'aws-cdk-lib/core';
-import * as cli from 'aws-cdk/lib';
+import * as cli from '../../../aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 import { HotswapMode, RequireApproval, StackActivityProgress } from '../lib/commands';
 
-jest.mock('aws-cdk/lib');
+jest.mock('../../../aws-cdk/lib');
 jest.mocked(cli.exec).mockResolvedValue(0);
 
 afterEach(() => {
@@ -369,4 +369,16 @@ describe('list', () => {
     );
   });
 
+  test('bootstrap specific environment', async () => {
+    // WHEN
+    await cdk.bootstrap({
+      environments: ['aws://123456789012/us-east-1'],
+    });
+
+    // THEN
+    expect(jest.mocked(cli.exec)).toHaveBeenCalledWith(
+      ['bootstrap', 'aws://123456789012/us-east-1', '--all'],
+      expect.anything(),
+    );
+  });
 });
