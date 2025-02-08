@@ -9,21 +9,30 @@ import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType } from '../../lib/base/base-service';
 import { addDefaultCapacityProvider } from '../util';
 
+let stack: cdk.Stack;
+let vpc: ec2.Vpc;
+let cluster: ecs.Cluster;
+let taskDefinition: ecs.ExternalTaskDefinition;
+let container: ecs.ContainerDefinition;
+
+beforeEach(() => {
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'MyVpc', {});
+  cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  addDefaultCapacityProvider(cluster, stack, vpc);
+
+  taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+  container = taskDefinition.addContainer('BaseContainer', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    memoryReservationMiB: 10,
+    memoryLimitMiB: 512,
+  });
+});
+
 describe('external service', () => {
   describe('When creating an External Service', () => {
     test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      addDefaultCapacityProvider(cluster, stack, vpc);
-      const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-      taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-        memoryLimitMiB: 512,
-      });
-
       const service = new ecs.ExternalService(stack, 'ExternalService', {
         cluster,
         taskDefinition,
@@ -32,7 +41,7 @@ describe('external service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
-          Ref: 'ExternalTaskDef6CCBDB87',
+          Ref: 'TaskDef54694570',
         },
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -50,18 +59,6 @@ describe('external service', () => {
   });
 
   test('with all properties set', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     // WHEN
     new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
@@ -82,7 +79,7 @@ describe('external service', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       TaskDefinition: {
-        Ref: 'ExternalTaskDef6CCBDB87',
+        Ref: 'TaskDef54694570',
       },
       Cluster: {
         Ref: 'EcsCluster97242B84',
@@ -99,12 +96,6 @@ describe('external service', () => {
 
   test('with cloudmap set on cluster, throw error', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
     cluster.addDefaultCloudMapNamespace({
       name: 'foo.com',
       type: cloudmap.NamespaceType.DNS_PRIVATE,
@@ -130,15 +121,6 @@ describe('external service', () => {
 
   test('with multiple security groups, it correctly updates the cfn template', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
     const securityGroup1 = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
       allowAllOutbound: true,
       description: 'Example',
@@ -164,7 +146,7 @@ describe('external service', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       TaskDefinition: {
-        Ref: 'ExternalTaskDef6CCBDB87',
+        Ref: 'TaskDef54694570',
       },
       Cluster: {
         Ref: 'EcsCluster97242B84',
@@ -202,17 +184,6 @@ describe('external service', () => {
   });
 
   test('with deployment alarms', () => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
 
     new ecs.ExternalService(stack, 'ExternalService', {
@@ -235,18 +206,6 @@ describe('external service', () => {
   });
 
   test('with enableExecuteCommand set to true', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     // WHEN
     new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
@@ -268,38 +227,91 @@ describe('external service', () => {
   });
 
   test('throws when task definition is not External compatible', () => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.TaskDefinition(stack, 'FargateTaskDef', {
+    const fargateTaskDefinition = new ecs.TaskDefinition(stack, 'FargateTaskDef', {
       compatibility: ecs.Compatibility.FARGATE,
       cpu: '256',
       memoryMiB: '512',
     });
-    taskDefinition.addContainer('BaseContainer', {
+    fargateTaskDefinition.addContainer('BaseContainer', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryReservationMiB: 10,
     });
 
     expect(() => new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
-      taskDefinition,
+      taskDefinition: fargateTaskDefinition,
     })).toThrow('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster');
   });
 
-  test('errors if minimum not less than maximum', () => {
+  test('errors if daemon and CODE_DEPLOY deployment controller', () => {
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        deploymentController: {
+          type: DeploymentControllerType.CODE_DEPLOY,
+        },
+      });
+    }).toThrow(/CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy/);
+  });
+
+  test('errors if daemon and EXTERNAL deployment controller', () => {
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        deploymentController: {
+          type: DeploymentControllerType.EXTERNAL,
+        },
+      });
+    }).toThrow(/CODE_DEPLOY or EXTERNAL deployment controller types don\'t support the DAEMON scheduling strategy/);
+  });
+
+  test('errors if daemon and desiredCount both specified', () => {
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        desiredCount: 2,
+      });
+    }).toThrow(/Cannot specify desiredCount/);
+  });
+
+  test('errors if daemon and maximumPercent not 100', () => {
+    expect(() => {
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        maxHealthyPercent: 300,
+      });
+    }).toThrow(/Maximum percent must be 100/);
+  });
+
+  test('sets daemon scheduling strategy', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-    taskDefinition.addContainer('BaseContainer', {
-      image: ecs.ContainerImage.fromRegistry('test'),
-      memoryReservationMiB: 10,
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      daemon: true,
     });
 
     // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      SchedulingStrategy: 'DAEMON',
+      DeploymentConfiguration: {
+        MaximumPercent: 100,
+        MinimumHealthyPercent: 0,
+      },
+      EnableECSManagedTags: false,
+      LaunchType: LaunchType.EXTERNAL,
+    });
+  });
+
+  test('errors if minimum not less than maximum', () => {
     expect(() => new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -309,19 +321,6 @@ describe('external service', () => {
   });
 
   test('error if cloudmap options provided with external service', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
-    // THEN
     expect(() => new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -329,23 +328,9 @@ describe('external service', () => {
         name: 'myApp',
       },
     })).toThrow('Cloud map options are not supported for External service');
-
-    // THEN
   });
 
   test('error if capacityProviderStrategies options provided with external service', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     // WHEN
     const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
       vpc,
@@ -366,23 +351,10 @@ describe('external service', () => {
         capacityProvider: capacityProvider.capacityProviderName,
       }],
     })).toThrow('Capacity Providers are not supported for External service');
-
-    // THEN
   });
 
   test('error when performing attachToApplicationTargetGroup to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -396,23 +368,10 @@ describe('external service', () => {
 
     // THEN
     expect(() => service.attachToApplicationTargetGroup(targetGroup)).toThrow('Application load balancer cannot be attached to an external service');
-
-    // THEN
   });
 
   test('error when performing loadBalancerTarget to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -422,23 +381,10 @@ describe('external service', () => {
     expect(() => service.loadBalancerTarget({
       containerName: 'MainContainer',
     })).toThrow('External service cannot be attached as load balancer targets');
-
-    // THEN
   });
 
   test('error when performing registerLoadBalancerTargets to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
     const listener = lb.addListener('listener', { port: 80 });
     const service = new ecs.ExternalService(stack, 'ExternalService', {
@@ -455,23 +401,10 @@ describe('external service', () => {
         newTargetGroupId: 'target1',
       },
     )).toThrow('External service cannot be registered as load balancer targets');
-
-    // THEN
   });
 
   test('error when performing autoScaleTaskCount to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -482,23 +415,10 @@ describe('external service', () => {
       maxCapacity: 2,
       minCapacity: 1,
     })).toThrow('Autoscaling not supported for external service');
-
-    // THEN
   });
 
   test('error when performing enableCloudMap to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -506,23 +426,10 @@ describe('external service', () => {
 
     // THEN
     expect(() => service.enableCloudMap({})).toThrow('Cloud map integration not supported for an external service');
-
-    // THEN
   });
 
   test('error when performing associateCloudMapService to an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    const container = taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -549,18 +456,6 @@ describe('external service', () => {
 
   test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -570,7 +465,6 @@ describe('external service', () => {
       circuitBreaker: { rollback: true },
       minHealthyPercent: 100, // required to prevent test failure due to warning
     });
-    app.synth();
 
     // THEN
     expect(service.node.metadata.map((m) => m.data)).toEqual([
@@ -581,17 +475,6 @@ describe('external service', () => {
 
   test('warning if minHealthyPercent not set for an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
@@ -604,17 +487,6 @@ describe('external service', () => {
 
   test('no warning if minHealthyPercent set for an external service', () => {
     // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    addDefaultCapacityProvider(cluster, stack, vpc);
-    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
-
-    taskDefinition.addContainer('web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryLimitMiB: 512,
-    });
-
     const service = new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,

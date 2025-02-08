@@ -14,7 +14,7 @@ import * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -596,6 +596,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
+  @MethodMetadata()
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
@@ -623,6 +624,7 @@ export class ServerlessCluster extends ServerlessClusterNew {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
