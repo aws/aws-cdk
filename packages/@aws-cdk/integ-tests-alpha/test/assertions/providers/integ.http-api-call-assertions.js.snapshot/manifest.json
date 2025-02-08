@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36e80ce5dbc492c642dac9ca0257e10d8e34c3caf3f30260ac762e52e4b238c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e7fc58037a1e3ef5a30c65ac2af47e5febfe4e4d862e183203483306d542b1e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +100,24 @@
             "data": "HttpApiGETstatus403A55D5D16"
           }
         ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/EchoIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoechoEchoIntegration7C9B7725"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/EchoIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoechoEchoIntegrationPermission23357605"
+          }
+        ],
+        "/InvokeFunctionAssertions/HttpApi/GET--echo--{echo}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiGETechoecho3FB8EAA5"
+          }
+        ],
         "/InvokeFunctionAssertions/GetHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +152,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ForbiddenHandler630D1ED1"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoHandlerServiceRole659EA5BA"
+          }
+        ],
+        "/InvokeFunctionAssertions/EchoHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EchoHandlerB75BC5D4"
           }
         ],
         "/InvokeFunctionAssertions/Stage/Resource": [
@@ -180,7 +210,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50a9f7f8eefab0b355a2ce03bbac0a10a5daafbdf65cdc3a014650815ee0731f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/503f62a00a2e258fb7167df4311707b1dbe9f4df405544db9067105f731b80ad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -245,6 +275,24 @@
             "data": "AssertionResultsHttpApiCallf16d32bb38fdf952b8530f86260d5337"
           }
         ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallb4a073c2cf8d627c3401d840e86f6804/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCallb4a073c2cf8d627c3401d840e86f6804"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall926492d2f4793e05bf2949d16464966f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall926492d2f4793e05bf2949d16464966f"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall926492d2f4793e05bf2949d16464966f/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall926492d2f4793e05bf2949d16464966f"
+          }
+        ],
         "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--getcd942067e1d112f86d205b2008dcab31/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -279,6 +327,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsHttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCallhttpbin.org--uuid578ccfacb1d0792dd6965cdddf794e02/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCallhttpbinorguuid578ccfacb1d0792dd6965cdddf794e02"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall01535207422a144ea98405a56eae8349/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall01535207422a144ea98405a56eae8349"
+          }
+        ],
+        "/AssertionsTest/DefaultTest/DeployAssert/HttpApiCall01535207422a144ea98405a56eae8349/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall01535207422a144ea98405a56eae8349"
           }
         ],
         "/AssertionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
