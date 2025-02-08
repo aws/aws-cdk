@@ -28,6 +28,15 @@ export interface OriginGroupProps {
    * @default - an originId will be generated for you
    */
   readonly originId?: string;
+
+  /**
+   * The selection criteria for the origin group.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
+   *
+   * @default - OriginSelectionCriteria.DEFAULT
+   */
+  readonly selectionCriteria?: cloudfront.OriginSelectionCriteria;
 }
 
 /**
@@ -52,6 +61,7 @@ export class OriginGroup implements cloudfront.IOrigin {
         statusCodes: this.props.fallbackStatusCodes,
       },
       originGroupId: this.props.originId,
+      selectionCriteria: this.props.selectionCriteria,
     };
   }
 }

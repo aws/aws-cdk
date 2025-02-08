@@ -9,6 +9,7 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A VPC endpoint.
@@ -152,7 +153,6 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * @resource AWS::EC2::VPCEndpoint
  */
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
-
   public static fromGatewayVpcEndpointId(scope: Construct, id: string, gatewayVpcEndpointId: string): IGatewayVpcEndpoint {
     class Import extends VpcEndpoint {
       public vpcEndpointId = gatewayVpcEndpointId;
@@ -184,6 +184,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
 
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const subnets: ISubnet[] = props.subnets
       ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))
@@ -233,7 +235,6 @@ export interface IInterfaceVpcEndpointService {
  * A custom-hosted service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService {
-
   /**
    * The name of the service.
    */
@@ -463,6 +464,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IOT_TWINMAKER_API = new InterfaceVpcEndpointAwsService('iottwinmaker.api');
   public static readonly IOT_TWINMAKER_DATA = new InterfaceVpcEndpointAwsService('iottwinmaker.data');
   public static readonly KAFKA = new InterfaceVpcEndpointAwsService('kafka');
+  public static readonly KAFKA_CONNECT = new InterfaceVpcEndpointAwsService('kafkaconnect');
   public static readonly KAFKA_FIPS = new InterfaceVpcEndpointAwsService('kafka-fips');
   public static readonly KENDRA = new InterfaceVpcEndpointAwsService('kendra');
   public static readonly KENDRA_RANKING = new InterfaceVpcEndpointAwsService('kendra-ranking', 'aws.api');
@@ -521,7 +523,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PARALLEL_COMPUTING_SERVICE = new InterfaceVpcEndpointAwsService('pcs');
   public static readonly PARALLEL_COMPUTING_SERVICE_FIPS = new InterfaceVpcEndpointAwsService('pcs-fips');
   public static readonly PAYMENT_CRYPTOGRAPHY_CONTROLPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.controlplane');
+  /** @deprecated - Use InterfaceVpcEndpointAwsService.PAYMENT_CRYPTOGRAPHY_DATAPLANE instead. */
   public static readonly PAYMENT_CRYTOGRAPHY_DATAPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.dataplane');
+  public static readonly PAYMENT_CRYPTOGRAPHY_DATAPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.dataplane');
   public static readonly PERSONALIZE = new InterfaceVpcEndpointAwsService('personalize');
   public static readonly PERSONALIZE_EVENTS = new InterfaceVpcEndpointAwsService('personalize-events');
   public static readonly PERSONALIZE_RUNTIME = new InterfaceVpcEndpointAwsService('personalize-runtime');
@@ -876,6 +880,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
   constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
@@ -956,7 +962,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Sanity checking when looking up AZs for an endpoint service, to make sure it won't fail
    */
   private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
-
     // Having any of these be true will cause the AZ lookup to fail at synthesis time
     const agnosticAcct = Token.isUnresolved(this.env.account);
     const agnosticRegion = Token.isUnresolved(this.env.region);

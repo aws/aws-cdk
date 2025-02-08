@@ -6,6 +6,7 @@ import { CfnKeyValueStore } from './cloudfront.generated';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The data to be imported to the key value store.
@@ -130,7 +131,6 @@ export class InlineImportSource extends ImportSource {
    * @internal
    */
   public _bind(scope: Construct): CfnKeyValueStore.ImportSourceProperty {
-
     if (!this.asset) {
       // CfnKeyValueStore does not support native in-line, so we need to use a
       // temporary file to be uploaded with the S3 assets
@@ -250,6 +250,8 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
         produce: () => Names.uniqueResourceName(this, { maxLength: 64 }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnKeyValueStore(this, 'Resource', {
       name: this.physicalName,

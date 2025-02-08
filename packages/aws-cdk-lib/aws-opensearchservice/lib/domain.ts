@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1390,6 +1391,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.search';
     const warmDefaultInstanceType = 'ultrawarm1.medium.search';
@@ -1513,21 +1516,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     function isInstanceType(t: string): Boolean {
       return dedicatedMasterType.startsWith(t) || instanceType.startsWith(t);
-    };
+    }
 
     function isSomeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(isInstanceType);
-    };
+    }
 
     function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
       return instanceTypes.some(t => instanceType.startsWith(t));
-    };
+    }
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
         ![
@@ -1763,7 +1765,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
@@ -1780,7 +1782,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
@@ -1797,7 +1799,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
@@ -1814,7 +1816,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       logPublishing.AUDIT_LOGS = {
         enabled: false,
       };
-    };
+    }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
     if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
@@ -2093,6 +2095,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Add policy statements to the domain access policy
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {
@@ -2194,7 +2197,7 @@ function zoneAwarenessCheckShouldBeSkipped(vpc: ec2.IVpc, vpcSubnets: ec2.Subnet
   for (const selection of vpcSubnets) {
     if (vpc.selectSubnets(selection).isPendingLookup) {
       return true;
-    };
+    }
   }
   return false;
 }
