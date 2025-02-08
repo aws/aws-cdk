@@ -216,6 +216,7 @@
      "Statement": [
       {
        "Action": [
+        "sagemaker:AddTags",
         "sagemaker:CreateTrainingJob",
         "sagemaker:DescribeTrainingJob",
         "sagemaker:StopTrainingJob"
@@ -461,6 +462,7 @@
      "Statement": [
       {
        "Action": [
+        "sagemaker:AddTags",
         "sagemaker:CreateTrainingJob",
         "sagemaker:DescribeTrainingJob",
         "sagemaker:StopTrainingJob"
