@@ -1142,6 +1142,9 @@ integTest(
         expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
       } finally {
         await fixture.cdkDestroy('migrate-stack');
+        await fixture.outputFile();
+        // eslint-disable-next-line no-console
+        console.log('file written! from cli.integ.test');
       }
     }),
   );
@@ -1158,6 +1161,9 @@ integTest(
 
     // We can make it fail by passing --fail
     await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1')])).rejects.toThrow('exited with error');
+    await fixture.outputFile();
+    // eslint-disable-next-line no-console
+    console.log('file written!');
   }),
 );
 
