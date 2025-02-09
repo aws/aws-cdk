@@ -10,6 +10,7 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for Alarms
@@ -164,6 +165,8 @@ export class Alarm extends AlarmBase {
     super(scope, id, {
       physicalName: props.alarmName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
@@ -242,6 +245,7 @@ export class Alarm extends AlarmBase {
    *
    * - You want to show an Alarm line in a graph with multiple metrics in it.
    */
+  @MethodMetadata()
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
   }
@@ -251,6 +255,7 @@ export class Alarm extends AlarmBase {
    *
    * Typically SnsAction or AutoScalingAction.
    */
+  @MethodMetadata()
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];

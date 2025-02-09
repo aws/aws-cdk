@@ -22,6 +22,7 @@ import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, TokenComparison } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -382,13 +383,13 @@ interface DatabaseClusterBaseProps {
   readonly networkType?: NetworkType;
 
   /**
-  * Directory ID for associating the DB cluster with a specific Active Directory.
-  *
-  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
-  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
-  *
-  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
-  */
+   * Directory ID for associating the DB cluster with a specific Active Directory.
+   *
+   * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+   * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+   *
+   * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
+   */
   readonly domain?: string;
 
   /**
@@ -422,14 +423,17 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable Performance Insights for the DB cluster.
    *
-   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set,
+   * or `databaseInsightsMode` is set to `DatabaseInsightsMode.ADVANCED`.
    */
   readonly enablePerformanceInsights?: boolean;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
+   * @default - 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -439,6 +443,13 @@ interface DatabaseClusterBaseProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * The database insights mode.
+   *
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
+   */
+  readonly databaseInsightsMode?: DatabaseInsightsMode;
 
   /**
    * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
@@ -536,6 +547,21 @@ export enum ClusterScailabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+}
+
+/**
+ * The database insights mode of the Aurora DB cluster.
+ */
+export enum DatabaseInsightsMode {
+  /**
+   * Standard mode.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * Advanced mode.
+   */
+  ADVANCED = 'advanced',
 }
 
 /**
@@ -719,6 +745,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
+   * The database insights mode.
+   */
+  public readonly databaseInsightsMode?: DatabaseInsightsMode;
+
+  /**
    * The IAM role for the enhanced monitoring.
    */
   public readonly monitoringRole?: iam.IRole;
@@ -834,12 +865,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     validateDatabaseClusterProps(this, props);
 
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+      || props.performanceInsightRetention !== undefined
+      || props.performanceInsightEncryptionKey !== undefined
+      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
+    this.databaseInsightsMode = props.databaseInsightsMode;
 
     // configure enhanced monitoring role for the cluster or instance
     this.monitoringRole = props.monitoringRole;
@@ -904,6 +938,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
+      databaseInsightsMode: this.databaseInsightsMode,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
@@ -1164,6 +1199,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     this.clusterIdentifier = attrs.clusterIdentifier;
     this._clusterResourceIdentifier = attrs.clusterResourceIdentifier;
@@ -1262,6 +1299,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
@@ -1444,6 +1483,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');

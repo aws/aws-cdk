@@ -5,6 +5,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set event destination
@@ -251,6 +252,8 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     super(scope, id, {
       physicalName: props.configurationSetEventDestinationName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.destination.bus && props.destination.bus.eventBusArn != `arn:${Aws.PARTITION}:events:${this.env.region}:${this.env.account}:event-bus/default`) {
       throw new Error(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`);

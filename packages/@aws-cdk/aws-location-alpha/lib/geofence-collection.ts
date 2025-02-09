@@ -4,6 +4,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Geofence Collection
@@ -130,6 +131,8 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     super(scope, id, {
       physicalName: props.geofenceCollectionName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
       collectionName: this.physicalName,
@@ -146,6 +149,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
   /**
    * Grant the given principal identity permissions to perform the actions on this geofence collection.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -159,6 +163,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:ListGeofences',
