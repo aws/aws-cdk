@@ -27,6 +27,15 @@ export interface SqsQueueProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
+
+  /**
+   * Role to be used to publish the event
+   *
+   * This is required to publish events cross-account.
+   *
+   * @default no role is attached.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -53,6 +62,8 @@ export class SqsQueue implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const { deadLetterQueue, message, messageGroupId, role } = this.props;
+
     const restrictToSameAccount = FeatureFlags.of(rule).isEnabled(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT);
 
     let conditions: any = {};
@@ -70,16 +81,28 @@ export class SqsQueue implements events.IRuleTarget {
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', { conditions }));
 
-    if (this.props.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+    if (deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(rule, deadLetterQueue);
+    }
+
+    if (role) {
+      role.addToPrincipalPolicy(this.sendMessageStatement());
     }
 
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.queue.queueArn,
-      input: this.props.message,
+      input: message,
+      role,
       targetResource: this.queue,
-      sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
+      sqsParameters: messageGroupId ? { messageGroupId } : undefined,
     };
+  }
+
+  private sendMessageStatement() {
+    return new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [this.queue.queueArn],
+    });
   }
 }

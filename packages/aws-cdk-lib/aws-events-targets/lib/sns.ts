@@ -13,6 +13,15 @@ export interface SnsTopicProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
+
+  /**
+   * Role to be used to publish the event
+   *
+   * This is required to publish events cross-account.
+   *
+   * @default no role is attached.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -37,18 +46,32 @@ export class SnsTopic implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const { deadLetterQueue, role } = this.props;
+
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 
-    if (this.props.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    if (deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, deadLetterQueue);
+    }
+
+    if (role) {
+      role.addToPrincipalPolicy(this.publishStatement());
     }
 
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.topic.topicArn,
       input: this.props.message,
+      role,
       targetResource: this.topic,
     };
+  }
+
+  private publishStatement() {
+    return new iam.PolicyStatement({
+      actions: ['sns:Publish'],
+      resources: [this.topic.topicArn],
+    });
   }
 }

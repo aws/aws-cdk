@@ -1,6 +1,7 @@
 import * as constructs from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -59,7 +60,7 @@ test('use lambda as an event rule target', () => {
   });
 });
 
-test('adding same lambda function as target mutiple times creates permission only once', () => {
+test('adding same lambda function as target multiple times creates permission only once', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const fn = newTestLambda(stack);
@@ -79,7 +80,7 @@ test('adding same lambda function as target mutiple times creates permission onl
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
 });
 
-test('adding different lambda functions as target mutiple times creates multiple permissions', () => {
+test('adding different lambda functions as target multiple times creates multiple permissions', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const fn1 = newTestLambda(stack);
@@ -100,7 +101,7 @@ test('adding different lambda functions as target mutiple times creates multiple
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
 });
 
-test('adding same singleton lambda function as target mutiple times creates permission only once', () => {
+test('adding same singleton lambda function as target multiple times creates permission only once', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const fn = new lambda.SingletonFunction(stack, 'MyLambda', {
@@ -327,6 +328,70 @@ test('must display a warning when using a Dead Letter Queue from another account
       ]),
     ]),
   }));
+});
+
+test('specifying a role', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const fn = newTestLambda(stack);
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+    roleName: 'GivenRole',
+  });
+
+  // WHEN
+  rule.addTarget(new targets.LambdaFunction(fn, {
+    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
+    role,
+  }));
+
+  // THEN
+  expect(() => app.synth()).not.toThrow();
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'lambda:InvokeFunction',
+          Resource: {
+            'Fn::GetAtt': [
+              'MyLambdaCCE802FB',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [{
+      Ref: 'Role1ABCC5F0',
+    }],
+  });
 });
 
 test('specifying retry policy', () => {

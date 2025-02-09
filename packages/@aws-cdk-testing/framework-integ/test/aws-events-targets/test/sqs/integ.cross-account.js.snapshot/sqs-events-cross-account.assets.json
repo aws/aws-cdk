@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "11f55d2b1a02ef1cb3f0c326899e84e77998f298bb09554398e39405a991cae3": {
+      "source": {
+        "path": "sqs-events-cross-account.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "11f55d2b1a02ef1cb3f0c326899e84e77998f298bb09554398e39405a991cae3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

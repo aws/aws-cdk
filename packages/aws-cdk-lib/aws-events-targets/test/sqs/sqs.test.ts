@@ -1,9 +1,9 @@
 import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import * as ssm from '../../../aws-ssm';
-import { App, CustomResource, Duration, Stack } from '../../../core';
+import { App, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
 
@@ -334,6 +334,69 @@ test('dead letter queue is configured correctly', () => {
         },
       },
     ],
+  });
+});
+
+test('specifying a role', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app);
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(Duration.minutes(1)),
+  });
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+    roleName: 'GivenRole',
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    role,
+  }));
+
+  // THEN
+  expect(() => app.synth()).not.toThrow();
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Effect: 'Allow',
+          Action: 'sqs:SendMessage',
+          Resource: {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    Roles: [{
+      Ref: 'Role1ABCC5F0',
+    }],
   });
 });
 

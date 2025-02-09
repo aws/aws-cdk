@@ -1,5 +1,6 @@
 import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
+import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 
 /**
@@ -14,6 +15,15 @@ export interface LambdaFunctionProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly event?: events.RuleTargetInput;
+
+  /**
+   * Role to be used to publish the event.
+   *
+   * This is required to publish events cross-account.
+   *
+   * @default no role is attached.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -29,18 +39,32 @@ export class LambdaFunction implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+    const { deadLetterQueue, event, role } = this.props;
+
     // Allow handler to be called from rule
     addLambdaPermission(rule, this.handler);
 
-    if (this.props.deadLetterQueue) {
-      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+    if (deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(rule, deadLetterQueue);
+    }
+
+    if (role) {
+      role.addToPrincipalPolicy(this.invokeFunctionStatement());
     }
 
     return {
       ...bindBaseTargetConfig(this.props),
       arn: this.handler.functionArn,
-      input: this.props.event,
+      input: event,
+      role,
       targetResource: this.handler,
     };
+  }
+
+  private invokeFunctionStatement() {
+    return new iam.PolicyStatement({
+      actions: ['lambda:InvokeFunction'],
+      resources: [this.handler.functionArn],
+    });
   }
 }
