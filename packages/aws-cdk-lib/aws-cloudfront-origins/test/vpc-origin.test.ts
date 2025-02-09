@@ -172,6 +172,38 @@ test('VPC origin from a VpcOrigin resource', () => {
   });
 });
 
+test('VPC origin from an imported VpcOrigin resource', () => {
+  // GIVEN
+  const vpcOrigin = cloudfront.VpcOrigin.fromVpcOriginId(stack, 'VpcOrigin', 'vpc-origin-id');
+
+  // WHEN
+  new cloudfront.Distribution(stack, 'Distribution', {
+    defaultBehavior: {
+      origin: VpcOrigin.withVpcOrigin(vpcOrigin, {
+        domainName: 'vpcorigin.example.com',
+      }),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Origins: [
+        {
+          Id: 'StackDistributionOrigin14F1B0A79',
+          DomainName: 'vpcorigin.example.com',
+          VpcOriginConfig: {
+            VpcOriginId: 'vpc-origin-id',
+          },
+        },
+      ],
+      DefaultCacheBehavior: {
+        TargetOriginId: 'StackDistributionOrigin14F1B0A79',
+      },
+    },
+  });
+});
+
 test.each([
   Duration.seconds(0),
   Duration.seconds(181),

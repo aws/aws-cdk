@@ -132,6 +132,18 @@ test('VPC origin with options configureed', () => {
   });
 });
 
+test('VPC origin imports from vpcOriginId', () => {
+  // WHEN
+  const vpcOrigin = VpcOrigin.fromVpcOriginId(stack, 'VpcOrigin', 'vpc-origin-id');
+
+  // THEN
+  expect(vpcOrigin.vpcOriginId).toEqual('vpc-origin-id');
+  expect(stack.resolve(vpcOrigin.vpcOriginArn)).toEqual({
+    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:vpcorigin/vpc-origin-id']],
+  });
+  expect(vpcOrigin.domainName).toBeUndefined();
+});
+
 test.each([88, 444, 65536])('VPC origins throws when httpPort is %s', (port) => {
   expect(() => {
     new VpcOrigin(stack, 'VpcOrigin', {
