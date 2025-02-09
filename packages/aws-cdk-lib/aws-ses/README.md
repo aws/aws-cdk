@@ -180,7 +180,7 @@ For Firehose, if you don't specify IAM Role ARN for Amazon SES to send events. A
 import * as events from 'aws-cdk-lib/aws-events';
 
 declare const myConfigurationSet: ses.ConfigurationSet;
-declare const firehoseDeliveryStream: kinesisfirehose.DeliveryStream;
+declare const firehoseDeliveryStream: firehose.DeliveryStream;
 declare const iamRole: iam.Role;
 
 // Create IAM Role automatically
