@@ -470,9 +470,9 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
   public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
     vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
 
-    const endpoints = Lazy.string({
+    const endpoints = Lazy.list({
       produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId).join(',');
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId);
       },
     });
 

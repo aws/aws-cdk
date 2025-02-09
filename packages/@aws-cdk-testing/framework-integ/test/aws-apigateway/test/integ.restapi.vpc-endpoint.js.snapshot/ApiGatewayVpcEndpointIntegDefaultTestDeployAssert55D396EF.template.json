@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6": {
+  "AwsApiCallLambdainvokeff16ee71a7cd1301bc4536b14e724d50": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction22AD90FC921DCA96"
+         "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction05BE16519A6856157"
         },
         "\""
        ]
@@ -28,7 +28,7 @@
      "InvocationType": "\"RequestResponse\""
     },
     "flattenResponse": "false",
-    "salt": "1735875134037"
+    "salt": "1739069897447"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -75,7 +75,27 @@
          ],
          "Resource": [
           {
-           "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction22AD90FCArn01516C4C"
+           "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction05BE16519Arn2FC9AB02"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Resource": [
+          {
+           "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction11C5DC9A0Arn58810350"
           }
          ]
         }
@@ -101,7 +121,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfcf4228d6660f50e81f19efdb64c6388dda6796296eb239decdff1dbc2f4981.zip"
+     "S3Key": "0620cd173f15e6874350d35d31917579f8488aac349f5c15062107ebca21d5b6.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -112,13 +132,54 @@
      ]
     }
    }
+  },
+  "AwsApiCallLambdainvoke1ab39d60d4268e4352842dacf126dcd5": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"Payload\":\"{\\\"statusCode\\\":200,\\\"body\\\":\\\"{\\\\\\\"message\\\\\\\":\\\\\\\"Success\\\\\\\",\\\\\\\"data\\\\\\\":\\\\\\\"{\\\\\\\\\\\\\\\"message\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"OK\\\\\\\\\\\\\\\"}\\\\\\\"}\\\"}\"}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction11C5DC9A07BBC8061"
+        },
+        "\""
+       ]
+      ]
+     },
+     "InvocationType": "\"RequestResponse\""
+    },
+    "flattenResponse": "false",
+    "salt": "1739069897448"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6": {
+  "AssertionResultsAwsApiCallLambdainvokeff16ee71a7cd1301bc4536b14e724d50": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallLambdainvoked401fe45bb8e637ca39f14a013e980c6",
+     "AwsApiCallLambdainvokeff16ee71a7cd1301bc4536b14e724d50",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdainvoke1ab39d60d4268e4352842dacf126dcd5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdainvoke1ab39d60d4268e4352842dacf126dcd5",
      "assertion"
     ]
    }
@@ -172,10 +233,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -226,10 +287,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

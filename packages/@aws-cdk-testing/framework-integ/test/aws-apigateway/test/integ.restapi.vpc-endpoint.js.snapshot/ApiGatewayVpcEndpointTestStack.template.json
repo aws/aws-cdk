@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "Vpc8378EB38": {
+  "Vpc1C211860B": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -10,12 +10,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1"
      }
     ]
    }
   },
-  "VpcPublicSubnet1Subnet5C2D37C4": {
+  "Vpc1PublicSubnet1SubnetA38B5196": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -39,55 +39,55 @@
      },
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcPublicSubnet1RouteTable6C95E38E": {
+  "Vpc1PublicSubnet1RouteTable7CD3463B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet1"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/PublicSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcPublicSubnet1RouteTableAssociation97140677": {
+  "Vpc1PublicSubnet1RouteTableAssociation0DA89392": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+     "Ref": "Vpc1PublicSubnet1RouteTable7CD3463B"
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+     "Ref": "Vpc1PublicSubnet1SubnetA38B5196"
     }
    }
   },
-  "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+  "Vpc1PublicSubnet1DefaultRouteD017B509": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "Vpc1IGW15AE5E6B"
     },
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+     "Ref": "Vpc1PublicSubnet1RouteTable7CD3463B"
     }
    },
    "DependsOn": [
-    "VpcVPCGWBF912B6E"
+    "Vpc1VPCGW4C1BD07A"
    ]
   },
-  "VpcPublicSubnet2Subnet691E08A3": {
+  "Vpc1PublicSubnet2Subnet9A232F02": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -111,55 +111,55 @@
      },
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcPublicSubnet2RouteTable94F7E489": {
+  "Vpc1PublicSubnet2RouteTable845CC89F": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/PublicSubnet2"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/PublicSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
+  "Vpc1PublicSubnet2RouteTableAssociationC2021359": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+     "Ref": "Vpc1PublicSubnet2RouteTable845CC89F"
     },
     "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+     "Ref": "Vpc1PublicSubnet2Subnet9A232F02"
     }
    }
   },
-  "VpcPublicSubnet2DefaultRoute97F91067": {
+  "Vpc1PublicSubnet2DefaultRoute1057C1D6": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "Vpc1IGW15AE5E6B"
     },
     "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+     "Ref": "Vpc1PublicSubnet2RouteTable845CC89F"
     }
    },
    "DependsOn": [
-    "VpcVPCGWBF912B6E"
+    "Vpc1VPCGW4C1BD07A"
    ]
   },
-  "VpcIsolatedSubnet1SubnetE48C5737": {
+  "Vpc1IsolatedSubnet1Subnet41898916": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -183,40 +183,40 @@
      },
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/IsolatedSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcIsolatedSubnet1RouteTable4771E3E5": {
+  "Vpc1IsolatedSubnet1RouteTable85CC0284": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet1"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/IsolatedSubnet1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcIsolatedSubnet1RouteTableAssociationD300FCBB": {
+  "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcIsolatedSubnet1RouteTable4771E3E5"
+     "Ref": "Vpc1IsolatedSubnet1RouteTable85CC0284"
     },
     "SubnetId": {
-     "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+     "Ref": "Vpc1IsolatedSubnet1Subnet41898916"
     }
    }
   },
-  "VpcIsolatedSubnet2Subnet16364B91": {
+  "Vpc1IsolatedSubnet2SubnetE973B126": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -240,65 +240,65 @@
      },
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/IsolatedSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcIsolatedSubnet2RouteTable1D30AF7D": {
+  "Vpc1IsolatedSubnet2RouteTable43B12B6D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc/IsolatedSubnet2"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1/IsolatedSubnet2"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA": {
+  "Vpc1IsolatedSubnet2RouteTableAssociation6394B926": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+     "Ref": "Vpc1IsolatedSubnet2RouteTable43B12B6D"
     },
     "SubnetId": {
-     "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+     "Ref": "Vpc1IsolatedSubnet2SubnetE973B126"
     }
    }
   },
-  "VpcIGWD7BA715C": {
+  "Vpc1IGW15AE5E6B": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1"
      }
     ]
    }
   },
-  "VpcVPCGWBF912B6E": {
+  "Vpc1VPCGW4C1BD07A": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {
-     "Ref": "VpcIGWD7BA715C"
+     "Ref": "Vpc1IGW15AE5E6B"
     },
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcVpcEndpointSecurityGroup0E497F39": {
+  "Vpc1VpcEndpoint1SecurityGroup18C43C3D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "ApiGatewayVpcEndpointTestStack/Vpc/VpcEndpoint/SecurityGroup",
+    "GroupDescription": "ApiGatewayVpcEndpointTestStack/Vpc1/VpcEndpoint1/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -310,7 +310,7 @@
      {
       "CidrIp": {
        "Fn::GetAtt": [
-        "Vpc8378EB38",
+        "Vpc1C211860B",
         "CidrBlock"
        ]
       },
@@ -321,7 +321,7 @@
          "from ",
          {
           "Fn::GetAtt": [
-           "Vpc8378EB38",
+           "Vpc1C211860B",
            "CidrBlock"
           ]
          },
@@ -337,43 +337,43 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1"
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    }
   },
-  "VpcVpcEndpointSecurityGroupfromApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7443F41B758E": {
+  "Vpc1VpcEndpoint1SecurityGroupfromApiGatewayVpcEndpointTestStackTestFunction0SecurityGroup8313BFC0443EEDA2391": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "Description": "from ApiGatewayVpcEndpointTestStackTestFunctionSecurityGroupF0399EA7:443",
+    "Description": "from ApiGatewayVpcEndpointTestStackTestFunction0SecurityGroup8313BFC0:443",
     "FromPort": 443,
     "GroupId": {
      "Fn::GetAtt": [
-      "VpcVpcEndpointSecurityGroup0E497F39",
+      "Vpc1VpcEndpoint1SecurityGroup18C43C3D",
       "GroupId"
      ]
     },
     "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "TestFunctionSecurityGroupAC0FED4B",
+      "TestFunction0SecurityGroup749DC118",
       "GroupId"
      ]
     },
     "ToPort": 443
    }
   },
-  "VpcVpcEndpoint697E0D62": {
+  "Vpc1VpcEndpoint1A8BD3278": {
    "Type": "AWS::EC2::VPCEndpoint",
    "Properties": {
     "PrivateDnsEnabled": true,
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "VpcVpcEndpointSecurityGroup0E497F39",
+       "Vpc1VpcEndpoint1SecurityGroup18C43C3D",
        "GroupId"
       ]
      }
@@ -392,21 +392,431 @@
     },
     "SubnetIds": [
      {
-      "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+      "Ref": "Vpc1IsolatedSubnet1Subnet41898916"
      },
      {
-      "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+      "Ref": "Vpc1IsolatedSubnet2SubnetE973B126"
      }
     ],
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ApiGatewayVpcEndpointTestStack/Vpc"
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc1"
      }
     ],
     "VpcEndpointType": "Interface",
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
+    }
+   }
+  },
+  "Vpc299FDBC5F": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2"
+     }
+    ]
+   }
+  },
+  "Vpc2PublicSubnet1Subnet758D49A9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2PublicSubnet1RouteTable424A19D4": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2PublicSubnet1RouteTableAssociationA1651F3A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "Vpc2PublicSubnet1RouteTable424A19D4"
+    },
+    "SubnetId": {
+     "Ref": "Vpc2PublicSubnet1Subnet758D49A9"
+    }
+   }
+  },
+  "Vpc2PublicSubnet1DefaultRoute64172CA2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "Vpc2IGWB10A76EB"
+    },
+    "RouteTableId": {
+     "Ref": "Vpc2PublicSubnet1RouteTable424A19D4"
+    }
+   },
+   "DependsOn": [
+    "Vpc2VPCGW62C338EF"
+   ]
+  },
+  "Vpc2PublicSubnet2Subnet0BF8C291": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2PublicSubnet2RouteTableF9AE47B1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2PublicSubnet2RouteTableAssociation361E1341": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "Vpc2PublicSubnet2RouteTableF9AE47B1"
+    },
+    "SubnetId": {
+     "Ref": "Vpc2PublicSubnet2Subnet0BF8C291"
+    }
+   }
+  },
+  "Vpc2PublicSubnet2DefaultRouteBAB514C1": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "Vpc2IGWB10A76EB"
+    },
+    "RouteTableId": {
+     "Ref": "Vpc2PublicSubnet2RouteTableF9AE47B1"
+    }
+   },
+   "DependsOn": [
+    "Vpc2VPCGW62C338EF"
+   ]
+  },
+  "Vpc2IsolatedSubnet1SubnetB1A200D6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2IsolatedSubnet1RouteTableB7D5B7B8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "Vpc2IsolatedSubnet1RouteTableB7D5B7B8"
+    },
+    "SubnetId": {
+     "Ref": "Vpc2IsolatedSubnet1SubnetB1A200D6"
+    }
+   }
+  },
+  "Vpc2IsolatedSubnet2SubnetAC9D1056": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2IsolatedSubnet2RouteTableF69567F2": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2IsolatedSubnet2RouteTableAssociation0186F707": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "Vpc2IsolatedSubnet2RouteTableF69567F2"
+    },
+    "SubnetId": {
+     "Ref": "Vpc2IsolatedSubnet2SubnetAC9D1056"
+    }
+   }
+  },
+  "Vpc2IGWB10A76EB": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2"
+     }
+    ]
+   }
+  },
+  "Vpc2VPCGW62C338EF": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "Vpc2IGWB10A76EB"
+    },
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2VpcEndpoint2SecurityGroup04C0C724": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ApiGatewayVpcEndpointTestStack/Vpc2/VpcEndpoint2/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "Vpc299FDBC5F",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "Vpc299FDBC5F",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   }
+  },
+  "Vpc2VpcEndpoint2SecurityGroupfromApiGatewayVpcEndpointTestStackTestFunction1SecurityGroup743BAD65443F937B44E": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from ApiGatewayVpcEndpointTestStackTestFunction1SecurityGroup743BAD65:443",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Vpc2VpcEndpoint2SecurityGroup04C0C724",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "TestFunction1SecurityGroup263EDDE5",
+      "GroupId"
+     ]
+    },
+    "ToPort": 443
+   }
+  },
+  "Vpc2VpcEndpoint2898EEC0D": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "Vpc2VpcEndpoint2SecurityGroup04C0C724",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".execute-api"
+      ]
+     ]
+    },
+    "SubnetIds": [
+     {
+      "Ref": "Vpc2IsolatedSubnet1SubnetB1A200D6"
+     },
+     {
+      "Ref": "Vpc2IsolatedSubnet2SubnetAC9D1056"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ApiGatewayVpcEndpointTestStack/Vpc2"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
     }
    }
   },
@@ -419,7 +829,10 @@
      ],
      "VpcEndpointIds": [
       {
-       "Ref": "VpcVpcEndpoint697E0D62"
+       "Ref": "Vpc1VpcEndpoint1A8BD3278"
+      },
+      {
+       "Ref": "Vpc2VpcEndpoint2898EEC0D"
       }
      ]
     },
@@ -430,9 +843,14 @@
        "Action": "execute-api:Invoke",
        "Condition": {
         "StringNotEquals": {
-         "aws:SourceVpce": {
-          "Ref": "VpcVpcEndpoint697E0D62"
-         }
+         "aws:SourceVpce": [
+          {
+           "Ref": "Vpc1VpcEndpoint1A8BD3278"
+          },
+          {
+           "Ref": "Vpc2VpcEndpoint2898EEC0D"
+          }
+         ]
         }
        },
        "Effect": "Deny",
@@ -503,7 +921,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "ApiDeploymentB17BE62D92eec14a5efe64a86b912ba4f73801b8": {
+  "ApiDeploymentB17BE62Def36cddc56e5dfb256d1d22dd6294755": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -519,7 +937,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "ApiDeploymentB17BE62D92eec14a5efe64a86b912ba4f73801b8"
+     "Ref": "ApiDeploymentB17BE62Def36cddc56e5dfb256d1d22dd6294755"
     },
     "RestApiId": {
      "Ref": "ApiF70053CD"
@@ -565,7 +983,7 @@
     }
    }
   },
-  "TestFunctionServiceRole6ABD93C7": {
+  "TestFunction0ServiceRoleD0765191": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -608,11 +1026,11 @@
     ]
    },
    "DependsOn": [
-    "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
-    "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
+    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
    ]
   },
-  "TestFunctionServiceRoleDefaultPolicy810BAB0B": {
+  "TestFunction0ServiceRoleDefaultPolicy02794024": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -648,22 +1066,22 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TestFunctionServiceRoleDefaultPolicy810BAB0B",
+    "PolicyName": "TestFunction0ServiceRoleDefaultPolicy02794024",
     "Roles": [
      {
-      "Ref": "TestFunctionServiceRole6ABD93C7"
+      "Ref": "TestFunction0ServiceRoleD0765191"
      }
     ]
    },
    "DependsOn": [
-    "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
-    "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
+    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
    ]
   },
-  "TestFunctionSecurityGroupAC0FED4B": {
+  "TestFunction0SecurityGroup749DC118": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function ApiGatewayVpcEndpointTestStackTestFunction7D61CC28",
+    "GroupDescription": "Automatic security group for Lambda Function ApiGatewayVpcEndpointTestStackTestFunction0F898900F",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -672,19 +1090,19 @@
      }
     ],
     "VpcId": {
-     "Ref": "Vpc8378EB38"
+     "Ref": "Vpc1C211860B"
     }
    },
    "DependsOn": [
-    "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
-    "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
+    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
    ]
   },
-  "TestFunction22AD90FC": {
+  "TestFunction05BE16519": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        const https = require('https');\n\n        const httpsGet = (url) => {\n          return new Promise((resolve, reject) => {\n            https.get(url, (res) => {\n              let data = '';\n\n              res.on('data', (chunk) => {\n                data += chunk;\n              });\n\n              res.on('end', () => {\n                resolve(data);\n              });\n\n              res.on('error', (e) => {\n                reject(e);\n              });\n            });\n          });\n        };\n\n        exports.handler = async function(event) {\n          const apiEndpoint = process.env.API_ENDPOINT;\n\n          try {\n            const data = await httpsGet(apiEndpoint);\n            return {\n              statusCode: 200,\n              body: JSON.stringify({ message: 'Success', data }),\n            };\n          } catch (error) {\n            return {\n              statusCode: 500,\n              body: JSON.stringify({ message: 'Error', error: error.message }),\n            };\n          }\n        };\n      "
+     "ZipFile": "\n          const https = require('https');\n  \n          const httpsGet = (url) => {\n            return new Promise((resolve, reject) => {\n              https.get(url, (res) => {\n                let data = '';\n  \n                res.on('data', (chunk) => {\n                  data += chunk;\n                });\n  \n                res.on('end', () => {\n                  resolve(data);\n                });\n  \n                res.on('error', (e) => {\n                  reject(e);\n                });\n              });\n            });\n          };\n  \n          exports.handler = async function(event) {\n            const apiEndpoint = process.env.API_ENDPOINT;\n  \n            try {\n              const data = await httpsGet(apiEndpoint);\n              return {\n                statusCode: 200,\n                body: JSON.stringify({ message: 'Success', data }),\n              };\n            } catch (error) {\n              return {\n                statusCode: 500,\n                body: JSON.stringify({ message: 'Error', error: error.message }),\n              };\n            }\n          };\n        "
     },
     "Environment": {
      "Variables": {
@@ -717,7 +1135,7 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "TestFunctionServiceRole6ABD93C7",
+      "TestFunction0ServiceRoleD0765191",
       "Arn"
      ]
     },
@@ -726,26 +1144,209 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "TestFunctionSecurityGroupAC0FED4B",
+        "TestFunction0SecurityGroup749DC118",
         "GroupId"
        ]
       }
      ],
      "SubnetIds": [
       {
-       "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+       "Ref": "Vpc1IsolatedSubnet1Subnet41898916"
       },
       {
-       "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+       "Ref": "Vpc1IsolatedSubnet2SubnetE973B126"
       }
      ]
     }
    },
    "DependsOn": [
-    "TestFunctionServiceRoleDefaultPolicy810BAB0B",
-    "TestFunctionServiceRole6ABD93C7",
-    "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
-    "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    "TestFunction0ServiceRoleDefaultPolicy02794024",
+    "TestFunction0ServiceRoleD0765191",
+    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
+    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
+   ]
+  },
+  "TestFunction1ServiceRoleFF9BD7F5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
+    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
+   ]
+  },
+  "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "execute-api:Invoke",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":",
+          {
+           "Ref": "ApiF70053CD"
+          },
+          "/*/*/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
+    "Roles": [
+     {
+      "Ref": "TestFunction1ServiceRoleFF9BD7F5"
+     }
+    ]
+   },
+   "DependsOn": [
+    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
+    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
+   ]
+  },
+  "TestFunction1SecurityGroup263EDDE5": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function ApiGatewayVpcEndpointTestStackTestFunction114C6E106",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc299FDBC5F"
+    }
+   },
+   "DependsOn": [
+    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
+    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
+   ]
+  },
+  "TestFunction11C5DC9A0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n          const https = require('https');\n  \n          const httpsGet = (url) => {\n            return new Promise((resolve, reject) => {\n              https.get(url, (res) => {\n                let data = '';\n  \n                res.on('data', (chunk) => {\n                  data += chunk;\n                });\n  \n                res.on('end', () => {\n                  resolve(data);\n                });\n  \n                res.on('error', (e) => {\n                  reject(e);\n                });\n              });\n            });\n          };\n  \n          exports.handler = async function(event) {\n            const apiEndpoint = process.env.API_ENDPOINT;\n  \n            try {\n              const data = await httpsGet(apiEndpoint);\n              return {\n                statusCode: 200,\n                body: JSON.stringify({ message: 'Success', data }),\n              };\n            } catch (error) {\n              return {\n                statusCode: 500,\n                body: JSON.stringify({ message: 'Error', error: error.message }),\n              };\n            }\n          };\n        "
+    },
+    "Environment": {
+     "Variables": {
+      "API_ENDPOINT": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Ref": "ApiF70053CD"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "ApiDeploymentStageprod3EB9684E"
+         },
+         "/"
+        ]
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestFunction1ServiceRoleFF9BD7F5",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "TestFunction1SecurityGroup263EDDE5",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "Vpc2IsolatedSubnet1SubnetB1A200D6"
+      },
+      {
+       "Ref": "Vpc2IsolatedSubnet2SubnetAC9D1056"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
+    "TestFunction1ServiceRoleFF9BD7F5",
+    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
+    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
    ]
   }
  },
@@ -776,23 +1377,42 @@
     ]
    }
   },
-  "ExportsOutputRefTestFunction22AD90FC921DCA96": {
+  "ExportsOutputRefTestFunction05BE16519A6856157": {
    "Value": {
-    "Ref": "TestFunction22AD90FC"
+    "Ref": "TestFunction05BE16519"
    },
    "Export": {
-    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction22AD90FC921DCA96"
+    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction05BE16519A6856157"
    }
   },
-  "ExportsOutputFnGetAttTestFunction22AD90FCArn01516C4C": {
+  "ExportsOutputFnGetAttTestFunction05BE16519Arn2FC9AB02": {
    "Value": {
     "Fn::GetAtt": [
-     "TestFunction22AD90FC",
+     "TestFunction05BE16519",
      "Arn"
     ]
    },
    "Export": {
-    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction22AD90FCArn01516C4C"
+    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction05BE16519Arn2FC9AB02"
+   }
+  },
+  "ExportsOutputFnGetAttTestFunction11C5DC9A0Arn58810350": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestFunction11C5DC9A0",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputFnGetAttTestFunction11C5DC9A0Arn58810350"
+   }
+  },
+  "ExportsOutputRefTestFunction11C5DC9A07BBC8061": {
+   "Value": {
+    "Ref": "TestFunction11C5DC9A0"
+   },
+   "Export": {
+    "Name": "ApiGatewayVpcEndpointTestStack:ExportsOutputRefTestFunction11C5DC9A07BBC8061"
    }
   }
  },
