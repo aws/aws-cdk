@@ -1,4 +1,498 @@
 {
+ "Resources": {
+  "AwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetPolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getPolicy",
+    "expected": "{\"$ObjectLike\":{\"Policy\":{\"PolicyName\":\"DefaultManagedPolicy\",\"Path\":\"/some/path/\",\"Description\":\"My Policy\"}}}",
+    "parameters": {
+     "PolicyArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-iam-managed-policy:ExportsOutputRefDefaultManagedPolicyD42A499A3EDDD52E"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555085"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "iam:GetPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetPolicyVersion"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:ListAttachedUserPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetRole"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetBucketPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:DescribeTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bfcf4228d6660f50e81f19efdb64c6388dda6796296eb239decdff1dbc2f4981.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetPolicyVersion",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getPolicyVersion",
+    "expected": "{\"$ObjectLike\":{\"PolicyVersion\":{\"VersionId\":\"v1\",\"IsDefaultVersion\":true}}}",
+    "parameters": {
+     "PolicyArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-iam-managed-policy:ExportsOutputRefDefaultManagedPolicyD42A499A3EDDD52E"
+        },
+        "\""
+       ]
+      ]
+     },
+     "VersionId": "\"v1\""
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555085"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea": {
+   "Type": "Custom::DeployAssert@SdkCallIAMlistAttachedUserPolicies",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "listAttachedUserPolicies",
+    "expected": "{\"$ObjectLike\":{\"AttachedPolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"PolicyArn\":{\"$StringLike\":\".*TwoManagedPolicy.*\"}}},{\"$ObjectLike\":{\"PolicyArn\":{\"$StringLike\":\".*SecurityAudit.*\"}}}]}}}",
+    "parameters": {
+     "UserName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-iam-managed-policy:ExportsOutputRefMyUserDC45028B53D3E858"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555086"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetRole",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getRole",
+    "expected": "{\"$ObjectLike\":{\"Role\":{\"RoleName\":{\"$StringLike\":\"aws-cdk-iam-managed-policy-Role.*\"}}}}",
+    "parameters": {
+     "RoleName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-iam-managed-policy:ExportsOutputRefRole1ABCC5F06F481065"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555086"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketPolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getBucketPolicy",
+    "expected": "{\"$ObjectLike\":{\"Policy\":{\"$StringLike\":\".*s3:GetBucket.*s3:PutBucketPolicy.*\"}}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "ResourceStack:ExportsOutputRefImportedBucket1C431EBF15F80098"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555086"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBdescribeTable",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "describeTable",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"Table\":{\"TableName\":\"",
+       {
+        "Fn::ImportValue": "ResourceStack:ExportsOutputRefImportedTable8FDCF7CAD36DCB94"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "TableName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "ResourceStack:ExportsOutputRefImportedTable8FDCF7CAD36DCB94"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1737681555086"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetPolicy43ff97f8c3d78eb9f5b6ed4831ddccc1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetPolicyVersione09a5c21da29915b0b934b25fd37df25",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMlistAttachedUserPolicies86800ea5b5fb05b98df54a72a4b73aea",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetRoleabe52f2a2b94392a0899a2050723dd83",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getBucketPolicy354907006741d00767fe2b0c1a224ecb",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBdescribeTablef4223e154a62a93016261cc20f48f0c6",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-5": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-7": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "ca-west-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-isoe-west-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "mx-central-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
