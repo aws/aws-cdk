@@ -160,7 +160,8 @@ myConfigurationSet.addEventDestination('ToSns', {
 })
 ```
 
-For EventBridge, only default EventBus can be used:
+**Note**: For EventBridge, you must specify the default EventBus:
+
 ```ts
 import * as events from 'aws-cdk-lib/aws-events';
 
