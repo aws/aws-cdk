@@ -15,6 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1390,6 +1391,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     super(scope, id, {
       physicalName: props.domainName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultInstanceType = 'r5.large.search';
     const warmDefaultInstanceType = 'ultrawarm1.medium.search';
@@ -1527,7 +1530,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/features-by-version.html
     const { versionNum: versionNum, isElasticsearchVersion } = parseVersion(props.version);
     if (isElasticsearchVersion) {
-
       if (
         versionNum <= 7.7 &&
         ![
@@ -2093,6 +2095,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Add policy statements to the domain access policy
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {

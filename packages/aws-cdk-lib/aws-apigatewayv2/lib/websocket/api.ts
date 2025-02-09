@@ -4,6 +4,7 @@ import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -135,6 +136,8 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.webSocketApiName = props?.apiName ?? id;
 
@@ -162,6 +165,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * Add a new route
    */
+  @MethodMetadata()
   public addRoute(routeKey: string, options: WebSocketRouteOptions) {
     return new WebSocketRoute(this, `${routeKey}-Route`, {
       webSocketApi: this,
@@ -176,6 +180,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    *
    * @param identity The principal
    */
+  @MethodMetadata()
   public grantManageConnections(identity: IGrantable): Grant {
     const arn = Stack.of(this).formatArn({
       service: 'execute-api',
@@ -191,14 +196,10 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
   /**
    * Get the "execute-api" ARN.
-   * When 'ANY' is passed to the method, an ARN with the method set to '*' is obtained.
    *
-   * @default - The default behavior applies when no specific method, path, or stage is provided.
-   * In this case, the ARN will cover all methods, all resources, and all stages of this API.
-   * Specifically, if 'method' is not specified, it defaults to '*', representing all methods.
-   * If 'path' is not specified, it defaults to '/*', representing all paths.
-   * If 'stage' is not specified, it also defaults to '*', representing all stages.
+   * @deprecated Use `arnForExecuteApiV2()` instead.
    */
+  @MethodMetadata()
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
       throw new UnscopedValidationError(`Path must start with '/': ${path}`);
@@ -213,6 +214,24 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       resource: this.apiId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,
+    });
+  }
+
+  /**
+   * Get the "execute-api" ARN.
+   *
+   * @default - The default behavior applies when no specific route, or stage is provided.
+   * In this case, the ARN will cover all routes, and all stages of this API.
+   * Specifically, if 'route' is not specified, it defaults to '*', representing all routes.
+   * If 'stage' is not specified, it also defaults to '*', representing all stages.
+   */
+  @MethodMetadata()
+  public arnForExecuteApiV2(route?: string, stage?: string): string {
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: `${stage ?? '*'}/${route ?? '*'}`,
     });
   }
 }

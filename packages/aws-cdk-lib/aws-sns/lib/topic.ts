@@ -5,6 +5,7 @@ import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -283,6 +284,8 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enforceSSL = props.enforceSSL;
 
@@ -356,6 +359,10 @@ export class Topic extends TopicBase {
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
+
+    if (this.enforceSSL) {
+      this.addSSLPolicy();
+    }
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
@@ -380,6 +387,7 @@ export class Topic extends TopicBase {
   /**
    * Adds a delivery status logging configuration to the topic.
    */
+  @MethodMetadata()
   public addLoggingConfig(config: LoggingConfig) {
     this.loggingConfigs.push(config);
   }

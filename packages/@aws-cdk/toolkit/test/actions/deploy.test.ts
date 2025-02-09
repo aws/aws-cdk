@@ -1,7 +1,11 @@
+let mockFindCloudWatchLogGroups = jest.fn();
+
 import { RequireApproval, StackParameters } from '../../lib';
 import { Toolkit } from '../../lib/toolkit';
 import { builderFixture, TestIoHost } from '../_helpers';
+import { MockSdk } from '../util/aws-cdk';
 
+const sdk = new MockSdk();
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 const rollbackSpy = jest.spyOn(toolkit as any, '_rollback').mockResolvedValue({});
@@ -22,6 +26,7 @@ jest.mock('../../lib/api/aws-cdk', () => {
       isSingleAssetPublished: jest.fn().mockResolvedValue(true),
       readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
     })),
+    findCloudWatchLogGroups: mockFindCloudWatchLogGroups,
   };
 });
 
@@ -29,6 +34,11 @@ beforeEach(() => {
   ioHost.notifySpy.mockClear();
   ioHost.requestSpy.mockClear();
   jest.clearAllMocks();
+  mockFindCloudWatchLogGroups.mockReturnValue({
+    env: { name: 'Z', account: 'X', region: 'Y' },
+    sdk,
+    logGroupNames: ['/aws/lambda/lambda-function-name'],
+  });
 });
 
 describe('deploy', () => {
@@ -127,6 +137,22 @@ describe('deploy', () => {
       successfulDeployment();
     });
 
+    test('can trace logs', async () => {
+      // WHEN
+      const cx = await builderFixture(toolkit, 'stack-with-role');
+      await toolkit.deploy(cx, {
+        traceLogs: true,
+      });
+
+      // THEN
+      expect(ioHost.notifySpy).toHaveBeenCalledWith(expect.objectContaining({
+        action: 'deploy',
+        level: 'info',
+        code: 'CDK_TOOLKIT_I5031',
+        message: expect.stringContaining('The following log groups are added: /aws/lambda/lambda-function-name'),
+      }));
+    });
+
     test('non sns notification arn results in error', async () => {
       // WHEN
       const arn = 'arn:aws:sqs:us-east-1:1111111111:resource';
@@ -134,6 +160,32 @@ describe('deploy', () => {
       await expect(async () => toolkit.deploy(cx, {
         notificationArns: [arn],
       })).rejects.toThrow(/Notification arn arn:aws:sqs:us-east-1:1111111111:resource is not a valid arn for an SNS topic/);
+    });
+
+    test('hotswap property overrides', async () => {
+      // WHEN
+      const cx = await builderFixture(toolkit, 'stack-with-role');
+      await toolkit.deploy(cx, {
+        hotswapProperties: {
+          ecs: {
+            maximumHealthyPercent: 100,
+            minimumHealthyPercent: 0,
+          },
+        },
+      });
+
+      // THEN
+      // passed through correctly to Deployments
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        hotswapPropertyOverrides: {
+          ecsHotswapProperties: {
+            maximumHealthyPercent: 100,
+            minimumHealthyPercent: 0,
+          },
+        },
+      }));
+
+      successfulDeployment();
     });
   });
 

@@ -95,7 +95,6 @@ describe('script', () => {
             },
           },
         });
-
       });
     });
 
@@ -109,7 +108,6 @@ describe('script', () => {
             Key: 'content',
           },
         });
-
       });
     });
 

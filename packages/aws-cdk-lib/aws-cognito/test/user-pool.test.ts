@@ -1736,7 +1736,6 @@ describe('User Pool', () => {
         replyTo: 'reply@example.com',
       }),
     })).toThrow(/Your stack region cannot be determined/);
-
   });
 
   test('email withSES with no name', () => {
@@ -1778,7 +1777,6 @@ describe('User Pool', () => {
         },
       },
     });
-
   });
 
   test('email withSES', () => {
@@ -2016,7 +2014,6 @@ describe('User Pool', () => {
         },
       },
     });
-
   });
 
   test('email withSES with verified domain', () => {
@@ -2170,7 +2167,6 @@ test('grant', () => {
       },
     ],
   });
-
 });
 
 test('deletion protection', () => {

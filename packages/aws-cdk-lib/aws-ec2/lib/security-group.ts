@@ -6,6 +6,7 @@ import { Port } from './port';
 import { IVpc } from './vpc';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Annotations, ContextProvider, IResource, Lazy, Names, Resource, ResourceProps, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -179,7 +180,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     connection: Port,
     fromTo: 'from' | 'to',
     remoteRule?: boolean): RuleScope {
-
     if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
       // Reversed
       const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
@@ -502,6 +502,8 @@ export class SecurityGroup extends SecurityGroupBase {
     super(scope, id, {
       physicalName: props.securityGroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const groupDescription = props.description || this.node.path;
 
@@ -528,6 +530,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDefaultIpv6EgressRule();
   }
 
+  @MethodMetadata()
   public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule || this.disableInlineRules) {
       super.addIngressRule(peer, connection, description, remoteRule);
@@ -545,6 +548,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
+  @MethodMetadata()
   public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     const isIpv6 = peer.toEgressRuleConfig().hasOwnProperty('cidrIpv6');
 
