@@ -177,7 +177,8 @@ myConfigurationSet.addEventDestination('ToEventBus', {
 For Firehose, if you don't specify IAM Role ARN for Amazon SES to send events. An IAM Role will be created automatically following https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html.
 
 ```ts
-import * as events from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const myConfigurationSet: ses.ConfigurationSet;
 declare const firehoseDeliveryStream: firehose.DeliveryStream;
