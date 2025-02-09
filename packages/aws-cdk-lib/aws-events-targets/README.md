@@ -9,6 +9,8 @@ Currently supported are:
 - [Event Targets for Amazon EventBridge](#event-targets-for-amazon-eventbridge)
   - [Event retry policy and using dead-letter queues](#event-retry-policy-and-using-dead-letter-queues)
   - [Invoke a Lambda function](#invoke-a-lambda-function)
+    - [Invoke a Lambda function within an account](#invoke-a-lambda-function-within-an-account)
+    - [Invoke a Lambda function cross-account](#invoke-a-lambda-function-cross-account)
   - [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
   - [Start a CodeBuild build](#start-a-codebuild-build)
   - [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
@@ -30,15 +32,21 @@ EventBridge.
 
 ## Event retry policy and using dead-letter queues
 
-The Codebuild, CodePipeline, Lambda, Kinesis Data Streams, StepFunctions, LogGroup, SQSQueue, SNSTopic and ECSTask targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+The Codebuild, CodePipeline, Lambda, Kinesis Data Streams, StepFunctions, LogGroup, SQSQueue, SNSTopic and ECSTask targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [Lambda example within an account](#invoke-a-lambda-function-within-an-account).
 Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
+
+## Targeting cross-account services
+
+The Lambda, SQSQueue, and SNSTopic targets support attaching a [role for cross-account service targets](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-service-cross-account.html). See the [Lambda example cross-account](#invoke-a-lambda-function-cross-account).
 
 ## Invoke a Lambda function
 
 Use the `LambdaFunction` target to invoke a lambda function.
 
+### Invoke a Lambda function within an account
+
 The code snippet below creates an event rule with a Lambda function as a target
-triggered for every events from `aws.ec2` source. You can optionally attach a
+triggered for every event from `aws.ec2` source. You can optionally attach a
 [dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
 
 ```ts
@@ -62,6 +70,36 @@ rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
   maxEventAge: Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
+}));
+```
+
+### Invoke a Lambda function cross-account
+
+The code snippet below creates an event rule targeting a Lambda function imported from another account.
+The role attached to the target will be automatically assigned required permissions for the Rule's account.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+// Function imported from another account
+const fn = lambda.Function.fromFunctionArn(
+  this,
+  'Function',
+  'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+);
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+
+const rule = new events.Rule(this, 'rule', {
+  eventPattern: {
+    source: ["aws.ec2"],
+  },
+});
+
+rule.addTarget(new targets.LambdaFunction(fn, {
+  role, // Optional: provide a role to attach required source account permissions
 }));
 ```
 
