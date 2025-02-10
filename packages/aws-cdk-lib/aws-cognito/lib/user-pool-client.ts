@@ -3,8 +3,11 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
+import { IRole } from '../../aws-iam';
+import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -344,6 +347,12 @@ export interface UserPoolClientOptions {
    * @default false for new user pool clients
    */
   readonly enablePropagateAdditionalUserContextData?: boolean;
+
+  /**
+   * The analytics configuration for this client.
+   * @default - no analytics configuration
+   */
+  readonly analytics?: AnalyticsConfiguration;
 }
 
 /**
@@ -354,6 +363,47 @@ export interface UserPoolClientProps extends UserPoolClientOptions {
    * The UserPool resource this client will have access to
    */
   readonly userPool: IUserPool;
+}
+
+/**
+ * The settings for Amazon Pinpoint analytics configuration.
+ * With an analytics configuration, your application can collect user-activity metrics for user notifications with an Amazon Pinpoint campaign.
+ * Amazon Pinpoint isn't available in all AWS Regions.
+ * For a list of available Regions, see Amazon Cognito and Amazon Pinpoint Region availability: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings.
+ */
+export interface AnalyticsConfiguration {
+  /**
+   * The Amazon Pinpoint project that you want to connect to your user pool app client.
+   * Amazon Cognito publishes events to the Amazon Pinpoint project.
+   * You can also configure your application to pass an endpoint ID in the `AnalyticsMetadata` parameter of sign-in operations.
+   * The endpoint ID is information about the destination for push notifications.
+   * @default - no configuration, you need to specify either `application` or all of `applicationId`, `externalId`, and `role`.
+   */
+  readonly application?: CfnApp;
+
+  /**
+   * Your Amazon Pinpoint project ID.
+   * @default - no configuration, you need to specify either this property along with `externalId` and `role` or `application`.
+   */
+  readonly applicationId?: string;
+
+  /**
+   * The external ID of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint. More info here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
+   * @default - no configuration, you need to specify either this property along with `applicationId` and `role` or `application`.
+   */
+  readonly externalId?: string;
+
+  /**
+   * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
+   * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `application`.
+   */
+  readonly role?: IRole;
+
+  /**
+   * If `true`, Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
+   * @default - false
+   */
+  readonly shareUserData?: boolean;
 }
 
 /**
@@ -413,6 +463,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.disableOAuth && props.oAuth) {
       throw new ValidationError('OAuth settings cannot be specified when disableOAuth is set.', this);
@@ -467,6 +519,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
+      analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
@@ -615,5 +668,30 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
       throw new ValidationError(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`, this);
     }
+  }
+
+  private configureAnalytics(analytics: AnalyticsConfiguration): CfnUserPoolClient.AnalyticsConfigurationProperty {
+    // NOTE: CloudFormation expects either `ApplicationArn` or all of `ApplicationId`, `ExternalId`, and `RoleArn` to be provided.
+    if (
+      analytics.application &&
+        (analytics.applicationId || analytics.externalId || analytics.role)
+    ) {
+      throw new ValidationError('Either `application` or all of `applicationId`, `externalId` and `role` must be specified.', this);
+    }
+
+    if (
+      !analytics.application &&
+        (!analytics.applicationId || !analytics.externalId || !analytics.role)
+    ) {
+      throw new ValidationError('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.', this);
+    }
+
+    return {
+      applicationArn: analytics.application?.attrArn,
+      applicationId: analytics.applicationId,
+      externalId: analytics.externalId,
+      roleArn: analytics.role?.roleArn,
+      userDataShared: analytics.shareUserData,
+    };
   }
 }

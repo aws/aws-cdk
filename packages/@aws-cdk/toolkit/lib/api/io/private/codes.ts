@@ -1,39 +1,54 @@
 import { IoMessageCode } from '../io-message';
 
+/**
+ * We have a rough system by which we assign message codes:
+ * - First digit groups messages by action, e.g. synth or deploy
+ * - X000-X009 are reserved for timings
+ * - X900-X999 are reserved for results
+ */
 export const CODES = {
-  // Default codes -- all 0000 codes
-  CDK_TOOLKIT_I0000: 'Default toolkit info code',
-  CDK_TOOLKIT_E0000: 'Default toolkit error code',
-  CDK_TOOLKIT_W0000: 'Default toolkit warning code',
-  CDK_SDK_I0000: 'Default sdk info code',
-  CDK_SDK_E0000: 'Default sdk error code',
-  CDK_SDK_WOOOO: 'Default sdk warning code',
-  CDK_ASSETS_I0000: 'Default assets info code',
-  CDK_ASSETS_E0000: 'Default assets error code',
-  CDK_ASSETS_W0000: 'Default assets warning code',
-  CDK_ASSEMBLY_I0000: 'Default assembly info code',
-  CDK_ASSEMBLY_E0000: 'Default assembly error code',
-  CDK_ASSEMBLY_W0000: 'Default assembly warning code',
+  // 1: Synth
+  CDK_TOOLKIT_I1000: 'Provides synthesis times',
+  CDK_TOOLKIT_I1901: 'Provides stack data',
+  CDK_TOOLKIT_I1902: 'Successfully deployed stacks',
 
-  // Toolkit Info codes
-  CDK_TOOLKIT_I0001: 'Display stack data',
-  CDK_TOOLKIT_I0002: 'Successfully deployed stacks',
-  CDK_TOOLKIT_I5001: 'Display synthesis times',
-  CDK_TOOLKIT_I5050: 'Confirm rollback',
+  // 2: List
+  CDK_TOOLKIT_I2901: 'Provides details on the selected stacks and their dependencies',
+
+  // 4: Diff
+
+  // 5: Deploy
+  CDK_TOOLKIT_I5000: 'Provides deployment times',
+  CDK_TOOLKIT_I5001: 'Provides total time in deploy action, including synth and rollback',
+  CDK_TOOLKIT_I5031: 'Informs about any log groups that are traced as part of the deployment',
+  CDK_TOOLKIT_I5050: 'Confirm rollback during deployment',
   CDK_TOOLKIT_I5060: 'Confirm deploy security sensitive changes',
+  CDK_TOOLKIT_I5900: 'Deployment results on success',
+
+  CDK_TOOLKIT_E5001: 'No stacks found',
+
+  // 6: Rollback
+  CDK_TOOLKIT_I6000: 'Provides rollback times',
+
+  CDK_TOOLKIT_E6001: 'No stacks found',
+  CDK_TOOLKIT_E6900: 'Rollback failed',
+
+  // 7: Destroy
+  CDK_TOOLKIT_I7000: 'Provides destroy times',
   CDK_TOOLKIT_I7010: 'Confirm destroy stacks',
 
-  // Toolkit Warning codes
+  CDK_TOOLKIT_E7010: 'Action was aborted due to negative confirmation of request',
+  CDK_TOOLKIT_E7900: 'Stack deletion failed',
 
-  // Toolkit Error codes
+  // 9: Bootstrap
 
-  // Assembly Info codes
+  // Assembly codes
   CDK_ASSEMBLY_I0042: 'Writing updated context',
   CDK_ASSEMBLY_I0241: 'Fetching missing context',
-
-  // Assembly Warning codes
-
-  // Assembly Error codes
+  CDK_ASSEMBLY_I1000: 'Cloud assembly output starts',
+  CDK_ASSEMBLY_I1001: 'Output lines emitted by the cloud assembly to stdout',
+  CDK_ASSEMBLY_E1002: 'Output lines emitted by the cloud assembly to stderr',
+  CDK_ASSEMBLY_I1003: 'Cloud assembly output finished',
   CDK_ASSEMBLY_E1111: 'Incompatible CDK CLI version. Upgrade needed.',
 };
 

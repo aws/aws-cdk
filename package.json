@@ -87,6 +87,7 @@
       "tools/@aws-cdk/yarn-cling",
       "tools/@aws-cdk/lazify",
       "tools/@aws-cdk/lambda-integration-test-updater",
+      "tools/@aws-cdk/construct-metadata-updater",
       "scripts/@aws-cdk/script-tests"
     ],
     "nohoist": [
@@ -176,5 +177,6 @@
   },
   "dependencies": {
     "string-width": "^4.2.3"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

@@ -4,6 +4,7 @@ import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import { IResource, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * An option group
@@ -124,6 +125,8 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
@@ -142,6 +145,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
     this.optionGroupName = optionGroup.ref;
   }
 
+  @MethodMetadata()
   public addConfiguration(configuration: OptionConfiguration) {
     this.configurations.push(configuration);
 

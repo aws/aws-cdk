@@ -1,6 +1,7 @@
 import { IResource, Resource, Stack } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
@@ -73,11 +74,11 @@ export interface PipeProps {
   readonly filter?: IFilter;
 
   /**
-  * Enrichment step to enhance the data from the source before sending it to the target.
-  *
-  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
-  * @default - no enrichment
-  */
+   * Enrichment step to enhance the data from the source before sending it to the target.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
+   * @default - no enrichment
+   */
   readonly enrichment?: IEnrichment;
 
   /**
@@ -88,12 +89,12 @@ export interface PipeProps {
   readonly target: ITarget;
 
   /**
-  * Name of the pipe in the AWS console
-  *
-  * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
-  *
-  * @default - automatically generated name
-  */
+   * Name of the pipe in the AWS console
+   *
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   *
+   * @default - automatically generated name
+   */
   readonly pipeName?: string;
 
   /**
@@ -182,6 +183,8 @@ class ImportedPipe extends PipeBase {
 
   constructor(scope: Construct, id: string, pipeName: string) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, { pipeName: pipeName });
     this.pipeName = pipeName;
     this.pipeArn = Stack.of(this).formatArn({
       service: 'pipes',
@@ -215,6 +218,8 @@ export class Pipe extends PipeBase {
 
   constructor(scope: Construct, id: string, props: PipeProps) {
     super(scope, id, { physicalName: props.pipeName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     /**
      * Role setup

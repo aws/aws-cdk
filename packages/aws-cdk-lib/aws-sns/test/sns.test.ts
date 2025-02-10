@@ -207,6 +207,37 @@ describe('Topic', () => {
   test('can enforce ssl when creating the topic', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    new sns.Topic(stack, 'Topic', {
+      enforceSSL: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            'Sid': 'AllowPublishThroughSSLOnly',
+            'Action': 'sns:Publish',
+            'Effect': 'Deny',
+            'Resource': {
+              'Ref': 'TopicBFC7AF6E',
+            },
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Principal': '*',
+          },
+        ],
+      },
+    });
+  });
+
+  test('can enforce ssl with addToResourcePolicy method', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic', {
       enforceSSL: true,
     });
@@ -224,13 +255,6 @@ describe('Topic', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            'Sid': '0',
-            'Action': 'sns:*',
-            'Effect': 'Allow',
-            'Principal': { 'AWS': 'arn' },
-            'Resource': '*',
-          },
-          {
             'Sid': 'AllowPublishThroughSSLOnly',
             'Action': 'sns:Publish',
             'Effect': 'Deny',
@@ -243,6 +267,13 @@ describe('Topic', () => {
               },
             },
             'Principal': '*',
+          },
+          {
+            'Sid': '1',
+            'Action': 'sns:*',
+            'Effect': 'Allow',
+            'Principal': { 'AWS': 'arn' },
+            'Resource': '*',
           },
         ],
       },

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { CheckRun, GitHubFile, GitHubPr, Review, summarizeRunConclusions } from "./github";
+import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from "./github";
 import { TestResult, ValidationCollector } from './results';
 import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, Exemption } from './constants';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
@@ -239,8 +239,12 @@ export class PullRequestLinter extends PullRequestLinterBase {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
-      testRuleSet: [{ test: noMetadataChanges }],
+      exemption: shouldExemptAnalyticsMetadataChange,
+      testRuleSet: [
+        { test: noMetadataChanges },
+        { test: noAnalyticsClassesChanges },
+        { test: noAnalyticsEnumsChanges },
+      ],
     });
 
     validationCollector.validateRuleSet({
@@ -252,6 +256,13 @@ export class PullRequestLinter extends PullRequestLinterBase {
         { test: validateBranch },
       ],
     });
+
+    validationCollector.validateRuleSet({
+      exemption: shouldExemptSizeCheck,
+      testRuleSet: [
+        { test: prIsSmall },
+      ],
+    })
 
     if (pr.base.ref === 'main') {
       // Only check CodeCov for PRs targeting 'main'
@@ -417,6 +428,14 @@ function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
 }
 
+function shouldExemptSizeCheck(pr: GitHubPr): boolean {
+  return hasLabel(pr, Exemption.SIZE_CHECK);
+}
+
+function shouldExemptAnalyticsMetadataChange(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.ANALYTICS_METADATA_CHANGE) || pr.user?.login === 'aws-cdk-automation');
+}
+
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
@@ -545,6 +564,45 @@ function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
   result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsClassesChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/classes.ts');
+  result.assessFailure(condition, 'Manual changes to the classes.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts');
+  result.assessFailure(condition, 'Manual changes to the enums.ts file are not allowed.');
+  return result;
+}
+
+function prIsSmall(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const folders = ['packages/aws-cdk/', 'packages/@aws-cdk-testing/cli-integ/'];
+  const exclude = [/THIRD_PARTY_LICENSES/, /.*\.md/, /.*\.test\.ts/];
+  const maxLinesAdded = 1000;
+  const maxLinesRemoved = 1000;
+
+  const filesToCheck: GitHubFile[] = files
+    .filter(r => folders.some(folder => r.filename.startsWith(folder)))
+    .filter(r => exclude.every(re => !re.test(r.filename)));
+
+  const sum = sumChanges(filesToCheck);
+
+  const result = new TestResult();
+  result.assessFailure(
+    sum.additions > maxLinesAdded,
+    `The number of lines added (${sum.additions}) is greater than ${maxLinesAdded}`
+  );
+  result.assessFailure(
+    sum.deletions > maxLinesRemoved,
+    `The number of lines removed (${sum.deletions}) is greater than ${maxLinesAdded}`
+  );
+
   return result;
 }
 
