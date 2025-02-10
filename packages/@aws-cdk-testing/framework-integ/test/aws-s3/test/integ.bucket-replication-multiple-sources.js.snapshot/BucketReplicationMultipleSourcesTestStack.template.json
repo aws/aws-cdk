@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "DestinationBucket1590C2E3A": {
+  "DestinationBucket4BECDB47": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -16,11 +16,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DestinationBucket1PolicyF63CD3B5": {
+  "DestinationBucketPolicyFCD81088": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "DestinationBucket1590C2E3A"
+     "Ref": "DestinationBucket4BECDB47"
     },
     "PolicyDocument": {
      "Statement": [
@@ -43,7 +43,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "DestinationBucket1590C2E3A",
+          "DestinationBucket4BECDB47",
           "Arn"
          ]
         },
@@ -53,7 +53,7 @@
           [
            {
             "Fn::GetAtt": [
-             "DestinationBucket1590C2E3A",
+             "DestinationBucket4BECDB47",
              "Arn"
             ]
            },
@@ -68,7 +68,7 @@
     }
    }
   },
-  "DestinationBucket1AutoDeleteObjectsCustomResource2FF3B78F": {
+  "DestinationBucketAutoDeleteObjectsCustomResource8ECA4428": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -78,11 +78,11 @@
      ]
     },
     "BucketName": {
-     "Ref": "DestinationBucket1590C2E3A"
+     "Ref": "DestinationBucket4BECDB47"
     }
    },
    "DependsOn": [
-    "DestinationBucket1PolicyF63CD3B5"
+    "DestinationBucketPolicyFCD81088"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,7 +142,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "DestinationBucket1590C2E3A"
+        "Ref": "DestinationBucket4BECDB47"
        },
        " S3 bucket."
       ]
@@ -152,93 +152,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "DestinationBucket217C2CCD2": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ],
-    "VersioningConfiguration": {
-     "Status": "Enabled"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "DestinationBucket2Policy45B70DC3": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "DestinationBucket217C2CCD2"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "DestinationBucket217C2CCD2",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "DestinationBucket217C2CCD2",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "DestinationBucket2AutoDeleteObjectsCustomResource42108D13": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "DestinationBucket217C2CCD2"
-    }
-   },
-   "DependsOn": [
-    "DestinationBucket2Policy45B70DC3"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "DestinationKmsKey0D94AA3C": {
    "Type": "AWS::KMS::Key",
@@ -310,7 +223,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SourceBucketReplicationRole9043C65F": {
+  "SourceBucket1ReplicationRole97D56E8A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -327,7 +240,7 @@
     }
    }
   },
-  "SourceBucketReplicationRoleDefaultPolicyF98AD664": {
+  "SourceBucket1ReplicationRoleDefaultPolicyE54E1AA3": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -340,7 +253,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "SourceBucketDDD2130A",
+         "SourceBucket1CCDBD520",
          "Arn"
         ]
        }
@@ -358,7 +271,7 @@
          [
           {
            "Fn::GetAtt": [
-            "SourceBucketDDD2130A",
+            "SourceBucket1CCDBD520",
             "Arn"
            ]
           },
@@ -375,36 +288,20 @@
         "s3:ReplicateTags"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "DestinationBucket1590C2E3A",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "DestinationBucket4BECDB47",
+            "Arn"
+           ]
+          },
+          "/*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "DestinationBucket217C2CCD2",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       },
       {
        "Action": [
@@ -433,15 +330,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "SourceBucketReplicationRoleDefaultPolicyF98AD664",
+    "PolicyName": "SourceBucket1ReplicationRoleDefaultPolicyE54E1AA3",
     "Roles": [
      {
-      "Ref": "SourceBucketReplicationRole9043C65F"
+      "Ref": "SourceBucket1ReplicationRole97D56E8A"
      }
     ]
    }
   },
-  "SourceBucketDDD2130A": {
+  "SourceBucket1CCDBD520": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "BucketEncryption": {
@@ -462,7 +359,7 @@
     "ReplicationConfiguration": {
      "Role": {
       "Fn::GetAtt": [
-       "SourceBucketReplicationRole9043C65F",
+       "SourceBucket1ReplicationRole97D56E8A",
        "Arn"
       ]
      },
@@ -474,38 +371,7 @@
        "Destination": {
         "Bucket": {
          "Fn::GetAtt": [
-          "DestinationBucket1590C2E3A",
-          "Arn"
-         ]
-        },
-        "EncryptionConfiguration": {
-         "ReplicaKmsKeyID": {
-          "Fn::GetAtt": [
-           "DestinationKmsKey0D94AA3C",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Filter": {
-        "Prefix": ""
-       },
-       "Priority": 2,
-       "SourceSelectionCriteria": {
-        "SseKmsEncryptedObjects": {
-         "Status": "Enabled"
-        }
-       },
-       "Status": "Enabled"
-      },
-      {
-       "DeleteMarkerReplication": {
-        "Status": "Enabled"
-       },
-       "Destination": {
-        "Bucket": {
-         "Fn::GetAtt": [
-          "DestinationBucket217C2CCD2",
+          "DestinationBucket4BECDB47",
           "Arn"
          ]
         },
@@ -528,18 +394,13 @@
          "Time": {
           "Minutes": 15
          }
-        },
-        "StorageClass": "STANDARD_IA"
+        }
        },
        "Filter": {
-        "Prefix": "prefix"
+        "Prefix": ""
        },
-       "Id": "full-settings-rule",
        "Priority": 1,
        "SourceSelectionCriteria": {
-        "ReplicaModifications": {
-         "Status": "Enabled"
-        },
         "SseKmsEncryptedObjects": {
          "Status": "Enabled"
         }
@@ -561,11 +422,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SourceBucketPolicy703DFBF9": {
+  "SourceBucket1Policy221A9741": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "SourceBucketDDD2130A"
+     "Ref": "SourceBucket1CCDBD520"
     },
     "PolicyDocument": {
      "Statement": [
@@ -588,7 +449,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "SourceBucketDDD2130A",
+          "SourceBucket1CCDBD520",
           "Arn"
          ]
         },
@@ -598,7 +459,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SourceBucketDDD2130A",
+             "SourceBucket1CCDBD520",
              "Arn"
             ]
            },
@@ -613,7 +474,7 @@
     }
    }
   },
-  "SourceBucketAutoDeleteObjectsCustomResourceC68FC040": {
+  "SourceBucket1AutoDeleteObjectsCustomResource5115166E": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -623,11 +484,281 @@
      ]
     },
     "BucketName": {
-     "Ref": "SourceBucketDDD2130A"
+     "Ref": "SourceBucket1CCDBD520"
     }
    },
    "DependsOn": [
-    "SourceBucketPolicy703DFBF9"
+    "SourceBucket1Policy221A9741"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceBucket2ReplicationRole080358A2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SourceBucket2ReplicationRoleDefaultPolicyB9F2C513": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetReplicationConfiguration",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceBucket27086FD01",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetObjectVersionAcl",
+        "s3:GetObjectVersionForReplication",
+        "s3:GetObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "SourceBucket27086FD01",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:ObjectOwnerOverrideToBucketOwner",
+        "s3:ReplicateDelete",
+        "s3:ReplicateObject",
+        "s3:ReplicateTags"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "DestinationBucket4BECDB47",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DestinationKmsKey0D94AA3C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceKmsKeyFE472F1C",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SourceBucket2ReplicationRoleDefaultPolicyB9F2C513",
+    "Roles": [
+     {
+      "Ref": "SourceBucket2ReplicationRole080358A2"
+     }
+    ]
+   }
+  },
+  "SourceBucket27086FD01": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "SourceKmsKeyFE472F1C",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "ReplicationConfiguration": {
+     "Role": {
+      "Fn::GetAtt": [
+       "SourceBucket2ReplicationRole080358A2",
+       "Arn"
+      ]
+     },
+     "Rules": [
+      {
+       "DeleteMarkerReplication": {
+        "Status": "Disabled"
+       },
+       "Destination": {
+        "Bucket": {
+         "Fn::GetAtt": [
+          "DestinationBucket4BECDB47",
+          "Arn"
+         ]
+        },
+        "EncryptionConfiguration": {
+         "ReplicaKmsKeyID": {
+          "Fn::GetAtt": [
+           "DestinationKmsKey0D94AA3C",
+           "Arn"
+          ]
+         }
+        },
+        "Metrics": {
+         "EventThreshold": {
+          "Minutes": 15
+         },
+         "Status": "Enabled"
+        },
+        "ReplicationTime": {
+         "Status": "Enabled",
+         "Time": {
+          "Minutes": 15
+         }
+        }
+       },
+       "Filter": {
+        "Prefix": ""
+       },
+       "Priority": 2,
+       "SourceSelectionCriteria": {
+        "SseKmsEncryptedObjects": {
+         "Status": "Enabled"
+        }
+       },
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceBucket2Policy4FF2CD51": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "SourceBucket27086FD01"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SourceBucket27086FD01",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceBucket27086FD01",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SourceBucket2AutoDeleteObjectsCustomResource0ADC3D27": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "SourceBucket27086FD01"
+    }
+   },
+   "DependsOn": [
+    "SourceBucket2Policy4FF2CD51"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -758,28 +889,28 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefSourceBucketDDD2130AFF6DDDA5": {
+  "ExportsOutputRefSourceBucket1CCDBD52039C67841": {
    "Value": {
-    "Ref": "SourceBucketDDD2130A"
+    "Ref": "SourceBucket1CCDBD520"
    },
    "Export": {
-    "Name": "TestStackWithUniqueRoleName:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+    "Name": "BucketReplicationMultipleSourcesTestStack:ExportsOutputRefSourceBucket1CCDBD52039C67841"
    }
   },
-  "ExportsOutputRefDestinationBucket1590C2E3AE3A57174": {
+  "ExportsOutputRefSourceBucket27086FD01F7E5EB3B": {
    "Value": {
-    "Ref": "DestinationBucket1590C2E3A"
+    "Ref": "SourceBucket27086FD01"
    },
    "Export": {
-    "Name": "TestStackWithUniqueRoleName:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+    "Name": "BucketReplicationMultipleSourcesTestStack:ExportsOutputRefSourceBucket27086FD01F7E5EB3B"
    }
   },
-  "ExportsOutputRefDestinationBucket217C2CCD298F62E2F": {
+  "ExportsOutputRefDestinationBucket4BECDB47A299B8F3": {
    "Value": {
-    "Ref": "DestinationBucket217C2CCD2"
+    "Ref": "DestinationBucket4BECDB47"
    },
    "Export": {
-    "Name": "TestStackWithUniqueRoleName:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
+    "Name": "BucketReplicationMultipleSourcesTestStack:ExportsOutputRefDestinationBucket4BECDB47A299B8F3"
    }
   }
  },

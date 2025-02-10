@@ -486,6 +486,18 @@
            "Arn"
           ]
          }
+        },
+        "Metrics": {
+         "EventThreshold": {
+          "Minutes": 15
+         },
+         "Status": "Enabled"
+        },
+        "ReplicationTime": {
+         "Status": "Enabled",
+         "Time": {
+          "Minutes": 15
+         }
         }
        },
        "Filter": {
@@ -764,7 +776,7 @@
     "Ref": "SourceBucketDDD2130A"
    },
    "Export": {
-    "Name": "TestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+    "Name": "BucketReplicationTestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
    }
   },
   "ExportsOutputRefDestinationBucket1590C2E3AE3A57174": {
@@ -772,7 +784,7 @@
     "Ref": "DestinationBucket1590C2E3A"
    },
    "Export": {
-    "Name": "TestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+    "Name": "BucketReplicationTestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
    }
   },
   "ExportsOutputRefDestinationBucket217C2CCD298F62E2F": {
@@ -780,7 +792,7 @@
     "Ref": "DestinationBucket217C2CCD2"
    },
    "Export": {
-    "Name": "TestStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
+    "Name": "BucketReplicationTestStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
    }
   }
  },
