@@ -31,9 +31,10 @@ test('findJsonValue for nonexisting paths', async () => {
 test('getResultObj returns correct objects', async () => {
   const propertiesToReturn = ['DBInstanceArn', 'Endpoint.Port', 'Endpoint'];
 
-  const result = getResultObj(jsonObj, propertiesToReturn);
+  const result = getResultObj(jsonObj, '12345', propertiesToReturn);
   expect(result.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
   expect(result['Endpoint.Port']).toEqual('5432');
+  expect(result.Identifier).toEqual('12345');
 
   const answer = {
     Address: 'address1.amazonaws.com',
@@ -45,5 +46,5 @@ test('getResultObj returns correct objects', async () => {
 test('getResultObj throws error for missing property', async () => {
   const propertiesToReturn = ['DBInstanceArn', 'NoSuchProp'];
 
-  expect(() => getResultObj(jsonObj, propertiesToReturn)).toThrow('Cannot read field NoSuchProp. NoSuchProp is not found.');
+  expect(() => getResultObj(jsonObj, '12345', propertiesToReturn)).toThrow('Cannot read field NoSuchProp. NoSuchProp is not found.');
 });

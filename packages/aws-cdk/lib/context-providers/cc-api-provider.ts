@@ -70,10 +70,7 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
       const id = result.ResourceDescription?.Identifier ?? '';
       if (id !== '') {
         const propsObject = JSON.parse(result.ResourceDescription?.Properties ?? '');
-        const propsObj = getResultObj(propsObject, propertiesToReturn);
-
-        // Add the identifier back to the propsObj.
-        propsObj.Identifier = result.ResourceDescription?.Identifier;
+        const propsObj = getResultObj(propsObject, result.ResourceDescription?.Identifier!, propertiesToReturn);
         resultObjs.push(propsObj);
       } else {
         throw new ContextProviderError(`Could not get resource ${exactIdentifier}.`);
@@ -131,8 +128,7 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
           }
 
           if (match) {
-            const propsObj = getResultObj(propsObject, propertiesToReturn);
-            propsObj.Identifier = resource.Identifier;
+            const propsObj = getResultObj(propsObject, resource.Identifier!, propertiesToReturn);
             resultObjs.push(propsObj);
           }
         }
