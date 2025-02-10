@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
+import { matchIncludePatterns } from './include';
 import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 
@@ -29,6 +30,18 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       ? fs.statSync(sourceFilePath)
       : fs.lstatSync(sourceFilePath);
 
+    const included = !options.include || matchIncludePatterns(options.include, rootDir, sourceFilePath);
+
+    if (stat && (stat.isSymbolicLink() || stat.isFile())) {
+      if (!included) {
+        continue;
+      }
+      const destDirPath = path.dirname(destFilePath);
+      if (!fs.existsSync(destDirPath)) {
+        fs.mkdirSync(destDirPath, { recursive: true });
+      }
+    }
+
     if (stat && stat.isSymbolicLink()) {
       const target = fs.readlinkSync(sourceFilePath);
 
@@ -45,7 +58,9 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
     }
 
     if (stat && stat.isDirectory()) {
-      fs.mkdirSync(destFilePath);
+      if (included) {
+        fs.mkdirSync(destFilePath, { recursive: true });
+      }
       copyDirectory(sourceFilePath, destFilePath, options, rootDir);
       stat = undefined;
     }
