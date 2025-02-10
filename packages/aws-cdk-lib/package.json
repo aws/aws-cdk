@@ -172,7 +172,7 @@
     "cdk8s": "2.69.10",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "fast-check": "^3.22.0",
     "jest": "^29.7.0",
     "jest-each": "^29.7.0",
