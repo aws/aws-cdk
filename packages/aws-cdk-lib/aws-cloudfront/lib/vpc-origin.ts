@@ -3,7 +3,7 @@ import { CfnVpcOrigin } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError } from '../../core';
+import { ArnFormat, IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -65,6 +65,33 @@ export interface VpcOriginProps extends VpcOriginOptions {
    * The VPC origin endpoint.
    */
   readonly endpoint: VpcOriginEndpoint;
+}
+
+/**
+ * The properties to import from the VPC origin
+ */
+export interface VpcOriginAttributes {
+  /**
+   * The ARN of the VPC origin.
+   *
+   * At least one of vpcOriginArn and vpcOriginId must be provided.
+   *
+   * @default - derived from `vpcOriginId`.
+   */
+  readonly vpcOriginArn?: string;
+  /**
+   * The ID of the VPC origin.
+   *
+   * At least one of vpcOriginArn and vpcOriginId must be provided.
+   *
+   * @default - derived from `vpcOriginArn`.
+   */
+  readonly vpcOriginId?: string;
+  /**
+   * The domain name of the CloudFront VPC origin endpoint configuration.
+   * @default - No domain name configured
+   */
+  readonly domainName?: string;
 }
 
 /**
@@ -141,7 +168,30 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    * Import an existing VPC origin from its ID.
    */
   public static fromVpcOriginId(scope: Construct, id: string, vpcOriginId: string): IVpcOrigin {
-    const vpcOriginArn = Stack.of(scope).formatArn({
+    return this.fromVpcOriginAttributes(scope, id, { vpcOriginId });
+  }
+
+  /**
+   * Import an existing VPC origin from its ARN.
+   */
+  public static fromVpcOriginArn(scope: Construct, id: string, vpcOriginArn: string): IVpcOrigin {
+    return this.fromVpcOriginAttributes(scope, id, { vpcOriginArn });
+  }
+
+  /**
+   * Import an existing VPC origin from its attributes.
+   */
+  public static fromVpcOriginAttributes(scope: Construct, id: string, attrs: VpcOriginAttributes): IVpcOrigin {
+    if (!attrs.vpcOriginArn && !attrs.vpcOriginId) {
+      throw new ValidationError('Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
+    }
+    const vpcOriginId = attrs.vpcOriginId
+      ?? Stack.of(scope).splitArn(attrs.vpcOriginArn!, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (!vpcOriginId) {
+      throw new ValidationError(`No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
+    }
+
+    const vpcOriginArn = attrs.vpcOriginArn ?? Stack.of(scope).formatArn({
       service: 'cloudfront',
       region: '',
       resource: 'vpcorigin',
@@ -150,8 +200,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
 
     class Import extends Resource implements IVpcOrigin {
       readonly vpcOriginArn = vpcOriginArn;
-      readonly vpcOriginId = vpcOriginId;
-      readonly domainName?: string = undefined;
+      readonly vpcOriginId = vpcOriginId!;
+      readonly domainName = attrs.domainName;
     }
 
     return new Import(scope, id);
@@ -179,12 +229,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    for (const key of ['httpPort', 'httpsPort'] as const) {
-      const port = props[key];
-      if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
-        throw new ValidationError(`'${key}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
-      }
-    }
+    this.validatePortNumber(props.httpPort, 'httpPort');
+    this.validatePortNumber(props.httpsPort, 'httpsPort');
 
     const resource = new CfnVpcOrigin(this, 'Resource', {
       vpcOriginEndpointConfig: {
@@ -206,5 +252,11 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
     this.vpcOriginId = resource.attrId;
     this.domainName = props.endpoint.domainName;
     this.cdkTagManager = resource.cdkTagManager;
+  }
+
+  private validatePortNumber(port: number | undefined, attrName: string) {
+    if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
+      throw new ValidationError(`'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
+    }
   }
 }

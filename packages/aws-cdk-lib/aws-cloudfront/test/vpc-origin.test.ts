@@ -132,7 +132,7 @@ test('VPC origin with options configureed', () => {
   });
 });
 
-test('VPC origin imports from vpcOriginId', () => {
+test('VPC origin imports from its ID', () => {
   // WHEN
   const vpcOrigin = VpcOrigin.fromVpcOriginId(stack, 'VpcOrigin', 'vpc-origin-id');
 
@@ -142,6 +142,42 @@ test('VPC origin imports from vpcOriginId', () => {
     'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:vpcorigin/vpc-origin-id']],
   });
   expect(vpcOrigin.domainName).toBeUndefined();
+});
+
+test('VPC origin imports from its ARN', () => {
+  // WHEN
+  const vpcOrigin = VpcOrigin.fromVpcOriginArn(stack, 'VpcOrigin', 'arn:aws:cloudfront::1234:vpcorigin/vpc-origin-id');
+
+  // THEN
+  expect(vpcOrigin.vpcOriginId).toEqual('vpc-origin-id');
+  expect(vpcOrigin.vpcOriginArn).toEqual('arn:aws:cloudfront::1234:vpcorigin/vpc-origin-id');
+  expect(vpcOrigin.domainName).toBeUndefined();
+});
+
+test('VPC origin imports from its attributes', () => {
+  // WHEN
+  const vpcOrigin = VpcOrigin.fromVpcOriginAttributes(stack, 'VpcOrigin', {
+    vpcOriginArn: 'arn:aws:cloudfront::1234:vpcorigin/vpc-origin-id',
+    vpcOriginId: 'vpc-origin-id',
+    domainName: 'vpcorigin.example.com',
+  });
+
+  // THEN
+  expect(vpcOrigin.vpcOriginId).toEqual('vpc-origin-id');
+  expect(vpcOrigin.vpcOriginArn).toEqual('arn:aws:cloudfront::1234:vpcorigin/vpc-origin-id');
+  expect(vpcOrigin.domainName).toEqual('vpcorigin.example.com');
+});
+
+test('VPC origin throws when its ID is missing during import from its ARN', () => {
+  expect(() => {
+    VpcOrigin.fromVpcOriginArn(stack, 'VpcOrigin', 'arn:aws:cloudfront::1234:vpcorigin');
+  }).toThrow("No VPC origin ID found in ARN: 'arn:aws:cloudfront::1234:vpcorigin'");
+});
+
+test('VPC origin throws when both ID and ARN are missing during import from its ARN', () => {
+  expect(() => {
+    VpcOrigin.fromVpcOriginAttributes(stack, 'VpcOrigin', {});
+  }).toThrow('Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes');
 });
 
 test.each([88, 444, 65536])('VPC origins throws when httpPort is %s', (port) => {
