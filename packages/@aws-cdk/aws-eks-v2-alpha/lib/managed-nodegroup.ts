@@ -184,6 +184,18 @@ export interface TaintSpec {
 }
 
 /**
+ * The node auto repair configuration for the node group.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-noderepairconfig.html
+ */
+export interface NodegroupRepairConfig {
+  /**
+   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
+   */
+  readonly enabled: boolean;
+}
+
+/**
  * The Nodegroup Options for addNodeGroup() method
  */
 export interface NodegroupOptions {
@@ -335,6 +347,14 @@ export interface NodegroupOptions {
    * @default undefined - node groups will update instances one at a time
    */
   readonly maxUnavailablePercentage?: number;
+
+  /**
+   * The node auto repair configuration for the node group.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-noderepairconfig.html
+   * @default - disabled
+   */
+  readonly nodeRepairConfig?: NodegroupRepairConfig;
 }
 
 /**
@@ -525,6 +545,7 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
+      nodeRepairConfig: props.nodeRepairConfig,
     });
 
     if (this.cluster instanceof Cluster) {
