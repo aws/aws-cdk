@@ -1,12 +1,12 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "testCases": {
-    "apigateway-vpcendpoint/DefaultTest": {
+    "ApiGatewayVpcEndpointInteg/DefaultTest": {
       "stacks": [
-        "test-apigateway-vpcendpoint"
+        "ApiGatewayVpcEndpointTestStack"
       ],
-      "assertionStack": "apigateway-vpcendpoint/DefaultTest/DeployAssert",
-      "assertionStackName": "apigatewayvpcendpointDefaultTestDeployAssert95ED9392"
+      "assertionStack": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF"
     }
   }
 }
