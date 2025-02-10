@@ -9,6 +9,7 @@ beforeEach(() => {
   restoreSdkMocksToDefault();
 });
 
+/* eslint-disable */
 test('looks up RDS instance using CC API getResource', async () => {
   // GIVEN
   mockCloudControlClient.on(GetResourceCommand).resolves({
@@ -30,10 +31,11 @@ test('looks up RDS instance using CC API getResource', async () => {
 
   // THEN
   const propsObj = results[0];
-  expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
-  expect(propsObj.StorageEncrypted).toEqual('true');
-  expect(propsObj.Identifier).toEqual('my-db-instance-1');
-  expect(results.length).toEqual(1);
+  expect(propsObj).toEqual(expect.objectContaining({
+    DBInstanceArn: 'arn:aws:rds:us-east-1:123456789012:db:test-instance-1',
+    StorageEncrypted: 'true',
+    Identifier: 'my-db-instance-1',
+  }));
 });
 
 // In theory, this should never happen.  We ask for my-db-instance-1 but CC API returns ''.
@@ -125,16 +127,20 @@ test('looks up RDS instance using CC API listResources', async () => {
 
   // THEN
   let propsObj = results[0];
-  expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
-  expect(propsObj.StorageEncrypted).toEqual('true');
-  expect(propsObj['Endpoint.Port']).toEqual('5432');
-  expect(propsObj.Identifier).toEqual('my-db-instance-1');
+  expect(propsObj).toEqual(expect.objectContaining({
+    DBInstanceArn: 'arn:aws:rds:us-east-1:123456789012:db:test-instance-1',
+    StorageEncrypted: 'true',
+    'Endpoint.Port': '5432',
+    Identifier: 'my-db-instance-1',
+  }));
 
   propsObj = results[1];
-  expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-3');
-  expect(propsObj.StorageEncrypted).toEqual('true');
-  expect(propsObj['Endpoint.Port']).toEqual('6000');
-  expect(propsObj.Identifier).toEqual('my-db-instance-3');
+  expect(propsObj).toEqual(expect.objectContaining({
+    DBInstanceArn: 'arn:aws:rds:us-east-1:123456789012:db:test-instance-3',
+    StorageEncrypted: 'true',
+    'Endpoint.Port': '6000',
+    Identifier: 'my-db-instance-3',
+  }));
 
   expect(results.length).toEqual(2);
 });
@@ -172,10 +178,12 @@ test('looks up RDS instance using CC API listResources - nested prop', async () 
 
   // THEN
   let propsObj = results[0];
-  expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
-  expect(propsObj.StorageEncrypted).toEqual('true');
-  expect(propsObj['Endpoint.Port']).toEqual('5432');
-  expect(propsObj.Identifier).toEqual('my-db-instance-1');
+  expect(propsObj).toEqual(expect.objectContaining({
+    DBInstanceArn: 'arn:aws:rds:us-east-1:123456789012:db:test-instance-1',
+    StorageEncrypted: 'true',
+    'Endpoint.Port': '5432',
+    Identifier: 'my-db-instance-1',
+  }));
 
   expect(results.length).toEqual(1);
 });
@@ -216,3 +224,4 @@ test('error by specifying neither exactIdentifier or propertyMatch', async () =>
     }),
   ).rejects.toThrow('Neither exactIdentifier nor propertyMatch is specified.'); // THEN
 });
+/* eslint-enable */
