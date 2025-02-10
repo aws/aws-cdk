@@ -1251,6 +1251,20 @@ describe('integration tests required on features', () => {
         requestChanges: undefined
       }));
     });
+
+    test('Tests are exempt', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk/test/bootstrap.test.ts',
+        additions: 1001,
+        deletions: 1002,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined
+      }));
+    });
   });
 });
 
