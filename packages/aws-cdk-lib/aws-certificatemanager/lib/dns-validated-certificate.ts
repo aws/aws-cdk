@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
@@ -84,6 +85,8 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.keyAlgorithm) {
       cdk.Annotations.of(this)
@@ -161,6 +164,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
+  @MethodMetadata()
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this._removalPolicy = policy;
   }

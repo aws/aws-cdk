@@ -5,6 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -728,6 +729,8 @@ export class FileSystem extends FileSystemBase {
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.props = props;
 
@@ -911,6 +914,7 @@ export class FileSystem extends FileSystemBase {
   /**
    * create access point from this filesystem
    */
+  @MethodMetadata()
   public addAccessPoint(id: string, accessPointOptions: AccessPointOptions = {}): AccessPoint {
     return new AccessPoint(this, id, {
       fileSystem: this,
@@ -942,6 +946,8 @@ class ImportedFileSystem extends FileSystemBase {
 
   constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
       throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');

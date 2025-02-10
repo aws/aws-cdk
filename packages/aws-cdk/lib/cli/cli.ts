@@ -8,6 +8,7 @@ import { checkForPlatformWarnings } from './platform-warnings';
 import * as version from './version';
 import { SdkProvider } from '../api/aws-auth';
 import { SdkToCliLogger } from '../api/aws-auth/sdk-logger';
+import { setSdkTracing } from '../api/aws-auth/tracing';
 import { BootstrapSource, Bootstrapper } from '../api/bootstrap';
 import { StackSelector } from '../api/cxapp/cloud-assembly';
 import { CloudExecutable, Synthesizer } from '../api/cxapp/cloud-executable';
@@ -28,7 +29,6 @@ import { Notices } from '../notices';
 import { Command, Configuration } from './user-configuration';
 import { IoMessageLevel, CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
-import { enableTracing } from '../util/tracing';
 
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-shadow */ // yargs
@@ -66,7 +66,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
   // Debug should always imply tracing
   if (argv.debug || argv.verbose > 2) {
-    enableTracing(true);
+    setSdkTracing(true);
+  } else {
+    // cli-lib-alpha needs to explicitly set in case it was enabled before
+    setSdkTracing(false);
   }
 
   try {
@@ -104,7 +107,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
     },
-    logger: new SdkToCliLogger(),
+    logger: new SdkToCliLogger(ioHost),
   });
 
   let outDirLock: ILock | undefined;

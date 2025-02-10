@@ -6,6 +6,7 @@ import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
 import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -645,6 +646,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
@@ -715,10 +718,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
+  @MethodMetadata()
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
+  @MethodMetadata()
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
@@ -998,6 +1003,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.kubernetesNamespace = props.kubernetesNamespace;
     this.eksCluster = props.eksCluster;
@@ -1062,10 +1069,12 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
+  @MethodMetadata()
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
+  @MethodMetadata()
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
@@ -1112,6 +1121,8 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {

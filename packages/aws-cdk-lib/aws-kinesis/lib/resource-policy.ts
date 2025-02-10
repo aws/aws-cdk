@@ -3,6 +3,7 @@ import { CfnResourcePolicy } from './kinesis.generated';
 import { IStream } from './stream';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to associate a data stream with a policy
@@ -43,6 +44,8 @@ export class ResourcePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.document = props.policyDocument ?? this.document;
 

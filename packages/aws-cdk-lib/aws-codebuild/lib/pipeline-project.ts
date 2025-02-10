@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { CodePipelineSource } from './codepipeline-source';
 import { CommonProjectProps, Project } from './project';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 export interface PipelineProjectProps extends CommonProjectProps {
 }
@@ -16,5 +17,7 @@ export class PipelineProject extends Project {
       artifacts: new CodePipelineArtifacts(),
       ...props,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "38.0.1",
   "artifacts": {
     "aws-ecs-integ-multiple-alb.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b890d97c3cbf756b1557bcbd7797001fd3ce8a3f30d26704ab0cd3f1708bc28.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4206140067eea68731cbdc100e86cd6361e9d373c36720f4a999e7f7e6a50efe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,10 +208,10 @@
             "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
           }
         ],
-        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+            "data": "ClusterDefaultAutoScalingGroupLaunchTemplate2449908D"
           }
         ],
         "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/ASG": [
@@ -280,6 +280,24 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRoleDefaultPolicyA592CB18"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
         "/aws-ecs-integ-multiple-alb/myService/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -332,42 +350,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceServiceURL1258C56B"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDefTaskRole1C1DE6CC"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDef7FB8322A"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/web/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDefwebLogGroupA1767F2C"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDefExecutionRole618CD311"
-          }
-        ],
-        "/aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
           }
         ],
         "/aws-ecs-integ-multiple-alb/myService/Service/Service": [

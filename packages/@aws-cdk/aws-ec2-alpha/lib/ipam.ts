@@ -1,6 +1,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -339,6 +340,8 @@ class IpamPool extends Resource implements IIpamPool {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.addressFamily === AddressFamily.IP_V6 && !props.awsService) {
       throw new Error('awsService is required when addressFamily is set to ipv6');
@@ -370,6 +373,7 @@ class IpamPool extends Resource implements IIpamPool {
    * @param options Either a CIDR or netmask length must be provided
    * @returns AWS::EC2::IPAMPoolCidr
    */
+  @MethodMetadata()
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr {
     const cidr = new CfnIPAMPoolCidr(this, id, {
       ...options,
@@ -415,6 +419,8 @@ class IpamScope extends Resource implements IIpamScopeBase {
 
   constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
     });
@@ -508,6 +514,8 @@ export class Ipam extends Resource {
 
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }
@@ -542,6 +550,7 @@ export class Ipam extends Resource {
    * Function to add custom scope to an existing IPAM
    * Custom scopes can only be private
    */
+  @MethodMetadata()
   public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
     const ipamScope = new IpamScope(scope, id, {
       ...options,

@@ -16,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -4739,6 +4740,69 @@ describe('CMCMK', () => {
       },
     });
     bockfs.restore();
+  });
+});
+
+describe('telemetry metadata', () => {
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    fn.addEnvironment('foo', '1234567890', {
+      removeInEdge: true,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([
+      {
+        data: { code: '*', handler: '*', runtime: '*' },
+        trace: undefined,
+        type: 'aws:cdk:analytics:construct',
+      },
+      {
+        data: { addEnvironment: ['*', '*', { removeInEdge: true }] },
+        trace: undefined,
+        type: 'aws:cdk:analytics:method',
+      },
+    ]);
+  });
+
+  it('redaction happens when feature flag is disabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
+    const stack = new cdk.Stack(app);
+
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
+    const fn = new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([]);
   });
 });
 
