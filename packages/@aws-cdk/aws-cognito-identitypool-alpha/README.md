@@ -302,19 +302,6 @@ new IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-Role mappings can also be added after instantiation with the Identity Pool's `addRoleMappings` method:
-
-```ts
-import { IdentityPoolRoleMapping } from '@aws-cdk/aws-cognito-identitypool-alpha';
-
-declare const identityPool: IdentityPool;
-declare const myAddedRoleMapping1: IdentityPoolRoleMapping;
-declare const myAddedRoleMapping2: IdentityPoolRoleMapping;
-declare const myAddedRoleMapping3: IdentityPoolRoleMapping;
-
-identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
-```
-
 #### Provider Urls
 
 Role mappings must be associated with the url of an Identity Provider which can be supplied
