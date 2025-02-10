@@ -3628,7 +3628,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ipsec.1',
     'dummy'
   ],
-  
   'VpnPort': [
     443,
     1194
