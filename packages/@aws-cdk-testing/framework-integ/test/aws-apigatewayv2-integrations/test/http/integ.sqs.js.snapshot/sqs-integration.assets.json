@@ -1,15 +1,15 @@
 {
-  "version": "38.0.1",
+  "version": "36.0.0",
   "files": {
-    "44c0185b62dbff82887ee51d1a7ab98a98737401563e9a5f6acc30753c170a29": {
+    "2a0c9cb36a87b6eaff8d4374a0cddf2f74af34851117514243e8968794dc2299": {
       "source": {
-        "path": "test-apigateway-vpcendpoint.template.json",
+        "path": "sqs-integration.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44c0185b62dbff82887ee51d1a7ab98a98737401563e9a5f6acc30753c170a29.json",
+          "objectKey": "2a0c9cb36a87b6eaff8d4374a0cddf2f74af34851117514243e8968794dc2299.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
