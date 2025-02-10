@@ -971,9 +971,9 @@ Each option provides a different method of security:
 
 - API Keys (`AppSyncAuthorizationType.API_KEY`)
 - Amazon Cognito User Pools (`AppSyncAuthorizationType.USER_POOL`)
-- OpenID Connect (`AppSyncAuthorizationType.OPENID_CONNECT`)
-- AWS Identity and Access Management (`AppSyncAuthorizationType.AWS_IAM`)
-- AWS Lambda (`AppSyncAuthorizationType.AWS_LAMBDA`)
+- OpenID Connect (`AppSyncAuthorizationType.OIDC`)
+- AWS Identity and Access Management (`AppSyncAuthorizationType.IAM`)
+- AWS Lambda (`AppSyncAuthorizationType.LAMBDA`)
 
 When you define your API, you configure the authorization mode to connect to your Event API WebSocket.
 You also configure the default authorization modes to use when publishing and subscribing to messages.
