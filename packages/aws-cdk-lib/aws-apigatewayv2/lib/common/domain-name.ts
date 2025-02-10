@@ -4,7 +4,7 @@ import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -212,7 +212,8 @@ export class DomainName extends Resource implements IDomainName {
    * Adds an endpoint to a domain name.
    * @param options domain name endpoint properties to be set
    */
-  public addEndpoint(options: EndpointOptions) : void {
+  @MethodMetadata()
+  public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: options.certificate.certificateArn,
       certificateName: options.certificateName,

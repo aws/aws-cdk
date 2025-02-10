@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -242,6 +242,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   /**
    * Add a share this to this Fairshare SchedulingPolicy
    */
+  @MethodMetadata()
   public addShare(share: Share) {
     this.shares.push(share);
   }

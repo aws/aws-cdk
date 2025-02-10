@@ -4,7 +4,7 @@ import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import * as ec2 from '../../aws-ec2';
 import { Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
@@ -104,6 +104,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
   /**
    * Creates a service within the namespace
    */
+  @MethodMetadata()
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
