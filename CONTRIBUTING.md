@@ -823,7 +823,7 @@ console.log('This cannot be covered')
 
 > [!NOTE]
 > If your PR is failing one of the required checks (e.g Codecov), it will not be auto-merged. If you believe the PR should be merged
-> inspite of this, let a maintainer know. The maintainer may agree and merge the PR manually, or ask you to address the failing checks.
+> in spite of this, let a maintainer know. The maintainer may agree and merge the PR manually, or ask you to address the failing checks.
 
 
 ## Breaking Changes
@@ -835,12 +835,6 @@ _(those with a `stability` of `experimental` in their respective `package.json` 
 _For v1, each module is separately released. For v2, only `stable` modules are released as part of the_
 _main `aws-cdk-lib` release, and all `experimental` modules are released independently as `-alpha` versions,_
 _and not included in the main CDK library._
-
-Whenever you are making changes, there is a chance for those changes to be
-*breaking* existing users of the library. A change is breaking if there are
-programs that customers could have been writing against the current version
-of the CDK, that will no longer "work correctly" with the proposed new
-version of the CDK.
 
 Breaking changes are not allowed in *stable* libraries. They are permitted
 in experimental libraries, unless the maintainer of the module decides that it should be avoided.
