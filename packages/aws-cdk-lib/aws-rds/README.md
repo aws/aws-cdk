@@ -1476,3 +1476,59 @@ new rds.DatabaseCluster(this, 'LimitlessDatabaseCluster', {
   cloudwatchLogsExports: ['postgresql'],
 });
 ```
+
+## Default Encryption Behavior
+
+New database clusters and instances are automatically encrypted at rest when the
+`@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+[feature flag](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html) is set to `true`.
+You can disable encryption at rest by setting the `storageEncrypted` variable to `false`.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc,
+  storageEncrypted: false,
+});
+
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+  storageEncrypted: false,
+});
+```
+
+Previously, the default behavior did not enable encryption at rest if the `storageEncrypted` or `storageEncryptionKey`
+property were not set. In this case, the `storageEncrypted` property was `undefined`. The new implementation always
+explicitly sets the `storageEncrypted` property to `true` or `false`.  To prevent replacing existing unencrypted
+database clusters and instances, set `storageEncrypted` to `false` and `storageEncryptedLegacyDefaultValue` to `true`
+for existing database clusters and instances. Validate that `cdk diff` does not show any changes to the unencrypted
+database clusters and instances.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc,
+
+  // Retain existing unencrypted database cluster behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+  // feature flag is set to `true`
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
+});
+
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+
+  // Retain existing unencrypted database instance behavior when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault`
+  // feature flag is set to `true`
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
+});
+```

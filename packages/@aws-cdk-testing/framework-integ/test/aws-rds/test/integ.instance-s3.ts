@@ -17,6 +17,8 @@ new DatabaseInstance(stack, 'Database', {
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
