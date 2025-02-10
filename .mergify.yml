@@ -76,6 +76,27 @@ pull_request_rules:
     conditions:
       - base!=release
       - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|two-approvers|priority-pr)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+  - name: automatic priority merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      queue:
+        name: priority-squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - label~=priority-pr
       - -label~=(blocked|do-not-merge|no-squash|two-approvers)
       - -merged
       - -closed
