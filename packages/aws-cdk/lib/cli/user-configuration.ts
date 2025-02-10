@@ -35,13 +35,38 @@ export enum Command {
   DOCTOR = 'doctor',
 }
 
-const BUNDLING_COMMANDS = [
+export const BUNDLING_COMMANDS = [
   Command.DEPLOY,
   Command.DIFF,
   Command.SYNTH,
   Command.SYNTHESIZE,
   Command.WATCH,
   Command.IMPORT,
+];
+
+/**
+ * The following commands skip bundling to save time
+ * This list is meant to contain all elements in enum Command
+ * that are not in BUNDLING_COMMANDS
+ */
+export const NON_BUNDLING_COMMANDS = [
+  Command.LS,
+  Command.LIST,
+  Command.BOOTSTRAP,
+  Command.DESTROY,
+  Command.METADATA,
+  Command.INIT,
+  Command.VERSION,
+  Command.GC,
+  Command.ROLLBACK,
+  Command.ACKNOWLEDGE,
+  Command.ACK,
+  Command.NOTICES,
+  Command.MIGRATE,
+  Command.CONTEXT,
+  Command.DOCS,
+  Command.DOC,
+  Command.DOCTOR,
 ];
 
 export type Arguments = {
@@ -202,8 +227,8 @@ export function commandLineArgumentsToSettings(argv: Arguments): Settings {
   // Determine bundling stacks
   let bundlingStacks: string[];
   if (BUNDLING_COMMANDS.includes(argv._[0])) {
-    // If we deploy, diff, synth or watch a list of stacks exclusively we skip
-    // bundling for all other stacks.
+    // If we deploy, diff, synth, or watch a list of stacks exclusively we skip
+    // bundling for all other stacks. Import only works on one stack and will always bundle.
     bundlingStacks = argv.exclusively ? argv.STACKS ?? ['**'] : ['**'];
   } else {
     // Skip bundling for all stacks
