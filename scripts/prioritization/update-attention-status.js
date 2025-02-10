@@ -14,7 +14,7 @@
  * This helps maintain visibility of PRs that may need intervention to progress.
  */
 const { STATUS, NEEDS_ATTENTION_STATUS, ...PROJECT_CONFIG } = require('./project-config');
-const { updateProjectField, fetchProjectItems } = require('./project-api');
+const { fetchProjectFields, updateProjectField, fetchProjectItems } = require('./project-api');
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -35,6 +35,20 @@ const getAttentionStatus = (days) => {
 
 module.exports = async ({ github }) => {
   try {
+    const projectFields = await fetchProjectFields({ 
+      github,
+      org: PROJECT_CONFIG.org,
+      number: PROJECT_CONFIG.projectNumber
+    });
+
+    const attentionField = projectFields.organization.projectV2.fields.nodes.find(
+      field => field.id === PROJECT_CONFIG.attentionFieldId
+    );
+
+    if (!attentionField) {
+      throw new Error('Attention field not found in project');
+    }
+
     let allItems = [];
     let hasNextPage = true;
     let cursor = null;
@@ -85,16 +99,23 @@ module.exports = async ({ github }) => {
 
         // Only update if attention status needs to be set
         if (attentionStatus) {
+          const attentionFieldOptionId = attentionField.options.find(
+            (option) => option.name === attentionStatus
+          )?.id;
+
+          if (!attentionFieldOptionId) {
+            console.error(`No option ID found for attention status: ${attentionStatus}`);
+            continue;
+          }
+
           await updateProjectField({
             github,
             projectId: PROJECT_CONFIG.projectId,
             itemId: item.id,
             fieldId: PROJECT_CONFIG.attentionFieldId,
-            value: attentionStatus,
+            value: attentionFieldOptionId,
           });
           console.log(`Updated item ${item.id} attention status to ${attentionStatus}`);
-        } else {
-          console.log(`No attention status needed for item ${item.id}`);
         }
       } catch (error) {
         console.error(`Error processing item ${item.id}:`, error);

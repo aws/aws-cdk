@@ -29,7 +29,7 @@ describe('Needs Attention Status Assignment', () => {
             call[1].input?.fieldId === PROJECT_CONFIG.attentionFieldId
         );
         expect(attentionUpdateCall[1].input.value.singleSelectOptionId)
-            .toBe(expectedAttentionStatus);
+            .toBe(OPTION_IDS[expectedAttentionStatus]);
     }
 
     describe('Needs Attention Status Tests', () => {
@@ -102,11 +102,11 @@ describe('Needs Attention Status Assignment', () => {
 
             expect(attentionCalls).toHaveLength(3); // Only 3 items should be updated
             expect(attentionCalls[0][1].input.value.singleSelectOptionId)
-                .toBe(NEEDS_ATTENTION_STATUS.EXTENDED.name);
+                .toBe(OPTION_IDS[NEEDS_ATTENTION_STATUS.EXTENDED.name]);
             expect(attentionCalls[1][1].input.value.singleSelectOptionId)
-                .toBe(NEEDS_ATTENTION_STATUS.AGING.name);
+                .toBe(OPTION_IDS[NEEDS_ATTENTION_STATUS.AGING.name]);
             expect(attentionCalls[2][1].input.value.singleSelectOptionId)
-                .toBe(NEEDS_ATTENTION_STATUS.STALLED.name);
+                .toBe(OPTION_IDS[NEEDS_ATTENTION_STATUS.STALLED.name]);
         });
     });
 });
