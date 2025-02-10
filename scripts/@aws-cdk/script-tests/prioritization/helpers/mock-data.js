@@ -1,4 +1,4 @@
-const { PRIORITIES, LABELS, STATUS, ...PROJECT_CONFIG } = require('../../../../../scripts/prioritization/project-config');
+const { PRIORITIES, LABELS, STATUS, NEEDS_ATTENTION_STATUS, ...PROJECT_CONFIG } = require('../../../../../scripts/prioritization/project-config');
 
 const OPTION_IDS = {
   [PRIORITIES.R1]: 'r1-option-id',
@@ -10,7 +10,10 @@ const OPTION_IDS = {
   [STATUS.IN_PROGRESS]: 'in_progress-status-id',
   [STATUS.PAUSED]: 'paused-status-id',
   [STATUS.ASSIGNED]: 'assigned-status-id',
-  [STATUS.DONE]: 'done-status-id'
+  [STATUS.DONE]: 'done-status-id',
+  [NEEDS_ATTENTION_STATUS.EXTENDED.name]: 'extended-status-id',
+  [NEEDS_ATTENTION_STATUS.AGING.name]: 'aging-status-id',
+  [NEEDS_ATTENTION_STATUS.STALLED.name]: 'stalled-status-id'
 };
 
 const projectFields = {
@@ -101,11 +104,11 @@ exports.createMockGithub = () => {
 /**
  * Creates mock GitHub GraphQL client with predefined responses for R5 priority
  */
-exports.createMockGithubForR5 = ({ 
-  draft = false, 
-  labels = [], 
+exports.createMockGithubForR5 = ({
+  draft = false,
+  labels = [],
   updatedAt = new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
-  existingPriority = null 
+  existingPriority = null
 }) => {
   const graphql = jest.fn();
 
@@ -167,8 +170,8 @@ exports.createMockGithubForR5 = ({
 /**
  * Creates mock GitHub GraphQL client with predefined responses for R2 priority
  */
-exports.createMockGithubForR2 = ({ 
-  approved = false,
+exports.createMockGithubForR2 = ({
+  approvalCount = 0,
   checksState = 'SUCCESS',
   existingPriority = null,
   existingStatus = STATUS.READY
@@ -186,9 +189,7 @@ exports.createMockGithubForR2 = ({
                 id: 'PR_123',
                 number: 123,
                 reviews: {
-                  nodes: approved ? [
-                    { state: 'APPROVED' }
-                  ] : []
+                  nodes: Array.from({ length: approvalCount }, () => ({ state: 'APPROVED' }))
                 },
                 commits: {
                   nodes: [{
@@ -253,6 +254,79 @@ exports.createMockGithubForR2 = ({
       .mockResolvedValueOnce(updateFieldValueInProject)
       //Sixth call - update status
       .mockResolvedValueOnce(updateFieldValueInProject);
+  }
+
+  return { graphql };
+};
+
+/**
+ * Creates mock GitHub GraphQL client with predefined responses for Needs Attention Status field assignment
+ */
+exports.createMockGithubForNeedsAttention = ({ 
+  status = STATUS.READY,
+  daysInStatus = 0,
+  items = null
+}) => {
+  const graphql = jest.fn();
+
+  const createItem = (itemStatus, days) => ({
+      id: `item-${Math.random()}`,
+      fieldValues: {
+          nodes: [
+              {
+                  field: { name: 'Status' },
+                  name: itemStatus,
+                  updatedAt: new Date(Date.now() - (days * 24 * 60 * 60 * 1000)).toISOString()
+              }
+          ]
+      }
+  });
+
+   // First call - fetch project fields
+   graphql.mockResolvedValueOnce({
+    organization: {
+        projectV2: {
+            fields: {
+                nodes: [
+                    {
+                        id: PROJECT_CONFIG.attentionFieldId,
+                        name: 'Needs Attention',
+                        options: Object.values(NEEDS_ATTENTION_STATUS).map(attentionStatus => ({
+                          id: OPTION_IDS[attentionStatus.name],
+                          name: attentionStatus.name
+                        }))
+                    }
+                ]
+            }
+        }
+    }
+   });
+  
+  // Second call - fetch project items
+  graphql.mockResolvedValueOnce({
+      organization: {
+          projectV2: {
+              items: {
+                  nodes: items ? items.map(item => createItem(item.status, item.daysInStatus))
+                              : [createItem(status, daysInStatus)],
+                  pageInfo: {
+                      hasNextPage: false,
+                      endCursor: null
+                  }
+              }
+          }
+      }
+  });
+
+  // For field updates
+  if (items) {
+    items.forEach(item => {
+        if (item.status !== STATUS.DONE) {  // Skip DONE items
+            graphql.mockResolvedValueOnce(updateFieldValueInProject);
+        }
+    });
+  } else if (status !== STATUS.DONE) {
+      graphql.mockResolvedValueOnce(updateFieldValueInProject);
   }
 
   return { graphql };
