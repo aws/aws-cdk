@@ -1236,7 +1236,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "CIDR6",

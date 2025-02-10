@@ -777,7 +777,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "DummyVpcIGW6BB373C0",

@@ -3361,4 +3361,196 @@ describe('cluster', () => {
       });
     });
   });
+
+  describe('RemoteNetworkConfig', () => {
+    test('create a cluster using remote network config with only remote node networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const remoteNodeNetworkCidrs = ['172.16.0.0/12'];
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: remoteNodeNetworkCidrs,
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: remoteNodeNetworkCidrs,
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('create a cluster using remote network config with both remote node and pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const remoteNodeNetworkCidrs = ['172.16.0.0/12'];
+      const remotePodNetworkCidrs = ['10.16.0.0/12'];
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: remoteNodeNetworkCidrs,
+          },
+        ],
+        remotePodNetworks: [
+          {
+            cidrs: remotePodNetworkCidrs,
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: remoteNodeNetworkCidrs,
+              },
+            ],
+            remotePodNetworks: [
+              {
+                cidrs: remotePodNetworkCidrs,
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('create a cluster using remote network config with overlapping remote node and pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs = ['192.168.0.0/12', overlappingCidr];
+      const remotePodNetworkCidrs = [overlappingCidr];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+          remotePodNetworks: [
+            {
+              cidrs: remotePodNetworkCidrs,
+            },
+          ],
+        });
+      }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
+    });
+
+    test('create a cluster using remote network config with overlapping CIDRs across two different remote node networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs1 = ['192.168.0.0/12', overlappingCidr];
+      const remoteNodeNetworkCidrs2 = [overlappingCidr, '10.0.0.0/16'];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs1,
+            },
+            {
+              cidrs: remoteNodeNetworkCidrs2,
+            },
+          ],
+        });
+      }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
+    });
+
+    test('create a cluster using remote network config with overlapping CIDRs across two different remote pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs = ['10.20.30.40/20'];
+      const remotePodNetworkCidrs1 = ['192.168.0.0/12', overlappingCidr];
+      const remotePodNetworkCidrs2 = [overlappingCidr, '10.0.0.0/16'];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+          remotePodNetworks: [
+            {
+              cidrs: remotePodNetworkCidrs1,
+            },
+            {
+              cidrs: remotePodNetworkCidrs2,
+            },
+          ],
+        });
+      }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
+    });
+
+    test('create a cluster using remote network config with overlapping CIDRs within the same remote node network', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs = [overlappingCidr, overlappingCidr];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+        });
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
+    });
+
+    test('create a cluster using remote network config with overlapping CIDRs within the same remote pod network', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const overlappingCidr = '172.16.0.0/12';
+      const remoteNodeNetworkCidrs = ['192.168.0.0/12'];
+      const remotePodNetworkCidrs = [overlappingCidr, overlappingCidr];
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: remoteNodeNetworkCidrs,
+            },
+          ],
+          remotePodNetworks: [
+            {
+              cidrs: remotePodNetworkCidrs,
+            },
+          ],
+        });
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
+    });
+  });
 });
