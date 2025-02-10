@@ -9,6 +9,10 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // assert that beforeBundling/afterBundling are called only once
+    let beforeBundlingCallCount = 0;
+    let afterBundlingCallCount = 0;
+
     new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,
@@ -19,6 +23,25 @@ class TestStack extends Stack {
         esbuildArgs: {
           '--log-limit': '0',
           '--out-extension': '.js=.mjs',
+        },
+        commandHooks: {
+          beforeBundling() {
+            if (1 < beforeBundlingCallCount) {
+              throw new Error('afterBundling should called only once');
+            }
+            beforeBundlingCallCount++;
+            return [];
+          },
+          afterBundling() {
+            if (1 < afterBundlingCallCount) {
+              throw new Error('afterBundling should called only once');
+            }
+            afterBundlingCallCount++;
+            return [];
+          },
+          beforeInstall() {
+            return [];
+          },
         },
       },
     });
