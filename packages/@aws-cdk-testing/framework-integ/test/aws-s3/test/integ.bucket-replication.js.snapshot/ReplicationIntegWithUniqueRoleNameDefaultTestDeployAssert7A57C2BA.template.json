@@ -21,7 +21,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+         "Fn::ImportValue": "TestStackWithUniqueRoleName:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
         },
         "\""
        ]
@@ -32,7 +32,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1739161411442"
+    "salt": "1739161411461"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -498,7 +498,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
+         "Fn::ImportValue": "TestStackWithUniqueRoleName:ExportsOutputRefSourceBucketDDD2130AFF6DDDA5"
         },
         "\""
        ]
@@ -509,7 +509,7 @@
      "ContentType": "\"text/plain\""
     },
     "flattenResponse": "false",
-    "salt": "1739161411445"
+    "salt": "1739161411463"
    },
    "DependsOn": [
     "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b",
@@ -685,7 +685,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+         "Fn::ImportValue": "TestStackWithUniqueRoleName:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
         },
         "\""
        ]
@@ -694,7 +694,7 @@
      "Key": "\"test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1739161411446"
+    "salt": "1739161411464"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e",
@@ -870,7 +870,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
+         "Fn::ImportValue": "TestStackWithUniqueRoleName:ExportsOutputRefDestinationBucket1590C2E3AE3A57174"
         },
         "\""
        ]
@@ -879,7 +879,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1739161411447"
+    "salt": "1739161411465"
    },
    "DependsOn": [
     "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904",
@@ -1055,7 +1055,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
+         "Fn::ImportValue": "TestStackWithUniqueRoleName:ExportsOutputRefDestinationBucket217C2CCD298F62E2F"
         },
         "\""
        ]
@@ -1064,7 +1064,7 @@
      "Key": "\"prefix-test-object\""
     },
     "flattenResponse": "false",
-    "salt": "1739161411448"
+    "salt": "1739161411466"
    },
    "DependsOn": [
     "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed",
