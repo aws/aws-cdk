@@ -155,6 +155,21 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
+By default, the API endpoint URI will be constructed using the AWS region of
+the stack in which the provided `api` is created.
+
+To construct the endpoint with a different region, use the `region` parameter:
+```ts
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: tasks.HttpMethod.GET,
+  region: 'us-west-2',
+});
+```
+
 Be aware that the header values must be arrays. When passing the Task Token
 in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
 `JsonPath.array()` to wrap the token in an array:
