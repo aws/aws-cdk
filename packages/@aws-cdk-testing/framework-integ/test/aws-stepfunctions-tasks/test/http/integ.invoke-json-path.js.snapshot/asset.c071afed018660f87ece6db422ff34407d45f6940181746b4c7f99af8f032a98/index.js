@@ -18,13 +18,13 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/http/my-lambda-handler/index.ts
-var my_lambda_handler_exports = {};
-__export(my_lambda_handler_exports, {
+var index_exports = {};
+__export(index_exports, {
   handler: () => handler,
   password: () => password,
   username: () => username
 });
-module.exports = __toCommonJS(my_lambda_handler_exports);
+module.exports = __toCommonJS(index_exports);
 var username = "integ-username";
 var password = "integ-password";
 var base64Encode = (value) => Buffer.from(value).toString("base64");
