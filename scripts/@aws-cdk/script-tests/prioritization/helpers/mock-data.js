@@ -1,4 +1,4 @@
-const { PRIORITIES, LABELS, STATUS, ...PROJECT_CONFIG } = require('../../../../../scripts/prioritization/project-config');
+const { PRIORITIES, LABELS, STATUS, NEEDS_ATTENTION_STATUS, ...PROJECT_CONFIG } = require('../../../../../scripts/prioritization/project-config');
 
 const OPTION_IDS = {
   [PRIORITIES.R1]: 'r1-option-id',
@@ -10,7 +10,10 @@ const OPTION_IDS = {
   [STATUS.IN_PROGRESS]: 'in_progress-status-id',
   [STATUS.PAUSED]: 'paused-status-id',
   [STATUS.ASSIGNED]: 'assigned-status-id',
-  [STATUS.DONE]: 'done-status-id'
+  [STATUS.DONE]: 'done-status-id',
+  [NEEDS_ATTENTION_STATUS.EXTENDED.name]: 'extended-status-id',
+  [NEEDS_ATTENTION_STATUS.AGING.name]: 'aging-status-id',
+  [NEEDS_ATTENTION_STATUS.STALLED.name]: 'stalled-status-id'
 };
 
 const projectFields = {
@@ -279,7 +282,27 @@ exports.createMockGithubForNeedsAttention = ({
       }
   });
 
-  // First call - fetch project items
+   // First call - fetch project fields
+   graphql.mockResolvedValueOnce({
+    organization: {
+        projectV2: {
+            fields: {
+                nodes: [
+                    {
+                        id: PROJECT_CONFIG.attentionFieldId,
+                        name: 'Needs Attention',
+                        options: Object.values(NEEDS_ATTENTION_STATUS).map(attentionStatus => ({
+                          id: OPTION_IDS[attentionStatus.name],
+                          name: attentionStatus.name
+                        }))
+                    }
+                ]
+            }
+        }
+    }
+   });
+  
+  // Second call - fetch project items
   graphql.mockResolvedValueOnce({
       organization: {
           projectV2: {
@@ -294,6 +317,17 @@ exports.createMockGithubForNeedsAttention = ({
           }
       }
   });
+
+  // For field updates
+  if (items) {
+    items.forEach(item => {
+        if (item.status !== STATUS.DONE) {  // Skip DONE items
+            graphql.mockResolvedValueOnce(updateFieldValueInProject);
+        }
+    });
+  } else if (status !== STATUS.DONE) {
+      graphql.mockResolvedValueOnce(updateFieldValueInProject);
+  }
 
   return { graphql };
 };

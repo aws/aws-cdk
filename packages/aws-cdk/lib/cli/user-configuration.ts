@@ -59,7 +59,6 @@ export const NON_BUNDLING_COMMANDS = [
   Command.VERSION,
   Command.GC,
   Command.ROLLBACK,
-  Command.IMPORT,
   Command.ACKNOWLEDGE,
   Command.ACK,
   Command.NOTICES,
