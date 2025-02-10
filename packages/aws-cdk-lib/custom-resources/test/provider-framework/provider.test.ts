@@ -512,6 +512,14 @@ describe('role', () => {
               },
             ],
           },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
           {
             Action: 'lambda:GetFunction',
             Effect: 'Allow',
@@ -523,7 +531,6 @@ describe('role', () => {
             },
           },
         ],
-        Version: '2012-10-17',
       },
     });
   });
@@ -580,6 +587,14 @@ describe('role', () => {
               },
             ],
           },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
           {
             Action: 'lambda:GetFunction',
             Effect: 'Allow',
@@ -591,7 +606,6 @@ describe('role', () => {
             },
           },
         ],
-        Version: '2012-10-17',
       },
     });
   });

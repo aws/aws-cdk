@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2e4257665d19056143c4db55344ad90c00f21a27d79890e20bf9e89bbdcb527.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/54942f1d89bbbc3da1297a13717a7e94ce0cdfa51f89fb304d87d5177b3a1a41.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,6 +100,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ/FargateCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
         "/aws-ecs-integ/FargateCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -154,12 +160,6 @@
             "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleA28505D9"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleDefaultPolicy53CD1145"
-          }
-        ],
         "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -176,6 +176,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole0987FAD33"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole14C257275"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2A1F0C369"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole3A85241C9"
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4DA338734"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Topic/Resource": [
@@ -226,6 +256,12 @@
             "data": "TaskDef54694570"
           }
         ],
+        "/aws-ecs-integ/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          }
+        ],
         "/aws-ecs-integ/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
@@ -248,6 +284,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FargateClustercapacityDrainECSHookFunctionServiceRoleDefaultPolicy53CD1145": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleDefaultPolicy53CD1145",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

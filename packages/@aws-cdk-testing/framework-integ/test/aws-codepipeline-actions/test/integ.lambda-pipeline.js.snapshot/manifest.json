@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-codepipeline-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-codepipeline-lambda.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/294db12dc14ebbe6a9d811957c4cd9a3e2f4c39db5b71cc997e40de782f672cb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df34b2df735e0f503ff60945d27845c0c760649008b32f822b19dc8942b54975.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,12 @@
         "aws-cdk-codepipeline-lambda.assets"
       ],
       "metadata": {
+        "/aws-cdk-codepipeline-lambda/Pipeline": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          }
+        ],
         "/aws-cdk-codepipeline-lambda/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -147,16 +154,16 @@
             "data": "LambdaFunServiceRoleF0979767"
           }
         ],
-        "/aws-cdk-codepipeline-lambda/LambdaFun/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaFunServiceRoleDefaultPolicy217FED83"
-          }
-        ],
         "/aws-cdk-codepipeline-lambda/LambdaFun/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaFun98622869"
+          }
+        ],
+        "/aws-cdk-codepipeline-lambda/LambdaFun/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFuninlinePolicyAddedToExecutionRole0E4128878"
           }
         ],
         "/aws-cdk-codepipeline-lambda/BootstrapVersion": [
@@ -169,6 +176,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdaFunServiceRoleDefaultPolicy217FED83": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunServiceRoleDefaultPolicy217FED83",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

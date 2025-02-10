@@ -833,111 +833,6 @@
                               "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ec2:DescribeHosts",
-                                            "ec2:DescribeInstanceAttribute",
-                                            "ec2:DescribeInstanceStatus",
-                                            "ec2:DescribeInstances"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": "autoscaling:CompleteLifecycleAction",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":autoscaling:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":autoScalingGroup:*:autoScalingGroupName/",
-                                                {
-                                                  "Ref": "ASG46ED3070"
-                                                }
-                                              ]
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "ecs:DescribeContainerInstances",
-                                            "ecs:DescribeTasks",
-                                            "ecs:ListTasks",
-                                            "ecs:UpdateContainerInstancesState"
-                                          ],
-                                          "Condition": {
-                                            "ArnEquals": {
-                                              "ecs:cluster": {
-                                                "Fn::GetAtt": [
-                                                  "ClusterEB0386A7",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            }
-                                          },
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": [
-                                            "ecs:ListContainerInstances",
-                                            "ecs:SubmitContainerStateChange",
-                                            "ecs:SubmitTaskStateChange"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "ClusterEB0386A7",
-                                              "Arn"
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
-                                    "roles": [
-                                      {
-                                        "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
                           }
                         },
                         "constructInfo": {
@@ -1037,6 +932,263 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ec2:DescribeHosts",
+                                        "ec2:DescribeInstanceAttribute",
+                                        "ec2:DescribeInstanceStatus",
+                                        "ec2:DescribeInstances"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3",
+                                "roles": [
+                                  {
+                                    "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-1": {
+                        "id": "inlinePolicyAddedToExecutionRole-1",
+                        "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "autoscaling:CompleteLifecycleAction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":autoscaling:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":autoScalingGroup:*:autoScalingGroupName/",
+                                            {
+                                              "Ref": "ASG46ED3070"
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01",
+                                "roles": [
+                                  {
+                                    "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-2": {
+                        "id": "inlinePolicyAddedToExecutionRole-2",
+                        "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ecs:DescribeContainerInstances",
+                                        "ecs:DescribeTasks"
+                                      ],
+                                      "Condition": {
+                                        "ArnEquals": {
+                                          "ecs:cluster": {
+                                            "Fn::GetAtt": [
+                                              "ClusterEB0386A7",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2",
+                                "roles": [
+                                  {
+                                    "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-3": {
+                        "id": "inlinePolicyAddedToExecutionRole-3",
+                        "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ecs:ListContainerInstances",
+                                        "ecs:SubmitContainerStateChange",
+                                        "ecs:SubmitTaskStateChange"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "ClusterEB0386A7",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B",
+                                "roles": [
+                                  {
+                                    "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-4": {
+                        "id": "inlinePolicyAddedToExecutionRole-4",
+                        "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-ecs-al2023-ami/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "ecs:ListTasks",
+                                        "ecs:UpdateContainerInstancesState"
+                                      ],
+                                      "Condition": {
+                                        "ArnEquals": {
+                                          "ecs:cluster": {
+                                            "Fn::GetAtt": [
+                                              "ClusterEB0386A7",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B",
+                                "roles": [
+                                  {
+                                    "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }

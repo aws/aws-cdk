@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-pipes-lambda-target.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-pipes-lambda-target.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b479cf8f164870a3c6d8151950f1bb109b669478bc644a2945ef7d5f786f845.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/20f52f9c06b0b97152b2f191a59dc5d9839f1d208f1b20419caa1616ca1d25cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -47,16 +46,16 @@
             "data": "TargetLambdaFunctionServiceRole2FBA8508"
           }
         ],
-        "/aws-cdk-pipes-lambda-target/TargetLambdaFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9"
-          }
-        ],
         "/aws-cdk-pipes-lambda-target/TargetLambdaFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetLambdaFunctionBCDA1A4E"
+          }
+        ],
+        "/aws-cdk-pipes-lambda-target/TargetLambdaFunction/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetLambdaFunctioninlinePolicyAddedToExecutionRole00E8E6F3A"
           }
         ],
         "/aws-cdk-pipes-lambda-target/Pipe/Role/Resource": [
@@ -100,6 +99,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-pipes-lambda-target"
@@ -119,10 +127,9 @@
         "templateFile": "integtestpipetargetlambdaDefaultTestDeployAssert48C58B78.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c33ac9eae43436e99a637a7e22641670980a9bb5025cd87b162a427eedcee40.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/735d3b6c682df5cb86a384bd215a1a2f55d601bbd6749c22ba14fe40f5a47e12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -139,10 +146,10 @@
         "integtestpipetargetlambdaDefaultTestDeployAssert48C58B78.assets"
       ],
       "metadata": {
-        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef5d083ed8f5fb367012aef7420ae359f/Default/Default": [
+        "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage34801ac69dec864e9b81a25c0fd374ac/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessagef5d083ed8f5fb367012aef7420ae359f"
+            "data": "AwsApiCallSQSsendMessage34801ac69dec864e9b81a25c0fd374ac"
           }
         ],
         "/integtest-pipe-target-lambda/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

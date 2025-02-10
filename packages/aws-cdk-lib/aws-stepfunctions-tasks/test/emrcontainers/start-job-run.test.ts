@@ -1052,6 +1052,12 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               ],
             },
           },
+        ],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
           {
             Action: [
               'iam:GetRole',

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "cdk-integ-secret-lambda-rotation.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-secret-lambda-rotation.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc90d37690ac7b3f65298669ac91e7fd063d66752c781aab7febf755ae8694bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d4e1f549965bae3bf9693d144eaf07c48793440a0aef2a164e5edff57de72ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,12 +64,6 @@
             "data": "LambdaServiceRoleA8ED4D3B"
           }
         ],
-        "/cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaServiceRoleDefaultPolicyDAE46E21"
-          }
-        ],
         "/cdk-integ-secret-lambda-rotation/Lambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -81,6 +76,18 @@
             "data": "LambdaInvokeN0a2GKfZP0JmDqDEVhhu6A0TUv3NyNbk4YMFKNc69846677"
           }
         ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdainlinePolicyAddedToExecutionRole06CEA97D1"
+          }
+        ],
+        "/cdk-integ-secret-lambda-rotation/Lambda/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdainlinePolicyAddedToExecutionRole1629BC4CB"
+          }
+        ],
         "/cdk-integ-secret-lambda-rotation/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -91,6 +98,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdaServiceRoleDefaultPolicyDAE46E21": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaServiceRoleDefaultPolicyDAE46E21",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -109,6 +125,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkintegsecretlambdarotationtestDefaultTestDeployAssert65AE5426.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

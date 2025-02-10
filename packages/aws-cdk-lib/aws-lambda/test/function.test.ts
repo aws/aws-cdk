@@ -430,6 +430,14 @@ describe('function', () => {
           Statement: [
             { Action: 'confirm:itsthesame', Effect: 'Allow', Resource: '*' },
             { Action: 'inline:inline', Effect: 'Allow', Resource: '*' },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
             { Action: 'explicit:explicit', Effect: 'Allow', Resource: '*' },
           ],
         },
@@ -842,7 +850,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -873,7 +881,6 @@ describe('function', () => {
         FunctionName: 'OneFunctionToRuleThemAll',
       },
       DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
     });
@@ -1140,7 +1147,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -1166,7 +1173,6 @@ describe('function', () => {
         },
       },
       DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
     });
@@ -1196,7 +1202,7 @@ describe('function', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
       Roles: [
         {
           Ref: 'MyLambdaServiceRole4539ECB6',
@@ -1222,7 +1228,6 @@ describe('function', () => {
         },
       },
       DependsOn: [
-        'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
         'MyLambdaServiceRole4539ECB6',
       ],
     });

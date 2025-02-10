@@ -47,7 +47,7 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyName: 'CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC',
+    PolicyName: 'CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2',
     Roles: [
       {
         Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
@@ -66,11 +66,25 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
           Effect: 'Allow',
           Resource: '*',
         },
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 'route53:GetChange',
           Effect: 'Allow',
           Resource: '*',
         },
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 'route53:changeResourceRecordSets',
           Effect: 'Allow',
