@@ -1,0 +1,345 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "ses-configuration-set-firehose.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ses-configuration-set-firehose.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ses-configuration-set-firehose": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ses-configuration-set-firehose.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a1e4855b24a64f87efe5c8a94c0bf4d85ec296fb790463d4a1902c5a7311a39.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ses-configuration-set-firehose.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ses-configuration-set-firehose.assets"
+      ],
+      "metadata": {
+        "/ses-configuration-set-firehose/ConfigurationSet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxDeliveryDuration": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventDestination": [
+                "*",
+                {
+                  "destination": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSet3DD38186"
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/FirehoseDestination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*",
+              "configurationSet": "*"
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/FirehoseDestination/FirehoseDeliveryStreamIamRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*"
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/FirehoseDestination/FirehoseDeliveryStreamIamRole/ImportFirehoseDeliveryStreamIamRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/FirehoseDestination/FirehoseDeliveryStreamIamRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSetFirehoseDestinationFirehoseDeliveryStreamIamRoleA664ACA2"
+          }
+        ],
+        "/ses-configuration-set-firehose/ConfigurationSet/FirehoseDestination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigurationSetFirehoseDestination6BB494C9"
+          }
+        ],
+        "/ses-configuration-set-firehose/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/ses-configuration-set-firehose/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ses-configuration-set-firehose/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/ses-configuration-set-firehose/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/ses-configuration-set-firehose/Firehose": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/ses-configuration-set-firehose/Firehose/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseEF5AC2A2"
+          }
+        ],
+        "/ses-configuration-set-firehose/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/ses-configuration-set-firehose/Exports/Output{\"Fn::GetAtt\":[\"FirehoseEF5AC2A2\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttFirehoseEF5AC2A2ArnC3360F61"
+          }
+        ],
+        "/ses-configuration-set-firehose/Exports/Output{\"Ref\":\"ConfigurationSet3DD38186\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefConfigurationSet3DD381867BBB7945"
+          }
+        ],
+        "/ses-configuration-set-firehose/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ses-configuration-set-firehose/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ses-configuration-set-firehose"
+    },
+    "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9759fe7a86677e975a6a0e766a10fa9056e687cc3f0060217ccf8abe6f864395.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ses-configuration-set-firehose",
+        "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085.assets"
+      ],
+      "metadata": {
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/AwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallsesv2getConfigurationSetEventDestinations6050644aa744334f21cb892a4182a824"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ses-configuration-set-firehose-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ses-configuration-set-firehose-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
