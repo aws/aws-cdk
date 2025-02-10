@@ -3127,7 +3127,7 @@ describe('cluster', () => {
     const providerStack = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     Template.fromStack(providerStack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [
-        { Ref: 'AwsCliLayerF44AAF94' },
+        { Ref: 'awscdklambdalayerawscliAwsCliLayer437D4B14' },
         'arn:of:layer',
       ],
     });

@@ -177,7 +177,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
     });
 
     // allow user to customize the layers with the tools we need
-    handler.addLayers(props.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
+    handler.addLayers(props.awscliLayer ?? AwsCliLayer.getOrCreate(this));
     handler.addLayers(props.kubectlLayer);
 
     const handlerRole = handler.role!;
