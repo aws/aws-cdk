@@ -23,6 +23,13 @@ export interface OriginGroupProps {
   readonly fallbackStatusCodes?: number[];
 
   /**
+   * A unique identifier for the origin. This value must be unique within the distribution.
+   *
+   * @default - an originId will be generated for you
+   */
+  readonly originId?: string;
+
+  /**
    * The selection criteria for the origin group.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
@@ -53,6 +60,7 @@ export class OriginGroup implements cloudfront.IOrigin {
         failoverOrigin: this.props.fallbackOrigin,
         statusCodes: this.props.fallbackStatusCodes,
       },
+      originGroupId: this.props.originId,
       selectionCriteria: this.props.selectionCriteria,
     };
   }
