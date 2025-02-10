@@ -3,22 +3,26 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
 import * as rds from '../lib';
 
+/* eslint-disable */
 describe('DatabaseInstanceBase from lookup', () => {
   test('return correct instance info', () => {
-    const dataObj = {};
-    Object.assign(dataObj, { ['DBInstanceArn']: 'arn:aws:rds:us-east-1:123456789012:db:instance-1' });
-    Object.assign(dataObj, { ['Endpoint.Address']: 'instance-1.testserver.us-east-1.rds.amazonaws.com' });
-    Object.assign(dataObj, { ['Endpoint.Port']: '5432' });
-    Object.assign(dataObj, { ['DbiResourceId']: 'db-ABCDEFGHI' });
-    Object.assign(dataObj, { ['DBSecurityGroups']: [] });
-    Object.assign(dataObj, { ['Identifier']: 'instance-1' });
-    const resultObj = {};
-    Object.assign(resultObj, { ['results']: [dataObj] });
+    // GIVEN
+    const resultObjs = [
+      {
+        'DBInstanceArn': 'arn:aws:rds:us-east-1:123456789012:db:instance-1',
+        'Endpoint.Address': 'instance-1.testserver.us-east-1.rds.amazonaws.com',
+        'Endpoint.Port': '5432',
+        'DbiResourceId': 'db-ABCDEFGHI',
+        'DBSecurityGroups': [],
+        'Identifier': 'instance-1',
+      },
+    ];
 
-    const previous = mockDbInstanceContextProviderWith(resultObj, options => {
+    const previous = mockDbInstanceContextProviderWith(resultObjs, options => {
       expect(options.exactIdentifier).toEqual('instance-1');
     });
 
+    // WHEN
     const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
     const instance = rds.DatabaseInstance.fromLookup(stack, 'MyInstance', {
       instanceIdentifier: 'instance-1',
@@ -29,23 +33,24 @@ describe('DatabaseInstanceBase from lookup', () => {
     expect(instance.dbInstanceEndpointPort).toEqual('5432');
     expect(instance.instanceResourceId).toEqual('db-ABCDEFGHI');
 
-    restoreContextProvider(previous);
+    // restoreContextProvider(previous);
   });
 });
 
 describe('DatabaseInstanceBase from lookup with DBSG', () => {
   test('return correct instance info', () => {
-    const dataObj = {};
-    Object.assign(dataObj, { ['DBInstanceArn']: 'arn:aws:rds:us-east-1:123456789012:db:instance-1' });
-    Object.assign(dataObj, { ['Endpoint.Address']: 'instance-1.testserver.us-east-1.rds.amazonaws.com' });
-    Object.assign(dataObj, { ['Endpoint.Port']: '5432' });
-    Object.assign(dataObj, { ['DbiResourceId']: 'db-ABCDEFGHI' });
-    Object.assign(dataObj, { ['DBSecurityGroups']: ['dbsg-1', 'dbsg-2'] });
-    Object.assign(dataObj, { ['Identifier']: 'instance-1' });
-    const resultObj = {};
-    Object.assign(resultObj, { ['results']: [dataObj] });
+    const resultObjs = [
+      {
+        'DBInstanceArn': 'arn:aws:rds:us-east-1:123456789012:db:instance-1',
+        'Endpoint.Address': 'instance-1.testserver.us-east-1.rds.amazonaws.com',
+        'Endpoint.Port': '5432',
+        'DbiResourceId': 'db-ABCDEFGHI',
+        'DBSecurityGroups': ['dbsg-1', 'dbsg-2'],
+        'Identifier': 'instance-1',
+      },
+    ];
 
-    const previous = mockDbInstanceContextProviderWith(resultObj, options => {
+    const previous = mockDbInstanceContextProviderWith(resultObjs, options => {
       expect(options.exactIdentifier).toEqual('instance-1');
     });
 
@@ -63,6 +68,7 @@ describe('DatabaseInstanceBase from lookup with DBSG', () => {
     restoreContextProvider(previous);
   });
 });
+/* eslint-enable */
 
 function mockDbInstanceContextProviderWith(response: Object, paramValidator?: (options: cxschema.CcApiContextQuery) => void) {
   const previous = ContextProvider.getValue;

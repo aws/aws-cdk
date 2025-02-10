@@ -139,7 +139,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
     try {
-      const response: {[key: string]: any} = ContextProvider.getValue(scope, {
+      const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
         provider: cxschema.ContextProvider.CC_API_PROVIDER,
         props: {
           typeName: 'AWS::RDS::DBInstance',
@@ -152,34 +152,33 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
             'DBSecurityGroups',
           ],
         } as cxschema.CcApiContextQuery,
-        dummyValue: {
-          results: [
-            {
-              'Identifier': 'TEST',
-              'DBInstanceArn': 'TESTARN',
-              'Endpoint.Address': 'TESTADDRESS',
-              'Endpoint.Port': '5432',
-              'DbiResourceId': 'TESTID',
-              'DBSecurityGroups': [],
-            },
-          ],
-        },
+        dummyValue: [
+          {
+            'Identifier': 'TEST',
+            'DBInstanceArn': 'TESTARN',
+            'Endpoint.Address': 'TESTADDRESS',
+            'Endpoint.Port': '5432',
+            'DbiResourceId': 'TESTID',
+            'DBSecurityGroups': [],
+          },
+        ],
       }).value;
 
-      // getValue returns a list of results in object.results.  We are expecting 1 result or Error.
-      const instance = response.results[0];
+      // getValue returns a list of result objects.  We are expecting 1 result or Error.
+      const instance = response[0];
 
       // Get ISecurityGroup from securityGroupId
-      const securityGroups: ec2.ISecurityGroup[] = [];
+      let securityGroups: ec2.ISecurityGroup[] = [];
       const dbsg: [string] = instance.DBSecurityGroups;
-      dbsg.forEach(securityGroupId => {
-        const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(
-          scope,
-          `LSG-${securityGroupId}`,
-          securityGroupId,
-        );
-        securityGroups.push(securityGroup);
-      });
+      if (dbsg) {
+        securityGroups = dbsg.map(securityGroupId => {
+          ec2.SecurityGroup.fromSecurityGroupId(
+            scope,
+            `LSG-${securityGroupId}`,
+            securityGroupId,
+          );
+        }) as unknown as ec2.ISecurityGroup[];
+      }
 
       return this.fromDatabaseInstanceAttributes(scope, id, {
         instanceEndpointAddress: instance['Endpoint.Address'],

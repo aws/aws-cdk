@@ -2,11 +2,10 @@ import type { CcApiContextQuery } from '@aws-cdk/cloud-assembly-schema';
 import { ICloudControlClient } from '../api';
 import { type SdkProvider, initContextProviderSdk } from '../api/aws-auth/sdk-provider';
 import { ContextProviderPlugin } from '../api/plugin';
+import { ContextProviderError } from '../toolkit/error';
 import { findJsonValue, getResultObj } from '../util/json';
 
 export class CcApiContextProviderPlugin implements ContextProviderPlugin {
-  public static RESULTS: string = 'results';
-
   constructor(private readonly aws: SdkProvider) {}
 
   /**
@@ -26,13 +25,20 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
     return result;
   }
 
-  private async findResources(cc: ICloudControlClient, args: CcApiContextQuery): Promise<{[key: string]: any}> {
+  private async findResources(cc: ICloudControlClient, args: CcApiContextQuery): Promise<{[key: string]: any} []> {
+    if (args.exactIdentifier && args.propertyMatch) {
+      throw new ContextProviderError('Specify either exactIdentifier or propertyMatch, but not both.');
+    }
+    if (!args.exactIdentifier && !args.propertyMatch) {
+      throw new ContextProviderError('Neither exactIdentifier nor propertyMatch is specified.');
+    }
+
     if (args.exactIdentifier) {
       // use getResource to get the exact indentifier
-      return this.getResource(cc, args);
+      return this.getResource(cc, args.typeName, args.exactIdentifier, args.propertiesToReturn);
     } else {
       // use listResource
-      return this.listResources(cc, args);
+      return this.listResources(cc, args.typeName, args.propertyMatch!, args.propertiesToReturn);
     }
   }
 
@@ -44,31 +50,38 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
    * If the resource is found, then a map of the identifier to a map of property values is returned.
    *
    * @param cc - CC API client
-   * @param args - This contains TypeName, exactIdentifier, and propertiesToReturn
+   * @param typeName
+   * @param exactIdentifier
+   * @param propertiesToReturn
    * @returns resultObject - resultObject.results contains a list of the propObjects.
    */
-  private async getResource(cc: ICloudControlClient, args: CcApiContextQuery): Promise<{[key: string]: any}> {
-    const resultObj: {[key: string]: any} = {};
+  private async getResource(
+    cc: ICloudControlClient,
+    typeName: string,
+    exactIdentifier: string,
+    propertiesToReturn: string[],
+  ): Promise<{[key: string]: any}[]> {
+    const resultObjs: {[key: string]: any}[] = [];
     try {
       const result = await cc.getResource({
-        TypeName: args.typeName,
-        Identifier: args.exactIdentifier,
+        TypeName: typeName,
+        Identifier: exactIdentifier,
       });
       const id = result.ResourceDescription?.Identifier ?? '';
       if (id !== '') {
         const propsObject = JSON.parse(result.ResourceDescription?.Properties ?? '');
-        const propsObj = getResultObj(propsObject, args.propertiesToReturn);
+        const propsObj = getResultObj(propsObject, propertiesToReturn);
 
         // Add the identifier back to the propsObj.
         propsObj.Identifier = result.ResourceDescription?.Identifier;
-        resultObj[CcApiContextProviderPlugin.RESULTS] = [propsObj];
+        resultObjs.push(propsObj);
       } else {
-        throw new TypeError(`Could not get resource ${args.exactIdentifier}.`);
+        throw new ContextProviderError(`Could not get resource ${exactIdentifier}.`);
       }
     } catch (err) {
-      throw new TypeError(`Encountered CC API error while getting resource ${args.exactIdentifier}.`);
+      throw new ContextProviderError(`Encountered CC API error while getting resource ${exactIdentifier}. Error: ${err}`);
     }
-    return resultObj;
+    return resultObjs;
   }
 
   /**
@@ -79,46 +92,54 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
    * This returns an object where the ids are object keys and values are objects with keys of args.propertiesToReturn.
    *
    * @param cc
-   * @param args
+   * @param typeName
+   * @param propertyMatch
+   * @param propertiesToReturn
    * @returns resultObject - resultObject.results contains a list of the propObjects.
    */
-  private async listResources(cc: ICloudControlClient, args: CcApiContextQuery): Promise<{[key: string]: any}> {
-    const resultObj: {[key: string]: any} = {};
-
-    if (!args.propertyMatch) {
-      throw new TypeError('Neither exactIdentifier nor propertyMatch are specified.');
-    }
+  private async listResources(
+    cc: ICloudControlClient,
+    typeName: string,
+    propertyMatch: Record<string, unknown>,
+    propertiesToReturn: string[],
+  ): Promise<{[key: string]: any}[]> {
+    const resultObjs: {[key: string]: any}[] = [];
 
     try {
       const result = await cc.listResources({
-        TypeName: args.typeName,
+        TypeName: typeName,
       });
-      let propObjects: any[] = [];
       result.ResourceDescriptions?.forEach((resource) => {
         const id = resource.Identifier ?? '';
         if (id !== '') {
           const propsObject = JSON.parse(resource.Properties ?? '');
-          const matchKey = Object.keys(args.propertyMatch!);
 
-          let misMatch = false;
-          matchKey.forEach((key) => {
-            const value = findJsonValue(propsObject, key);
-            if (value !== args.propertyMatch![key]) {
-              misMatch = true;
+          const filters = Object.entries(propertyMatch);
+          let match = false;
+          if (filters) {
+            match = filters.every((record, _index, _arr) => {
+              const key = record[0];
+              const expected = record[1];
+              const actual = findJsonValue(propsObject, key);
+              return propertyMatchesFilter(actual, expected);
+            });
+
+            function propertyMatchesFilter(actual: any, expected: unknown) {
+              // For now we just check for strict equality, but we can implement pattern matching and fuzzy matching here later
+              return expected === actual;
             }
-          });
+          }
 
-          if (!misMatch) {
-            const propsObj = getResultObj(propsObject, args.propertiesToReturn);
+          if (match) {
+            const propsObj = getResultObj(propsObject, propertiesToReturn);
             propsObj.Identifier = resource.Identifier;
-            propObjects.push(propsObj);
+            resultObjs.push(propsObj);
           }
         }
       });
-      resultObj[CcApiContextProviderPlugin.RESULTS] = propObjects;
     } catch (err) {
-      throw new TypeError(`Could not get resources ${args.propertyMatch}. Error: ${err}`);
+      throw new ContextProviderError(`Could not get resources ${propertyMatch}. Error: ${err}`);
     }
-    return resultObj;
+    return resultObjs;
   }
 }

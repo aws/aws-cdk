@@ -20,7 +20,7 @@ test('looks up RDS instance using CC API getResource', async () => {
   });
 
   // WHEN
-  const result = await provider.getValue({
+  const results = await provider.getValue({
     account: '123456789012',
     region: 'us-east-1',
     typeName: 'AWS::RDS::DBInstance',
@@ -29,7 +29,6 @@ test('looks up RDS instance using CC API getResource', async () => {
   });
 
   // THEN
-  const results = result[CcApiContextProviderPlugin.RESULTS];
   const propsObj = results[0];
   expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
   expect(propsObj.StorageEncrypted).toEqual('true');
@@ -114,7 +113,7 @@ test('looks up RDS instance using CC API listResources', async () => {
   });
 
   // WHEN
-  const result = await provider.getValue({
+  const results = await provider.getValue({
     account: '123456789012',
     region: 'us-east-1',
     typeName: 'AWS::RDS::DBInstance',
@@ -125,7 +124,6 @@ test('looks up RDS instance using CC API listResources', async () => {
   });
 
   // THEN
-  const results = result[CcApiContextProviderPlugin.RESULTS];
   let propsObj = results[0];
   expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
   expect(propsObj.StorageEncrypted).toEqual('true');
@@ -161,7 +159,7 @@ test('looks up RDS instance using CC API listResources - nested prop', async () 
   });
 
   // WHEN
-  const result = await provider.getValue({
+  const results = await provider.getValue({
     account: '123456789012',
     region: 'us-east-1',
     typeName: 'AWS::RDS::DBInstance',
@@ -173,7 +171,6 @@ test('looks up RDS instance using CC API listResources - nested prop', async () 
   });
 
   // THEN
-  const results = result[CcApiContextProviderPlugin.RESULTS];
   let propsObj = results[0];
   expect(propsObj.DBInstanceArn).toEqual('arn:aws:rds:us-east-1:123456789012:db:test-instance-1');
   expect(propsObj.StorageEncrypted).toEqual('true');
@@ -181,4 +178,41 @@ test('looks up RDS instance using CC API listResources - nested prop', async () 
   expect(propsObj.Identifier).toEqual('my-db-instance-1');
 
   expect(results.length).toEqual(1);
+});
+
+test('error by specifying both exactIdentifier and propertyMatch', async () => {
+  // GIVEN
+  mockCloudControlClient.on(GetResourceCommand).resolves({
+  });
+
+  await expect(
+    // WHEN
+    provider.getValue({
+      account: '123456789012',
+      region: 'us-east-1',
+      typeName: 'AWS::RDS::DBInstance',
+      exactIdentifier: 'bad-identifier',
+      propertyMatch: {
+        'StorageEncrypted': 'true',
+        'Endpoint.Port': '5432',
+      },
+      propertiesToReturn: ['DBInstanceArn', 'StorageEncrypted'],
+    }),
+  ).rejects.toThrow('Specify either exactIdentifier or propertyMatch, but not both.'); // THEN
+});
+
+test('error by specifying neither exactIdentifier or propertyMatch', async () => {
+  // GIVEN
+  mockCloudControlClient.on(GetResourceCommand).resolves({
+  });
+
+  await expect(
+    // WHEN
+    provider.getValue({
+      account: '123456789012',
+      region: 'us-east-1',
+      typeName: 'AWS::RDS::DBInstance',
+      propertiesToReturn: ['DBInstanceArn', 'StorageEncrypted'],
+    }),
+  ).rejects.toThrow('Neither exactIdentifier nor propertyMatch is specified.'); // THEN
 });
