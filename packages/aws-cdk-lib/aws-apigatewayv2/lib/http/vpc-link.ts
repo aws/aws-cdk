@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnVpcLink } from '.././index';
 import * as ec2 from '../../../aws-ec2';
 import { IResource, Lazy, Names, Resource } from '../../../core';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Represents an API Gateway VpcLink
@@ -112,6 +112,7 @@ export class VpcLink extends Resource implements IVpcLink {
   /**
    * Adds the provided subnets to the vpc link
    */
+  @MethodMetadata()
   public addSubnets(...subnets: ec2.ISubnet[]) {
     this.subnets.push(...subnets);
   }
@@ -119,6 +120,7 @@ export class VpcLink extends Resource implements IVpcLink {
   /**
    * Adds the provided security groups to the vpc link
    */
+  @MethodMetadata()
   public addSecurityGroups(...groups: ec2.ISecurityGroup[]) {
     this.securityGroups.push(...groups);
   }

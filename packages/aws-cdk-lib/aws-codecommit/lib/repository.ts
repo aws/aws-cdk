@@ -6,7 +6,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Additional options to pass to the notification rule.
@@ -589,6 +589,7 @@ export class Repository extends RepositoryBase {
    * @param arn   Arn of the resource that repository events will notify
    * @param options Trigger options to run actions
    */
+  @MethodMetadata()
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
     let evt = options && options.events;
     if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {

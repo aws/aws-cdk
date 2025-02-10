@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -87,6 +87,7 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
   /**
    * Overriden method to throw error as interface accelerators are not supported for external tasks
    */
+  @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
     throw new Error('Cannot use inference accelerators on tasks that run on External service');
   }

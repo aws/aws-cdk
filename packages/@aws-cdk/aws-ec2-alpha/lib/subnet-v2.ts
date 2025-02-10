@@ -4,7 +4,7 @@ import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
 import { CidrBlock, CidrBlockIpv6 } from './util';
 import { RouteTable } from './route';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Interface to define subnet CIDR
@@ -330,6 +330,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
    * @param networkAcl The Network ACL to associate with this subnet.
    * This allows controlling inbound and outbound traffic for instances in this subnet.
    */
+  @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
     this._networkAcl = networkAcl;
 

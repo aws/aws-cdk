@@ -65,8 +65,9 @@ export const prompt = <T, U>(code: VALID_CODE, message: string, defaultResponse:
 
 /**
  * Creates an error level message.
+ * Errors must always have a unique code.
  */
-export const error = <T>(message: string, code?: VALID_CODE, payload?: T) => {
+export const error = <T>(message: string, code: VALID_CODE, payload?: T) => {
   return formatMessage({
     level: 'error',
     code,

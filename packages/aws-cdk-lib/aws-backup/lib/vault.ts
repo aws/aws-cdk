@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A backup vault
@@ -307,6 +307,7 @@ export class BackupVault extends BackupVaultBase {
   /**
    * Adds a statement to the vault access policy
    */
+  @MethodMetadata()
   public addToAccessPolicy(statement: iam.PolicyStatement) {
     this.accessPolicy.addStatements(statement);
   }
@@ -315,6 +316,7 @@ export class BackupVault extends BackupVaultBase {
    * Adds a statement to the vault access policy that prevents anyone
    * from deleting a recovery point.
    */
+  @MethodMetadata()
   public blockRecoveryPointDeletion() {
     this.addToAccessPolicy(new iam.PolicyStatement({
       effect: iam.Effect.DENY,
