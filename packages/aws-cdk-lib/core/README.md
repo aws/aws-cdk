@@ -1795,4 +1795,49 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
+## RemovalPolicies
+
+The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
+
+### Usage
+
+Creates a new instance of RemovalPolicies for the given scope.
+
+```typescript
+import { RemovalPolicies } from 'aws-cdk-lib';
+
+// Apply DESTROY policy to all resources in a scope
+RemovalPolicies.of(scope).destroy();
+
+// Apply DESTROY policy (overwrited)
+RemovalPolicies.of(scope).snapshot();
+RemovalPolicies.of(scope).destroy({ overwrite: true }));
+
+// Apply DESTROY policy (priority)
+RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 });
+RemovalPolicies.of(stack).destroy({ priority: 10 });
+
+// Apply RETAIN policy only to specific resource types
+RemovalPolicies.of(parent).retain({
+  applyToResourceTypes: [
+    'AWS::DynamoDB::Table',
+    bucket.cfnResourceType, // 'AWS::S3::Bucket'
+    CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
+  ],
+});
+
+// Apply SNAPSHOT policy excluding specific resource types
+RemovalPolicies.of(scope).snapshot({
+  excludeResourceTypes: ['AWS::Test::Resource'],
+});
+```
+
+#### Behavior Summary
+
+- When `overwrite` is `false` (default):  
+  - Existing `removalPolicy` set by the user is preserved. Applying the policy to such resources will be skipped.
+
+- When `overwrite` is `true`:  
+  - The existing `removalPolicy` is ignored, and the specified policy is applied unconditionally.
+
 <!--END CORE DOCUMENTATION-->
