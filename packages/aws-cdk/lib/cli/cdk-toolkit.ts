@@ -8,7 +8,7 @@ import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { Configuration, PROJECT_CONFIG } from './user-configuration';
 import { SdkProvider } from '../api/aws-auth';
-import { Bootstrapper, BootstrapEnvironmentOptions } from '../api/bootstrap';
+import { BootstrapEnvironmentOptions, Bootstrapper } from '../api/bootstrap';
 import {
   CloudAssembly,
   DefaultSelection,
@@ -18,37 +18,38 @@ import {
 } from '../api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../api/cxapp/cloud-executable';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../api/cxapp/environments';
-import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from '../api/deployments';
+import { createDiffChangeSet, DeploymentMethod, Deployments, SuccessfulDeployStackResult } from '../api/deployments';
 import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
-import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '../api/hotswap/common';
+import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../api/hotswap/common';
 import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../api/logs/logs-monitor';
-import { tagsForStack, type Tag } from '../api/tags';
+import { type Tag, tagsForStack } from '../api/tags';
 import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
 import { formatTime } from '../api/util/string-manipulation';
 import {
+  appendWarningsToReadme,
+  buildCfnClient,
+  buildGenertedTemplateOutput,
+  CfnTemplateGeneratorProvider,
+  FromScan,
   generateCdkApp,
   generateStack,
+  generateTemplate,
+  GenerateTemplateOutput,
+  isThereAWarning,
+  parseSourceOptions,
   readFromPath,
   readFromStack,
   setEnvironment,
-  parseSourceOptions,
-  generateTemplate,
-  FromScan,
   TemplateSourceOptions,
-  GenerateTemplateOutput,
-  CfnTemplateGeneratorProvider,
   writeMigrateJsonFile,
-  buildGenertedTemplateOutput,
-  appendWarningsToReadme,
-  isThereAWarning,
-  buildCfnClient,
 } from '../commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
-import { ResourceImporter, removeNonImportResources } from '../import';
+import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
 import { result as logResult, debug, error, highlight, info, success, warning } from '../logging';
 import { ResourceMigrator } from '../migrator';
+import { findResourceCorrespondence } from '../refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
@@ -359,6 +360,24 @@ export class CdkToolkit {
         );
       }
 
+      const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
+      const deployedResources = currentTemplate?.Resources;
+      const correspondence = findResourceCorrespondence(
+        deployedResources ?? {},
+        stack.template.Resources ?? {},
+      );
+
+      if (!correspondence.isEmpty()) {
+        warning(`Some resources have been renamed:${correspondence}`);
+
+        await askUserConfirmation(
+          this.ioHost,
+          concurrency,
+          'Some resources have been renamed, which may cause resource replacement',
+          'Do you wish to deploy these changes',
+        );
+      }
+
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
         if (!(await this.props.deployments.stackExists({ stack }))) {
@@ -378,7 +397,6 @@ export class CdkToolkit {
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await askUserConfirmation(
             this.ioHost,
