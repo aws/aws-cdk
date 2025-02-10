@@ -33,12 +33,15 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
 );
 
 const outputBucket = new s3.Bucket(stack, 'OutputBucket', {
+  autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const trainingBucket = new s3.Bucket(stack, 'TrainingBucket', {
+  autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const validationBucket = new s3.Bucket(stack, 'ValidationBucket', {
+  autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
@@ -60,20 +63,20 @@ const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
   jobTags: [{ key: 'key2', value: 'value2' }],
   outputData: {
     bucket: outputBucket,
-    prefix: 'output-data',
+    path: 'output-data',
   },
   trainingData: {
     bucket: trainingBucket,
-    prefix: 'training-data',
+    path: 'training-data',
   },
   validationData: [
     {
       bucket: validationBucket,
-      prefix: 'validation-data1',
+      path: 'validation-data1',
     },
     {
       bucket: validationBucket,
-      prefix: 'validation-data2',
+      path: 'validation-data2',
     },
   ],
   vpcConfig: {
