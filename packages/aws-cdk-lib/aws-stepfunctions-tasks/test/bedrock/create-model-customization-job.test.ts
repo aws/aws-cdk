@@ -23,20 +23,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     });
@@ -164,6 +164,35 @@ describe('create model customization job', () => {
             Effect: 'Allow',
             Principal: {
               Service: 'bedrock.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+              },
+              ArnEquals: {
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':bedrock:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':model-customization-job/*',
+                    ],
+                  ],
+                },
+              },
             },
           },
         ],
@@ -360,20 +389,20 @@ describe('create model customization job', () => {
       jobTags: [{ key: 'key2', value: 'value2' }],
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
       role: new iam.Role(stack, 'Role', {
@@ -546,20 +575,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow(`clientRequestToken must be between 1 and 256 characters long, got: ${tokenLength}`);
@@ -584,20 +613,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow('clientRequestToken must match the pattern /^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/');
@@ -620,20 +649,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow(`customModelName must be between 1 and 63 characters long, got: ${nameLength}`);
@@ -657,20 +686,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow('customModelName must match the pattern /^([0-9a-zA-Z][_-]?)+$/');
@@ -691,20 +720,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow('customModelTags must be between 0 and 200 items long, got: 201');
@@ -727,20 +756,20 @@ describe('create model customization job', () => {
       jobName: 'a'.repeat(nameLength),
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow(`jobName must be between 1 and 63 characters long, got: ${nameLength}`);
@@ -763,20 +792,20 @@ describe('create model customization job', () => {
       jobName: name,
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow('jobName must match the pattern /^[a-zA-Z0-9](-*[a-zA-Z0-9\\+\\-\\.])*$/');
@@ -797,20 +826,20 @@ describe('create model customization job', () => {
       jobTags: Array(201).fill({ key: 'key', value: 'value' }),
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
     })).toThrow('jobTags must be between 0 and 200 items long, got: 201');
@@ -830,15 +859,15 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: Array(11).map((_, index) => ({
         bucket: validationDataBucket,
-        prefix: `validation-data${index}`,
+        path: `validation-data${index}`,
       })),
     })).toThrow('validationData must be between 1 and 10 items long, got: 11');
   });
@@ -858,20 +887,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
       vpcConfig: {
@@ -896,20 +925,20 @@ describe('create model customization job', () => {
       jobName: 'job-name',
       outputData: {
         bucket: outputDataBucket,
-        prefix: 'output-data',
+        path: 'output-data',
       },
       trainingData: {
         bucket: trainingDataBucket,
-        prefix: 'training-data',
+        path: 'training-data',
       },
       validationData: [
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data1',
+          path: 'validation-data1',
         },
         {
           bucket: validationDataBucket,
-          prefix: 'validation-data2',
+          path: 'validation-data2',
         },
       ],
       vpcConfig: {

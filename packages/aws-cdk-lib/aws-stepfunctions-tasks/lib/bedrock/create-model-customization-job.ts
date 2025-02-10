@@ -60,6 +60,7 @@ export interface DataBucketConfiguration {
    * The S3 bucket.
    */
   readonly bucket: s3.IBucket;
+
   /**
    * Path to file or directory within the bucket.
    *
@@ -213,7 +214,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
    */
-  readonly validationData: ValidationBucketConfiguration[];
+  readonly validationData?: ValidationBucketConfiguration[];
 
   /**
    * The VPC configuration.
@@ -227,7 +228,6 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
  * A Step Functions Task to create model customization in Bedrock.
  */
 export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -292,8 +292,22 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     if (this.props.role) {
       return this.props.role;
     }
+    const account = Stack.of(this).account;
     const role = new iam.Role(this, 'BedrockRole', {
-      assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com', {
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': account,
+          },
+          ArnEquals: {
+            'aws:SourceArn': Stack.of(this).formatArn({
+              service: 'bedrock',
+              resource: 'model-customization-job',
+              resourceName: '*',
+            }),
+          },
+        },
+      }),
       inlinePolicies: {
         BedrockCreateModelCustomizationJob: new iam.PolicyDocument({
           statements: [
@@ -303,8 +317,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
               resources: [
                 this.props.trainingData.bucket.bucketArn,
                 `${this.props.trainingData.bucket.bucketArn}/*`,
-                ...(this.props.validationData.map((bucketConfig) => bucketConfig.bucket.bucketArn)),
-                ...this.props.validationData.map((bucketConfig) => `${bucketConfig.bucket.bucketArn}/*`),
+                ...(this.props.validationData ? this.props.validationData.map((bucketConfig) => bucketConfig.bucket.bucketArn) : []),
+                ...(this.props.validationData ? this.props.validationData.map((bucketConfig) => `${bucketConfig.bucket.bucketArn}/*`) : []),
               ],
             }),
             new iam.PolicyStatement({
@@ -506,15 +520,15 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         TrainingDataConfig: {
           S3Uri: this.props.trainingData.bucket.s3UrlForObject(this.props.trainingData.path),
         },
-        ValidationDataConfig: {
+        ValidationDataConfig: this.props.validationData && {
           Validators: this.props.validationData.map(
             (bucketConfig) => ({ S3Uri: bucketConfig.bucket.s3UrlForObject(bucketConfig.path) }),
           ),
         },
-        VpcConfig: this.props.vpcConfig ? {
+        VpcConfig: this.props.vpcConfig && {
           SecurityGroupIds: this.props.vpcConfig.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
           SubnetIds: this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId),
-        } : undefined,
+        },
       }),
     };
   }
