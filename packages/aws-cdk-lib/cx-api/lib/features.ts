@@ -123,6 +123,7 @@ export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlockin
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
+export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1384,6 +1385,19 @@ export const FLAGS: Record<string, FlagInfo> = {
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
+    detailsMd: `
+      When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
+      When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+      When disabled, 'CDKReplicationRole' is always specified.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };
