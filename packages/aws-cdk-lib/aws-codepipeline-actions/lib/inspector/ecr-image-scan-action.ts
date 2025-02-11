@@ -45,6 +45,13 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
     const config = super.bound(scope, stage, options);
 
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'ecr:GetAuthorizationToken',
+      ],
+    }));
+
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.ecrProps.repository.repositoryArn],
       actions: [
         'ecr:GetDownloadUrlForLayer',
