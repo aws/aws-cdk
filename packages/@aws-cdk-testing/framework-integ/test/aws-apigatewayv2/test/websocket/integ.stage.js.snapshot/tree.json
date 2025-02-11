@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-aws-apigatewayv2-websocket-stage": {
         "id": "aws-cdk-aws-apigatewayv2-websocket-stage",
         "path": "aws-cdk-aws-apigatewayv2-websocket-stage",
@@ -32,14 +24,17 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketApi",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "WebSocketStage": {
@@ -55,34 +50,63 @@
                     "apiId": {
                       "Ref": "WebSocketApi34BCF99B"
                     },
-                    "stageName": "dev",
                     "defaultRouteSettings": {
                       "throttlingBurstLimit": 1000,
-                      "throttlingRateLimit": 1000
-                    }
+                      "throttlingRateLimit": 1000,
+                      "detailedMetricsEnabled": true
+                    },
+                    "description": "My Stage",
+                    "stageName": "dev"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigatewayv2.WebSocketStage",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2-websocket-stage/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

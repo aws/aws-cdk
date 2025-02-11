@@ -1,0 +1,33 @@
+{
+  "Conditions": {
+    "SomeCondition": {
+      "Fn::Equals": [
+        2,
+        2
+      ]
+    }
+  },
+  "Resources": {
+    "ASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "10"
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": {
+            "Fn::If": [
+              "SomeCondition",
+              1,
+              2
+            ]
+          },
+          "MaxBatchSize": 2,
+          "PauseTime": "PT5M",
+          "WaitOnResourceSignals": true
+        }
+      }
+    }
+  }
+}

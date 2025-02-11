@@ -26,6 +26,39 @@ beforeEach(() => {
 });
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
+  test('using JSONata', () => {
+    // WHEN
+    const task = EmrContainersStartJobRun.jsonata(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::emr-containers:startJobRun',
+          ],
+        ],
+      },
+      Arguments: {
+        ReleaseLabel: 'emr-6.2.0-latest',
+        JobDriver: {
+          SparkSubmitJobDriver: {
+            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
+            SparkSubmitParameters: '--conf spark.executor.instances=2',
+          },
+        },
+      },
+    });
+  });
   test('Request/Response integration pattern', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
@@ -369,7 +402,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     test('provided from user', () => {
       // WHEN
       const logGroup = logs.LogGroup.fromLogGroupName(stack, 'Monitoring Group', 'providedloggroup');
-      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');;
+      const s3Bucket = s3.Bucket.fromBucketName(stack, 'Monitoring Bucket', 'providedbucket');
       const prefixName = 'prefix';
 
       const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
@@ -668,7 +701,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or an encoded JSON path but received object');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path or JSONata expression but received object.');
 
       // THEN
       expect(() => {
@@ -681,7 +714,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow('Entry point arguments must be a string array or an encoded JSON path, but received a non JSON path string');
+      }).toThrow('Entry point arguments must be a string array or an encoded JSON path or JSONata expression, but received a non JSON path or JSONata expression string');
 
       // THEN
       expect(() => {
@@ -1045,7 +1078,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.9',
+      Runtime: 'python3.11',
       Timeout: 30,
     });
   });

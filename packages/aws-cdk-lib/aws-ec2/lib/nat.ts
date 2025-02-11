@@ -189,6 +189,13 @@ export interface NatInstanceProps {
   readonly instanceType: InstanceType;
 
   /**
+   * Whether to associate a public IP address to the primary network interface attached to this instance.
+   *
+   * @default undefined - No public IP address associated
+   */
+  readonly associatePublicIpAddress?: boolean;
+
+  /**
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
@@ -280,7 +287,7 @@ export interface NatInstanceProps {
 /**
  * Provider for NAT Gateways
  */
-class NatGatewayProvider extends NatProvider {
+export class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
   constructor(private readonly props: NatGatewayProps = {}) {
@@ -539,6 +546,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
         sourceDestCheck: false, // Required for NAT
         vpc: options.vpc,
         vpcSubnets: { subnets: [sub] },
+        associatePublicIpAddress: this.props.associatePublicIpAddress,
         securityGroup: this._securityGroup,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,

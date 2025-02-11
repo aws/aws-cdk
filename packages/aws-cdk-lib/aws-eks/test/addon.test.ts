@@ -11,7 +11,7 @@ describe('Addon', () => {
     app = new App();
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_30,
+      version: KubernetesVersion.V1_32,
     });
   });
 
@@ -52,6 +52,26 @@ describe('Addon', () => {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
+    });
+  });
+  test('create a new Addon with preserveOnDelete', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithPreserveOnDelete', {
+      addonName: 'test-addon',
+      cluster,
+      preserveOnDelete: false,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      PreserveOnDelete: false,
     });
   });
 

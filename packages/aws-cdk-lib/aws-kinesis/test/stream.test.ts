@@ -1289,4 +1289,32 @@ describe('Kinesis data streams', () => {
       DeletionPolicy: CfnDeletionPolicy.DELETE,
     });
   });
+
+  test('addToResourcePolicy will automatically create a policy for this stream', () => {
+    // GIVEN
+    const stack = new Stack();
+    const stream = new Stream(stack, 'Stream', {});
+
+    // WHEN
+    stream.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['kinesis:GetRecords'],
+      principals: [new iam.AnyPrincipal()],
+      resources: [stream.streamArn],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::ResourcePolicy', {
+      ResourcePolicy: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'kinesis:GetRecords',
+            Effect: 'Allow',
+            Principal: { AWS: '*' },
+            Resource: stack.resolve(stream.streamArn),
+          },
+        ],
+      },
+    });
+  });
 });

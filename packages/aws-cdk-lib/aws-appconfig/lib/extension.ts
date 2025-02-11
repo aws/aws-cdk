@@ -6,7 +6,8 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Defines Extension action points.
@@ -21,6 +22,7 @@ export enum ActionPoint {
   ON_DEPLOYMENT_BAKING = 'ON_DEPLOYMENT_BAKING',
   ON_DEPLOYMENT_COMPLETE = 'ON_DEPLOYMENT_COMPLETE',
   ON_DEPLOYMENT_ROLLED_BACK = 'ON_DEPLOYMENT_ROLLED_BACK',
+  AT_DEPLOYMENT_TICK = 'AT_DEPLOYMENT_TICK',
 }
 
 /**
@@ -391,12 +393,12 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new Error(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`);
+      throw new ValidationError(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new Error('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}');
+      throw new ValidationError('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
     }
 
     const extensionId = resourceName[0];
@@ -495,6 +497,8 @@ export class Extension extends Resource implements IExtension {
     super(scope, id, {
       physicalName: props.extensionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.actions = props.actions;
     this.name = props.extensionName || Names.uniqueResourceName(this, {
@@ -657,6 +661,10 @@ export class ExtensibleBase implements IExtensible {
     this.getExtensionForActionPoint(eventDestination, ActionPoint.ON_DEPLOYMENT_ROLLED_BACK, options);
   }
 
+  public atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions) {
+    this.getExtensionForActionPoint(eventDestination, ActionPoint.AT_DEPLOYMENT_TICK, options);
+  }
+
   public addExtension(extension: IExtension) {
     this.addExtensionAssociation(extension);
   }
@@ -792,6 +800,15 @@ export interface IExtensible {
    * @param options Options for the extension
    */
   onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an AT_DEPLOYMENT_TICK extension with the provided event destination and
+   * also creates an extension association to the derived resource.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  atDeploymentTick(eventDestination: IEventDestination, options?: ExtensionOptions): void;
 
   /**
    * Adds an extension association to the derived resource.

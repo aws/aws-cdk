@@ -16,7 +16,13 @@
        "KeyId": "alias/aws/kinesis"
       }
      ]
-    }
+    },
+    "Tags": [
+     {
+      "Key": "stage",
+      "Value": "IntegTest"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -149,6 +155,14 @@
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [
        {
+        "Key": "stage",
+        "Value": "IntegTest"
+       },
+       {
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
+       },
+       {
         "Key": "USE2ReplicaTagKey",
         "Value": "USE2ReplicaTagValue"
        }
@@ -184,6 +198,14 @@
       "Region": "us-west-2",
       "TableClass": "STANDARD",
       "Tags": [
+       {
+        "Key": "stage",
+        "Value": "IntegTest"
+       },
+       {
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
+       },
        {
         "Key": "USW2ReplicaTagKey",
         "Value": "USW2ReplicaTagValue"
@@ -231,6 +253,14 @@
       "Region": "us-east-1",
       "TableClass": "STANDARD_INFREQUENT_ACCESS",
       "Tags": [
+       {
+        "Key": "stage",
+        "Value": "IntegTest"
+       },
+       {
+        "Key": "tagAspectKey",
+        "Value": "tagAspectValue"
+       },
        {
         "Key": "primaryTableTagKey",
         "Value": "primaryTableTagValue"

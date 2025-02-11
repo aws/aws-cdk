@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 import { Duration, Names, Resource, Stack, Token, withResolved } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a Cache Policy
@@ -26,6 +27,9 @@ export interface CachePolicyProps {
 
   /**
    * A comment to describe the cache policy.
+   *
+   * The comment cannot be longer than 128 characters.
+   *
    * @default - no comment
    */
   readonly comment?: string;
@@ -108,6 +112,16 @@ export class CachePolicy extends Resource implements ICachePolicy {
   /** Designed for use with an origin that is an AWS Elemental MediaPackage endpoint. */
   public static readonly ELEMENTAL_MEDIA_PACKAGE = CachePolicy.fromManagedCachePolicy('08627262-05a9-4f76-9ded-b50ca2e3a84f');
 
+  /**
+   * Designed for use with an origin that returns Cache-Control HTTP response headers and does not serve different content based on values present in the query string.
+   */
+  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS = CachePolicy.fromManagedCachePolicy('83da9c7e-98b4-4e11-a168-04f0df8e2c65');
+
+  /**
+   * Designed for use with an origin that returns Cache-Control HTTP response headers and serves different content based on values present in the query string.
+   */
+  public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS = CachePolicy.fromManagedCachePolicy('4cc15a8a-d715-48a4-82b8-cc0b614638fe');
+
   /** Imports a Cache Policy from its id. */
   public static fromCachePolicyId(scope: Construct, id: string, cachePolicyId: string): ICachePolicy {
     return new class extends Resource implements ICachePolicy {
@@ -128,6 +142,8 @@ export class CachePolicy extends Resource implements ICachePolicy {
     super(scope, id, {
       physicalName: props.cachePolicyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
 
@@ -137,6 +153,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
     if (cachePolicyName.length > 128) {
       throw new Error(`'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`);
+    }
+
+    if (props.comment && !Token.isUnresolved(props.comment) && props.comment.length > 128) {
+      throw new Error(`'comment' cannot be longer than 128 characters, got: ${props.comment.length}`);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();

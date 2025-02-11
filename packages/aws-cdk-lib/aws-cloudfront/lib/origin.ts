@@ -3,6 +3,23 @@ import { CfnDistribution } from './cloudfront.generated';
 import { Duration, Token } from '../../core';
 
 /**
+ * The selection criteria for the origin group.
+ */
+export enum OriginSelectionCriteria {
+  /**
+   * Default selection behavior.
+   */
+  DEFAULT='default',
+
+  /**
+   * Selection based on media quality.
+   *
+   * This option is only valid for AWS Elemental MediaPackage v2 Origins.
+   */
+  MEDIA_QUALITY_BASED='media-quality-based',
+}
+
+/**
  * The failover configuration used for Origin Groups,
  * returned in `OriginBindConfig.failoverConfig`.
  */
@@ -33,6 +50,15 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly failoverConfig?: OriginFailoverConfig;
+
+  /**
+   * The selection criteria for how your origins are selected.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html#concept_origin_groups.creating
+   *
+   * @default - OriginSelectionCriteria.DEFAULT
+   */
+  readonly selectionCriteria?: OriginSelectionCriteria;
 }
 
 /**
@@ -95,6 +121,13 @@ export interface OriginOptions {
    * @default - an originid will be generated for you
    */
   readonly originId?: string;
+
+  /**
+   * The unique identifier of an origin access control for this origin.
+   *
+   * @default - no origin access control
+   */
+  readonly originAccessControlId?: string;
 }
 
 /**
@@ -119,6 +152,14 @@ export interface OriginBindOptions {
    * as assigned by the Distribution this Origin has been used added to.
    */
   readonly originId: string;
+
+  /**
+   * The identifier of the Distribution this Origin is used for.
+   * This is used to grant origin access permissions to the distribution for origin access control.
+   *
+   * @default - no distribution id
+   */
+  readonly distributionId?: string;
 }
 
 /**
@@ -134,6 +175,7 @@ export abstract class OriginBase implements IOrigin {
   private readonly originShieldRegion?: string;
   private readonly originShieldEnabled: boolean;
   private readonly originId?: string;
+  private readonly originAccessControlId?: string;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
@@ -148,6 +190,7 @@ export abstract class OriginBase implements IOrigin {
     this.originShieldRegion = props.originShieldRegion;
     this.originId = props.originId;
     this.originShieldEnabled = props.originShieldEnabled ?? true;
+    this.originAccessControlId = props.originAccessControlId;
   }
 
   /**
@@ -172,6 +215,7 @@ export abstract class OriginBase implements IOrigin {
         s3OriginConfig,
         customOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
+        originAccessControlId: this.originAccessControlId,
       },
     };
   }

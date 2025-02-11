@@ -7,9 +7,10 @@ import { shell, addToShellPath } from '../shell';
 
 export class RepoPackageSourceSetup implements IPackageSourceSetup {
   readonly name = 'repo';
-  readonly description = `repo(${this.repoRoot})`;
+  readonly description: string;
 
   constructor(private readonly repoRoot: string) {
+    this.description = `repo(${this.repoRoot})`;
   }
 
   public async prepare(): Promise<void> {
@@ -49,6 +50,10 @@ export class RepoPackageSource implements IPackageSource {
     return releaseJson.majorVersion;
   }
 
+  public requestedCliVersion(): string {
+    return '*';
+  }
+
   public requestedFrameworkVersion(): string {
     return '*';
   }
@@ -71,17 +76,18 @@ async function writePackageMap(repoRoot: string): Promise<string> {
 const YARN_MONOREPO_CACHE: Record<string, any> = {};
 
 /**
-  * Return a { name -> directory } packages found in a Yarn monorepo
-  *
-  * Cached in YARN_MONOREPO_CACHE.
-  */
-async function findYarnPackages(root: string): Promise<Record<string, string>> {
+ * Return a { name -> directory } packages found in a Yarn monorepo
+ *
+ * Cached in YARN_MONOREPO_CACHE.
+ */
+export async function findYarnPackages(root: string): Promise<Record<string, string>> {
   if (!(root in YARN_MONOREPO_CACHE)) {
-    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', '--silent', 'info'], {
+    const outputDataString: string = JSON.parse(await shell(['yarn', 'workspaces', '--json', 'info'], {
       captureStderr: false,
       cwd: root,
       show: 'error',
-    }));
+    })).data;
+    const output: YarnWorkspacesOutput = JSON.parse(outputDataString);
 
     const ret: Record<string, string> = {};
     for (const [k, v] of Object.entries(output)) {
@@ -96,7 +102,7 @@ async function findYarnPackages(root: string): Promise<Record<string, string>> {
  * Find the root directory of the repo from the current directory
  */
 export async function autoFindRoot() {
-  const found = await findUp('release.json');
+  const found = findUp('release.json');
   if (!found) {
     throw new Error(`Could not determine repository root: 'release.json' not found from ${process.cwd()}`);
   }

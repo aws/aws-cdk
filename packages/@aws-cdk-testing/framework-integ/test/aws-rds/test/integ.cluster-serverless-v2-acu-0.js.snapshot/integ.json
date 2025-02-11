@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-test-acu/DefaultTest": {
+      "stacks": [
+        "integ-aurora-serverlessv2-cluster-acu-0"
+      ],
+      "assertionStack": "integ-test-acu/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestacuDefaultTestDeployAssert17F73A1A"
+    }
+  }
+}

@@ -15,11 +15,14 @@ class MyStack extends cdk.Stack {
 
     bucket.addObjectCreatedNotification(new s3n.SnsDestination(objectCreateTopic));
     bucket.addObjectRemovedNotification(new s3n.SnsDestination(objectRemovedTopic), { prefix: 'foo/', suffix: '.txt' });
-
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  },
+});
 
 new MyStack(app, 'sns-bucket-notifications');
 

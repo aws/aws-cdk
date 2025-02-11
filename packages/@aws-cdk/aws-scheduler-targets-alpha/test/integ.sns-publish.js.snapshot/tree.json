@@ -161,11 +161,11 @@
                       },
                       "roleArn": {
                         "Fn::GetAtt": [
-                          "SchedulerRoleForTarget1441a743A31888",
+                          "SchedulerRoleForTarget0f6b2b82B558C1",
                           "Arn"
                         ]
                       },
-                      "input": "\"Hello, Scheduler!\"",
+                      "input": "Hello, Scheduler!",
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -180,17 +180,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
-          "SchedulerRoleForTarget-1441a7": {
-            "id": "SchedulerRoleForTarget-1441a7",
-            "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7",
+          "SchedulerRoleForTarget-0f6b2b": {
+            "id": "SchedulerRoleForTarget-0f6b2b",
+            "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b",
             "children": {
-              "ImportSchedulerRoleForTarget-1441a7": {
-                "id": "ImportSchedulerRoleForTarget-1441a7",
-                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/ImportSchedulerRoleForTarget-1441a7",
+              "ImportSchedulerRoleForTarget-0f6b2b": {
+                "id": "ImportSchedulerRoleForTarget-0f6b2b",
+                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/ImportSchedulerRoleForTarget-0f6b2b",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -198,7 +198,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/Resource",
+                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -210,6 +210,26 @@
                             "StringEquals": {
                               "aws:SourceAccount": {
                                 "Ref": "AWS::AccountId"
+                              },
+                              "aws:SourceArn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":scheduler:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":schedule-group/default"
+                                  ]
+                                ]
                               }
                             }
                           },
@@ -230,11 +250,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/DefaultPolicy",
+                "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource",
+                    "path": "AwsSchedulerTargetsSnsPublish/SchedulerRoleForTarget-0f6b2b/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -250,10 +270,10 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "policyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+                        "policyName": "SchedulerRoleForTarget0f6b2bDefaultPolicy6F5310D7",
                         "roles": [
                           {
-                            "Ref": "SchedulerRoleForTarget1441a743A31888"
+                            "Ref": "SchedulerRoleForTarget0f6b2b82B558C1"
                           }
                         ]
                       }
@@ -499,6 +519,14 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "IntegTestSnsPublish/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {

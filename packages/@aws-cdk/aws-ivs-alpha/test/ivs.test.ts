@@ -10,7 +10,7 @@ EPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM
 
 let stack: Stack;
 
-beforeEach( () => {
+beforeEach(() => {
   const app = new App({
     context: {
       '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -197,5 +197,17 @@ test('the preset with the STANDARD or BASIC channel type is overwritten with an 
   Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
     Type: 'STANDARD',
     Preset: '',
+  });
+});
+
+test.each([true, false])('channel with insecureIngest set to %s.', (insecureIngest) => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.STANDARD,
+    insecureIngest,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'STANDARD',
+    InsecureIngest: insecureIngest,
   });
 });

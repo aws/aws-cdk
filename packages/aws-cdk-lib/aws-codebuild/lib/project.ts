@@ -29,6 +29,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -563,7 +564,7 @@ export interface CommonProjectProps {
   /**
    * Build environment to use for the build.
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -734,6 +735,14 @@ export interface CommonProjectProps {
    * @default - no visibility is set
    */
   readonly visibility?: ProjectVisibility;
+
+  /**
+   * CodeBuild will automatically call retry build using the project's service role up to the auto-retry limit.
+   * `autoRetryLimit` must be between 0 and 10.
+   *
+   * @default - no retry
+   */
+  readonly autoRetryLimit?: number;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -859,7 +868,6 @@ export class Project extends ProjectBase {
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
     validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
-
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Set<string>();
@@ -1053,6 +1061,8 @@ export class Project extends ProjectBase {
     super(scope, id, {
       physicalName: props.projectName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
@@ -1060,7 +1070,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_7_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -1107,6 +1117,12 @@ export class Project extends ProjectBase {
       this.addFileSystemLocation(fileSystemLocation);
     }
 
+    if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
+      if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
+        throw new Error(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`);
+      }
+    }
+
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: {
@@ -1143,6 +1159,7 @@ export class Project extends ProjectBase {
           return config;
         },
       }),
+      autoRetryLimit: props.autoRetryLimit,
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -1204,6 +1221,7 @@ export class Project extends ProjectBase {
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
+  @MethodMetadata()
   public enableBatchBuilds(): BatchBuildConfig | undefined {
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
@@ -1231,6 +1249,7 @@ export class Project extends ProjectBase {
    * @param secondarySource the source to add as a secondary source
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
+  @MethodMetadata()
   public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
       throw new Error('The identifier attribute is mandatory for secondary sources');
@@ -1250,6 +1269,7 @@ export class Project extends ProjectBase {
    *
    * @param fileSystemLocation the fileSystemLocation to add
    */
+  @MethodMetadata()
   public addFileSystemLocation(fileSystemLocation: IFileSystemLocation): void {
     const fileSystemConfig = fileSystemLocation.bind(this, this);
     this._fileSystemLocations.push(fileSystemConfig.location);
@@ -1261,6 +1281,7 @@ export class Project extends ProjectBase {
    * @param secondaryArtifact the artifact to add as a secondary artifact
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
+  @MethodMetadata()
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
       throw new Error('The identifier attribute is mandatory for secondary artifacts');
@@ -1274,6 +1295,7 @@ export class Project extends ProjectBase {
    * @param _scope the construct the binding is taking place in
    * @param options additional options for the binding
    */
+  @MethodMetadata()
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
@@ -1284,7 +1306,7 @@ export class Project extends ProjectBase {
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
       if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+        (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1329,7 +1351,6 @@ export class Project extends ProjectBase {
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
-
     const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
@@ -1624,7 +1645,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_7_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1749,8 +1770,9 @@ export interface IBindableBuildImage extends IBuildImage {
 
 /**
  * The options when creating a CodeBuild Docker build image
- * using `LinuxBuildImage.fromDockerRegistry`
- * or `WindowsBuildImage.fromDockerRegistry`.
+ * using `LinuxBuildImage.fromDockerRegistry`,
+ * `WindowsBuildImage.fromDockerRegistry`,
+ * or `MacBuildImage.fromDockerRegistry`
  */
 export interface DockerImageOptions {
   /**
@@ -1825,10 +1847,19 @@ export class LinuxBuildImage implements IBuildImage {
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
+  /** The Amazon Linux 2023 x86_64 standard image, version `4.0`. */
+  public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
   /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:corretto11');
 
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
@@ -2125,7 +2156,6 @@ export class WindowsBuildImage implements IBuildImage {
     name: string,
     options: DockerImageOptions = {},
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       ...options,
       imageId: name,
@@ -2149,7 +2179,6 @@ export class WindowsBuildImage implements IBuildImage {
     repository: ecr.IRepository,
     tagOrDigest: string = 'latest',
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     return new WindowsBuildImage({
       imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
       imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
@@ -2166,7 +2195,6 @@ export class WindowsBuildImage implements IBuildImage {
     id: string,
     props: DockerImageAssetProps,
     imageType: WindowsImageType = WindowsImageType.STANDARD): IBuildImage {
-
     const asset = new DockerImageAsset(scope, id, props);
     return new WindowsBuildImage({
       imageId: asset.imageUri,
@@ -2237,6 +2265,108 @@ export class WindowsBuildImage implements IBuildImage {
         },
       },
     });
+  }
+}
+
+/**
+ * Construction properties of `MacBuildImage`.
+ * Module-private, as the constructor of `MacBuildImage` is private.
+ */
+interface MacBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
+ * A CodeBuild image running ARM MacOS.
+ *
+ * This class has a bunch of public constants that represent the most popular images.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - MacBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
+ * - MacBuildImage.fromEcrRepository(repo[, tag])
+ * - MacBuildImage.fromAsset(parent, id, props)
+ *
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class MacBuildImage implements IBuildImage {
+  /**
+   * Corresponds to the standard CodeBuild image `aws/codebuild/macos-arm-base:14`.
+   */
+  public static readonly BASE_14: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:14',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
+   * Makes an ARM MacOS build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new MacBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
+
+  /**
+   * Makes an ARM MacOS build image from an ECR repository.
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+    return new MacBuildImage({
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
+
+  /**
+   * Uses an Docker image asset as a ARM MacOS build image.
+   */
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
+    return new MacBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
+
+  public readonly type = EnvironmentType.MAC_ARM as string;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
+
+  private constructor(props: MacBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
+  }
+
+  public validate(buildEnvironment: BuildEnvironment): string[] {
+    const errors: string[] = [];
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      errors.push('Mac images do not support Lambda compute types');
+    }
+
+    if (!buildEnvironment.fleet) {
+      errors.push('Mac images must be used with a fleet');
+    }
+
+    return errors;
+  }
+
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    // Reuse Linux BuildSpec, since it is compatible
+    return runScriptLinuxBuildSpec(entrypoint);
   }
 }
 

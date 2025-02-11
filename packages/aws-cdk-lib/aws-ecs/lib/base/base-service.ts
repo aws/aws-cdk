@@ -7,6 +7,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
 import {
   Annotations,
@@ -19,6 +20,8 @@ import {
   ArnFormat,
   FeatureFlags,
   Token,
+  Arn,
+  Fn,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
@@ -252,6 +255,39 @@ export interface ServiceConnectService {
    * @default - Duration.seconds(15)
    */
   readonly perRequestTimeout?: Duration;
+
+  /**
+   * A reference to an object that represents a Transport Layer Security (TLS) configuration.
+   *
+   * @default - none
+   */
+  readonly tls?: ServiceConnectTlsConfiguration;
+}
+
+/**
+ * TLS configuration for Service Connect service
+ */
+export interface ServiceConnectTlsConfiguration {
+  /**
+   * The ARN of the certificate root authority that secures your service.
+   *
+   * @default - none
+   */
+  readonly awsPcaAuthorityArn?: string;
+
+  /**
+   * The KMS key used for encryption and decryption.
+   *
+   * @default - none
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The IAM role that's associated with the Service Connect TLS.
+   *
+   * @default - none
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -516,16 +552,20 @@ export abstract class BaseService extends Resource
   public static fromServiceArnWithCluster(scope: Construct, id: string, serviceArn: string): IBaseService {
     const stack = Stack.of(scope);
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
-    const resourceName = arn.resourceName;
-    if (!resourceName) {
-      throw new Error(`Missing resource Name from service ARN: ${serviceArn}`);
+    const resourceName = Arn.extractResourceName(serviceArn, 'service');
+    let clusterName: string;
+    let serviceName: string;
+    if (Token.isUnresolved(resourceName)) {
+      clusterName = Fn.select(0, Fn.split('/', resourceName));
+      serviceName = Fn.select(1, Fn.split('/', resourceName));
+    } else {
+      const resourceNameParts = resourceName.split('/');
+      if (resourceNameParts.length !== 2) {
+        throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
+      }
+      clusterName = resourceNameParts[0];
+      serviceName = resourceNameParts[1];
     }
-    const resourceNameParts = resourceName.split('/');
-    if (resourceNameParts.length !== 2) {
-      throw new Error(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`);
-    }
-    const clusterName = resourceNameParts[0];
-    const serviceName = resourceNameParts[1];
 
     const clusterArn = Stack.of(scope).formatArn({
       partition: arn.partition,
@@ -700,6 +740,10 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
       throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+    }
+
+    if (props.minHealthyPercent === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:minHealthyPercent', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705');
     }
 
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
@@ -885,7 +929,7 @@ export abstract class BaseService extends Resource
      * Resolve which namespace to use by picking:
      * 1. The namespace defined in service connect config.
      * 2. The namespace defined in the cluster's defaultCloudMapNamespace property.
-    */
+     */
     let namespace;
     if (this.cluster.defaultCloudMapNamespace) {
       namespace = this.cluster.defaultCloudMapNamespace.namespaceName;
@@ -910,12 +954,21 @@ export abstract class BaseService extends Resource
         dnsName: svc.dnsName,
       };
 
+      const tls: CfnService.ServiceConnectTlsConfigurationProperty | undefined = svc.tls ? {
+        issuerCertificateAuthority: {
+          awsPcaAuthorityArn: svc.tls.awsPcaAuthorityArn,
+        },
+        kmsKey: svc.tls.kmsKey?.keyArn,
+        roleArn: svc.tls.role?.roleArn,
+      } : undefined;
+
       return {
         portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
         timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
+        tls,
       } as CfnService.ServiceConnectServiceProperty;
     });
 
@@ -932,7 +985,7 @@ export abstract class BaseService extends Resource
       namespace: namespace,
       services: services,
     };
-  };
+  }
 
   /**
    * Validate Service Connect Configuration
@@ -960,7 +1013,7 @@ export abstract class BaseService extends Resource
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
         throw new Error(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`);
-      };
+      }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
@@ -985,6 +1038,12 @@ export abstract class BaseService extends Resource
       if (serviceConnectService.port &&
         !this.isValidPort(serviceConnectService.port)) {
         throw new Error(`Client Alias port ${serviceConnectService.port} is not valid.`);
+      }
+
+      // tls.awsPcaAuthorityArn should be an ARN
+      const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
+      if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
+        throw new Error(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`);
       }
     });
   }
@@ -1027,23 +1086,30 @@ export abstract class BaseService extends Resource
   }
 
   private executeCommandLogConfiguration() {
+    const reducePermissions = FeatureFlags.of(this).isEnabled(cxapi.REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS);
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
-      resources: [logGroupArn],
-    }));
+    // When Feature Flag is false, keep the previous behaviour for non-breaking changes.
+    // When Feature Flag is true and when cloudwatch log group is specified in logConfiguration, then
+    // append the necessary permissions to the task definition.
+    if (!reducePermissions || logConfiguration?.cloudWatchLogGroup) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: [logGroupArn],
+      }));
+    }
 
     if (logConfiguration?.s3Bucket?.bucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
@@ -1118,6 +1184,8 @@ export abstract class BaseService extends Resource
    * Registers the service as a target of a Classic Load Balancer (CLB).
    *
    * Don't call this. Call `loadBalancer.addTarget()` instead.
+   *
+   * @param loadBalancer [disable-awslint:ref-via-interface]
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     return this.defaultLoadBalancerTarget.attachToClassicLB(loadBalancer);

@@ -63,3 +63,9 @@ new CfnOutput(stack, 'URL', {
 new CfnOutput(stack, 'URLWithDefaultAuthorizer', {
   value: httpApiWithDefaultAuthorizer.url!,
 });
+new CfnOutput(stack, 'AuthorizerId', {
+  value: authorizer.authorizerId,
+});
+new CfnOutput(stack, 'AuthorizationType', {
+  value: authorizer.authorizationType,
+});

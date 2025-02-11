@@ -2,9 +2,9 @@
 Shout out to our top contributors!
 
 - [rix0rrr](https://github.com/rix0rrr)
+- [kaizencc](https://github.com/kaizencc)
 - [skinny85](https://github.com/skinny85)
 - [RomainMuller](https://github.com/RomainMuller)
-- [kaizencc](https://github.com/kaizencc)
 - [njlynch](https://github.com/njlynch)
 - [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
@@ -12,21 +12,21 @@ Shout out to our top contributors!
 - [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [mrgrain](https://github.com/mrgrain)
-- [madeline-k](https://github.com/madeline-k)
+- [mazyu36](https://github.com/mazyu36)
 - [pahud](https://github.com/pahud)
-- [comcalvi](https://github.com/comcalvi)
-- [NetaNir](https://github.com/NetaNir)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
+- [comcalvi](https://github.com/comcalvi)
+- [madeline-k](https://github.com/madeline-k)
+- [go-to-k](https://github.com/go-to-k)
+- [NetaNir](https://github.com/NetaNir)
+- [badmintoncryer](https://github.com/badmintoncryer)
 - [robertd](https://github.com/robertd)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
-- [go-to-k](https://github.com/go-to-k)
 - [lpizzinidev](https://github.com/lpizzinidev)
 - [peterwoodworth](https://github.com/peterwoodworth)
-- [colifran](https://github.com/colifran)
 - [msambol](https://github.com/msambol)
-- [nija-at](https://github.com/nija-at)
-- [watany-dev](https://github.com/watany-dev)
-- [hoegertn](https://github.com/hoegertn)
+- [colifran](https://github.com/colifran)
+- [GavinZZ](https://github.com/GavinZZ)
 
 
-_Last updated: Mon, 01 Jul 24 00:11:02 +0000_
+_Last updated: Sat, 01 Feb 25 00:11:52 +0000_

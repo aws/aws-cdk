@@ -1,8 +1,8 @@
 ---
 name: "❗ Notice"
-description: Post a notice for a high impact issue
+description: Post a notice for a high impact issue. Internal CDK team use only.
 title: "❗ NOTICE (module name): (short notice description)"
-labels: [p0, management/tracking]
+labels: [needs-triage, management/tracking]
 body:
   - type: dropdown
     attributes:

@@ -12,6 +12,24 @@ import * as logs from '../../aws-logs';
 import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+
+const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
+
+/**
+ * The storage type of the DocDB cluster
+ */
+export enum StorageType {
+  /**
+   * Standard storage
+   */
+  STANDARD = 'standard',
+
+  /**
+   * I/O-optimized storage
+   */
+  IOPT1 = 'iopt1',
+}
 
 /**
  * Properties for a new database cluster
@@ -20,7 +38,7 @@ export interface DatabaseClusterProps {
   /**
    * What version of the database to start
    *
-   * @default - The default engine version.
+   * @default -  the latest major version
    */
   readonly engineVersion?: string;
 
@@ -101,31 +119,31 @@ export interface DatabaseClusterProps {
   readonly caCertificate?: CaCertificate;
 
   /**
-    * What subnets to run the DocumentDB instances in.
-    *
-    * Must be at least 2 subnets in two different AZs.
-    */
+   * What subnets to run the DocumentDB instances in.
+   *
+   * Must be at least 2 subnets in two different AZs.
+   */
   readonly vpc: ec2.IVpc;
 
   /**
-    * Where to place the instances within the VPC
-    *
-    * @default private subnets
-    */
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-    * Security group.
-    *
-    * @default a new security group is created.
-    */
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-    * The DB parameter group to associate with the instance.
-    *
-    * @default no parameter group
-    */
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
   readonly parameterGroup?: IClusterParameterGroup;
 
   /**
@@ -194,11 +212,11 @@ export interface DatabaseClusterProps {
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
-    * The IAM role for the Lambda function associated with the custom resource
-    * that sets the retention policy.
-    *
-    * @default - a new role is created.
-    */
+   * The IAM role for the Lambda function associated with the custom resource
+   * that sets the retention policy.
+   *
+   * @default - a new role is created.
+   */
   readonly cloudWatchLogsRetentionRole?: IRole;
 
   /**
@@ -236,6 +254,17 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
+
+  /**
+   * The storage type of the DocDB cluster.
+   *
+   * I/O-optimized storage is supported starting with engine version 5.0.0.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-cluster-storage-configs.html
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/release-notes.html#release-notes.11-21-2023
+   *
+   * @default StorageType.STANDARD
+   */
+  readonly storageType?: StorageType;
 }
 
 /**
@@ -293,7 +322,6 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
  * @resource AWS::DocDB::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase {
-
   /**
    * The default number of instances in the DocDB cluster if none are
    * specified
@@ -438,6 +466,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
@@ -502,6 +532,19 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('KMS key supplied but storageEncrypted is false');
     }
 
+    const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
+    if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
+      throw new Error(`Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`);
+    }
+
+    if (
+      props.storageType === StorageType.IOPT1
+      && props.engineVersion !== undefined
+      && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
+    ) {
+      throw new Error(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`);
+    }
+
     // Create the DocDB cluster
     this.cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -528,6 +571,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot,
+      storageType: props.storageType,
     });
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
@@ -629,6 +673,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
+  @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
@@ -654,6 +699,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
@@ -674,6 +720,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Adds security groups to this cluster.
    * @param securityGroups The security groups to add.
    */
+  @MethodMetadata()
   public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
     if (this.cluster.vpcSecurityGroupIds === undefined) {
       this.cluster.vpcSecurityGroupIds = [];

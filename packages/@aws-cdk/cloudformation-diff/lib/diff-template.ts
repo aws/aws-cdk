@@ -51,7 +51,6 @@ export function fullDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
-
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
@@ -73,7 +72,6 @@ export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
-
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 
@@ -151,7 +149,7 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 /**
  * Replace all references to the given logicalID on the given template, in-place
  *
- * Returns true iff any references were replaced.
+ * Returns true if any references were replaced.
  */
 function propagateReplacedReferences(template: object, logicalId: string): boolean {
   let ret = false;

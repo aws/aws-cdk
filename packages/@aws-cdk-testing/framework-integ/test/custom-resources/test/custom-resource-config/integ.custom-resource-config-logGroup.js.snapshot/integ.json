@@ -1,0 +1,13 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-test-custom-resource-config-logGroup/DefaultTest": {
+      "stacks": [
+        "MyStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-custom-resource-config-logGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcustomresourceconfiglogGroupDefaultTestDeployAssert04698011"
+    }
+  }
+}

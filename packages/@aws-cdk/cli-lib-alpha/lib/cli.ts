@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { exec as runCli } from 'aws-cdk/lib';
+import { exec as runCli } from '../../../aws-cdk/lib';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { createAssembly, prepareContext, prepareDefaultEnvironment } from 'aws-cdk/lib/api/cxapp/exec';
+import { createAssembly, prepareContext, prepareDefaultEnvironment } from '../../../aws-cdk/lib/api/cxapp/exec';
 import { SharedOptions, DeployOptions, DestroyOptions, BootstrapOptions, SynthOptions, ListOptions, StackActivityProgress, HotswapMode } from './commands';
 
 /**
@@ -123,7 +123,7 @@ export class AwsCdkCli implements IAwsCdkCli {
     return new AwsCdkCli(async (args) => changeDir(
       () => runCli(args, async (sdk, config) => {
         const env = await prepareDefaultEnvironment(sdk);
-        const context = await prepareContext(config, env);
+        const context = await prepareContext(config.settings, config.context.all, env);
 
         return withEnv(async() => createAssembly(await producer.produce(context)), env);
       }),
@@ -172,7 +172,9 @@ export class AwsCdkCli implements IAwsCdkCli {
    * cdk bootstrap
    */
   public async bootstrap(options: BootstrapOptions = {}) {
+    const envs = options.environments ?? [];
     const bootstrapCommandArgs: string[] = [
+      ...envs,
       ...renderBooleanArg('force', options.force),
       ...renderBooleanArg('show-template', options.showTemplate),
       ...renderBooleanArg('terminationProtection', options.terminationProtection),
@@ -185,8 +187,8 @@ export class AwsCdkCli implements IAwsCdkCli {
       ...options.template ? ['--template', options.template] : [],
       ...options.customPermissionsBoundary ? ['--custom-permissions-boundary', options.customPermissionsBoundary] : [],
       ...options.qualifier ? ['--qualifier', options.qualifier] : [],
-      ...options.trust ? ['--qualifier', options.trust] : [],
-      ...options.trustForLookup ? ['--qualifier', options.trustForLookup] : [],
+      ...options.trust ? ['--trust', options.trust] : [],
+      ...options.trustForLookup ? ['--trust-for-lookup', options.trustForLookup] : [],
       ...options.bootstrapKmsKeyId ? ['--bootstrap-kms-key-id', options.bootstrapKmsKeyId] : [],
       ...options.bootstrapCustomerKey ? ['--bootstrap-customer-key', options.bootstrapCustomerKey] : [],
       ...options.publicAccessBlockConfiguration ? ['--public-access-block-configuration', options.publicAccessBlockConfiguration] : [],
@@ -324,7 +326,6 @@ async function changeDir(block: () => Promise<any>, workingDir?: string) {
     }
 
     return await block();
-
   } finally {
     if (workingDir) {
       process.chdir(originalWorkingDir);
@@ -344,7 +345,6 @@ async function withEnv(block: () => Promise<any>, env: Record<string, string> = 
     };
 
     return await block();
-
   } finally {
     process.env = originalEnv;
   }

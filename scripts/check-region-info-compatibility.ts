@@ -21,6 +21,14 @@ function main(oldPackage: string, newPackage: string) {
   const disappearedFacts = oldFacts
     .filter((oldFact) => !newFacts.some((newFact) => factEq(oldFact, newFact)))
     .map((fact) => ({ fact, key: `${fact[0]}:${fact[1]}` }))
+    // This mapping is generated dynamically at build time and the values in the mapping
+    // aren't accessed directly by users.
+    // This change updates the handling and generation of service principals but does not
+    // remove the ability of users to utilize them. The mapping is unnecessary.
+    // While we could have just added these to the file tracking allowed breaking changes,
+    // that seemed like it would clutter that file excessively rather than adding this check.
+    // We can remove this after the next release, if we feel so inclined.
+    .filter(({ key }) => !key.includes('service-principal'))
     .filter(({ key }) => !allowedBreaks.has(key));
 
   if (disappearedFacts.length > 0) {

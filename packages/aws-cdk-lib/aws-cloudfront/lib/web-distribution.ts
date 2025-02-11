@@ -11,6 +11,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * HTTP status code to failover to second origin
@@ -129,7 +130,7 @@ interface SourceConfigurationRender {
 
 /**
  * A source configuration is a wrapper for CloudFront origins and behaviors.
- * An origin is what CloudFront will "be in front of" - that is, CloudFront will pull it's assets from an origin.
+ * An origin is what CloudFront will "be in front of" - that is, CloudFront will pull its assets from an origin.
  *
  * If you're using s3 as a source - pass the `s3Origin` property, otherwise, pass the `customOriginSource` property.
  *
@@ -479,7 +480,7 @@ export interface LambdaFunctionAssociation {
   /**
    * Allows a Lambda function to have read access to the body content.
    * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
-   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
    *
    * @default false
    */
@@ -736,14 +737,14 @@ export interface CloudFrontWebDistributionAttributes {
  * });
  * ```
  *
- * This will create a CloudFront distribution that uses your S3Bucket as it's origin.
+ * This will create a CloudFront distribution that uses your S3Bucket as its origin.
  *
  * You can customize the distribution using additional properties from the CloudFrontWebDistributionProps interface.
  *
  * @resource AWS::CloudFront::Distribution
+ * @deprecated Use `Distribution` instead
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
-
   /**
    * Creates a construct that represents an external (imported) distribution.
    */
@@ -760,6 +761,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         this.distributionId = attrs.distributionId;
       }
 
+      public get distributionArn(): string {
+        return formatDistributionArn(this);
+      }
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
@@ -819,6 +823,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -991,6 +997,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.distributionId = distribution.ref;
   }
 
+  public get distributionArn(): string {
+    return formatDistributionArn(this);
+  }
+
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
@@ -998,6 +1008,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
    */
+  @MethodMetadata()
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
   }

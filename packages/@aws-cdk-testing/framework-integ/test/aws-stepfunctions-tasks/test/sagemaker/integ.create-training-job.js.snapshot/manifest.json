@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.5",
   "artifacts": {
     "integ-stepfunctions-sagemaker.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-stepfunctions-sagemaker.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11bc70dd89e4afb387b1b639ea823eb492c0e7a7dd664e50aa483f10ef3e204a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5052c67d354503fa1171f1d73a3f241505423ddfffd57ff1d7985c2ae028c0db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -75,10 +76,46 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
+        "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskAnotherSagemakerRoleBD8363A2"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrainTaskAnotherSagemakerRoleDefaultPolicy67E5C282"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachineAnother/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineAnotherRoleB3F4936A"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachineAnother/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineAnotherRoleDefaultPolicy5D4FD497"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/StateMachineAnother/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineAnother9B75AA58"
+          }
+        ],
         "/integ-stepfunctions-sagemaker/stateMachineArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "stateMachineArn"
+          }
+        ],
+        "/integ-stepfunctions-sagemaker/stateMachineArn2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn2"
           }
         ],
         "/integ-stepfunctions-sagemaker/BootstrapVersion": [

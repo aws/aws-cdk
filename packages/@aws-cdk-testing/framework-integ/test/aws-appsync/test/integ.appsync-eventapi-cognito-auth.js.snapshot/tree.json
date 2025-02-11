@@ -1,0 +1,227 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EventApiCognitoAuthStack": {
+        "id": "EventApiCognitoAuthStack",
+        "path": "EventApiCognitoAuthStack",
+        "children": {
+          "Pool": {
+            "id": "Pool",
+            "path": "EventApiCognitoAuthStack/Pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiCognitoAuthStack/Pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolName": "myPool",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "EventApiCognitoAuth": {
+            "id": "EventApiCognitoAuth",
+            "path": "EventApiCognitoAuthStack/EventApiCognitoAuth",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "eventConfig": {
+                      "authProviders": [
+                        {
+                          "authType": "AMAZON_COGNITO_USER_POOLS",
+                          "cognitoConfig": {
+                            "userPoolId": {
+                              "Ref": "PoolD3F588B8"
+                            },
+                            "awsRegion": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        }
+                      ],
+                      "connectionAuthModes": [
+                        {
+                          "authType": "AMAZON_COGNITO_USER_POOLS"
+                        }
+                      ],
+                      "defaultPublishAuthModes": [
+                        {
+                          "authType": "AMAZON_COGNITO_USER_POOLS"
+                        }
+                      ],
+                      "defaultSubscribeAuthModes": [
+                        {
+                          "authType": "AMAZON_COGNITO_USER_POOLS"
+                        }
+                      ]
+                    },
+                    "name": "api-cognito-auth-test"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.EventApi",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events HTTP endpoint": {
+            "id": "AWS AppSync Events HTTP endpoint",
+            "path": "EventApiCognitoAuthStack/AWS AppSync Events HTTP endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events Realtime endpoint": {
+            "id": "AWS AppSync Events Realtime endpoint",
+            "path": "EventApiCognitoAuthStack/AWS AppSync Events Realtime endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EventApiCognitoAuthStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EventApiCognitoAuthStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "appsync-event-api-cognito-auth": {
+        "id": "appsync-event-api-cognito-auth",
+        "path": "appsync-event-api-cognito-auth",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appsync-event-api-cognito-auth/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appsync-event-api-cognito-auth/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
