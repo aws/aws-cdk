@@ -1217,14 +1217,24 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    if (this.role instanceof iam.Role) {
-      this.role.assumeRolePolicy?.addStatements(
-        new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          principals: [new iam.ServicePrincipal('eks.amazonaws.com')],
-          actions: ['sts:TagSession'],
-        }),
-      );
+    const disableAutoMode = props.autoMode === false ||
+      props.defaultCapacity !== undefined ||
+      props.defaultCapacityType !== undefined ||
+      props.defaultCapacityInstance !== undefined;
+
+    // sts:TagSession is required for EKS Auto Mode or when using EKS Pod Identity features.
+    // see https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
+    // https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#_create_an_eks_auto_mode_cluster_iam_role
+    if (!disableAutoMode) { // when autoMode is enabled
+      if (this.role instanceof iam.Role) {
+        this.role.assumeRolePolicy?.addStatements(
+          new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            principals: [new iam.ServicePrincipal('eks.amazonaws.com')],
+            actions: ['sts:TagSession'],
+          }),
+        );
+      }
     }
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
@@ -1428,11 +1438,6 @@ export class Cluster extends ClusterBase {
         throw new Error('defaultCapacity* properties are not supported when autoMode is explicitly enabled');
       }
     }
-
-    const disableAutoMode = props.autoMode === false ||
-      props.defaultCapacity !== undefined ||
-      props.defaultCapacityType !== undefined ||
-      props.defaultCapacityInstance !== undefined;
 
     if (disableAutoMode) {
       const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
