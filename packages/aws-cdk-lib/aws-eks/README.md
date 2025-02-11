@@ -68,12 +68,12 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
-  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -139,7 +139,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
@@ -148,7 +148,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
@@ -161,7 +161,7 @@ Capacity is the amount and the type of worker nodes that are available to the cl
 ### Managed node groups
 
 Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
-With Amazon EKS managed node groups, you don’t need to separately provision or register the Amazon EC2 instances that provide compute capacity to run your Kubernetes applications. You can create, update, or terminate nodes for your cluster with a single operation. Nodes run using the latest Amazon EKS optimized AMIs in your AWS account while node updates and terminations gracefully drain nodes to ensure that your applications stay available.
+With Amazon EKS managed node groups, you don't need to separately provision or register the Amazon EC2 instances that provide compute capacity to run your Kubernetes applications. You can create, update, or terminate nodes for your cluster with a single operation. Nodes run using the latest Amazon EKS optimized AMIs in your AWS account while node updates and terminations gracefully drain nodes to ensure that your applications stay available.
 
 > For more details visit [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 
@@ -173,7 +173,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
@@ -186,7 +186,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 0,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -288,7 +288,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
 });
 
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 0,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -404,8 +404,8 @@ successful replacement. Consider this example if you are renaming the cluster fr
 ```ts
 const cluster = new eks.Cluster(this, 'cluster-to-rename', {
   clusterName: 'foo', // rename this to 'bar'
-  version: eks.KubernetesVersion.V1_31,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_32,
 });
 
 // allow the cluster admin role to delete the cluster 'foo'
@@ -459,7 +459,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
 });
 ```
 
@@ -536,7 +536,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -641,7 +641,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -664,7 +664,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   albController: {
     version: eks.AlbControllerVersion.V2_8_2,
   },
@@ -708,7 +708,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
@@ -756,7 +756,7 @@ You can configure the environment of the Cluster Handler functions by specifying
 ```ts
 declare const proxyInstanceSecurityGroup: ec2.SecurityGroup;
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   clusterHandlerEnvironment: {
     https_proxy: 'http://proxy.myproxy.com',
   },
@@ -799,7 +799,7 @@ for (let subnet of subnets) {
 }
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
   vpcSubnets: [{ subnets: vpc.publicSubnets }],
@@ -835,7 +835,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com',
   },
@@ -856,11 +856,11 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_31,
-  kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -895,7 +895,7 @@ const cluster1 = new eks.Cluster(this, 'MyCluster', {
   kubectlLayer: layer,
   vpc,
   clusterName: 'cluster-name',
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
@@ -914,7 +914,7 @@ By default, the kubectl provider is configured with 1024MiB of memory. You can u
 ```ts
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 
@@ -954,7 +954,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   mastersRole: role,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -1005,7 +1005,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
 ```
@@ -1016,7 +1016,7 @@ You can also use a similar configuration for running a cluster built using the F
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
 });
 ```
 
@@ -1060,7 +1060,7 @@ To access the Kubernetes resources from the console, make sure your viewing prin
 in the `aws-auth` ConfigMap. Some options to consider:
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role;
 declare const vpc: ec2.Vpc;
@@ -1080,7 +1080,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 
 ```ts
 // Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 declare const vpc: ec2.Vpc;
 
 
@@ -1090,8 +1090,8 @@ const mastersRole = new iam.Role(this, 'MastersRole', {
 
 const cluster = new eks.Cluster(this, 'EksCluster', {
   vpc,
-  version: eks.KubernetesVersion.V1_31,
-  kubectlLayer: new KubectlV31Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'KubectlLayer'),
   mastersRole,
 });
 
@@ -1135,13 +1135,13 @@ AWS IAM principals from both Amazon EKS access entry APIs and the aws-auth confi
 To specify the `authenticationMode`:
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'Cluster', {
   vpc,
-  version: eks.KubernetesVersion.V1_31,
-  kubectlLayer: new KubectlV31Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'KubectlLayer'),
   authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
 });
 ```
@@ -1186,7 +1186,7 @@ eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 declare const vpc: ec2.Vpc;
 
 const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
@@ -1204,8 +1204,8 @@ const eksAdminViewRole = new iam.Role(this, 'EKSAdminViewRole', {
 const cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole: clusterAdminRole,
-  version: eks.KubernetesVersion.V1_31,
-  kubectlLayer: new KubectlV31Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'KubectlLayer'),
   authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
 });
 
@@ -1538,7 +1538,7 @@ when a cluster is defined:
 
 ```ts
 new eks.Cluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   prune: false,
   kubectlLayer: new KubectlV31Layer(this, 'kubectl'),
 });
@@ -1942,7 +1942,7 @@ property. For example:
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
     eks.ClusterLoggingTypes.AUTHENTICATOR,

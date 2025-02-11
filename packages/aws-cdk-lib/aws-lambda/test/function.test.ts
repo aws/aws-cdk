@@ -4764,11 +4764,22 @@ describe('telemetry metadata', () => {
       runtime: lambda.Runtime.NODEJS_18_X,
     });
 
-    expect(fn.node.metadata).toStrictEqual([{
-      data: { code: '*', handler: '*', runtime: '*' },
-      trace: undefined,
-      type: 'aws:cdk:analytics:construct',
-    }]);
+    fn.addEnvironment('foo', '1234567890', {
+      removeInEdge: true,
+    });
+
+    expect(fn.node.metadata).toStrictEqual([
+      {
+        data: { code: '*', handler: '*', runtime: '*' },
+        trace: undefined,
+        type: 'aws:cdk:analytics:construct',
+      },
+      {
+        data: { addEnvironment: ['*', '*', { removeInEdge: true }] },
+        trace: undefined,
+        type: 'aws:cdk:analytics:method',
+      },
+    ]);
   });
 
   it('redaction happens when feature flag is disabled', () => {

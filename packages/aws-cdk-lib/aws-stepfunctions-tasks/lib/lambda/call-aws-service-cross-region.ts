@@ -4,6 +4,7 @@ import { IFunction } from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, Duration } from '../../../core';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';
+import { integrationResourceArn } from '../private/task-utils';
 
 interface CallAwsServiceCrossRegionOptions {
   /**
@@ -134,12 +135,17 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
   protected readonly lambdaFunction: IFunction;
 
+  private readonly integrationPattern: sfn.IntegrationPattern | undefined;
+
   constructor(scope: Construct, id: string, private readonly props: CallAwsServiceCrossRegionProps) {
     super(scope, id, props);
 
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
+
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
+      throw new Error('The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion');
     }
+
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
       throw new Error(`action must be camelCase, got: ${props.action}`);
     }
@@ -196,15 +202,31 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
     const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
-    return {
-      Resource: this.lambdaFunction.functionArn,
-      ...this._renderParametersOrArguments({
-        region: this.props.region,
-        endpoint: this.props.endpoint,
-        action: this.props.action,
-        service: this.props.service,
-        parameters: this.props.parameters,
-      }, queryLanguage),
-    };
+    if (this.integrationPattern === sfn.IntegrationPattern.REQUEST_RESPONSE) {
+      return {
+        Resource: this.lambdaFunction.functionArn,
+        ...this._renderParametersOrArguments({
+          region: this.props.region,
+          endpoint: this.props.endpoint,
+          action: this.props.action,
+          service: this.props.service,
+          parameters: this.props.parameters,
+        }, queryLanguage),
+      };
+    } else {
+      return {
+        Resource: integrationResourceArn('lambda', 'invoke', this.props.integrationPattern),
+        ...this._renderParametersOrArguments({
+          FunctionName: this.lambdaFunction.functionArn,
+          Payload: {
+            region: this.props.region,
+            endpoint: this.props.endpoint,
+            action: this.props.action,
+            service: this.props.service,
+            parameters: this.props.parameters,
+          },
+        }, queryLanguage),
+      };
+    }
   }
 }

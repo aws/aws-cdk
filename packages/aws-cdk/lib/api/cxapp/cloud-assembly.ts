@@ -1,4 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import type * as cxapi from '@aws-cdk/cx-api';
+import { SynthesisMessageLevel } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
@@ -206,6 +207,24 @@ export class CloudAssembly {
 }
 
 /**
+ * The dependencies of a stack.
+ */
+export type StackDependency = {
+  id: string;
+  dependencies: StackDependency[];
+};
+
+/**
+ * Details of a stack.
+ */
+export type StackDetails = {
+  id: string;
+  name: string;
+  environment: cxapi.Environment;
+  dependencies: StackDependency[];
+};
+
+/**
  * A collection of stacks and related artifacts
  *
  * In practice, not all artifacts in the CloudAssembly are created equal;
@@ -235,6 +254,45 @@ export class StackCollection {
     return this.stackArtifacts.map(s => s.hierarchicalId);
   }
 
+  public withDependencies(): StackDetails[] {
+    const allData: StackDetails[] = [];
+
+    for (const stack of this.stackArtifacts) {
+      const data: StackDetails = {
+        id: stack.displayName ?? stack.id,
+        name: stack.stackName,
+        environment: stack.environment,
+        dependencies: [],
+      };
+
+      for (const dependencyId of stack.dependencies.map(x => x.id)) {
+        if (dependencyId.includes('.assets')) {
+          continue;
+        }
+
+        const depStack = this.assembly.stackById(dependencyId);
+
+        if (depStack.firstStack.dependencies.filter((dep) => !(dep.id).includes('.assets')).length > 0) {
+          for (const stackDetail of depStack.withDependencies()) {
+            data.dependencies.push({
+              id: stackDetail.id,
+              dependencies: stackDetail.dependencies,
+            });
+          }
+        } else {
+          data.dependencies.push({
+            id: depStack.firstStack.displayName ?? depStack.firstStack.id,
+            dependencies: [],
+          });
+        }
+      }
+
+      allData.push(data);
+    }
+
+    return allData;
+  }
+
   public reversed() {
     const arts = [...this.stackArtifacts];
     arts.reverse();
@@ -262,15 +320,15 @@ export class StackCollection {
     for (const stack of this.stackArtifacts) {
       for (const message of stack.messages) {
         switch (message.level) {
-          case cxapi.SynthesisMessageLevel.WARNING:
+          case SynthesisMessageLevel.WARNING:
             warnings = true;
             await logger('warn', message);
             break;
-          case cxapi.SynthesisMessageLevel.ERROR:
+          case SynthesisMessageLevel.ERROR:
             errors = true;
             await logger('error', message);
             break;
-          case cxapi.SynthesisMessageLevel.INFO:
+          case SynthesisMessageLevel.INFO:
             await logger('info', message);
             break;
         }

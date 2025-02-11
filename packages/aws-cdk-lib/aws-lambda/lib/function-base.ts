@@ -15,6 +15,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, IResource, Resource, Token, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -824,6 +825,7 @@ class LatestVersion extends FunctionBase implements IVersion {
     return [this.functionArn];
   }
 
+  @MethodMetadata()
   public addAlias(aliasName: string, options: AliasOptions = {}) {
     return addAlias(this, this, aliasName, options);
   }

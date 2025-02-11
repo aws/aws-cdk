@@ -12,12 +12,12 @@ describe('Addon', () => {
     app = new App();
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_30,
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      version: KubernetesVersion.V1_32,
     });
   });
 
-  test('creates a new Addon', () => {
+  test('creates a new Addon', () => 
     // GIVEN
 
     // WHEN

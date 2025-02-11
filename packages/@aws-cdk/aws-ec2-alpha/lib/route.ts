@@ -4,7 +4,7 @@ import { Annotations, Duration, IResource, Resource, Tags } from 'aws-cdk-lib/co
 import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
 import { ISubnetV2 } from './subnet-v2';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -819,6 +819,7 @@ export class RouteTable extends Resource implements IRouteTable {
    * @param target The gateway or endpoint targeted by the route.
    * @param routeName The resource name of the route.
    */
+  @MethodMetadata()
   public addRoute(id: string, destination: string, target: RouteTargetType, routeName?: string) {
     new Route(this, id, {
       routeTable: this,
