@@ -350,6 +350,7 @@ export interface RoleMappingRule {
 
   /**
    * How to match with the claim value
+   *
    * @default RoleMappingMatchType.EQUALS
    */
   readonly matchType?: RoleMappingMatchType;
