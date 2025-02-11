@@ -2,6 +2,9 @@ import { Construct } from 'constructs';
 import { InspectorScanActionBase, InspectorScanActionBaseProps } from './scan-action-base';
 import * as codepipeline from '../../../aws-codepipeline';
 
+/**
+ * Construction properties of the `InspectorSourceCodeScanAction`.
+ */
 export interface InspectorSourceCodeScanActionProps extends InspectorScanActionBaseProps {
   /**
    * The source code to scan for vulnerabilities.
@@ -9,6 +12,9 @@ export interface InspectorSourceCodeScanActionProps extends InspectorScanActionB
   readonly input: codepipeline.Artifact;
 }
 
+/**
+ * CodePipeline invoke action that uses AWS InspectorScan for source code.
+ */
 export class InspectorSourceCodeScanAction extends InspectorScanActionBase {
   constructor(props: InspectorSourceCodeScanActionProps) {
     const baseProps: InspectorScanActionBaseProps & { inputs?: codepipeline.Artifact[] } = {

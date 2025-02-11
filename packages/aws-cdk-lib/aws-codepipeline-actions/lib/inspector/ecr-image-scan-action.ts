@@ -4,6 +4,9 @@ import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
 
+/**
+ * Construction properties of the `InspectorEcrImageScanAction`.
+ */
 export interface InspectorEcrImageScanActionProps extends InspectorScanActionBaseProps {
   /**
    * The Amazon ECR repository where the image is pushed.
@@ -18,6 +21,9 @@ export interface InspectorEcrImageScanActionProps extends InspectorScanActionBas
   readonly imageTag?: string;
 }
 
+/**
+ * CodePipeline invoke action that uses AWS InspectorScan for ECR images.
+ */
 export class InspectorEcrImageScanAction extends InspectorScanActionBase {
   private readonly ecrProps: InspectorEcrImageScanActionProps;
 
