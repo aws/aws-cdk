@@ -52,7 +52,7 @@ describe('pattern', () => {
     });
 
     test('regex pattern', () => {
-      const pattern = FilterPattern.regexValue('$.field', '==', 'value');
+      const pattern = FilterPattern.regexValue('$.field', '=', 'value');
 
       expect('{ $.field = %value% }').toEqual(pattern.logPatternString);
     });
