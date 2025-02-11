@@ -17,9 +17,7 @@ describe('Addon', () => {
     });
   });
 
-  test('creates a new Addon', () => 
-    // GIVEN
-
+  test('creates a new Addon', () => {
     // WHEN
     new Addon(stack, 'TestAddon', {
       addonName: 'test-addon',
