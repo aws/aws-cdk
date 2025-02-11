@@ -73,7 +73,7 @@ export interface ECRBuildAndPublishActionProps extends codepipeline.CommonAwsAct
 }
 
 /**
- * CodePipeline compute action that uses AWS ECRBuildAndPublish.
+ * CodePipeline build action that uses AWS ECRBuildAndPublish.
  */
 export class ECRBuildAndPublishAction extends Action {
   private readonly props: ECRBuildAndPublishActionProps;
