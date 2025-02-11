@@ -298,7 +298,8 @@ class ImportableStack extends cdk.Stack {
             minify: true,
             sourceMap: false,
             sourcesContent: false,
-            target: 'ES2020'
+            target: 'ES2020',
+            forceDockerBundling: true,
           },
           runtime: lambda.Runtime.NODEJS_18_X,
           entry: path.join(__dirname, 'lambda-node/index.ts')

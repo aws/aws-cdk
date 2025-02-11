@@ -1,5 +1,9 @@
-import { execSync } from 'child_process';
-import { existsSync, mkdtempSync, promises as fs } from 'fs';
+// import { execSync } from 'child_process';
+import {
+  existsSync,
+  // mkdtempSync,
+  promises as fs,
+} from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -2261,16 +2265,6 @@ integTest(
 integTest(
   'test s3 bucket import with nodejsfunction lambda',
   withDefaultFixture(async (fixture) => {
-    // Create a temporary directory for esbuild installation
-    const tempDir = mkdtempSync(path.join(os.tmpdir(), 'esbuild-'));
-    const originalPath = process.env.PATH;
-
-    // Install esbuild locally in the temporary directory
-    execSync('npm init -y && npm install esbuild', { cwd: tempDir, stdio: 'inherit' });
-
-    // Add the local node_modules/.bin to the PATH
-    process.env.PATH = `${path.join(tempDir, 'node_modules', '.bin')}${path.delimiter}${process.env.PATH}`;
-
     // GIVEN
     const randomPrefix = randomString();
     const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
@@ -2322,12 +2316,6 @@ integTest(
       expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
       expect(cfnTemplateAfterImport.TemplateBody).toContain(bucketLogicalId);
     } finally {
-      // Restore the original PATH
-      process.env.PATH = originalPath;
-
-      // Clean up the temporary directory
-      await fs.rm(tempDir, { recursive: true, force: true });
-
       // Clean up the resources we created
       await fixture.cdkDestroy('importable-stack');
     }
