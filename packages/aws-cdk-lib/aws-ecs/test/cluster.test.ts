@@ -395,9 +395,14 @@ describe('cluster', () => {
       }
     });
 
-    testDeprecated('lifecycle hook is automatically added', () => {
+    testDeprecated('lifecycle hook is automatically added @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -537,6 +542,141 @@ describe('cluster', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
+            {
+              Action: [
+                'ecs:UpdateContainerInstancesState',
+                'ecs:ListTasks',
+              ],
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ],
+        },
+      });
+    });
+
+    testDeprecated('lifecycle hook is automatically added @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+      });
+
+      // WHEN
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+        AutoScalingGroupName: { Ref: 'EcsClusterDefaultAutoScalingGroupASGC1A785DB' },
+        LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
+        DefaultResult: 'CONTINUE',
+        HeartbeatTimeout: 300,
+        NotificationTargetARN: { Ref: 'EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4' },
+        RoleARN: { 'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B', 'Arn'] },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Timeout: 310,
+        Environment: {
+          Variables: {
+            CLUSTER: {
+              Ref: 'EcsCluster97242B84',
+            },
+          },
+        },
+        Handler: 'index.lambda_handler',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeInstanceAttribute',
+                'ec2:DescribeInstanceStatus',
+                'ec2:DescribeHosts',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'autoscaling:CompleteLifecycleAction',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':autoscaling:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':autoScalingGroup:*:autoScalingGroupName/',
+                    {
+                      Ref: 'EcsClusterDefaultAutoScalingGroupASGC1A785DB',
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'ecs:DescribeContainerInstances',
+                'ecs:DescribeTasks',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+              Condition: {
+                ArnEquals: {
+                  'ecs:cluster': {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              },
+            },
+            {
+              Action: [
+                'ecs:ListContainerInstances',
+                'ecs:SubmitContainerStateChange',
+                'ecs:SubmitTaskStateChange',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'EcsCluster97242B84',
+                  'Arn',
+                ],
+              },
+            },
             {
               Action: [
                 'ecs:UpdateContainerInstancesState',
