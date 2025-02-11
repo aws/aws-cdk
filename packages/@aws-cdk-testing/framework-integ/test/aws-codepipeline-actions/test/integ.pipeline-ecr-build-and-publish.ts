@@ -4,6 +4,16 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
+/*
+ * To run this integ test, the following steps are required.
+ * 1. Create a test repository on GitHub (in the code below, it is 'cdk-codepipeline-demo-1')
+ * 2. Create a Dockerfile with any content at the path `./my-dir/Dockerfile`
+ * 3. Set the `owner` and `repo` of `CodeStarConnectionsSourceAction` to your GitHub account name and repository name
+ * 4. Create a Connections in the CodePipeline management console that accesses your GitHub account
+ * 5. Set the ARN of that Connections to the `CONNECTION_ARN` environment variable in the integ test execution environment
+ * 6. After running the integ test, replace the value of CONNECTION_ARN written in the file generated in CloudAssembly (integ.pipeline-ecr-build-and-publish.js.snapshot/*) with the string `MOCK`
+ */
+
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'codepipeline-ecr-build-and-publish');
