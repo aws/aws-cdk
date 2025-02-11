@@ -102,8 +102,8 @@ module.exports = async ({ github }) => {
       });
 
       // Filter specific project
-      const projectItem = result.node.projectItems.nodes
-        .find(item => item.project.id === PROJECT_CONFIG.projectId);
+      const projectItem = result?.node?.projectItems?.nodes
+        ?.find(item => item.project.id === PROJECT_CONFIG.projectId);
       
       // Skip if PR is already in project
       if (projectItem) {
