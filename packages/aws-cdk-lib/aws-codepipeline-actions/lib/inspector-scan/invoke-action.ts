@@ -10,79 +10,100 @@ import { Action } from '../action';
  */
 export interface InspectorScanVariables {
   /**
-   * The sha256 digest of the image manifest.
+   * The highest severity output from the scan.
+   *
+   * Valid values are medium | high | critical.
    */
-  readonly ecrImageDigestId: string;
-
-  /**
-   * The name of the Amazon ECR repository where the image was pushed.
-   */
-  readonly ecrRepositoryName: string;
+  readonly highestScannedSeverity: string;
 }
 
 /**
- * The type of registry to use for the InspectorScan action.
+ * The mode of the scan.
  */
-export enum RegistryType {
+export enum InspectorRunMode {
   /**
-   * Private registry
+   * Scan the source code.
    */
-  PRIVATE = 'private',
+  SOURCE_CODE_SCAN = 'SourceCodeScan',
   /**
-   * Public registry
+   * Scan the image in the ECR repository.
    */
-  PUBLIC = 'public',
+  ECR_IMAGE_SCAN = 'ECRImageScan',
 }
 
 /**
  * Construction properties of the `InspectorScanAction`.
  */
 export interface InspectorScanActionProps extends codepipeline.CommonAwsActionProps {
+  // TODO: consider separating class into two with base class.
+  /**
+   * Indicates the mode of the scan.
+   */
+  readonly inspectorRunMode: InspectorRunMode;
+
   /**
    * The Amazon ECR repository where the image is pushed.
+   *
+   * @default - required if `inspectorRunMode` is `InspectorRunMode.ECR_IMAGE_SCAN`, otherwise not needed
    */
-  readonly repository: ecr.IRepository;
+  readonly repository?: ecr.IRepository;
 
   /**
-   * The location of the Docker file used to build the image.
+   * The tag used for the image.
    *
-   * Optionally, you can provide an alternate docker file location if not at the root level.
-   *
-   * @default - the source repository root level
+   * @default - latest if `inspectorRunMode` is `InspectorRunMode.ECR_IMAGE_SCAN`, otherwise no tag.
    */
-  readonly dockerfilePath?: string;
+  readonly imageTag?: string;
 
   /**
-   * The tags used for the image.
+   * The number of critical severity vulnerabilities found in your source
+   * beyond which CodePipeline should fail the action.
    *
-   * @default - latest
+   * @default - no threshold
    */
-  readonly imageTags?: string[];
+  readonly criticalThreshold?: number;
 
   /**
-   * Specifies whether the repository is public or private.
+   * The number of high severity vulnerabilities found in your source
+   * beyond which CodePipeline should fail the action.
    *
-   * @default - RegistryType.PRIVATE
+   * @default - no threshold
    */
-  readonly registryType?: RegistryType;
+  readonly highThreshold?: number;
+
+  /**
+   * The number of medium severity vulnerabilities found in your source
+   * beyond which CodePipeline should fail the action.
+   *
+   * @default - no threshold
+   */
+  readonly mediumThreshold?: number;
+
+  /**
+   * The number of low severity vulnerabilities found in your source
+   * beyond which CodePipeline should fail the action.
+   *
+   * @default - no threshold
+   */
+  readonly lowThreshold?: number;
 
   /**
    * The source code to scan for vulnerabilities.
    *
    * If the scan is for an ECR repository, this input artifact is not needed.
    *
-   * @default - required if
+   * @default - required if `inspectorRunMode` is `InspectorRunMode.SOURCE_CODE_SCAN`, otherwise not needed
    */
   readonly input?: codepipeline.Artifact;
 
   /**
    * Vulnerability details of your source in the form of a Software Bill of Materials (SBOM) file.
    */
-  readonly output?: codepipeline.Artifact;
+  readonly output: codepipeline.Artifact;
 }
 
 /**
- * CodePipeline compute action that uses AWS InspectorScan.
+ * CodePipeline invoke action that uses AWS InspectorScan.
  */
 export class InspectorScanAction extends Action {
   private readonly props: InspectorScanActionProps;
@@ -92,8 +113,9 @@ export class InspectorScanAction extends Action {
       ...props,
       category: codepipeline.ActionCategory.INVOKE,
       provider: 'InspectorScan',
-      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
-      inputs: [props.input],
+      artifactBounds: { minInputs: 0, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
+      inputs: props.input ? [props.input] : undefined,
+      outputs: [props.output],
     });
 
     this.props = props;
@@ -102,8 +124,7 @@ export class InspectorScanAction extends Action {
   /** The variables emitted by this action. */
   public get variables(): InspectorScanVariables {
     return {
-      ecrImageDigestId: this.variableExpression('ECRImageDigestId'),
-      ecrRepositoryName: this.variableExpression('ECRRepositoryName'),
+      highestScannedSeverity: this.variableExpression('HighestScannedSeverity'),
     };
   }
 
@@ -113,46 +134,20 @@ export class InspectorScanAction extends Action {
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
-        'ecr:DescribeRepositories',
-        'ecr:GetAuthorizationToken',
-        'ecr-public:DescribeRepositories',
-        'ecr-public:GetAuthorizationToken',
+        'inspector-scan:ScanSbom',
       ],
     }));
 
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'ecr:GetAuthorizationToken',
-        'ecr:InitiateLayerUpload',
-        'ecr:UploadLayerPart',
-        'ecr:CompleteLayerUpload',
-        'ecr:PutImage',
-        'ecr:GetDownloadUrlForLayer',
-        'ecr:BatchCheckLayerAvailability',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'ecr-public:GetAuthorizationToken',
-        'ecr-public:DescribeRepositories',
-        'ecr-public:InitiateLayerUpload',
-        'ecr-public:UploadLayerPart',
-        'ecr-public:CompleteLayerUpload',
-        'ecr-public:PutImage',
-        'ecr-public:BatchCheckLayerAvailability',
-        'sts:GetServiceBearerToken',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'sts:GetServiceBearerToken',
-      ],
-    }));
+    if (this.props.repository) {
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'ecr:GetDownloadUrlForLayer',
+          'ecr:BatchGetImage',
+          'ecr:BatchCheckLayerAvailability',
+        ],
+      }));
+    }
 
     const logGroupArn = cdk.Stack.of(scope).formatArn({
       service: 'logs',
@@ -175,13 +170,19 @@ export class InspectorScanAction extends Action {
     if ((this.actionProperties.inputs ?? []).length > 0) {
       options.bucket.grantRead(options.role);
     }
+    if ((this.actionProperties.outputs ?? []).length > 0) {
+      options.bucket.grantWrite(options.role);
+    }
 
     return {
       configuration: {
-        ECRRepositoryName: this.props.repository.repositoryName,
-        DockerFilePath: this.props.dockerfilePath,
-        ImageTags: this.props.imageTags,
-        RegistryType: this.props.registryType,
+        InspectorRunMode: this.props.inspectorRunMode,
+        Repository: this.props.repository?.repositoryName,
+        ImageTag: this.props.imageTag,
+        CriticalThreshold: this.props.criticalThreshold,
+        HighThreshold: this.props.highThreshold,
+        MediumThreshold: this.props.mediumThreshold,
+        LowThreshold: this.props.lowThreshold,
       },
     };
   }
