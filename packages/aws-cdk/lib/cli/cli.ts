@@ -580,6 +580,3 @@ export function cli(args: string[] = process.argv.slice(2)) {
       process.exitCode = 1;
     });
 }
-
-cli();
-
