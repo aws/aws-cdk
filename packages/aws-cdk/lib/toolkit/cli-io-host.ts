@@ -183,14 +183,6 @@ export class CliIoHost implements IIoHost {
   private corkedCounter = 0;
   private readonly corkedLoggingBuffer: IoMessage<any>[] = [];
 
-  /**
-   * Stream to use for the input
-   *
-   * Should only be used for unit testing. Defaults to `process.stdin`
-   * which is what you usually want.
-   */
-  public testInputStream?: NodeJS.ReadableStream;
-
   private constructor(props: CliIoHostProps = {}) {
     this._currentAction = props.currentAction ?? 'none' as ToolkitAction;
     this._isTTY = props.isTTY ?? process.stdout.isTTY ?? false;
@@ -380,9 +372,7 @@ export class CliIoHost implements IIoHost {
       // Basic confirmation prompt
       // We treat all requests with a boolean response as confirmation prompts
       if (isConfirmationPrompt(msg)) {
-        const confirmed = await promptly.confirm(`${chalk.cyan(msg.message)} (y/n)`, {
-          input: this.testInputStream,
-        });
+        const confirmed = await promptly.confirm(`${chalk.cyan(msg.message)} (y/n)`);
         if (!confirmed) {
           throw new ToolkitError('Aborted by user');
         }
@@ -393,7 +383,6 @@ export class CliIoHost implements IIoHost {
       const prompt = extractPromptInfo(msg);
       const answer = await promptly.prompt(`${chalk.cyan(msg.message)} (${prompt.default})`, {
         default: prompt.default,
-        input: this.testInputStream,
       });
       return prompt.convertAnswer(answer);
     });

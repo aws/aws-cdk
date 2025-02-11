@@ -8,6 +8,9 @@ const ioHost = CliIoHost.instance({
   logLevel: 'trace',
 });
 
+// Mess with the 'process' global so we can replace its 'process.stdin' member
+global.process = { ...process };
+
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
   let mockStderr: jest.Mock;
@@ -21,7 +24,7 @@ describe('CliIoHost', () => {
     ioHost.isTTY = process.stdout.isTTY ?? false;
     ioHost.isCI = false;
     ioHost.currentAction = 'synth';
-    ioHost.testInputStream = passThrough = new PassThrough();
+    (process as any).stdin = passThrough = new PassThrough();
 
     defaultMessage = {
       time: new Date('2024-01-01T12:00:00'),
