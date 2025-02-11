@@ -38,7 +38,22 @@ abstract class ChannelBase extends core.Resource implements IChannel {
 }
 
 /**
-  Channel latency mode
+ * Container Format
+ */
+export enum ContainerFormat {
+  /**
+   * Use MPEG-TS.
+   */
+  TS = 'TS',
+
+  /**
+   * Use fMP4.
+   */
+  FRAGMENTED_MP4 = 'FRAGMENTED_MP4',
+}
+
+/**
+ * Channel latency mode
  */
 export enum LatencyMode {
   /**
@@ -120,6 +135,16 @@ export interface ChannelProps {
   readonly authorized?: boolean;
 
   /**
+   * Indicates which content-packaging format is used (MPEG-TS or fMP4).
+   *
+   * If `multitrackInputConfiguration` is specified containerFormat is required and must be set to ContainerFormat.FRAGMENTED_MP4.
+   * Otherwise, containerFormat may be set to ContainerFormat.TS or ContainerFormat.FRAGMENTED_MP4.
+   *
+   * @default undefined - IVS default setting is MPEG-TS
+   */
+  readonly containerFormat?: ContainerFormat;
+
+  /**
    * Whether the channel allows insecure RTMP ingest.
    *
    * @default false
@@ -139,6 +164,17 @@ export interface ChannelProps {
    * @default Automatically generated name
    */
   readonly channelName?: string;
+
+  /**
+   * Object specifying multitrack input configuration.
+   * You must specify `multitrackInputConfiguration` if you want to use MultiTrack Video.
+   *
+   * `multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`.
+   *
+   * @default undefined - IVS default setting is not use MultiTrack Video.
+   * @see https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/multitrack-video.html
+   */
+  readonly multitrackInputConfiguration?: MultitrackInputConfiguration;
 
   /**
    * The channel type, which determines the allowable resolution and bitrate.
@@ -163,6 +199,57 @@ export interface ChannelProps {
    */
   readonly recordingConfiguration?: IRecordingConfiguration;
 }
+
+/**
+ * Maximum resolution for multitrack input.
+ */
+export enum MaximumResolution {
+  /**
+   * Full HD (1080p)
+   */
+  FULL_HD = 'FULL_HD',
+
+  /**
+   * HD (720p)
+   */
+  HD = 'HD',
+
+  /**
+   * SD (480p)
+   */
+  SD = 'SD',
+}
+
+/**
+ * Whether multitrack input is allowed or required.
+ */
+export enum Policy {
+  /**
+   * Multitrack input is allowed.
+   */
+  ALLOW = 'ALLOW',
+
+  /**
+   * Multitrack input is required.
+   */
+  REQUIRE = 'REQUIRE',
+}
+
+/**
+ * A complex type that specifies multitrack input configuration.
+ */
+export interface MultitrackInputConfiguration {
+  /**
+   * Maximum resolution for multitrack input.
+   */
+  readonly maximumResolution: MaximumResolution;
+
+  /**
+   * Indicates whether multitrack input is allowed or required.
+   */
+  readonly policy: Policy;
+}
+
 
 /**
   A new IVS channel
@@ -227,6 +314,14 @@ export class Channel extends ChannelBase {
       preset = props.preset;
     }
 
+    if ((props.type !== ChannelType.STANDARD) && !props.multitrackInputConfiguration) {
+      throw new Error('`multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`');
+    }
+
+    if((props.containerFormat!==ContainerFormat.FRAGMENTED_MP4)&&props.multitrackInputConfiguration){
+      throw new Error('`containerFormat` must be set to `ContainerFormat.FRAGMENTED_MP4` when `multitrackInputConfiguration` is specified');
+    }
+
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
       insecureIngest: props.insecureIngest,
@@ -235,6 +330,13 @@ export class Channel extends ChannelBase {
       type: props.type,
       preset,
       recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
+      multitrackInputConfiguration: props.multitrackInputConfiguration ?
+        {
+          enabled: true,
+          maximumResolution: props.multitrackInputConfiguration.maximumResolution,
+          policy: props.multitrackInputConfiguration.policy,
+        }
+        : undefined,
     });
 
     this.channelArn = resource.attrArn;
