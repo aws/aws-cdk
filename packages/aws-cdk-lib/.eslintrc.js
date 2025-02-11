@@ -27,6 +27,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-applicationautoscaling',
   'aws-appsync',
   'aws-appmesh',
+  'aws-batch',
   'aws-cognito',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
