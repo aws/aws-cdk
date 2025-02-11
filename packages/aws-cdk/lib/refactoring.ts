@@ -1,4 +1,8 @@
 import { createHash } from 'crypto';
+import * as cxapi from '@aws-cdk/cx-api';
+import { ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { ICloudFormationClient } from './api';
+import { info } from './logging';
 
 /**
  * The Resources section of a CFN template
@@ -50,6 +54,27 @@ export class ResourceCorrespondence {
   isEmpty(): boolean {
     return this.pairs.length === 0;
   }
+
+  newResourcesPreservingOldMetadata(mappings: ResourceMapping[]): Record<string, any> {
+    const result = JSON.parse(JSON.stringify(this.newResources));
+
+    for (const mapping of mappings) {
+      const sourceId = mapping.Source?.LogicalResourceId;
+      const destId = mapping.Destination?.LogicalResourceId;
+
+      if (sourceId == null || destId == null) {
+        continue;
+      }
+
+      const sourceMetadata = this.oldResources[sourceId]?.Metadata;
+
+      if (sourceMetadata && result[destId]) {
+        result[destId].Metadata = sourceMetadata;
+      }
+    }
+
+    return result;
+  }
 }
 
 /**
@@ -71,6 +96,67 @@ export function findResourceCorrespondence(m1: Record<string, any>, m2: Record<s
   );
 
   return new ResourceCorrespondence(pairs, m1, m2);
+}
+
+// TODO Handle cross-stack refactoring
+export async function refactorStack(
+  cfnClient: ICloudFormationClient,
+  correspondence: ResourceCorrespondence,
+  stack: cxapi.CloudFormationStackArtifact,
+): Promise<void> {
+  const mappings = correspondence.pairs.map(toStackRefactor);
+
+  // TODO Add an event progress tracker, like the one for deploy
+  info('Performing stack refactoring');
+
+  const resources = correspondence.newResourcesPreservingOldMetadata(mappings);
+  const template = {
+    ...stack.template,
+    Resources: resources,
+  };
+
+  const stackRefactor = await cfnClient.createStackRefactor({
+    StackDefinitions: [{
+      StackName: stack.stackName,
+      TemplateBody: JSON.stringify(template),
+    }],
+    ResourceMappings: mappings,
+  });
+
+  info(`Stack refactor created: ${stackRefactor.StackRefactorId}`);
+
+  await cfnClient.waitUntilStackRefactorCreateComplete({
+    StackRefactorId: stackRefactor.StackRefactorId,
+  });
+
+  info('Stack refactor creation completed');
+
+  await cfnClient.executeStackRefactor({
+    StackRefactorId: stackRefactor.StackRefactorId,
+  });
+
+  info('Stack refactor execution started');
+
+  await cfnClient.waitUntilStackRefactorExecuteComplete({
+    StackRefactorId: stackRefactor.StackRefactorId,
+  });
+
+  info('Stack refactoring complete');
+
+  function toStackRefactor(pair: RenamingPair): ResourceMapping {
+    const from = [...pair[0]][0];
+    const to = [...pair[1]][0];
+    return {
+      Source: {
+        StackName: stack.stackName,
+        LogicalResourceId: from,
+      },
+      Destination: {
+        StackName: stack.stackName,
+        LogicalResourceId: to,
+      },
+    };
+  }
 }
 
 function index(resourceMap: ResourceMap): ResourceIndex {

@@ -47,9 +47,9 @@ import {
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
 import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
-import { result as logResult, debug, error, highlight, info, success, warning } from '../logging';
+import { debug, error, highlight, info, result as logResult, success, warning } from '../logging';
 import { ResourceMigrator } from '../migrator';
-import { findResourceCorrespondence } from '../refactoring';
+import { findResourceCorrespondence, refactorStack } from '../refactoring';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
@@ -376,6 +376,10 @@ export class CdkToolkit {
           'Some resources have been renamed, which may cause resource replacement',
           'Do you wish to deploy these changes',
         );
+
+        const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
+        const cfnClient = targetEnvironment.sdk.cloudFormation();
+        await refactorStack(cfnClient, correspondence, stack);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) {

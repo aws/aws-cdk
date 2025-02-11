@@ -491,6 +491,9 @@ Resources:
                   - cloudformation:UpdateStack
                   - cloudformation:RollbackStack
                   - cloudformation:ContinueUpdateRollback
+                  - cloudformation:CreateStackRefactor
+                  - cloudformation:ExecuteStackRefactor
+                  - cloudformation:DescribeStackRefactor
                 Resource: "*"
               - Sid: PipelineCrossAccountArtifactsBucket
                 # Read/write buckets in different accounts. Permissions to buckets in
