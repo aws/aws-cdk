@@ -3,9 +3,10 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
-const stack = new Stack(app, 'integ-identitypool');
+const stack = new Stack(app, 'integ-idp');
 
 const userPool = new UserPool(stack, 'Pool');
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
@@ -74,4 +75,7 @@ idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   resources: ['*'],
 }));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
-app.synth();
+
+new IntegTest(app, 'integ-identitypool', {
+  testCases: [stack],
+});

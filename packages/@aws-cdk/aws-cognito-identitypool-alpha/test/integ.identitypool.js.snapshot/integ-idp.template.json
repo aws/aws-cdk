@@ -485,7 +485,7 @@
     "PooltestClientFE8D4935"
    ]
   },
-  "identitypoolDefaultRoleAttachment6BCAB114": {
+  "identitypoolDefaultRoleAttachment9339A8E5": {
    "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
    "Properties": {
     "IdentityPoolId": {
