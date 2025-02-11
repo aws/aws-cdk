@@ -44,13 +44,13 @@ export interface EcrBuildAndPublishActionProps extends codepipeline.CommonAwsAct
   readonly repository: ecr.IRepository;
 
   /**
-   * The location of the Docker file used to build the image.
+   * The directory path of Dockerfile used to build the image.
    *
-   * Optionally, you can provide an alternate docker file location if not at the root level.
+   * Optionally, you can provide an alternate directory path if Dockerfile is not at the root level.
    *
    * @default - the source repository root level
    */
-  readonly dockerfilePath?: string;
+  readonly dockerfileDirectoryPath?: string;
 
   /**
    * The tags used for the image.
@@ -170,7 +170,7 @@ export class EcrBuildAndPublishAction extends Action {
     return {
       configuration: {
         ECRRepositoryName: this.props.repository.repositoryName,
-        DockerFilePath: this.props.dockerfilePath,
+        DockerFilePath: this.props.dockerfileDirectoryPath,
         ImageTags: this.props.imageTags !== undefined ? this.props.imageTags.join(',') : undefined,
         RegistryType: this.props.registryType,
       },
