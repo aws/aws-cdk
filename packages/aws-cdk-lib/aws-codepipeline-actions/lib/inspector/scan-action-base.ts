@@ -83,7 +83,7 @@ export abstract class InspectorScanActionBase extends Action {
     };
   }
 
-  protected abstract getActionConfiguration(): Record<string, any>;
+  protected abstract renderActionConfiguration(): Record<string, any>;
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
@@ -119,7 +119,7 @@ export abstract class InspectorScanActionBase extends Action {
 
     return {
       configuration: {
-        ...this.getActionConfiguration(),
+        ...this.renderActionConfiguration(),
         CriticalThreshold: this.props.criticalThreshold,
         HighThreshold: this.props.highThreshold,
         MediumThreshold: this.props.mediumThreshold,

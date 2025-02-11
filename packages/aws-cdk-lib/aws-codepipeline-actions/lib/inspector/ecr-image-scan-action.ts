@@ -32,7 +32,7 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
     this.ecrProps = props;
   }
 
-  protected getActionConfiguration(): Record<string, any> {
+  protected renderActionConfiguration(): Record<string, any> {
     return {
       InspectorRunMode: 'ECRImageScan',
       ECRRepositoryName: this.ecrProps.repository.repositoryName,

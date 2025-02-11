@@ -24,7 +24,7 @@ export class InspectorSourceCodeScanAction extends InspectorScanActionBase {
     super(baseProps);
   }
 
-  protected getActionConfiguration(): Record<string, any> {
+  protected renderActionConfiguration(): Record<string, any> {
     return {
       InspectorRunMode: 'SourceCodeScan',
     };
