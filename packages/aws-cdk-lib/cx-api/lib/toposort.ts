@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from '../../core';
+import { CloudAssemblyError } from './private/error';
 
 export type KeyFunc<T> = (x: T) => string;
 export type DepFunc<T> = (x: T) => string[];
@@ -32,7 +32,7 @@ export function topologicalSort<T>(xs: Iterable<T>, keyFn: KeyFunc<T>, depFn: De
 
     // If we didn't make any progress, we got stuck
     if (selectable.length === 0) {
-      throw new UnscopedValidationError(`Could not determine ordering between: ${Array.from(remaining.keys()).join(', ')}`);
+      throw new CloudAssemblyError(`Could not determine ordering between: ${Array.from(remaining.keys()).join(', ')}`);
     }
   }
 

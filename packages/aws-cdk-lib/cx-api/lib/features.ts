@@ -1,4 +1,3 @@
-import { UnscopedValidationError } from '../../core';
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
@@ -1433,7 +1432,9 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
-    throw new UnscopedValidationError(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
+    throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;
 }
