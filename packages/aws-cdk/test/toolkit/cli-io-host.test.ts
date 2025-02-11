@@ -378,6 +378,9 @@ describe('CliIoHost', () => {
   });
 });
 
+/**
+ * Do a requestResponse cycle with the global ioHost, while sending input on the global fake input stream
+ */
 async function requestResponse<DataType, ResponseType>(input: string, msg: IoRequest<DataType, ResponseType>): Promise<ResponseType> {
   const promise = ioHost.requestResponse(msg);
   passThrough.write(input + '\n');
