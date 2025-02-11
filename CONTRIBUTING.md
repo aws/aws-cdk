@@ -689,13 +689,19 @@ CDK integration tests.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
-* If this PR includes breaking changes, they must be listed at the end in the following format
+* If this PR includes breaking changes, they must be listed at the end in the following format *before* the `---` or else it will not be included in the CHANGELOG
   (notice how multiple breaking changes should be formatted):
 
   ```
   BREAKING CHANGE: Description of what broke and how to achieve this behavior now
   * **module-name:** Another breaking change
   * **module-name:** Yet another breaking change
+
+  ---
+  
+  *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
+  
+  ---
   ```
 
   Breaking changes are only allowed in experimental libraries. Experimental
