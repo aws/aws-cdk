@@ -1701,7 +1701,7 @@ This solves an issue where a circular dependency could occur if adding lambda to
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
-| 2.178.1 | `false` | `true` |
+| (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
 
