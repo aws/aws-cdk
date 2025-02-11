@@ -250,7 +250,6 @@ export interface MultitrackInputConfiguration {
   readonly policy: Policy;
 }
 
-
 /**
   A new IVS channel
  */
@@ -314,12 +313,14 @@ export class Channel extends ChannelBase {
       preset = props.preset;
     }
 
-    if ((props.type !== ChannelType.STANDARD) && !props.multitrackInputConfiguration) {
-      throw new Error('`multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`');
-    }
+    if (props.multitrackInputConfiguration !== undefined) {
+      if (props.type !== undefined && props.type !== ChannelType.STANDARD) {
+        throw new Error('`multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`');
+      }
 
-    if((props.containerFormat!==ContainerFormat.FRAGMENTED_MP4)&&props.multitrackInputConfiguration){
-      throw new Error('`containerFormat` must be set to `ContainerFormat.FRAGMENTED_MP4` when `multitrackInputConfiguration` is specified');
+      if (props.containerFormat !== undefined && props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
+        throw new Error('`containerFormat` must be set to `ContainerFormat.FRAGMENTED_MP4` when `multitrackInputConfiguration` is specified');
+      }
     }
 
     const resource = new CfnChannel(this, 'Resource', {
@@ -330,6 +331,7 @@ export class Channel extends ChannelBase {
       type: props.type,
       preset,
       recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
+      containerFormat: props.containerFormat,
       multitrackInputConfiguration: props.multitrackInputConfiguration ?
         {
           enabled: true,
