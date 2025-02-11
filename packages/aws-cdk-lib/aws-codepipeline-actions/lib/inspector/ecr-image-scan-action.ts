@@ -54,7 +54,8 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
       ],
     }));
 
-    // Because it was not listed in the reference, but without it, an error would occur.
+    // This permission was not listed in the above reference, but without it,
+    // an error would occur since `ecr get-login-password` is executed in the action.
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
