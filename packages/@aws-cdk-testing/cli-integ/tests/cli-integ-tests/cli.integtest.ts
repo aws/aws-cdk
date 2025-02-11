@@ -2256,7 +2256,7 @@ integTest(
 /**
  * Create an S3 bucket, orphan that bucket, then import the bucket, with a NodeJSFunction lambda also in the stack.
  *
- * We want to test with a large template to make sure large templates can work with import.
+ * Validates fix for https://github.com/aws/aws-cdk/issues/31999 (import fails)
  */
 integTest(
   'test s3 bucket import with nodejsfunction lambda',

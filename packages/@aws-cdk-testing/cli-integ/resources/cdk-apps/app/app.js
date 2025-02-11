@@ -266,25 +266,6 @@ class ImportableStack extends cdk.Stack {
       });
     }
 
-    // if (process.env.INCLUDE_SINGLE_BUCKET === '1') {
-    //   const bucket = new s3.bucket(this, 'test-bucket', {
-    //     removalPolicy: (process.env.RETAIN_SINGLE_BUCKET === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
-    //   });
-
-    //   // new cdk.CfnOutput(this, 'QueueName', {
-    //   //   value: bucket.queueName,
-    //   // });
-
-    //   // new cdk.CfnOutput(this, 'QueueUrl', {
-    //   //   value: bucket.queueUrl,
-    //   // });
-
-    //   new cdk.CfnOutput(this, 'BucketLogicalId', {
-    //     value: bucket.node.defaultChild.logicalId,
-    //   });
-    // }
-
-
     if (process.env.INCLUDE_SINGLE_BUCKET === '1') {
       const bucket = new s3.Bucket(this, 'test-bucket', {
         removalPolicy: (process.env.RETAIN_SINGLE_BUCKET === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
@@ -321,7 +302,6 @@ class ImportableStack extends cdk.Stack {
           },
           runtime: lambda.Runtime.NODEJS_18_X,
           entry: path.join(__dirname, 'lambda-node/index.ts')
-          // entry: lambda.Code.asset(path.join(__dirname, 'lambda/index.js')),
         }
       )
     }
