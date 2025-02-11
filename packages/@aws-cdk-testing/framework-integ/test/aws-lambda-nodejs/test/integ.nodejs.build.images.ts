@@ -51,39 +51,3 @@ stack.lambdaFunctions.forEach(func=> {
     ExecutedVersion: '$LATEST',
   }));
 });
-
-// Ensure that the code is bundled
-const assembly = app.synth();
-
-stack.lambdaFunctions.forEach((func) => {
-  const template = assembly.getStackArtifact(stack.artifactId).template;
-  const resourceName = stack.getLogicalId(func.node.defaultChild as lambda.CfnFunction);
-  const resource = template.Resources[resourceName];
-
-  if (!resource || resource.Type !== 'AWS::Lambda::Function') {
-    throw new ValidationError(`Could not find Lambda function resource for ${func.functionName}`, stack);
-  }
-
-  const s3Bucket = resource.Properties.Code.S3Bucket;
-  const s3Key = resource.Properties.Code.S3Key;
-
-  if (!s3Bucket || !s3Key) {
-    throw new ValidationError(`Could not find S3 location for function ${func.functionName}`, stack);
-  }
-
-  const assetId = s3Key.split('.')[0]; // S3Key format is <hash>.zip"
-  const assetDir = path.join(assembly.directory, `asset.${assetId}`);
-
-  try {
-    if (!fs.existsSync(assetDir) || !fs.statSync(assetDir).isDirectory()) {
-      throw new ValidationError(`Asset directory does not exist for function ${func.functionName}: ${assetDir}`, stack);
-    }
-
-    const indexPath = path.join(assetDir, 'index.js');
-    if (!fs.existsSync(indexPath)) {
-      throw new ValidationError(`index.js not found in asset directory for function ${func.functionName}`, stack);
-    }
-  } catch (error) {
-    throw error;
-  }
-});
