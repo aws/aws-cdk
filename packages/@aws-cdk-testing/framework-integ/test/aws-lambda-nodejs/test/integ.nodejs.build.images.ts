@@ -1,8 +1,6 @@
 import * as path from 'path';
-import * as fs from 'fs';
-import { App, Stack, StackProps, ValidationError } from 'aws-cdk-lib';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
