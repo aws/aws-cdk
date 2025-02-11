@@ -27,10 +27,10 @@ export class CcApiContextProviderPlugin implements ContextProviderPlugin {
 
   private async findResources(cc: ICloudControlClient, args: CcApiContextQuery): Promise<{[key: string]: any} []> {
     if (args.exactIdentifier && args.propertyMatch) {
-      throw new ContextProviderError('Specify either exactIdentifier or propertyMatch, but not both.');
+      throw new ContextProviderError(`Specify either exactIdentifier or propertyMatch, but not both. Failed to find resources using CC API for type ${args.typeName}.`);
     }
     if (!args.exactIdentifier && !args.propertyMatch) {
-      throw new ContextProviderError('Neither exactIdentifier nor propertyMatch is specified.');
+      throw new ContextProviderError(`Neither exactIdentifier nor propertyMatch is specified. Failed to find resources using CC API for type ${args.typeName}.`);
     }
 
     if (args.exactIdentifier) {

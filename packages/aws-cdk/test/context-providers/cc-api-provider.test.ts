@@ -206,7 +206,7 @@ test('error by specifying both exactIdentifier and propertyMatch', async () => {
       },
       propertiesToReturn: ['DBInstanceArn', 'StorageEncrypted'],
     }),
-  ).rejects.toThrow('Specify either exactIdentifier or propertyMatch, but not both.'); // THEN
+  ).rejects.toThrow('Specify either exactIdentifier or propertyMatch, but not both. Failed to find resources using CC API for type AWS::RDS::DBInstance.'); // THEN
 });
 
 test('error by specifying neither exactIdentifier or propertyMatch', async () => {
@@ -222,6 +222,6 @@ test('error by specifying neither exactIdentifier or propertyMatch', async () =>
       typeName: 'AWS::RDS::DBInstance',
       propertiesToReturn: ['DBInstanceArn', 'StorageEncrypted'],
     }),
-  ).rejects.toThrow('Neither exactIdentifier nor propertyMatch is specified.'); // THEN
+  ).rejects.toThrow('Neither exactIdentifier nor propertyMatch is specified. Failed to find resources using CC API for type AWS::RDS::DBInstance.'); // THEN
 });
 /* eslint-enable */
