@@ -1282,18 +1282,20 @@ export class Cluster extends ClusterBase {
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       computeConfig: {
-        enabled: props.autoMode,
+        enabled: props.autoMode === false ? false : true,
         nodePools: props.compute?.nodePools ?? ['system', 'general-purpose'],
         nodeRoleArn: props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
       },
       storageConfig: {
         blockStorage: {
-          enabled: props.autoMode,
+          enabled: props.autoMode === false ? false : true,
         },
       },
       kubernetesNetworkConfig: {
+        ipFamily: this.ipFamily,
+        serviceIpv4Cidr: props.serviceIpv4Cidr,
         elasticLoadBalancing: {
-          enabled: props.autoMode,
+          enabled: props.autoMode === false ? false : true,
         },
       },
       resourcesVpcConfig: {
@@ -1410,9 +1412,29 @@ export class Cluster extends ClusterBase {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
     }
 
-    // allocate default capacity if non-zero (or default) when autoMode is disabled. This means when
-    // autoMode is enabled, the default capacity is ignored.
-    if (props.autoMode === false) {
+    /**
+     * allocate default capacity for the following cases:
+     * 1. autoMode is explicitly false
+     * 2. defaultCapacity is defined
+     * 3. defaultCapacityType is defined
+     * 4. defaultCapacityInstance is defined
+     */
+
+    // if any of defaultCapacity* properties are set with autoMode explicitly enabled, throw an error
+    if (props.defaultCapacity !== undefined ||
+      props.defaultCapacityType !== undefined ||
+      props.defaultCapacityInstance !== undefined) {
+      if (props.autoMode === true) {
+        throw new Error('defaultCapacity* properties are not supported when autoMode is explicitly enabled');
+      }
+    }
+
+    const disableAutoMode = props.autoMode === false ||
+      props.defaultCapacity !== undefined ||
+      props.defaultCapacityType !== undefined ||
+      props.defaultCapacityInstance !== undefined;
+
+    if (disableAutoMode) {
       const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
       if (minCapacity > 0) {
         const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
@@ -1423,7 +1445,13 @@ export class Cluster extends ClusterBase {
           this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
       }
 
-      this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+      // we only need this if we are not using auto mode or if we are using fargate
+      this.defineCoreDnsComputeType(CoreDnsComputeType.EC2);
+    }
+
+    // ensure FARGATE still applies here
+    if (props.coreDnsComputeType === CoreDnsComputeType.FARGATE) {
+      this.defineCoreDnsComputeType(CoreDnsComputeType.FARGATE);
     }
 
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;

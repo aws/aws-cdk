@@ -1020,15 +1020,42 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 
 By default, the Cluster construct enables EKS Auto mode.
 
-```typescript
-
+```ts
 // Create EKS cluster with Auto Mode enabled
 const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
   version: eks.KubernetesVersion.V1_32,
-  autoMode: true, // default is true
 });
 ```
 
+When you explicitly turn `autoMode` to `false` or define any of `defaultCapacity`, `defaultCapacityType` or `defaultCapacityInstance`, the cluster falls back its 
+compute capacity to the default nodegroup.
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  autoMode: false, // disables Auto Mode and provisions a default nodegroup instead
+});
+```
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacity: 2 // implicitly disable Auto Mode and opt in the a nodegroup
+});
+```
+
+You can't opt in both Auto Mode and a default nodegroup
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  autoMode: true,
+  defaultCapacity: 2  // will throw an error
+});
+```
 
 ### Node Pools
 
