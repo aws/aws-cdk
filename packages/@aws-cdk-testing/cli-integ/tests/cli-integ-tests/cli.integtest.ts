@@ -2266,9 +2266,7 @@ integTest(
   'test s3 bucket import with nodejsfunction lambda',
   withDefaultFixture(async (fixture) => {
     // GIVEN
-    const randomPrefix = randomString();
-    const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
-    const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
+    const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
     await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
     // First, create a stack that includes a NodeJSFunction lambda and one bucket that will be removed from the stack but NOT deleted from AWS.
@@ -2289,7 +2287,7 @@ integTest(
           BucketName: bucketName,
         },
       };
-      const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
+      const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
       await fs.writeFile(mappingFile, JSON.stringify(bucketResourceMap), { encoding: 'utf-8' });
 
       // Third, remove the bucket from the stack, but don't delete the bucket from AWS.
