@@ -1809,7 +1809,7 @@ import { RemovalPolicies } from 'aws-cdk-lib';
 // Apply DESTROY policy to all resources in a scope
 RemovalPolicies.of(scope).destroy();
 
-// Apply DESTROY policy (overwrited)
+// Apply DESTROY policy (overwritten)
 RemovalPolicies.of(scope).snapshot();
 RemovalPolicies.of(scope).destroy({ overwrite: true }));
 
