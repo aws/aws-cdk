@@ -2,15 +2,15 @@ import { Construct } from 'constructs';
 import { BaseInspectorScanAction, BaseInspectorScanActionProps } from './base-scan-action';
 import * as codepipeline from '../../../aws-codepipeline';
 
-export interface SourceCodeScanActionProps extends BaseInspectorScanActionProps {
+export interface InspectorSourceCodeScanActionProps extends BaseInspectorScanActionProps {
   /**
    * The source code to scan for vulnerabilities.
    */
   readonly input: codepipeline.Artifact;
 }
 
-export class SourceCodeScanAction extends BaseInspectorScanAction {
-  constructor(props: SourceCodeScanActionProps) {
+export class InspectorSourceCodeScanAction extends BaseInspectorScanAction {
+  constructor(props: InspectorSourceCodeScanActionProps) {
     const baseProps: BaseInspectorScanActionProps & { inputs?: codepipeline.Artifact[] } = {
       ...props,
       inputs: [props.input],

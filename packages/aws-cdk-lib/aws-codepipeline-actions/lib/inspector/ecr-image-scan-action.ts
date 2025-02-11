@@ -4,7 +4,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
 
-export interface EcrImageScanActionProps extends BaseInspectorScanActionProps {
+export interface InspectorEcrImageScanActionProps extends BaseInspectorScanActionProps {
   /**
    * The Amazon ECR repository where the image is pushed.
    */
@@ -18,10 +18,10 @@ export interface EcrImageScanActionProps extends BaseInspectorScanActionProps {
   readonly imageTag?: string;
 }
 
-export class EcrImageScanAction extends BaseInspectorScanAction {
-  private readonly ecrProps: EcrImageScanActionProps;
+export class InspectorEcrImageScanAction extends BaseInspectorScanAction {
+  private readonly ecrProps: InspectorEcrImageScanActionProps;
 
-  constructor(props: EcrImageScanActionProps) {
+  constructor(props: InspectorEcrImageScanActionProps) {
     super(props);
     this.ecrProps = props;
   }
