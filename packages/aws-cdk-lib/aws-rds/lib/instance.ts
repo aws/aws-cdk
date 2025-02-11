@@ -138,58 +138,54 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * Lookup an existing DatabaseInstance using instanceIdentifier.
    */
   public static fromLookup(scope: Construct, id: string, options: DatabaseInstanceLookupOptions): IDatabaseInstance {
-    try {
-      const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
-        provider: cxschema.ContextProvider.CC_API_PROVIDER,
-        props: {
-          typeName: 'AWS::RDS::DBInstance',
-          exactIdentifier: options.instanceIdentifier,
-          propertiesToReturn: [
-            'DBInstanceArn',
-            'Endpoint.Address',
-            'Endpoint.Port',
-            'DbiResourceId',
-            'DBSecurityGroups',
-          ],
-        } as cxschema.CcApiContextQuery,
-        dummyValue: [
-          {
-            'Identifier': 'TEST',
-            'DBInstanceArn': 'TESTARN',
-            'Endpoint.Address': 'TESTADDRESS',
-            'Endpoint.Port': '5432',
-            'DbiResourceId': 'TESTID',
-            'DBSecurityGroups': [],
-          },
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::RDS::DBInstance',
+        exactIdentifier: options.instanceIdentifier,
+        propertiesToReturn: [
+          'DBInstanceArn',
+          'Endpoint.Address',
+          'Endpoint.Port',
+          'DbiResourceId',
+          'DBSecurityGroups',
         ],
-      }).value;
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          'Identifier': 'TEST',
+          'DBInstanceArn': 'TESTARN',
+          'Endpoint.Address': 'TESTADDRESS',
+          'Endpoint.Port': '5432',
+          'DbiResourceId': 'TESTID',
+          'DBSecurityGroups': [],
+        },
+      ],
+    }).value;
 
-      // getValue returns a list of result objects.  We are expecting 1 result or Error.
-      const instance = response[0];
+    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    const instance = response[0];
 
-      // Get ISecurityGroup from securityGroupId
-      let securityGroups: ec2.ISecurityGroup[] = [];
-      const dbsg: [string] = instance.DBSecurityGroups;
-      if (dbsg) {
-        securityGroups = dbsg.map(securityGroupId => {
-          ec2.SecurityGroup.fromSecurityGroupId(
-            scope,
-            `LSG-${securityGroupId}`,
-            securityGroupId,
-          );
-        }) as unknown as ec2.ISecurityGroup[];
-      }
-
-      return this.fromDatabaseInstanceAttributes(scope, id, {
-        instanceEndpointAddress: instance['Endpoint.Address'],
-        port: instance['Endpoint.Port'],
-        instanceIdentifier: options.instanceIdentifier,
-        securityGroups: securityGroups,
-        instanceResourceId: instance.DbiResourceId,
-      });
-    } catch (error) {
-      throw new TypeError(`Could not find RDS DatabaseInstance with instanceIdentifier of ${options.instanceIdentifier}. ${error}`);
+    // Get ISecurityGroup from securityGroupId
+    let securityGroups: ec2.ISecurityGroup[] = [];
+    const dbsg: string[] = instance.DBSecurityGroups;
+    if (dbsg) {
+      securityGroups = dbsg.map(securityGroupId => {
+        ec2.SecurityGroup.fromSecurityGroupId(
+          scope,
+          `LSG-${securityGroupId}`,
+          securityGroupId,
+        );
+      }) as unknown as ec2.ISecurityGroup[];
     }
+
+    return this.fromDatabaseInstanceAttributes(scope, id, {
+      instanceEndpointAddress: instance['Endpoint.Address'],
+      port: instance['Endpoint.Port'],
+      instanceIdentifier: options.instanceIdentifier,
+      securityGroups: securityGroups,
+      instanceResourceId: instance.DbiResourceId,
+    });
   }
 
   /**
