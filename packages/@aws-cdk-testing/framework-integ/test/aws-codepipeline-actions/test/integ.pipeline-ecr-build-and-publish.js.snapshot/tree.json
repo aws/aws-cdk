@@ -370,7 +370,8 @@
                               "ECRRepositoryName": {
                                 "Ref": "Repository22E53BBD"
                               },
-                              "DockerFilePath": "./my-dir"
+                              "DockerFilePath": "./my-dir",
+                              "ImageTags": "my-tag-1,my-tag-2"
                             },
                             "runOrder": 1,
                             "roleArn": {

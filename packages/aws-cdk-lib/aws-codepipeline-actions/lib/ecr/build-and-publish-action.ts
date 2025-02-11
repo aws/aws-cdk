@@ -171,7 +171,7 @@ export class EcrBuildAndPublishAction extends Action {
       configuration: {
         ECRRepositoryName: this.props.repository.repositoryName,
         DockerFilePath: this.props.dockerfilePath,
-        ImageTags: this.props.imageTags,
+        ImageTags: this.props.imageTags !== undefined ? this.props.imageTags.join(',') : undefined,
         RegistryType: this.props.registryType,
       },
     };

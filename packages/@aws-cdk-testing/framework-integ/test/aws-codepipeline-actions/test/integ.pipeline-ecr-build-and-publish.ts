@@ -29,12 +29,13 @@ const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
 });
 
-const imageTag = 'latest';
+const imageTag1 = 'my-tag-1';
+const imageTag2 = 'my-tag-2';
 const buildAction = new cpactions.EcrBuildAndPublishAction({
   actionName: 'EcrBuildAndPublishAction',
   repository: repository,
   dockerfilePath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
-  imageTags: [imageTag],
+  imageTags: [imageTag1, imageTag2],
   input: sourceOutput,
 });
 
@@ -66,7 +67,7 @@ const describeImagesCall = integ.assertions.awsApiCall('ECR', 'describeImages', 
 }).expect(ExpectedResult.objectLike({
   imageDetails: Match.arrayWith([
     Match.objectLike({
-      imageTags: Match.arrayWith([imageTag]),
+      imageTags: Match.arrayWith([imageTag1, imageTag2]),
     }),
   ]),
 }));
