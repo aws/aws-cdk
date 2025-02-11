@@ -8,7 +8,7 @@ import { Action } from '../action';
 /**
  * The CodePipeline variables emitted by the ECR build and publish Action.
  */
-export interface ECRBuildAndPublishVariables {
+export interface EcrBuildAndPublishVariables {
   /**
    * The sha256 digest of the image manifest.
    */
@@ -21,7 +21,7 @@ export interface ECRBuildAndPublishVariables {
 }
 
 /**
- * The type of registry to use for the ECRBuildAndPublish action.
+ * The type of registry to use for the EcrBuildAndPublish action.
  */
 export enum RegistryType {
   /**
@@ -35,9 +35,9 @@ export enum RegistryType {
 }
 
 /**
- * Construction properties of the `ECRBuildAndPublishAction`.
+ * Construction properties of the `EcrBuildAndPublishAction`.
  */
-export interface ECRBuildAndPublishActionProps extends codepipeline.CommonAwsActionProps {
+export interface EcrBuildAndPublishActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The Amazon ECR repository where the image is pushed.
    */
@@ -73,12 +73,12 @@ export interface ECRBuildAndPublishActionProps extends codepipeline.CommonAwsAct
 }
 
 /**
- * CodePipeline build action that uses AWS ECRBuildAndPublish.
+ * CodePipeline build action that uses AWS EcrBuildAndPublish.
  */
-export class ECRBuildAndPublishAction extends Action {
-  private readonly props: ECRBuildAndPublishActionProps;
+export class EcrBuildAndPublishAction extends Action {
+  private readonly props: EcrBuildAndPublishActionProps;
 
-  constructor(props: ECRBuildAndPublishActionProps) {
+  constructor(props: EcrBuildAndPublishActionProps) {
     super({
       ...props,
       category: codepipeline.ActionCategory.BUILD,
@@ -91,7 +91,7 @@ export class ECRBuildAndPublishAction extends Action {
   }
 
   /** The variables emitted by this action. */
-  public get variables(): ECRBuildAndPublishVariables {
+  public get variables(): EcrBuildAndPublishVariables {
     return {
       ecrImageDigestId: this.variableExpression('ECRImageDigestId'),
       ecrRepositoryName: this.variableExpression('ECRRepositoryName'),
