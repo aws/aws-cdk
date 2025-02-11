@@ -1,5 +1,5 @@
 import { Step } from './step';
-import { UnscopedValidationError, ValidationError } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 
 /**
  * A set of files traveling through the deployment pipeline
