@@ -1011,3 +1011,38 @@ const cluster = new eks.Cluster(this, 'Cluster', {
   ],
 });
 ```
+
+## EKS Auto Mode
+
+[Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
+
+### Using Auto Mode
+
+By default, the Cluster construct enables EKS Auto mode.
+
+```typescript
+
+// Create EKS cluster with Auto Mode enabled
+const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  autoMode: true, // default is true
+});
+```
+
+
+### Node Pools
+
+Auto Mode comes with two default node pools if `nodePool` is undefined:
+
+- `general-purpose`: For running your application workloads
+- `system`: For running system components and add-ons
+
+You can customize the node pools by providing your own list in the `nodePools` property of `compute`.
+
+```typescript
+const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+  // ...
+  compute: {
+    nodePools: ['custom-purpose'],  // Optional: defaults to ['general-purpose', 'system']
+  },
+});
