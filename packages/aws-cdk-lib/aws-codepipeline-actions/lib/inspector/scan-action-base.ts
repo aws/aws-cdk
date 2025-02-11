@@ -17,9 +17,9 @@ export interface InspectorScanVariables {
 }
 
 /**
- * Base construction properties of the `InspectorScanAction`.
+ * Base construction properties of the `InspectorScanActionBase`.
  */
-export interface BaseInspectorScanActionProps extends codepipeline.CommonAwsActionProps {
+export interface InspectorScanActionBaseProps extends codepipeline.CommonAwsActionProps {
   /**
    * The number of critical severity vulnerabilities found in your source
    * beyond which CodePipeline should fail the action.
@@ -61,10 +61,10 @@ export interface BaseInspectorScanActionProps extends codepipeline.CommonAwsActi
 /**
  * CodePipeline invoke action that uses AWS InspectorScan.
  */
-export abstract class BaseInspectorScanAction extends Action {
-  protected readonly props: BaseInspectorScanActionProps;
+export abstract class InspectorScanActionBase extends Action {
+  protected readonly props: InspectorScanActionBaseProps;
 
-  constructor(props: BaseInspectorScanActionProps) {
+  constructor(props: InspectorScanActionBaseProps) {
     super({
       ...props,
       category: codepipeline.ActionCategory.INVOKE,

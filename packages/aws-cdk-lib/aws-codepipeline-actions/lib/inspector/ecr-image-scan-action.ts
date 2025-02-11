@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { BaseInspectorScanAction, BaseInspectorScanActionProps } from './base-scan-action';
+import { InspectorScanActionBase, InspectorScanActionBaseProps } from './scan-action-base';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
 
-export interface InspectorEcrImageScanActionProps extends BaseInspectorScanActionProps {
+export interface InspectorEcrImageScanActionProps extends InspectorScanActionBaseProps {
   /**
    * The Amazon ECR repository where the image is pushed.
    */
@@ -18,7 +18,7 @@ export interface InspectorEcrImageScanActionProps extends BaseInspectorScanActio
   readonly imageTag?: string;
 }
 
-export class InspectorEcrImageScanAction extends BaseInspectorScanAction {
+export class InspectorEcrImageScanAction extends InspectorScanActionBase {
   private readonly ecrProps: InspectorEcrImageScanActionProps;
 
   constructor(props: InspectorEcrImageScanActionProps) {
