@@ -67,7 +67,7 @@ export interface ECRBuildAndPublishActionProps extends codepipeline.CommonAwsAct
   readonly registryType?: RegistryType;
 
   /**
-   * The source to use as input for this action.
+   * The artifact produced by the source action that contains the Dockerfile needed to build the image.
    */
   readonly input: codepipeline.Artifact;
 }
