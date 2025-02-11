@@ -55,6 +55,31 @@ const updateFieldValueInProject = {
   }
 }
 
+const projectItem = (existingPriority, existingStatus) => ({
+  node: {
+    projectItems: {
+      nodes: existingPriority ? [{
+        id: 'existing-item-id',
+        project: {
+          id: PROJECT_CONFIG.projectId
+        },
+        fieldValues: {
+          nodes: [
+            {
+              field: { name: 'Priority' },
+              name: existingPriority
+            },
+            {
+              field: { name: 'Status' },
+              name: existingStatus
+            }
+          ]
+        }
+      }] : []
+    }
+  }
+});
+
 /**
  * Creates a mock PR with specified properties
  */
@@ -83,20 +108,32 @@ exports.createMockPR = ({
 });
 
 /**
- * Creates mock GitHub GraphQL client with predefined responses
+ * Creates mock GitHub GraphQL client with predefined responses for Priority (R1, R3, R4)
  */
-exports.createMockGithub = () => {
+exports.createMockGithubForPriority = ({
+  existingPriority = null,
+  existingStatus = STATUS.READY
+} = {}) => { 
   const graphql = jest.fn();
 
   graphql
     // First call - fetch project fields
     .mockResolvedValueOnce(projectFields)
-    // Second call - add item to project
-    .mockResolvedValueOnce(addItemToProject)
-    // Third call - update priority
-    .mockResolvedValueOnce(updateFieldValueInProject)
-    // Fourth call - update status
-    .mockResolvedValueOnce(updateFieldValueInProject);
+    // Second call - check if PR is in project
+    .mockResolvedValueOnce(projectItem(existingPriority, existingStatus));
+
+    // If PR exists and needs priority update
+    if (existingPriority) {
+      // Third call - update priority only
+      graphql.mockResolvedValueOnce(updateFieldValueInProject);
+    } else {
+      // Third call - add to project
+      graphql.mockResolvedValueOnce(addItemToProject)
+      // Fourth call - update priority
+      .mockResolvedValueOnce(updateFieldValueInProject)
+      // Fifth call - update status
+      .mockResolvedValueOnce(updateFieldValueInProject);
+    }
 
   return { graphql };
 };
@@ -108,7 +145,8 @@ exports.createMockGithubForR5 = ({
   draft = false,
   labels = [],
   updatedAt = new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(),
-  existingPriority = null
+  existingPriority = null,
+  existingStatus = STATUS.READY
 }) => {
   const graphql = jest.fn();
 
@@ -139,30 +177,15 @@ exports.createMockGithubForR5 = ({
     // Second call - fetch project fields
     .mockResolvedValueOnce(projectFields)
     // Third call - fetchProjectItem (check if PR is in project)
-    .mockResolvedValueOnce({
-      node: {
-        projectItems: {
-            nodes: existingPriority ? [{
-                id: 'existing-item-id',
-                project: {
-                    id: PROJECT_CONFIG.projectId
-                },
-                fieldValues: {
-                    nodes: [{
-                        field: { name: 'Priority' },
-                        name: existingPriority
-                    }]
-                }
-            }] : []
-        }
-      }
-    })
-    // Fourth call - add item to project
-    .mockResolvedValueOnce(addItemToProject)
-    // Fifth call - update priority
-    .mockResolvedValueOnce(updateFieldValueInProject)
-    // Sixth call - update status
-    .mockResolvedValueOnce(updateFieldValueInProject);
+    .mockResolvedValueOnce(projectItem(existingPriority, existingStatus))
+    if (!existingPriority) {
+      // Fourth call - add to project
+      graphql.mockResolvedValueOnce(addItemToProject)
+      // Fifth call - update priority
+      .mockResolvedValueOnce(updateFieldValueInProject)
+      // Sixth call - update status
+      .mockResolvedValueOnce(updateFieldValueInProject);
+    }
 
   return { graphql };
 };
@@ -212,39 +235,12 @@ exports.createMockGithubForR2 = ({
       // Second call - fetch project fields
       .mockResolvedValueOnce(projectFields)
       // Third call - check if PR is in project
-      .mockResolvedValueOnce({
-          node: {
-              projectItems: {
-                  nodes: existingPriority ? [{
-                      id: 'existing-item-id',
-                      project: {
-                          id: PROJECT_CONFIG.projectId
-                      },
-                      fieldValues: {
-                          nodes: [
-                              {
-                                  field: { name: 'Priority' },
-                                  name: existingPriority
-                              },
-                              {
-                                  field: { name: 'Status' },
-                                  name: existingStatus
-                              }
-                          ]
-                      }
-                  }] : []
-              }
-          }
-      });
+      .mockResolvedValueOnce(projectItem(existingPriority, existingStatus));
 
   // If PR exists and needs priority update
   if (existingPriority && existingPriority !== PRIORITIES.R2) {
       // Fourth call - update priority only
-      graphql.mockResolvedValueOnce({
-          updateProjectV2ItemFieldValue: {
-              projectV2Item: { id: 'existing-item-id' }
-          }
-      });
+      graphql.mockResolvedValueOnce(updateFieldValueInProject);
   }
   // If PR doesn't exist in project
   else if (!existingPriority) {
