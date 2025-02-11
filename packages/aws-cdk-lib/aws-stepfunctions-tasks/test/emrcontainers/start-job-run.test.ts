@@ -1033,7 +1033,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 
 describe('Custom resource is created that has correct EKS namespace, environment, AWSCLI layer, and IAM policy permissions', () => {
   test('@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
-    //GIVEN
+    // GIVEN
     const app = new App({
       context: {
         [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
@@ -1131,7 +1131,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
   });
 
   test('@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
-    //GIVEN
+    // GIVEN
     const app = new App({
       context: {
         [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
