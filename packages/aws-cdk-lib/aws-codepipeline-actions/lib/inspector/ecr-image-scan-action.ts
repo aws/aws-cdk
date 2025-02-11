@@ -44,19 +44,21 @@ export class InspectorEcrImageScanAction extends InspectorScanActionBase {
   codepipeline.ActionConfig {
     const config = super.bound(scope, stage, options);
 
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'ecr:GetAuthorizationToken',
-      ],
-    }));
-
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.ecrProps.repository.repositoryArn],
       actions: [
         'ecr:GetDownloadUrlForLayer',
         'ecr:BatchGetImage',
         'ecr:BatchCheckLayerAvailability',
+      ],
+    }));
+
+    // Because it was not listed in the reference, but without it, an error would occur.
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'ecr:GetAuthorizationToken',
       ],
     }));
 
