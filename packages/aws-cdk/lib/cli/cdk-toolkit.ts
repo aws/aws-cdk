@@ -367,8 +367,9 @@ export class CdkToolkit {
         stack.template.Resources ?? {},
       );
 
-      if (!correspondence.isEmpty()) {
-        warning(`Some resources have been renamed:${correspondence}`);
+      const ambiguous = correspondence.ambiguous();
+      if (!ambiguous.isEmpty()) {
+        warning(`Some resources have been renamed, but it is not possible to automatically establish a 1:1 mapping:${ambiguous}`);
 
         await askUserConfirmation(
           this.ioHost,
@@ -376,10 +377,13 @@ export class CdkToolkit {
           'Some resources have been renamed, which may cause resource replacement',
           'Do you wish to deploy these changes',
         );
+      }
 
+      const unambiguous = correspondence.unambiguous();
+      if (!unambiguous.isEmpty()) {
         const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
         const cfnClient = targetEnvironment.sdk.cloudFormation();
-        await refactorStack(cfnClient, correspondence, stack);
+        await refactorStack(cfnClient, unambiguous, currentTemplate, stack.stackName);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) {

@@ -1,7 +1,6 @@
 import { createHash } from 'crypto';
-import * as cxapi from '@aws-cdk/cx-api';
-import { ResourceMapping } from '@aws-sdk/client-cloudformation';
-import { ICloudFormationClient } from './api';
+import { type CreateStackRefactorCommandInput, ResourceMapping } from '@aws-sdk/client-cloudformation';
+import { ICloudFormationClient, Template } from './api';
 import { info } from './logging';
 
 /**
@@ -55,25 +54,26 @@ export class ResourceCorrespondence {
     return this.pairs.length === 0;
   }
 
-  newResourcesPreservingOldMetadata(mappings: ResourceMapping[]): Record<string, any> {
-    const result = JSON.parse(JSON.stringify(this.newResources));
+  /**
+   * A subset of this correspondence containing only ambiguous pairs
+   */
+  ambiguous(): ResourceCorrespondence {
+    const ambiguousPairs = this.pairs.filter(pair =>
+      pair[0].size > 1 || pair[1].size > 1,
+    );
 
-    for (const mapping of mappings) {
-      const sourceId = mapping.Source?.LogicalResourceId;
-      const destId = mapping.Destination?.LogicalResourceId;
+    return new ResourceCorrespondence(ambiguousPairs, this.oldResources, this.newResources);
+  }
 
-      if (sourceId == null || destId == null) {
-        continue;
-      }
+  /**
+   * A subset of this correspondence containing only unambiguous pairs
+   */
+  unambiguous(): ResourceCorrespondence {
+    const ambiguousPairs = this.pairs.filter(pair =>
+      !(pair[0].size > 1 || pair[1].size > 1),
+    );
 
-      const sourceMetadata = this.oldResources[sourceId]?.Metadata;
-
-      if (sourceMetadata && result[destId]) {
-        result[destId].Metadata = sourceMetadata;
-      }
-    }
-
-    return result;
+    return new ResourceCorrespondence(ambiguousPairs, this.oldResources, this.newResources);
   }
 }
 
@@ -102,26 +102,39 @@ export function findResourceCorrespondence(m1: Record<string, any>, m2: Record<s
 export async function refactorStack(
   cfnClient: ICloudFormationClient,
   correspondence: ResourceCorrespondence,
-  stack: cxapi.CloudFormationStackArtifact,
+  oldTemplate: Template,
+  stackName: string,
 ): Promise<void> {
-  const mappings = correspondence.pairs.map(toStackRefactor);
+  const mappings = correspondence.pairs.map(toResourceMapping);
 
   // TODO Add an event progress tracker, like the one for deploy
   info('Performing stack refactoring');
 
-  const resources = correspondence.newResourcesPreservingOldMetadata(mappings);
+  // Performing the name replacement in the template to send to the API.
+  // This seems redundant, since CloudFormation could infer the template
+  // from the current state + the mappings. But without this, the API
+  // rejects the request.
+  const resources = Object.fromEntries(
+    Object.entries(oldTemplate.Resources).map(([k, v]) => {
+      const mapping = mappings.find(m => m.Source?.LogicalResourceId === k);
+      return mapping != null ? [mapping.Destination?.LogicalResourceId, v] : [k, v];
+    }),
+  );
+
   const template = {
-    ...stack.template,
+    ...oldTemplate,
     Resources: resources,
   };
 
-  const stackRefactor = await cfnClient.createStackRefactor({
+  const refactorCommand: CreateStackRefactorCommandInput = {
     StackDefinitions: [{
-      StackName: stack.stackName,
+      StackName: stackName,
       TemplateBody: JSON.stringify(template),
     }],
     ResourceMappings: mappings,
-  });
+  };
+
+  const stackRefactor = await cfnClient.createStackRefactor(refactorCommand);
 
   info(`Stack refactor created: ${stackRefactor.StackRefactorId}`);
 
@@ -143,16 +156,16 @@ export async function refactorStack(
 
   info('Stack refactoring complete');
 
-  function toStackRefactor(pair: RenamingPair): ResourceMapping {
+  function toResourceMapping(pair: RenamingPair): ResourceMapping {
     const from = [...pair[0]][0];
     const to = [...pair[1]][0];
     return {
       Source: {
-        StackName: stack.stackName,
+        StackName: stackName,
         LogicalResourceId: from,
       },
       Destination: {
-        StackName: stack.stackName,
+        StackName: stackName,
         LogicalResourceId: to,
       },
     };
