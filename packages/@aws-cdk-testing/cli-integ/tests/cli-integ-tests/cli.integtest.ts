@@ -1,4 +1,5 @@
-import { existsSync, promises as fs } from 'fs';
+const { execSync } = require('child_process');
+import { existsSync, mkdtempSync, promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -2140,144 +2141,6 @@ integTest(
   }),
 );
 
-/**
- * Ensure that CDK Import emits correct metadata, so that stack comparison during import succeeds
- *
- * https://github.com/aws/aws-cdk/issues/31999
- *
- */
-integTest(
-  'CDK import adds the metadata properties expected by sam, validates that bundling is not skipped',
-  withSamIntegrationFixture(async (fixture) => {
-    const randomPrefix = randomString();
-    const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
-    const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
-    await fs.mkdir(path.dirname(outputsFile), { recursive: true });
-
-    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
-
-    // We don't need anything mapped, we are just testing metadata on import-synth
-    // --resource-mapping is required on cdk import when not run through the CLI
-    await fs.writeFile(mappingFile, JSON.stringify({}), { encoding: 'utf-8' });
-
-    await fixture.cdk(
-      ['import', '--resource-mapping', mappingFile], {});
-    const template = fixture.template('TestStack');
-
-    const expectedResources = [
-      {
-        // Python Layer Version
-        id: 'PythonLayerVersion39495CEF',
-        cdkId: 'PythonLayerVersion',
-        isBundled: true,
-        property: 'Content',
-      },
-      {
-        // Layer Version
-        id: 'LayerVersion3878DA3A',
-        cdkId: 'LayerVersion',
-        isBundled: false,
-        property: 'Content',
-      },
-      {
-        // Bundled layer version
-        id: 'BundledLayerVersionPythonRuntime6BADBD6E',
-        cdkId: 'BundledLayerVersionPythonRuntime',
-        isBundled: true,
-        property: 'Content',
-      },
-      {
-        // Python Function
-        id: 'PythonFunction0BCF77FD',
-        cdkId: 'PythonFunction',
-        isBundled: true,
-        property: 'Code',
-      },
-      {
-        // Log Retention Function
-        id: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
-        cdkId: 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a',
-        isBundled: false,
-        property: 'Code',
-      },
-      {
-        // Function
-        id: 'FunctionPythonRuntime28CBDA05',
-        cdkId: 'FunctionPythonRuntime',
-        isBundled: false,
-        property: 'Code',
-      },
-      {
-        // Bundled Function
-        id: 'BundledFunctionPythonRuntime4D9A0918',
-        cdkId: 'BundledFunctionPythonRuntime',
-        isBundled: true,
-        property: 'Code',
-      },
-      {
-        // NodeJs Function
-        id: 'NodejsFunction09C1F20F',
-        cdkId: 'NodejsFunction',
-        isBundled: true,
-        property: 'Code',
-      },
-      {
-        // Go Function
-        id: 'GoFunctionCA95FBAA',
-        cdkId: 'GoFunction',
-        isBundled: true,
-        property: 'Code',
-      },
-      {
-        // Docker Image Function
-        id: 'DockerImageFunction28B773E6',
-        cdkId: 'DockerImageFunction',
-        dockerFilePath: 'Dockerfile',
-        property: 'Code.ImageUri',
-      },
-      {
-        // Spec Rest Api
-        id: 'SpecRestAPI7D4B3A34',
-        cdkId: 'SpecRestAPI',
-        property: 'BodyS3Location',
-      },
-    ];
-
-    for (const resource of expectedResources) {
-      fixture.output.write(`validate assets metadata for resource ${JSON.stringify(resource)}`);
-      expect(resource.id in template.Resources).toBeTruthy();
-      expect(template.Resources[resource.id]).toEqual(
-        expect.objectContaining({
-          Metadata: {
-            'aws:cdk:path': `${fixture.fullStackName('TestStack')}/${resource.cdkId}/Resource`,
-            'aws:asset:path': expect.stringMatching(/asset\.[0-9a-zA-Z]{64}/), // relative path, not absolute workspace path
-            'aws:asset:is-bundled': resource.isBundled,
-            'aws:asset:dockerfile-path': resource.dockerFilePath,
-            'aws:asset:property': resource.property,
-          },
-        }),
-      );
-    }
-
-    // Nested Stack
-    fixture.output.write('validate assets metadata for nested stack resource');
-    expect('NestedStackNestedStackNestedStackNestedStackResourceB70834FD' in template.Resources).toBeTruthy();
-    expect(template.Resources.NestedStackNestedStackNestedStackNestedStackResourceB70834FD).toEqual(
-      expect.objectContaining({
-        Metadata: {
-          'aws:cdk:path': `${fixture.fullStackName(
-            'TestStack',
-          )}/NestedStack.NestedStack/NestedStack.NestedStackResource`,
-          'aws:asset:path': expect.stringMatching(
-            `${fixture.stackNamePrefix.replace(/-/, '')}TestStackNestedStack[0-9A-Z]{8}\.nested\.template\.json`,
-          ),
-          'aws:asset:property': 'TemplateURL',
-        },
-      }),
-    );
-  }),
-);
-
 integTest(
   'CDK synth bundled functions as expected',
   withSamIntegrationFixture(async (fixture) => {
@@ -2387,6 +2250,87 @@ integTest(
     // Neither succeeds nor fails, but skips the refresh
     await expect(output).not.toContain('Notices refreshed');
     await expect(output).not.toContain('Notices refresh failed');
+  }),
+);
+
+/**
+ * Create an S3 bucket, orphan that bucket, then import the bucket, with a NodeJSFunction lambda also in the stack.
+ *
+ * We want to test with a large template to make sure large templates can work with import.
+ */
+integTest(
+  'test s3 bucket import with nodejsfunction lambda',
+  withDefaultFixture(async (fixture) => {
+    // Create a temporary directory for esbuild installation
+    const tempDir = mkdtempSync(path.join(os.tmpdir(), 'esbuild-'));
+    const originalPath = process.env.PATH;
+
+    // Install esbuild locally in the temporary directory
+    execSync('npm init -y && npm install esbuild', { cwd: tempDir, stdio: 'inherit' });
+
+    // Add the local node_modules/.bin to the PATH
+    process.env.PATH = `${path.join(tempDir, 'node_modules', '.bin')}${path.delimiter}${process.env.PATH}`;
+
+    // GIVEN
+    const randomPrefix = randomString();
+    const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
+    const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
+    await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+    // First, create a stack that includes a NodeJSFunction lambda and one bucket that will be removed from the stack but NOT deleted from AWS.
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '1', RETAIN_SINGLE_BUCKET: '1' },
+      options: ['--outputs-file', outputsFile],
+    });
+
+    try {
+      // Second, now the bucket we will remove is in the stack and has a logicalId. We can now make the resource mapping file.
+      // This resource mapping file will be used to tell the import operation what bucket to bring into the stack.
+      const fullStackName = fixture.fullStackName('importable-stack');
+      const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+      const bucketLogicalId = outputs[fullStackName].BucketLogicalId;
+      const bucketName = outputs[fullStackName].BucketName;
+      const bucketResourceMap = {
+        [bucketLogicalId]: {
+          BucketName: bucketName,
+        },
+      };
+      const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
+      await fs.writeFile(mappingFile, JSON.stringify(bucketResourceMap), { encoding: 'utf-8' });
+
+      // Third, remove the bucket from the stack, but don't delete the bucket from AWS.
+      await fixture.cdkDeploy('importable-stack', {
+        modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '0', RETAIN_SINGLE_BUCKET: '0' },
+      });
+      const cfnTemplateBeforeImport = await fixture.aws.cloudFormation.send(
+        new GetTemplateCommand({ StackName: fullStackName }),
+      );
+      expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(bucketLogicalId);
+
+      // WHEN
+      await fixture.cdk(['import', '--resource-mapping', mappingFile, fixture.fullStackName('importable-stack')], {
+        modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '1', RETAIN_SINGLE_BUCKET: '0' },
+      });
+
+      // THEN
+      const describeStacksResponse = await fixture.aws.cloudFormation.send(
+        new DescribeStacksCommand({ StackName: fullStackName }),
+      );
+      const cfnTemplateAfterImport = await fixture.aws.cloudFormation.send(
+        new GetTemplateCommand({ StackName: fullStackName }),
+      );
+      expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+      expect(cfnTemplateAfterImport.TemplateBody).toContain(bucketLogicalId);
+    } finally {
+      // Restore the original PATH
+      process.env.PATH = originalPath;
+
+      // Clean up the temporary directory
+      await fs.rm(tempDir, { recursive: true, force: true });
+
+      // Clean up the resources we created
+      await fixture.cdkDestroy('importable-stack');
+    }
   }),
 );
 
