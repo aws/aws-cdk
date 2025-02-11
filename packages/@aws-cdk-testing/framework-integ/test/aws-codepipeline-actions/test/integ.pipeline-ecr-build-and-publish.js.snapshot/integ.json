@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "codepipeline-ecr-build-and-publish-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-ecr-build-and-publish"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineecrbuildandpublishtestDefaultTestDeployAssert736BF029"
+    }
+  }
+}
