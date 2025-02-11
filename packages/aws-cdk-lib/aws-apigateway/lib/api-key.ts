@@ -226,6 +226,10 @@ export class ApiKey extends ApiKeyBase {
 export interface RateLimitedApiKeyProps extends ApiKeyProps {
   /**
    * API Stages to be associated with the RateLimitedApiKey.
+   * If you already prepared UsagePlan resource explicitly, you should use `stages` property.
+   * If you prefer to prepare UsagePlan resource implicitly via RateLimitedApiKey,
+   * or you should specify throttle settings at each stage individually, you should use `apiStages` property.
+   *
    * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[];
