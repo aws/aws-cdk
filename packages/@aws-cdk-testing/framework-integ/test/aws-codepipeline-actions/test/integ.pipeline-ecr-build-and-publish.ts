@@ -34,7 +34,7 @@ const imageTag2 = 'my-tag-2';
 const buildAction = new cpactions.EcrBuildAndPublishAction({
   actionName: 'EcrBuildAndPublishAction',
   repository: repository,
-  dockerfilePath: './my-dir/Dockerfile', // The path indicates ./my-dir/Dockerfile in the source repository
+  dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
   imageTags: [imageTag1, imageTag2],
   input: sourceOutput,
 });
