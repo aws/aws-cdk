@@ -137,10 +137,10 @@ export interface ChannelProps {
   /**
    * Indicates which content-packaging format is used (MPEG-TS or fMP4).
    *
-   * If `multitrackInputConfiguration` is specified containerFormat is required and must be set to ContainerFormat.FRAGMENTED_MP4.
-   * Otherwise, containerFormat may be set to ContainerFormat.TS or ContainerFormat.FRAGMENTED_MP4.
+   * If `multitrackInputConfiguration` is specified, only fMP4 can be used.
+   * Otherwise, `containerFormat` may be set to `ContainerFormat.TS` or `ContainerFormat.FRAGMENTED_MP4`.
    *
-   * @default undefined - IVS default setting is MPEG-TS
+   * @default - `ContainerFormat.FRAGMENTED_MP4` is automatically set when the `multitrackInputConfiguration` is specified. If not specified, it remains undefined and uses the IVS default setting (TS).
    */
   readonly containerFormat?: ContainerFormat;
 
@@ -318,7 +318,7 @@ export class Channel extends ChannelBase {
         throw new Error(`\`multitrackInputConfiguration\` is only supported for \`ChannelType.STANDARD\`, got: ${props.type}.`);
       }
 
-      if (props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
+      if (props.containerFormat !== undefined && props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
         throw new Error(`\`containerFormat\` must be set to \`ContainerFormat.FRAGMENTED_MP4\` when \`multitrackInputConfiguration\` is specified, got: ${props.containerFormat}.`);
       }
     }
@@ -331,7 +331,8 @@ export class Channel extends ChannelBase {
       type: props.type,
       preset,
       recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
-      containerFormat: props.containerFormat,
+      containerFormat: props.containerFormat ??
+        (props.multitrackInputConfiguration ? ContainerFormat.FRAGMENTED_MP4 : undefined),
       multitrackInputConfiguration: props.multitrackInputConfiguration ?
         {
           enabled: true,

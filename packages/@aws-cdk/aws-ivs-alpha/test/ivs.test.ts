@@ -212,7 +212,7 @@ test.each([true, false])('channel with insecureIngest set to %s.', (insecureInge
   });
 });
 
-test.each([ivs.ContainerFormat.FRAGMENTED_MP4, ivs.ContainerFormat.TS])('channel with containerFormat set to %s.', (containerFormat) => {
+test.each([ivs.ContainerFormat.FRAGMENTED_MP4, ivs.ContainerFormat.TS])('channel when containerFormat is set to %s.', (containerFormat) => {
   new ivs.Channel(stack, 'Channel', {
     type: ivs.ChannelType.STANDARD,
     containerFormat,
@@ -228,7 +228,7 @@ test.each([
   [ivs.MaximumResolution.FULL_HD, ivs.Policy.ALLOW],
   [ivs.MaximumResolution.HD, ivs.Policy.REQUIRE],
   [ivs.MaximumResolution.SD, ivs.Policy.ALLOW],
-])('channel with multitrackInputConfiguration, maximumResolution: %s, policy: %s.', (maximumResolution, policy) => {
+])('create channel when multitrackInputConfiguration is specified, maximumResolution: %s, policy: %s.', (maximumResolution, policy) => {
   new ivs.Channel(stack, 'Channel', {
     type: ivs.ChannelType.STANDARD,
     containerFormat: ivs.ContainerFormat.FRAGMENTED_MP4,
@@ -249,11 +249,31 @@ test.each([
   });
 });
 
+test('create channel when multitrackInputConfiguration is specified without containerFormat', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.STANDARD,
+    multitrackInputConfiguration: {
+      maximumResolution: ivs.MaximumResolution.HD,
+      policy: ivs.Policy.ALLOW,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'STANDARD',
+    ContainerFormat: 'FRAGMENTED_MP4',
+    MultitrackInputConfiguration: {
+      Enabled: true,
+      MaximumResolution: ivs.MaximumResolution.HD,
+      Policy: ivs.Policy.ALLOW,
+    },
+  });
+});
+
 test.each([
   ivs.ChannelType.ADVANCED_HD,
   ivs.ChannelType.ADVANCED_SD,
   ivs.ChannelType.BASIC,
-])('throws an error when `type` is %s with `multitrackInputConfiguration`', (type) => {
+])('throws an error when `multitrackInputConfiguration` is specified with %s ', (type) => {
   expect(() => new ivs.Channel(stack, 'Channel', {
     type,
     containerFormat: ivs.ContainerFormat.FRAGMENTED_MP4,
@@ -264,13 +284,13 @@ test.each([
   })).toThrow(`\`multitrackInputConfiguration\` is only supported for \`ChannelType.STANDARD\`, got: ${type}.`);
 });
 
-test.each([undefined, ivs.ContainerFormat.TS])('throws an error when `containerFormat` is %s with `multitrackInputConfiguration`', (containerFormat) => {
+test('throws an error when `multitrackInputConfiguration` is specified with `ContainerFormat.TS`', () => {
   expect(() => new ivs.Channel(stack, 'Channel', {
     type: ivs.ChannelType.STANDARD,
-    containerFormat,
+    containerFormat: ivs.ContainerFormat.TS,
     multitrackInputConfiguration: {
       maximumResolution: ivs.MaximumResolution.SD,
       policy: ivs.Policy.ALLOW,
     },
-  })).toThrow(`\`containerFormat\` must be set to \`ContainerFormat.FRAGMENTED_MP4\` when \`multitrackInputConfiguration\` is specified, got: ${containerFormat}.`);
+  })).toThrow(`\`containerFormat\` must be set to \`ContainerFormat.FRAGMENTED_MP4\` when \`multitrackInputConfiguration\` is specified, got: ${ivs.ContainerFormat.TS}.`);
 });
