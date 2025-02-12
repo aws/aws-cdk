@@ -6,7 +6,8 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Defines Extension action points.
@@ -392,12 +393,12 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new Error(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`);
+      throw new ValidationError(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new Error('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}');
+      throw new ValidationError('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
     }
 
     const extensionId = resourceName[0];
@@ -496,6 +497,8 @@ export class Extension extends Resource implements IExtension {
     super(scope, id, {
       physicalName: props.extensionName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.actions = props.actions;
     this.name = props.extensionName || Names.uniqueResourceName(this, {

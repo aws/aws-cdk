@@ -3,7 +3,7 @@ import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
-import { debug, print } from '../../logging';
+import { debug, info } from '../../logging';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
@@ -251,9 +251,10 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numImages} images in batches`);
 
+      printer.start();
+
       for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
 
@@ -323,12 +324,13 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numObjects} objects in batches`);
 
+      printer.start();
+
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 
@@ -526,7 +528,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      info(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -559,23 +561,23 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      info(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bucketName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.repositoryName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bootstrapStack.parameters.Qualifier;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 
   private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {

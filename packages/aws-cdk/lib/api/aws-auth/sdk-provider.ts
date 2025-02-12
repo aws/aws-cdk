@@ -10,9 +10,10 @@ import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
 import { makeCachingProvider } from './provider-caching';
 import { SDK } from './sdk';
+import { callTrace, traceMemberMethods } from './tracing';
 import { debug, warning } from '../../logging';
 import { AuthenticationError } from '../../toolkit/error';
-import { traceMethods } from '../../util/tracing';
+import { formatErrorMessage } from '../../util/error';
 import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
@@ -110,7 +111,7 @@ export interface SdkForEnvironment {
  *     - Seeded terminal with `ReadOnly` credentials in order to do `cdk diff`--the `ReadOnly`
  *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
-@traceMethods
+@traceMemberMethods
 export class SdkProvider {
   /**
    * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
@@ -119,6 +120,7 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
+    callTrace(SdkProvider.withAwsCliCompatibleDefaults.name, SdkProvider.constructor.name, options.logger);
     const credentialProvider = await AwsCliCompatible.credentialChainBuilder({
       profile: options.profile,
       httpOptions: options.httpOptions,
@@ -281,7 +283,7 @@ export class SdkProvider {
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${formatErrorMessage(e)}`);
         return undefined;
       }
     });

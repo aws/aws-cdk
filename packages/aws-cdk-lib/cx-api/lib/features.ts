@@ -118,6 +118,11 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
+export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
+export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
+export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
+export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1139,6 +1144,44 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [Enable_IMDS_Blocking_Deprecated_Feature]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated ' +
+      'commands will be added to UserData to block container accessing IMDS. ' +
+      '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: '2.175.0' },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
+      'However, it is **not** recommended.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [Disable_ECS_IMDS_Blocking]: {
+    type: FlagType.Temporary,
+    summary: 'When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false.' +
+      ' **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**',
+    detailsMd: `
+    In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
+    accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
+    
+    It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
+    `,
+    introducedIn: { v2: '2.175.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
+      'this flag to false to continue using the old implementation.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: {
     type: FlagType.BugFix,
     summary: 'When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration',
@@ -1297,6 +1340,50 @@ export const FLAGS: Record<string, FlagInfo> = {
     If the flag is set to false then a custom resource will be created when using \`UserPoolDomainTarget\`.
     `,
     introducedIn: { v2: '2.174.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere',
+    detailsMd: `
+      For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
+      will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+      Using a feature flag to make sure existing customers who might be relying
+      on the overly restrictive permissions are not broken.`,
+    introducedIn: { v2: '2.176.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default behaviour of OIDC provider will reject unauthorized connections',
+    detailsMd: `
+      When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+      default to reject unauthorized connections when downloading CA Certificates.
+      
+      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+      thumbprints from unsecure connections.`,
+    introducedIn: { v2: '2.177.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ADDITIONAL_METADATA_COLLECTION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.',
+    detailsMd: `
+    When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+      * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+    `,
+    introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
 };
