@@ -863,7 +863,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "EksClusterDefaultVpcIGWCA6A3220",
@@ -1069,7 +1069,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/8d877e6f611845f8a2568d7e3cfbb0d630a728e6f51d78f6c2555a0f25f89709.json"
+       "/744e05a1389c6e321b3824a1e7df17c068daa3cebf997f874f06d520d718813c.json"
       ]
      ]
     }

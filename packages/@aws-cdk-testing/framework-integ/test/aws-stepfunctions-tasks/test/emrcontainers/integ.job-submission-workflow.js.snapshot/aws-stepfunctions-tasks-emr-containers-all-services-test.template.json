@@ -802,7 +802,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 4
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "integrationtesteksclusterDefaultVpcIGW9ADAFE6F",
@@ -994,7 +994,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/154b7c815cde184c2dfd643be5312b06e81c2353e541102b159d4a6999959cb2.json"
+       "/1d45f6c868f155a7f7e1a6e777469141257a14889ed0922da41be143742b3002.json"
       ]
      ]
     }
