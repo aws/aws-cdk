@@ -88,7 +88,6 @@ describe('k8s manifest', () => {
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // WHEN
@@ -116,7 +115,6 @@ describe('k8s manifest', () => {
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     const manifest = cluster.addManifest('foo', { bar: 2334 });

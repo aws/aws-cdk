@@ -54,7 +54,6 @@ describe('user data', () => {
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
-      kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
     });
 
     // WHEN
@@ -93,7 +92,6 @@ describe('user data', () => {
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterEndpoint: cluster.clusterEndpoint,
-      kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
     });
 
     // WHEN

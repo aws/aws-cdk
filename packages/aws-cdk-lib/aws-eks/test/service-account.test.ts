@@ -33,7 +33,6 @@ describe('service account', () => {
         clusterName: 'Cluster',
         openIdConnectProvider: oidcProvider,
         kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
-        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       cluster.addServiceAccount('MyServiceAccount');

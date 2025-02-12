@@ -144,7 +144,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
    */
-  readonly kubectlLayer: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -383,8 +383,10 @@ export interface ClusterAttributes {
    * /opt/helm/helm
    * /opt/kubectl/kubectl
    * ```
+   *
+   * @default - No default layer will be provided
    */
-  readonly kubectlLayer: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
@@ -1085,7 +1087,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly ipFamily?: IpFamily;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlLambdaRole?: iam.IRole;
-  public abstract readonly kubectlLayer: lambda.ILayerVersion;
+  public abstract readonly kubectlLayer?: lambda.ILayerVersion;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -1477,7 +1479,7 @@ export class Cluster extends ClusterBase {
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
    */
-  readonly kubectlLayer: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
@@ -2398,7 +2400,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
-  public readonly kubectlLayer: lambda.ILayerVersion;
+  public readonly kubectlLayer?: lambda.ILayerVersion;
   public readonly ipFamily?: IpFamily;
   public readonly awscliLayer?: lambda.ILayerVersion;
   public readonly kubectlProvider?: IKubectlProvider;

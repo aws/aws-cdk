@@ -149,7 +149,9 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     // allow user to customize the layers with the tools we need
     handler.addLayers(props.cluster.awscliLayer ?? new AwsCliLayer(this, 'AwsCliLayer'));
-    handler.addLayers(props.cluster.kubectlLayer);
+    if (props.cluster.kubectlLayer) {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
 
     this.handlerRole = handler.role!;
 

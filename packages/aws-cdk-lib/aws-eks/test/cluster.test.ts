@@ -174,7 +174,6 @@ describe('cluster', () => {
 
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     expect(() => cluster.clusterSecurityGroup).toThrow(/"clusterSecurityGroup" is not defined for this imported cluster/);
@@ -215,7 +214,6 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       clusterSecurityGroupId: clusterSgId,
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     const clusterSg = cluster.clusterSecurityGroup;
@@ -281,7 +279,6 @@ describe('cluster', () => {
     const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
       clusterName: cluster.clusterName,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
-      kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
     });
 
     const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
@@ -981,7 +978,6 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       kubectlProvider: kubectlProvider,
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     expect(cluster.kubectlProvider).toEqual(kubectlProvider);
@@ -1001,7 +997,6 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
-        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1028,7 +1023,6 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
-        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1062,7 +1056,6 @@ describe('cluster', () => {
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
         clusterName: 'cluster',
         kubectlProvider: kubectlProvider,
-        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       new eks.HelmChart(stack, 'Chart', {
@@ -1104,7 +1097,6 @@ describe('cluster', () => {
     const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
       clusterName: 'cluster',
       kubectlPrivateSubnetIds: vpc.privateSubnets.map(s => s.subnetId),
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     expect(cluster.kubectlPrivateSubnets?.map(s => stack.resolve(s.subnetId))).toEqual([
@@ -1139,7 +1131,6 @@ describe('cluster', () => {
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
       clusterSecurityGroupId: cluster.clusterSecurityGroupId,
       clusterEncryptionConfigKeyArn: cluster.clusterEncryptionConfigKeyArn,
-      kubectlLayer: new KubectlV31Layer(stack2, 'KubectlLayer'),
     });
 
     // this should cause an export/import
@@ -2605,7 +2596,6 @@ describe('cluster', () => {
         clusterName,
         kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
         kubectlLambdaRole: kubectlLambdaRole,
-        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       const chart = 'hello-world';
@@ -3338,7 +3328,6 @@ describe('cluster', () => {
       clusterName: 'my-cluster',
       kubectlRoleArn: 'arn:aws:iam::123456789012:role/MyRole',
       kubectlMemory: cdk.Size.gibibytes(4),
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     cluster.addManifest('foo', { bar: 123 });

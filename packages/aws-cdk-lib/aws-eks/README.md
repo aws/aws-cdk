@@ -515,14 +515,11 @@ cluster.connectAutoScalingGroupCapacity(asg, {});
 To connect a self-managed node group to an imported cluster, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-
 declare const cluster: eks.Cluster;
 declare const asg: autoscaling.AutoScalingGroup;
 const importedCluster = eks.Cluster.fromClusterAttributes(this, 'ImportedCluster', {
   clusterName: cluster.clusterName,
   clusterSecurityGroupId: cluster.clusterSecurityGroupId,
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 importedCluster.connectAutoScalingGroupCapacity(asg, {});
@@ -843,8 +840,6 @@ The resources are created in the cluster by running `kubectl apply` from a pytho
 By default, CDK will create a new python lambda function to apply your k8s manifests. If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
 // get the serviceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
@@ -857,7 +852,6 @@ const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 
 const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
   clusterName: 'cluster',
   kubectlProvider,
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -959,7 +953,6 @@ eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
   vpc,
   clusterName: 'cluster-name',
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
@@ -1372,8 +1365,6 @@ You can also add service accounts to existing clusters.
 To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-
 // you can import an existing provider
 const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC');
 
@@ -1387,7 +1378,6 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   clusterName: 'Cluster',
   openIdConnectProvider: provider,
   kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
@@ -1930,12 +1920,9 @@ First, you'll need to "import" a cluster to your CDK app. To do that, use the
 `eks.Cluster.fromClusterAttributes()` static method:
 
 ```ts
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
-
 const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   clusterName: 'my-cluster-name',
   kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
 
