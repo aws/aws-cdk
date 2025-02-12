@@ -43,7 +43,7 @@ export enum Command {
   DOCTOR = 'doctor',
 }
 
-export interface ConfiguredCommand {
+interface ConfiguredCommand {
   bundling: boolean;
 }
 
@@ -59,7 +59,7 @@ type CommandType = {
  * ConfiguredCommands[Command.DEPLOY].bundling; // true
  * ConfiguredCommands[Command.LS].bundling; // false
  */
-export const ConfiguredCommands: CommandType = {
+const ConfiguredCommands: CommandType = {
   // List operations (no bundling)
   [Command.LS]: { bundling: false },
   [Command.LIST]: { bundling: false },
