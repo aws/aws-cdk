@@ -302,7 +302,7 @@ class ImportableStack extends cdk.Stack {
             forceDockerBundling: true,
           },
           runtime: lambda.Runtime.NODEJS_18_X,
-          entry: path.join(__dirname, 'lambda-node/index.ts')
+          entry: path.join(__dirname, 'lambda/index.js')
         }
       )
     }
