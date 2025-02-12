@@ -11,6 +11,7 @@ import { TreeCloudArtifact } from './artifacts/tree-cloud-artifact';
 import { CloudArtifact } from './cloud-artifact';
 import { topologicalSort } from './toposort';
 import * as cxschema from '../../cloud-assembly-schema';
+import { CloudAssemblyError } from './private/error';
 
 const CLOUD_ASSEMBLY_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssembly');
 
@@ -98,12 +99,12 @@ export class CloudAssembly implements ICloudAssembly {
   public getStackByName(stackName: string): CloudFormationStackArtifact {
     const artifacts = this.artifacts.filter(a => a instanceof CloudFormationStackArtifact && a.stackName === stackName);
     if (!artifacts || artifacts.length === 0) {
-      throw new Error(`Unable to find stack with stack name "${stackName}"`);
+      throw new CloudAssemblyError(`Unable to find stack with stack name "${stackName}"`);
     }
 
     if (artifacts.length > 1) {
       // eslint-disable-next-line max-len
-      throw new Error(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
+      throw new CloudAssemblyError(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 
     return artifacts[0] as CloudFormationStackArtifact;
@@ -128,11 +129,11 @@ export class CloudAssembly implements ICloudAssembly {
     const artifact = this.tryGetArtifactRecursively(artifactId);
 
     if (!artifact) {
-      throw new Error(`Unable to find artifact with id "${artifactId}"`);
+      throw new CloudAssemblyError(`Unable to find artifact with id "${artifactId}"`);
     }
 
     if (!(artifact instanceof CloudFormationStackArtifact)) {
-      throw new Error(`Artifact ${artifactId} is not a CloudFormation stack`);
+      throw new CloudAssemblyError(`Artifact ${artifactId} is not a CloudFormation stack`);
     }
 
     return artifact;
@@ -167,11 +168,11 @@ export class CloudAssembly implements ICloudAssembly {
   public getNestedAssemblyArtifact(artifactId: string): NestedCloudAssemblyArtifact {
     const artifact = this.tryGetArtifact(artifactId);
     if (!artifact) {
-      throw new Error(`Unable to find artifact with id "${artifactId}"`);
+      throw new CloudAssemblyError(`Unable to find artifact with id "${artifactId}"`);
     }
 
     if (!(artifact instanceof NestedCloudAssemblyArtifact)) {
-      throw new Error(`Found artifact '${artifactId}' but it's not a nested cloud assembly`);
+      throw new CloudAssemblyError(`Found artifact '${artifactId}' but it's not a nested cloud assembly`);
     }
 
     return artifact;
@@ -196,12 +197,12 @@ export class CloudAssembly implements ICloudAssembly {
     if (trees.length === 0) {
       return undefined;
     } else if (trees.length > 1) {
-      throw new Error(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
+      throw new CloudAssemblyError(`Multiple artifacts of type ${cxschema.ArtifactType.CDK_TREE} found in manifest`);
     }
     const tree = trees[0];
 
     if (!(tree instanceof TreeCloudArtifact)) {
-      throw new Error('"Tree" artifact is not of expected type');
+      throw new CloudAssemblyError('"Tree" artifact is not of expected type');
     }
 
     return tree;
@@ -481,7 +482,7 @@ function determineOutputDirectory(outdir?: string) {
 function ensureDirSync(dir: string) {
   if (fs.existsSync(dir)) {
     if (!fs.statSync(dir).isDirectory()) {
-      throw new Error(`${dir} must be a directory`);
+      throw new CloudAssemblyError(`${dir} must be a directory`);
     }
   } else {
     fs.mkdirSync(dir, { recursive: true });
