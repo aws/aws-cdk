@@ -77,7 +77,7 @@ Multitrack Video requires both a STANDARD Channel and Fragmented Mp4.
 For more information, see [Amazon IVS Multitrack Video](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/multitrack-video.html).
 
 ```ts
-new ivs.Channel(stack, 'ChannelWithMultitrackVideo', {
+new ivs.Channel(this, 'ChannelWithMultitrackVideo', {
   type: ivs.ChannelType.STANDARD,
   containerFormat: ivs.ContainerFormat.FRAGMENTED_MP4,
   multitrackInputConfiguration: {
