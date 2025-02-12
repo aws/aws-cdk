@@ -230,7 +230,7 @@ export class S3ObjectsItemReader implements IItemReader {
 /**
  * Base interface for Item Reader configuration properties the iterate over entries in a S3 file
  */
-export interface S3FileItemReaderProps extends ItemReaderProps {
+export interface S3FileItemReaderOptions extends ItemReaderProps {
   /**
    * Key of file stored in S3 bucket containing an array to iterate over
    */
@@ -240,7 +240,7 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
 /**
  * Base interface for Item Reader configuration options the iterate over entries in a S3 file
  */
-export interface S3FileItemReaderOptions extends S3FileItemReaderProps {
+export interface S3FileItemReaderProps extends S3FileItemReaderOptions {
   /**
    * Query language to use in the ItemReader configuration
    *
@@ -439,7 +439,7 @@ export class CsvHeaders {
 /**
  * Properties for configuring an Item Reader that iterates over items in a CSV file in S3
  */
-export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
+export interface S3CsvItemReaderOptions extends S3FileItemReaderOptions {
   /**
    * CSV file header configuration
    *
@@ -451,7 +451,7 @@ export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
 /**
  * Options for configuring an Item Reader that iterates over items in a CSV file in S3
  */
-export interface S3CsvItemReaderOptions extends S3CsvItemReaderProps {
+export interface S3CsvItemReaderProps extends S3CsvItemReaderOptions {
   /**
    * Query language to use in the ItemReader configuration
    *
@@ -467,14 +467,14 @@ export class S3CsvItemReader extends S3FileItemReader {
   /**
    * Define a S3CsvItemReader using JSONPath in the state machine
    */
-  public static jsonPath(props: S3CsvItemReaderProps) {
+  public static jsonPath(props: S3CsvItemReaderOptions) {
     return new S3CsvItemReader(props);
   }
 
   /**
    * Define a S3CsvItemReader using JSONata in the state machine
    */
-  public static jsonata(props: S3CsvItemReaderProps) {
+  public static jsonata(props: S3CsvItemReaderOptions) {
     return new S3CsvItemReader({
       ...props,
       queryLanguage: QueryLanguage.JSONATA,
@@ -487,7 +487,7 @@ export class S3CsvItemReader extends S3FileItemReader {
   readonly csvHeaders: CsvHeaders;
   protected readonly inputType: string = 'CSV';
 
-  constructor(props: S3CsvItemReaderOptions) {
+  constructor(props: S3CsvItemReaderProps) {
     super(props);
     this.csvHeaders = props.csvHeaders ?? CsvHeaders.useFirstRow();
   }
