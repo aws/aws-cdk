@@ -33,6 +33,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [ARM64 Support](#arm64-support)
     - [Masters Role](#masters-role)
     - [Encryption](#encryption)
+    - [Hybrid nodes](#hybrid-nodes)
   - [Permissions and Security](#permissions-and-security)
     - [AWS IAM Mapping](#aws-iam-mapping)
     - [Access Config](#access-config)
@@ -1008,6 +1009,28 @@ The Amazon Resource Name (ARN) for that CMK can be retrieved.
 ```ts
 declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
+```
+
+### Hybrid Nodes
+
+When you create an Amazon EKS cluster, you can configure it to leverage the [EKS Hybrid Nodes](https://aws.amazon.com/eks/hybrid-nodes/) feature, allowing you to use your on-premises and edge infrastructure as nodes in your EKS cluster. Refer to the Hyrid Nodes [networking documentation](https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-networking.html) to configure your on-premises network, node and pod CIDRs, access control, etc before creating your EKS Cluster.
+
+Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
+
+```ts
+new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_31,
+  remoteNodeNetworks: [
+    {
+      cidrs: ['10.0.0.0/16'],
+    },
+  ],
+  remotePodNetworks: [
+    {
+      cidrs: ['192.168.0.0/16'],
+    },
+  ],
+});
 ```
 
 ## Permissions and Security
