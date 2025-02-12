@@ -131,7 +131,7 @@
         }
       }
     },
-    "df8eb1cba0d54126a62cdb8afade83b67e2ad8d45040e8f8438f8794edec0206": {
+    "9366ce543672145365736aa8c9356f7a21298a680de792729b4f6c19b2a11979": {
       "source": {
         "path": "aws-stepfunctions-tasks-emr-containers-start-job-run.template.json",
         "packaging": "file"
@@ -139,7 +139,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "df8eb1cba0d54126a62cdb8afade83b67e2ad8d45040e8f8438f8794edec0206.json",
+          "objectKey": "9366ce543672145365736aa8c9356f7a21298a680de792729b4f6c19b2a11979.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

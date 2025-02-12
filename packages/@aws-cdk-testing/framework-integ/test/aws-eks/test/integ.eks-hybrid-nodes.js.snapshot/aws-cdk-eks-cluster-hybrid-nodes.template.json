@@ -759,7 +759,23 @@
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
      },
-     "accessConfig": {}
+     "accessConfig": {},
+     "remoteNetworkConfig": {
+      "remoteNodeNetworks": [
+       {
+        "cidrs": [
+         "10.0.0.0/16"
+        ]
+       }
+      ],
+      "remotePodNetworks": [
+       {
+        "cidrs": [
+         "192.168.0.0/16"
+        ]
+       }
+      ]
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -767,7 +783,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
