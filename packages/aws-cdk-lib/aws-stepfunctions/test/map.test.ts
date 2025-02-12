@@ -344,7 +344,7 @@ describe('Map State', () => {
       {
         outputs: '$states.errorOutput',
       },
-    );;
+    );
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
