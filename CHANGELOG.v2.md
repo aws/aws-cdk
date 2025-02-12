@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.178.2](https://github.com/aws/aws-cdk/compare/v2.178.1...v2.178.2) (2025-02-12)
+
+
+### Bug Fixes
+
+* **cli:** do not print credentials refreshed by plugins ([#33398](https://github.com/aws/aws-cdk/issues/33398)) ([727d42f](https://github.com/aws/aws-cdk/commit/727d42f3b1677ec97d9358588667da1bfc2c1151)), closes [#33394](https://github.com/aws/aws-cdk/issues/33394) [#33394](https://github.com/aws/aws-cdk/issues/33394)
+
 ## [2.178.1](https://github.com/aws/aws-cdk/compare/v2.178.0...v2.178.1) (2025-02-06)
 
 
