@@ -451,7 +451,7 @@ export interface S3CsvItemReaderOptions extends S3FileItemReaderOptions {
 /**
  * Options for configuring an Item Reader that iterates over items in a CSV file in S3
  */
-export interface S3CsvItemReaderProps extends S3CsvItemReaderOptions {
+export interface S3CsvItemReaderProps extends S3CsvItemReaderOptions, S3FileItemReaderProps {
   /**
    * Query language to use in the ItemReader configuration
    *
