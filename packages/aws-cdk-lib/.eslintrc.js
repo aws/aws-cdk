@@ -60,6 +60,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
+  'cx-api',
   'aws-s3',
   'aws-s3-assets',
   'aws-s3-deployment',
