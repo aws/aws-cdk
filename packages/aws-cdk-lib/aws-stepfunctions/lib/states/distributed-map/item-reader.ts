@@ -297,7 +297,7 @@ abstract class S3FileItemReader implements IItemReader {
 
   protected abstract readonly inputType: string;
 
-  constructor(props: S3FileItemReaderOptions) {
+  constructor(props: S3FileItemReaderProps) {
     this._bucket = props.bucket;
     this.bucketNamePath = props.bucketNamePath;
     this.key = props.key;
