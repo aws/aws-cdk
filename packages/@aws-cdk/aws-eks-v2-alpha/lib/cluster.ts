@@ -1460,9 +1460,6 @@ export class Cluster extends ClusterBase {
         accessPolicies: policies,
       });
       this.accessEntries.set(principal, newEntry);
-      // if (this.kubectlProvider) {
-      //   Node.of(this.kubectlProvider).addDependency(newEntry);
-      // }
     }
   }
 
