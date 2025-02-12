@@ -3,14 +3,14 @@
  */
 import * as path from 'path';
 import { Construct, IConstruct, Node } from 'constructs';
-import { App, Stage } from '../../../core';
+import { App, Stage, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
 export function appOf(construct: IConstruct): App {
   const root = Node.of(construct).root;
 
   if (!App.isApp(root)) {
-    throw new Error(`Construct must be created under an App, but is not: ${Node.of(construct).path}`);
+    throw new ValidationError(`Construct must be created under an App, but is not: ${Node.of(construct).path}`, construct);
   }
 
   return root;

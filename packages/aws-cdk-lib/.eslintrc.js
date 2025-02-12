@@ -16,15 +16,18 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
+  'assets',
   'aws-amplify',
   'aws-amplifyuibuilder',
   'aws-apigateway',
   'aws-apigatewayv2',
   'aws-apigatewayv2-authorizers',
   'aws-apigatewayv2-integrations',
+  'aws-appconfig',
   'aws-applicationautoscaling',
   'aws-appsync',
   'aws-appmesh',
+  'aws-batch',
   'aws-cognito',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
@@ -54,6 +57,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
+  'cx-api',
   'aws-s3',
   'aws-s3-assets',
   'aws-s3-deployment',
@@ -62,7 +66,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-s3objectlambda',
   'aws-s3outposts',
   'aws-s3tables',
-  'cx-api',
+  'pipelines',
 ];
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
