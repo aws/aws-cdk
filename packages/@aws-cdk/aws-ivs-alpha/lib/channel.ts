@@ -315,11 +315,11 @@ export class Channel extends ChannelBase {
 
     if (props.multitrackInputConfiguration !== undefined) {
       if (props.type !== undefined && props.type !== ChannelType.STANDARD) {
-        throw new Error('`multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`');
+        throw new Error(`\`multitrackInputConfiguration\` is only supported for \`ChannelType.STANDARD\`, got: ${props.type}.`);
       }
 
-      if (props.containerFormat !== undefined && props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
-        throw new Error('`containerFormat` must be set to `ContainerFormat.FRAGMENTED_MP4` when `multitrackInputConfiguration` is specified');
+      if (props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
+        throw new Error(`\`containerFormat\` must be set to \`ContainerFormat.FRAGMENTED_MP4\` when \`multitrackInputConfiguration\` is specified, got: ${props.containerFormat}.`);
       }
     }
 
