@@ -296,6 +296,7 @@ describe('Map State', () => {
       States: {
         'My-Map-State': {
           Type: 'Map',
+          Assign: {},
           QueryLanguage: 'JSONata',
           End: true,
           ItemSelector: {
@@ -321,7 +322,7 @@ describe('Map State', () => {
     });
   }),
 
-  test('State Machine With Map State using JSONata', () => {
+  test('State Machine With Map State using JSONata static method with Catch method', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -335,7 +336,15 @@ describe('Map State', () => {
         bar: '{% $bar %}',
       },
       assign: {},
-    });
+    }).addCatch(
+      stepfunctions.Fail.jsonPath(stack, 'failed', {
+        error: 'ErrorHappened',
+        cause: 'We got stuck',
+      }),
+      {
+        outputs: '$states.errorOutput',
+      },
+    );;
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
@@ -344,6 +353,12 @@ describe('Map State', () => {
       States: {
         'My-Map-State': {
           Type: 'Map',
+          Assign: {},
+          Catch: [{
+            ErrorEquals: ['States.ALL'],
+            Next: 'failed',
+            Output: '$states.errorOutput',
+          }],
           QueryLanguage: 'JSONata',
           End: true,
           ItemSelector: {
@@ -364,6 +379,11 @@ describe('Map State', () => {
           },
           Items: '{% $inputForMap %}',
           MaxConcurrency: 1,
+        },
+        'failed': {
+          Type: 'Fail',
+          Error: 'ErrorHappened',
+          Cause: 'We got stuck',
         },
       },
     });
