@@ -1,6 +1,7 @@
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
+import { CloudAssemblyError } from '../private/error';
 
 const TREE_CLOUD_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.TreeCloudArtifact');
 
@@ -33,7 +34,7 @@ export class TreeCloudArtifact extends CloudArtifact {
 
     const properties = (this.manifest.properties || {}) as cxschema.TreeArtifactProperties;
     if (!properties.file) {
-      throw new Error('Invalid TreeCloudArtifact. Missing "file" property');
+      throw new CloudAssemblyError('Invalid TreeCloudArtifact. Missing "file" property');
     }
     this.file = properties.file;
   }
