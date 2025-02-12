@@ -193,7 +193,7 @@
                                 },
                                 "Configuration": {
                                     "ConnectionArn": "MOCK",
-                                    "FullRepositoryId": "go-to-k/cdk-codepipeline-demo-1",
+                                    "FullRepositoryId": "MOCK/MOCK",
                                     "BranchName": "master"
                                 },
                                 "Name": "CodeStarConnectionsSourceAction",
