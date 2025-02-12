@@ -75,7 +75,7 @@ export interface ItemReaderProps {
 /**
  * Properties for configuring an Item Reader that iterates over objects in an S3 bucket
  */
-export interface S3ObjectsItemReaderProps extends ItemReaderProps {
+export interface S3ObjectsItemReaderOptions extends ItemReaderProps {
   /**
    * S3 prefix used to limit objects to iterate over
    *
@@ -85,9 +85,38 @@ export interface S3ObjectsItemReaderProps extends ItemReaderProps {
 }
 
 /**
+ * Properties for configuring an Item Reader that iterates over objects in an S3 bucket
+ */
+export interface S3ObjectsItemReaderProps extends S3ObjectsItemReaderOptions {
+  /**
+   * Query language to use in the ItemReader configuration
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+}
+
+/**
  * Item Reader configuration for iterating over objects in an S3 bucket
  */
 export class S3ObjectsItemReader implements IItemReader {
+  /**
+   * Define a S3CsvItemReader using JSONPath in the state machine
+   */
+  public static jsonPath(props: S3ObjectsItemReaderOptions) {
+    return new S3ObjectsItemReader(props);
+  }
+
+  /**
+   * Define a S3CsvItemReader using JSONata in the state machine
+   */
+  public static jsonata(props: S3ObjectsItemReaderOptions) {
+    return new S3ObjectsItemReader({
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
+
   private readonly _bucket?: IBucket;
 
   /**
@@ -125,11 +154,19 @@ export class S3ObjectsItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
+  /**
+   * Query language to use in the ItemReader configuration
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+
   constructor(props: S3ObjectsItemReaderProps) {
     this._bucket = props.bucket;
     this.bucketNamePath = props.bucketNamePath;
     this.prefix = props.prefix;
     this.maxItems = props.maxItems;
+    this.queryLanguage = props.queryLanguage;
     this.resource = Arn.format({
       region: '',
       account: '',
@@ -146,14 +183,19 @@ export class S3ObjectsItemReader implements IItemReader {
    * @returns - JSON object
    */
   public render(): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      ...(this.prefix && { Prefix: this.prefix }),
+    };
     return FieldUtils.renderObject({
       Resource: this.resource,
       ...(this.maxItems && { ReaderConfig: { MaxItems: this.maxItems } }),
-      Parameters: {
-        ...(this._bucket && { Bucket: this._bucket.bucketName }),
-        ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
-        ...(this.prefix && { Prefix: this.prefix }),
-      },
+      ...(this.queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      } : {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 

@@ -579,6 +579,66 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State and Object Reader in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      itemReader: stepfunctions.S3ObjectsItemReader.jsonata({
+        bucket: writerBucket,
+        prefix: 'my-prefix',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          QueryLanguage: 'JSONata',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Arguments: {
+              Bucket: {
+                Ref: 'TestBucket560B80BC',
+              },
+              Prefix: 'my-prefix',
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:::s3:listObjectsV2',
+                ],
+              ],
+            },
+          },
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
     // GIVEN
     const stack = new cdk.Stack();
