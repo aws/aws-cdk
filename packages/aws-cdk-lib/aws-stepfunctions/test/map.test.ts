@@ -277,6 +277,55 @@ describe('Map State', () => {
     const stack = new cdk.Stack();
 
     // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+      queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      assign: {},
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          QueryLanguage: 'JSONata',
+          End: true,
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: 'INLINE',
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          Items: '{% $inputForMap %}',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Map State using JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
     const map = stepfunctions.Map.jsonata(stack, 'Map State', {
       stateName: 'My-Map-State',
       maxConcurrency: 1,
@@ -285,6 +334,7 @@ describe('Map State', () => {
         foo: 'foo',
         bar: '{% $bar %}',
       },
+      assign: {},
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
