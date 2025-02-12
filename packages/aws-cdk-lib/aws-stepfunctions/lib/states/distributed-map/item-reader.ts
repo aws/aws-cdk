@@ -2,6 +2,7 @@ import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
+import { QueryLanguage } from '../../types';
 
 /**
  * Base interface for Item Reader configurations
@@ -195,6 +196,18 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
 }
 
 /**
+ * Base interface for Item Reader configuration options the iterate over entries in a S3 file
+ */
+export interface S3FileItemReaderOptions extends S3FileItemReaderProps {
+  /**
+   * Query language to use in the ItemReader configuration
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+}
+
+/**
  * Base Item Reader configuration for iterating over entries in a S3 file
  */
 abstract class S3FileItemReader implements IItemReader {
@@ -233,13 +246,21 @@ abstract class S3FileItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
+  /**
+   * Query language used to query S3 file
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+
   protected abstract readonly inputType: string;
 
-  constructor(props: S3FileItemReaderProps) {
+  constructor(props: S3FileItemReaderOptions) {
     this._bucket = props.bucket;
     this.bucketNamePath = props.bucketNamePath;
     this.key = props.key;
     this.maxItems = props.maxItems;
+    this.queryLanguage = props.queryLanguage;
     this.resource = Arn.format({
       region: '',
       account: '',
@@ -256,17 +277,23 @@ abstract class S3FileItemReader implements IItemReader {
    * @returns - JSON object
    */
   public render(): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      Key: this.key,
+    };
+
     return FieldUtils.renderObject({
       Resource: this.resource,
       ReaderConfig: {
         InputType: this.inputType,
         ...(this.maxItems && { MaxItems: this.maxItems }),
       },
-      Parameters: {
-        ...(this._bucket && { Bucket: this._bucket.bucketName }),
-        ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
-        Key: this.key,
-      },
+      ...(this.queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      }: {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 
@@ -380,16 +407,45 @@ export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
 }
 
 /**
+ * Options for configuring an Item Reader that iterates over items in a CSV file in S3
+ */
+export interface S3CsvItemReaderOptions extends S3CsvItemReaderProps {
+  /**
+   * Query language to use in the ItemReader configuration
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+}
+
+/**
  * Item Reader configuration for iterating over items in a CSV file stored in S3
  */
 export class S3CsvItemReader extends S3FileItemReader {
+  /**
+   * Define a S3CsvItemReader using JSONPath in the state machine
+   */
+  public static jsonPath(props: S3CsvItemReaderProps) {
+    return new S3CsvItemReader(props);
+  }
+
+  /**
+   * Define a S3CsvItemReader using JSONata in the state machine
+   */
+  public static jsonata(props: S3CsvItemReaderProps) {
+    return new S3CsvItemReader({
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
+
   /**
    * CSV headers configuration
    */
   readonly csvHeaders: CsvHeaders;
   protected readonly inputType: string = 'CSV';
 
-  constructor(props: S3CsvItemReaderProps) {
+  constructor(props: S3CsvItemReaderOptions) {
     super(props);
     this.csvHeaders = props.csvHeaders ?? CsvHeaders.useFirstRow();
   }

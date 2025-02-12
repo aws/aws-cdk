@@ -579,6 +579,95 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemReader: stepfunctions.S3CsvItemReader.jsonata({
+        bucket: writerBucket,
+        key: 'CSV_KEY',
+        csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+      }),
+      resultWriter: stepfunctions.ResultWriter.jsonata({
+        bucket: writerBucket,
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Arguments: {
+              Bucket: {
+                Ref: 'TestBucket560B80BC',
+              },
+              Key: 'CSV_KEY',
+            },
+            ReaderConfig: {
+              CSVHeaderLocation: 'FIRST_ROW',
+              InputType: 'CSV',
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
+          },
+          ResultWriter: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:putObject',
+                ],
+              ],
+            },
+            Arguments: {
+              Bucket: {
+                Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+              },
+              Prefix: 'test',
+            },
+          },
+          MaxConcurrency: 1,
+          QueryLanguage: 'JSONata',
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and ResultWriter', () => {
     // GIVEN
     const stack = new cdk.Stack();

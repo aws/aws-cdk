@@ -2,22 +2,36 @@ import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
+import { QueryLanguage } from '../../types';
 
 /**
- * Interface for Result Writer configuration properties
+ * Interface for Result Writer configuration options
  */
-export interface ResultWriterProps {
+export interface ResultWriterOptions {
   /**
    * S3 Bucket in which to save Map Run results
    */
   readonly bucket: IBucket;
 
   /**
-   * S3 prefix in which to save Map Run results
+   * The prefix to use for the file where the Map Run results are saved
    *
    * @default - No prefix
    */
   readonly prefix?: string;
+
+}
+
+/**
+ * Interface for Result Writer configuration properties
+ */
+export interface ResultWriterProps extends ResultWriterOptions {
+  /**
+   * Query language to use when writing results to S3
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
 }
 
 /**
@@ -25,6 +39,27 @@ export interface ResultWriterProps {
  */
 export class ResultWriter {
   /**
+   * Define a ResultWriter using JSONPath in the state machine
+   *
+   * A ResultWriter can be used for writing Distributed Map state results to S3
+   */
+  public static jsonPath(props: ResultWriterOptions) {
+    return new ResultWriter(props);
+  }
+
+  /**
+   * Define a ResultWriter using JSONata in the state machine
+   *
+   * A ResultWriter can be used for writing Distributed Map state results to S3
+   */
+  public static jsonata(props: ResultWriterOptions) {
+    return new ResultWriter({
+      ...props,
+      queryLanguage: QueryLanguage.JSONATA,
+    });
+  }
+
+  /**
    * S3 Bucket in which to save Map Run results
    */
   readonly bucket: IBucket;
@@ -36,9 +71,17 @@ export class ResultWriter {
    */
   readonly prefix?: string;
 
+  /**
+   * Query language to use when writing results to S3
+   *
+   * @default undefined - QueryLanguage.JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
+
   constructor(props: ResultWriterProps) {
     this.bucket = props.bucket;
     this.prefix = props.prefix;
+    this.queryLanguage = props.queryLanguage;
   }
 
   /**
@@ -54,12 +97,19 @@ export class ResultWriter {
       resourceName: 'putObject',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    const argumentOrParameter = {
+      Bucket: this.bucket.bucketName,
+      ...(this.prefix && { Prefix: this.prefix }),
+    };
+
     return FieldUtils.renderObject({
       Resource: resource,
-      Parameters: {
-        Bucket: this.bucket.bucketName,
-        ...(this.prefix && { Prefix: this.prefix }),
-      },
+      ...(this.queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: argumentOrParameter,
+      } : {
+        Parameters: argumentOrParameter,
+      }),
     });
   }
 
