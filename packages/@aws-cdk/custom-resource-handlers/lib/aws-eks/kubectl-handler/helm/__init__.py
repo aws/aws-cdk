@@ -91,7 +91,7 @@ def helm_handler(event, context):
             chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
 
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, atomic=atomic)
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, skip_crds, atomic=atomic)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
