@@ -493,7 +493,7 @@ exports[`MSK Cluster Snapshot test with all values set 1`] = `
 }
 `;
 
-exports[`MSK Cluster created with authentication enabled with sasl/iam auth and tls Snapshot test with all values set (iam/sasl) 1`] = `
+exports[`MSK Cluster created with authentication enabled with combinations of sasl/scram, iam, and tls Snapshot test with all values set (iam/scram/tls) 1`] = `
 {
   "Resources": {
     "Vpc8378EB38": {
@@ -915,6 +915,9 @@ exports[`MSK Cluster created with authentication enabled with sasl/iam auth and 
             "Iam": {
               "Enabled": true,
             },
+            "Scram": {
+              "Enabled": true,
+            },
           },
           "Tls": {
             "CertificateAuthorityArnList": [
@@ -964,6 +967,89 @@ exports[`MSK Cluster created with authentication enabled with sasl/iam auth and 
       },
       "Type": "AWS::MSK::Cluster",
       "UpdateReplacePolicy": "Retain",
+    },
+    "kafkaSASLKey69FC3AFA": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Used for encrypting MSK secrets for SASL/SCRAM authentication.",
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:CreateGrant",
+                "kms:DescribeKey",
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "kms:CallerAccount": {
+                    "Ref": "AWS::AccountId",
+                  },
+                  "kms:ViaService": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "secretsmanager.",
+                        {
+                          "Ref": "AWS::Region",
+                        },
+                        ".amazonaws.com",
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": "*",
+              "Sid": "Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "kafkaSASLKeyAlias7A73E101": {
+      "Properties": {
+        "AliasName": "alias/msk/test-cluster/sasl/scram",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "kafkaSASLKey69FC3AFA",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::KMS::Alias",
     },
     "sg1fromsg32181E6F4C07E": {
       "Properties": {

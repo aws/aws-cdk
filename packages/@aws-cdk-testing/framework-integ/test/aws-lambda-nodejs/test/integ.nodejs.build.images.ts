@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as lambdaNodeJs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 
@@ -18,13 +18,13 @@ class TestStack extends Stack {
     const uniqueRuntimes: Runtime[] = runtimes.filter((value, index, array) => array.findIndex(value1 => value1.runtimeEquals(value)) === index);
 
     uniqueRuntimes.forEach((runtime) => {
-      this.lambdaFunctions.push(new lambda.NodejsFunction(this, `func-${runtime.name}`, {
+      this.lambdaFunctions.push(new lambdaNodeJs.NodejsFunction(this, `func-${runtime.name}`, {
         entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
         runtime: runtime,
         bundling: {
           minify: true,
           sourceMap: true,
-          sourceMapMode: lambda.SourceMapMode.BOTH,
+          sourceMapMode: lambdaNodeJs.SourceMapMode.BOTH,
         },
       }));
     });

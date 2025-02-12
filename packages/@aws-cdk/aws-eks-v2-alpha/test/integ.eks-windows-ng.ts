@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
@@ -27,9 +27,9 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
     });
 

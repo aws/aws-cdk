@@ -12,6 +12,7 @@ const {
   updateProjectField,
   addItemToProject,
   fetchProjectFields,
+  fetchProjectItem,
 } = require('./project-api');
 
 module.exports = async ({ github, context }) => {
@@ -78,53 +79,74 @@ module.exports = async ({ github, context }) => {
       (field) => field.id === PROJECT_CONFIG.statusFieldId
     );
 
+    const priorityOptionId = priorityField.options.find(
+      (option) => option.name === priority
+    )?.id;
+
     try {
-      // Add PR to project
-      const addResult = await addItemToProject({
+      // Check if PR is already in project
+      const result = await fetchProjectItem({
         github,
-        projectId: PROJECT_CONFIG.projectId,
-        contentId: pr.node_id,
+        contentId: pr.node_id
       });
 
-      const itemId = addResult.addProjectV2ItemById.item.id;
+      // Filter our specific project
+      const projectItem = result?.node?.projectItems?.nodes
+        ?.find(item => item.project.id === PROJECT_CONFIG.projectId);
+      
+      if (projectItem) {
+        // PR already in project - update only priority if different
+        const currentPriority = projectItem.fieldValues.nodes
+          .find(fv => fv.field?.name === 'Priority')?.name;
 
-      // Set priority
-      const priorityOptionId = priorityField.options.find(
-        (option) => option.name === priority
-      )?.id;
+        if (currentPriority === priority) {
+          console.log(`PR #${pr.number} already has ${priority} priority. Skipping.`);
+          return;
+        }
 
-      if (!priorityOptionId) {
-        console.error(`Priority option ${priority} not found in project settings`);
-        return;
-      }
+        // Update priority only, retain existing status
+        console.log(`Updating PR #${pr.number} from ${currentPriority} to ${priority} priority`);
 
-      // Set Ready status
-      const readyOptionId = statusField.options.find(
-        (option) => option.name === STATUS.READY
-      )?.id;
-
-      if (!readyOptionId) {
-        console.error('Ready status option not found in project settings');
-        return;
-      }
-
-      // Set Priority and Ready Status
-      await Promise.all([
-        updateProjectField({
+        await updateProjectField({
           github,
           projectId: PROJECT_CONFIG.projectId,
-          itemId: itemId,
+          itemId: projectItem.id,
           fieldId: PROJECT_CONFIG.priorityFieldId,
           value: priorityOptionId,
-        }),
-        updateProjectField({
+        });
+      } else {
+        // Add new PR to project with priority and Ready status
+        console.log(`Adding PR #${pr.number} to project with ${priority} priority`);
+        const addResult = await addItemToProject({
           github,
           projectId: PROJECT_CONFIG.projectId,
-          itemId: itemId,
-          fieldId: PROJECT_CONFIG.statusFieldId,
-          value: readyOptionId,
-        })
-      ]);
+          contentId: pr.node_id,
+        });
+
+        const itemId = addResult.addProjectV2ItemById.item.id;
+
+        const readyStatusId = statusField.options.find(
+          (option) => option.name === STATUS.READY
+        )?.id;
+
+        // Set both priority and Ready status for new items
+        await Promise.all([
+          updateProjectField({
+            github,
+            projectId: PROJECT_CONFIG.projectId,
+            itemId: itemId,
+            fieldId: PROJECT_CONFIG.priorityFieldId,
+            value: priorityOptionId,
+          }),
+          updateProjectField({
+            github,
+            projectId: PROJECT_CONFIG.projectId,
+            itemId: itemId,
+            fieldId: PROJECT_CONFIG.statusFieldId,
+            value: readyStatusId,
+          })
+        ]);
+      }
     } catch (error) {
       console.error(`Error processing PR #${pr.number}:`, error);
     }

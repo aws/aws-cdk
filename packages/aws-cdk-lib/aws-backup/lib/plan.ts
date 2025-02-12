@@ -3,7 +3,7 @@ import { CfnBackupPlan } from './backup.generated';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
-import { IResource, Lazy, Resource } from '../../core';
+import { IResource, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -217,7 +217,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public get backupVault(): IBackupVault {
     if (!this._backupVault) {
       // This cannot happen but is here to make TypeScript happy
-      throw new Error('No backup vault!');
+      throw new ValidationError('No backup vault!', this);
     }
 
     return this._backupVault;

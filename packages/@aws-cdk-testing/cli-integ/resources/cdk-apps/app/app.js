@@ -11,6 +11,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var sns = require('@aws-cdk/aws-sns');
   var sqs = require('@aws-cdk/aws-sqs');
   var lambda = require('@aws-cdk/aws-lambda');
+  var node_lambda = require('@aws-cdk/aws-lambda-nodejs');
   var sso = require('@aws-cdk/aws-sso');
   var docker = require('@aws-cdk/aws-ecr-assets');
   var appsync = require('@aws-cdk/aws-appsync');
@@ -28,6 +29,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_sns: sns,
     aws_sqs: sqs,
     aws_lambda: lambda,
+    aws_lambda_nodejs: node_lambda,
     aws_ecr_assets: docker,
     aws_appsync: appsync,
     Stack
@@ -264,6 +266,20 @@ class ImportableStack extends cdk.Stack {
       });
     }
 
+    if (process.env.INCLUDE_SINGLE_BUCKET === '1') {
+      const bucket = new s3.Bucket(this, 'test-bucket', {
+        removalPolicy: (process.env.RETAIN_SINGLE_BUCKET === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+    
+      new cdk.CfnOutput(this, 'BucketLogicalId', {
+        value: bucket.node.defaultChild.logicalId,
+      });
+
+      new cdk.CfnOutput(this, 'BucketName', {
+        value: bucket.bucketName,
+      });
+    }
+
     if (process.env.LARGE_TEMPLATE === '1') {
       for (let i = 1; i <= 70; i++) {
         new sqs.Queue(this, `cdk-import-queue-test${i}`, {
@@ -271,6 +287,24 @@ class ImportableStack extends cdk.Stack {
           removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
       }
+    }
+
+    if (process.env.INCLUDE_NODEJS_FUNCTION_LAMBDA === '1') {
+      new node_lambda.NodejsFunction(
+        this,
+        'cdk-import-nodejs-lambda-test',
+        {
+          bundling: {
+            minify: true,
+            sourceMap: false,
+            sourcesContent: false,
+            target: 'ES2020',
+            forceDockerBundling: true,
+          },
+          runtime: lambda.Runtime.NODEJS_18_X,
+          entry: path.join(__dirname, 'lambda/index.js')
+        }
+      )
     }
   }
 }

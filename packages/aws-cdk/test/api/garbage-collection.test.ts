@@ -20,6 +20,7 @@ import {
   BackgroundStackRefresh,
   BackgroundStackRefreshProps,
 } from '../../lib/api/garbage-collection/stack-refresh';
+import { ProgressPrinter } from '../../lib/api/garbage-collection/progress-printer';
 import {
   BatchDeleteImageCommand,
   BatchGetImageCommand,
@@ -999,6 +1000,33 @@ describe('BackgroundStackRefresh', () => {
     jest.advanceTimersByTime(120000); // Advance time by 2 minutes
 
     await expect(waitPromise).rejects.toThrow('refreshStacks took too long; the background thread likely threw an error');
+  });
+});
+
+describe('ProgressPrinter', () => {
+  let progressPrinter: ProgressPrinter;
+  let setInterval: jest.SpyInstance;
+  let clearInterval: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setInterval = jest.spyOn(global, 'setInterval');
+    clearInterval = jest.spyOn(global, 'clearInterval');
+
+    progressPrinter = new ProgressPrinter(0, 1000);
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    setInterval.mockRestore();
+    clearInterval.mockRestore();
+  });
+
+  test('throws if start is called twice without stop', () => {
+    progressPrinter.start();
+
+    expect(setInterval).toHaveBeenCalledTimes(1);
+    expect(() => progressPrinter.start()).toThrow('ProgressPrinter is already running. Stop it first using the stop() method before starting it again.');
   });
 });
 

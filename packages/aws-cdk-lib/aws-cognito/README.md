@@ -39,6 +39,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Resource Servers](#resource-servers)
     - [Domains](#domains)
     - [Deletion protection](#deletion-protection)
+    - [Analytics Configuration](#analytics-configuration)
+      - [When specifying a Pinpoint application from the same account](#when-specifying-a-pinpoint-application-from-the-same-account)
+      - [When specifying a Pinpoint application from a different account](#when-specifying-a-pinpoint-application-from-a-different-account)
 
 ## User Pools
 
@@ -1110,5 +1113,68 @@ new cognito.UserPoolGroup(this, 'UserPoolGroup', {
 // You can also add a group by using addGroup method.
 userPool.addGroup('AnotherUserPoolGroup', {
   groupName: 'another-group-name'
+});
+```
+
+### Analytics Configuration
+
+User pool clients can be configured with Amazon Pinpoint analytics to collect user activity metrics. This integration enables you to track user engagement and campaign effectiveness.
+
+📝 Note: Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+
+The following example shows how to configure analytics for a user pool client:
+
+#### When specifying a Pinpoint application from the same account
+
+If you specify the `application` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project
+    application: pinpointApp,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```
+
+#### When specifying a Pinpoint application from a different account
+
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `application` property.  
+(In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
+
+Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project ID
+    applicationId: pinpointApp.ref,
+
+    // External ID for the IAM role
+    externalId: "sample-external-id",
+
+    // IAM role that Cognito can assume to publish to Pinpoint
+    role: pinpointRole,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
 });
 ```

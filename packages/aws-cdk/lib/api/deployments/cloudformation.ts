@@ -459,7 +459,7 @@ export async function uploadStackTemplateAssets(stack: cxapi.CloudFormationStack
   }
 }
 
-async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetCommandOutput> {
+export async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetCommandOutput> {
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
@@ -478,6 +478,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
     Parameters: stackParams.apiParameters,
     ResourcesToImport: options.resourcesToImport,
     RoleARN: options.role,
+    Tags: toCfnTags(options.stack.tags),
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
   });
 
@@ -489,6 +490,13 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   return createdChangeSet;
+}
+
+function toCfnTags(tags: { [id: string]: string }): Tag[] {
+  return Object.entries(tags).map(([k, v]) => ({
+    Key: k,
+    Value: v,
+  }));
 }
 
 export async function cleanupOldChangeset(changeSetName: string, stackName: string, cfn: ICloudFormationClient) {

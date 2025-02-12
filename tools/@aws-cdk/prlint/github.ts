@@ -30,8 +30,29 @@ export interface GitHubLabel {
   readonly name: string;
 }
 
-export interface GitHubFile {
+export interface Delta {
+  readonly additions: number;
+  readonly deletions: number;
+}
+
+export interface GitHubFile extends Delta {
   readonly filename: string;
+}
+
+export function sumChanges(files: GitHubFile[]) {
+  function add(d1: Delta, d2: Delta): Delta {
+    return {
+      additions: d1.additions + d2.additions,
+      deletions: d1.deletions + d2.deletions,
+    };
+  }
+
+  const identity = {
+    additions: 0,
+    deletions: 0
+  };
+
+  return files.reduce(add, identity);
 }
 
 

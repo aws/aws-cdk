@@ -3,6 +3,7 @@ const {
     updateProjectField,
     addItemToProject,
     fetchProjectFields,
+    fetchProjectItem,
 } = require('./project-api');
 
 module.exports = async ({ github, context }) => {
@@ -15,41 +16,87 @@ module.exports = async ({ github, context }) => {
             org: PROJECT_CONFIG.org,
             number: PROJECT_CONFIG.projectNumber
         });
+
         const priorityField = projectFields.organization.projectV2.fields.nodes.find(
             (field) => field.id === PROJECT_CONFIG.priorityFieldId
         );
 
-        const addResult = await addItemToProject({
+        const statusField = projectFields.organization.projectV2.fields.nodes.find(
+            (field) => field.id === PROJECT_CONFIG.statusFieldId
+        );
+
+        // Check if issue is already in project
+        const result = await fetchProjectItem({
             github,
-            projectId: PROJECT_CONFIG.projectId,
-            contentId: issue.node_id,
+            contentId: issue.node_id
         });
 
-        const itemId = addResult.addProjectV2ItemById.item.id;
+        // Filter our specific project
+        const projectItem = result?.node?.projectItems?.nodes
+            ?.find(item => item.project.id === PROJECT_CONFIG.projectId);
 
-        const priorityR6OptionId = priorityField.options.find(
-            (option) => option.name === PRIORITIES.R6
-        )?.id;
+        if (projectItem) {
+            // Issue already in project - update only priority if different
+            const currentPriority = projectItem.fieldValues.nodes
+                .find(fv => fv.field?.name === 'Priority')?.name;
 
-        if (!priorityR6OptionId) {
-            throw new Error(`Cannot find Id of the R6 priority option. 
-            Found: ${priorityField.options.map(op => op.name)}`);
+            if (currentPriority === PRIORITIES.R6) {
+                console.log(`Issue #${issue.number} already has ${PRIORITIES.R6} priority. Skipping.`);
+                return;
+            }
+
+            const priorityR6OptionId = priorityField.options.find(
+                (option) => option.name === PRIORITIES.R6
+            )?.id;
+
+            // Update priority only, retain existing status
+            await updateProjectField({
+                github,
+                projectId: PROJECT_CONFIG.projectId,
+                itemId: projectItem.id,
+                fieldId: PROJECT_CONFIG.priorityFieldId,
+                value: priorityR6OptionId,
+            });
+        } else {
+            // Add new issue to project
+            const addResult = await addItemToProject({
+                github,
+                projectId: PROJECT_CONFIG.projectId,
+                contentId: issue.node_id,
+            });
+
+            const itemId = addResult.addProjectV2ItemById.item.id;
+            const priorityR6OptionId = priorityField.options.find(
+                (option) => option.name === PRIORITIES.R6
+            )?.id;
+
+            const readyStatusId = statusField.options.find(
+                (option) => option.name === STATUS.READY
+            )?.id;
+
+            // Set both priority and Ready status for new items only
+            await Promise.all([
+                updateProjectField({
+                    github,
+                    projectId: PROJECT_CONFIG.projectId,
+                    itemId: itemId,
+                    fieldId: PROJECT_CONFIG.priorityFieldId,
+                    value: priorityR6OptionId,
+                }),
+                updateProjectField({
+                    github,
+                    projectId: PROJECT_CONFIG.projectId,
+                    itemId: itemId,
+                    fieldId: PROJECT_CONFIG.statusFieldId,
+                    value: readyStatusId,
+                })
+            ]);
         }
-
-        await updateProjectField({
-            github,
-            projectId: PROJECT_CONFIG.projectId,
-            itemId: itemId,
-            fieldId: PROJECT_CONFIG.priorityFieldId,
-            value: priorityR6OptionId,
-        });
     }
 
     const issue = context.payload.issue;
     const labels = issue.labels.map((l) => l.name);
     if (labels.includes(LABELS.P1) && labels.includes(LABELS.BUG)) {
         await addToProject(issue);
-    } else {
-        // do nothing
     }
 };
