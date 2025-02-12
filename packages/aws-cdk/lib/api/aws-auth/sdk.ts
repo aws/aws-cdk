@@ -33,6 +33,9 @@ import {
   CreateStackCommand,
   type CreateStackCommandInput,
   type CreateStackCommandOutput,
+  CreateStackRefactorCommand,
+  type CreateStackRefactorCommandInput,
+  type CreateStackRefactorCommandOutput,
   DeleteChangeSetCommand,
   type DeleteChangeSetCommandInput,
   type DeleteChangeSetCommandOutput,
@@ -54,6 +57,7 @@ import {
   DescribeStackEventsCommand,
   type DescribeStackEventsCommandInput,
   DescribeStackEventsCommandOutput,
+  DescribeStackRefactorCommandInput,
   DescribeStackResourcesCommand,
   DescribeStackResourcesCommandInput,
   DescribeStackResourcesCommandOutput,
@@ -63,6 +67,9 @@ import {
   ExecuteChangeSetCommand,
   type ExecuteChangeSetCommandInput,
   type ExecuteChangeSetCommandOutput,
+  ExecuteStackRefactorCommand,
+  type ExecuteStackRefactorCommandInput,
+  type ExecuteStackRefactorCommandOutput,
   GetGeneratedTemplateCommand,
   type GetGeneratedTemplateCommandInput,
   type GetGeneratedTemplateCommandOutput,
@@ -102,6 +109,8 @@ import {
   UpdateTerminationProtectionCommand,
   type UpdateTerminationProtectionCommandInput,
   type UpdateTerminationProtectionCommandOutput,
+  waitUntilStackRefactorCreateComplete,
+  waitUntilStackRefactorExecuteComplete,
 } from '@aws-sdk/client-cloudformation';
 import {
   CloudWatchLogsClient,
@@ -376,6 +385,9 @@ export interface ICloudFormationClient {
   createChangeSet(input: CreateChangeSetCommandInput): Promise<CreateChangeSetCommandOutput>;
   createGeneratedTemplate(input: CreateGeneratedTemplateCommandInput): Promise<CreateGeneratedTemplateCommandOutput>;
   createStack(input: CreateStackCommandInput): Promise<CreateStackCommandOutput>;
+
+  createStackRefactor(input: CreateStackRefactorCommandInput): Promise<CreateStackRefactorCommandOutput>;
+
   deleteChangeSet(input: DeleteChangeSetCommandInput): Promise<DeleteChangeSetCommandOutput>;
   deleteGeneratedTemplate(input: DeleteGeneratedTemplateCommandInput): Promise<DeleteGeneratedTemplateCommandOutput>;
   deleteStack(input: DeleteStackCommandInput): Promise<DeleteStackCommandOutput>;
@@ -387,7 +399,11 @@ export interface ICloudFormationClient {
   describeStacks(input: DescribeStacksCommandInput): Promise<DescribeStacksCommandOutput>;
   describeStackResources(input: DescribeStackResourcesCommandInput): Promise<DescribeStackResourcesCommandOutput>;
   executeChangeSet(input: ExecuteChangeSetCommandInput): Promise<ExecuteChangeSetCommandOutput>;
+
+  executeStackRefactor(input: ExecuteStackRefactorCommandInput): Promise<ExecuteStackRefactorCommandOutput>;
+
   getGeneratedTemplate(input: GetGeneratedTemplateCommandInput): Promise<GetGeneratedTemplateCommandOutput>;
+
   getTemplate(input: GetTemplateCommandInput): Promise<GetTemplateCommandOutput>;
   getTemplateSummary(input: GetTemplateSummaryCommandInput): Promise<GetTemplateSummaryCommandOutput>;
   listExports(input: ListExportsCommandInput): Promise<ListExportsCommandOutput>;
@@ -408,6 +424,8 @@ export interface ICloudFormationClient {
   // Pagination functions
   describeStackEvents(input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
+  waitUntilStackRefactorCreateComplete(input: DescribeStackRefactorCommandInput): Promise<WaiterResult>;
+  waitUntilStackRefactorExecuteComplete(input: DescribeStackRefactorCommandInput): Promise<WaiterResult>;
 }
 
 export interface ICloudWatchLogsClient {
@@ -619,6 +637,8 @@ export class SDK {
       ): Promise<CreateGeneratedTemplateCommandOutput> => client.send(new CreateGeneratedTemplateCommand(input)),
       createStack: (input: CreateStackCommandInput): Promise<CreateStackCommandOutput> =>
         client.send(new CreateStackCommand(input)),
+      createStackRefactor: (input: CreateStackRefactorCommandInput): Promise<CreateStackRefactorCommandOutput> =>
+        client.send(new CreateStackRefactorCommand(input)),
       deleteChangeSet: (input: DeleteChangeSetCommandInput): Promise<DeleteChangeSetCommandOutput> =>
         client.send(new DeleteChangeSetCommand(input)),
       deleteGeneratedTemplate: (
@@ -639,6 +659,8 @@ export class SDK {
         client.send(new DescribeStackResourcesCommand(input)),
       executeChangeSet: (input: ExecuteChangeSetCommandInput): Promise<ExecuteChangeSetCommandOutput> =>
         client.send(new ExecuteChangeSetCommand(input)),
+      executeStackRefactor: (input: ExecuteStackRefactorCommandInput): Promise<ExecuteStackRefactorCommandOutput> =>
+        client.send(new ExecuteStackRefactorCommand(input)),
       getGeneratedTemplate: (input: GetGeneratedTemplateCommandInput): Promise<GetGeneratedTemplateCommandOutput> =>
         client.send(new GetGeneratedTemplateCommand(input)),
       getTemplate: (input: GetTemplateCommandInput): Promise<GetTemplateCommandOutput> =>
@@ -678,6 +700,30 @@ export class SDK {
           stackResources.push(...(page?.StackResourceSummaries || []));
         }
         return stackResources;
+      },
+      waitUntilStackRefactorCreateComplete: (input: DescribeStackRefactorCommandInput): Promise<WaiterResult> => {
+        return waitUntilStackRefactorCreateComplete(
+          {
+            client,
+            // TODO Tweak these parameters
+            maxWaitTime: 20,
+            minDelay: 1,
+            maxDelay: 3,
+          },
+          input,
+        );
+      },
+      waitUntilStackRefactorExecuteComplete: (input: DescribeStackRefactorCommandInput): Promise<WaiterResult> => {
+        return waitUntilStackRefactorExecuteComplete(
+          {
+            client,
+            // TODO Tweak these parameters
+            maxWaitTime: 20,
+            minDelay: 1,
+            maxDelay: 3,
+          },
+          input,
+        );
       },
     };
   }

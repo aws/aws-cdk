@@ -31,11 +31,11 @@ import {
   retry,
   shell,
   sleep,
-  withCDKMigrateFixture,
+  withCDKMigrateFixture, withCompositeFixture,
   withDefaultFixture,
   withExtendedTimeoutFixture,
   withoutBootstrap,
-  withSamIntegrationFixture,
+  withSamIntegrationFixture, withCdkApp, withSpecificCdkApp,
   withSpecificFixture,
 } from '../../lib';
 import { awsActionsFromRequests, startProxyServer } from '../../lib/proxy';
@@ -2898,6 +2898,40 @@ integTest(
       await fixture.cdkDestroy('test-rollback');
     }
   }),
+);
+
+integTest('renamed resources require user approval',
+  withCompositeFixture([
+    // First deploy a stack
+    withCdkApp(async (fixture) => {
+      process.env.INTEG_NO_CLEAN = 'true';
+
+      await fixture.cdkDeploy('notices');
+    }),
+
+    // Then deploy a stack with the same name,
+    // but with a resource name changed.
+    withSpecificCdkApp('refactoring', async (fixture) => {
+      delete process.env.INTEG_NO_CLEAN;
+
+      const stackName = 'notices';
+      const stdErr = await fixture.cdkDeploy(stackName, {
+        allowErrExit: true,
+      });
+
+      // ensure the user would be ask for confirmation
+      expect(stdErr).toContain('Some resources have been renamed, which may cause resource replacement');
+
+      const stackDescription = await fixture.aws.cloudFormation.send(
+        new DescribeStacksCommand({
+          StackName: fixture.fullStackName(stackName),
+        }),
+      );
+
+      // ensure stack was not updated
+      expect(stackDescription.Stacks?.[0].StackStatus === 'CREATE_COMPLETE');
+    }),
+  ]),
 );
 
 integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
