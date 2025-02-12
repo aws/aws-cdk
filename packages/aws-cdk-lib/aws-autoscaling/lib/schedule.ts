@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Annotations } from '../../core';
+import { Annotations, UnscopedValidationError } from '../../core';
 
 /**
  * Schedule for scheduled scaling actions
@@ -20,7 +20,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new Error('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError('Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');

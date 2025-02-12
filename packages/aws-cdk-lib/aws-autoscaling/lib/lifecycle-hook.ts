@@ -3,7 +3,7 @@ import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
 import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
+import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -97,7 +97,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public get role() {
     if (!this._role) {
-      throw new Error('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.');
+      throw new ValidationError('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.', this);
     }
 
     return this._role;
@@ -122,7 +122,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       this._role = props.role;
 
       if (!props.notificationTarget) {
-        throw new Error("'notificationTarget' parameter required when 'role' parameter is specified");
+        throw new ValidationError("'notificationTarget' parameter required when 'role' parameter is specified", this);
       }
     } else {
       this._role = targetProps ? targetProps.createdRole : undefined;
