@@ -2258,7 +2258,7 @@ integTest(
  * Validates fix for https://github.com/aws/aws-cdk/issues/31999 (import fails)
  */
 integTest(
-  'test s3 bucket import with nodejsfunction lambda',
+  'test resource import with construct that requires bundling',
   withDefaultFixture(async (fixture) => {
     // GIVEN
     const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
@@ -2306,7 +2306,11 @@ integTest(
       const cfnTemplateAfterImport = await fixture.aws.cloudFormation.send(
         new GetTemplateCommand({ StackName: fullStackName }),
       );
+
+      // If bundling is skipped during import for NodeJSFunction lambda, then the operation should fail and exit
       expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+
+      // If the import operation is successful, the template should contain the imported bucket
       expect(cfnTemplateAfterImport.TemplateBody).toContain(bucketLogicalId);
     } finally {
       // Clean up the resources we created
