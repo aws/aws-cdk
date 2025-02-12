@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
+import { CloudAssemblyError } from '../private/error';
 
 const ASSET_MANIFEST_ARTIFACT_SYM = Symbol.for('@aws-cdk/cx-api.AssetManifestArtifact');
 
@@ -55,7 +56,7 @@ export class AssetManifestArtifact extends CloudArtifact {
 
     const properties = (this.manifest.properties || {}) as cxschema.AssetManifestProperties;
     if (!properties.file) {
-      throw new Error('Invalid AssetManifestArtifact. Missing "file" property');
+      throw new CloudAssemblyError('Invalid AssetManifestArtifact. Missing "file" property');
     }
     this.file = path.resolve(this.assembly.directory, properties.file);
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;

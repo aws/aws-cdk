@@ -548,7 +548,12 @@ export class EnumsUpdater extends MetadataUpdater {
 export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
 `;
 
-    const jsonContent = JSON.stringify(enums, null, 2).replace(/"/g, "'");
+    // Sort the keys of the enums object
+    const sortedEnums = Object.keys(enums).sort().reduce<Record<string, (string | number)[]>>((acc, key) => {
+      acc[key] = enums[key];
+      return acc;
+    }, {});
+    const jsonContent = JSON.stringify(sortedEnums, null, 2).replace(/"/g, "'");
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);

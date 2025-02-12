@@ -33,7 +33,7 @@ export { findCloudWatchLogGroups } from '../../../../aws-cdk/lib/api/logs/find-c
 export { HotswapPropertyOverrides, EcsHotswapProperties } from '../../../../aws-cdk/lib/api/hotswap/common';
 
 // @todo Cloud Assembly and Executable - this is a messy API right now
-export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
+export { CloudAssembly, sanitizePatterns, type StackDetails, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
 export { prepareDefaultEnvironment, prepareContext, spaceAvailableForContext } from '../../../../aws-cdk/lib/api/cxapp/exec';
 export { guessExecutable } from '../../../../aws-cdk/lib/api/cxapp/exec';
 

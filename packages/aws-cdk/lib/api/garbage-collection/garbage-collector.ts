@@ -251,9 +251,10 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numImages} images in batches`);
 
+      printer.start();
+
       for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
 
@@ -323,12 +324,13 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numObjects} objects in batches`);
 
+      printer.start();
+
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 

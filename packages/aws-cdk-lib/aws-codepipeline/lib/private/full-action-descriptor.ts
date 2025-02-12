@@ -27,6 +27,8 @@ export class FullActionDescriptor {
   public readonly region?: string;
   public readonly role?: iam.IRole;
   public readonly configuration: any;
+  public readonly commands?: string[];
+  public readonly outputVariables?: string[];
 
   constructor(props: FullActionDescriptorProps) {
     this.action = props.action;
@@ -45,6 +47,8 @@ export class FullActionDescriptor {
     this.role = actionProperties.role ?? props.actionRole;
 
     this.configuration = props.actionConfig.configuration;
+    this.commands = actionProperties.commands;
+    this.outputVariables = actionProperties.outputVariables;
   }
 }
 

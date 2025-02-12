@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnWarmPool } from './autoscaling.generated';
-import { Lazy, Names, Resource } from '../../core';
+import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -64,11 +64,11 @@ export class WarmPool extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
-      throw new Error('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1');
+      throw new ValidationError('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
     }
 
     if (props.minSize && props.minSize < 0) {
-      throw new Error('\'minSize\' parameter should be greater than or equal to 0');
+      throw new ValidationError('\'minSize\' parameter should be greater than or equal to 0', this);
     }
 
     new CfnWarmPool(this, 'Resource', {

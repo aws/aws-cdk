@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.178.1](https://github.com/aws/aws-cdk/compare/v2.178.0...v2.178.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* **cli:** sdk logging is always present even when not turned on ([#33324](https://github.com/aws/aws-cdk/issues/33324)) ([29a9a6d](https://github.com/aws/aws-cdk/commit/29a9a6d9c2ce8b24564ae521563b061276a93e87)), closes [#33320](https://github.com/aws/aws-cdk/issues/33320) [#33320](https://github.com/aws/aws-cdk/issues/33320) [#33273](https://github.com/aws/aws-cdk/issues/33273)
+* **custom-resource:** provider framework lambda missing GetFunction permission ([#33315](https://github.com/aws/aws-cdk/issues/33315)) ([80217f1](https://github.com/aws/aws-cdk/commit/80217f1d4a74d0423011dd12e47b7efa85d6367c)), closes [#26838](https://github.com/aws/aws-cdk/issues/26838) [/github.com/aws/aws-cdk/blob/64b865ba7697f454a1f091a67bf54a6d4ad0e76e/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/outbound.ts#L66-L80](https://github.com/aws//github.com/aws/aws-cdk/blob/64b865ba7697f454a1f091a67bf54a6d4ad0e76e/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/outbound.ts/issues/L66-L80) [/github.com/aws/aws-sdk-js-v3/blob/6858c7e04730a2b524b06355969e4076c28ae863/clients/client-lambda/src/waiters/waitForFunctionActiveV2.ts#L57](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/6858c7e04730a2b524b06355969e4076c28ae863/clients/client-lambda/src/waiters/waitForFunctionActiveV2.ts/issues/L57) [/github.com/aws/aws-cdk/commit/c3a4b7b899289b04fffb6d65b3289cc5526d5397#diff-85920270c638d83b082246e0026f1a316dd39aaa3cd8720fdaeb3d526e438f7fR66](https://github.com/aws//github.com/aws/aws-cdk/commit/c3a4b7b899289b04fffb6d65b3289cc5526d5397/issues/diff-85920270c638d83b082246e0026f1a316dd39aaa3cd8720fdaeb3d526e438f7fR66)
+
 ## [2.178.0](https://github.com/aws/aws-cdk/compare/v2.177.0...v2.178.0) (2025-02-05)
 
 

@@ -101,7 +101,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new Error(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`);
+      throw new cdk.ValidationError(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
     }
   }
 

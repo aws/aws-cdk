@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { AspectPriority, Aspects, Stage } from '../../../core';
+import { AspectPriority, Aspects, Stage, ValidationError } from '../../../core';
 import { AddStageOpts as StageOptions, WaveOptions, Wave, IFileSetProducer, ShellStep, FileSet } from '../blueprint';
 
 const PIPELINE_SYMBOL = Symbol.for('@aws-cdk/pipelines.PipelineBase');
@@ -72,7 +72,7 @@ export abstract class PipelineBase extends Construct {
     }
 
     if (!props.synth.primaryOutput) {
-      throw new Error(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`);
+      throw new ValidationError(`synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`, this);
     }
 
     this.synth = props.synth;
@@ -91,7 +91,7 @@ export abstract class PipelineBase extends Construct {
    */
   public addStage(stage: Stage, options?: StageOptions) {
     if (this.built) {
-      throw new Error('addStage: can\'t add Stages anymore after buildPipeline() has been called');
+      throw new ValidationError('addStage: can\'t add Stages anymore after buildPipeline() has been called', this);
     }
     return this.addWave(stage.stageName).addStage(stage, options);
   }
@@ -113,7 +113,7 @@ export abstract class PipelineBase extends Construct {
    */
   public addWave(id: string, options?: WaveOptions) {
     if (this.built) {
-      throw new Error('addWave: can\'t add Waves anymore after buildPipeline() has been called');
+      throw new ValidationError('addWave: can\'t add Waves anymore after buildPipeline() has been called', this);
     }
 
     const wave = new Wave(id, options);
@@ -128,7 +128,7 @@ export abstract class PipelineBase extends Construct {
    */
   public buildPipeline() {
     if (this.built) {
-      throw new Error('build() has already been called: can only call it once');
+      throw new ValidationError('build() has already been called: can only call it once', this);
     }
     this.doBuildPipeline();
     this.built = true;

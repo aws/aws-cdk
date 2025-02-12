@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "94daf9d929c0440b15cac98160ed22e1146416901827edaa8f7ffc1b16373977": {
+      "source": {
+        "path": "IntegUserPoolClientAnalytics2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "94daf9d929c0440b15cac98160ed22e1146416901827edaa8f7ffc1b16373977.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

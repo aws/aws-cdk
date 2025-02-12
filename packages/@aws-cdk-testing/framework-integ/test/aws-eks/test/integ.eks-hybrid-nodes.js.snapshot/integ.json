@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-hybrid-nodes-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-hybrid-nodes"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-hybrid-nodes-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterhybridnodesintegDefaultTestDeployAssert8189222F"
+    }
+  }
+}

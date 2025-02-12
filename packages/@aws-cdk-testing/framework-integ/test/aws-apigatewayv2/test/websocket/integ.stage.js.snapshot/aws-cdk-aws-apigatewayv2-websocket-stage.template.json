@@ -15,6 +15,7 @@
      "Ref": "WebSocketApi34BCF99B"
     },
     "DefaultRouteSettings": {
+     "DetailedMetricsEnabled": true,
      "ThrottlingBurstLimit": 1000,
      "ThrottlingRateLimit": 1000
     },

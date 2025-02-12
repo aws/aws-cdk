@@ -11,7 +11,7 @@ describe('Addon', () => {
     app = new App();
     stack = new Stack(app, 'Stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_30,
+      version: KubernetesVersion.V1_32,
     });
   });
 

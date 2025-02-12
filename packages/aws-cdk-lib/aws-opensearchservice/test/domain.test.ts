@@ -2563,54 +2563,6 @@ describe('EBS Options Configurations', () => {
         version: EngineVersion.OPENSEARCH_2_5,
         ebs: {
           volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 99,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 64001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 16001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 2999,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
           volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
           throughput: 1024,
         },

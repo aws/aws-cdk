@@ -20,10 +20,11 @@ export enum StackSelectionStrategy {
   ONLY_SINGLE = 'ONLY_SINGLE',
 
   /**
-   * @todo not currently publicly exposed
    * Return stacks matched by patterns.
    * If no stacks are found, execution is halted successfully.
    * Most likely you don't want to use this but `StackSelectionStrategy.MUST_MATCH_PATTERN`
+   *
+   * @todo not currently publicly exposed in cli, but available in toolkit
    */
   PATTERN_MATCH = 'PATTERN_MATCH',
 
