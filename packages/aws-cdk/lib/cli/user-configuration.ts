@@ -13,11 +13,11 @@ const CONTEXT_KEY = 'context';
  * All available CDK commands.
  */
 export enum Command {
-  // List operations
+  // List operations (no bundling)
   LS = 'ls',
   LIST = 'list',
 
-  // Stack modification operations
+  // Stack modification operations (require bundling)
   DIFF = 'diff',
   DEPLOY = 'deploy',
   SYNTHESIZE = 'synthesize',
@@ -25,7 +25,7 @@ export enum Command {
   WATCH = 'watch',
   IMPORT = 'import',
 
-  // Management operations
+  // Management operations (no bundling)
   BOOTSTRAP = 'bootstrap',
   DESTROY = 'destroy',
   METADATA = 'metadata',
@@ -43,23 +43,12 @@ export enum Command {
   DOCTOR = 'doctor',
 }
 
-interface ConfiguredCommand {
-  bundling: boolean;
-}
-
-type CommandType = {
-  [K in Command]: ConfiguredCommand;
-};
-
 /**
- * Available commands and their bundling configurations.
- * The bundling property is determined by the command's categorization.
- *
- * @example
- * ConfiguredCommands[Command.DEPLOY].bundling; // true
- * ConfiguredCommands[Command.LS].bundling; // false
+ * Metadata for each command specifying if it requires bundling.
+ * This must be kept in sync with the Command enum.
+ * TypeScript will enforce this by checking that all enum values are covered.
  */
-const ConfiguredCommands: CommandType = {
+export const CommandMetadata: { [K in Command]: { bundling: boolean } } = {
   // List operations (no bundling)
   [Command.LS]: { bundling: false },
   [Command.LIST]: { bundling: false },
@@ -89,6 +78,29 @@ const ConfiguredCommands: CommandType = {
   [Command.DOC]: { bundling: false },
   [Command.DOCTOR]: { bundling: false },
 };
+
+export interface ConfiguredCommand {
+  bundling: boolean;
+}
+
+type CommandType = {
+  [key: string]: ConfiguredCommand;
+};
+
+/**
+ * Available commands and their bundling configurations.
+ * Generated from CommandMetadata to ensure consistency.
+ *
+ * @example
+ * ConfiguredCommands['deploy'].bundling; // true
+ * ConfiguredCommands['ls'].bundling; // false
+ */
+export const ConfiguredCommands: CommandType = Object.entries(Command)
+  .filter(([key]) => isNaN(Number(key))) // Filter out reverse mapping
+  .reduce((acc, [_, value]) => ({
+    ...acc,
+    [value]: CommandMetadata[value as Command],
+  }), {});
 
 export type Arguments = {
   readonly _: [keyof typeof ConfiguredCommands, ...string[]];
