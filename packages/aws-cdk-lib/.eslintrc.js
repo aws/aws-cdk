@@ -70,6 +70,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-s3objectlambda',
   'aws-s3outposts',
   'aws-s3tables',
+  'region-info',
   'pipelines',
 ];
 baseConfig.overrides.push({
