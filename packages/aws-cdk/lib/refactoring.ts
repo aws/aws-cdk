@@ -75,6 +75,14 @@ export class ResourceCorrespondence {
 
     return new ResourceCorrespondence(ambiguousPairs, this.oldResources, this.newResources);
   }
+
+  invert(): ResourceCorrespondence {
+    return new ResourceCorrespondence(
+      this.pairs.map(p => [p[1], p[0]]),
+      this.newResources,
+      this.oldResources,
+    );
+  }
 }
 
 /**

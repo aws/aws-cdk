@@ -379,11 +379,12 @@ export class CdkToolkit {
         );
       }
 
+      const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
+      const cfnClient = targetEnvironment.sdk.cloudFormation();
+
       const unambiguous = correspondence.unambiguous();
       if (!unambiguous.isEmpty()) {
         info(`Automatically renaming the following resources:${unambiguous}`);
-        const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
-        const cfnClient = targetEnvironment.sdk.cloudFormation();
         await refactorStack(cfnClient, unambiguous, currentTemplate, stack.stackName);
       }
 
@@ -555,6 +556,11 @@ export class CdkToolkit {
 
         logResult(deployResult.stackArn);
       } catch (e: any) {
+        if (!unambiguous.isEmpty()) {
+          info('Rolling back the automatic refactoring.');
+          await refactorStack(cfnClient, unambiguous.invert(), currentTemplate, stack.stackName);
+        }
+
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new ToolkitError(
@@ -823,10 +829,10 @@ export class CdkToolkit {
     // Notify user of next steps
     info(
       `Import operation complete. We recommend you run a ${chalk.blueBright('drift detection')} operation ` +
-        'to confirm your CDK app resource definitions are up-to-date. Read more here: ' +
-        chalk.underline.blueBright(
-          'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/detect-drift-stack.html',
-        ),
+      'to confirm your CDK app resource definitions are up-to-date. Read more here: ' +
+      chalk.underline.blueBright(
+        'https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/detect-drift-stack.html',
+      ),
     );
     if (actualImport.importResources.length < additions.length) {
       info('');
