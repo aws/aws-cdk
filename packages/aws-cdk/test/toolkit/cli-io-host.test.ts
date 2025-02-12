@@ -1,10 +1,15 @@
+import { PassThrough } from 'stream';
 import * as chalk from 'chalk';
-import { CliIoHost, IoMessage, IoMessageLevel } from '../../lib/toolkit/cli-io-host';
-import { sendResponse } from '../_helpers/prompts';
+import { CliIoHost, IoMessage, IoMessageLevel, IoRequest } from '../../lib/toolkit/cli-io-host';
+
+let passThrough: PassThrough;
 
 const ioHost = CliIoHost.instance({
   logLevel: 'trace',
 });
+
+// Mess with the 'process' global so we can replace its 'process.stdin' member
+global.process = { ...process };
 
 describe('CliIoHost', () => {
   let mockStdout: jest.Mock;
@@ -19,6 +24,7 @@ describe('CliIoHost', () => {
     ioHost.isTTY = process.stdout.isTTY ?? false;
     ioHost.isCI = false;
     ioHost.currentAction = 'synth';
+    (process as any).stdin = passThrough = new PassThrough();
 
     defaultMessage = {
       time: new Date('2024-01-01T12:00:00'),
@@ -243,8 +249,7 @@ describe('CliIoHost', () => {
 
     describe('boolean', () => {
       test('respond "yes" to a confirmation prompt', async () => {
-        sendResponse('y');
-        const response = await ioHost.requestResponse({
+        const response = await requestResponse('y', {
           time: new Date(),
           level: 'info',
           action: 'synth',
@@ -258,8 +263,7 @@ describe('CliIoHost', () => {
       });
 
       test('respond "no" to a confirmation prompt', async () => {
-        sendResponse('n');
-        await expect(() => ioHost.requestResponse({
+        await expect(() => requestResponse('n', {
           time: new Date(),
           level: 'info',
           action: 'synth',
@@ -279,8 +283,7 @@ describe('CliIoHost', () => {
         // simulate the enter key
         ['\x0A', 'cat'],
       ])('receives %p and returns %p', async (input, expectedResponse) => {
-        sendResponse(input);
-        const response = await ioHost.requestResponse({
+        const response = await requestResponse(input, {
           time: new Date(),
           level: 'info',
           action: 'synth',
@@ -300,8 +303,7 @@ describe('CliIoHost', () => {
         // simulate the enter key
         ['\x0A', 1],
       ])('receives %p and return %p', async (input, expectedResponse) => {
-        sendResponse(input);
-        const response = await ioHost.requestResponse({
+        const response = await requestResponse(input, {
           time: new Date(),
           level: 'info',
           action: 'synth',
@@ -378,3 +380,12 @@ describe('CliIoHost', () => {
     });
   });
 });
+
+/**
+ * Do a requestResponse cycle with the global ioHost, while sending input on the global fake input stream
+ */
+async function requestResponse<DataType, ResponseType>(input: string, msg: IoRequest<DataType, ResponseType>): Promise<ResponseType> {
+  const promise = ioHost.requestResponse(msg);
+  passThrough.write(input + '\n');
+  return promise;
+}
