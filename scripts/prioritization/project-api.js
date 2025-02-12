@@ -153,10 +153,10 @@ const updateProjectField = async ({
   };
 
   /**
-   * Fetches project item details for a specific PR
+   * Fetches project item details for a specific PR or Issue
    * @param {Object} params - The parameters for fetching project item
    * @param {Object} params.github - The GitHub API client
-   * @param {string} params.contentId - PR node ID
+   * @param {string} params.contentId - PR/Issue node ID
    * @returns {Promise<Object>} Project item details if PR is in project
    */
   const fetchProjectItem = async ({ github, contentId }) => {
@@ -165,6 +165,28 @@ const updateProjectField = async ({
       query($contentId: ID!) {
         node(id: $contentId) {
           ... on PullRequest {
+            projectItems(first: 100) {
+              nodes {
+                id
+                project {
+                  id
+                }
+                fieldValues(first: 8) {
+                  nodes {
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                      field {
+                        ... on ProjectV2SingleSelectField {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          ... on Issue {
             projectItems(first: 100) {
               nodes {
                 id

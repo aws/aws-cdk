@@ -1,6 +1,7 @@
 import type { CloudAssembly } from './cloud-assembly';
 import { MetadataEntryResult, SynthesisMessage, SynthesisMessageLevel } from './metadata';
 import * as cxschema from '../../cloud-assembly-schema';
+import { CloudAssemblyError } from './private/error';
 
 /**
  * Artifact properties for CloudFormation stacks.
@@ -45,7 +46,7 @@ export class CloudArtifact {
   public static fromManifest(assembly: CloudAssembly, id: string, artifact: cxschema.ArtifactManifest): CloudArtifact | undefined {
     // Implementation is defined in a separate file to break cyclic dependencies
     void(assembly), void(id), void(artifact);
-    throw new Error('Implementation not overridden yet');
+    throw new CloudAssemblyError('Implementation not overridden yet');
   }
 
   /**
@@ -84,7 +85,7 @@ export class CloudArtifact {
     this._deps = this._dependencyIDs.map(id => {
       const dep = this.assembly.tryGetArtifact(id);
       if (!dep) {
-        throw new Error(`Artifact ${this.id} depends on non-existing artifact ${id}`);
+        throw new CloudAssemblyError(`Artifact ${this.id} depends on non-existing artifact ${id}`);
       }
       return dep;
     });
