@@ -381,6 +381,7 @@ export class CdkToolkit {
 
       const unambiguous = correspondence.unambiguous();
       if (!unambiguous.isEmpty()) {
+        info(`Automatically renaming the following resources:${unambiguous}`);
         const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
         const cfnClient = targetEnvironment.sdk.cloudFormation();
         await refactorStack(cfnClient, unambiguous, currentTemplate, stack.stackName);
