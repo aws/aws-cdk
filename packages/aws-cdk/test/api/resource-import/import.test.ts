@@ -178,9 +178,7 @@ test('asks human to confirm automic import if identifier is in template', async 
   };
 
   // WHEN
-  await importer.importResourcesFromMap(importMap, {
-    toolkitStackName: 'CDKToolkit',
-  });
+  await importer.importResourcesFromMap(importMap);
 
   expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
     ChangeSetName: expect.any(String),
@@ -384,9 +382,7 @@ async function importTemplateFromClean(stack: ReturnType<typeof testStack>) {
   const importer = new ResourceImporter(stack, props);
   const { additions } = await importer.discoverImportableResources();
   const importable = await importer.askForResourceIdentifiers(additions);
-  await importer.importResourcesFromMap(importable, {
-    toolkitStackName: 'CDKToolkit',
-  });
+  await importer.importResourcesFromMap(importable);
   return importable;
 }
 

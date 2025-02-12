@@ -20,13 +20,6 @@ export interface ResourceImporterProps {
 
 export interface ImportDeploymentOptions {
   /**
-   * Name of the toolkit stack to use/deploy
-   *
-   * @default CDKToolkit
-   */
-  readonly toolkitStackName: string;
-
-  /**
    * Role to pass to CloudFormation for deployment
    *
    * @default - Default stack role
@@ -35,11 +28,15 @@ export interface ImportDeploymentOptions {
 
   /**
    * Deployment method
+   *
+   * @default - Change set with default options
    */
   readonly deploymentMethod?: DeploymentMethod;
 
   /**
    * Stack tags (pass through to CloudFormation)
+   *
+   * @default - No tags
    */
   readonly tags?: Tag[];
 
@@ -183,7 +180,7 @@ export class ResourceImporter {
    * @param importMap Mapping from CDK construct tree path to physical resource import identifiers
    * @param options Options to pass to CloudFormation deploy operation
    */
-  public async importResourcesFromMap(importMap: ImportMap, options: ImportDeploymentOptions) {
+  public async importResourcesFromMap(importMap: ImportMap, options: ImportDeploymentOptions = {}) {
     const resourcesToImport: ResourcesToImport = await this.makeResourcesToImport(importMap);
     const updatedTemplate = await this.currentTemplateWithAdditions(importMap.importResources);
 
@@ -198,7 +195,7 @@ export class ResourceImporter {
    * @param resourcesToImport The mapping created by cdk migrate
    * @param options Options to pass to CloudFormation deploy operation
    */
-  public async importResourcesFromMigrate(resourcesToImport: ResourcesToImport, options: ImportDeploymentOptions) {
+  public async importResourcesFromMigrate(resourcesToImport: ResourcesToImport, options: ImportDeploymentOptions = {}) {
     const updatedTemplate = this.removeNonImportResources();
 
     await this.importResources(updatedTemplate, resourcesToImport, options);

@@ -805,7 +805,6 @@ export class CdkToolkit {
     const tags = tagsForStack(stack);
     await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName ?? this.toolkitStackName,
       tags,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,

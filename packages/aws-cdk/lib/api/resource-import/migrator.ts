@@ -65,7 +65,6 @@ export class ResourceMigrator {
     // Initial Deployment
     await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,

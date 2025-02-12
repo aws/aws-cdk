@@ -258,10 +258,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const deployments = await this.deploymentsForAction('deploy');
     const migrator = new ResourceMigrator({ deployments, ioHost, action });
 
-    await migrator.tryMigrateResources(stackCollection, {
-      toolkitStackName: this.toolkitStackName,
-      ...options,
-    });
+    await migrator.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.NEVER;
 
