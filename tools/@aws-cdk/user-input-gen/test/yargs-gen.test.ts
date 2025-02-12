@@ -25,7 +25,7 @@ describe('render', () => {
 
     expect(await renderYargs(config, YARGS_HELPERS)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
-      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // GENERATED FROM packages/aws-cdk/lib/cli/cli-config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
@@ -91,7 +91,7 @@ describe('render', () => {
 
     expect(await renderYargs(config, YARGS_HELPERS)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
-      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // GENERATED FROM packages/aws-cdk/lib/cli/cli-config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
@@ -176,7 +176,7 @@ describe('render', () => {
 
     expect(await renderYargs(config, YARGS_HELPERS)).toMatchInlineSnapshot(`
       "// -------------------------------------------------------------------------------------------
-      // GENERATED FROM packages/aws-cdk/lib/config.ts.
+      // GENERATED FROM packages/aws-cdk/lib/cli/cli-config.ts.
       // Do not edit by hand; all changes will be overwritten at build time from the config file.
       // -------------------------------------------------------------------------------------------
       /* eslint-disable @stylistic/max-len */
