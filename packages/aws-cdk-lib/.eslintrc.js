@@ -46,6 +46,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
+  'cloudformation-include',
   'aws-route53',
   'aws-route53-patterns',
   'aws-route53-targets',
