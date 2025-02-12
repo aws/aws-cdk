@@ -8,11 +8,10 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
  * To run this integ test, the following steps are required.
  *
  * 1. Create a test repository with any repository name on your GitHub account
- * 2. Create a Dockerfile with any content at the path `./my-dir/Dockerfile` in the repository, and push it to the repository
- * 3. Create a Connections in the CodePipeline management console that accesses your GitHub account
- * 4. Set the ARN of that Connections to the `CONNECTION_ARN` environment variable in the integ test execution environment
- * 5. Set your GitHub account name and the repository name to the `REPO_OWNER` and `REPO_NAME` environment variables in the integ test execution environment
- * 6. After running the integ test, replace the value of `CONNECTION_ARN`, `REPO_OWNER`, and `REPO_NAME` written in the file generated in CloudAssembly (integ.THIS_FILE.js.snapshot/*) with the string `MOCK`
+ * 2. Create a Connections in the CodePipeline management console that accesses your GitHub account
+ * 3. Set the ARN of that Connections to the `CONNECTION_ARN` environment variable in the integ test execution environment
+ * 4. Set your GitHub account name and the repository name to the `REPO_OWNER` and `REPO_NAME` environment variables in the integ test execution environment
+ * 5. After running the integ test, replace the value of `CONNECTION_ARN`, `REPO_OWNER`, and `REPO_NAME` written in the file generated in CloudAssembly (integ.THIS_FILE.js.snapshot/*) with the string `MOCK`
  */
 
 const app = new cdk.App();
