@@ -1071,8 +1071,11 @@ When you create an Amazon EKS cluster, you can configure it to leverage the [EKS
 Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
 
 ```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
 new eks.Cluster(this, 'Cluster', {
-  version: eks.KubernetesVersion.V1_31,
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'KubectlLayer'),
   remoteNodeNetworks: [
     {
       cidrs: ['10.0.0.0/16'],
