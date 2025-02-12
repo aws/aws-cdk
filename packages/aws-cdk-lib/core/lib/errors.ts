@@ -1,9 +1,11 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { constructInfoFromConstruct } from './helpers-internal';
+import type { AssertionError } from '../../assertions/lib/private/error';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
+const ASSERTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/assertions.AssertionError');
 const ASSEMBLY_ERROR_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssemblyError');
 
 /**
@@ -28,6 +30,15 @@ export class Errors {
    */
   public static isValidationError(x: any): x is ValidationError {
     return Errors.isConstructError(x) && VALIDATION_ERROR_SYMBOL in x;
+  }
+
+  /**
+   * Test whether the given error is a AssertionError.
+   *
+   * An AssertionError is thrown when an assertion fails.
+   */
+  public static isAssertionError(x: any): x is AssertionError {
+    return Errors.isConstructError(x) && ASSERTION_ERROR_SYMBOL in x;
   }
 
   /**

@@ -16,7 +16,7 @@ baseConfig.rules['import/no-extraneous-dependencies'] = [
 
 // no-throw-default-error
 const enableNoThrowDefaultErrorIn = [
-  'aws-backup',
+  'assertions',
   'assets',
   'aws-amplify',
   'aws-amplifyuibuilder',
@@ -30,6 +30,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-appmesh',
   'aws-autoscaling',
   'aws-autoscaling-common',  
+  'aws-backup',
   'aws-batch',
   'aws-cognito',
   'aws-elasticloadbalancing',
@@ -46,7 +47,6 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
-  'cloudformation-include',
   'aws-route53',
   'aws-route53-patterns',
   'aws-route53-targets',
@@ -61,7 +61,6 @@ const enableNoThrowDefaultErrorIn = [
   'aws-ssmincidents',
   'aws-ssmquicksetup',
   'aws-synthetics',
-  'cx-api',
   'aws-s3',
   'aws-s3-assets',
   'aws-s3-deployment',
@@ -70,6 +69,8 @@ const enableNoThrowDefaultErrorIn = [
   'aws-s3objectlambda',
   'aws-s3outposts',
   'aws-s3tables',
+  'cloudformation-include',
+  'cx-api',
   'pipelines',
 ];
 baseConfig.overrides.push({
