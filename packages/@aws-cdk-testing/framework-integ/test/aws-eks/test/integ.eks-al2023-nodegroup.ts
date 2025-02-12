@@ -27,7 +27,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
