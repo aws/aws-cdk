@@ -33,6 +33,8 @@ const enableNoThrowDefaultErrorIn = [
   'aws-backup',
   'aws-batch',
   'aws-cognito',
+  'aws-cloudfront',
+  'aws-cloudfront-origins',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
