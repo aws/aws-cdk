@@ -3,6 +3,7 @@ import { Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IFirewallRuleGroup } from './firewall-rule-group';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -106,6 +107,8 @@ export class FirewallRuleGroupAssociation extends Resource {
 
   constructor(scope: Construct, id: string, props: FirewallRuleGroupAssociationProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
       throw new Error(`Priority must be greater than 100 and less than 9000, got ${props.priority}`);

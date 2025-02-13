@@ -34,7 +34,7 @@ export class DiffMethod {
    *
    * This will create, analyze, and subsequently delete a changeset against the CloudFormation stack.
    */
-  public static ChangeSet(options: ChangeSetDiffOptions = {}) {
+  public static ChangeSet(options: ChangeSetDiffOptions = {}): DiffMethod {
     return new class extends DiffMethod {
       public override readonly options: ChangeSetDiffOptions;
       public constructor(opts: ChangeSetDiffOptions) {
@@ -44,7 +44,7 @@ export class DiffMethod {
     }(options);
   }
 
-  public static TemplateOnly(options: CloudFormationDiffOptions = {}) {
+  public static TemplateOnly(options: CloudFormationDiffOptions = {}): DiffMethod {
     return new class extends DiffMethod {
       public override readonly options: CloudFormationDiffOptions;
       public constructor(opts: CloudFormationDiffOptions) {
@@ -54,7 +54,7 @@ export class DiffMethod {
     }(options);
   }
 
-  public static LocalFile(path: string) {
+  public static LocalFile(path: string): DiffMethod {
     return new class extends DiffMethod {
       public override readonly options: { path: string };
       public constructor(opts: { path: string }) {
@@ -62,7 +62,7 @@ export class DiffMethod {
         this.options = opts;
       }
     }({ path });
-  };
+  }
 
   private constructor(
     public readonly method: 'change-set' | 'template-only' | 'local-file',

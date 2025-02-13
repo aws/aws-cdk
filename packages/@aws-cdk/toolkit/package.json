@@ -3,15 +3,16 @@
   "description": "AWS CDK Programmatic Toolkit Library",
   "private": true,
   "version": "0.0.0",
-  "main": "./lib/main.js",
+  "type": "commonjs",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "default": "./lib/main.js"
-    }
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "types": "./lib/index.d.ts",
-  "type": "commonjs",
   "scripts": {
     "awslint": "cdk-awslint",
     "build": "cdk-build",
@@ -19,17 +20,20 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test",
-    "bundle": "node bundle.mjs",
+    "bundle": "node build-tools/bundle.mjs",
+    "docs": "typedoc lib/index.ts --excludeExternals --excludePrivate --excludeProtected --excludeInternal",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
+    "publish-local": "./build-tools/package.sh",
     "test": "cdk-test",
     "watch": "cdk-watch"
   },
   "cdk-build": {
     "post": [
       "yarn bundle",
-      "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
+      "node ./lib/index.js >/dev/null 2>/dev/null </dev/null",
+      "node ./lib/api/aws-cdk.js >/dev/null 2>/dev/null </dev/null"
     ]
   },
   "author": {
@@ -45,14 +49,17 @@
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",
     "@types/node": "^18.18.14",
+    "@types/split2": "^4.2.3",
     "aws-cdk": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "esbuild": "^0.24.0",
+    "aws-sdk-client-mock": "^4.0.1",
+    "esbuild": "^0.25.0",
     "jest": "^29.7.0",
+    "typedoc": "^0.27.6",
     "typescript": "~5.6.3"
   },
   "dependencies": {
-    "@aws-cdk/cloud-assembly-schema": "^39.0.1",
+    "@aws-cdk/cloud-assembly-schema": "^39.2.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
@@ -76,7 +83,7 @@
     "@aws-sdk/credential-providers": "3.699.0",
     "@aws-sdk/ec2-metadata-service": "3.699.0",
     "@aws-sdk/lib-storage": "3.699.0",
-    "@jsii/check-node": "1.104.0",
+    "@jsii/check-node": "1.106.0",
     "@smithy/middleware-endpoint": "3.1.4",
     "@smithy/node-http-handler": "3.2.4",
     "@smithy/property-provider": "3.1.10",
@@ -86,7 +93,7 @@
     "@smithy/util-waiter": "3.1.6",
     "archiver": "^5.3.2",
     "camelcase": "^6.3.0",
-    "cdk-assets": "^3.0.0-rc.111",
+    "cdk-assets": "3.0.0-rc.143",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",
     "chokidar": "^3.6.0",
@@ -99,6 +106,7 @@
     "promptly": "^3.2.0",
     "proxy-agent": "^6.4.0",
     "semver": "^7.6.3",
+    "split2": "^4.2.0",
     "strip-ansi": "^6.0.1",
     "table": "^6.8.2",
     "uuid": "^8.3.2",

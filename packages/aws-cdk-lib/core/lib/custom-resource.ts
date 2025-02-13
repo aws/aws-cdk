@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
+import { addConstructMetadata, MethodMetadata } from './metadata-resource';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -137,6 +138,8 @@ export class CustomResource extends Resource {
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
@@ -181,6 +184,7 @@ export class CustomResource extends Resource {
    * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
    * use the convenience `getAttString` for string attributes.
    */
+  @MethodMetadata()
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
@@ -193,6 +197,7 @@ export class CustomResource extends Resource {
    * @param attributeName the name of the attribute
    * @returns a token for `Fn::GetAtt` encoded as a string.
    */
+  @MethodMetadata()
   public getAttString(attributeName: string): string {
     return Token.asString(this.getAtt(attributeName));
   }

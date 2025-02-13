@@ -82,21 +82,21 @@ export class StackParameters {
    */
   public static onlyExisting() {
     return new StackParameters({}, true);
-  };
+  }
 
   /**
    * Use exactly these parameters and remove any other existing parameters from the stack.
    */
   public static exactly(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, false);
-  };
+  }
 
   /**
    * Define additional parameters for the stack, while keeping existing parameters for unspecified values.
    */
   public static withExisting(params: { [name: string]: string | undefined }) {
     return new StackParameters(params, true);
-  };
+  }
 
   public readonly parameters: Map<string, string | undefined>;
   public readonly keepExistingParameters: boolean;
@@ -110,8 +110,10 @@ export class StackParameters {
 export interface BaseDeployOptions {
   /**
    * Criteria for selecting stacks to deploy
+   *
+   * @default - all stacks
    */
-  readonly stacks: StackSelector;
+  readonly stacks?: StackSelector;
 
   /**
    * @deprecated set on toolkit
@@ -148,9 +150,9 @@ export interface BaseDeployOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
+   * @default - no hotswap
    */
-  readonly hotswap: HotswapMode;
+  readonly hotswap?: HotswapMode;
 
   /**
    * Rollback failed deployments
@@ -171,6 +173,14 @@ export interface BaseDeployOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Whether to send logs from all CloudWatch log groups in the template
+   * to the IoHost
+   *
+   * @default - false
+   */
+  readonly traceLogs?: boolean;
 }
 
 export interface DeployOptions extends BaseDeployOptions {
@@ -182,7 +192,7 @@ export interface DeployOptions extends BaseDeployOptions {
   /**
    * What kind of security changes require approval
    *
-   * @default RequireApproval.Broadening
+   * @default RequireApproval.NEVER
    */
   readonly requireApproval?: RequireApproval;
 
@@ -202,14 +212,6 @@ export interface DeployOptions extends BaseDeployOptions {
    * @default - Outputs are not written to any file
    */
   readonly outputsFile?: string;
-
-  /**
-   * Whether to show logs from all CloudWatch log groups in the template
-   * locally in the users terminal
-   *
-   * @default - false
-   */
-  readonly traceLogs?: boolean;
 
   /**
    * Build/publish assets for a single stack in parallel
@@ -242,4 +244,39 @@ export interface DeployOptions extends BaseDeployOptions {
    * @deprecated Implement in IoHost instead
    */
   readonly progress?: StackActivityProgress;
+
+  /**
+   * Represents configuration property overrides for hotswap deployments.
+   * Currently only supported by ECS.
+   *
+   * @default - no overrides
+   */
+  readonly hotswapProperties?: HotswapProperties;
+}
+
+/**
+ * Property overrides for ECS hotswaps
+ */
+export interface EcsHotswapProperties {
+  /**
+   * The lower limit on the number of your service's tasks that must remain
+   * in the RUNNING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly minimumHealthyPercent: number;
+
+  /**
+   * The upper limit on the number of your service's tasks that are allowed
+   * in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount.
+   */
+  readonly maximumHealthyPercent: number;
+}
+
+/**
+ * Property overrides for hotswap deployments.
+ */
+export interface HotswapProperties {
+  /**
+   * ECS specific hotswap property overrides
+   */
+  readonly ecs: EcsHotswapProperties;
 }

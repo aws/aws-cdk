@@ -1,7 +1,7 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { generateDefault, lit } from './util';
+import { lit, SOURCE_OF_TRUTH } from './util';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 // to import lodash.clonedeep properly, we would need to set esModuleInterop: true
@@ -24,7 +24,7 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
-  scope.documentation.push('GENERATED FROM packages/aws-cdk/lib/config.ts.');
+  scope.documentation.push(`GENERATED FROM ${SOURCE_OF_TRUTH}.`);
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
@@ -114,10 +114,10 @@ function makeOptions(prefix: Expression, options: { [optionName: string]: CliOpt
   let optionsExpr = prefix;
   for (const option of Object.keys(options)) {
     const theOption: CliOption = {
-      // Make the default explicit (overridden if the option includes an actual default)
-      // 'notification-arns' is a special snowflake that should be defaulted to 'undefined', but https://github.com/yargs/yargs/issues/2443
-      // prevents us from doing so. This should be changed if the issue is resolved.
-      ...(option === 'notification-arns' ? {} : { default: generateDefault(options[option].type) }),
+      // https://github.com/yargs/yargs/issues/2443 prevents us from supplying 'undefined' as the default
+      // for array types, because this turns into ['undefined']. The only way to achieve yargs' default is
+      // to provide no default.
+      ...(options[option].type == 'array' ? {} : { default: undefined }),
       ...options[option],
     };
     const optionProps: YargsOption = cloneDeep(theOption);

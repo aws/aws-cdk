@@ -10,6 +10,7 @@ import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for Alarms
@@ -103,7 +104,6 @@ export enum TreatMissingData {
  * An alarm on a CloudWatch metric
  */
 export class Alarm extends AlarmBase {
-
   /**
    * Import an existing CloudWatch alarm provided an Name.
    *
@@ -165,6 +165,8 @@ export class Alarm extends AlarmBase {
     super(scope, id, {
       physicalName: props.alarmName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
@@ -243,6 +245,7 @@ export class Alarm extends AlarmBase {
    *
    * - You want to show an Alarm line in a graph with multiple metrics in it.
    */
+  @MethodMetadata()
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
   }
@@ -252,6 +255,7 @@ export class Alarm extends AlarmBase {
    *
    * Typically SnsAction or AutoScalingAction.
    */
+  @MethodMetadata()
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];
@@ -348,7 +352,6 @@ export class Alarm extends AlarmBase {
               };
             },
             withExpression(expr, conf) {
-
               const hasSubmetrics = mathExprHasSubmetrics(expr);
 
               if (hasSubmetrics) {
@@ -463,7 +466,7 @@ function assertSubmetricsCount(expr: MetricExpressionConfig) {
   if (Object.keys(expr.usingMetrics).length > 10) {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
     throw new Error('Alarms on math expressions cannot contain more than 10 individual metrics');
-  };
+  }
 }
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

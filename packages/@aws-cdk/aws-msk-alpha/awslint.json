@@ -1,4 +1,5 @@
 {
     "exclude": [
+        "props-physical-name:@aws-cdk/aws-msk-alpha.ServerlessClusterProps"
     ]
 }

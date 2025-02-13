@@ -15,7 +15,6 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
 
   /**
    * Improved stack selection interface with a single selector
-   * @returns
    * @throws when the assembly does not contain any stacks, unless `selector.failOnEmpty` is `false`
    * @throws when individual selection strategies are not satisfied
    */
@@ -36,13 +35,13 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
         return new StackCollection(this, allStacks);
       case StackSelectionStrategy.MAIN_ASSEMBLY:
         if (topLevelStacks.length < 1) {
-          //@todo text should probably be handled in io host
+          // @todo text should probably be handled in io host
           throw new ToolkitError('No stack found in the main cloud assembly. Use "list" to print manifest');
         }
         return this.extendStacks(topLevelStacks, allStacks, extend);
       case StackSelectionStrategy.ONLY_SINGLE:
         if (topLevelStacks.length !== 1) {
-          //@todo text should probably be handled in io host
+          // @todo text should probably be handled in io host
           throw new ToolkitError('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
           `Stacks: ${allStacks.map(x => x.hierarchicalId).join(' · ')}`);
         }
@@ -53,7 +52,7 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
           selector.strategy === StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE
           && matched.stackCount !== 1
         ) {
-          //@todo text should probably be handled in io host
+          // @todo text should probably be handled in io host
           throw new ToolkitError(
             `Stack selection is ambiguous, please choose a specific stack for import [${allStacks.map(x => x.hierarchicalId).join(',')}]`,
           );
@@ -62,7 +61,7 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
           selector.strategy === StackSelectionStrategy.PATTERN_MUST_MATCH
           && matched.stackCount < 1
         ) {
-          //@todo text should probably be handled in io host
+          // @todo text should probably be handled in io host
           throw new ToolkitError(
             `Stack selection is ambiguous, please choose a specific stack for import [${allStacks.map(x => x.hierarchicalId).join(',')}]`,
           );
@@ -87,7 +86,6 @@ export class StackAssembly extends CloudAssembly implements ICloudAssemblySource
   /**
    * Select all stacks that have the validateOnSynth flag et.
    *
-   * @param assembly
    * @returns a `StackCollection` of all stacks that needs to be validated
    */
   public selectStacksForValidation() {

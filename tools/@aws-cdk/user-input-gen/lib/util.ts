@@ -1,8 +1,6 @@
 import { code, Expression } from '@cdklabs/typewriter';
 
-export function generateDefault(type: string) {
-  return type === 'array' ? [] : undefined;
-}
+export const SOURCE_OF_TRUTH = 'packages/aws-cdk/lib/cli/cli-config.ts';
 
 export function lit(value: any): Expression {
   switch (value) {
