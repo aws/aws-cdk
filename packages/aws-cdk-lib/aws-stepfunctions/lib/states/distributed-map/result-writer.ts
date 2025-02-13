@@ -19,7 +19,6 @@ export interface ResultWriterProps {
    * @default - No prefix
    */
   readonly prefix?: string;
-
 }
 
 /**

@@ -239,13 +239,6 @@ abstract class S3FileItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
-  /**
-   * Query language used to query S3 file
-   *
-   * @default undefined - QueryLanguage.JSON_PATH
-   */
-  readonly queryLanguage?: QueryLanguage;
-
   protected abstract readonly inputType: string;
 
   constructor(props: S3FileItemReaderProps) {
