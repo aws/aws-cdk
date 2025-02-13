@@ -29,7 +29,8 @@
                     "path": "lambda-layer-awscli-integ-stack/AwsCliLayer/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -48,7 +49,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f24ba5e516d9d80b64bc7b0f406eedd12c36b20e7461f3e7719b7ffbdad72410.zip"
+                      "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
                     },
                     "description": "/opt/awscli/aws"
                   }
@@ -61,7 +62,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {}
+              ]
             }
           },
           "Lambda$python3.9": {
@@ -77,7 +81,10 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -122,7 +129,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -142,7 +162,8 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.9/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -188,7 +209,24 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*",
+                  "layers": [
+                    "*"
+                  ],
+                  "memorySize": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Providerpython3.9": {
@@ -208,7 +246,10 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -287,6 +328,16 @@
                                           ]
                                         }
                                       ]
+                                    },
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Lambdapython39426A0480",
+                                          "Arn"
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -307,13 +358,69 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Code": {
@@ -333,7 +440,8 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -352,7 +460,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                          "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
                         "environment": {
@@ -392,7 +500,29 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "code": "*",
+                      "description": "*",
+                      "runtime": "*",
+                      "handler": "*",
+                      "timeout": "*",
+                      "logGroup": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "securityGroups": "*",
+                      "role": "*",
+                      "functionName": "*",
+                      "environmentEncryption": "*"
+                    },
+                    {
+                      "addEnvironment": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -424,7 +554,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.CustomResource",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Lambda$python3.10": {
@@ -440,7 +573,10 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -485,7 +621,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -505,7 +654,8 @@
                     "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -551,7 +701,24 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*",
+                  "layers": [
+                    "*"
+                  ],
+                  "memorySize": "*",
+                  "timeout": "*"
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Providerpython3.10": {
@@ -571,7 +738,10 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -650,6 +820,16 @@
                                           ]
                                         }
                                       ]
+                                    },
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "Lambdapython310815BD7E9",
+                                          "Arn"
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -670,13 +850,69 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Code": {
@@ -696,7 +932,8 @@
                         "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -715,7 +952,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                          "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.10)",
                         "environment": {
@@ -755,7 +992,29 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "code": "*",
+                      "description": "*",
+                      "runtime": "*",
+                      "handler": "*",
+                      "timeout": "*",
+                      "logGroup": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "securityGroups": "*",
+                      "role": "*",
+                      "functionName": "*",
+                      "environmentEncryption": "*"
+                    },
+                    {
+                      "addEnvironment": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -779,7 +1038,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.CustomResource",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "BootstrapVersion": {

@@ -111,7 +111,6 @@ export abstract class MappingTemplate {
 }
 
 class StringMappingTemplate extends MappingTemplate {
-
   constructor(private readonly template: string) {
     super();
   }

@@ -7,14 +7,14 @@ import * as apigw from '../../lib';
 describe('StepFunctionsIntegration', () => {
   describe('startExecution', () => {
     test('minimal setup', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
         ResourceId: {
           'Fn::GetAtt': [
@@ -66,10 +66,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('headers are NOT included by default', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
@@ -92,10 +92,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('headers are included when specified by the integration', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
         headers: true,
       });
@@ -120,10 +120,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('querystring and path are included by default', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
@@ -163,10 +163,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('querystring and path are false when specified by the integration', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
         querystring: false,
         path: false,
@@ -209,10 +209,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('request context is NOT included by default', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {});
       api.root.addMethod('GET', integ);
 
@@ -235,10 +235,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('request context is included when specified by the integration', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
         requestContext: {
           accountId: true,
@@ -265,10 +265,10 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('authorizer context is included when specified by the integration', () => {
-      //GIVEN
+      // GIVEN
       const { stack, api, stateMachine } = givenSetup();
 
-      //WHEN
+      // WHEN
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {
         authorizer: true,
       });
@@ -357,7 +357,7 @@ describe('StepFunctionsIntegration', () => {
     });
 
     test('fails integration if State Machine is not of type EXPRESS', () => {
-      //GIVEN
+      // GIVEN
       const stack = new cdk.Stack();
       const restapi = new apigw.RestApi(stack, 'RestApi');
       const method = restapi.root.addMethod('ANY');
@@ -367,17 +367,17 @@ describe('StepFunctionsIntegration', () => {
       });
       const integration = apigw.StepFunctionsIntegration.startExecution(stateMachine);
 
-      //WHEN + THEN
+      // WHEN + THEN
       expect(() => integration.bind(method))
         .toThrow(/State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/);
     });
   });
 
   test('addMethod is not susceptible to false sharing of arrays', () => {
-    //GIVEN
+    // GIVEN
     const { stack, api, stateMachine } = givenSetup();
 
-    //WHEN
+    // WHEN
     const methodOptions = {
       methodResponses: [
         {
@@ -490,10 +490,10 @@ describe('StepFunctionsIntegration', () => {
   });
 
   test('default method responses are not created when useDefaultMethodResponses is false', () => {
-    //GIVEN
+    // GIVEN
     const { stack, api, stateMachine } = givenSetup();
 
-    //WHEN
+    // WHEN
     const methodOptions = {
       methodResponses: [
         {

@@ -27,7 +27,6 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  * The purpose of this class is to include differences from the ChangeSet to differences in the TemplateDiff.
  */
 export class TemplateAndChangeSetDiffMerger {
-
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.

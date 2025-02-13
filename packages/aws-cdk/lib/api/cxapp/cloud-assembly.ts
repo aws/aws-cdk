@@ -1,9 +1,10 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import type * as cxapi from '@aws-cdk/cx-api';
+import { SynthesisMessageLevel } from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { minimatch } from 'minimatch';
 import * as semver from 'semver';
-import { error, print, warning } from '../../logging';
-import { ToolkitError } from '../../toolkit/error';
+import { info } from '../../logging';
+import { AssemblyError, ToolkitError } from '../../toolkit/error';
 import { flatten } from '../../util';
 
 export enum DefaultSelection {
@@ -134,7 +135,7 @@ export class CloudAssembly {
     }
   }
 
-  private selectMatchingStacks(
+  protected selectMatchingStacks(
     stacks: cxapi.CloudFormationStackArtifact[],
     patterns: string[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
@@ -170,7 +171,7 @@ export class CloudAssembly {
     }
   }
 
-  private extendStacks(
+  protected extendStacks(
     matched: cxapi.CloudFormationStackArtifact[],
     all: cxapi.CloudFormationStackArtifact[],
     extend: ExtendedStackSelection = ExtendedStackSelection.None,
@@ -206,6 +207,24 @@ export class CloudAssembly {
 }
 
 /**
+ * The dependencies of a stack.
+ */
+export type StackDependency = {
+  id: string;
+  dependencies: StackDependency[];
+};
+
+/**
+ * Details of a stack.
+ */
+export type StackDetails = {
+  id: string;
+  name: string;
+  environment: cxapi.Environment;
+  dependencies: StackDependency[];
+};
+
+/**
  * A collection of stacks and related artifacts
  *
  * In practice, not all artifacts in the CloudAssembly are created equal;
@@ -231,6 +250,49 @@ export class StackCollection {
     return this.stackArtifacts.map(s => s.id);
   }
 
+  public get hierarchicalIds(): string[] {
+    return this.stackArtifacts.map(s => s.hierarchicalId);
+  }
+
+  public withDependencies(): StackDetails[] {
+    const allData: StackDetails[] = [];
+
+    for (const stack of this.stackArtifacts) {
+      const data: StackDetails = {
+        id: stack.displayName ?? stack.id,
+        name: stack.stackName,
+        environment: stack.environment,
+        dependencies: [],
+      };
+
+      for (const dependencyId of stack.dependencies.map(x => x.id)) {
+        if (dependencyId.includes('.assets')) {
+          continue;
+        }
+
+        const depStack = this.assembly.stackById(dependencyId);
+
+        if (depStack.firstStack.dependencies.filter((dep) => !(dep.id).includes('.assets')).length > 0) {
+          for (const stackDetail of depStack.withDependencies()) {
+            data.dependencies.push({
+              id: stackDetail.id,
+              dependencies: stackDetail.dependencies,
+            });
+          }
+        } else {
+          data.dependencies.push({
+            id: depStack.firstStack.displayName ?? depStack.firstStack.id,
+            dependencies: [],
+          });
+        }
+      }
+
+      allData.push(data);
+    }
+
+    return allData;
+  }
+
   public reversed() {
     const arts = [...this.stackArtifacts];
     arts.reverse();
@@ -241,49 +303,44 @@ export class StackCollection {
     return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
   }
 
-  public concat(other: StackCollection): StackCollection {
-    return new StackCollection(this.assembly, this.stackArtifacts.concat(other.stackArtifacts));
+  public concat(...others: StackCollection[]): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.concat(...others.map(o => o.stackArtifacts)));
   }
 
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  public processMetadataMessages(options: MetadataMessageOptions = {}) {
+  public async validateMetadata(
+    failAt: 'warn' | 'error' | 'none' = 'error',
+    logger: (level: 'info' | 'error' | 'warn', msg: cxapi.SynthesisMessage) => Promise<void> = async () => {},
+  ) {
     let warnings = false;
     let errors = false;
 
     for (const stack of this.stackArtifacts) {
       for (const message of stack.messages) {
         switch (message.level) {
-          case cxapi.SynthesisMessageLevel.WARNING:
+          case SynthesisMessageLevel.WARNING:
             warnings = true;
-            printMessage(warning, 'Warning', message.id, message.entry);
+            await logger('warn', message);
             break;
-          case cxapi.SynthesisMessageLevel.ERROR:
+          case SynthesisMessageLevel.ERROR:
             errors = true;
-            printMessage(error, 'Error', message.id, message.entry);
+            await logger('error', message);
             break;
-          case cxapi.SynthesisMessageLevel.INFO:
-            printMessage(print, 'Info', message.id, message.entry);
+          case SynthesisMessageLevel.INFO:
+            await logger('info', message);
             break;
         }
       }
     }
 
-    if (errors && !options.ignoreErrors) {
-      throw new ToolkitError('Found errors');
+    if (errors && failAt != 'none') {
+      throw new AssemblyError('Found errors');
     }
 
-    if (options.strict && warnings) {
-      throw new ToolkitError('Found warnings (--strict mode)');
-    }
-
-    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
-      logFn(`[${prefix} at ${id}] ${entry.data}`);
-
-      if (options.verbose && entry.trace) {
-        logFn(`  ${entry.trace.join('\n  ')}`);
-      }
+    if (warnings && failAt === 'warn') {
+      throw new AssemblyError('Found warnings (--strict mode)');
     }
   }
 }
@@ -346,7 +403,7 @@ function includeDownstreamStacks(
   } while (madeProgress);
 
   if (added.length > 0) {
-    print('Including depending stacks: %s', chalk.bold(added.join(', ')));
+    info('Including depending stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
@@ -376,11 +433,11 @@ function includeUpstreamStacks(
   }
 
   if (added.length > 0) {
-    print('Including dependency stacks: %s', chalk.bold(added.join(', ')));
+    info('Including dependency stacks: %s', chalk.bold(added.join(', ')));
   }
 }
 
-function sanitizePatterns(patterns: string[]): string[] {
+export function sanitizePatterns(patterns: string[]): string[] {
   let sanitized = patterns.filter(s => s != null); // filter null/undefined
   sanitized = [...new Set(sanitized)]; // make them unique
   return sanitized;

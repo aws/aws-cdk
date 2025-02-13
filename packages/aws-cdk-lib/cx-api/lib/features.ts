@@ -120,6 +120,9 @@ export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
+export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
+export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1153,7 +1156,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.175.0' },
     recommendedValue: false,
     compatibilityWithOldBehaviorMd: 'Set this flag to false in order to continue using old and outdated commands. ' +
       'However, it is **not** recommended.',
@@ -1172,7 +1175,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.175.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'It is strongly recommended to set this flag to true. However, if necessary, set ' +
       'this flag to false to continue using the old implementation.',
@@ -1339,6 +1342,50 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.174.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere',
+    detailsMd: `
+      For internet facing ALBs with 'dualstack-without-public-ipv4' IP address type, the default security group rules
+      will allow IPv6 ingress from anywhere (::/0). Previously, the default security group rules would only allow IPv4 ingress.
+
+      Using a feature flag to make sure existing customers who might be relying
+      on the overly restrictive permissions are not broken.`,
+    introducedIn: { v2: '2.176.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default behaviour of OIDC provider will reject unauthorized connections',
+    detailsMd: `
+      When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+      default to reject unauthorized connections when downloading CA Certificates.
+      
+      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+      thumbprints from unsecure connections.`,
+    introducedIn: { v2: '2.177.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ADDITIONAL_METADATA_COLLECTION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.',
+    detailsMd: `
+    When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+      * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+    `,
+    introducedIn: { v2: '2.178.0' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';
@@ -1385,6 +1432,8 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

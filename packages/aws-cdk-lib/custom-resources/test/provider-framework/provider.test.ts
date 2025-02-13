@@ -10,7 +10,6 @@ import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
 test('security groups are applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -75,11 +74,9 @@ test('security groups are applied to all framework functions', () => {
       ],
     },
   });
-
 });
 
 test('vpc is applied to all framework functions', () => {
-
   // GIVEN
   const stack = new Stack();
 
@@ -130,7 +127,6 @@ test('vpc is applied to all framework functions', () => {
       ],
     },
   });
-
 });
 
 test('minimal setup', () => {
@@ -478,12 +474,56 @@ describe('role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           'MyRoleF48FFE04',
           'Arn',
         ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
@@ -502,12 +542,56 @@ describe('role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           'MyProviderframeworkonEventServiceRole8761E48D',
           'Arn',
         ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
       },
     });
   });
