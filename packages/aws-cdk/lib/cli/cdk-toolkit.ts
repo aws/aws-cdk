@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { Configuration, PROJECT_CONFIG } from './user-configuration';
+import { DEFAULT_TOOLKIT_STACK_NAME } from '../api';
 import { SdkProvider } from '../api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from '../api/bootstrap';
 import {
@@ -23,6 +24,7 @@ import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '../api/hotswap/common';
 import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../api/logs/logs-monitor';
+import { ResourceImporter, removeNonImportResources, ResourceMigrator } from '../api/resource-import';
 import { tagsForStack, type Tag } from '../api/tags';
 import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
 import { formatTime } from '../api/util/string-manipulation';
@@ -45,10 +47,8 @@ import {
   buildCfnClient,
 } from '../commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../diff';
-import { ResourceImporter, removeNonImportResources } from '../import';
 import { listStacks } from '../list-stacks';
 import { result as logResult, debug, error, highlight, info, success, warning } from '../logging';
-import { ResourceMigrator } from '../migrator';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
@@ -84,6 +84,13 @@ export interface CdkToolkitProps {
    * The CliIoHost that's used for I/O operations
    */
   ioHost?: CliIoHost;
+
+  /**
+   * Name of the toolkit stack to use/deploy
+   *
+   * @default CDKToolkit
+   */
+  toolkitStackName?: string;
 
   /**
    * Whether to be verbose
@@ -143,9 +150,11 @@ export enum AssetBuildTime {
  */
 export class CdkToolkit {
   private ioHost: CliIoHost;
+  private toolkitStackName: string;
 
   constructor(private readonly props: CdkToolkitProps) {
     this.ioHost = props.ioHost ?? CliIoHost.instance();
+    this.toolkitStackName = props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
   public async metadata(stackName: string, json: boolean) {
@@ -199,6 +208,8 @@ export class CdkToolkit {
 
         const migrator = new ResourceMigrator({
           deployments: this.props.deployments,
+          ioHost: this.ioHost,
+          action: 'diff',
         });
         const resourcesToImport = await migrator.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
@@ -298,8 +309,13 @@ export class CdkToolkit {
 
     const migrator = new ResourceMigrator({
       deployments: this.props.deployments,
+      ioHost: this.ioHost,
+      action: 'deploy',
     });
-    await migrator.tryMigrateResources(stackCollection, options);
+    await migrator.tryMigrateResources(stackCollection, {
+      toolkitStackName: this.toolkitStackName,
+      ...options,
+    });
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -748,7 +764,11 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.deployments);
+    const resourceImporter = new ResourceImporter(stack, {
+      deployments: this.props.deployments,
+      ioHost: this.ioHost,
+      action: 'import',
+    });
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning(
@@ -785,7 +805,6 @@ export class CdkToolkit {
     const tags = tagsForStack(stack);
     await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
-      toolkitStackName: options.toolkitStackName,
       tags,
       deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,

@@ -2,6 +2,8 @@
 // existed first in the "autoscaling" module before it existed in the "ec2"
 // module so we couldn't standardize the structs in the right way.
 
+import { UnscopedValidationError } from '../../core';
+
 /**
  * Block device
  */
@@ -154,7 +156,7 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new Error(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);

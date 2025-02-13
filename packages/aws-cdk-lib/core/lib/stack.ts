@@ -297,9 +297,9 @@ export class Stack extends Construct implements ITaggable {
    * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
-   * into a **account-agnostic template**. In this case, your code should either
+   * into an **account-agnostic template**. In this case, your code should either
    * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
-   * implement some other region-agnostic behavior.
+   * implement some other account-agnostic behavior.
    */
   public readonly account: string;
 
