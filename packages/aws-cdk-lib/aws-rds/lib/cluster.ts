@@ -95,7 +95,7 @@ interface DatabaseClusterBaseProps {
    * This setting specifies the duration of inactivity in seconds after which the serverless cluster will be paused.
    * The value must be between 300 (5 minutes) and 86400 (24 hours).
    *
-   * @default 300
+   * @default undefined - RDS default setting is 300 seconds (five minutes).
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
    */
   readonly secondsUntilAutoPause?: Duration;
@@ -473,7 +473,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default ClusterScailabilityType.STANDARD
    * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
-  */
+   */
   readonly clusterScailabilityType?: ClusterScailabilityType;
 }
 
@@ -738,7 +738,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The number of seconds until a serverless cluster is paused.
    */
-  protected readonly secondsUntilAutoPause: number;
+  protected readonly secondsUntilAutoPause?: number;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -766,7 +766,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
-    this.secondsUntilAutoPause = props.secondsUntilAutoPause?.toSeconds() ?? 300;
+    this.secondsUntilAutoPause = props.secondsUntilAutoPause?.toSeconds();
 
     this.validateServerlessScalingConfig();
 

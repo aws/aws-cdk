@@ -264,7 +264,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   writer: rds.ClusterInstance.serverlessV2('writer'),
   vpc,
   serverlessV2MinCapacity: 0,
-  secondsUntilAutoPause: 3600, // Auto-pause after 1 hour of inactivity
+  secondsUntilAutoPause: Duration.seconds(3600), // Auto-pause after 1 hour of inactivity
 });
 ```
 
