@@ -1,3 +1,5 @@
+import { CloudAssemblyError } from './private/error';
+
 /**
  * Parser for the artifact environment field.
  *
@@ -26,14 +28,14 @@ export class EnvironmentUtils {
   public static parse(environment: string): Environment {
     const env = AWS_ENV_REGEX.exec(environment);
     if (!env) {
-      throw new Error(
+      throw new CloudAssemblyError(
         `Unable to parse environment specification "${environment}". ` +
         'Expected format: aws://account/region');
     }
 
     const [, account, region] = env;
     if (!account || !region) {
-      throw new Error(`Invalid environment specification: ${environment}`);
+      throw new CloudAssemblyError(`Invalid environment specification: ${environment}`);
     }
 
     return { account, region, name: environment };

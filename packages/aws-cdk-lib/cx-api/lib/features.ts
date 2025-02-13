@@ -1432,6 +1432,8 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;
