@@ -34,61 +34,13 @@
         "lambda-layer-kubectl-integ-stack.assets"
       ],
       "metadata": {
-        "/lambda-layer-kubectl-integ-stack/KubectlLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
         "/lambda-layer-kubectl-integ-stack/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.9": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "layers": [
-                "*"
-              ],
-              "memorySize": "*",
-              "timeout": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
@@ -285,61 +237,10 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.9": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.9/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomResourcepython39"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.10": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "layers": [
-                "*"
-              ],
-              "memorySize": "*",
-              "timeout": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.10/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.10/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/lambda-layer-kubectl-integ-stack/Lambda$python3.10/ServiceRole/Resource": [
@@ -528,12 +429,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.10": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.10/Default": [
