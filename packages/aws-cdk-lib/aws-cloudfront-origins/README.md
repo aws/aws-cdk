@@ -616,7 +616,7 @@ const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', {
   vpc,
   internetFacing: false,
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-})
+});
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: origins.VpcOrigin.withApplicationLoadBalancer(alb) },
 });
@@ -665,12 +665,27 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-### VPC Origins Service Security Group
+### Restrict traffic coming to the VPC origin
+
+You may needed to update the security group for your VPC private origin (Application Load Balancer, Network Load Balancer, or EC2 instance) to explicitly allow the traffic from your VPC origins.
+
+#### The CloudFront managed prefix list
+
+You can allow the traffic from the CloudFront managed prefix list named **com.amazonaws.global.cloudfront.origin-facing**. For more information, see [Use an AWS-managed prefix list](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html#use-aws-managed-prefix-list).
+
+``` ts
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+const plCloudFront = ec2.PrefixList.fromPrefixListId(this, 'CloudFrontPrefixList', 'pl-xxxxxxxx'); // See the management console to find actual PrefixList Id.
+alb.connections.allowFrom(plCloudFront, ec2.Port.HTTP);
+```
+
+#### The VPC origin service security group
 
 VPC origin will create a security group named `CloudFront-VPCOrigins-Service-SG`.
-It can be further restricted to allow only traffic from your VPC origins (Application Load Balancer, Network Load Balancer, or EC2 instance).
+It can be further restricted to allow only traffic from your VPC origins.
 
-The security group is not provided by CloudFormation currently.
+The id of the security group is not provided by CloudFormation currently.
 You can retrieve it dynamically using custom resource.
 
 ``` ts
