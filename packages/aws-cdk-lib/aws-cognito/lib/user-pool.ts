@@ -1426,7 +1426,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     }
 
-    // PASSWORD should be configured as one of the allowed first auth factors.
+    // As of writing, from testing, CFN deployment will fail if `PASSWORD` is not enabled.
     if (!props.allowedFirstAuthFactors.password) {
       throw new ValidationError('The password authentication cannot be disabled.', this);
     }
