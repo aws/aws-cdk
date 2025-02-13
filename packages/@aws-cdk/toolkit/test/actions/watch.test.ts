@@ -146,7 +146,7 @@ describe('watch', () => {
     }));
 
     // Deactivate the cloudWatchLogMonitor that we created, otherwise the tests won't exit
-    (deploySpy.mock.calls[0][2] as any).cloudWatchLogMonitor?.deactivate();
+    (deploySpy.mock.calls[0]?.[2] as any).cloudWatchLogMonitor?.deactivate();
   });
 
   describe.each([
