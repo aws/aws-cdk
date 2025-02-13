@@ -5,11 +5,7 @@ import { builderFixture, TestIoHost } from '../_helpers';
 const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 
-let mockRollbackStack = jest.fn().mockResolvedValue({
-  notInRollbackableState: false,
-  success: true,
-});
-
+let mockRollbackStack = jest.fn();
 jest.mock('../../lib/api/aws-cdk', () => {
   return {
     ...jest.requireActual('../../lib/api/aws-cdk'),
@@ -23,6 +19,10 @@ beforeEach(() => {
   ioHost.notifySpy.mockClear();
   ioHost.requestSpy.mockClear();
   jest.clearAllMocks();
+  mockRollbackStack.mockResolvedValue({
+    notInRollbackableState: false,
+    success: true,
+  });
 });
 
 describe('rollback', () => {
