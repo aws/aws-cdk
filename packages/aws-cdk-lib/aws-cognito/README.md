@@ -23,6 +23,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
+      - [Choise-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
@@ -210,6 +211,84 @@ new cognito.UserPool(this, 'myuserpool', {
 
 A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
 check the capitalization of the alias when signing in. Default is true.
+
+#### Choice-based authentication: passwordless sign-in / passkey sign-in
+
+User pools can be configured to allow the following authentication methods in choice-based authentication:
+- Passwordless sign-in with email message one-time password
+- Passwordless sign-in with SMS message one-time password
+- Passkey (WebAuthn) sign-in
+
+To use choice-based authentication, [User pool feature plan](#user-pool-feature-plans) should be Essentials or higher.
+
+For details of authentication methods and client implementation, see [Manage authentication methods in AWS SDKs](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html).
+
+The following code configures a user pool with choice-based authentication enabled:
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: {
+      password: true, // password authentication must be enabled
+      emailOtp: true, // enables email message one-time password
+      smsOtp: true,   // enables SMS message one-time password
+      passkey: true,  // enables passkey sign-in
+    },
+  },
+});
+
+// You should also configure the user pool client with USER_AUTH authentication flow allowed
+userPool.addClient('myclient', {
+  authFlows: { user: true },
+});
+```
+
+⚠️ Enabling SMS message one-time password requires the AWS account be activated to SMS message sending.
+Learn more about [SMS message settings for Amazon Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html).
+
+When enabling passkey sign-in, you should specify the authentication domain used as the relying party ID.
+Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey) and [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+```ts
+// Use the hosted Amazon Cognito domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
+});
+
+// Use the custom domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+});
+```
+
+You can configure user verification to be preferred (default) or required. When you set user verification to preferred, users can set up authenticators that don't have the user verification capability, and registration and authentication operations can succeed without user verification. To mandate user verification in passkey registration and authentication, specify `passkeyUserVerification` to `PasskeyUserVerification.REQUIRED`.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+});
+```
+
+To disable choice-based authentication explicitly, specify `password` only.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true },
+  },
+  featurePlan: cognito.FeaturePlan.LITE,
+});
+```
 
 ### Attributes
 
