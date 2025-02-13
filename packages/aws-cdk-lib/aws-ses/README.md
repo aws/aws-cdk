@@ -181,21 +181,21 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const myConfigurationSet: ses.ConfigurationSet;
-declare const firehoseDeliveryStream: firehose.DeliveryStream;
-declare const iamRole: iam.Role;
+declare const firehoseDeliveryStream: firehose.IDeliveryStream;
+declare const iamRole: iam.IRole;
 
 // Create IAM Role automatically
 myConfigurationSet.addEventDestination('ToFirehose', {
   destination: ses.EventDestination.firehoseDeliveryStream({
-    deliveryStreamArn: firehoseDeliveryStream.deliveryStreamArn,
+    deliveryStream: firehoseDeliveryStream,
   }),
 })
 
 // Specify your IAM Role
 myConfigurationSet.addEventDestination('ToFirehose', {
   destination: ses.EventDestination.firehoseDeliveryStream({
-    deliveryStreamArn: firehoseDeliveryStream.deliveryStreamArn,
-    iamRoleArn: iamRole.roleArn,
+    deliveryStream: firehoseDeliveryStream,
+    role: iamRole,
   }),
 })
 ```
