@@ -913,7 +913,9 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
 * Objects in a S3 bucket with an optional prefix.
-  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source. Note that `S3ObjectsItemReader` will default to use Distributed map's query language. If the
+  map does not specify a query language, then it falls back to the State machine's query language. An exmaple of using `S3ObjectsItemReader`
+  is as follows:
   ```ts
   import * as s3 from 'aws-cdk-lib/aws-s3';
 
@@ -959,15 +961,6 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
   * Both `bucket` and `bucketNamePath` are mutually exclusive.
-  * You can alternatively use `JSONata` as the query language by specifying the following:
-  ```ts
-  const distributedMap = sfn.DistributedMap.jsonata(this, 'DistributedMap', {
-    itemReader: sfn.S3ObjectsItemReader.jsonata({
-      bucketName: '{% $bucketName %}',
-      prefix: '{% $prefix %}',
-    }),
-  });
-  ```
 * JSON array in a JSON file stored in S3
   * When `DistributedMap` is required to iterate over a JSON array stored in a JSON file in a S3 bucket, then an object of `S3JsonItemReader` can be passed to `itemReader` to configure the iterator source as follows:
   ```ts
@@ -1021,7 +1014,8 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
-Alternatively, if you want to use `JSONATA` as query language, you can use `ResultWriter` like `sfn.ResultWriter.jsonata(...)`.
+ResultWriter object will default to use the Distributed map's query language. If the Distributed map's does not specify a query language, then it
+will fall back to the State machine's query langauge.
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
