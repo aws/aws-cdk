@@ -4,11 +4,7 @@ import * as cdk_assets from 'cdk-assets';
 import * as chalk from 'chalk';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import {
-  buildAssets,
-  type BuildAssetsOptions,
   EVENT_TO_LOGGER,
-  publishAssets,
-  type PublishAssetsOptions,
   PublishingAws,
 } from './asset-publishing';
 import { determineAllowCrossAccountAssetPublishing } from './checks';
@@ -298,22 +294,12 @@ interface AssetOptions {
 
 export interface BuildStackAssetsOptions extends AssetOptions {
   /**
-   * Options to pass on to `buildAssets()` function
-   */
-  readonly buildOptions?: BuildAssetsOptions;
-
-  /**
    * Stack name this asset is for
    */
   readonly stackName?: string;
 }
 
 interface PublishStackAssetsOptions extends AssetOptions {
-  /**
-   * Options to pass on to `publishAsests()` function
-   */
-  readonly publishOptions?: Omit<PublishAssetsOptions, 'buildAssets'>;
-
   /**
    * Stack name this asset is for
    */
@@ -640,43 +626,6 @@ export class Deployments {
     return stack.exists;
   }
 
-  private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
-    const env = await this.envs.accessStackForMutableStackOperations(options.stack);
-
-    await this.validateBootstrapStackVersion(
-      options.stack.stackName,
-      asset.requiresBootstrapStackVersion,
-      asset.bootstrapStackVersionSsmParameter,
-      env.resources);
-
-    const manifest = cdk_assets.AssetManifest.fromFile(asset.file);
-
-    return { manifest, stackEnv: env.resolvedEnvironment };
-  }
-
-  /**
-   * Build all assets in a manifest
-   *
-   * @deprecated Use `buildSingleAsset` instead
-   */
-  public async buildAssets(asset: cxapi.AssetManifestArtifact, options: BuildStackAssetsOptions) {
-    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await buildAssets(manifest, this.assetSdkProvider, stackEnv, options.buildOptions);
-  }
-
-  /**
-   * Publish all assets in a manifest
-   *
-   * @deprecated Use `publishSingleAsset` instead
-   */
-  public async publishAssets(asset: cxapi.AssetManifestArtifact, options: PublishStackAssetsOptions) {
-    const { manifest, stackEnv } = await this.prepareAndValidateAssets(asset, options);
-    await publishAssets(manifest, this.assetSdkProvider, stackEnv, {
-      ...options.publishOptions,
-      allowCrossAccount: await this.allowCrossAccountAssetPublishingForEnv(options.stack),
-    });
-  }
-
   /**
    * Build a single asset from an asset manifest
    *
@@ -712,7 +661,6 @@ export class Deployments {
   /**
    * Publish a single asset from an asset manifest
    */
-  // eslint-disable-next-line max-len
   public async publishSingleAsset(
     assetManifest: cdk_assets.AssetManifest,
     asset: cdk_assets.IManifestEntry,

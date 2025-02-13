@@ -18,19 +18,7 @@ import { ToolkitError } from '../../toolkit/error';
 import type { SdkProvider } from '../aws-auth';
 import { Mode } from '../plugin';
 
-export interface PublishAssetsOptions {
-  /**
-   * Print progress at 'debug' level
-   */
-  readonly quiet?: boolean;
-
-  /**
-   * Whether to build assets before publishing.
-   *
-   * @default true To remain backward compatible.
-   */
-  readonly buildAssets?: boolean;
-
+interface PublishAssetsOptions {
   /**
    * Whether to build/publish assets in parallel
    *
@@ -46,6 +34,8 @@ export interface PublishAssetsOptions {
 
 /**
  * Use cdk-assets to publish all assets in the given manifest.
+ *
+ * @deprecated used in legacy deployments only, should be migrated at some point
  */
 export async function publishAssets(
   manifest: AssetManifest,
@@ -66,64 +56,16 @@ export async function publishAssets(
 
   const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(options.quiet ?? false),
+    progressListener: new PublishingProgressListener(),
     throwOnError: false,
     publishInParallel: options.parallel ?? true,
-    buildAssets: options.buildAssets ?? true,
+    buildAssets: true,
     publishAssets: true,
-    quiet: options.quiet,
+    quiet: false,
   });
   await publisher.publish({ allowCrossAccount: options.allowCrossAccount });
   if (publisher.hasFailures) {
     throw new ToolkitError('Failed to publish one or more assets. See the error messages above for more information.');
-  }
-}
-
-export interface BuildAssetsOptions {
-  /**
-   * Print progress at 'debug' level
-   */
-  readonly quiet?: boolean;
-
-  /**
-   * Build assets in parallel
-   *
-   * @default true
-   */
-  readonly parallel?: boolean;
-}
-
-/**
- * Use cdk-assets to build all assets in the given manifest.
- */
-export async function buildAssets(
-  manifest: AssetManifest,
-  sdk: SdkProvider,
-  targetEnv: Environment,
-  options: BuildAssetsOptions = {},
-) {
-  // This shouldn't really happen (it's a programming error), but we don't have
-  // the types here to guide us. Do an runtime validation to be super super sure.
-  if (
-    targetEnv.account === undefined ||
-    targetEnv.account === UNKNOWN_ACCOUNT ||
-    targetEnv.region === undefined ||
-    targetEnv.account === UNKNOWN_REGION
-  ) {
-    throw new ToolkitError(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
-  }
-
-  const publisher = new AssetPublishing(manifest, {
-    aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(options.quiet ?? false),
-    throwOnError: false,
-    publishInParallel: options.parallel ?? true,
-    buildAssets: true,
-    publishAssets: false,
-  });
-  await publisher.publish();
-  if (publisher.hasFailures) {
-    throw new ToolkitError('Failed to build one or more assets. See the error messages above for more information.');
   }
 }
 
@@ -241,10 +183,10 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
 };
 
 class PublishingProgressListener implements IPublishProgressListener {
-  constructor(private readonly quiet: boolean) {}
+  constructor() {}
 
   public onPublishEvent(type: EventType, event: IPublishProgress): void {
-    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
+    const handler = EVENT_TO_LOGGER[type];
     handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }
 }
