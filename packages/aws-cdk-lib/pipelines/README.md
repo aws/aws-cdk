@@ -1299,11 +1299,11 @@ declare const sharedXRegionUsWest1KeyArn: string;
 declare const sharedXRegionUsWest2BucketArn: string;
 declare const sharedXRegionUsWest2KeyArn: string;
 
-const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsEast1Bucket', {
+const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsWest1Bucket', {
   bucketArn: sharedXRegionUsWest1BucketArn,
   encryptionKey: kms.Key.fromKeyArn(
     scope,
-    'UsEast1BucketKeyArn',
+    'UsWest1BucketKeyArn',
     sharedXRegionUsWest1BucketArn
   ),
 });
