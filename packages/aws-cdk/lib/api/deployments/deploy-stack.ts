@@ -27,6 +27,7 @@ import {
 import { ChangeSetDeploymentMethod, DeploymentMethod } from './deployment-method';
 import { DeployStackResult, SuccessfulDeployStackResult } from './deployment-result';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { debug } from '../../cli/messages';
 import { IIoHost, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
@@ -715,13 +716,15 @@ async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
   parameterChanges: ParameterChanges,
+  ioHost: IIoHost,
+  action: ToolkitAction,
 ): Promise<boolean> {
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
-  debug(`${deployName}: checking if we can skip deploy`);
+  await ioHost.notify(debug(action, `${deployName}: checking if we can skip deploy`));
 
   // Forced deploy
   if (deployStackOptions.force) {
-    debug(`${deployName}: forced deployment`);
+    await ioHost.notify(debug(action, `${deployName}: forced deployment`));
     return false;
   }
 
@@ -730,53 +733,53 @@ async function canSkipDeploy(
     deployStackOptions.deploymentMethod?.method === 'change-set' &&
     deployStackOptions.deploymentMethod.execute === false
   ) {
-    debug(`${deployName}: --no-execute, always creating change set`);
+    await ioHost.notify(debug(action, `${deployName}: --no-execute, always creating change set`));
     return false;
   }
 
   // No existing stack
   if (!cloudFormationStack.exists) {
-    debug(`${deployName}: no existing stack`);
+    await ioHost.notify(debug(action, `${deployName}: no existing stack`));
     return false;
   }
 
   // Template has changed (assets taken into account here)
   if (JSON.stringify(deployStackOptions.stack.template) !== JSON.stringify(await cloudFormationStack.template())) {
-    debug(`${deployName}: template has changed`);
+    await ioHost.notify(debug(action, `${deployName}: template has changed`));
     return false;
   }
 
   // Tags have changed
   if (!compareTags(cloudFormationStack.tags, deployStackOptions.tags ?? [])) {
-    debug(`${deployName}: tags have changed`);
+    await ioHost.notify(debug(action, `${deployName}: tags have changed`));
     return false;
   }
 
   // Notification arns have changed
   if (!arrayEquals(cloudFormationStack.notificationArns, deployStackOptions.notificationArns ?? [])) {
-    debug(`${deployName}: notification arns have changed`);
+    await ioHost.notify(debug(action, `${deployName}: notification arns have changed`));
     return false;
   }
 
   // Termination protection has been updated
   if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
-    debug(`${deployName}: termination protection has been updated`);
+    await ioHost.notify(debug(action, `${deployName}: termination protection has been updated`));
     return false;
   }
 
   // Parameters have changed
   if (parameterChanges) {
     if (parameterChanges === 'ssm') {
-      debug(`${deployName}: some parameters come from SSM so we have to assume they may have changed`);
+      await ioHost.notify(debug(action, `${deployName}: some parameters come from SSM so we have to assume they may have changed`));
     } else {
-      debug(`${deployName}: parameters have changed`);
+      await ioHost.notify(debug(action, `${deployName}: parameters have changed`));
     }
     return false;
   }
 
   // Existing stack is in a failed state
   if (cloudFormationStack.stackStatus.isFailure) {
-    debug(`${deployName}: stack is in a failure state`);
+    await ioHost.notify(debug(action, `${deployName}: stack is in a failure state`));
     return false;
   }
 
