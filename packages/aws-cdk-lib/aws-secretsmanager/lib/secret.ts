@@ -5,7 +5,7 @@ import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
@@ -698,6 +698,7 @@ export class Secret extends SecretBase {
    *
    * @deprecated use `attach()` instead
    */
+  @MethodMetadata()
   public addTargetAttachment(id: string, options: AttachedSecretOptions): SecretTargetAttachment {
     return new SecretTargetAttachment(this, id, {
       secret: this,
@@ -711,6 +712,7 @@ export class Secret extends SecretBase {
    * @param region The name of the region
    * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
    */
+  @MethodMetadata()
   public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
@@ -882,6 +884,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
    * If we do not forward policy additions, a new policy resource is created using the secret attachment ARN.
    * This ends up being rejected by CloudFormation.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY)) {
       return this.attachedSecret.addToResourcePolicy(statement);

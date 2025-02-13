@@ -4,7 +4,7 @@ import { CfnStage } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
 import { Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
@@ -95,10 +95,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       apiId: props.webSocketApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
-      defaultRouteSettings: !props.throttle ? undefined : {
+      defaultRouteSettings: props.throttle || props.detailedMetricsEnabled ? {
         throttlingBurstLimit: props.throttle?.burstLimit,
         throttlingRateLimit: props.throttle?.rateLimit,
-      },
+        detailedMetricsEnabled: props.detailedMetricsEnabled,
+      } : undefined,
       description: props.description,
     });
 
@@ -131,6 +132,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
    *
    * @param identity The principal
    */
+  @MethodMetadata()
   public grantManagementApiAccess(identity: IGrantable): Grant {
     const arn = Stack.of(this.api).formatArn({
       service: 'execute-api',

@@ -4,7 +4,7 @@ import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
 
 /**
@@ -144,6 +144,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   /**
    * Adds an action to this receipt rule.
    */
+  @MethodMetadata()
   public addAction(action: IReceiptRuleAction) {
     this.actions.push(action.bind(this));
   }

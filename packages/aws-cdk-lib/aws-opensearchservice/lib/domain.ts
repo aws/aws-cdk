@@ -15,7 +15,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -1658,16 +1658,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
             '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
           );
         }
-        // Enforce minimum & maximum IOPS:
-        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-        const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-        iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-        iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
-        const { Min, Max } = iopsRanges[volumeType];
-        if (props.ebs?.iops < Min || props.ebs?.iops > Max) {
-          throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
-        }
 
         // Enforce maximum ratio of IOPS/GiB:
         // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
@@ -2095,6 +2085,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Add policy statements to the domain access policy
    */
+  @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
     if (accessPolicyStatements.length > 0) {
       if (!this.accessPolicy) {

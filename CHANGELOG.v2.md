@@ -2,6 +2,63 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.178.2](https://github.com/aws/aws-cdk/compare/v2.178.1...v2.178.2) (2025-02-12)
+
+
+### Bug Fixes
+
+* **cli:** do not print credentials refreshed by plugins ([#33398](https://github.com/aws/aws-cdk/issues/33398)) ([727d42f](https://github.com/aws/aws-cdk/commit/727d42f3b1677ec97d9358588667da1bfc2c1151)), closes [#33394](https://github.com/aws/aws-cdk/issues/33394) [#33394](https://github.com/aws/aws-cdk/issues/33394)
+
+## [2.178.1](https://github.com/aws/aws-cdk/compare/v2.178.0...v2.178.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* **cli:** sdk logging is always present even when not turned on ([#33324](https://github.com/aws/aws-cdk/issues/33324)) ([29a9a6d](https://github.com/aws/aws-cdk/commit/29a9a6d9c2ce8b24564ae521563b061276a93e87)), closes [#33320](https://github.com/aws/aws-cdk/issues/33320) [#33320](https://github.com/aws/aws-cdk/issues/33320) [#33273](https://github.com/aws/aws-cdk/issues/33273)
+* **custom-resource:** provider framework lambda missing GetFunction permission ([#33315](https://github.com/aws/aws-cdk/issues/33315)) ([80217f1](https://github.com/aws/aws-cdk/commit/80217f1d4a74d0423011dd12e47b7efa85d6367c)), closes [#26838](https://github.com/aws/aws-cdk/issues/26838) [/github.com/aws/aws-cdk/blob/64b865ba7697f454a1f091a67bf54a6d4ad0e76e/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/outbound.ts#L66-L80](https://github.com/aws//github.com/aws/aws-cdk/blob/64b865ba7697f454a1f091a67bf54a6d4ad0e76e/packages/aws-cdk-lib/custom-resources/lib/provider-framework/runtime/outbound.ts/issues/L66-L80) [/github.com/aws/aws-sdk-js-v3/blob/6858c7e04730a2b524b06355969e4076c28ae863/clients/client-lambda/src/waiters/waitForFunctionActiveV2.ts#L57](https://github.com/aws//github.com/aws/aws-sdk-js-v3/blob/6858c7e04730a2b524b06355969e4076c28ae863/clients/client-lambda/src/waiters/waitForFunctionActiveV2.ts/issues/L57) [/github.com/aws/aws-cdk/commit/c3a4b7b899289b04fffb6d65b3289cc5526d5397#diff-85920270c638d83b082246e0026f1a316dd39aaa3cd8720fdaeb3d526e438f7fR66](https://github.com/aws//github.com/aws/aws-cdk/commit/c3a4b7b899289b04fffb6d65b3289cc5526d5397/issues/diff-85920270c638d83b082246e0026f1a316dd39aaa3cd8720fdaeb3d526e438f7fR66)
+
+## [2.178.0](https://github.com/aws/aws-cdk/compare/v2.177.0...v2.178.0) (2025-02-05)
+
+
+### Features
+
+* **apigateway:** throw `ValidationError` instead of untyped errors ([#33075](https://github.com/aws/aws-cdk/issues/33075)) ([04efe6c](https://github.com/aws/aws-cdk/commit/04efe6cf9d1ba9e524f34c2699414053ee7fe444)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **applicationautoscaling:** throw `ValidationError` instead of untyped errors ([#33172](https://github.com/aws/aws-cdk/issues/33172)) ([abd4a3e](https://github.com/aws/aws-cdk/commit/abd4a3e997e2a456d31b9bb4669b22e12c364c01)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **appmesh:** throw `ValidationError` istead of untyped Errors ([#33245](https://github.com/aws/aws-cdk/issues/33245)) ([ba2f5c8](https://github.com/aws/aws-cdk/commit/ba2f5c862cf1d1a52d399ba82639650d61c7d549)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **appsync:** add L2 constructs for AWS AppSync Events ([#32505](https://github.com/aws/aws-cdk/issues/32505)) ([9ae1d34](https://github.com/aws/aws-cdk/commit/9ae1d34b128a0a4332fb43ab2c5ccacbdb337a51)), closes [#32004](https://github.com/aws/aws-cdk/issues/32004)
+* **appsync:** throw `ValidationError` instead of untyped errors ([#33206](https://github.com/aws/aws-cdk/issues/33206)) ([ab9dd0a](https://github.com/aws/aws-cdk/commit/ab9dd0a40a9ad703004f68e83d23a0e684734f57)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **bedrock:** support Luma AI's Ray2 visual AI model ([#33163](https://github.com/aws/aws-cdk/issues/33163)) ([01abd83](https://github.com/aws/aws-cdk/commit/01abd83652632aa705ac8b972baf86c12deb5a64))
+* **cloudfront:** add origin group selection criteria to L2 Distribution and L2 OriginGroup ([#32740](https://github.com/aws/aws-cdk/issues/32740)) ([1b35c4e](https://github.com/aws/aws-cdk/commit/1b35c4e49feee8457f2d0964de04d36eea048291))
+* **cognito:** support password history size ([#33164](https://github.com/aws/aws-cdk/issues/33164)) ([988043e](https://github.com/aws/aws-cdk/commit/988043e70673f179e3f6ecde1bbaced2406d6dfe)), closes [#33106](https://github.com/aws/aws-cdk/issues/33106)
+* **cognito:** throw `ValidationError` instead of untyped errors ([#33170](https://github.com/aws/aws-cdk/issues/33170)) ([ecbe1bf](https://github.com/aws/aws-cdk/commit/ecbe1bf8e7e43d7423abfe93aa1c09189bf418c0))
+* **custom-resource:** update default node runtime to node20 for China and Gov regions ([#33112](https://github.com/aws/aws-cdk/issues/33112)) ([8c13cf2](https://github.com/aws/aws-cdk/commit/8c13cf236bf05122492bf125873861fc47a2a184))
+* **dynamodb:** add pointintimerecoveryspecification and deprecate old ([#33059](https://github.com/aws/aws-cdk/issues/33059)) ([aec64f0](https://github.com/aws/aws-cdk/commit/aec64f05c0598fa619dd1f973e90eef9155b94e3)), closes [#32786](https://github.com/aws/aws-cdk/issues/32786)
+* **ecs:** `ExternalService` support daemon scheduling strategy ([#32630](https://github.com/aws/aws-cdk/issues/32630)) ([361c7d3](https://github.com/aws/aws-cdk/commit/361c7d33e8735bf9a1ae611244c65deaa5bf6c3b)), closes [#32538](https://github.com/aws/aws-cdk/issues/32538)
+* **ecs:** add `tls` property to a ServiceConnectService ([#32605](https://github.com/aws/aws-cdk/issues/32605)) ([d32baf6](https://github.com/aws/aws-cdk/commit/d32baf6833bdad56ddecc332e45e3c30341455e6)), closes [#32583](https://github.com/aws/aws-cdk/issues/32583)
+* **ecs:** support availability zone rebalancing ([#32263](https://github.com/aws/aws-cdk/issues/32263)) ([a8e2622](https://github.com/aws/aws-cdk/commit/a8e262274225b0757f96197c36e8d7090d4390be)), closes [#32226](https://github.com/aws/aws-cdk/issues/32226)
+* **ecs:** support container version consistency ([#32225](https://github.com/aws/aws-cdk/issues/32225)) ([37df0d2](https://github.com/aws/aws-cdk/commit/37df0d29d4108389de2a42572913038a187a8228)), closes [#32202](https://github.com/aws/aws-cdk/issues/32202)
+* **ecs-patterns:** add `containerCpu` and `containerMemoryLimitMiB` property to `ApplicationLoadBalancedFargateService` ([#30920](https://github.com/aws/aws-cdk/issues/30920)) ([4dd97bc](https://github.com/aws/aws-cdk/commit/4dd97bc211810323b1dccf466e7b57b395d5c873)), closes [#20638](https://github.com/aws/aws-cdk/issues/20638) [#20638](https://github.com/aws/aws-cdk/issues/20638)
+* **elasticloadbalancingv2:** support AdvertiseTrustStoreCaNames for mTLS ([#32678](https://github.com/aws/aws-cdk/issues/32678)) ([6a77e4f](https://github.com/aws/aws-cdk/commit/6a77e4f5cd872b4f3b985f1ea6eebd5d54aebd70))
+* **kinesisfirehose:** graduate to stable 🚀 ([#33296](https://github.com/aws/aws-cdk/issues/33296)) ([7aaac12](https://github.com/aws/aws-cdk/commit/7aaac1246cb016f37813a9f93bc780383db66edd))
+* enable additional metadata collection (under feature flag) ([#33232](https://github.com/aws/aws-cdk/issues/33232)) ([6b9e47a](https://github.com/aws/aws-cdk/commit/6b9e47a1529319561bc1040739fe02bac15895bf)), closes [/github.com/aws/aws-cdk/pull/33232/files#diff-81f821b1205e7040fc3103bf7c0114060a6d5c43ebd2994aa4ed5906e42c9c5fR33](https://github.com/aws//github.com/aws/aws-cdk/pull/33232/files/issues/diff-81f821b1205e7040fc3103bf7c0114060a6d5c43ebd2994aa4ed5906e42c9c5fR33)
+* metadata collection for construct methods ([#33292](https://github.com/aws/aws-cdk/issues/33292)) ([bc96ee1](https://github.com/aws/aws-cdk/commit/bc96ee17a18c19b98e4ad052bed7c24da2371050))
+* throw `ValidationError` instead of untyped errors in L1s ([#33032](https://github.com/aws/aws-cdk/issues/33032)) ([1b666db](https://github.com/aws/aws-cdk/commit/1b666db6a55c2871dfca15bf7ddf1189fda7b17c)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* update L1 CloudFormation resource definitions ([#33191](https://github.com/aws/aws-cdk/issues/33191)) ([1beaf83](https://github.com/aws/aws-cdk/commit/1beaf83cf38c4a511e3b2d60c5b0713576e50f1d))
+* update L1 CloudFormation resource definitions ([#33272](https://github.com/aws/aws-cdk/issues/33272)) ([80073c8](https://github.com/aws/aws-cdk/commit/80073c8d309ef30da5950ffe53a99820b01c3bf4))
+* **lambda:**  latest versions for ADOT Lambda Layers (v0.115.0) ([#32783](https://github.com/aws/aws-cdk/issues/32783)) ([39e5578](https://github.com/aws/aws-cdk/commit/39e557869883d37b3fb0c2a57403c8496b5d917e))
+* **rds:** support Aurora PostgreSQL Limitless Database PostgreSQL 16.6 ([#33162](https://github.com/aws/aws-cdk/issues/33162)) ([111ffc2](https://github.com/aws/aws-cdk/commit/111ffc210d7230a25be4711f6623e3303a884496)), closes [/docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/limitless-updates.html#16](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/limitless-updates.html/issues/16)
+* **sns:** support high throughput mode for FIFO topics ([#33056](https://github.com/aws/aws-cdk/issues/33056)) ([bfa0f15](https://github.com/aws/aws-cdk/commit/bfa0f15edaeac4be8f4dee66149db51432a6a8d2))
+* **stepfunctions:** add support JSONata and variables ([#32343](https://github.com/aws/aws-cdk/issues/32343)) ([0bb3d6f](https://github.com/aws/aws-cdk/commit/0bb3d6f5914ef5911d09046f98f69b7ea02e8691)), closes [#32262](https://github.com/aws/aws-cdk/issues/32262) [#32262](https://github.com/aws/aws-cdk/issues/32262) [/github.com/aws/aws-cdk/pull/32343#issuecomment-2524096740](https://github.com/aws//github.com/aws/aws-cdk/pull/32343/issues/issuecomment-2524096740)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** incorrect arn function causing unwanted behavior ([#33100](https://github.com/aws/aws-cdk/issues/33100)) ([ffe9863](https://github.com/aws/aws-cdk/commit/ffe98638de6c9cfe40eabc22980501c8943d5534)), closes [#33218](https://github.com/aws/aws-cdk/issues/33218)
+* **batch:** support cfn parameters for managed compute environment properties minvcpus, maxvcpus, and spotbidpercentage ([#32954](https://github.com/aws/aws-cdk/issues/32954)) ([5fef9e0](https://github.com/aws/aws-cdk/commit/5fef9e0eb0ad4faf8a85e98d7aa64c00fb4085b4)), closes [#32905](https://github.com/aws/aws-cdk/issues/32905)
+* **cli:** array arguments in cdk.json are ignored ([#33107](https://github.com/aws/aws-cdk/issues/33107)) ([2eff2bd](https://github.com/aws/aws-cdk/commit/2eff2bd3dabe1467376871e1aa9c56e8f99ce313)), closes [#32814](https://github.com/aws/aws-cdk/issues/32814)
+* **custom-resources:** incorrect IAM prefix generated for CloudWatch actions ([#33078](https://github.com/aws/aws-cdk/issues/33078)) ([c76f668](https://github.com/aws/aws-cdk/commit/c76f668863d858b4cd21bd19aae9afb1be43a34c)), closes [#32968](https://github.com/aws/aws-cdk/issues/32968)
+* **sns:** topic policy is not created even if enforceSSL enabled ([#31569](https://github.com/aws/aws-cdk/issues/31569)) ([b3975c5](https://github.com/aws/aws-cdk/commit/b3975c5dc83c5d82a23db079df42d70efe79530e)), closes [#31558](https://github.com/aws/aws-cdk/issues/31558)
+
 ## [2.177.0](https://github.com/aws/aws-cdk/compare/v2.176.0...v2.177.0) (2025-01-24)
 
 
