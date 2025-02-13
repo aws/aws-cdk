@@ -42,6 +42,17 @@
                             }
                           },
                           "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrypt",
+                            "kms:GenerateDataKey*"
+                          ],
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "s3.amazonaws.com"
+                          },
+                          "Resource": "*"
                         }
                       ],
                       "Version": "2012-10-17"
@@ -269,12 +280,6 @@
                   "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                   "aws:cdk:cloudformation:props": {
                     "displayName": "fooDisplayName2",
-                    "kmsMasterKeyId": {
-                      "Fn::GetAtt": [
-                        "CustomKey1E6D0D07",
-                        "Arn"
-                      ]
-                    },
                     "topicName": "fooTopic2"
                   }
                 },
@@ -289,9 +294,9 @@
               "version": "0.0.0"
             }
           },
-          "ImportedTopic": {
-            "id": "ImportedTopic",
-            "path": "SNSInteg/ImportedTopic",
+          "ImportedTopic2": {
+            "id": "ImportedTopic2",
+            "path": "SNSInteg/ImportedTopic2",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sns.TopicBase",
               "version": "0.0.0"
@@ -349,8 +354,28 @@
                             {
                               "Action": "sns:Publish",
                               "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Ref": "MyTopic288CE2107"
+                                },
+                                {
+                                  "Ref": "MyTopic3134CFDFB"
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
+                              ],
+                              "Effect": "Allow",
                               "Resource": {
-                                "Ref": "MyTopic288CE2107"
+                                "Fn::GetAtt": [
+                                  "CustomKey1E6D0D07",
+                                  "Arn"
+                                ]
                               }
                             }
                           ],
@@ -381,6 +406,55 @@
               "version": "0.0.0"
             }
           },
+          "MyTopic3": {
+            "id": "MyTopic3",
+            "path": "SNSInteg/MyTopic3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyTopic3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "fooDisplayName3",
+                    "kmsMasterKeyId": {
+                      "Fn::GetAtt": [
+                        "CustomKey1E6D0D07",
+                        "Arn"
+                      ]
+                    },
+                    "topicName": "fooTopic3"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedTopic3": {
+            "id": "ImportedTopic3",
+            "path": "SNSInteg/ImportedTopic3",
+            "children": {
+              "Key": {
+                "id": "Key",
+                "path": "SNSInteg/ImportedTopic3/Key",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "SNSInteg/BootstrapVersion",
@@ -408,7 +482,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
