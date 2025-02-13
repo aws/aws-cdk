@@ -12,7 +12,33 @@ import { ReplicationTimeValue } from '../lib/bucket';
 /* eslint-disable no-console */
 
 describe('bucket', () => {
-  test('default bucket', () => {
+  test('metadata table configuration', () => {
+  const stack = new cdk.Stack();
+
+  new s3.Bucket(stack, 'XXXXXXXX', {
+    metadataTableConfiguration: {
+      s3TablesDestination: {
+        tableName: 'my-table',
+        tableNamespace: 'my-namespace',
+        tableBucketArn: 'arn:aws:s3:::my-bucket',
+        tableArn: 'arn:aws:s3:::my-bucket/my-table',
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    MetadataTableConfiguration: {
+      S3TablesDestination: {
+        TableName: 'my-table',
+        TableNamespace: 'my-namespace',
+        TableBucketArn: 'arn:aws:s3:::my-bucket',
+        TableArn: 'arn:aws:s3:::my-bucket/my-table',
+      },
+    },
+  });
+});
+
+test('default bucket', () => {
     const stack = new cdk.Stack();
 
     new s3.Bucket(stack, 'MyBucket');

@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import { MetadataTableConfiguration } from './metadata-table';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -1633,6 +1634,12 @@ export enum TransitionDefaultMinimumObjectSize {
 
 export interface BucketProps {
   /**
+   * Configuration for metadata table management in S3.
+   *
+   * @default - No metadata table configuration
+   */
+  readonly metadataTableConfiguration?: MetadataTableConfiguration;
+  /**
    * The kind of server-side encryption to apply to this bucket.
    *
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
@@ -2222,6 +2229,7 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      metadataTableConfiguration: props.metadataTableConfiguration,
     });
     this._resource = resource;
 
