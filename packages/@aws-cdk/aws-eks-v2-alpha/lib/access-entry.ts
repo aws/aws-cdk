@@ -1,9 +1,7 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from 'aws-cdk-lib/aws-eks';
-import {
-  Resource, IResource, Aws, Lazy,
-} from 'aws-cdk-lib/core';
+import { Resource, IResource, Aws, Lazy } from 'aws-cdk-lib/core';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
@@ -346,7 +344,6 @@ export class AccessEntry extends Resource implements IAccessEntry {
           policyArn: p.policy,
         })),
       }),
-
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {

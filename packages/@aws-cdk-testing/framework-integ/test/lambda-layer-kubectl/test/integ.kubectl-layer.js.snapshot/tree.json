@@ -49,9 +49,10 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip"
+                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
                     },
-                    "description": "/opt/kubectl/kubectl and /opt/helm/helm"
+                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "licenseInfo": "Apache-2.0"
                   }
                 },
                 "constructInfo": {
@@ -61,11 +62,9 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.lambda_layer_kubectl.KubectlLayer",
-              "version": "0.0.0",
-              "metadata": [
-                {}
-              ]
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
+              "version": "2.0.0",
+              "metadata": []
             }
           },
           "Lambda$python3.9": {
@@ -82,9 +81,7 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "metadata": []
                     }
                   },
                   "Resource": {
@@ -130,19 +127,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "metadata": []
                 }
               },
               "Code": {
@@ -210,23 +195,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "code": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "layers": [
-                    "*"
-                  ],
-                  "memorySize": "*",
-                  "timeout": "*"
-                },
-                {
-                  "addLayers": [
-                    "*"
-                  ]
-                }
-              ]
+              "metadata": []
             }
           },
           "Providerpython3.9": {
@@ -247,9 +216,7 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -359,68 +326,14 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            }
-                          ]
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          },
-                          "managedPolicies": [
-                            {
-                              "managedPolicyArn": "*"
-                            }
-                          ]
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        }
-                      ]
+                      "metadata": []
                     }
                   },
                   "Code": {
@@ -501,28 +414,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "code": "*",
-                      "description": "*",
-                      "runtime": "*",
-                      "handler": "*",
-                      "timeout": "*",
-                      "logGroup": "*",
-                      "vpc": "*",
-                      "vpcSubnets": "*",
-                      "securityGroups": "*",
-                      "role": "*",
-                      "functionName": "*",
-                      "environmentEncryption": "*"
-                    },
-                    {
-                      "addEnvironment": [
-                        "*",
-                        "*"
-                      ]
-                    }
-                  ]
+                  "metadata": []
                 }
               }
             },
@@ -555,9 +447,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.CustomResource",
               "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "metadata": []
             }
           },
           "Lambda$python3.10": {
@@ -574,9 +464,7 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "metadata": []
                     }
                   },
                   "Resource": {
@@ -622,19 +510,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "metadata": []
                 }
               },
               "Code": {
@@ -702,23 +578,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "code": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "layers": [
-                    "*"
-                  ],
-                  "memorySize": "*",
-                  "timeout": "*"
-                },
-                {
-                  "addLayers": [
-                    "*"
-                  ]
-                }
-              ]
+              "metadata": []
             }
           },
           "Providerpython3.10": {
@@ -739,9 +599,7 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "metadata": []
                         }
                       },
                       "Resource": {
@@ -851,68 +709,14 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            }
-                          ]
+                          "metadata": []
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          },
-                          "managedPolicies": [
-                            {
-                              "managedPolicyArn": "*"
-                            }
-                          ]
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        }
-                      ]
+                      "metadata": []
                     }
                   },
                   "Code": {
@@ -993,28 +797,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "code": "*",
-                      "description": "*",
-                      "runtime": "*",
-                      "handler": "*",
-                      "timeout": "*",
-                      "logGroup": "*",
-                      "vpc": "*",
-                      "vpcSubnets": "*",
-                      "securityGroups": "*",
-                      "role": "*",
-                      "functionName": "*",
-                      "environmentEncryption": "*"
-                    },
-                    {
-                      "addEnvironment": [
-                        "*",
-                        "*"
-                      ]
-                    }
-                  ]
+                  "metadata": []
                 }
               }
             },
@@ -1039,9 +822,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.CustomResource",
               "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "metadata": []
             }
           },
           "BootstrapVersion": {
