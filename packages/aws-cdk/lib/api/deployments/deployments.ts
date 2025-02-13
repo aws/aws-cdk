@@ -4,7 +4,7 @@ import * as cdk_assets from 'cdk-assets';
 import * as chalk from 'chalk';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import {
-  EVENT_TO_LEVEL,
+  BasePublishProgressListener,
   PublishingAws,
 } from './asset-publishing';
 import { determineAllowCrossAccountAssetPublishing } from './checks';
@@ -24,7 +24,7 @@ import {
   loadCurrentTemplateWithNestedStacks,
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
-import { debug, formatMessage, warn } from '../../cli/messages';
+import { debug, warn } from '../../cli/messages';
 import { IIoHost, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
@@ -744,28 +744,16 @@ export class Deployments {
 /**
  * Asset progress that doesn't do anything with percentages (currently)
  */
-class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
+class ParallelSafeAssetProgress extends BasePublishProgressListener {
   private readonly prefix: string;
-  private readonly ioHost: IIoHost;
-  private readonly action: ToolkitAction;
 
   constructor(prefix: string, ioHost: IIoHost, action: ToolkitAction) {
+    super(ioHost, action);
     this.prefix = prefix;
-    this.ioHost = ioHost;
-    this.action = action;
   }
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
-    const level = EVENT_TO_LEVEL[type];
-    if (level) {
-      void this.ioHost.notify(
-        formatMessage({
-          level,
-          action: this.action,
-          message: `${this.prefix}${type}: ${event.message}`,
-        }),
-      );
-    }
+  protected getMessage(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): string {
+    return `${this.prefix}${type}: ${event.message}`;
   }
 }
 
