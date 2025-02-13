@@ -32,6 +32,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-autoscaling-common',  
   'aws-backup',
   'aws-batch',
+  'aws-certificatemanager',
   'aws-cognito',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
