@@ -6,7 +6,9 @@ const app = new App();
 const stack = new Stack(app, 'integ-user-pool-passwordless');
 
 const userpool = new UserPool(stack, 'myuserpool', {
-  allowedFirstAuthFactors: { password: true, emailOtp: true, passkey: true },
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, emailOtp: true, passkey: true },
+  },
   passkeyRelyingPartyId: 'example.com',
   passkeyUserVerification: PasskeyUserVerification.REQUIRED,
   removalPolicy: RemovalPolicy.DESTROY,
@@ -14,7 +16,9 @@ const userpool = new UserPool(stack, 'myuserpool', {
 });
 
 new UserPool(stack, 'myuserpool-disabled-passwordless', {
-  allowedFirstAuthFactors: { password: true },
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true },
+  },
   featurePlan: FeaturePlan.LITE,
   removalPolicy: RemovalPolicy.DESTROY,
   deletionProtection: false,

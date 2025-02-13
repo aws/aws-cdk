@@ -2086,12 +2086,14 @@ describe('User Pool', () => {
     })).toThrow(/"fromEmail" contains a different domain than the "sesVerifiedDomain"/);
   });
 
-  test('allowFirstAuthFactors is not present if option is not provided', () => {
+  test('signInPolicy is not present if none of options are not provided', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new UserPool(stack, 'Pool', {});
+    new UserPool(stack, 'Pool', {
+      signInPolicy: {},
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
@@ -2106,7 +2108,9 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       new UserPool(stack, 'Pool', {
-        allowedFirstAuthFactors: { password: false },
+        signInPolicy: {
+          allowedFirstAuthFactors: { password: false },
+        },
       });
     }).toThrow('The password authentication cannot be disabled.');
   });
@@ -2117,11 +2121,13 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      allowedFirstAuthFactors: {
-        password: true,
-        emailOtp: true,
-        smsOtp: true,
-        passkey: true,
+      signInPolicy: {
+        allowedFirstAuthFactors: {
+          password: true,
+          emailOtp: true,
+          smsOtp: true,
+          passkey: true,
+        },
       },
     });
 
@@ -2147,7 +2153,9 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       new UserPool(stack, 'Pool', {
-        allowedFirstAuthFactors: { password: true, emailOtp: true },
+        signInPolicy: {
+          allowedFirstAuthFactors: { password: true, emailOtp: true },
+        },
         featurePlan: FeaturePlan.LITE,
       });
     }).toThrow('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.');
@@ -2159,7 +2167,9 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      allowedFirstAuthFactors: { password: true },
+      signInPolicy: {
+        allowedFirstAuthFactors: { password: true },
+      },
       featurePlan: FeaturePlan.LITE,
     });
 

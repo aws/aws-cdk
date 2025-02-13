@@ -471,10 +471,24 @@ export interface PasswordPolicy {
 }
 
 /**
+ * Sign-in policy for User Pools.
+ */
+export interface SignInPolicy {
+  /**
+   * The types of authentication that you want to allow for users' first authentication prompt.
+   * The password authentication is allowed always.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice
+   *
+   * @default - Password only
+   */
+  readonly allowedFirstAuthFactors?: AllowedFirstAuthFactors;
+}
+
+/**
  * The types of authentication that you want to allow for users' first authentication prompt
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice
  */
-export interface AuthFactor {
+export interface AllowedFirstAuthFactors {
   /**
    * Whether the password authentication is allowed.
    * This must be true.
@@ -758,13 +772,10 @@ export interface UserPoolProps {
   readonly passwordPolicy?: PasswordPolicy;
 
   /**
-   * The types of authentication that you want to allow for users' first authentication prompt.
-   * The password authentication is allowed always.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice
-   *
-   * @default - Password only
+   * Sign-in policy for this user pool.
+   * @default - see defaults on each property of SignInPolicy.
    */
-  readonly allowedFirstAuthFactors?: AuthFactor;
+  readonly signInPolicy?: SignInPolicy;
 
   /**
    * The authentication domain that passkey providers must use as a relying party (RP) in their configuration.
@@ -1423,27 +1434,26 @@ export class UserPool extends UserPoolBase {
   }
 
   private configureSignInPolicy(props: UserPoolProps): CfnUserPool.SignInPolicyProperty | undefined {
-    if (!props.allowedFirstAuthFactors) {
-      return undefined;
-    }
+    let allowedFirstAuthFactors: string[] | undefined = undefined;
+    if (props.signInPolicy?.allowedFirstAuthFactors) {
+      // As of writing, from testing, CFN deployment will fail if `PASSWORD` is not enabled.
+      if (!props.signInPolicy.allowedFirstAuthFactors.password) {
+        throw new ValidationError('The password authentication cannot be disabled.', this);
+      }
 
-    // As of writing, from testing, CFN deployment will fail if `PASSWORD` is not enabled.
-    if (!props.allowedFirstAuthFactors.password) {
-      throw new ValidationError('The password authentication cannot be disabled.', this);
-    }
-
-    const allowedFirstAuthFactors = [];
-    if (props.allowedFirstAuthFactors.password) {
-      allowedFirstAuthFactors.push('PASSWORD');
-    }
-    if (props.allowedFirstAuthFactors.emailOtp) {
-      allowedFirstAuthFactors.push('EMAIL_OTP');
-    }
-    if (props.allowedFirstAuthFactors.smsOtp) {
-      allowedFirstAuthFactors.push('SMS_OTP');
-    }
-    if (props.allowedFirstAuthFactors.passkey) {
-      allowedFirstAuthFactors.push('WEB_AUTHN');
+      allowedFirstAuthFactors = [];
+      if (props.signInPolicy.allowedFirstAuthFactors.password) {
+        allowedFirstAuthFactors.push('PASSWORD');
+      }
+      if (props.signInPolicy.allowedFirstAuthFactors.emailOtp) {
+        allowedFirstAuthFactors.push('EMAIL_OTP');
+      }
+      if (props.signInPolicy.allowedFirstAuthFactors.smsOtp) {
+        allowedFirstAuthFactors.push('SMS_OTP');
+      }
+      if (props.signInPolicy.allowedFirstAuthFactors.passkey) {
+        allowedFirstAuthFactors.push('WEB_AUTHN');
+      }
     }
 
     /*
@@ -1451,12 +1461,12 @@ export class UserPool extends UserPoolBase {
      * This check should be placed here to supply the way to disable choice-based authentication explicitly
      * by specifying `allowedFirstAuthFactors: { password: true }`.
      */
-    const isChoiceBasedAuthenticationEnabled = allowedFirstAuthFactors.some((auth) => auth !== 'PASSWORD');
+    const isChoiceBasedAuthenticationEnabled = allowedFirstAuthFactors?.some((auth) => auth !== 'PASSWORD');
     if (isChoiceBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
       throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 
-    return { allowedFirstAuthFactors };
+    return undefinedIfNoKeys({ allowedFirstAuthFactors });
   }
 
   private schemaConfiguration(props: UserPoolProps): CfnUserPool.SchemaAttributeProperty[] | undefined {
