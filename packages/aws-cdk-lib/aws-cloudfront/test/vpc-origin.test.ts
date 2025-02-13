@@ -25,7 +25,7 @@ test('VPC origin from an EC2 instance', () => {
 
   // WHEN
   const vpcOrigin = new VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: VpcOriginEndpoint.fromEc2Instance(instance),
+    endpoint: VpcOriginEndpoint.ec2Instance(instance),
   });
 
   // THEN
@@ -52,11 +52,11 @@ test('VPC origin from an EC2 instance', () => {
 test('VPC origin from an Application Load Balancer', () => {
   // GIVEN
   const vpc = new ec2.Vpc(stack, 'Vpc');
-  const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+  const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
 
   // WHEN
   const vpcOrigin = new VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: VpcOriginEndpoint.fromApplicationLoadBalancer(loadBalancer),
+    endpoint: VpcOriginEndpoint.applicationLoadBalancer(alb),
   });
 
   // THEN
@@ -73,11 +73,11 @@ test('VPC origin from an Application Load Balancer', () => {
 test('VPC origin from a Network Load Balancer', () => {
   // GIVEN
   const vpc = new ec2.Vpc(stack, 'Vpc');
-  const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
+  const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
 
   // WHEN
   const vpcOrigin = new VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: VpcOriginEndpoint.fromNetworkLoadBalancer(loadBalancer),
+    endpoint: VpcOriginEndpoint.networkLoadBalancer(nlb),
   });
 
   // THEN
@@ -94,7 +94,7 @@ test('VPC origin from a Network Load Balancer', () => {
 test('VPC origin from an opaque endpoint ARN', () => {
   // WHEN
   const vpcOrigin = new VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+    endpoint: { endpointArn: 'arn:opaque' },
   });
 
   // THEN
@@ -111,7 +111,7 @@ test('VPC origin from an opaque endpoint ARN', () => {
 test('VPC origin with options configureed', () => {
   // WHEN
   const vpcOrigin = new VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+    endpoint: { endpointArn: 'arn:opaque' },
     vpcOriginName: 'VpcOriginName',
     httpPort: 8080,
     httpsPort: 8443,
@@ -183,7 +183,7 @@ test('VPC origin throws when both ID and ARN are missing during import from its 
 test.each([88, 444, 65536])('VPC origins throws when httpPort is %s', (port) => {
   expect(() => {
     new VpcOrigin(stack, 'VpcOrigin', {
-      endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+      endpoint: { endpointArn: 'arn:opaque' },
       httpPort: port,
     });
   }).toThrow(`'httpPort' must be 80, 443, or a value between 1024 and 65535, got ${port}`);
@@ -192,7 +192,7 @@ test.each([88, 444, 65536])('VPC origins throws when httpPort is %s', (port) => 
 test.each([88, 444, 65536])('VPC origins throws when httpsPort is %s', (port) => {
   expect(() => {
     new VpcOrigin(stack, 'VpcOrigin', {
-      endpoint: new VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+      endpoint: { endpointArn: 'arn:opaque' },
       httpsPort: port,
     });
   }).toThrow(`'httpsPort' must be 80, 443, or a value between 1024 and 65535, got ${port}`);

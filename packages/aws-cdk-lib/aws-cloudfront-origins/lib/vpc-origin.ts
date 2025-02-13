@@ -59,21 +59,21 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
    * Create a VPC origin with an EC2 instance.
    */
   public static withEc2Instance(instance: IInstance, props?: VpcOriginWithEndpointProps): VpcOrigin {
-    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromEc2Instance(instance), props);
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.ec2Instance(instance), props);
   }
 
   /**
    * Create a VPC origin with an Application Load Balancer.
    */
-  public static withApplicationLoadBalancer(loadBalancer: IApplicationLoadBalancer, props?: VpcOriginWithEndpointProps): VpcOrigin {
-    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromApplicationLoadBalancer(loadBalancer), props);
+  public static withApplicationLoadBalancer(alb: IApplicationLoadBalancer, props?: VpcOriginWithEndpointProps): VpcOrigin {
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.applicationLoadBalancer(alb), props);
   }
 
   /**
    * Create a VPC origin with a Network Load Balancer.
    */
-  public static withNetworkLoadBalancer(loadBalancer: INetworkLoadBalancer, props?: VpcOriginWithEndpointProps): VpcOrigin {
-    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.fromNetworkLoadBalancer(loadBalancer), props);
+  public static withNetworkLoadBalancer(nlb: INetworkLoadBalancer, props?: VpcOriginWithEndpointProps): VpcOrigin {
+    return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.networkLoadBalancer(nlb), props);
   }
 
   protected vpcOrigin?: cloudfront.IVpcOrigin;

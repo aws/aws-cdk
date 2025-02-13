@@ -32,7 +32,7 @@ const instance = new ec2.Instance(stack, 'Instance', {
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
 });
 new cloudfront.VpcOrigin(stack, 'VpcOriginFromInstance', {
-  endpoint: cloudfront.VpcOriginEndpoint.fromEc2Instance(instance),
+  endpoint: cloudfront.VpcOriginEndpoint.ec2Instance(instance),
 });
 
 // VPC origin for Application Load Balancer
@@ -47,7 +47,7 @@ alb.addListener('HTTP', {
   defaultAction: elbv2.ListenerAction.fixedResponse(400),
 });
 new cloudfront.VpcOrigin(stack, 'VpcOriginFromALB', {
-  endpoint: cloudfront.VpcOriginEndpoint.fromApplicationLoadBalancer(alb),
+  endpoint: cloudfront.VpcOriginEndpoint.applicationLoadBalancer(alb),
   protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
 });
 
@@ -66,7 +66,7 @@ nlb.addListener('HTTP', {
   defaultTargetGroups: [nlbTg],
 });
 new cloudfront.VpcOrigin(stack, 'VpcOriginFromNLB', {
-  endpoint: cloudfront.VpcOriginEndpoint.fromNetworkLoadBalancer(nlb),
+  endpoint: cloudfront.VpcOriginEndpoint.networkLoadBalancer(nlb),
   protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
 });
 

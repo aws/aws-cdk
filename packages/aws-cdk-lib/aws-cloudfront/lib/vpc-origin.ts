@@ -95,67 +95,44 @@ export interface VpcOriginAttributes {
 }
 
 /**
- * Properties for the VPC origin endpoint configuration.
- */
-export interface VpcOriginEndpointProps {
-  /**
-   * The ARN of the CloudFront VPC origin endpoint configuration.
-   */
-  readonly endpointArn: string;
-  /**
-   * The domain name of the CloudFront VPC origin endpoint configuration.
-   * @default - No domain name configured
-   */
-  readonly domainName?: string;
-}
-
-/**
  * Represents the VPC origin endpoint.
  */
-export class VpcOriginEndpoint {
+export abstract class VpcOriginEndpoint {
   /**
    * A VPC origin endpoint from an EC2 instance.
-   * @param instance The EC2 instance as the CloudFront VPC origin endpoint.
    */
-  public static fromEc2Instance(instance: IInstance): VpcOriginEndpoint {
+  public static ec2Instance(instance: IInstance): VpcOriginEndpoint {
     const endpointArn = Stack.of(instance).formatArn({
       service: 'ec2',
       resource: 'instance',
       resourceName: instance.instanceId,
     });
-    return new VpcOriginEndpoint({ endpointArn, domainName: instance.instancePrivateDnsName });
+    return { endpointArn, domainName: instance.instancePrivateDnsName };
   }
 
   /**
    * A VPC origin endpoint from an Application Load Balancer.
-   * @param loadBalancer The Application Load Balancer as the CloudFront VPC origin endpoint.
    */
-  public static fromApplicationLoadBalancer(loadBalancer: IApplicationLoadBalancer): VpcOriginEndpoint {
-    return new VpcOriginEndpoint({ endpointArn: loadBalancer.loadBalancerArn, domainName: loadBalancer.loadBalancerDnsName });
+  public static applicationLoadBalancer(alb: IApplicationLoadBalancer): VpcOriginEndpoint {
+    return { endpointArn: alb.loadBalancerArn, domainName: alb.loadBalancerDnsName };
   }
 
   /**
    * A VPC origin endpoint from an Network Load Balancer.
-   * @param loadBalancer The Network Load Balancer as the CloudFront VPC origin endpoint.
    */
-  public static fromNetworkLoadBalancer(loadBalancer: INetworkLoadBalancer): VpcOriginEndpoint {
-    return new VpcOriginEndpoint({ endpointArn: loadBalancer.loadBalancerArn, domainName: loadBalancer.loadBalancerDnsName });
+  public static networkLoadBalancer(nlb: INetworkLoadBalancer): VpcOriginEndpoint {
+    return { endpointArn: nlb.loadBalancerArn, domainName: nlb.loadBalancerDnsName };
   }
 
   /**
    * The ARN of the CloudFront VPC origin endpoint configuration.
    */
-  readonly endpointArn: string;
+  abstract readonly endpointArn: string;
   /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
    * @default - No domain name configured
    */
-  readonly domainName?: string;
-
-  constructor(props: VpcOriginEndpointProps) {
-    this.endpointArn = props.endpointArn;
-    this.domainName = props.domainName;
-  }
+  abstract readonly domainName?: string;
 }
 
 /**
