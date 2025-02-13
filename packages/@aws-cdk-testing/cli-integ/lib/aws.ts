@@ -1,3 +1,4 @@
+import { writeFile } from 'fs/promises';
 import {
   CloudFormationClient,
   DeleteStackCommand,
@@ -22,6 +23,7 @@ import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromIni, fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
 import { ConfiguredRetryStrategy } from '@smithy/util-retry';
+import { iamLoggingMiddleware } from './iam-tracking-middleware';
 interface ClientConfig {
   readonly credentials: AwsCredentialIdentityProvider | AwsCredentialIdentity;
   readonly region: string;
@@ -48,6 +50,7 @@ export class AwsClients {
   public readonly iam: IAMClient;
   public readonly lambda: LambdaClient;
   public readonly sts: STSClient;
+  public readonly arnOperationMap: Map<string, string>;
 
   constructor(
     public readonly region: string,
@@ -58,15 +61,45 @@ export class AwsClients {
       region: this.region,
       retryStrategy: new ConfiguredRetryStrategy(9, (attempt: number) => attempt ** 500),
     };
+
+    this.arnOperationMap = new Map<string, string>();
+
     this.cloudFormation = new CloudFormationClient(this.config);
+    this.cloudFormation.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.s3 = new S3Client(this.config);
+    this.cloudFormation.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.ecr = new ECRClient(this.config);
+    this.ecr.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.ecs = new ECSClient(this.config);
+    this.ecs.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.sso = new SSOClient(this.config);
+    this.sso.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.sns = new SNSClient(this.config);
+    this.sns.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.iam = new IAMClient(this.config);
+    this.iam.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.lambda = new LambdaClient(this.config);
+    this.lambda.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+
     this.sts = new STSClient(this.config);
+    this.sts.middlewareStack.use(iamLoggingMiddleware(this.arnOperationMap, this.config.region));
+  }
+
+  public async outputFile() {
+    // console.log(this.arnOperationMap);
+    const mapObject = Object.fromEntries(this.arnOperationMap);
+
+    await writeFile(
+      'arn-operation-map.json',
+      JSON.stringify(mapObject, null, 2),
+    );
   }
 
   public async account(): Promise<string> {
