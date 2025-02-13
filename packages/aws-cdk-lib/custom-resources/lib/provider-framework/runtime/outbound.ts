@@ -9,7 +9,7 @@ import { SFN, StartExecutionInput, StartExecutionOutput } from '@aws-sdk/client-
 const FRAMEWORK_HANDLER_TIMEOUT = 900000; // 15 minutes
 
 // In order to honor the overall maximum timeout set for the target process,
-// the default 2 minutes from AWS SDK has to be overridden:
+// the default 2 minutes from AWS SDK has to be overriden:
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#httpOptions-property
 const awsSdkConfig = {
   httpOptions: { timeout: FRAMEWORK_HANDLER_TIMEOUT },
