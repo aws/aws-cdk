@@ -12,7 +12,7 @@ type SimplifiedMessage<T> = Omit<IoMessage<T>, 'time'>;
  * Handles string interpolation, format strings, and object parameter styles.
  * Applies optional styling and prepares the final message for logging.
  */
-function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>, category: IoMessageCodeCategory = 'TOOLKIT'): IoMessage<T> {
+export function formatMessage<T>(msg: Optional<SimplifiedMessage<T>, 'code'>, category: IoMessageCodeCategory = 'TOOLKIT'): IoMessage<T> {
   return {
     time: new Date(),
     level: msg.level,

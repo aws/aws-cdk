@@ -785,6 +785,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     return new Deployments({
       sdkProvider: await this.sdkProvider(action),
       toolkitStackName: this.toolkitStackName,
+      ioHost: this.ioHost as any, // @todo temporary while we have to separate IIoHost interfaces
+      action,
     });
   }
 

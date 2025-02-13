@@ -183,7 +183,12 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
-    const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
+    const cloudFormation = new Deployments({
+      sdkProvider,
+      toolkitStackName,
+      ioHost,
+      action: ioHost.currentAction,
+    });
 
     if (args.all && args.STACKS) {
       throw new ToolkitError('You must either specify a list of Stacks or the `--all` argument');

@@ -223,6 +223,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -262,6 +264,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -326,6 +330,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -381,6 +387,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -436,6 +444,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -488,6 +498,8 @@ describe('readCurrentTemplate', () => {
       sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: new Deployments({
         sdkProvider: mockCloudExecutable.sdkProvider,
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
       }),
     });
 
@@ -1266,7 +1278,11 @@ describe('synth', () => {
 
       const cdkToolkit = new CdkToolkit({
         cloudExecutable: mockCloudExecutable,
-        deployments: new Deployments({ sdkProvider: mockSdkProvider }),
+        deployments: new Deployments({
+          sdkProvider: mockSdkProvider,
+          ioHost: CliIoHost.instance(),
+          action: 'deploy',
+        }),
         sdkProvider: mockSdkProvider,
         configuration: mockCloudExecutable.configuration,
       });
@@ -1465,7 +1481,11 @@ describe('synth', () => {
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: new Deployments({
+        sdkProvider: new MockSdkProvider(),
+        ioHost: CliIoHost.instance(),
+        action: 'deploy',
+      }),
     });
 
     await toolkit.rollback({
@@ -1488,7 +1508,11 @@ describe('synth', () => {
       ],
     });
 
-    const deployments = new Deployments({ sdkProvider: new MockSdkProvider() });
+    const deployments = new Deployments({
+      sdkProvider: new MockSdkProvider(),
+      ioHost: CliIoHost.instance(),
+      action: 'deploy',
+    });
 
     // Rollback might be called -- just don't do anything.
     const mockRollbackStack = jest.spyOn(deployments, 'rollbackStack').mockResolvedValue({});
@@ -1663,7 +1687,11 @@ class FakeCloudFormation extends Deployments {
     expectedTags: { [stackName: string]: { [key: string]: string } } = {},
     expectedNotificationArns?: string[],
   ) {
-    super({ sdkProvider: new MockSdkProvider() });
+    super({
+      sdkProvider: new MockSdkProvider(),
+      ioHost: CliIoHost.instance(),
+      action: 'deploy',
+    });
 
     for (const [stackName, tags] of Object.entries(expectedTags)) {
       this.expectedTags[stackName] = Object.entries(tags)

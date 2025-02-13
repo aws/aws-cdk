@@ -5,7 +5,7 @@ import { ImportDeploymentOptions, ResourceImporter } from './importer';
 import { info } from '../../cli/messages';
 import type { IIoHost, ToolkitAction } from '../../toolkit/cli-io-host';
 import { StackCollection } from '../cxapp/cloud-assembly';
-import { Deployments, ResourcesToImport } from '../deployments';
+import type { Deployments, ResourcesToImport } from '../deployments';
 import { formatTime } from '../util/string-manipulation';
 
 export interface ResourceMigratorProps {

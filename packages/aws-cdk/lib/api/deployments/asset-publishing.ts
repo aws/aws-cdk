@@ -14,6 +14,7 @@ import {
 } from 'cdk-assets';
 import type { SDK } from '..';
 import { debug, error, info } from '../../logging';
+import { IoMessageLevel } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import type { SdkProvider } from '../aws-auth';
 import { Mode } from '../plugin';
@@ -180,6 +181,22 @@ export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   shell_stderr: ignore,
   shell_stdout: ignore,
   shell_close: ignore,
+};
+
+export const EVENT_TO_LEVEL: Record<EventType, IoMessageLevel | false> = {
+  build: 'debug',
+  cached: 'debug',
+  check: 'debug',
+  debug: 'debug',
+  fail: 'error',
+  found: 'debug',
+  start: 'info',
+  success: 'info',
+  upload: 'debug',
+  shell_open: 'debug',
+  shell_stderr: false,
+  shell_stdout: false,
+  shell_close: false,
 };
 
 class PublishingProgressListener implements IPublishProgressListener {

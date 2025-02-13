@@ -16,6 +16,7 @@ import { CloudFormationStack, createChangeSet, Deployments } from '../../../lib/
 import { deployStack } from '../../../lib/api/deployments/deploy-stack';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { ToolkitInfo } from '../../../lib/api/toolkit-info';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 import { testStack } from '../../util';
 import {
   mockBootstrapStack,
@@ -40,7 +41,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
-  deployments = new Deployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider, ioHost: CliIoHost.instance(), action: 'deploy' });
 
   currentCfnStackResources = {};
   restoreSdkMocksToDefault();
