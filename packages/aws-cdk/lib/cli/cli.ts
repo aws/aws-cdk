@@ -200,6 +200,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const cli = new CdkToolkit({
       ioHost,
       cloudExecutable,
+      toolkitStackName,
       deployments: cloudFormation,
       verbose: argv.trace || argv.verbose > 0,
       ignoreErrors: argv['ignore-errors'],
