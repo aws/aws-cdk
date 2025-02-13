@@ -3,8 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-
-import { KubectlLayer } from 'aws-cdk-lib/lambda-layer-kubectl';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 
 /**
  * Test verifies that kubectl and helm are invoked successfully inside Lambda runtime.
@@ -12,7 +11,7 @@ import { KubectlLayer } from 'aws-cdk-lib/lambda-layer-kubectl';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'lambda-layer-kubectl-integ-stack');
-const layer = new KubectlLayer(stack, 'KubectlLayer');
+const layer = new KubectlV31Layer(stack, 'KubectlLayer');
 
 const runtimes = [
   lambda.Runtime.PYTHON_3_9,

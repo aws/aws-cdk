@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../../assertions';
 import * as eks from '../../../aws-eks';
 import * as sfn from '../../../aws-stepfunctions';
@@ -146,6 +147,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
     // WHEN
     const eksCluster = new eks.Cluster(stack, 'EKS Cluster', {
       version: eks.KubernetesVersion.V1_20,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
