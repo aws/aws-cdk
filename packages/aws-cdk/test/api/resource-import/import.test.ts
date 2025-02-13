@@ -15,10 +15,11 @@ import {
   StackStatus,
 } from '@aws-sdk/client-cloudformation';
 import * as promptly from 'promptly';
-import { testStack } from './util';
-import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from './util/mock-sdk';
-import { Deployments } from '../lib/api/deployments';
-import { ResourceImporter, ImportMap } from '../lib/import';
+import { Deployments } from '../../../lib/api/deployments';
+import { ResourceImporter, ImportMap, ResourceImporterProps } from '../../../lib/api/resource-import';
+import { CliIoHost, IIoHost } from '../../../lib/toolkit/cli-io-host';
+import { testStack } from '../../util';
+import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../../util/mock-sdk';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
 const promptlyPrompt = promptly.prompt as jest.Mock;
@@ -73,11 +74,19 @@ function stackWithKeySigningKey(props: Record<string, unknown>) {
 
 let sdkProvider: MockSdkProvider;
 let deployments: Deployments;
+let ioHost: IIoHost;
+let props: ResourceImporterProps;
 beforeEach(() => {
   restoreSdkMocksToDefault();
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
   deployments = new Deployments({ sdkProvider });
+  ioHost = CliIoHost.instance();
+  props = {
+    deployments,
+    ioHost,
+    action: 'import',
+  };
 });
 
 test('discovers importable resources', async () => {
@@ -85,7 +94,7 @@ test('discovers importable resources', async () => {
     Resources: {},
   });
 
-  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, props);
   const { additions } = await importer.discoverImportableResources();
   expect(additions).toEqual([
     expect.objectContaining({
@@ -103,7 +112,7 @@ test('by default, its an error if there are non-addition changes in the template
     },
   });
 
-  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, props);
   await expect(importer.discoverImportableResources()).rejects.toThrow(/No resource updates or deletes/);
 
   // But the error can be silenced
@@ -113,7 +122,7 @@ test('by default, its an error if there are non-addition changes in the template
 test('asks human for resource identifiers', async () => {
   // GIVEN
   givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
-  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, props);
   const { additions } = await importer.discoverImportableResources();
 
   // WHEN
@@ -136,7 +145,7 @@ test('asks human for resource identifiers', async () => {
 test('asks human to confirm automic import if identifier is in template', async () => {
   // GIVEN
   givenCurrentStack(STACK_WITH_NAMED_QUEUE.stackName, { Resources: {} });
-  const importer = new ResourceImporter(STACK_WITH_NAMED_QUEUE, deployments);
+  const importer = new ResourceImporter(STACK_WITH_NAMED_QUEUE, props);
   const { additions } = await importer.discoverImportableResources();
 
   // WHEN
@@ -159,7 +168,7 @@ test('asks human to confirm automic import if identifier is in template', async 
 test('asks human to confirm automic import if identifier is in template', async () => {
   // GIVEN
   givenCurrentStack(STACK_WITH_QUEUE.stackName, { Resources: {} });
-  const importer = new ResourceImporter(STACK_WITH_QUEUE, deployments);
+  const importer = new ResourceImporter(STACK_WITH_QUEUE, props);
   const { additions } = await importer.discoverImportableResources();
   const importMap: ImportMap = {
     importResources: additions,
@@ -169,7 +178,7 @@ test('asks human to confirm automic import if identifier is in template', async 
   };
 
   // WHEN
-  await importer.importResourcesFromMap(importMap, {});
+  await importer.importResourcesFromMap(importMap);
 
   expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
     ChangeSetName: expect.any(String),
@@ -215,7 +224,7 @@ test('importing resources from migrate strips cdk metadata and outputs', async (
   };
 
   givenCurrentStack(stack.stackName, stack);
-  const importer = new ResourceImporter(testStack(stack), deployments);
+  const importer = new ResourceImporter(testStack(stack), props);
   const migrateMap = [
     {
       LogicalResourceId: 'MyQueue',
@@ -370,10 +379,10 @@ test('do not ask for second part of compound identifier if the user skips the fi
  */
 async function importTemplateFromClean(stack: ReturnType<typeof testStack>) {
   givenCurrentStack(stack.stackName, { Resources: {} });
-  const importer = new ResourceImporter(stack, deployments);
+  const importer = new ResourceImporter(stack, props);
   const { additions } = await importer.discoverImportableResources();
   const importable = await importer.askForResourceIdentifiers(additions);
-  await importer.importResourcesFromMap(importable, {});
+  await importer.importResourcesFromMap(importable);
   return importable;
 }
 
