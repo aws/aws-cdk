@@ -143,7 +143,7 @@ test('VPC origin from a Network Load Balancer', () => {
 test('VPC origin from a VpcOrigin resource', () => {
   // GIVEN
   const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: new cloudfront.VpcOriginEndpoint({ endpointArn: 'arn:opaque', domainName: 'vpcorigin.example.com' }),
+    endpoint: { endpointArn: 'arn:opaque', domainName: 'vpcorigin.example.com' },
   });
 
   // WHEN
@@ -237,7 +237,7 @@ test.each([
 test('VPC origin throws when no domainName is specified', () => {
   // GIVEN
   const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
-    endpoint: new cloudfront.VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+    endpoint: { endpointArn: 'arn:opaque' },
   });
 
   // WHEN
@@ -257,7 +257,7 @@ test('VPC origin with options configured', () => {
   const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
   const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
   const vpcOrigin = new cloudfront.VpcOrigin(stack, 'Opaque', {
-    endpoint: new cloudfront.VpcOriginEndpoint({ endpointArn: 'arn:opaque' }),
+    endpoint: { endpointArn: 'arn:opaque' },
   });
 
   // WHEN
