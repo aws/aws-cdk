@@ -217,7 +217,7 @@ describe('removal-policies', () => {
 
     // THEN:
     expect(warnSpy).toHaveBeenCalledWith(
-      'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.'
+      'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.',
     );
 
     warnSpy.mockRestore();
