@@ -296,16 +296,19 @@ export class DistributedMap extends MapBase implements INextable {
     }
     rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
+    // ItemReader and ResultWriter configuration will base on the Map's query language.
+    // If Map's query language is not specified, then use state machine's query language.
+    const stateQueryLanguage = this.queryLanguage ?? stateMachineQueryLanguage;
     return {
       ...rendered,
-      ...this.renderItemReader(stateMachineQueryLanguage),
+      ...this.renderItemReader(stateQueryLanguage),
       ...this.renderItemBatcher(),
       ...(this.toleratedFailurePercentage && { ToleratedFailurePercentage: this.toleratedFailurePercentage }),
       ...(this.toleratedFailurePercentagePath && { ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath }),
       ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
       ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
       ...(this.label && { Label: this.label }),
-      ...this.renderResultWriter(stateMachineQueryLanguage),
+      ...this.renderResultWriter(stateQueryLanguage),
     };
   }
 

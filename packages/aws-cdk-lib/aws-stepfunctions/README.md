@@ -963,8 +963,8 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   ```ts
   const distributedMap = sfn.DistributedMap.jsonata(this, 'DistributedMap', {
     itemReader: sfn.S3ObjectsItemReader.jsonata({
-      bucketNamePath: sfn.JsonPath.stringAt('$.bucketName'),
-      prefix: sfn.JsonPath.stringAt('$.prefix'),
+      bucketName: '{% $bucketName %}',
+      prefix: '{% $prefix %}',
     }),
   });
   ```
