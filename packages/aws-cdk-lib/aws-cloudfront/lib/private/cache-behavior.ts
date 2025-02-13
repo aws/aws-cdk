@@ -1,4 +1,5 @@
 import * as iam from '../../../aws-iam';
+import { UnscopedValidationError } from '../../../core';
 import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
 import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
@@ -68,7 +69,7 @@ export class CacheBehavior {
   private validateEdgeLambdas(edgeLambdas?: EdgeLambda[]) {
     const includeBodyEventTypes = [LambdaEdgeEventType.ORIGIN_REQUEST, LambdaEdgeEventType.VIEWER_REQUEST];
     if (edgeLambdas && edgeLambdas.some(lambda => lambda.includeBody && !includeBodyEventTypes.includes(lambda.eventType))) {
-      throw new Error('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
+      throw new UnscopedValidationError('\'includeBody\' can only be true for ORIGIN_REQUEST or VIEWER_REQUEST event types.');
     }
   }
 

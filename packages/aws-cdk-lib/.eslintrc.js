@@ -34,6 +34,8 @@ const enableNoThrowDefaultErrorIn = [
   'aws-batch',
   'aws-chatbot',
   'aws-cognito',
+  'aws-cloudfront',
+  'aws-cloudfront-origins',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
