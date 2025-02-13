@@ -17,7 +17,7 @@ class DistributedMapStack extends cdk.Stack {
     });
 
     const distributedMap = sfn.DistributedMap.jsonata(this, 'DistributedMap', {
-      itemReader: sfn.S3CsvItemReader.jsonata({
+      itemReader: new sfn.S3CsvItemReader({
         bucket: this.bucket,
         key: CSV_KEY,
         csvHeaders: sfn.CsvHeaders.useFirstRow(),

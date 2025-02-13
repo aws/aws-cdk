@@ -586,7 +586,7 @@ describe('Distributed Map State', () => {
 
     // WHEN
     const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
-      itemReader: stepfunctions.S3ObjectsItemReader.jsonata({
+      itemReader: new stepfunctions.S3ObjectsItemReader({
         bucket: writerBucket,
         prefix: 'my-prefix',
       }),
@@ -594,12 +594,11 @@ describe('Distributed Map State', () => {
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
-    expect(render(map)).toStrictEqual({
+    expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
       StartAt: 'Map State',
       States: {
         'Map State': {
           Type: 'Map',
-          QueryLanguage: 'JSONata',
           End: true,
           ItemProcessor: {
             ProcessorConfig: {
@@ -647,12 +646,12 @@ describe('Distributed Map State', () => {
     // WHEN
     const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
       maxConcurrency: 1,
-      itemReader: stepfunctions.S3CsvItemReader.jsonata({
+      itemReader: new stepfunctions.S3CsvItemReader({
         bucket: writerBucket,
         key: 'CSV_KEY',
         csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
       }),
-      resultWriter: stepfunctions.ResultWriter.jsonata({
+      resultWriter: new stepfunctions.ResultWriter({
         bucket: writerBucket,
         prefix: 'test',
       }),
@@ -660,7 +659,7 @@ describe('Distributed Map State', () => {
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
     // THEN
-    expect(render(map)).toStrictEqual({
+    expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
       StartAt: 'Map State',
       States: {
         'Map State': {
@@ -722,7 +721,6 @@ describe('Distributed Map State', () => {
             },
           },
           MaxConcurrency: 1,
-          QueryLanguage: 'JSONata',
         },
       },
     });
@@ -1164,8 +1162,8 @@ describe('Distributed Map State', () => {
   });
 });
 
-function render(sm: stepfunctions.IChainable) {
-  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+function render(sm: stepfunctions.IChainable, queryLanguage?: stepfunctions.QueryLanguage) {
+  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson(queryLanguage));
 }
 
 function createAppWithMap(mapFactory: (stack: cdk.Stack) => stepfunctions.DistributedMap) {
