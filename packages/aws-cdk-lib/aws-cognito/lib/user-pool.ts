@@ -794,7 +794,7 @@ export interface UserPoolProps {
    * You can override other MFA options and require passkey MFA, or you can set it as preferred.
    * When passkey MFA is preferred, the hosted UI encourages users to register a passkey at sign-in.
    *
-   * @default PasskeyUserVerification.PREFERRED
+   * @default - Cognito default setting is PasskeyUserVerification.PREFERRED
    */
   readonly passkeyUserVerification?: PasskeyUserVerification;
 
