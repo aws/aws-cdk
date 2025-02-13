@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "d4cdd7da3243deb657e43e94ffbd700f5c2b24fbca065b5f78377b1746e91654": {
+      "source": {
+        "path": "aws-ecs-task-definition-container-version-consistency.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d4cdd7da3243deb657e43e94ffbd700f5c2b24fbca065b5f78377b1746e91654.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

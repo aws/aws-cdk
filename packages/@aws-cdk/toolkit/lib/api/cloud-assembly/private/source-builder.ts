@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import type { ICloudAssemblySource } from '../';
 import { ContextAwareCloudAssembly, ContextAwareCloudAssemblyProps } from './context-aware-source';
@@ -6,16 +7,15 @@ import { assemblyFromDirectory, changeDir, determineOutputDirectory, guessExecut
 import { ToolkitServices } from '../../../toolkit/private';
 import { Context, ILock, RWLock, Settings } from '../../aws-cdk';
 import { ToolkitError } from '../../errors';
-import { debug } from '../../io/private';
+import { debug, error, info } from '../../io/private';
 import { AssemblyBuilder, CdkAppSourceProps } from '../source-builder';
 
 export abstract class CloudAssemblySourceBuilder {
-
   /**
    * Helper to provide the CloudAssemblySourceBuilder with required toolkit services
    * @deprecated this should move to the toolkit really.
    */
-  protected abstract toolkitServices(): Promise<ToolkitServices>;
+  protected abstract sourceBuilderServices(): Promise<ToolkitServices>;
 
   /**
    * Create a Cloud Assembly from a Cloud Assembly builder function.
@@ -27,7 +27,7 @@ export abstract class CloudAssemblySourceBuilder {
     builder: AssemblyBuilder,
     props: CdkAppSourceProps = {},
   ): Promise<ICloudAssemblySource> {
-    const services = await this.toolkitServices();
+    const services = await this.sourceBuilderServices();
     const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
@@ -40,13 +40,19 @@ export abstract class CloudAssemblySourceBuilder {
         produce: async () => {
           const outdir = determineOutputDirectory(props.outdir);
           const env = await prepareDefaultEnvironment(services, { outdir });
-          return changeDir(async () =>
+          const assembly = await changeDir(async () =>
             withContext(context.all, env, props.synthOptions ?? {}, async (envWithContext, ctx) =>
               withEnv(envWithContext, () => builder({
                 outdir,
                 context: ctx,
               })),
             ), props.workingDirectory);
+
+          if (cxapi.CloudAssembly.isCloudAssembly(assembly)) {
+            return assembly;
+          }
+
+          return new cxapi.CloudAssembly(assembly.directory);
         },
       },
       contextAssemblyProps,
@@ -59,7 +65,7 @@ export abstract class CloudAssemblySourceBuilder {
    * @returns the CloudAssembly source
    */
   public async fromAssemblyDirectory(directory: string): Promise<ICloudAssemblySource> {
-    const services: ToolkitServices = await this.toolkitServices();
+    const services: ToolkitServices = await this.sourceBuilderServices();
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
       services,
       context: new Context(), // @todo there is probably a difference between contextaware and contextlookup sources
@@ -72,7 +78,6 @@ export abstract class CloudAssemblySourceBuilder {
           // @todo build
           await services.ioHost.notify(debug('--app points to a cloud assembly, so we bypass synth'));
           return assemblyFromDirectory(directory, services.ioHost);
-
         },
       },
       contextAssemblyProps,
@@ -84,7 +89,7 @@ export abstract class CloudAssemblySourceBuilder {
    * @returns the CloudAssembly source
    */
   public async fromCdkApp(app: string, props: CdkAppSourceProps = {}): Promise<ICloudAssemblySource> {
-    const services: ToolkitServices = await this.toolkitServices();
+    const services: ToolkitServices = await this.sourceBuilderServices();
     // @todo this definitely needs to read files from the CWD
     const context = new Context({ bag: new Settings(props.context ?? {}) });
     const contextAssemblyProps: ContextAwareCloudAssemblyProps = {
@@ -117,7 +122,20 @@ export abstract class CloudAssemblySourceBuilder {
 
             const env = await prepareDefaultEnvironment(services, { outdir });
             return await withContext(context.all, env, props.synthOptions, async (envWithContext, _ctx) => {
-              await execInChildProcess(commandLine.join(' '), { extraEnv: envWithContext, cwd: props.workingDirectory });
+              await execInChildProcess(commandLine.join(' '), {
+                eventPublisher: async (type, line) => {
+                  switch (type) {
+                    case 'data_stdout':
+                      await services.ioHost.notify(info(line, 'CDK_ASSEMBLY_I1001'));
+                      break;
+                    case 'data_stderr':
+                      await services.ioHost.notify(error(line, 'CDK_ASSEMBLY_E1002'));
+                      break;
+                  }
+                },
+                extraEnv: envWithContext,
+                cwd: props.workingDirectory,
+              });
               return assemblyFromDirectory(outdir, services.ioHost);
             });
           } finally {
