@@ -476,7 +476,6 @@ export interface PasswordPolicy {
 export interface SignInPolicy {
   /**
    * The types of authentication that you want to allow for users' first authentication prompt.
-   * The password authentication is allowed always.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice
    *
    * @default - Password only
