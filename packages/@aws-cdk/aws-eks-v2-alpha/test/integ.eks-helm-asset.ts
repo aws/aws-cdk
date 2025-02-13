@@ -33,6 +33,9 @@ class EksClusterStack extends Stack {
       },
     });
 
+    // // ensure the OIDC provider is created
+    // this.cluster.openIdConnectProvider;
+
     this.assertHelmChartAsset();
   }
 
@@ -82,6 +85,12 @@ class EksClusterStack extends Stack {
 
     // testing installation with atomic flag set to true
     // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
+
+    const sa = this.cluster.addServiceAccount('ec2-controller-sa', {
+      namespace: 'ack-system',
+    });
+    sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
+
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'ec2-chart',
       release: 'ec2-chart-release',
@@ -91,7 +100,16 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       skipCrds: true,
       atomic: true,
-      values: { aws: { region: this.region } },
+      values: {
+        aws: { region: this.region },
+        serviceAccount: {
+          name: sa.serviceAccountName,
+          create: false,
+          annotations: {
+            'eks.amazonaws.com/role-arn': sa.role.roleArn,
+          },
+        },
+      },
     });
 
     // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator

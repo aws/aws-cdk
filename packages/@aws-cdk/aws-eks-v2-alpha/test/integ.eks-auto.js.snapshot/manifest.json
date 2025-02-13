@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/13d64cdb0ff1ff3492ffa36494285d51a3bf0caaf34980bc714d23192a06046b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cac9b5611661096d7dc22260ea8b1c440806a3d24a67792f0ada8df75530388c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -497,7 +497,10 @@
         "/eks-auto-mode-stack/hello-eks/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksBE273F5A"
+            "data": "helloeksBE273F5A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-auto-mode-stack/hello-eks/KubectlReadyBarrier": [
@@ -856,7 +859,10 @@
         "/eks-auto-mode-stack/hello-eks/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksClusterAdminRoleAccess3B9D74AE"
+            "data": "helloeksClusterAdminRoleAccess3B9D74AE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-auto-mode-stack/hello-eks/mastersRoleAccess": [
@@ -868,7 +874,10 @@
         "/eks-auto-mode-stack/hello-eks/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksmastersRoleAccessF848B5EF"
+            "data": "helloeksmastersRoleAccessF848B5EF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-auto-mode-stack/hello-eks/ConfigCommand": [

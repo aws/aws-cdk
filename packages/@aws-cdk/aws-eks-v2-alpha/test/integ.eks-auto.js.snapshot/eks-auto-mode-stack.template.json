@@ -719,7 +719,8 @@
     "KubernetesNetworkConfig": {
      "ElasticLoadBalancing": {
       "Enabled": true
-     }
+     },
+     "IpFamily": "ipv4"
     },
     "ResourcesVpcConfig": {
      "EndpointPrivateAccess": true,

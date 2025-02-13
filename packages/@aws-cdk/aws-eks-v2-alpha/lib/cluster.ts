@@ -1217,15 +1217,18 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const disableAutoMode = props.autoMode === false ||
+    const autoModeDisabled = props.autoMode === false ||
       props.defaultCapacity !== undefined ||
       props.defaultCapacityType !== undefined ||
       props.defaultCapacityInstance !== undefined;
 
+    // for better readability
+    const autoModeEnabled = !autoModeDisabled;
+
     // sts:TagSession is required for EKS Auto Mode or when using EKS Pod Identity features.
     // see https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
     // https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#_create_an_eks_auto_mode_cluster_iam_role
-    if (!disableAutoMode) { // when autoMode is enabled
+    if (autoModeEnabled) {
       if (this.role instanceof iam.Role) {
         this.role.assumeRolePolicy?.addStatements(
           new iam.PolicyStatement({
@@ -1292,20 +1295,22 @@ export class Cluster extends ClusterBase {
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       computeConfig: {
-        enabled: props.autoMode === false ? false : true,
-        nodePools: props.compute?.nodePools ?? ['system', 'general-purpose'],
-        nodeRoleArn: props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
+        enabled: autoModeDisabled ? false : true,
+        // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
+        // the request must not include values for the nodeRoleArn or nodePools fields.
+        nodePools: autoModeDisabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
+        nodeRoleArn: autoModeDisabled ? undefined : props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
       },
       storageConfig: {
         blockStorage: {
-          enabled: props.autoMode === false ? false : true,
+          enabled: autoModeDisabled ? false : true,
         },
       },
       kubernetesNetworkConfig: {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
         elasticLoadBalancing: {
-          enabled: props.autoMode === false ? false : true,
+          enabled: autoModeDisabled ? false : true,
         },
       },
       resourcesVpcConfig: {
@@ -1327,7 +1332,7 @@ export class Cluster extends ClusterBase {
       logging: this.logging,
     });
 
-    if (props.autoMode != false) {
+    if (autoModeEnabled) {
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
@@ -1439,7 +1444,7 @@ export class Cluster extends ClusterBase {
       }
     }
 
-    if (disableAutoMode) {
+    if (autoModeDisabled) {
       const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
       if (minCapacity > 0) {
         const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
