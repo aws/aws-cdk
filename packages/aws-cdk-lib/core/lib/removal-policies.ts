@@ -118,6 +118,11 @@ export class RemovalPolicies {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
       priority: props.priority ?? AspectPriority.MUTATING,
     });
+
+    if (props.priority !== undefined && props.overwrite === true) {
+      // eslint-disable-next-line no-console
+      console.warn('Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.');
+    }
   }
 
   /**

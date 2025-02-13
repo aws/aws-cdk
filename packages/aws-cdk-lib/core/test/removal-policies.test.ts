@@ -204,4 +204,22 @@ describe('removal-policies', () => {
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
   });
 
+  test('warns when both priority and overwrite are set', () => {
+    // GIVEN:
+    const stack = new Stack();
+    const resource = new TestResource(stack, 'Resource');
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // WHEN:
+    RemovalPolicies.of(resource).destroy({ priority: 1, overwrite: true });
+    synthesize(stack);
+
+    // THEN:
+    expect(warnSpy).toHaveBeenCalledWith(
+      'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.'
+    );
+
+    warnSpy.mockRestore();
+  });
 });
