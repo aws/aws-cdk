@@ -1,5 +1,4 @@
 import { existsSync, promises as fs } from 'fs';
-import * as querystring from 'node:querystring';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -23,8 +22,6 @@ import { InvokeCommand } from '@aws-sdk/client-lambda';
 import { PutObjectLockConfigurationCommand } from '@aws-sdk/client-s3';
 import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
 import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as mockttp from 'mockttp';
-import { CompletedRequest } from 'mockttp';
 import {
   cloneDirectory,
   integTest,
@@ -41,6 +38,7 @@ import {
   withSamIntegrationFixture,
   withSpecificFixture,
 } from '../../lib';
+import { awsActionsFromRequests, startProxyServer } from '../../lib/proxy';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -363,7 +361,8 @@ integTest('doubly nested stack',
     await fixture.cdkDeploy('with-doubly-nested-stack', {
       captureStderr: false,
     });
-  }));
+  }),
+);
 
 integTest(
   'nested stack with parameters',
@@ -406,7 +405,7 @@ integTest(
     );
     expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
-    //verify a change set was created with the provided name
+    // verify a change set was created with the provided name
     const changeSetResponse = await fixture.aws.cloudFormation.send(
       new ListChangeSetsCommand({
         StackName: stackArn,
@@ -1263,7 +1262,6 @@ integTest(
 integTest(
   'cdk diff doesnt show resource metadata changes',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -1283,7 +1281,6 @@ integTest(
 integTest(
   'cdk diff shows resource metadata changes with --no-change-set',
   withDefaultFixture(async (fixture) => {
-
     // GIVEN - small initial stack with default resource metadata
     await fixture.cdkDeploy('metadata');
 
@@ -2256,6 +2253,73 @@ integTest(
 );
 
 /**
+ * Create an S3 bucket, orphan that bucket, then import the bucket, with a NodeJSFunction lambda also in the stack.
+ *
+ * Validates fix for https://github.com/aws/aws-cdk/issues/31999 (import fails)
+ */
+integTest(
+  'test resource import with construct that requires bundling',
+  withDefaultFixture(async (fixture) => {
+    // GIVEN
+    const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+    await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+
+    // First, create a stack that includes a NodeJSFunction lambda and one bucket that will be removed from the stack but NOT deleted from AWS.
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '1', RETAIN_SINGLE_BUCKET: '1' },
+      options: ['--outputs-file', outputsFile],
+    });
+
+    try {
+      // Second, now the bucket we will remove is in the stack and has a logicalId. We can now make the resource mapping file.
+      // This resource mapping file will be used to tell the import operation what bucket to bring into the stack.
+      const fullStackName = fixture.fullStackName('importable-stack');
+      const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+      const bucketLogicalId = outputs[fullStackName].BucketLogicalId;
+      const bucketName = outputs[fullStackName].BucketName;
+      const bucketResourceMap = {
+        [bucketLogicalId]: {
+          BucketName: bucketName,
+        },
+      };
+      const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+      await fs.writeFile(mappingFile, JSON.stringify(bucketResourceMap), { encoding: 'utf-8' });
+
+      // Third, remove the bucket from the stack, but don't delete the bucket from AWS.
+      await fixture.cdkDeploy('importable-stack', {
+        modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '0', RETAIN_SINGLE_BUCKET: '0' },
+      });
+      const cfnTemplateBeforeImport = await fixture.aws.cloudFormation.send(
+        new GetTemplateCommand({ StackName: fullStackName }),
+      );
+      expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(bucketLogicalId);
+
+      // WHEN
+      await fixture.cdk(['import', '--resource-mapping', mappingFile, fixture.fullStackName('importable-stack')], {
+        modEnv: { INCLUDE_NODEJS_FUNCTION_LAMBDA: '1', INCLUDE_SINGLE_BUCKET: '1', RETAIN_SINGLE_BUCKET: '0' },
+      });
+
+      // THEN
+      const describeStacksResponse = await fixture.aws.cloudFormation.send(
+        new DescribeStacksCommand({ StackName: fullStackName }),
+      );
+      const cfnTemplateAfterImport = await fixture.aws.cloudFormation.send(
+        new GetTemplateCommand({ StackName: fullStackName }),
+      );
+
+      // If bundling is skipped during import for NodeJSFunction lambda, then the operation should fail and exit
+      expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+
+      // If the import operation is successful, the template should contain the imported bucket
+      expect(cfnTemplateAfterImport.TemplateBody).toContain(bucketLogicalId);
+    } finally {
+      // Clean up the resources we created
+      await fixture.cdkDestroy('importable-stack');
+    }
+  }),
+);
+
+/**
  * Create a queue, orphan that queue, then import the queue.
  *
  * We want to test with a large template to make sure large templates can work with import.
@@ -2837,7 +2901,6 @@ integTest(
 );
 
 integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixture) => {
-
   const cache = {
     expiration: 4125963264000, // year 2100 so we never overwrite the cache
     notices: [
@@ -2871,65 +2934,36 @@ integTest('cdk notices are displayed correctly', withDefaultFixture(async (fixtu
 
   // assert dynamic environments are resolved
   expect(output).toContain(`AffectedEnvironments:<aws://${await fixture.aws.account()}/${fixture.aws.region}>`);
-
 }));
 
 integTest('requests go through a proxy when configured',
   withDefaultFixture(async (fixture) => {
-    // Set up key and certificate
-    const { key, cert } = await mockttp.generateCACertificate();
-    const certDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-'));
-    const certPath = path.join(certDir, 'cert.pem');
-    const keyPath = path.join(certDir, 'key.pem');
-    await fs.writeFile(keyPath, key);
-    await fs.writeFile(certPath, cert);
-
-    const proxyServer = mockttp.getLocal({
-      https: { keyPath, certPath },
-    });
-
-    // We don't need to modify any request, so the proxy
-    // passes through all requests to the target host.
-    const endpoint = await proxyServer
-      .forAnyRequest()
-      .thenPassThrough();
-
-    proxyServer.enableDebug();
-    await proxyServer.start();
-
-    // The proxy is now ready to intercept requests
-
+    const proxyServer = await startProxyServer();
     try {
+      // Delete notices cache if it exists
+      await fs.rm(path.join(process.env.HOME ?? os.userInfo().homedir, '.cdk/cache/notices.json'), { force: true });
+
       await fixture.cdkDeploy('test-2', {
         captureStderr: true,
         options: [
           '--proxy', proxyServer.url,
-          '--ca-bundle-path', certPath,
+          '--ca-bundle-path', proxyServer.certPath,
         ],
         modEnv: {
           CDK_HOME: fixture.integTestDir,
         },
       });
+
+      const requests = await proxyServer.getSeenRequests();
+
+      expect(requests.map(req => req.url))
+        .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
+
+      const actionsUsed = awsActionsFromRequests(requests);
+      expect(actionsUsed).toContain('AssumeRole');
+      expect(actionsUsed).toContain('CreateChangeSet');
     } finally {
-      await fs.rm(certDir, { recursive: true, force: true });
       await proxyServer.stop();
     }
-
-    const requests = await endpoint.getSeenRequests();
-
-    expect(requests.map(req => req.url))
-      .toContain('https://cli.cdk.dev-tools.aws.dev/notices.json');
-
-    const actionsUsed = actions(requests);
-    expect(actionsUsed).toContain('AssumeRole');
-    expect(actionsUsed).toContain('CreateChangeSet');
   }),
 );
-
-function actions(requests: CompletedRequest[]): string[] {
-  return [...new Set(requests
-    .map(req => req.body.buffer.toString('utf-8'))
-    .map(body => querystring.decode(body))
-    .map(x => x.Action as string)
-    .filter(action => action != null))];
-}

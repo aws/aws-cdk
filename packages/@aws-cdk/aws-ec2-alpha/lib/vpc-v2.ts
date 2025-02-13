@@ -5,6 +5,7 @@ import { IpamOptions, IIpamPool } from './ipam';
 import { IVpcV2, VpcV2Base } from './vpc-v2-base';
 import { ISubnetV2, SubnetV2, SubnetV2Attributes } from './subnet-v2';
 import { region_info } from 'aws-cdk-lib';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Additional props needed for secondary Address
@@ -310,9 +311,9 @@ export class VpcV2 extends VpcV2Base {
    */
   public static fromVpcV2Attributes(scope: Construct, id: string, attrs: VpcV2Attributes): IVpcV2 {
     /**
-    * Internal class to allow users to import VPC
-    * @internal
-    */
+     * Internal class to allow users to import VPC
+     * @internal
+     */
     class ImportedVpcV2 extends VpcV2Base {
       public readonly vpcId: string;
       public readonly vpcArn: string;
@@ -332,9 +333,9 @@ export class VpcV2 extends VpcV2Base {
       public readonly secondaryCidrBlock?: IVPCCidrBlock[];
 
       /**
-      * Refers to actual VPC Resource attribute in non-imported VPC
-      * Required to implement here due to extension from Base class
-      */
+       * Refers to actual VPC Resource attribute in non-imported VPC
+       * Required to implement here due to extension from Base class
+       */
       public readonly vpcCidrBlock: string;
 
       // Required to do CIDR range test on imported VPCs to create new subnets
@@ -496,6 +497,8 @@ export class VpcV2 extends VpcV2Base {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.vpcName = props.vpcName;
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
@@ -504,7 +507,7 @@ export class VpcV2 extends VpcV2Base {
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.resource = new CfnVPC(this, 'Resource', {
-      cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses CIDR block
+      cidrBlock: vpcOptions.ipv4CidrBlock, // for Ipv4 addresses CIDR block
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
       ipv4IpamPoolId: vpcOptions.ipv4IpamPool?.ipamPoolId, // for Ipv4 ipam option
@@ -526,13 +529,12 @@ export class VpcV2 extends VpcV2Base {
     }, this.stack);
     this.region = this.stack.region;
     this.ownerAccountId = this.stack.account;
-    //Add tag to the VPC with the name provided in properties
+    // Add tag to the VPC with the name provided in properties
     Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
     if (props.secondaryAddressBlocks) {
       const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
 
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
-
         const secondaryVpcOptions: VpcCidrOptions = secondaryAddressBlock.allocateVpcCidr();
         if (!secondaryVpcOptions.cidrBlockName) {
           throw new Error('Cidr Block Name is required to create secondary IP address');
@@ -541,7 +543,7 @@ export class VpcV2 extends VpcV2Base {
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool || secondaryVpcOptions.ipv6PoolId) {
           this.useIpv6 = true;
         }
-        //validate CIDR ranges per RFC 1918
+        // validate CIDR ranges per RFC 1918
         if (secondaryVpcOptions.ipv4CidrBlock!) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
@@ -559,9 +561,9 @@ export class VpcV2 extends VpcV2Base {
           ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
           ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPool?.ipamPoolId,
           amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
-          //BYOIP IPv6 Address
+          // BYOIP IPv6 Address
           ipv6CidrBlock: secondaryVpcOptions?.ipv6CidrBlock,
-          //BYOIP Pool for IPv6 address
+          // BYOIP Pool for IPv6 address
           ipv6Pool: secondaryVpcOptions?.ipv6PoolId,
         });
         if (secondaryVpcOptions.dependencies) {
@@ -569,7 +571,7 @@ export class VpcV2 extends VpcV2Base {
             vpcCidrBlock.node.addDependency(dep);
           }
         }
-        //Create secondary blocks for Ipv4 and Ipv6
+        // Create secondary blocks for Ipv4 and Ipv6
         this.secondaryCidrBlock?.push(vpcCidrBlock);
       }
     }
@@ -626,7 +628,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: { cidrBlockName: string}) {};
+  constructor(private readonly props: { cidrBlockName: string}) {}
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
@@ -662,7 +664,6 @@ class IpamIpv4 implements IIpAddresses {
   constructor(private readonly props: IpamOptions) {
   }
   allocateVpcCidr(): VpcCidrOptions {
-
     return {
       ipv4NetmaskLength: this.props.netmaskLength,
       ipv4IpamPool: this.props.ipamPool,
@@ -744,10 +745,10 @@ export interface VPCCidrBlockattributes {
   readonly cidrBlock?: string;
 
   /**
-  * The secondary IPv4 CIDR Block
-  *
-  * @default - no CIDR block provided
-  */
+   * The secondary IPv4 CIDR Block
+   *
+   * @default - no CIDR block provided
+   */
   readonly cidrBlockName?: string;
 
   /**
@@ -826,7 +827,7 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
       public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
       public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
       public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
-      //BYOIP Pool Attributes
+      // BYOIP Pool Attributes
       public readonly ipv6Pool?: string = props.ipv6Pool;
       public readonly ipv6CidrBlock?: string = props.ipv6CidrBlock;
     }
@@ -849,19 +850,21 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
 
   constructor(scope: Construct, id: string, props: VPCCidrBlockProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.resource = new CfnVPCCidrBlock(this, id, props);
     this.node.defaultChild = this.resource;
     this.cidrBlock = props.cidrBlock;
     this.ipv6IpamPoolId = props.ipv6IpamPoolId;
     this.ipv4IpamPoolId = props.ipv4IpamPoolId;
     this.amazonProvidedIpv6CidrBlock = props.amazonProvidedIpv6CidrBlock;
-    //BYOIP Pool and CIDR Block
+    // BYOIP Pool and CIDR Block
     this.ipv6CidrBlock = props.ipv6CidrBlock;
     this.ipv6Pool = props.ipv6Pool;
   }
 }
 
-//@internal First two Octet to verify RFC 1918
+// @internal First two Octet to verify RFC 1918
 interface IPaddressConfig {
   octet1: number;
   octet2: number;

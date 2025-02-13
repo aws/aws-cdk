@@ -13,6 +13,7 @@ export enum ActionCategory {
   APPROVAL = 'Approval',
   DEPLOY = 'Deploy',
   INVOKE = 'Invoke',
+  COMPUTE = 'Compute',
 }
 
 /**
@@ -104,6 +105,20 @@ export interface ActionProperties {
    * @default - a name will be generated, based on the stage and action names
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * Shell commands for the Commands action to run.
+   *
+   * @default - no commands
+   */
+  readonly commands?: string[];
+
+  /**
+   * The names of the variables in your environment that you want to export.
+   *
+   * @default - no output variables
+   */
+  readonly outputVariables?: string[];
 }
 
 export interface ActionBindOptions {
@@ -506,23 +521,23 @@ export enum PipelineNotificationEvents {
   STAGE_EXECUTION_STARTED = 'codepipeline-pipeline-stage-execution-started',
 
   /**
-  * Trigger notification when pipeline stage execution succeeded
-  */
+   * Trigger notification when pipeline stage execution succeeded
+   */
   STAGE_EXECUTION_SUCCEEDED = 'codepipeline-pipeline-stage-execution-succeeded',
 
   /**
-  * Trigger notification when pipeline stage execution resumed
-  */
+   * Trigger notification when pipeline stage execution resumed
+   */
   STAGE_EXECUTION_RESUMED = 'codepipeline-pipeline-stage-execution-resumed',
 
   /**
-  * Trigger notification when pipeline stage execution canceled
-  */
+   * Trigger notification when pipeline stage execution canceled
+   */
   STAGE_EXECUTION_CANCELED = 'codepipeline-pipeline-stage-execution-canceled',
 
   /**
-  * Trigger notification when pipeline stage execution failed
-  */
+   * Trigger notification when pipeline stage execution failed
+   */
   STAGE_EXECUTION_FAILED = 'codepipeline-pipeline-stage-execution-failed',
 
   /**

@@ -7,16 +7,13 @@ const ioHost = new TestIoHost();
 const toolkit = new Toolkit({ ioHost });
 jest.spyOn(toolkit, 'rollback').mockResolvedValue();
 
-let mockDestroyStack = jest.fn().mockResolvedValue({});
+let mockDestroyStack = jest.fn();
 
 jest.mock('../../lib/api/aws-cdk', () => {
   return {
     ...jest.requireActual('../../lib/api/aws-cdk'),
     Deployments: jest.fn().mockImplementation(() => ({
       destroyStack: mockDestroyStack,
-      // resolveEnvironment: jest.fn().mockResolvedValue({}),
-      // isSingleAssetPublished: jest.fn().mockResolvedValue(true),
-      // readCurrentTemplate: jest.fn().mockResolvedValue({ Resources: {} }),
     })),
   };
 });
@@ -25,6 +22,7 @@ beforeEach(() => {
   ioHost.notifySpy.mockClear();
   ioHost.requestSpy.mockClear();
   jest.clearAllMocks();
+  mockDestroyStack.mockResolvedValue({});
 });
 
 describe('destroy', () => {
@@ -71,7 +69,7 @@ describe('destroy', () => {
 
   test('destroy deployment fails', async () => {
     // GIVEN
-    mockDestroyStack = jest.fn().mockRejectedValue({});
+    mockDestroyStack.mockRejectedValue({});
 
     // WHEN
     const cx = await builderFixture(toolkit, 'stack-with-role');

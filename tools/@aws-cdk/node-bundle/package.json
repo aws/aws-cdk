@@ -33,7 +33,7 @@
     "typescript": "~5.5.2"
   },
   "dependencies": {
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",

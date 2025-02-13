@@ -257,7 +257,6 @@ export class GaugeWidget extends ConcreteWidget {
   }
 
   public toJson(): any[] {
-
     const metrics = allMetricsGraphJson(this.metrics, []);
     const leftYAxis = {
       ...this.props.leftYAxis,

@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
 import { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core/lib/errors';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
@@ -23,7 +24,7 @@ export class NetworkListenerAction implements IListenerAction {
    */
   public static forward(targetGroups: INetworkTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
     if (targetGroups.length === 0) {
-      throw new Error('Need at least one targetGroup in a NetworkListenerAction.forward()');
+      throw new UnscopedValidationError('Need at least one targetGroup in a NetworkListenerAction.forward()');
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
@@ -50,7 +51,7 @@ export class NetworkListenerAction implements IListenerAction {
    */
   public static weightedForward(targetGroups: NetworkWeightedTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
     if (targetGroups.length === 0) {
-      throw new Error('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
+      throw new UnscopedValidationError('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
     }
 
     return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {

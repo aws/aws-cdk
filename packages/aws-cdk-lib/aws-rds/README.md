@@ -1228,7 +1228,7 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 
 You can access your Aurora DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
-The following example shows granting Data API access to a Lamba function.
+The following example shows granting Data API access to a Lambda function.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1389,6 +1389,33 @@ To see Amazon RDS DB engines that support Performance Insights, see [Amazon RDS 
 To see Amazon Aurora DB engines that support Performance Insights, see [Amazon Aurora DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.Engines.html).
 
 For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).
+
+## Database Insights
+
+The standard mode of Database Insights is enabled by default for Aurora databases.
+
+You can enhance the monitoring of your Aurora databases by enabling the advanced mode of Database Insights.
+
+To control Database Insights mode, use the `databaseInsightsMode` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  // If you enable the advanced mode of Database Insights,
+  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).
+  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  }),
+});
+```
+
+Note: Database Insights are only supported for Amazon Aurora MySQL and Amazon Aurora PostgreSQL clusters.
+
+> Visit [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more details.
 
 ## Enhanced Monitoring
 

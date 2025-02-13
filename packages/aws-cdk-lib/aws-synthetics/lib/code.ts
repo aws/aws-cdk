@@ -5,6 +5,7 @@ import { RuntimeFamily } from './runtime';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { Stage, Token } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**
  * The code the canary should execute
@@ -92,7 +93,7 @@ export class AssetCode extends Code {
     super();
 
     if (!fs.existsSync(this.assetPath)) {
-      throw new Error(`${this.assetPath} is not a valid path`);
+      throw new UnscopedValidationError(`${this.assetPath} is not a valid path`);
     }
   }
 
@@ -129,7 +130,7 @@ export class AssetCode extends Code {
    */
   private validateCanaryAsset(scope: Construct, handler: string, family: RuntimeFamily, runtimeName?: string) {
     if (!this.asset) {
-      throw new Error("'validateCanaryAsset' must be called after 'this.asset' is instantiated");
+      throw new ValidationError("'validateCanaryAsset' must be called after 'this.asset' is instantiated", scope);
     }
 
     // Get the staged (or copied) asset path.
@@ -139,7 +140,7 @@ export class AssetCode extends Code {
 
     if (path.extname(assetPath) !== '.zip') {
       if (!fs.lstatSync(assetPath).isDirectory()) {
-        throw new Error(`Asset must be a .zip file or a directory (${this.assetPath})`);
+        throw new ValidationError(`Asset must be a .zip file or a directory (${this.assetPath})`, scope);
       }
 
       const filename = handler.split('.')[0];
@@ -151,16 +152,16 @@ export class AssetCode extends Code {
         const hasValidExtension = playwrightValidExtensions.some(ext => fs.existsSync(path.join(assetPath, `${filename}${ext}`)));
         // Requires asset directory to have the structure 'nodejs/node_modules' for puppeteer runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('puppeteer') && !fs.existsSync(path.join(assetPath, 'nodejs', 'node_modules', nodeFilename))) {
-          throw new Error(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
+          throw new ValidationError(`The canary resource requires that the handler is present at "nodejs/node_modules/${nodeFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`, scope);
         }
         // Requires the canary handler file to have the extension '.js', '.mjs', or '.cjs' for the playwright runtime.
         if (family === RuntimeFamily.NODEJS && runtimeName.includes('playwright') && !hasValidExtension) {
-          throw new Error(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`);
+          throw new ValidationError(`The canary resource requires that the handler is present at one of the following extensions: ${playwrightValidExtensions.join(', ')} but not found at ${this.assetPath}`, scope);
         }
       }
       // Requires the asset directory to have the structure 'python/{canary-handler-name}.py' for the Python runtime.
       if (family === RuntimeFamily.PYTHON && !fs.existsSync(path.join(assetPath, 'python', pythonFilename))) {
-        throw new Error(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`);
+        throw new ValidationError(`The canary resource requires that the handler is present at "python/${pythonFilename}" but not found at ${this.assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Python.html)`, scope);
       }
     }
   }
@@ -174,14 +175,13 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error('Canary inline code cannot be empty');
+      throw new UnscopedValidationError('Canary inline code cannot be empty');
     }
   }
 
-  public bind(_scope: Construct, handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
-
+  public bind(scope: Construct, handler: string, _family: RuntimeFamily, _runtimeName?: string): CodeConfig {
     if (handler !== 'index.handler') {
-      throw new Error(`The handler for inline code must be "index.handler" (got "${handler}")`);
+      throw new ValidationError(`The handler for inline code must be "index.handler" (got "${handler}")`, scope);
     }
 
     return {

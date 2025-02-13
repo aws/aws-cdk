@@ -1,4 +1,4 @@
-/*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
+/* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
 
@@ -16,6 +16,29 @@ export function subnetGroupNameFromConstructId(subnet: ISubnet) {
  */
 export function subnetId(name: string, i: number) {
   return `${name}Subnet${i + 1}`;
+}
+
+/**
+ * The status of a Transit Gateway feature.
+ */
+export enum TransitGatewayFeatureStatus {
+  /**
+   * The feature is enabled.
+   */
+  ENABLE = 'enable',
+
+  /**
+   * The feature is disabled.
+   */
+  DISABLE = 'disable',
+}
+
+export function getFeatureStatus(status?: boolean): TransitGatewayFeatureStatus | undefined {
+  if (status === undefined) {
+    return undefined;
+  } else {
+    return status ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  }
 }
 
 /**
@@ -394,7 +417,6 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
   private ipv6ToNumber(ipv6Address: string): bigint {

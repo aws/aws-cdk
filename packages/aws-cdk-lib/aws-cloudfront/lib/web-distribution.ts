@@ -11,6 +11,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * HTTP status code to failover to second origin
@@ -822,6 +823,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -1005,6 +1008,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
    */
+  @MethodMetadata()
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({ grantee: identity, actions, resourceArns: [formatDistributionArn(this)] });
   }

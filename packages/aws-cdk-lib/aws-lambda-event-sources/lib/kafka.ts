@@ -201,8 +201,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   /**
-  * The identifier for this EventSourceMapping
-  */
+   * The identifier for this EventSourceMapping
+   */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
       throw new Error('KafkaEventSource is not yet bound to an event source mapping');
@@ -241,11 +241,10 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
-
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new Error('Function is not a construct. Unexpected error.'); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({

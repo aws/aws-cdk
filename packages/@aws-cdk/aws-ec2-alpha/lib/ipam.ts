@@ -1,6 +1,7 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMPoolCidr, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { Lazy, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the address family for IP addresses in an IPAM pool.
@@ -62,7 +63,7 @@ export interface IpamProps {
    *
    * @default - Stack.region if defined in the stack
    */
-  readonly operatingRegion?: string[];
+  readonly operatingRegions?: string[];
 
   /**
    * Name of IPAM that can be used for tagging resource
@@ -127,14 +128,14 @@ export interface PoolOptions {
   readonly publicIpSource?: IpamPoolPublicIpSource;
 
   /**
-  * Limits which service in AWS that the pool can be used in.
-  *
-  * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
-  *
-  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
-  *
-  * @default - required in case of an IPv6, throws an error if not provided.
-  */
+   * Limits which service in AWS that the pool can be used in.
+   *
+   * "ec2", for example, allows users to use space for Elastic IP addresses and VPCs.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipampool.html#cfn-ec2-ipampool-awsservice
+   *
+   * @default - required in case of an IPv6, throws an error if not provided.
+   */
   readonly awsService?: AwsServiceName;
 
   /**
@@ -184,9 +185,9 @@ export interface IpamPoolCidrProvisioningOptions {
  */
 export interface IIpamPool {
   /**
- * Pool ID to be passed to the VPC construct
- * @attribute IpamPoolId
- */
+   * Pool ID to be passed to the VPC construct
+   * @attribute IpamPoolId
+   */
   readonly ipamPoolId: string;
 
   /**
@@ -339,12 +340,14 @@ class IpamPool extends Resource implements IIpamPool {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.addressFamily === AddressFamily.IP_V6 && !props.awsService) {
       throw new Error('awsService is required when addressFamily is set to ipv6');
     }
 
-    //Add tags to the IPAM Pool if name is provided
+    // Add tags to the IPAM Pool if name is provided
     if (props.ipamPoolName) {
       Tags.of(this).add(NAME_TAG, props.ipamPoolName);
     }
@@ -370,6 +373,7 @@ class IpamPool extends Resource implements IIpamPool {
    * @param options Either a CIDR or netmask length must be provided
    * @returns AWS::EC2::IPAMPoolCidr
    */
+  @MethodMetadata()
   public provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr {
     const cidr = new CfnIPAMPoolCidr(this, id, {
       ...options,
@@ -415,6 +419,8 @@ class IpamScope extends Resource implements IIpamScopeBase {
 
   constructor(scope: Construct, id: string, props: IpamScopeProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
       ipamId: props.ipamId,
     });
@@ -468,10 +474,10 @@ class IpamScopeBase implements IIpamScopeBase {
  */
 export class Ipam extends Resource {
   /**
- * Provides access to default public IPAM scope through add pool method.
- * Usage: To add an Ipam Pool to a default public scope
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
- */
+   * Provides access to default public IPAM scope through add pool method.
+   * Usage: To add an Ipam Pool to a default public scope
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-ipamscope.html
+   */
   public readonly publicScope: IIpamScopeBase;
 
   /**
@@ -508,14 +514,16 @@ export class Ipam extends Resource {
 
   constructor(scope: Construct, id: string, props?: IpamProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     if (props?.ipamName) {
       Tags.of(this).add(NAME_TAG, props.ipamName);
     }
-    if (!props?.operatingRegion && !Stack.of(this).region) {
+    if (props?.operatingRegions && (props.operatingRegions.length === 0)) {
       throw new Error('Please provide at least one operating region');
     }
 
-    this.operatingRegions = props?.operatingRegion ?? [Stack.of(this).region];
+    this.operatingRegions = props?.operatingRegions ?? [Stack.of(this).region];
     this.ipamName = props?.ipamName;
 
     this._ipam = new CfnIPAM(this, 'Ipam', {
@@ -536,13 +544,13 @@ export class Ipam extends Resource {
     });
 
     this.scopes.push(this.publicScope, this.privateScope);
-
   }
 
   /**
    * Function to add custom scope to an existing IPAM
    * Custom scopes can only be private
    */
+  @MethodMetadata()
   public addScope(scope: Construct, id: string, options: IpamScopeOptions): IIpamScopeBase {
     const ipamScope = new IpamScope(scope, id, {
       ...options,

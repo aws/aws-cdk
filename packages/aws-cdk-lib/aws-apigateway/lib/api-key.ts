@@ -6,6 +6,8 @@ import { IStage } from './stage';
 import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -169,6 +171,8 @@ export class ApiKey extends ApiKeyBase {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnApiKey(this, 'Resource', {
       customerId: props.customerId,
@@ -196,15 +200,15 @@ export class ApiKey extends ApiKeyBase {
     }
 
     if (resources && stages) {
-      throw new Error('Only one of "resources" or "stages" should be provided');
+      throw new ValidationError('Only one of "resources" or "stages" should be provided', this);
     }
 
     return resources
       ? resources.map((resource: IRestApi) => {
         const restApi = resource;
         if (!restApi.deploymentStage) {
-          throw new Error('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
-          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage');
+          throw new ValidationError('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          'Either set the RestApi.deploymentStage or create an ApiKey from a Stage', this);
         }
         const restApiId = restApi.restApiId;
         const stageName = restApi.deploymentStage!.stageName.toString();
@@ -222,6 +226,10 @@ export class ApiKey extends ApiKeyBase {
 export interface RateLimitedApiKeyProps extends ApiKeyProps {
   /**
    * API Stages to be associated with the RateLimitedApiKey.
+   * If you already prepared UsagePlan resource explicitly, you should use `stages` property.
+   * If you prefer to prepare UsagePlan resource implicitly via RateLimitedApiKey,
+   * or you should specify throttle settings at each stage individually, you should use `apiStages` property.
+   *
    * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[];
@@ -252,6 +260,8 @@ export class RateLimitedApiKey extends ApiKeyBase {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new ApiKey(this, 'Resource', props);
 
