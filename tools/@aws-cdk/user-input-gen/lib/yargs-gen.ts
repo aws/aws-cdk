@@ -1,7 +1,7 @@
 import { $E, Expression, ExternalModule, FreeFunction, IScope, Module, SelectiveModuleImport, Statement, ThingSymbol, Type, TypeScriptRenderer, code, expr } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { lit } from './util';
+import { lit, SOURCE_OF_TRUTH } from './util';
 import { CliConfig, CliOption, YargsOption } from './yargs-types';
 
 // to import lodash.clonedeep properly, we would need to set esModuleInterop: true
@@ -24,7 +24,7 @@ export async function renderYargs(config: CliConfig, helpers: CliHelpers): Promi
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
-  scope.documentation.push('GENERATED FROM packages/aws-cdk/lib/config.ts.');
+  scope.documentation.push(`GENERATED FROM ${SOURCE_OF_TRUTH}.`);
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 
