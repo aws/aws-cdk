@@ -43,6 +43,8 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  cpu: '512',
+  memory: '512',
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [
