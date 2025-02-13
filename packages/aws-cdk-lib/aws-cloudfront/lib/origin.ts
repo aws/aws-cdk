@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { Duration, Token } from '../../core';
+import { Duration, Token, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * The selection criteria for the origin group.
@@ -196,12 +196,12 @@ export abstract class OriginBase implements IOrigin {
   /**
    * Binds the origin to the associated Distribution. Can be used to grant permissions, create dependent resources, etc.
    */
-  public bind(_scope: Construct, options: OriginBindOptions): OriginBindConfig {
+  public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const s3OriginConfig = this.renderS3OriginConfig();
     const customOriginConfig = this.renderCustomOriginConfig();
 
     if (!s3OriginConfig && !customOriginConfig) {
-      throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
+      throw new ValidationError('Subclass must override and provide either s3OriginConfig or customOriginConfig', scope);
     }
 
     return {
@@ -268,7 +268,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
   if (value === undefined) { return; }
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
-    throw new Error(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
+    throw new UnscopedValidationError(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
 
@@ -296,9 +296,9 @@ function validateCustomHeaders(customHeaders?: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new Error(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
+    throw new UnscopedValidationError(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new Error(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
+    throw new UnscopedValidationError(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }
