@@ -8,6 +8,8 @@ module.exports = {
   testMatch: [
     '<rootDir>/**/test/**/?(*.)+(test).ts',
   ],
+  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
+
   // Massive parallellism leads to common timeouts
   testTimeout: 60_000,
 
@@ -17,4 +19,6 @@ module.exports = {
       statements: 55,
     },
   },
+
+  testEnvironment: './testhelpers/jest-bufferedconsole.ts',
 };

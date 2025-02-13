@@ -1,8 +1,12 @@
 import { inspect } from 'util';
+import type { CredentialProviderSource, ForReading, ForWriting, PluginProviderResult, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '@aws-cdk/cli-plugin-contract';
 import type { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@smithy/types';
-import { debug, warning } from '../../logging';
-import { CredentialProviderSource, PluginProviderResult, Mode, PluginHost, SDKv2CompatibleCredentials, SDKv3CompatibleCredentialProvider, SDKv3CompatibleCredentials } from '../plugin';
 import { credentialsAboutToExpire, makeCachingProvider } from './provider-caching';
+import { debug, warning } from '../../logging';
+import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import { Mode } from '../plugin/mode';
+import { PluginHost } from '../plugin/plugin';
 
 /**
  * Cache for credential providers.
@@ -45,7 +49,7 @@ export class CredentialPlugins {
         available = await source.isAvailable();
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${formatErrorMessage(e)}`);
         available = false;
       }
 
@@ -59,7 +63,7 @@ export class CredentialPlugins {
         canProvide = await source.canProvideCredentials(awsAccountId);
       } catch (e: any) {
         // This shouldn't happen, but let's guard against it anyway
-        warning(`Uncaught exception in ${source.name}: ${e.message}`);
+        warning(`Uncaught exception in ${source.name}: ${formatErrorMessage(e)}`);
         canProvide = false;
       }
       if (!canProvide) {
@@ -68,7 +72,7 @@ export class CredentialPlugins {
       debug(`Using ${source.name} credentials for account ${awsAccountId}`);
 
       return {
-        credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode, {
+        credentials: await v3ProviderFromPlugin(() => source.getProvider(awsAccountId, mode as ForReading | ForWriting, {
           supportsV3Providers: true,
         })),
         pluginName: source.name,
@@ -124,7 +128,7 @@ async function v3ProviderFromPlugin(producer: () => Promise<PluginProviderResult
     // V2 credentials that refresh and cache themselves
     return v3ProviderFromV2Credentials(initial);
   } else {
-    throw new Error(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
+    throw new AuthenticationError(`Plugin returned a value that doesn't resemble AWS credentials: ${inspect(initial)}`);
   }
 }
 
@@ -140,19 +144,17 @@ function v3ProviderFromV2Credentials(x: SDKv2CompatibleCredentials): AwsCredenti
       accessKeyId: x.accessKeyId,
       secretAccessKey: x.secretAccessKey,
       sessionToken: x.sessionToken,
-      expiration: x.expireTime,
+      expiration: x.expireTime ?? undefined,
     };
   };
 }
 
 function refreshFromPluginProvider(current: AwsCredentialIdentity, producer: () => Promise<PluginProviderResult>): AwsCredentialIdentityProvider {
   return async () => {
-    // eslint-disable-next-line no-console
-    console.error(current, Date.now());
     if (credentialsAboutToExpire(current)) {
       const newCreds = await producer();
       if (!isV3Credentials(newCreds)) {
-        throw new Error(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
+        throw new AuthenticationError(`Plugin initially returned static V3 credentials but now returned something else: ${inspect(newCreds)}`);
       }
       current = newCreds;
     }

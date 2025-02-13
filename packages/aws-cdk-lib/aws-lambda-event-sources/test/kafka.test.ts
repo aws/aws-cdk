@@ -60,7 +60,6 @@ describe('KafkaEventSource', () => {
           kafkaTopic,
         ],
       });
-
     });
     test('with secret', () => {
       // GIVEN
@@ -132,7 +131,6 @@ describe('KafkaEventSource', () => {
           },
         ],
       });
-
     });
 
     test('with filters', () => {
@@ -475,7 +473,6 @@ describe('KafkaEventSource', () => {
           },
         ],
       });
-
     });
 
     test('with filters', () => {
@@ -581,7 +578,6 @@ describe('KafkaEventSource', () => {
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           }));
       }).toThrow(/secret must be set/);
-
     });
 
     test('with s3 onFailure Destination', () => {
@@ -671,7 +667,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
       });
       test('with secret', () => {
         // GIVEN
@@ -759,7 +754,6 @@ describe('KafkaEventSource', () => {
             },
           ],
         });
-
       });
       test('setting vpc requires vpcSubnets to be set', () => {
         const stack = new cdk.Stack();
@@ -781,7 +775,6 @@ describe('KafkaEventSource', () => {
 
             }));
         }).toThrow(/vpcSubnets must be set/);
-
       });
 
       test('setting vpc requires securityGroup to be set', () => {
@@ -803,7 +796,6 @@ describe('KafkaEventSource', () => {
               vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
             }));
         }).toThrow(/securityGroup must be set/);
-
       });
     });
 
@@ -1046,11 +1038,9 @@ describe('KafkaEventSource', () => {
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SelfManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
-
     });
 
     test('consumerGroupId can be set for ManagedKafkaEventSource', () => {
-
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -1075,7 +1065,6 @@ describe('KafkaEventSource', () => {
       template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         AmazonManagedKafkaEventSourceConfig: { ConsumerGroupId: consumerGroupId },
       });
-
     });
 
     test('ManagedKafkaEventSource name conforms to construct id rules', () => {

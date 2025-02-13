@@ -564,7 +564,6 @@ describe('auto scaling group', () => {
         ],
       },
     });
-
   });
 
   testDeprecated('can configure replacing update', () => {
@@ -1589,7 +1588,6 @@ describe('auto scaling group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       CapacityRebalance: true,
     });
-
   });
 
   test('Can protect new instances from scale-in via constructor property', () => {
@@ -2303,7 +2301,6 @@ describe('auto scaling group', () => {
       vpc: mockVpc(stack),
       signals: autoscaling.Signals.waitForAll(),
     })).not.toThrow();
-
   });
 
   describe('multiple target groups', () => {
@@ -2480,7 +2477,6 @@ describe('auto scaling group', () => {
       });
     }).toThrow("Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set");
   });
-
 });
 
 function mockVpc(stack: cdk.Stack) {
@@ -2793,6 +2789,27 @@ describe('InstanceMaintenancePolicy', () => {
       InstanceMaintenancePolicy: {
         MaxHealthyPercentage: -1,
         MinHealthyPercentage: -1,
+      },
+    });
+  });
+
+  test('can specify capacityDistributionStrategy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      AvailabilityZoneDistribution: {
+        CapacityDistributionStrategy: 'balanced-only',
       },
     });
   });

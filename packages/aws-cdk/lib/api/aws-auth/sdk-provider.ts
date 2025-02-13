@@ -8,11 +8,13 @@ import { AwsCredentialIdentityProvider, Logger } from '@smithy/types';
 import { AwsCliCompatible } from './awscli-compatible';
 import { cached } from './cached';
 import { CredentialPlugins } from './credential-plugins';
-import { SDK } from './sdk';
-import { debug, warning } from '../../logging';
-import { traceMethods } from '../../util/tracing';
-import { Mode } from '../plugin';
 import { makeCachingProvider } from './provider-caching';
+import { SDK } from './sdk';
+import { callTrace, traceMemberMethods } from './tracing';
+import { debug, warning } from '../../logging';
+import { AuthenticationError } from '../../toolkit/error';
+import { formatErrorMessage } from '../../util/error';
+import { Mode } from '../plugin/mode';
 
 export type AssumeRoleAdditionalOptions = Partial<Omit<AssumeRoleCommandInput, 'ExternalId' | 'RoleArn'>>;
 
@@ -109,7 +111,7 @@ export interface SdkForEnvironment {
  *     - Seeded terminal with `ReadOnly` credentials in order to do `cdk diff`--the `ReadOnly`
  *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
-@traceMethods
+@traceMemberMethods
 export class SdkProvider {
   /**
    * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
@@ -118,6 +120,7 @@ export class SdkProvider {
    * class `AwsCliCompatible` for the details.
    */
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
+    callTrace(SdkProvider.withAwsCliCompatibleDefaults.name, SdkProvider.constructor.name, options.logger);
     const credentialProvider = await AwsCliCompatible.credentialChainBuilder({
       profile: options.profile,
       httpOptions: options.httpOptions,
@@ -158,14 +161,14 @@ export class SdkProvider {
 
     // At this point, we need at least SOME credentials
     if (baseCreds.source === 'none') {
-      throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+      throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
     }
 
     // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
     // account.
     if (options?.assumeRoleArn === undefined) {
       if (baseCreds.source === 'incorrectDefault') {
-        throw new Error(fmtObtainCredentialsError(env.account, baseCreds));
+        throw new AuthenticationError(fmtObtainCredentialsError(env.account, baseCreds));
       }
 
       // Our current credentials must be valid and not expired. Confirm that before we get into doing
@@ -240,7 +243,7 @@ export class SdkProvider {
     const account = env.account !== UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error(
+      throw new AuthenticationError(
         'Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment',
       );
     }
@@ -280,7 +283,7 @@ export class SdkProvider {
           return undefined;
         }
 
-        debug(`Unable to determine the default AWS account (${e.name}): ${e.message}`);
+        debug(`Unable to determine the default AWS account (${e.name}): ${formatErrorMessage(e)}`);
         return undefined;
       }
     });
@@ -377,7 +380,7 @@ export class SdkProvider {
       }
 
       debug(`Assuming role failed: ${err.message}`);
-      throw new Error(
+      throw new AuthenticationError(
         [
           'Could not assume role in target account',
           ...(sourceDescription ? [`using ${sourceDescription}`] : []),

@@ -645,13 +645,6 @@ export class JSIIProjectReferences extends ValidationRule {
     if (!isJSII(pkg)) {
       return;
     }
-
-    expectJSON(
-      this.name,
-      pkg,
-      'jsii.projectReferences',
-      pkg.json.name !== 'aws-cdk-lib',
-    );
   }
 }
 
@@ -1000,7 +993,9 @@ export class MustUseCDKBuild extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    }
 
     // cdk-build will write a hash file that we have to ignore.
     const merkleMarker = '.LAST_BUILD';
@@ -1181,7 +1176,9 @@ export class MustUseCDKTest extends ValidationRule {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
     if (!hasTestDirectory(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
+      expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    }
 
     // 'cdk-test' will calculate coverage, so have the appropriate
     // files in .gitignore.
@@ -1411,7 +1408,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
   public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
-    if (!isJSII(pkg)) { return; }
+    if (!isJSII(pkg) || pkg.packageName === '@aws-cdk/cli-lib-alpha') { return; }
 
     for (const inner of findInnerPackages(pkg.packageRoot)) {
       const innerPkg = PackageJson.fromDirectory(inner);
@@ -1663,6 +1660,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
+    '@aws-cdk/cli-plugin-contract',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',

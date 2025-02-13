@@ -16,7 +16,7 @@ describe('AccessEntry', () => {
     app = new App();
     stack = new Stack(app, 'test-stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_29,
+      version: KubernetesVersion.V1_32,
       authenticationMode: AuthenticationMode.API,
     });
 
@@ -134,5 +134,4 @@ describe('AccessEntry', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
   });
-
 });

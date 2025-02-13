@@ -4,6 +4,7 @@ import * as appscaling from '../../../aws-applicationautoscaling';
 import * as batch from '../../../aws-batch';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
@@ -73,6 +74,7 @@ describe('fargate service', () => {
             ],
           },
         },
+        AvailabilityZoneRebalancing: Match.absent(),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
@@ -711,6 +713,7 @@ describe('fargate service', () => {
         })],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
       });
 
       // THEN
@@ -769,6 +772,7 @@ describe('fargate service', () => {
             },
           },
         ],
+        AvailabilityZoneRebalancing: 'ENABLED',
       });
     });
 
@@ -791,7 +795,6 @@ describe('fargate service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -881,7 +884,6 @@ describe('fargate service', () => {
       // THEN
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]');
-
     });
 
     test('errors when no container specified on task definition', () => {
@@ -1068,6 +1070,28 @@ describe('fargate service', () => {
           },
         },
       });
+    });
+
+    test('throws when availability zone rebalancing is enabled and maxHealthyPercent is 100', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+          maxHealthyPercent: 100,
+        });
+      }).toThrow(/requires maxHealthyPercent > 100/);
     });
 
     test('sets task definition to family when CODE_DEPLOY deployment controller is specified', () => {
@@ -1343,11 +1367,51 @@ describe('fargate service', () => {
         },
       });
     });
+
+    test('warning if minHealthyPercent not set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
+
+    test('no warning if minHealthyPercent set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 50,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('/Default/FargateService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+    });
   });
 
   describe('when enabling service connect', () => {
     describe('when validating service connect configurations', () => {
-
       let service: ecs.FargateService;
 
       beforeEach(() => {
@@ -1469,7 +1533,6 @@ describe('fargate service', () => {
     });
 
     describe('when creating a FargateService with service connect', () => {
-
       let service: ecs.FargateService;
       let stack: cdk.Stack;
       let cluster: ecs.Cluster;
@@ -3276,6 +3339,32 @@ describe('fargate service', () => {
     });
   });
 
+  describe('When adding a classic load balancer', () => {
+    test('throws when AvailabilityZoneRebalancing.ENABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const service = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+
+      // THEN
+      expect(() => {
+        lb.addTarget(service);
+      }).toThrow('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer');
+    });
+  });
+
   describe('autoscaling tests', () => {
     test('allows scaling on a specified scheduled time', () => {
       // GIVEN
@@ -3502,6 +3591,7 @@ describe('fargate service', () => {
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
+        minHealthyPercent: 50, // must be set to avoid warning causing test failure
       });
 
       // WHEN
@@ -3903,7 +3993,6 @@ describe('fargate service', () => {
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
-
     });
 
     test('with serviceArn new format', () => {

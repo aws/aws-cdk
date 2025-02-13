@@ -3,12 +3,13 @@ import { ImageIdentifier } from '@aws-sdk/client-ecr';
 import { Tag } from '@aws-sdk/client-s3';
 import * as chalk from 'chalk';
 import * as promptly from 'promptly';
-import { debug, print } from '../../logging';
+import { debug, info } from '../../logging';
 import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
-import { Mode } from '../plugin';
+import { ToolkitError } from '../../toolkit/error';
+import { Mode } from '../plugin/mode';
 
 // Must use a require() otherwise esbuild complains
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -91,14 +92,14 @@ export class ObjectAsset {
 
   private getTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error('Cannot call getTag before allTags');
+      throw new ToolkitError('Cannot call getTag before allTags');
     }
     return this.cached_tags.find((t: any) => t.Key === tag)?.Value;
   }
 
   private hasTag(tag: string) {
     if (!this.cached_tags) {
-      throw new Error('Cannot call hasTag before allTags');
+      throw new ToolkitError('Cannot call hasTag before allTags');
     }
     return this.cached_tags.some((t: any) => t.Key === tag);
   }
@@ -225,7 +226,7 @@ export class GarbageCollector {
         await this.garbageCollectEcr(sdk, activeAssets, backgroundStackRefresh);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       backgroundStackRefresh.stop();
     }
@@ -250,9 +251,10 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numImages} images in batches`);
 
+      printer.start();
+
       for await (const batch of this.readRepoInBatches(ecr, repo, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !asset.tags.some(t => activeAssets.contains(t)));
 
@@ -283,7 +285,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'image');
           await this.parallelDeleteEcr(ecr, repo, deletables, printer);
         }
 
@@ -298,7 +300,7 @@ export class GarbageCollector {
         printer.reportScannedAsset(batch.length);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       printer.stop();
     }
@@ -322,12 +324,13 @@ export class GarbageCollector {
 
       debug(`Parsing through ${numObjects} objects in batches`);
 
+      printer.start();
+
       // Process objects in batches of 1000
       // This is the batch limit of s3.DeleteObject and we intend to optimize for the "worst case" scenario
       // where gc is run for the first time on a long-standing bucket where ~100% of objects are isolated.
       for await (const batch of this.readBucketInBatches(s3, bucket, batchSize, currentTime)) {
         await backgroundStackRefresh.noOlderThan(600_000); // 10 mins
-        printer.start();
 
         const { included: isolated, excluded: notIsolated } = partition(batch, asset => !activeAssets.contains(asset.fileName()));
 
@@ -359,7 +362,7 @@ export class GarbageCollector {
         debug(`${untaggables.length} assets to untag`);
 
         if (this.permissionToDelete && deletables.length > 0) {
-          await this.confirmationPrompt(printer, deletables);
+          await this.confirmationPrompt(printer, deletables, 'object');
           await this.parallelDeleteS3(s3, bucket, deletables, printer);
         }
 
@@ -374,7 +377,7 @@ export class GarbageCollector {
         printer.reportScannedAsset(batch.length);
       }
     } catch (err: any) {
-      throw new Error(err);
+      throw new ToolkitError(err);
     } finally {
       printer.stop();
     }
@@ -525,7 +528,7 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting images: ${err}`));
+      info(chalk.red(`Error deleting images: ${err}`));
     }
   }
 
@@ -558,23 +561,23 @@ export class GarbageCollector {
         printer.reportDeletedAsset(deletables.slice(0, deletedCount));
       }
     } catch (err) {
-      print(chalk.red(`Error deleting objects: ${err}`));
+      info(chalk.red(`Error deleting objects: ${err}`));
     }
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bucketName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.repositoryName;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
-    return info.bootstrapStack.parameters.Qualifier;
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 
   private async numObjectsInBucket(s3: IS3Client, bucket: string): Promise<number> {
@@ -620,6 +623,7 @@ export class GarbageCollector {
       while (batch.length < batchSize) {
         const response = await ecr.listImages({
           repositoryName: repo,
+          nextToken: continuationToken,
         });
 
         // No images in the repository
@@ -711,12 +715,16 @@ export class GarbageCollector {
     } while (continuationToken);
   }
 
-  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[]) {
+  private async confirmationPrompt(printer: ProgressPrinter, deletables: GcAsset[], type: string) {
+    const pluralize = (name: string, count: number): string => {
+      return count === 1 ? name : `${name}s`;
+    };
+
     if (this.confirm) {
       const message = [
-        `Found ${deletables.length} assets to delete based off of the following criteria:`,
-        `- assets have been isolated for > ${this.props.rollbackBufferDays} days`,
-        `- assets were created > ${this.props.createdBufferDays} days ago`,
+        `Found ${deletables.length} ${pluralize(type, deletables.length)} to delete based off of the following criteria:`,
+        `- ${type}s have been isolated for > ${this.props.rollbackBufferDays} days`,
+        `- ${type}s were created > ${this.props.createdBufferDays} days ago`,
         '',
         'Delete this batch (yes/no/delete-all)?',
       ].join('\n');
@@ -727,7 +735,7 @@ export class GarbageCollector {
 
       // Anything other than yes/y/delete-all is treated as no
       if (!response || !['yes', 'y', 'delete-all'].includes(response.toLowerCase())) {
-        throw new Error('Deletion aborted by user');
+        throw new ToolkitError('Deletion aborted by user');
       } else if (response.toLowerCase() == 'delete-all') {
         this.confirm = false;
       }

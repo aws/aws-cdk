@@ -1,6 +1,7 @@
 import { StateMachine } from './state-machine';
 import { DistributedMap } from './states/distributed-map';
 import { State } from './states/state';
+import { QueryLanguage } from './types';
 import * as iam from '../../aws-iam';
 import { Duration } from '../../core';
 
@@ -105,10 +106,10 @@ export class StateGraph {
   /**
    * Return the Amazon States Language JSON for this graph
    */
-  public toGraphJson(): object {
+  public toGraphJson(queryLanguage?: QueryLanguage): object {
     const states: any = {};
     for (const state of this.allStates) {
-      states[state.stateId] = state.toStateJson();
+      states[state.stateId] = state.toStateJson(queryLanguage);
     }
 
     return {

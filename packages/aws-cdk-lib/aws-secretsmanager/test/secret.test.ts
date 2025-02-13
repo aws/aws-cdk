@@ -1388,7 +1388,6 @@ test('cross-environment grant with direct object reference', () => {
       }],
     },
   });
-
 });
 
 test('cross-environment grant with imported from completeArn', () => {
@@ -1416,7 +1415,6 @@ test('cross-environment grant with imported from completeArn', () => {
       }],
     },
   });
-
 });
 
 test('cross-environment grant with imported from partialArn', () => {
@@ -1444,5 +1442,4 @@ test('cross-environment grant with imported from partialArn', () => {
       }],
     },
   });
-
 });
