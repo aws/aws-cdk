@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Stack } from '../../core';
 import { CloudWatchDimensionSource, ConfigurationSet, ConfigurationSetEventDestination, EventDestination } from '../lib';
@@ -158,14 +159,12 @@ test('throw if event bridge destination is not default event bus', () => {
 });
 
 test('kinesis firehose delivery stream destination only specify stream ARN', () => {
+  const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(stack, 'Firehose', 'my-deliverystream');
+
   new ConfigurationSetEventDestination(stack, 'Destination', {
     configurationSet,
     destination: EventDestination.firehoseDeliveryStream({
-      deliveryStreamArn: stack.formatArn({
-        service: 'firehose',
-        resource: 'deliverystream',
-        resourceName: 'my-deliverystream',
-      }),
+      deliveryStream,
     }),
   });
 
@@ -271,15 +270,13 @@ test('kinesis firehose delivery stream destination specify stream ARN and IAM Ro
     assumedBy: new iam.ServicePrincipal('ses.amazonaws.com'),
   });
 
+  const deliveryStream = firehose.DeliveryStream.fromDeliveryStreamName(stack, 'Firehose', 'my-deliverystream');
+
   new ConfigurationSetEventDestination(stack, 'Destination', {
     configurationSet,
     destination: EventDestination.firehoseDeliveryStream({
-      deliveryStreamArn: stack.formatArn({
-        service: 'firehose',
-        resource: 'deliverystream',
-        resourceName: 'my-deliverystream',
-      }),
-      iamRoleArn: role.roleArn,
+      deliveryStream,
+      role: role,
     }),
   });
 

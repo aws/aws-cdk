@@ -3,6 +3,7 @@ import { IConfigurationSet } from './configuration-set';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Aws, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -78,8 +79,8 @@ export abstract class EventDestination {
   /**
    * Use Firehose Delivery Stream as event destination
    */
-  public static firehoseDeliveryStream(firehose: FirehoseDeliveryStreamDestination): EventDestination {
-    return { firehose };
+  public static firehoseDeliveryStream(stream: FirehoseDeliveryStreamDestination): EventDestination {
+    return { stream };
   }
 
   /**
@@ -108,7 +109,7 @@ export abstract class EventDestination {
    *
    * @default - do not send events to Firehose Delivery Stream
    */
-  public abstract readonly firehose?: FirehoseDeliveryStreamDestination;
+  public abstract readonly stream?: FirehoseDeliveryStreamDestination;
 }
 
 /**
@@ -243,21 +244,22 @@ export enum CloudWatchDimensionSource {
    */
   MESSAGE_TAG = 'messageTag',
 }
+
 /**
  * An object that defines an Amazon Kinesis Data Firehose destination for email events
  */
 export interface FirehoseDeliveryStreamDestination {
   /**
-   * The Amazon Resource Name (ARN) of the Amazon Kinesis Data Firehose stream that the Amazon SES API v2 sends email events to.
+   * The Amazon Kinesis Data Firehose stream that the Amazon SES API v2 sends email events to.
    */
-  readonly deliveryStreamArn: string;
+  readonly deliveryStream: firehose.IDeliveryStream;
 
   /**
-   * The Amazon Resource Name (ARN) of the IAM role that the Amazon SES API v2 uses to send email events to the Amazon Kinesis Data Firehose stream.
+   * The IAM role that the Amazon SES API v2 uses to send email events to the Amazon Kinesis Data Firehose stream.
    *
    * @default - Create IAM Role for Kinesis Data Firehose Delivery stream
    */
-  readonly iamRoleArn?: string;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -298,9 +300,9 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';
-    if (props.destination.firehose?.iamRoleArn) {
-      firehoseDeliveryStreamIamRoleArn = props.destination.firehose.iamRoleArn;
-    } else if (props.destination.firehose) {
+    if (props.destination.stream?.role) {
+      firehoseDeliveryStreamIamRoleArn = props.destination.stream.role.roleArn;
+    } else if (props.destination.stream) {
       // As per https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html
       const firehoseDeliveryStreamIamRole = new iam.Role(this, 'FirehoseDeliveryStreamIamRole', {
         assumedBy: new iam.ServicePrincipal('ses.amazonaws.com', {
@@ -321,7 +323,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
               new iam.PolicyStatement({
                 effect: iam.Effect.ALLOW,
                 actions: ['firehose:PutRecordBatch'],
-                resources: [props.destination.firehose.deliveryStreamArn],
+                resources: [props.destination.stream.deliveryStream.deliveryStreamArn],
               }),
             ],
           }),
@@ -348,9 +350,9 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
           }
           : undefined,
         eventBridgeDestination: props.destination.bus ? { eventBusArn: props.destination.bus.eventBusArn } : undefined,
-        kinesisFirehoseDestination: props.destination.firehose
+        kinesisFirehoseDestination: props.destination.stream
           ? {
-            deliveryStreamArn: props.destination.firehose.deliveryStreamArn,
+            deliveryStreamArn: props.destination.stream.deliveryStream.deliveryStreamArn,
             iamRoleArn: firehoseDeliveryStreamIamRoleArn,
           }
           : undefined,

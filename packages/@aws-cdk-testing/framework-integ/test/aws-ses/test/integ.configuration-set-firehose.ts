@@ -40,7 +40,7 @@ const firehoseDeliveryStream = new firehose.DeliveryStream(stack, 'Firehose', {
 
 configurationSet.addEventDestination('FirehoseDestination', {
   destination: ses.EventDestination.firehoseDeliveryStream({
-    deliveryStreamArn: firehoseDeliveryStream.deliveryStreamArn,
+    deliveryStream: firehoseDeliveryStream,
   }),
 });
 
