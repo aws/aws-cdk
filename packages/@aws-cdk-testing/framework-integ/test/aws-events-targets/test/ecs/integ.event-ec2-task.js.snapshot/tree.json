@@ -1871,7 +1871,7 @@
                             ]
                           }
                         },
-                        "input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}"
+                        "input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}],\"cpu\":\"0.5\",\"memory\":\"512\"}"
                       }
                     ]
                   }
