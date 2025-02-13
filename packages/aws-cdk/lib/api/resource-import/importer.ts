@@ -1,20 +1,68 @@
-import { DeployOptions } from '@aws-cdk/cloud-assembly-schema';
+import { format } from 'util';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { ResourceDifference } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { assertIsSuccessfulDeployStackResult, Deployments, DeploymentMethod, ResourceIdentifierProperties, ResourcesToImport } from './api/deployments';
-import { Tag } from './api/tags';
-import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { error, info, success, warning } from './logging';
-import { ToolkitError } from './toolkit/error';
+import { error, info, warn } from '../../cli/messages';
+import { IIoHost, ToolkitAction } from '../../toolkit/cli-io-host';
+import { ToolkitError } from '../../toolkit/error';
+import { assertIsSuccessfulDeployStackResult, Deployments, DeploymentMethod, ResourceIdentifierProperties, ResourcesToImport } from '../deployments';
+import { Tag } from '../tags';
+import { StackActivityProgress } from '../util/cloudformation/stack-activity-monitor';
 
-export interface ImportDeploymentOptions extends DeployOptions {
-  deploymentMethod?: DeploymentMethod;
-  progress?: StackActivityProgress;
-  tags?: Tag[];
+export interface ResourceImporterProps {
+  deployments: Deployments;
+  ioHost: IIoHost;
+  action: ToolkitAction;
+}
+
+export interface ImportDeploymentOptions {
+  /**
+   * Role to pass to CloudFormation for deployment
+   *
+   * @default - Default stack role
+   */
+  readonly roleArn?: string;
+
+  /**
+   * Deployment method
+   *
+   * @default - Change set with default options
+   */
+  readonly deploymentMethod?: DeploymentMethod;
+
+  /**
+   * Stack tags (pass through to CloudFormation)
+   *
+   * @default - No tags
+   */
+  readonly tags?: Tag[];
+
+  /**
+   * Use previous values for unspecified parameters
+   *
+   * If not set, all parameters must be specified for every deployment.
+   *
+   * @default true
+   */
+  readonly usePreviousParameters?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  readonly progress?: StackActivityProgress;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
 }
 
 /**
@@ -61,9 +109,20 @@ export type ResourceMap = { [logicalResource: string]: ResourceIdentifierPropert
 export class ResourceImporter {
   private _currentTemplate: any;
 
+  private readonly stack: cxapi.CloudFormationStackArtifact;
+  private readonly cfn: Deployments;
+  private readonly ioHost: IIoHost;
+  private readonly action: ToolkitAction;
+
   constructor(
-    private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly cfn: Deployments) { }
+    stack: cxapi.CloudFormationStackArtifact,
+    props: ResourceImporterProps,
+  ) {
+    this.stack = stack;
+    this.cfn = props.deployments;
+    this.ioHost = props.ioHost;
+    this.action = props.action;
+  }
 
   /**
    * Ask the user for resources to import
@@ -96,19 +155,19 @@ export class ResourceImporter {
       const descr = this.describeResource(resource.logicalId);
       const idProps = contents[resource.logicalId];
       if (idProps) {
-        info('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)));
+        await this.ioHost.notify(info(this.action, format('%s: importing using %s', chalk.blue(descr), chalk.blue(fmtdict(idProps)))));
 
         ret.importResources.push(resource);
         ret.resourceMap[resource.logicalId] = idProps;
         delete contents[resource.logicalId];
       } else {
-        info('%s: skipping', chalk.blue(descr));
+        await this.ioHost.notify(info(this.action, format('%s: skipping', chalk.blue(descr))));
       }
     }
 
     const unknown = Object.keys(contents);
     if (unknown.length > 0) {
-      warning(`Unrecognized resource identifiers in mapping file: ${unknown.join(', ')}`);
+      await this.ioHost.notify(warn(this.action, `Unrecognized resource identifiers in mapping file: ${unknown.join(', ')}`));
     }
 
     return ret;
@@ -121,7 +180,7 @@ export class ResourceImporter {
    * @param importMap Mapping from CDK construct tree path to physical resource import identifiers
    * @param options Options to pass to CloudFormation deploy operation
    */
-  public async importResourcesFromMap(importMap: ImportMap, options: ImportDeploymentOptions) {
+  public async importResourcesFromMap(importMap: ImportMap, options: ImportDeploymentOptions = {}) {
     const resourcesToImport: ResourcesToImport = await this.makeResourcesToImport(importMap);
     const updatedTemplate = await this.currentTemplateWithAdditions(importMap.importResources);
 
@@ -136,7 +195,7 @@ export class ResourceImporter {
    * @param resourcesToImport The mapping created by cdk migrate
    * @param options Options to pass to CloudFormation deploy operation
    */
-  public async importResourcesFromMigrate(resourcesToImport: ResourcesToImport, options: ImportDeploymentOptions) {
+  public async importResourcesFromMigrate(resourcesToImport: ResourcesToImport, options: ImportDeploymentOptions = {}) {
     const updatedTemplate = this.removeNonImportResources();
 
     await this.importResources(updatedTemplate, resourcesToImport, options);
@@ -158,9 +217,9 @@ export class ResourceImporter {
         ? ' ✅  %s (no changes)'
         : ' ✅  %s';
 
-      success('\n' + message, this.stack.displayName);
+      await this.ioHost.notify(info(this.action, '\n' + chalk.green(format(message, this.stack.displayName))));
     } catch (e) {
-      error('\n ❌  %s failed: %s', chalk.bold(this.stack.displayName), e);
+      await this.ioHost.notify(error(this.action, format('\n ❌  %s failed: %s', chalk.bold(this.stack.displayName), e), 'CDK_TOOLKIT_E3900'));
       throw e;
     }
   }
@@ -189,7 +248,7 @@ export class ResourceImporter {
       const offendingResources = nonAdditions.map(([logId, _]) => this.describeResource(logId));
 
       if (allowNonAdditions) {
-        warning(`Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`);
+        await this.ioHost.notify(warn(this.action, `Ignoring updated/deleted resources (--force): ${offendingResources.join(', ')}`));
       } else {
         throw new ToolkitError('No resource updates or deletes are allowed on import operation. Make sure to resolve pending changes ' +
           `to existing resources, before attempting an import. Updated/deleted resources: ${offendingResources.join(', ')} (--force to override)`);
@@ -277,7 +336,7 @@ export class ResourceImporter {
     // Skip resources that do not support importing
     const resourceType = chg.resourceDiff.newResourceType;
     if (resourceType === undefined || !(resourceType in resourceIdentifiers)) {
-      warning(`${resourceName}: unsupported resource type ${resourceType}, skipping import.`);
+      await this.ioHost.notify(warn(this.action, `${resourceName}: unsupported resource type ${resourceType}, skipping import.`));
       return undefined;
     }
 
@@ -303,7 +362,7 @@ export class ResourceImporter {
 
     // If we got here and the user rejected any available identifiers, then apparently they don't want the resource at all
     if (satisfiedPropSets.length > 0) {
-      info(chalk.grey(`Skipping import of ${resourceName}`));
+      await this.ioHost.notify(info(this.action, chalk.grey(`Skipping import of ${resourceName}`)));
       return undefined;
     }
 
@@ -321,7 +380,7 @@ export class ResourceImporter {
 
     // Do the input loop here
     if (preamble) {
-      info(preamble);
+      await this.ioHost.notify(info(this.action, preamble));
     }
     for (const idProps of idPropSets) {
       const input: Record<string, string> = {};
@@ -356,7 +415,7 @@ export class ResourceImporter {
       }
     }
 
-    info(chalk.grey(`Skipping import of ${resourceName}`));
+    await this.ioHost.notify(info(this.action, chalk.grey(`Skipping import of ${resourceName}`)));
     return undefined;
   }
 
