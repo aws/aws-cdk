@@ -82,10 +82,10 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
   executionArn: start.getAttString('executionArn'),
 });
 
-// ✅ Expect the execution to FAIL instead of SUCCEED
+// Expect the execution to FAIL since assign will throw
 describe.expect(ExpectedResult.objectLike({
   status: 'FAILED',
-  cause: 'We got stuck', // Optional: If you want to assert the error cause
+  cause: 'We got stuck',
 })).waitForAssertions({
   interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(5),
