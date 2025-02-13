@@ -33,9 +33,6 @@ class EksClusterStack extends Stack {
       },
     });
 
-    // // ensure the OIDC provider is created
-    // this.cluster.openIdConnectProvider;
-
     this.assertHelmChartAsset();
   }
 
