@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../core';
+
 /**
  * Controls the countries in which content is distributed.
  */
@@ -44,12 +46,11 @@ export class GeoRestriction {
 
   private static validateLocations(locations: string[]) {
     if (locations.length === 0) {
-      throw new Error('Should provide at least 1 location');
+      throw new UnscopedValidationError('Should provide at least 1 location');
     }
     locations.forEach(location => {
       if (!GeoRestriction.LOCATION_REGEX.test(location)) {
-        // eslint-disable-next-line max-len
-        throw new Error(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+        throw new UnscopedValidationError(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
       }
     });
     return locations;
