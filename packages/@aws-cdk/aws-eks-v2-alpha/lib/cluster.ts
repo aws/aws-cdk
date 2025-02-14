@@ -24,61 +24,6 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
-
-/**
- * Properties for the EKS cluster auto mode configuration
- */
-interface AutoModeConfig {
-  /**
-   * Auto Mode compute configuration
-   */
-  readonly compute?: {
-    /**
-     * Whether to enable Auto Mode compute
-     */
-    readonly enabled?: boolean;
-  };
-
-  /**
-   * Auto Mode storage configuration
-   */
-  readonly storage?: {
-    /**
-     * Block storage configuration
-     */
-    readonly blockStorage?: {
-      /**
-       * Whether to enable Auto Mode block storage
-       */
-      readonly enabled?: boolean;
-    };
-  };
-
-  /**
-   * Auto Mode networking configuration
-   */
-  readonly kubernetesNetwork?: {
-    /**
-     * Elastic load balancing configuration
-     */
-    readonly elasticLoadBalancing?: {
-      /**
-       * Whether to enable Auto Mode elastic load balancing
-       */
-      readonly enabled?: boolean;
-    };
-  };
-}
-
-// Extend CfnClusterProps to include autoMode
-declare module 'aws-cdk-lib/aws-eks' {
-  interface CfnClusterProps {
-    /**
-     * Auto Mode configuration for the cluster
-     */
-    readonly autoMode?: AutoModeConfig;
-  }
-}
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 // defaults are based on https://eksctl.io
@@ -626,12 +571,7 @@ export interface StorageConfig {
  * When enabled, EKS will automatically manage load balancers.
  */
 export interface ElasticLoadBalancingConfig {
-  /**
-   * Whether to enable Auto Mode elastic load balancing.
-   * When enabled, EKS will automatically provision and configure load balancers based on service requirements.
-   * @default false
-   */
-  readonly enabled?: boolean;
+  // To implement all optional props in the future
 }
 
 /**
