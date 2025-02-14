@@ -1,8 +1,8 @@
 # AWS CDK Roadmap
 
-> Updated 2/12/2025
+> Updated 2/17/2025
 
-The roadmap priorities for the AWS CDK (Cloud Development Kit) are informed by what we hear from customers and interactions on Github, CDK.dev Slack, Stack Overflow, and X. This document outlines the high level direction we are working towards, and for each project there is a tracking issue where you can leave feedback. We update this doc on a quarterly basis to reflect any changing priorities. Please be aware that this list will update throughout the year and is subject to change. If you have feedback on items that should be prioritized by our team, feel free to submit a separate issue on GitHub.
+The roadmap priorities for the AWS CDK (Cloud Development Kit) are informed by what we hear from customers and interactions on Github, CDK.dev Slack, Stack Overflow, X, Bluesky, and any other place the community gathers and engages. This document outlines the high level direction we are working towards, and for each project there is a tracking issue where you can leave feedback. We update this doc on a quarterly basis to reflect any changing priorities. Please be aware that this list will update throughout the year and is subject to change. If you have feedback on items that should be prioritized by our team, feel free to submit a separate issue on GitHub.
 
 Follow [cdk.dev](https://cdk.dev/) and [CDK Live!](https://www.youtube.com/@CDK-Live) to learn what's new in AWS CDK.
 
@@ -12,20 +12,29 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 [aws-cdk-rfcs]: https://github.com/aws/aws-cdk-rfcs
 [jsii]: https://github.com/aws/jsii
 
-## Our Core Tenets (which guide prioritization decisions)
+### Community contribution call-outs
 
-- **We empower CDK builders to innovate with confidence, without sacrificing security.** The CDK provides customers with conviction by providing a clear and streamlined direction to building secure, modernized, industry leading innovations with AWS.
-- **Productivity through simplicity.** The CDK measurably improves developer productivity in building with AWS. We make Infrastructure as Code simple to define, understand, change, and troubleshoot.
-- **Be transparent.** The AWS CDK team’s current work should be easily visible.
-- **Listen to customers.** Allow them to participate in design decisions and to vote on and propose new AWS CDK features. We will periodically reprioritize the roadmap based on customer feedback.
+Thank you to our community members that have contributed to the project. Below are some of the great contributions from the community! We'll continue to update this list as contributions come in, and please feel free to reach out on the cdk.dev slack workspace if you have any questions or feedback.
+
+* [fix(autoscaling): AutoScalingGroup requireImdsv2 with launchTemplate or mixedInstancesPolicy throws unclear error](https://github.com/aws/aws-cdk/issues/32775) - by shinebleu
+* [key rotation is not enabled while creating KMS encrypted S3 buckets](https://github.com/aws/aws-cdk/pull/32064) - by mellevanderlinde
+* [fix(apigateway): move url property to RestApiBase](https://github.com/aws/aws-cdk/pull/27742) - by hariprakash-j
+* [fix(stepfunctions-task): elasticloadbalancingv2 service policy](https://github.com/aws/aws-cdk/pull/32419) - by nmussy
+* [feat(ec2): instance support passing IAM instance profile ](https://github.com/aws/aws-cdk/pull/32073) - by phuhung273
+* [feat(custom-resource): add serviceTimeout property for custom resources](https://github.com/aws/aws-cdk/pull/30911) - by mazyu36
+* [feat(s3): replicating objects](https://github.com/aws/aws-cdk/pull/30966) - by badmintoncryer
+* [fix(batch): support cfn parameters for managed compute environment properties minvcpus, maxvcpus, and spotbidpercentage](https://github.com/aws/aws-cdk/pull/32954) - by bdoyle0182
+* [fix(apigatewayv2): incorrect arn function causing unwanted behavior](https://github.com/aws/aws-cdk/pull/33100) - by IkeNefcy
+* [feat(stepfunctions): add support JSONata and variables](https://github.com/aws/aws-cdk/pull/32343) - by WinterYukky
+* [feat(appsync): add L2 constructs for AWS AppSync Events](https://github.com/aws/aws-cdk/pull/32505) - by kwwendt
 
 ## Themes
 
-In 2025, to accelerate the growth of CDK, we will focus our efforts on: 1/ enhancing and expanding the CDK L2 construct library 2/ improving the CDK developer experience and 3/ supporting extensible infrastructure.
+In 2025, we will focus our efforts on: 1/ enhancing and expanding the CDK L2 construct library 2/ improving the CDK developer experience and 3/ supporting extensible infrastructure.
 
 ### Objective 1 - Enhance and expand the L2 construct library
 
-Our vision is to provide L2 constructs for all AWS services, and timely maintain and enhance existing L2 constructs as their underlying services evolve. Our challenge is that creating and maintaining L2 constructs takes significant engineering capacity and scales linearly with engineering resource, limiting our ability to scale across all AWS services. In 2025 we will continue to grow and maintain the L2 construct library, and in parallel develop additional tools and mechanisms to streamline L2 construct generation and maintenance. We’ll do this by: 1/ responding to community reported bugs and PRs, 2/ resolving top P1 feature requests for the most used L2 constructs, 3/ graduating five alpha constructs to GA, 4/ releasing three new, stable L2 constructs, and 5/ creating a generative AI-powered tool to enable the creation of new, stable L2 constructs with reduced engineering effort. We will also work to accelerate construct maintenance by creating mechanisms and tools to enable other AWS teams to create and maintain L2 constructs, and increase the adoption of 3rd party created and maintained L2 constructs by delivering improvements to Construct Hub, and mechanisms to increase community trust in such constructs.
+Our vision is to provide L2 constructs for all AWS services, and timely maintain and enhance existing L2 constructs as their underlying services evolve. In 2025 we will continue to grow and maintain the L2 construct library, and in parallel develop additional tools and mechanisms to streamline L2 construct generation and maintenance. We’ll do this by: 1/ responding to community reported bugs and PRs, 2/ resolving top P1 feature requests for the most used L2 constructs, 3/ graduating five alpha constructs to GA, 4/ releasing three new, stable L2 constructs, and 5/ creating a generative AI-powered tool to enable the creation of new, stable L2 constructs with reduced engineering effort. We will also work to accelerate construct maintenance by creating mechanisms and tools to enable other AWS teams to create and maintain L2 constructs, and increase the adoption of 3rd party created and maintained L2 constructs by delivering improvements to Construct Hub, and mechanisms to increase community trust in such constructs.
 
 For reference, below are the stages of a construct module lifecycle.
 
@@ -47,7 +56,7 @@ Kindly refer to the [construct module lifecyle](https://github.com/aws/aws-cdk-r
 **_Work in progress_**
   
 * **Resolution of top P1 bugs and community Pull Request (PR) reviews:** The CDK engineering team allocates dedicated resources to address high-priority P1 bugs and review and merge pull requests submitted by community contributors. This regular initiative ensures we maintain code quality while fostering active community participation in CDK's development.
-* **General Availability release of AWS Cognito_Identity_pool L2 construct** [Amazon Cognito Identity Pools L2 construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html) enables you to grant your users access to other AWS services. We plan to graduate this experimental construct to GA.
+* **General Availability release of AWS Cognito_Identity_pool L2 construct:** The [Amazon Cognito Identity Pools L2 construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cognito-identitypool-alpha-readme.html) enables you to grant your users access to other AWS services. We plan to graduate this experimental construct to GA.
 * **General Availability release of Amazon EventBridge Scheduler L2 construct:** The [Amazon EventBridge Scheduler L2 construct](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-scheduler-alpha-readme.html) allows you to create, run, and manage scheduled tasks at scale with Amazon EventBridge.
 * **Experimental release of Amazon Bedrock L2 construct:** This new [L2 construct for Amazon Bedrock](https://github.com/aws/aws-cdk-rfcs/pull/688) provides an easy way to build and scale generative AI applications with foundation models. There is an [rfc](https://github.com/aws/aws-cdk-rfcs/issues/686) in progress to add support for this L2 construct.
 * **Experimental release of VPC Lattice L2 construct:** This new [L2 construct for VPC Lattice](https://github.com/aws/aws-cdk/issues/25452) simplifies service-to-service connectivity, security, and monitoring. There is an [rfc](https://github.com/aws/aws-cdk-rfcs/issues/631) in progress to add support for this L2 construct. 
@@ -55,7 +64,7 @@ Kindly refer to the [construct module lifecyle](https://github.com/aws/aws-cdk-r
 * **Developer Preview release of aws-lambda-python construct:** This [module](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-lambda-python-alpha-readme.html) provides constructs for Python Lambda functions.
 * **Improve generation of L2 constructs:** This [proposal](https://github.com/aws/aws-cdk-rfcs/issues/611) is to automate parts of the L2 generation process to reduce the engineering effort required to create new L2 constructs.
 
-**_Prioritized Initiatives_**
+**_Work Planned_**
 
 * **L2 construct support for the following:**
   - [WAF v2](https://github.com/aws/aws-cdk/issues/6878)
@@ -73,7 +82,7 @@ Kindly refer to the [construct module lifecyle](https://github.com/aws/aws-cdk-r
 
 ### Objective 2 - Continue to improve the CDK Developer Experience
 
-Developers love CDK because it provides them with the ability to configure and manage their infrastructure using modern languages, IDEs, developer tools, and workflows. Our aim is to provide a developer experience for infrastructure code that matches the experience of writing application code in popular programming languages. Today, however, CDK support for languages beyond TypeScript is limited, and both troubleshooting and CDK CLI integration with tools for CI/CD, monitoring, and infrastructure orchestration can be difficult. In 2025 we will address the most requested developer experience feature requirements by delivering: 1/ CDK upgrade tooling to help customers upgrade CDK applications , 2/ enhanced L1 constructs with support support for enums, resource interfaces, and CFN constraints, 3/ programmatic access to the CDK CLI toolkit, and 4/ CDK Stack refactoring and 5/ Give display names to assets. We will also explore enhanced troubleshooting capabilities, and developing tools to enable CDK users to leverage generative AI to create custom CDK constructs, and CDK applications.
+Developers love CDK because it provides them with the ability to configure and manage their infrastructure using modern languages, IDEs, developer tools, and workflows. In 2025 we will address the most requested developer experience feature requirements by delivering: 1/ CDK upgrade tooling to help customers upgrade CDK applications , 2/ enhanced L1 constructs with support support for enums, resource interfaces, and CFN constraints, 3/ programmatic access to the CDK CLI toolkit, and 4/ CDK Stack refactoring and 5/ Give display names to assets. We will also explore enhanced troubleshooting capabilities, and developing tools to enable CDK users to leverage generative AI to create custom CDK constructs, and CDK applications.
 
 **_Recent Releases_**
 
@@ -87,7 +96,7 @@ Developers love CDK because it provides them with the ability to configure and m
 * **CDK Stack Refactoring:** This [feature](https://github.com/aws/aws-cdk-rfcs/issues/162) release will enable users to easily reorganize their constructs within the same or across different stacks.
 * **CDK Upgrade tool:** An automated CDK upgrade tool that analyzes customer applications to identify outdated components, including deprecated constructs, properties, and features. The tool streamlines the upgrade process by providing targeted code modification suggestions and step-by-step migration guidance, enabling customers to modernize their CDK applications with reduced manual intervention and lower risk of deployment failures.
 
-**_Prioritized Initiatives_**
+**_Work Planned_**
  
 * **Give assets a display name:** This [feature](https://github.com/aws/aws-cdk/issues/9628) allows specifying a display name for AWS CDK assets to improve clarity in asset publishing and deployment.
 * **Enhanced L1 constructs:** This [rfc](https://github.com/aws/aws-cdk-rfcs/pull/657) is a proposal to enhance the L1 constructs by adding support for enums, resource interfaces, and CFN contraints to generated L1s.
