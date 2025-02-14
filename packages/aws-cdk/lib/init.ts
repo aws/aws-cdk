@@ -2,6 +2,7 @@ import * as childProcess from 'child_process';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { versionNumber } from './cli/version';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
@@ -176,6 +177,7 @@ export class InitTemplate {
 
   private expand(template: string, language: string, project: ProjectInfo) {
     const cdkVersion = project.versions['aws-cdk-lib'];
+    const cdkCliVersion = project.versions['aws-cdk'];
     let constructsVersion = project.versions.constructs;
 
     switch (language) {
@@ -202,6 +204,7 @@ export class InitTemplate {
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
+      .replace(/%cdk-cli-version%/g, cdkCliVersion)
       .replace(/%constructs-version%/g, constructsVersion)
       .replace(/%cdk-home%/g, cdkHomeDir())
       .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
@@ -475,6 +478,7 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
 }
 
 interface Versions {
+  ['aws-cdk']: string;
   ['aws-cdk-lib']: string;
   constructs: string;
 }
@@ -491,6 +495,7 @@ async function loadInitVersions(): Promise<Versions> {
   const ret = {
     'aws-cdk-lib': contents['aws-cdk-lib'],
     'constructs': contents.constructs,
+    'aws-cdk': versionNumber(),
   };
   for (const [key, value] of Object.entries(ret)) {
     /* istanbul ignore next */
