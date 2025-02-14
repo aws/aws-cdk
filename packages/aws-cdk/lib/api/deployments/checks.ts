@@ -1,8 +1,13 @@
-import { debug } from '../../logging';
+import { debug } from '../../cli/messages';
+import { IoMessaging } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { SDK } from '../aws-auth';
 
-export async function determineAllowCrossAccountAssetPublishing(sdk: SDK, customStackName?: string): Promise<boolean> {
+export async function determineAllowCrossAccountAssetPublishing(
+  sdk: SDK,
+  { ioHost, action }: IoMessaging,
+  customStackName?: string,
+): Promise<boolean> {
   try {
     const stackName = customStackName || 'CDKToolkit';
     const stackInfo = await getBootstrapStackInfo(sdk, stackName);
@@ -29,8 +34,8 @@ export async function determineAllowCrossAccountAssetPublishing(sdk: SDK, custom
     // of creating bootstrap resources. If they do, there's nothing for us to validate,
     // but we can't use that as a reason to disallow cross-account publishing. We'll just
     // have to trust they did their due diligence. So we fail open.
-    debug(`Error determining cross account asset publishing: ${e}`);
-    debug('Defaulting to allowing cross account asset publishing');
+    await ioHost.notify(debug(action, `Error determining cross account asset publishing: ${e}`));
+    await ioHost.notify(debug(action, 'Defaulting to allowing cross account asset publishing'));
     return true;
   }
 }

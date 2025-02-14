@@ -14,7 +14,7 @@ import {
 } from 'cdk-assets';
 import type { SDK } from '..';
 import { formatMessage } from '../../cli/messages';
-import { IIoHost, IoMessageLevel, ToolkitAction } from '../../toolkit/cli-io-host';
+import { IIoHost, IoMessageLevel, IoMessaging, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import type { SdkProvider } from '../aws-auth';
 import { Mode } from '../plugin';
@@ -43,6 +43,7 @@ export async function publishAssets(
   sdk: SdkProvider,
   targetEnv: Environment,
   options: PublishAssetsOptions,
+  { ioHost, action }: IoMessaging,
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
@@ -57,7 +58,7 @@ export async function publishAssets(
 
   const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(ioHost, action),
+    progressListener: new PublishingProgressListener({ ioHost, action }),
     throwOnError: false,
     publishInParallel: options.parallel ?? true,
     buildAssets: true,
@@ -184,7 +185,7 @@ export abstract class BasePublishProgressListener implements IPublishProgressLis
   protected readonly ioHost: IIoHost;
   protected readonly action: ToolkitAction;
 
-  constructor(ioHost: IIoHost, action: ToolkitAction) {
+  constructor({ ioHost, action }: IoMessaging) {
     this.ioHost = ioHost;
     this.action = action;
   }

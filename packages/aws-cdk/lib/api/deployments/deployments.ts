@@ -25,7 +25,7 @@ import {
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
 import { debug, warn } from '../../cli/messages';
-import { IIoHost, ToolkitAction } from '../../toolkit/cli-io-host';
+import { IIoHost, IoMessaging, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
 import type { SdkProvider } from '../aws-auth/sdk-provider';
@@ -482,7 +482,7 @@ export class Deployments {
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
-    });
+    }, { ioHost: this.ioHost, action: this.action });
   }
 
   public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
@@ -688,7 +688,10 @@ export class Deployments {
   private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
       const env = await this.envs.accessStackForReadOnlyStackOperations(stack);
-      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(env.sdk, this.props.toolkitStackName);
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(env.sdk, {
+        ioHost: this.ioHost,
+        action: this.action,
+      }, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;
   }
@@ -734,7 +737,7 @@ export class Deployments {
       // The AssetPublishing class takes care of role assuming etc, so it's okay to
       // give it a direct `SdkProvider`.
       aws: new PublishingAws(this.assetSdkProvider, env),
-      progressListener: new ParallelSafeAssetProgress(prefix, this.ioHost, this.action),
+      progressListener: new ParallelSafeAssetProgress(prefix, { ioHost: this.ioHost, action: this.action }),
     });
     this.publisherCache.set(assetManifest, publisher);
     return publisher;
@@ -747,8 +750,8 @@ export class Deployments {
 class ParallelSafeAssetProgress extends BasePublishProgressListener {
   private readonly prefix: string;
 
-  constructor(prefix: string, ioHost: IIoHost, action: ToolkitAction) {
-    super(ioHost, action);
+  constructor(prefix: string, { ioHost, action }: IoMessaging) {
+    super({ ioHost, action });
     this.prefix = prefix;
   }
 
