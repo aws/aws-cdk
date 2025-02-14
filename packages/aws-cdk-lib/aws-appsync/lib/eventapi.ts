@@ -414,7 +414,8 @@ export class EventApi extends EventApiBase {
   public readonly defaultSubscribeModeTypes: AppSyncAuthorizationType[];
 
   /**
-   * the configured API keys, if present
+   * The configured API keys, if present.
+   * The key of this object is an apiKey name (apiKeyConfig.name) if specified, `Default` otherwise.
    *
    * @default - no api key
    * @attribute ApiKeys

@@ -1,0 +1,1 @@
+sam can locally test the synthesized cdk application
