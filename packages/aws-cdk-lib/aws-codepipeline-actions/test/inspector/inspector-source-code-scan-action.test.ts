@@ -218,7 +218,7 @@ describe('InspectorSourceCodeScanAction', () => {
       const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
         actionName: 'InspectorScan',
         output: scanOutput,
-        input: scanOutput,
+        input: sourceOutput,
       });
 
       pipeline.addStage({
