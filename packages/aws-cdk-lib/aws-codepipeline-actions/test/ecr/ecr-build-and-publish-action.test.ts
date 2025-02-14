@@ -32,7 +32,7 @@ describe('EcrBuildAndPublish Action', () => {
 
   test('pipeline with EcrBuildAndPublish action', () => {
     // WHEN
-    const EcrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+    const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
       actionName: 'EcrBuildAndPublish',
       input: sourceOutput,
       repository,
@@ -43,7 +43,7 @@ describe('EcrBuildAndPublish Action', () => {
 
     pipeline.addStage({
       stageName: 'EcrBuildAndPublish',
-      actions: [EcrBuildAndPublishAction],
+      actions: [ecrBuildAndPublishAction],
     });
 
     // THEN
@@ -89,21 +89,21 @@ describe('EcrBuildAndPublish Action', () => {
 
   test('can get variables', () => {
     // WHEN
-    const EcrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+    const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
       actionName: 'EcrBuildAndPublish',
       input: sourceOutput,
       repository,
     });
 
     // THEN
-    expect(EcrBuildAndPublishAction.variables.ecrImageDigestId).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.ECRImageDigestId}$/);
-    expect(EcrBuildAndPublishAction.variables.ecrRepositoryName).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.ECRRepositoryName}$/);
+    expect(ecrBuildAndPublishAction.variables.ecrImageDigestId).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.ECRImageDigestId}$/);
+    expect(ecrBuildAndPublishAction.variables.ecrRepositoryName).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.ECRRepositoryName}$/);
   });
 
   describe('grant policy', () => {
     test('grant policy for ecr', () => {
       // WHEN
-      const EcrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+      const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
         repository,
@@ -111,7 +111,7 @@ describe('EcrBuildAndPublish Action', () => {
 
       pipeline.addStage({
         stageName: 'EcrBuildAndPublish',
-        actions: [EcrBuildAndPublishAction],
+        actions: [ecrBuildAndPublishAction],
       });
 
       // THEN
@@ -178,7 +178,7 @@ describe('EcrBuildAndPublish Action', () => {
 
     test('grant policy for logs', () => {
       // WHEN
-      const EcrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+      const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
         repository,
@@ -186,7 +186,7 @@ describe('EcrBuildAndPublish Action', () => {
 
       pipeline.addStage({
         stageName: 'EcrBuildAndPublish',
-        actions: [EcrBuildAndPublishAction],
+        actions: [ecrBuildAndPublishAction],
       });
 
       // THEN
@@ -258,7 +258,7 @@ describe('EcrBuildAndPublish Action', () => {
 
     test('grant read policy for buckets', () => {
       // WHEN
-      const EcrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+      const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
         repository,
@@ -266,7 +266,7 @@ describe('EcrBuildAndPublish Action', () => {
 
       pipeline.addStage({
         stageName: 'EcrBuildAndPublish',
-        actions: [EcrBuildAndPublishAction],
+        actions: [ecrBuildAndPublishAction],
       });
 
       // THEN
