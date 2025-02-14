@@ -90,7 +90,7 @@ export interface LogGroupProps extends TargetBaseProps {
    * Whether a CloudWatch LogGroup Resource Policy will be
    * created to allow EventBridge to write to the LogGroup
    *
-   * @default - create the CloudWatch LogGroup Resource Policy
+   * @default - true (create the CloudWatch LogGroup Resource Policy)
    */
   readonly createLogGroupResourcePolicy?: boolean;
 }
@@ -122,9 +122,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
 
     _rule.node.addValidation({ validate: () => this.validateInputTemplate() });
 
-    const createLogGroupResourcePolicy = this.props.createLogGroupResourcePolicy !== undefined ?
-      this.props.createLogGroupResourcePolicy :
-      true;
+    const createLogGroupResourcePolicy = this.props.createLogGroupResourcePolicy ?? true;
 
     if (!this.logGroup.node.tryFindChild(resourcePolicyId) && createLogGroupResourcePolicy) {
       new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
