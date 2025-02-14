@@ -1280,7 +1280,7 @@ The `InspectorSourceCodeScanAction` allows you to scan the application source co
 declare const pipeline: codepipeline.Pipeline;
 
 const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'CodeStarConnectionsSourceAction',
   output: sourceOutput,
   connectionArn: 'your-connection-arn',
@@ -1289,7 +1289,7 @@ const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
 });
 
 const scanOutput = new codepipeline.Artifact();
-const scanAction = new cpactions.InspectorSourceCodeScanAction({
+const scanAction = new codepipeline_actions.InspectorSourceCodeScanAction({
   actionName: 'InspectorSourceCodeScanAction',
   input: sourceOutput,
   output: scanOutput,
