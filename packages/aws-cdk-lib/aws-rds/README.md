@@ -343,7 +343,7 @@ DB instance to a status of `incompatible-parameters`. While the DB instance has
 the incompatible-parameters status, some operations are blocked. For example,
 you can't upgrade the engine version.
 
-#### CA certificate
+### CA certificate
 
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for a cluster instances:
@@ -364,7 +364,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-#### Scheduling modifications
+### Scheduling modifications
 
 To schedule modifications to database instances in the next scheduled maintenance window, specify `applyImmediately` to `false` in the instance props:
 
@@ -611,6 +611,8 @@ new rds.DatabaseInstance(this, 'Instance', {
   caCertificate: rds.CaCertificate.of('future-rds-ca'),
 });
 ```
+
+### Scheduling modifications
 
 To schedule modifications in the next scheduled maintenance window, specify `applyImmediately` to `false`:
 
