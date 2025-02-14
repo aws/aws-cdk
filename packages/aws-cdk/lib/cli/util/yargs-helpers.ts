@@ -29,7 +29,7 @@ export function yargsNegativeAlias<T extends { [x in S | L]: boolean | undefined
  * @returns the current version of the CLI
  */
 export function cliVersion(): string {
-  return version.DISPLAY_VERSION;
+  return version.displayVersion();
 }
 
 /**

@@ -2,6 +2,7 @@ import * as childProcess from 'child_process';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
+import { versionNumber } from './cli/version';
 import { invokeBuiltinHooks } from './init-hooks';
 import { error, info, warning } from './logging';
 import { ToolkitError } from './toolkit/error';
@@ -141,10 +142,10 @@ export class InitTemplate {
           for (const fileName of fileNames) {
             const fullPath = path.join(targetDirectory, fileName);
             const template = await fs.readFile(fullPath, { encoding: 'utf-8' });
-            await fs.writeFile(fullPath, this.expand(template, language, projectInfo));
+            await fs.writeFile(fullPath, expandPlaceholders(template, language, projectInfo));
           }
         },
-        placeholder: (ph: string) => this.expand(`%${ph}%`, language, projectInfo),
+        placeholder: (ph: string) => expandPlaceholders(`%${ph}%`, language, projectInfo),
       },
     );
   }
@@ -152,7 +153,7 @@ export class InitTemplate {
   private async installFiles(sourceDirectory: string, targetDirectory: string, language: string, project: ProjectInfo) {
     for (const file of await fs.readdir(sourceDirectory)) {
       const fromFile = path.join(sourceDirectory, file);
-      const toFile = path.join(targetDirectory, this.expand(file, language, project));
+      const toFile = path.join(targetDirectory, expandPlaceholders(file, language, project));
       if ((await fs.stat(fromFile)).isDirectory()) {
         await fs.mkdir(toFile);
         await this.installFiles(fromFile, toFile, language, project);
@@ -171,42 +172,7 @@ export class InitTemplate {
 
   private async installProcessed(templatePath: string, toFile: string, language: string, project: ProjectInfo) {
     const template = await fs.readFile(templatePath, { encoding: 'utf-8' });
-    await fs.writeFile(toFile, this.expand(template, language, project));
-  }
-
-  private expand(template: string, language: string, project: ProjectInfo) {
-    const cdkVersion = project.versions['aws-cdk-lib'];
-    let constructsVersion = project.versions.constructs;
-
-    switch (language) {
-      case 'java':
-      case 'csharp':
-      case 'fsharp':
-        constructsVersion = rangeFromSemver(constructsVersion, 'bracket');
-        break;
-      case 'python':
-        constructsVersion = rangeFromSemver(constructsVersion, 'pep');
-        break;
-    }
-    return template
-      .replace(/%name%/g, project.name)
-      .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
-      .replace(
-        /%PascalNameSpace%/,
-        project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%',
-      )
-      .replace(
-        /%PascalStackProps%/,
-        project.stackName ? camelCase(project.stackName, { pascalCase: true }) + 'StackProps' : 'StackProps',
-      )
-      .replace(/%name\.camelCased%/g, camelCase(project.name))
-      .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
-      .replace(/%cdk-version%/g, cdkVersion)
-      .replace(/%constructs-version%/g, constructsVersion)
-      .replace(/%cdk-home%/g, cdkHomeDir())
-      .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
-      .replace(/%python-executable%/g, pythonExecutable())
-      .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+    await fs.writeFile(toFile, expandPlaceholders(template, language, project));
   }
 
   /**
@@ -244,6 +210,43 @@ export class InitTemplate {
   }
 }
 
+export function expandPlaceholders(template: string, language: string, project: ProjectInfo) {
+  const cdkVersion = project.versions['aws-cdk-lib'];
+  const cdkCliVersion = project.versions['aws-cdk'];
+  let constructsVersion = project.versions.constructs;
+
+  switch (language) {
+    case 'java':
+    case 'csharp':
+    case 'fsharp':
+      constructsVersion = rangeFromSemver(constructsVersion, 'bracket');
+      break;
+    case 'python':
+      constructsVersion = rangeFromSemver(constructsVersion, 'pep');
+      break;
+  }
+  return template
+    .replace(/%name%/g, project.name)
+    .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
+    .replace(
+      /%PascalNameSpace%/,
+      project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%',
+    )
+    .replace(
+      /%PascalStackProps%/,
+      project.stackName ? camelCase(project.stackName, { pascalCase: true }) + 'StackProps' : 'StackProps',
+    )
+    .replace(/%name\.camelCased%/g, camelCase(project.name))
+    .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
+    .replace(/%cdk-version%/g, cdkVersion)
+    .replace(/%cdk-cli-version%/g, cdkCliVersion)
+    .replace(/%constructs-version%/g, constructsVersion)
+    .replace(/%cdk-home%/g, cdkHomeDir())
+    .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+    .replace(/%python-executable%/g, pythonExecutable())
+    .replace(/%name\.StackName%/g, project.name.replace(/[^A-Za-z0-9-]/g, '-'));
+}
+
 interface ProjectInfo {
   /** The value used for %name% */
   readonly name: string;
@@ -267,6 +270,7 @@ export async function availableInitTemplates(): Promise<InitTemplate[]> {
     }
   });
 }
+
 export async function availableInitLanguages(): Promise<string[]> {
   return new Promise(async (resolve) => {
     const templates = await availableInitTemplates();
@@ -475,6 +479,7 @@ async function execute(cmd: string, args: string[], { cwd }: { cwd: string }) {
 }
 
 interface Versions {
+  ['aws-cdk']: string;
   ['aws-cdk-lib']: string;
   constructs: string;
 }
@@ -491,6 +496,7 @@ async function loadInitVersions(): Promise<Versions> {
   const ret = {
     'aws-cdk-lib': contents['aws-cdk-lib'],
     'constructs': contents.constructs,
+    'aws-cdk': versionNumber(),
   };
   for (const [key, value] of Object.entries(ret)) {
     /* istanbul ignore next */

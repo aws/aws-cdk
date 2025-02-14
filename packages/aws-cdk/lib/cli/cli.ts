@@ -78,7 +78,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     debug(`Error while checking for platform warnings: ${e}`);
   }
 
-  debug('CDK toolkit version:', version.DISPLAY_VERSION);
+  debug('CDK toolkit version:', version.displayVersion());
   debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
@@ -494,7 +494,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         });
       case 'version':
         ioHost.currentAction = 'version';
-        return result(version.DISPLAY_VERSION);
+        return result(version.displayVersion());
 
       default:
         throw new ToolkitError('Unknown command: ' + command);
