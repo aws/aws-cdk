@@ -571,7 +571,7 @@ export interface StorageConfig {
  * When enabled, EKS will automatically manage load balancers.
  */
 export interface ElasticLoadBalancingConfig {
-  // To implement all optional props in the future
+  // TODO - implement other props in a seperate PR
 }
 
 /**
