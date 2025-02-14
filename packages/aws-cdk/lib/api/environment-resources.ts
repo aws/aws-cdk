@@ -1,8 +1,9 @@
 import type { Environment } from '@aws-cdk/cx-api';
 import type { SDK } from './aws-auth';
 import { type EcrRepositoryInfo, ToolkitInfo } from './toolkit-info';
-import { debug, warning } from '../logging';
+import { debug, warn } from '../cli/messages';
 import { Notices } from '../notices';
+import { IoMessaging } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
 import { formatErrorMessage } from '../util/error';
 
@@ -20,14 +21,14 @@ export class EnvironmentResourcesRegistry {
 
   constructor(private readonly toolkitStackName?: string) {}
 
-  public for(resolvedEnvironment: Environment, sdk: SDK) {
+  public for(resolvedEnvironment: Environment, sdk: SDK, msg: IoMessaging) {
     const key = `${resolvedEnvironment.account}:${resolvedEnvironment.region}`;
     let envCache = this.cache.get(key);
     if (!envCache) {
       envCache = emptyCache();
       this.cache.set(key, envCache);
     }
-    return new EnvironmentResources(resolvedEnvironment, sdk, envCache, this.toolkitStackName);
+    return new EnvironmentResources(resolvedEnvironment, sdk, msg, envCache, this.toolkitStackName);
   }
 }
 
@@ -47,6 +48,7 @@ export class EnvironmentResources {
   constructor(
     public readonly environment: Environment,
     private readonly sdk: SDK,
+    private readonly msg: IoMessaging,
     private readonly cache: EnvironmentCache,
     private readonly toolkitStackName?: string,
   ) {}
@@ -56,7 +58,7 @@ export class EnvironmentResources {
    */
   public async lookupToolkit() {
     if (!this.cache.toolkitInfo) {
-      this.cache.toolkitInfo = await ToolkitInfo.lookup(this.environment, this.sdk, this.toolkitStackName);
+      this.cache.toolkitInfo = await ToolkitInfo.lookup(this.environment, this.sdk, this.msg, this.toolkitStackName);
     }
     return this.cache.toolkitInfo;
   }
@@ -95,9 +97,10 @@ export class EnvironmentResources {
         // so let it fail as it would if we didn't have this fallback.
         const bootstrapStack = await this.lookupToolkit();
         if (bootstrapStack.found && bootstrapStack.version < BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
-          warning(
+          await this.msg.ioHost.notify(warn(
+            this.msg.action,
             `Could not read SSM parameter ${ssmParameterName}: ${formatErrorMessage(e)}, falling back to version from ${bootstrapStack}`,
-          );
+          ));
           doValidate(bootstrapStack.version, this.environment);
           return;
         }
@@ -166,7 +169,7 @@ export class EnvironmentResources {
 
     // check if repo already exists
     try {
-      debug(`${repositoryName}: checking if ECR repository already exists`);
+      await this.msg.ioHost.notify(debug(this.msg.action, `${repositoryName}: checking if ECR repository already exists`));
       const describeResponse = await ecr.describeRepositories({
         repositoryNames: [repositoryName],
       });
@@ -181,7 +184,7 @@ export class EnvironmentResources {
     }
 
     // create the repo (tag it so it will be easier to garbage collect in the future)
-    debug(`${repositoryName}: creating ECR repository`);
+    await this.msg.ioHost.notify(debug(this.msg.action, `${repositoryName}: creating ECR repository`));
     const assetTag = { Key: 'awscdk:asset', Value: 'true' };
     const response = await ecr.createRepository({
       repositoryName,
@@ -193,7 +196,7 @@ export class EnvironmentResources {
     }
 
     // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
-    debug(`${repositoryName}: enable image scanning`);
+    await this.msg.ioHost.notify(debug(this.msg.action, `${repositoryName}: enable image scanning`));
     await ecr.putImageScanningConfiguration({
       repositoryName,
       imageScanningConfiguration: { scanOnPush: true },
@@ -204,8 +207,8 @@ export class EnvironmentResources {
 }
 
 export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
-  constructor(environment: Environment, sdk: SDK) {
-    super(environment, sdk, emptyCache());
+  constructor(environment: Environment, sdk: SDK, msg: IoMessaging) {
+    super(environment, sdk, msg, emptyCache());
   }
 
   /**

@@ -367,9 +367,13 @@ export class Deployments {
   constructor(private readonly props: DeploymentsProps) {
     this.assetSdkProvider = props.sdkProvider;
     this.deployStackSdkProvider = props.sdkProvider;
-    this.envs = new EnvironmentAccess(props.sdkProvider, props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     this.ioHost = props.ioHost;
     this.action = props.action;
+    this.envs = new EnvironmentAccess(
+      props.sdkProvider,
+      props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME,
+      { ioHost: this.ioHost, action: this.action },
+    );
   }
 
   /**
@@ -573,7 +577,7 @@ export class Deployments {
       let stackErrorMessage: string | undefined = undefined;
       let finalStackState = cloudFormationStack;
       try {
-        const successStack = await stabilizeStack(cfn, deployName);
+        const successStack = await stabilizeStack(cfn, { ioHost: this.ioHost, action: this.action }, deployName);
 
         // This shouldn't really happen, but catch it anyway. You never know.
         if (!successStack) {
@@ -621,7 +625,7 @@ export class Deployments {
       deployName: options.deployName,
       quiet: options.quiet,
       ci: options.ci,
-    });
+    }, { ioHost: this.ioHost, action: this.action });
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {

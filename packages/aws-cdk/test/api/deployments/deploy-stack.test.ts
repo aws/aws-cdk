@@ -21,7 +21,7 @@ import { deployStack, DeployStackOptions } from '../../../lib/api/deployments/de
 import { tryHotswapDeployment } from '../../../lib/api/deployments/hotswap-deployments';
 import { NoBootstrapStackEnvironmentResources } from '../../../lib/api/environment-resources';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
-import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
+import { CliIoHost, IoMessaging } from '../../../lib/toolkit/cli-io-host';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../../util';
 import {
   mockCloudFormationClient,
@@ -30,6 +30,12 @@ import {
   MockSdkProvider,
   restoreSdkMocksToDefault,
 } from '../../util/mock-sdk';
+
+const mockMsg: IoMessaging = { ioHost: CliIoHost.instance(), action: 'deploy' };
+
+function testDeployStack(options: DeployStackOptions) {
+  return deployStack(options, mockMsg);
+}
 
 jest.mock('../../../lib/api/deployments/hotswap-deployments');
 jest.mock('../../../lib/api/deployments/checks', () => ({
@@ -112,14 +118,14 @@ function standardDeployStackArguments(): DeployStackOptions {
     sdk,
     sdkProvider,
     resolvedEnvironment,
-    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk, mockMsg),
   };
 }
 
 test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.CLASSIC`", async () => {
   // WHEN
   const spyOnSdk = jest.spyOn(sdk, 'appendCustomUserAgent');
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.FALL_BACK,
     extraUserAgent: 'extra-user-agent',
@@ -141,7 +147,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
   });
   const spyOnSdk = jest.spyOn(sdk, 'appendCustomUserAgent');
   // WHEN
-  const deployStackResult = await deployStack({
+  const deployStackResult = await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.HOTSWAP_ONLY,
     extraUserAgent: 'extra-user-agent',
@@ -159,7 +165,7 @@ test("calls tryHotswapDeployment() if 'hotswap' is `HotswapMode.HOTSWAP_ONLY`", 
 
 test('correctly passes CFN parameters when hotswapping', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.FALL_BACK,
     parameters: {
@@ -193,7 +199,7 @@ test('correctly passes SSM parameters when hotswapping', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: testStack({
       stackName: 'stack',
@@ -223,7 +229,7 @@ test('correctly passes SSM parameters when hotswapping', async () => {
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'direct' },
   });
@@ -238,7 +244,7 @@ test('call UpdateStack when method=direct and the stack exists already', async (
     Stacks: [{ ...baseResponse }],
   });
 
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'direct' },
     force: true,
@@ -258,7 +264,7 @@ test('method=direct and no updates to be performed', async () => {
     Stacks: [{ ...baseResponse }],
   });
 
-  const ret = await deployStack({
+  const ret = await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'direct' },
     force: true,
@@ -270,7 +276,7 @@ test('method=direct and no updates to be performed', async () => {
 
 test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: undefined,
   });
@@ -281,7 +287,7 @@ test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
 
 test("rollback still defaults to enabled even if 'hotswap' is enabled", async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: HotswapMode.FALL_BACK,
     rollback: undefined,
@@ -298,7 +304,7 @@ test("rollback still defaults to enabled even if 'hotswap' is enabled", async ()
 
 test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     hotswap: undefined,
     rollback: undefined,
@@ -316,7 +322,7 @@ test("rollback defaults to enabled if 'hotswap' is undefined", async () => {
 
 test('do deploy executable change set with 0 changes', async () => {
   // WHEN
-  const ret = await deployStack({
+  const ret = await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -327,7 +333,7 @@ test('do deploy executable change set with 0 changes', async () => {
 
 test('correctly passes CFN parameters, ignoring ones with empty values', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     parameters: {
       A: 'A-value',
@@ -363,7 +369,7 @@ test('reuse previous parameters if requested', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
     parameters: {
@@ -402,7 +408,7 @@ describe('ci=true', () => {
   test('output written to stdout', async () => {
     // GIVEN
 
-    await deployStack({
+    await testDeployStack({
       ...standardDeployStackArguments(),
     });
 
@@ -427,7 +433,7 @@ test('do not reuse previous parameters if not requested', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
     parameters: {
@@ -463,7 +469,7 @@ test('throw exception if not enough parameters supplied', async () => {
 
   // WHEN
   await expect(
-    deployStack({
+    testDeployStack({
       ...standardDeployStackArguments(),
       stack: FAKE_STACK_WITH_PARAMETERS,
       parameters: {
@@ -484,7 +490,7 @@ test('deploy is skipped if template did not change', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -509,7 +515,7 @@ test('deploy is skipped if parameters are the same', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
     parameters: {},
@@ -537,7 +543,7 @@ test('deploy is not skipped if parameters are different', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
     parameters: {
@@ -566,7 +572,7 @@ test('deploy is skipped if notificationArns are the same', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK,
     notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
@@ -584,7 +590,7 @@ test('deploy is not skipped if notificationArns are different', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK,
     notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:MagicTopic'],
@@ -627,7 +633,7 @@ test('if existing stack failed to create, it is deleted and recreated', async ()
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -669,7 +675,7 @@ test('if existing stack failed to create, it is deleted and recreated even if th
     });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -688,7 +694,7 @@ test('deploy not skipped if template did not change and --force is applied', asy
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     force: true,
   });
@@ -712,7 +718,7 @@ test('deploy is skipped if template and tags did not change', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     tags: [
       { Key: 'Key1', Value: 'Value1' },
@@ -740,7 +746,7 @@ test('deploy not skipped if template did not change but tags changed', async () 
 
   // WHEN
   const resolvedEnvironment = mockResolvedEnvironment();
-  await deployStack({
+  await testDeployStack({
     stack: FAKE_STACK,
     sdk,
     sdkProvider,
@@ -751,7 +757,7 @@ test('deploy not skipped if template did not change but tags changed', async () 
         Value: 'NewValue',
       },
     ],
-    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk, mockMsg),
   });
 
   // THEN
@@ -774,7 +780,7 @@ test('deployStack reports no change if describeChangeSet returns specific error'
   });
 
   // WHEN
-  const deployResult = await deployStack({
+  const deployResult = await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -797,7 +803,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     tags: [{ Key: 'Key1', Value: 'Value1' }],
   });
@@ -827,7 +833,7 @@ test('deploy is not skipped if stack is in a _FAILED state', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     usePreviousParameters: true,
   }).catch(() => {});
@@ -860,7 +866,7 @@ test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async ()
   givenTemplateIs({ changed: 123 });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -880,7 +886,7 @@ test('deploy not skipped if template changed', async () => {
   givenTemplateIs({ changed: 123 });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -891,7 +897,7 @@ test('deploy not skipped if template changed', async () => {
 
 test('not executed and no error if --no-execute is given', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'change-set', execute: false },
   });
@@ -912,7 +918,7 @@ test('empty change set is deleted if --execute is given', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'change-set', execute: true },
     force: true, // Necessary to bypass "skip deploy"
@@ -938,7 +944,7 @@ test('empty change set is not deleted if --no-execute is given', async () => {
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'change-set', execute: false },
   });
@@ -953,7 +959,7 @@ test('empty change set is not deleted if --no-execute is given', async () => {
 
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: testStack({
       stackName: 'withouterrors',
@@ -973,7 +979,7 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
 
 test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: testStack({
       stackName: 'withouterrors',
@@ -1007,7 +1013,7 @@ test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', asyn
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'change-set', execute: false },
   });
@@ -1036,7 +1042,7 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     deploymentMethod: { method: 'change-set', execute: false },
   });
@@ -1052,7 +1058,7 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
 
 test('deploy with termination protection enabled', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK_TERMINATION_PROTECTION,
   });
@@ -1066,7 +1072,7 @@ test('deploy with termination protection enabled', async () => {
 
 test('updateTerminationProtection not called when termination protection is undefined', async () => {
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -1086,7 +1092,7 @@ test('updateTerminationProtection called when termination protection is undefine
   });
 
   // WHEN
-  await deployStack({
+  await testDeployStack({
     ...standardDeployStackArguments(),
   });
 
@@ -1100,7 +1106,7 @@ test('updateTerminationProtection called when termination protection is undefine
 describe('disable rollback', () => {
   test('by default, we do not disable rollback (and also do not pass the flag)', async () => {
     // WHEN
-    await deployStack({
+    await testDeployStack({
       ...standardDeployStackArguments(),
     });
 
@@ -1114,7 +1120,7 @@ describe('disable rollback', () => {
 
   test('rollback can be disabled by setting rollback: false', async () => {
     // WHEN
-    await deployStack({
+    await testDeployStack({
       ...standardDeployStackArguments(),
       rollback: false,
     });
@@ -1130,7 +1136,7 @@ describe('disable rollback', () => {
 describe('import-existing-resources', () => {
   test('is disabled by default', async () => {
     // WHEN
-    await deployStack({
+    await testDeployStack({
       ...standardDeployStackArguments(),
       deploymentMethod: {
         method: 'change-set',
@@ -1146,7 +1152,7 @@ describe('import-existing-resources', () => {
 
   test('is added to the CreateChangeSetCommandInput', async () => {
     // WHEN
-    await deployStack({
+    await testDeployStack({
       ...standardDeployStackArguments(),
       deploymentMethod: {
         method: 'change-set',
@@ -1185,7 +1191,7 @@ test.each([
   givenChangeSetContainsReplacement(replacement === 'replacement');
 
   // WHEN
-  const result = await deployStack({
+  const result = await testDeployStack({
     ...standardDeployStackArguments(),
     stack: FAKE_STACK,
     rollback: rollback === 'rollback',

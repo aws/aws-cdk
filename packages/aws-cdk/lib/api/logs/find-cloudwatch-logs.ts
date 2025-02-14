@@ -1,6 +1,7 @@
 import type { CloudFormationStackArtifact, Environment } from '@aws-cdk/cx-api';
 import type { StackResourceSummary } from '@aws-sdk/client-cloudformation';
 import { debug } from '../../logging';
+import { IoMessaging } from '../../toolkit/cli-io-host';
 import { formatErrorMessage } from '../../util/error';
 import type { SDK, SdkProvider } from '../aws-auth';
 import { EnvironmentAccess } from '../environment-access';
@@ -37,13 +38,14 @@ export interface FoundLogGroupsResult {
 
 export async function findCloudWatchLogGroups(
   sdkProvider: SdkProvider,
+  msg: IoMessaging,
   stackArtifact: CloudFormationStackArtifact,
 ): Promise<FoundLogGroupsResult> {
   let sdk: SDK;
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // try to assume the lookup role and fallback to the default credentials
   try {
-    sdk = (await new EnvironmentAccess(sdkProvider, DEFAULT_TOOLKIT_STACK_NAME).accessStackForLookup(stackArtifact)).sdk;
+    sdk = (await new EnvironmentAccess(sdkProvider, DEFAULT_TOOLKIT_STACK_NAME, msg).accessStackForLookup(stackArtifact)).sdk;
   } catch (e: any) {
     debug(`Failed to access SDK environment: ${formatErrorMessage(e)}`);
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;

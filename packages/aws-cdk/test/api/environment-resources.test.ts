@@ -4,12 +4,15 @@ import { Context } from '../../lib/api/context';
 import { EnvironmentResourcesRegistry } from '../../lib/api/environment-resources';
 import * as version from '../../lib/cli/version';
 import { CachedDataSource, Notices, NoticesFilter } from '../../lib/notices';
+import { CliIoHost, IoMessaging } from '../../lib/toolkit/cli-io-host';
 import { MockSdk, mockBootstrapStack, mockSSMClient } from '../util/mock-sdk';
 import { MockToolkitInfo } from '../util/mock-toolkitinfo';
 
 let mockSdk: MockSdk;
 let envRegistry: EnvironmentResourcesRegistry;
 let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
+let mockMsg: IoMessaging = { ioHost: CliIoHost.instance(), action: 'deploy' };
+
 beforeEach(() => {
   mockSdk = new MockSdk();
   envRegistry = new EnvironmentResourcesRegistry();
@@ -32,6 +35,7 @@ function envResources() {
       name: 'aws://11111111/us-nowhere',
     },
     mockSdk,
+    mockMsg,
   );
 }
 

@@ -8,6 +8,7 @@ import { IECRClient, IS3Client, SDK, SdkProvider } from '../aws-auth';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 import { ProgressPrinter } from './progress-printer';
 import { ActiveAssetCache, BackgroundStackRefresh, refreshStacks } from './stack-refresh';
+import { IoMessaging } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { Mode } from '../plugin/mode';
 
@@ -156,6 +157,11 @@ interface GarbageCollectorProps {
    * Will be used to make SDK calls to CloudFormation, S3, and ECR.
    */
   readonly sdkProvider: SdkProvider;
+
+  /**
+   * Used to send messages.
+   */
+  readonly msg: IoMessaging;
 
   /**
    * The name of the bootstrap stack to look for.
@@ -566,17 +572,17 @@ export class GarbageCollector {
   }
 
   private async bootstrapBucketName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, this.props.msg, bootstrapStackName);
     return toolkitInfo.bucketName;
   }
 
   private async bootstrapRepositoryName(sdk: SDK, bootstrapStackName: string): Promise<string> {
-    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, this.props.msg, bootstrapStackName);
     return toolkitInfo.repositoryName;
   }
 
   private async bootstrapQualifier(sdk: SDK, bootstrapStackName: string): Promise<string | undefined> {
-    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, bootstrapStackName);
+    const toolkitInfo = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, this.props.msg, bootstrapStackName);
     return toolkitInfo.bootstrapStack.parameters.Qualifier;
   }
 

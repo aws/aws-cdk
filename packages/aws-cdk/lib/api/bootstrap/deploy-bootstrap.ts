@@ -40,7 +40,7 @@ export class BootstrapStack {
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
     const sdk = (await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting)).sdk;
 
-    const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
+    const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, msg, toolkitStackName);
 
     return new BootstrapStack(sdkProvider, sdk, resolvedEnvironment, toolkitStackName, currentToolkitInfo, msg);
   }
@@ -144,8 +144,8 @@ export class BootstrapStack {
       parameters,
       usePreviousParameters: options.usePreviousParameters ?? true,
       // Obviously we can't need a bootstrap stack to deploy a bootstrap stack
-      envResources: new NoBootstrapStackEnvironmentResources(this.resolvedEnvironment, this.sdk),
-    });
+      envResources: new NoBootstrapStackEnvironmentResources(this.resolvedEnvironment, this.sdk, this.msg),
+    }, this.msg);
 
     assertIsSuccessfulDeployStackResult(ret);
 

@@ -82,6 +82,7 @@ describe('Bootstrapping v2', () => {
           PublicAccessBlockConfiguration: 'true',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -100,6 +101,7 @@ describe('Bootstrapping v2', () => {
           PublicAccessBlockConfiguration: 'true',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -117,6 +119,7 @@ describe('Bootstrapping v2', () => {
           PublicAccessBlockConfiguration: 'false',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -133,6 +136,7 @@ describe('Bootstrapping v2', () => {
           InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -157,6 +161,7 @@ describe('Bootstrapping v2', () => {
           InputPermissionsBoundary: 'permissions-boundary-name',
         }),
       }),
+      expect.anything(),
     );
     expect(stderrMock.mock.calls).toEqual(
       expect.arrayContaining([
@@ -291,6 +296,7 @@ describe('Bootstrapping v2', () => {
           CloudFormationExecutionPolicies: '',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -308,6 +314,7 @@ describe('Bootstrapping v2', () => {
           TrustedAccountsForLookup: '123456789012',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -357,6 +364,7 @@ describe('Bootstrapping v2', () => {
           TrustedAccounts: '222222222222',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -387,6 +395,7 @@ describe('Bootstrapping v2', () => {
           TrustedAccountsForLookup: '222222222222',
         }),
       }),
+      expect.anything(),
     );
   });
 
@@ -477,6 +486,7 @@ describe('Bootstrapping v2', () => {
             terminationProtection: false,
           }),
         }),
+        expect.anything(),
       );
     });
 
@@ -494,6 +504,7 @@ describe('Bootstrapping v2', () => {
             terminationProtection: true,
           }),
         }),
+        expect.anything(),
       );
     });
 
@@ -514,6 +525,7 @@ describe('Bootstrapping v2', () => {
             terminationProtection: true,
           }),
         }),
+        expect.anything(),
       );
     });
 
@@ -535,6 +547,7 @@ describe('Bootstrapping v2', () => {
             terminationProtection: false,
           }),
         }),
+        expect.anything(),
       );
     });
   });
@@ -567,6 +580,7 @@ describe('Bootstrapping v2', () => {
               FileAssetsBucketKmsKeyId: paramKeyId,
             }),
           }),
+          expect.anything(),
         );
       },
     );
@@ -610,6 +624,7 @@ describe('Bootstrapping v2', () => {
               FileAssetsBucketKmsKeyId: paramKeyId,
             }),
           }),
+          expect.anything(),
         );
       },
     );

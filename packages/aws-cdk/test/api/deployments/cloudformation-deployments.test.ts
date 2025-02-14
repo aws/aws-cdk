@@ -1,3 +1,4 @@
+import exp = require('constants');
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   ContinueUpdateRollbackCommand,
@@ -83,6 +84,7 @@ test('passes through hotswap=true to deployStack()', async () => {
     expect.objectContaining({
       hotswap: HotswapMode.FALL_BACK,
     }),
+    expect.anything(),
   );
 });
 
@@ -100,6 +102,7 @@ test('placeholders are substituted in CloudFormation execution role', async () =
     expect.objectContaining({
       roleArn: 'bloop:here:123456789012',
     }),
+    expect.anything(),
   );
 });
 
@@ -1148,16 +1151,19 @@ test('tags are passed along to create change set', async () => {
     stack[methodName] = jest.fn();
   }
 
-  await createChangeSet({
-    stack: stack,
-    cfn: new MockSdk().cloudFormation(),
-    changeSetName: 'foo',
-    willExecute: false,
-    exists: true,
-    uuid: '142DF82A-8ED8-4944-8EEB-A5BAE141F13F',
-    bodyParameter: {},
-    parameters: {},
-  });
+  await createChangeSet(
+    { ioHost: CliIoHost.instance(), action: 'deploy' },
+    {
+      stack: stack,
+      cfn: new MockSdk().cloudFormation(),
+      changeSetName: 'foo',
+      willExecute: false,
+      exists: true,
+      uuid: '142DF82A-8ED8-4944-8EEB-A5BAE141F13F',
+      bodyParameter: {},
+      parameters: {},
+    },
+  );
 
   expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
     Tags: [{ Key: 'SomeKey', Value: 'SomeValue' }],
