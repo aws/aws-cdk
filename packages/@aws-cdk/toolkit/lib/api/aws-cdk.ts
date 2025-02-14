@@ -4,7 +4,6 @@ export { Bootstrapper, type BootstrapEnvironmentOptions } from '../../../../aws-
 
 // APIs
 export { formatSdkLoggerContent, SdkProvider } from '../../../../aws-cdk/lib/api/aws-auth';
-export { Mode } from '../../../../aws-cdk/lib/api/plugin';
 export { Context, PROJECT_CONTEXT } from '../../../../aws-cdk/lib/api/context';
 export { Deployments, type SuccessfulDeployStackResult } from '../../../../aws-cdk/lib/api/deployments';
 export { Settings } from '../../../../aws-cdk/lib/api/settings';
@@ -20,11 +19,10 @@ export { HotswapMode } from '../../../../aws-cdk/lib/api/hotswap/common';
 export { StackActivityProgress } from '../../../../aws-cdk/lib/api/util/cloudformation/stack-activity-monitor';
 export { RWLock, type ILock } from '../../../../aws-cdk/lib/api/util/rwlock';
 export { formatTime } from '../../../../aws-cdk/lib/api/util/string-manipulation';
-export { rootDir } from '../../../../aws-cdk/lib/util/directories';
 
 // @todo Not yet API probably should be
 export { formatErrorMessage } from '../../../../aws-cdk/lib/util/error';
-export { loadStructuredFile, obscureTemplate, serializeStructure } from '../../../../aws-cdk/lib/serialize';
+export { obscureTemplate, serializeStructure } from '../../../../aws-cdk/lib/serialize';
 export { loadTree, some } from '../../../../aws-cdk/lib/tree';
 export { splitBySize } from '../../../../aws-cdk/lib/util';
 export { validateSnsTopicArn } from '../../../../aws-cdk/lib/util/validate-notification-arn';

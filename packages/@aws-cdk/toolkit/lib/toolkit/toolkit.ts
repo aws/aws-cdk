@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import { ToolkitServices } from './private';
+import { BootstrapEnvironmentOptions } from '../actions/bootstrap';
 import { AssetBuildTime, type DeployOptions, RequireApproval } from '../actions/deploy';
 import { type ExtendedDeployOptions, buildParameterMap, createHotswapPropertyOverrides, removePublishedAssets } from '../actions/deploy/private';
 import { type DestroyOptions } from '../actions/destroy';
@@ -14,7 +15,7 @@ import { type RollbackOptions } from '../actions/rollback';
 import { type SynthOptions } from '../actions/synth';
 import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
 import { type SdkOptions } from '../api/aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, Bootstrapper, BootstrapEnvironmentOptions, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups, formatTime, StackDetails } from '../api/aws-cdk';
+import { DEFAULT_TOOLKIT_STACK_NAME, Bootstrapper, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups, formatTime, StackDetails } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
@@ -162,7 +163,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
    *
    * Bootstraps the CDK Toolkit stack in the environments used by the specified stack(s).
    */
-
   public async bootstrap(cx: ICloudAssemblySource, options: BootstrapEnvironmentOptions = {}): Promise<void> {
     const ioHost = withAction(this.ioHost, 'bootstrap');
     const assembly = await this.assemblyFromSource(cx);
@@ -199,7 +199,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         await ioHost.notify({
           time: new Date(),
           level: 'error',
-          code: 'CDK_TOOLKIT_E9900' as IoMessageCode,
+          code: 'CDK_TOOLKIT_E9900',
           message: `\n ❌  ${chalk.bold(environment.name)} failed: ${formatErrorMessage(e)}`,
         });
         throw e;

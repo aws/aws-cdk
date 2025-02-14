@@ -10,14 +10,11 @@ jest.mock('../../../../aws-cdk/lib/api', () => ({
   })),
 }));
 
-import * as os from 'node:os';
-import * as path from 'node:path';
-import * as cxapi from '@aws-cdk/cx-api';
-import * as fs from 'fs-extra';
-import { BootstrapEnvironmentOptions, SdkProvider, Bootstrapper, StringWithoutPlaceholders } from '../../lib/api/aws-cdk';
+import { BootstrapEnvironmentOptions } from '../../lib/actions/bootstrap';
 import { Toolkit } from '../../lib/toolkit';
 import { TestIoHost } from '../_helpers';
 import { TestCloudAssemblySource } from '../_helpers/test-cloud-assembly-source';
+import { SdkProvider, Bootstrapper, StringWithoutPlaceholders, fs, path, os, cxapi } from '../util/aws-cdk';
 
 const ioHost = new TestIoHost();
 
