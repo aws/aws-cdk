@@ -18,11 +18,18 @@ import {
 } from '../api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../api/cxapp/cloud-executable';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../api/cxapp/environments';
-import { createDiffChangeSet, DeploymentMethod, Deployments, SuccessfulDeployStackResult } from '../api/deployments';
+import {
+  CloudFormationStack,
+  createDiffChangeSet,
+  DeploymentMethod,
+  Deployments,
+  SuccessfulDeployStackResult,
+} from '../api/deployments';
 import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
 import { EcsHotswapProperties, HotswapMode, HotswapPropertyOverrides } from '../api/hotswap/common';
 import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from '../api/logs/logs-monitor';
+import { Mode } from '../api/plugin';
 import { type Tag, tagsForStack } from '../api/tags';
 import { StackActivityProgress } from '../api/util/cloudformation/stack-activity-monitor';
 import { formatTime } from '../api/util/string-manipulation';
@@ -49,7 +56,7 @@ import { removeNonImportResources, ResourceImporter } from '../import';
 import { listStacks } from '../list-stacks';
 import { debug, error, highlight, info, result as logResult, success, warning } from '../logging';
 import { ResourceMigrator } from '../migrator';
-import { findResourceCorrespondence, refactorStack } from '../refactoring';
+import { refactorStacks, StackFoo } from '../refactoring2';
 import { deserializeStructure, obscureTemplate, serializeStructure } from '../serialize';
 import { CliIoHost } from '../toolkit/cli-io-host';
 import { ToolkitError } from '../toolkit/error';
@@ -361,32 +368,6 @@ export class CdkToolkit {
       }
 
       const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
-      const deployedResources = currentTemplate?.Resources;
-      const correspondence = findResourceCorrespondence(
-        deployedResources ?? {},
-        stack.template.Resources ?? {},
-      );
-
-      const ambiguous = correspondence.ambiguous();
-      if (!ambiguous.isEmpty()) {
-        warning(`Some resources have been renamed, but it is not possible to automatically establish a 1:1 mapping:${ambiguous}`);
-
-        await askUserConfirmation(
-          this.ioHost,
-          concurrency,
-          'Some resources have been renamed, which may cause resource replacement',
-          'Do you wish to deploy these changes',
-        );
-      }
-
-      const targetEnvironment = await this.props.deployments.envs.accessStackForMutableStackOperations(stack);
-      const cfnClient = targetEnvironment.sdk.cloudFormation();
-
-      const unambiguous = correspondence.unambiguous();
-      if (!unambiguous.isEmpty()) {
-        info(`Automatically renaming the following resources:${unambiguous}`);
-        await refactorStack(cfnClient, unambiguous, currentTemplate, stack.stackName);
-      }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) {
         // The generated stack has no resources
@@ -556,11 +537,6 @@ export class CdkToolkit {
 
         logResult(deployResult.stackArn);
       } catch (e: any) {
-        if (!unambiguous.isEmpty()) {
-          info('Rolling back the automatic refactoring.');
-          await refactorStack(cfnClient, unambiguous.invert(), currentTemplate, stack.stackName);
-        }
-
         // It has to be exactly this string because an integration test tests for
         // "bold(stackname) failed: ResourceNotReady: <error>"
         throw new ToolkitError(
@@ -613,6 +589,31 @@ export class CdkToolkit {
       'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
       'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
     };
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    const bla = (await Promise.all(stackCollection.stackArtifacts.map(async s => {
+      const cfn = (await this.props.sdkProvider.forEnvironment(s.environment, Mode.ForWriting, {
+        // TODO use a parameterized ARN
+        // eslint-disable-next-line @cdklabs/no-literal-partition
+        assumeRoleArn: 'arn:aws:iam::669420849322:role/cdk-hnb659fds-deploy-role-669420849322-us-east-2',
+      })).sdk.cloudFormation();
+
+      const cfnStack = await CloudFormationStack.lookup(cfn, s.stackName, true);
+
+      if (cfnStack.exists) {
+        const result: StackFoo = {
+          environment: s.environment,
+          template: await cfnStack.template(),
+          stackName: s.stackName,
+        };
+
+        return result;
+      } else {
+        return undefined;
+      }
+    }))).filter(Boolean) as StackFoo[];
+
+    await refactorStacks(bla, stackCollection.stackArtifacts, this.props.sdkProvider);
 
     await workGraph.doParallel(graphConcurrency, {
       deployStack,
@@ -673,7 +674,7 @@ export class CdkToolkit {
     if (!watchSettings) {
       throw new ToolkitError(
         "Cannot use the 'watch' command without specifying at least one directory to monitor. " +
-          'Make sure to add a "watch" key to your cdk.json',
+        'Make sure to add a "watch" key to your cdk.json',
       );
     }
 
@@ -756,7 +757,7 @@ export class CdkToolkit {
           latch = 'queued';
           info(
             "Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
-              'Will queue for another deployment after this one finishes',
+            'Will queue for another deployment after this one finishes',
             filePath,
             event,
           );
@@ -1020,7 +1021,8 @@ export class CdkToolkit {
         confirm: options.confirm ?? true,
       });
       await gc.garbageCollect();
-    };
+    }
+    ;
   }
 
   private async defineEnvironments(userEnvironmentSpecs: string[]): Promise<cxapi.Environment[]> {
@@ -1218,8 +1220,12 @@ export class CdkToolkit {
    */
   private async validateStacks(stacks: StackCollection) {
     let failAt: 'warn' | 'error' | 'none' = 'error';
-    if (this.props.ignoreErrors) { failAt = 'none'; }
-    if (this.props.strict) { failAt = 'warn'; }
+    if (this.props.ignoreErrors) {
+      failAt = 'none';
+    }
+    if (this.props.strict) {
+      failAt = 'warn';
+    }
 
     await stacks.validateMetadata(failAt, stackMetadataLogger(this.props.verbose));
   }
@@ -1832,10 +1838,10 @@ export interface MigrateOptions {
 
 function buildParameterMap(
   parameters:
-  | {
-    [name: string]: string | undefined;
-  }
-  | undefined,
+    | {
+      [name: string]: string | undefined;
+    }
+    | undefined,
 ): { [name: string]: { [name: string]: string | undefined } } {
   const parameterMap: {
     [name: string]: { [name: string]: string | undefined };
@@ -1881,7 +1887,9 @@ async function askUserConfirmation(
     }
 
     const confirmed = await promptly.confirm(`${chalk.cyan(question)} (y/n)?`);
-    if (!confirmed) { throw new ToolkitError('Aborted by user'); }
+    if (!confirmed) {
+      throw new ToolkitError('Aborted by user');
+    }
   });
 }
 
