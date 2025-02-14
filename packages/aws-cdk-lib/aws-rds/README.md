@@ -364,6 +364,34 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+#### Scheduling modifications
+
+To schedule modifications to database instances in the next scheduled maintenance window, specify `applyImmediately` to `false` in the instance props:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.provisioned('writer', {
+    applyImmediately: false,
+  }),
+  readers: [
+    rds.ClusterInstance.serverlessV2('reader', {
+      applyImmediately: false,
+    }),
+  ],
+  vpc,
+});
+```
+
+Until RDS applies the changes, the DB instance remains in a drift state.
+As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+
+Currently, CloudFormation does not support to schedule modifications of the cluster configurations.
+To apply changes of the cluster, such as engine version, in the next scheduled maintenance window, you should use `modify-db-cluster` CLI command or management console.
+
+For details, see [Modifying an Amazon Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html).
+
 ### Migrating from instanceProps
 
 Creating instances in a `DatabaseCluster` using `instanceProps` & `instances` is
@@ -583,6 +611,22 @@ new rds.DatabaseInstance(this, 'Instance', {
   caCertificate: rds.CaCertificate.of('future-rds-ca'),
 });
 ```
+
+To schedule modifications in the next scheduled maintenance window, specify `applyImmediately` to `false`:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  vpc,
+  applyImmediately: false,
+});
+```
+
+Until RDS applies the changes, the DB instance remains in a drift state.
+As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+
+For details, see [Using the schedule modifications setting](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ModifyInstance.ApplyImmediately.html).
 
 ## Setting Public Accessibility
 
