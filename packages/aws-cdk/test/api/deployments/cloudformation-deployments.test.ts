@@ -1,4 +1,3 @@
-import exp = require('constants');
 import * as cxapi from '@aws-cdk/cx-api';
 import {
   ContinueUpdateRollbackCommand,

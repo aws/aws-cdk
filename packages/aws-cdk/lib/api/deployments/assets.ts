@@ -16,7 +16,6 @@ import { ToolkitInfo } from '../toolkit-info';
  * Returns the CloudFormation parameters that need to be sent to the template to
  * pass Asset coordinates.
  */
-// eslint-disable-next-line max-len
 export async function addMetadataAssetsToManifest(
   { ioHost, action }: IoMessaging,
   stack: cxapi.CloudFormationStackArtifact,
