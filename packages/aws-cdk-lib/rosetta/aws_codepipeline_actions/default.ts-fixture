@@ -6,7 +6,6 @@ import codedeploy = require('aws-cdk-lib/aws-codedeploy');
 import codepipeline = require('aws-cdk-lib/aws-codepipeline');
 import codepipeline_actions = require('aws-cdk-lib/aws-codepipeline-actions');
 import codecommit = require('aws-cdk-lib/aws-codecommit');
-import ecr = require('aws-cdk-lib/aws-ecr');
 import iam = require('aws-cdk-lib/aws-iam');
 import lambda = require('aws-cdk-lib/aws-lambda');
 import targets = require('aws-cdk-lib/aws-events-targets');

@@ -627,6 +627,8 @@ For information about the `ECRBuildAndPublish` build action,
 see [ECRBuildAndPublish build action reference](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECRBuildAndPublish.html).
 
 ```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
 declare const pipeline: codepipeline.Pipeline;
 declare const repository: ecr.IRepository;
 
