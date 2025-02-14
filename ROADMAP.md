@@ -114,7 +114,7 @@ These features allow CDK to grow beyond its initial scope and adapt to different
 
 ## Community Engagement
 
-**Contributor Council Proposal Update:** We have completed phase one of the Contributor Council Charter (see RFC #676), which focused on community input. During this period, we collected feedback from customers, maintainers, contributors, and the broader AWS CDK community. Our next step is to review these responses to finalize the council’s structure, processes, and next steps. Additional updates outside of this roadmap document will be shared as we transition into phase two. 
+**Contributor Council Proposal Update:** We have completed phase one of the Contributor Council Charter (see [RFC #676](https://github.com/aws/aws-cdk-rfcs/pull/679)), which focused on community input. During this period, we collected feedback from customers, maintainers, contributors, and the broader AWS CDK community. Our next step is to review these responses to finalize the council’s structure, processes, and next steps. Additional updates outside of this roadmap document will be shared as we transition into phase two. 
 
 We would love to hear from you on how the CDK operates today and how it should grow in the future. To report a bug or create a small feature request, please [create an issue here](https://github.com/aws/aws-cdk/issues/new/choose). If you are seeking to request a change in strategic direction or make a CDK core framework change, please [create a Request for Comments (RFC) ticket here](https://github.com/aws/aws-cdk-rfcs/issues/new/choose). If you are ever unsure about where your feature request should live, it is best to follow the first link within the aws-cdk repo.
 
