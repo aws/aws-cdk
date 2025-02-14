@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a73ba7b2de725c0621d5712e27bbaec61fc4d903db2c8157856f9f96fecb1ea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/feb9fcce50da5b54727369cecd1a76e51607e158da8b4150e34e4fa6624f1552.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,29 +34,26 @@
         "aws-stepfunctions-tasks-eks-call-integ-test.assets"
       ],
       "metadata": {
+        "/aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5"
+          }
+        ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "version": "*",
-              "clusterName": "*"
+              "clusterName": "*",
+              "kubectlLayer": "*"
             }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "new Cluster (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:544:43)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eks/integ.call.js:24:17)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2057,18 +2054,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -2265,6 +2250,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProviderframeworkonEvent890A3570Arn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn": [

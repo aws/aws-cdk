@@ -8,6 +8,67 @@
         "id": "aws-stepfunctions-tasks-eks-call-integ-test",
         "path": "aws-stepfunctions-tasks-eks-call-integ-test",
         "children": {
+          "KubectlLayer": {
+            "id": "KubectlLayer",
+            "path": "aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-eks-call-integ-test/KubectlLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+                    },
+                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "licenseInfo": "Apache-2.0"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
+              "version": "2.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
           "EksCluster": {
             "id": "EksCluster",
             "path": "aws-stepfunctions-tasks-eks-call-integ-test/EksCluster",
@@ -1758,7 +1819,8 @@
               "metadata": [
                 {
                   "version": "*",
-                  "clusterName": "*"
+                  "clusterName": "*",
+                  "kubectlLayer": "*"
                 },
                 {
                   "addNodegroupCapacity": [
@@ -4076,7 +4138,7 @@
                             "Ref": "AwsCliLayerF44AAF94"
                           },
                           {
-                            "Ref": "KubectlLayer600207B5"
+                            "Ref": "referencetoawsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref"
                           }
                         ],
                         "memorySize": 1024,
@@ -4205,66 +4267,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {}
-                  ]
-                }
-              },
-              "KubectlLayer": {
-                "id": "KubectlLayer",
-                "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0",
-                          "metadata": []
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip"
-                        },
-                        "description": "/opt/kubectl/kubectl and /opt/helm/helm"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_kubectl.KubectlLayer",
                   "version": "0.0.0",
                   "metadata": [
                     {}
@@ -4698,6 +4700,14 @@
                   "version": "0.0.0"
                 }
               },
+              "reference-to-awsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref": {
+                "id": "reference-to-awsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref",
+                "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnParameter",
+                  "version": "0.0.0"
+                }
+              },
               "reference-to-awsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn": {
                 "id": "reference-to-awsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn",
                 "path": "aws-stepfunctions-tasks-eks-call-integ-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn",
@@ -4747,6 +4757,9 @@
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
                     "parameters": {
+                      "referencetoawsstepfunctionstasksekscallintegtestKubectlLayer0B270356Ref": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
                       "referencetoawsstepfunctionstasksekscallintegtestEksClusterKubectlHandlerRole61616EA6Arn": {
                         "Fn::GetAtt": [
                           "EksClusterKubectlHandlerRole4A986A70",
@@ -4782,7 +4795,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/48957c96da72f56dfffaa55a76688638dd952d7811167c8e643f738a01b805ec.json"
+                          "/1b5d0eb1fa14ebadca21593781280b640852bb1c0a48197fbad1098dd959d29c.json"
                         ]
                       ]
                     }
