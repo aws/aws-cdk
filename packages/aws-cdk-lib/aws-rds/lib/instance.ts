@@ -742,13 +742,15 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the PreferredMaintenanceWindow setting.
-   * If set to false, changes are applied during the next maintenance window. Until RDS applies the changes, the DB instance remains in a drift state.
+   * If set to false, changes are applied during the next maintenance window.
+   *
+   * Until RDS applies the changes, the DB instance remains in a drift state.
    * As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
    *
    * This property also determines whether the DB instance reboots when a static parameter is modified in the associated DB parameter group.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.DBInstance.Modifying.html
    *
-   * @default - true
+   * @default - Changes will be applied immediately
    */
   readonly applyImmediately?: boolean;
 }
