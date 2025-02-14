@@ -182,7 +182,6 @@ export class MatchResult {
    */
   public toHumanStrings(): string[] {
     const failures = new Array<MatchFailure>();
-    debugger;
     recurse(this, []);
 
     return failures.map(r => {

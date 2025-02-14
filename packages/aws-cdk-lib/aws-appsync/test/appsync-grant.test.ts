@@ -25,12 +25,11 @@ beforeEach(() => {
 });
 
 describe('grant Permissions', () => {
-
   test('IamResource throws error when custom is called with no arguments', () => {
-    //THEN
+    // THEN
     expect(() => {
       api.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
-    }).toThrowError('At least 1 custom ARN must be provided.');
+    }).toThrow('At least 1 custom ARN must be provided.');
   });
 
   test('grant provides custom permissions when called with `custom` argument', () => {
@@ -258,7 +257,6 @@ describe('grant Permissions', () => {
 });
 
 describe('grantMutation Permissions', () => {
-
   test('grantMutation provides Mutation/* permissions when called with no `fields` argument', () => {
     // WHEN
     api.grantMutation(role);
@@ -366,7 +364,6 @@ describe('grantMutation Permissions', () => {
 });
 
 describe('grantQuery Permissions', () => {
-
   test('grantQuery provides Query/* permissions when called without the `fields` argument', () => {
     // WHEN
     api.grantQuery(role);
@@ -474,7 +471,6 @@ describe('grantQuery Permissions', () => {
 });
 
 describe('grantSubscription Permissions', () => {
-
   test('grantSubscription provides Subscription/* permissions when called without `fields` argument', () => {
     // WHEN
     api.grantSubscription(role);
@@ -590,7 +586,7 @@ describe('imported API', () => {
 
   describe('grant Permissions', () => {
     test('IamResource throws error when custom is called with no arguments', () => {
-      //THEN
+      // THEN
       expect(() => {
         importedApi.grant(role, appsync.IamResource.custom(), 'appsync:GraphQL');
       }).toThrow('At least 1 custom ARN must be provided.');

@@ -1,4 +1,5 @@
-import { Tag } from '../../cdk-toolkit';
+import { BootstrapSource } from './bootstrap-environment';
+import { Tag } from '../tags';
 import { StringWithoutPlaceholders } from '../util/placeholders';
 
 export const BUCKET_NAME_OUTPUT = 'BucketName';
@@ -21,6 +22,13 @@ export interface BootstrapEnvironmentOptions {
   readonly roleArn?: StringWithoutPlaceholders;
   readonly parameters?: BootstrappingParameters;
   readonly force?: boolean;
+
+  /**
+   * The source of the bootstrap stack
+   *
+   * @default - modern v2-style bootstrapping
+   */
+  readonly source?: BootstrapSource;
 
   /**
    * Whether to execute the changeset or only create it and leave it in review.
@@ -93,6 +101,14 @@ export interface BootstrappingParameters {
    * @default - only the bootstrapped account can look up values in this environment
    */
   readonly trustedAccountsForLookup?: string[];
+
+  /**
+   * The list of AWS account IDs that should not be trusted by the bootstrapped environment.
+   * If these accounts are already trusted, they will be removed on bootstrapping.
+   *
+   * @default - no account will be untrusted.
+   */
+  readonly untrustedAccounts?: string[];
 
   /**
    * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.

@@ -92,6 +92,88 @@ test('configuration set with vdmOptions not configured', () => {
   });
 });
 
+describe('configuration set with account-level suppression list overrides', () => {
+  test('disable account-level suppression list', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableSuppressionList: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        SuppressedReasons: [],
+      },
+    });
+  });
+
+  test('throws error with both disableSuppressionList and suppressionReasons are specified', () => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        disableSuppressionList: true,
+        suppressionReasons: SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+      });
+    }).toThrow('When disableSuppressionList is true, suppressionReasons must not be specified.');
+  });
+
+  test('allows when disableSuppressionList is false and suppressionReasons are specified', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableSuppressionList: false,
+      suppressionReasons: SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        SuppressedReasons: ['BOUNCE', 'COMPLAINT'],
+      },
+    });
+  });
+
+  test('enable account-level suppression list explicitly', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableSuppressionList: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: Match.absent(),
+    });
+  });
+
+  test('override suppressionReasons to BOUNCES only', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      suppressionReasons: SuppressionReasons.BOUNCES_ONLY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        SuppressedReasons: ['BOUNCE'],
+      },
+    });
+  });
+
+  test('override suppressionReasons to COMPLAINTS only', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      suppressionReasons: SuppressionReasons.COMPLAINTS_ONLY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        SuppressedReasons: ['COMPLAINT'],
+      },
+    });
+  });
+
+  test('override suppressionReasons to BOUNCES and COMPLAINTS', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      suppressionReasons: SuppressionReasons.BOUNCES_AND_COMPLAINTS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        SuppressedReasons: ['BOUNCE', 'COMPLAINT'],
+      },
+    });
+  });
+});
+
 describe('maxDeliveryDuration', () => {
   test.each([Duration.millis(999), Duration.minutes(4)])('invalid duration less than 5 minutes %s', (maxDeliveryDuration) => {
     expect(() => {

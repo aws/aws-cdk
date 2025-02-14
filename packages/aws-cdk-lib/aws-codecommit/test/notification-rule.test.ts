@@ -59,6 +59,5 @@ describe('notification rule', () => {
         },
       ],
     });
-
   });
 });

@@ -153,6 +153,75 @@ describe('table', () => {
     });
   });
 
+  test('with point-in-time-recovery-specification', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+        recoveryPeriodInDays: 4,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: {
+            Ref: 'AWS::Region',
+          },
+          PointInTimeRecoverySpecification: {
+            PointInTimeRecoveryEnabled: true,
+            RecoveryPeriodInDays: 4,
+          },
+        },
+      ],
+    });
+  });
+
+  test('both point-in-time-recovery-specification and point-in-time-recovery set', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecovery: true,
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 5,
+        },
+      });
+    }).toThrow('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.');
+  });
+
+  test('recoveryPeriodInDays set out of bounds', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: true,
+          recoveryPeriodInDays: 36,
+        },
+      });
+    }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
+  });
+
+  test('recoveryPeriodInDays set but pitr disabled', () => {
+    const stack = new Stack(undefined, 'Stack');
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        pointInTimeRecoverySpecification: {
+          pointInTimeRecoveryEnabled: false,
+          recoveryPeriodInDays: 35,
+        },
+      });
+    }).toThrow('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.');
+  });
+
   test('with STANDARD table class', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
@@ -1183,7 +1252,6 @@ describe('table', () => {
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
-
 });
 
 describe('replica tables', () => {
@@ -2312,7 +2380,7 @@ describe('secondary indexes', () => {
     });
   });
 
-  test('with global secondary index wihtout read capacity inherits from table when billing mode is provisioned', () => {
+  test('with global secondary index without read capacity inherits from table when billing mode is provisioned', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
 
@@ -3105,6 +3173,71 @@ test('Resource policy test', () => {
             Version: '2012-10-17',
           },
         },
+      },
+    ],
+  });
+});
+
+test('Warm Throughput test on-demand', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    warmThroughput: {
+      readUnitsPerSecond: 13000,
+      writeUnitsPerSecond: 5000,
+    },
+    replicas: [{
+      region: 'us-west-2',
+    }],
+    globalSecondaryIndexes: [{
+      indexName: 'my-index-1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      warmThroughput: {
+        readUnitsPerSecond: 15000,
+        writeUnitsPerSecond: 6000,
+      },
+    },
+    {
+      indexName: 'my-index-2',
+      partitionKey: { name: 'gsi2pk', type: AttributeType.STRING },
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk', AttributeType: 'S' },
+      { AttributeName: 'gsi2pk', AttributeType: 'S' },
+    ],
+    WarmThroughput: {
+      ReadUnitsPerSecond: 13000,
+      WriteUnitsPerSecond: 5000,
+    },
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'my-index-1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
+        WarmThroughput: {
+          ReadUnitsPerSecond: 15000,
+          WriteUnitsPerSecond: 6000,
+        },
+      },
+      {
+        IndexName: 'my-index-2',
+        KeySchema: [
+          { AttributeName: 'gsi2pk', KeyType: 'HASH' },
+        ],
+        Projection: { ProjectionType: 'ALL' },
       },
     ],
   });

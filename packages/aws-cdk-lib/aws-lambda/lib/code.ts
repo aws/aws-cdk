@@ -7,6 +7,7 @@ import { IKey } from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents the Lambda Handler Code.
@@ -45,7 +46,7 @@ export abstract class Code {
   /**
    * Inline code for Lambda handler
    * @returns `LambdaInlineCode` with inline code.
-   * @param code The actual handler code (limited to 4KiB)
+   * @param code The actual handler code (the resulting zip file cannot exceed 4MB)
    */
   public static fromInline(code: string): InlineCode {
     return new InlineCode(code);
@@ -83,7 +84,7 @@ export abstract class Code {
     options?: CustomCommandOptions,
   ): AssetCode {
     if (command.length === 0) {
-      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+      throw new UnscopedValidationError('command must contain at least one argument. For example, ["node", "buildFile.js"].');
     }
 
     const cmd = command[0];
@@ -94,10 +95,10 @@ export abstract class Code {
       : spawnSync(cmd, commandArguments, options.commandOptions);
 
     if (proc.error) {
-      throw new Error(`Failed to execute custom command: ${proc.error}`);
+      throw new UnscopedValidationError(`Failed to execute custom command: ${proc.error}`);
     }
     if (proc.status !== 0) {
-      throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new UnscopedValidationError(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
 
     return new AssetCode(output, options);
@@ -275,11 +276,10 @@ export class S3Code extends Code {
     super();
 
     if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
+      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {
@@ -303,11 +303,10 @@ export class S3CodeV2 extends Code {
   constructor(bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
     super();
     if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
+      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketName;
-
   }
 
   public bind(_scope: Construct): CodeConfig {
@@ -332,7 +331,7 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new Error('Lambda inline code cannot be empty');
+      throw new UnscopedValidationError('Lambda inline code cannot be empty');
     }
   }
 
@@ -366,12 +365,12 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.', scope);
     }
 
     if (!this.asset.isZipArchive) {
-      throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
+      throw new ValidationError(`Asset must be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -385,7 +384,7 @@ export class AssetCode extends Code {
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error('bindToResource() must be called after bind()');
+      throw new ValidationError('bindToResource() must be called after bind()', resource);
     }
 
     const resourceProperty = options.resourceProperty || 'Code';
@@ -497,7 +496,7 @@ export class CfnParametersCode extends Code {
     if (this._bucketNameParam) {
       return this._bucketNameParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
+      throw new UnscopedValidationError('Pass CfnParametersCode to a Lambda Function before accessing the bucketNameParam property');
     }
   }
 
@@ -505,7 +504,7 @@ export class CfnParametersCode extends Code {
     if (this._objectKeyParam) {
       return this._objectKeyParam.logicalId;
     } else {
-      throw new Error('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
+      throw new UnscopedValidationError('Pass CfnParametersCode to a Lambda Function before accessing the objectKeyParam property');
     }
   }
 }
@@ -628,8 +627,8 @@ export class AssetImageCode extends Code {
       });
       this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
-        'Create a new Code instance for every stack.');
+      throw new ValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.', scope);
     }
 
     return {
@@ -644,7 +643,7 @@ export class AssetImageCode extends Code {
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
     if (!this.asset) {
-      throw new Error('bindToResource() must be called after bind()');
+      throw new ValidationError('bindToResource() must be called after bind()', resource);
     }
 
     const resourceProperty = options.resourceProperty || 'Code.ImageUri';

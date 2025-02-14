@@ -1,6 +1,7 @@
 import { Writable } from 'stream';
 import { type FunctionConfiguration, type UpdateFunctionConfigurationCommandInput } from '@aws-sdk/client-lambda';
 import { type ChangeHotswapResult, classifyChanges, type HotswappableChangeCandidate, PropDiffs } from './common';
+import { ToolkitError } from '../../toolkit/error';
 import { flatMap } from '../../util';
 import type { ILambdaClient, SDK } from '../aws-auth';
 import { CfnEvaluationException, type EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
@@ -245,7 +246,7 @@ async function evaluateLambdaFunctionProps(
         break;
       default:
         // we will never get here, but just in case we do throw an error
-        throw new Error(
+        throw new ToolkitError(
           'while apply()ing, found a property that cannot be hotswapped. Please report this at github.com/aws/aws-cdk/issues/new/choose',
         );
     }

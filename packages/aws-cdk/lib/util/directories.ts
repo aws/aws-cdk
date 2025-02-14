@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { ToolkitError } from '../toolkit/error';
 
 /**
  * Return a location that will be used as the CDK home directory.
@@ -17,7 +18,13 @@ export function cdkHomeDir() {
   const tmpDir = fs.realpathSync(os.tmpdir());
   let home;
   try {
-    home = path.join((os.userInfo().homedir ?? os.homedir()).trim(), '.cdk');
+    let userInfoHome: string | undefined = os.userInfo().homedir;
+    // Node returns this if the user doesn't have a home directory
+    /* istanbul ignore if: will not happen in normal setups */
+    if (userInfoHome == '/var/empty') {
+      userInfoHome = undefined;
+    }
+    home = path.join((userInfoHome ?? os.homedir()).trim(), '.cdk');
   } catch {}
   return process.env.CDK_HOME
     ? path.resolve(process.env.CDK_HOME)
@@ -46,7 +53,7 @@ export function rootDir(fail?: boolean) {
     }
     if (path.dirname(dirname) === dirname) {
       if (fail ?? true) {
-        throw new Error('Unable to find package manifest');
+        throw new ToolkitError('Unable to find package manifest');
       }
       return undefined;
     }

@@ -4,7 +4,7 @@ import {
   type StackEvent,
   StackStatus,
 } from '@aws-sdk/client-cloudformation';
-import { MockSdk, mockCloudFormationClient } from './mock-sdk';
+import { MockSdk, mockCloudFormationClient, restoreSdkMocksToDefault } from './mock-sdk';
 import {
   StackActivityMonitor,
   type IActivityPrinter,
@@ -19,6 +19,8 @@ beforeEach(() => {
 
   printer = new FakePrinter();
   monitor = new StackActivityMonitor(sdk.cloudFormation(), 'StackName', printer, undefined, new Date(T100)).start();
+
+  restoreSdkMocksToDefault();
 });
 
 describe('stack monitor event ordering and pagination', () => {

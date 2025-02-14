@@ -3,13 +3,14 @@ import * as path from 'path';
 import { TestContext } from './integ-test';
 import { RESOURCES_DIR } from './resources';
 import { AwsContext, withAws } from './with-aws';
-import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S, CdkCliOptions } from './with-cdk-app';
+import { cloneDirectory, installNpmPackages, TestFixture, DEFAULT_TEST_TIMEOUT_S, CdkCliOptions, DisableBootstrapContext, ensureBootstrapped } from './with-cdk-app';
 import { withTimeout } from './with-timeout';
 
 /**
  * Higher order function to execute a block with a CliLib Integration CDK app fixture
  */
-export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
+export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext & DisableBootstrapContext>(
+  block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
   return async (context: A) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
@@ -36,13 +37,24 @@ export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(
       }
 
       const alphaInstallationVersion = fixture.packages.requestedAlphaVersion();
+
+      // cli-lib-alpha has a magic alpha version in the old release pipeline,
+      // but will just mirror the CLI version in the new pipeline.
+      const cliLibVersion = process.env.CLI_LIB_VERSION_MIRRORS_CLI
+        ? `${fixture.packages.requestedCliVersion()}-alpha.0`
+        : alphaInstallationVersion;
+
       await installNpmPackages(fixture, {
         'aws-cdk-lib': installationVersion,
-        '@aws-cdk/cli-lib-alpha': alphaInstallationVersion,
+        '@aws-cdk/cli-lib-alpha': cliLibVersion,
         '@aws-cdk/aws-lambda-go-alpha': alphaInstallationVersion,
         '@aws-cdk/aws-lambda-python-alpha': alphaInstallationVersion,
         'constructs': '^10',
       });
+
+      if (!context.disableBootstrap) {
+        await ensureBootstrapped(fixture);
+      }
 
       await block(fixture);
     } catch (e: any) {
@@ -126,9 +138,11 @@ __EOS__`], {
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
+        // In these tests we want to make a distinction between stdout and sterr
+        CI: 'false',
         ...options.modEnv,
       },
     });
   }
-
 }
+

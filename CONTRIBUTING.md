@@ -1,18 +1,20 @@
 # Contributing to the AWS Cloud Development Kit
 
-Thanks for your interest in contributing to the AWS CDK! ❤️
+The AWS Cloud Development Kit (AWS CDK) is an open-source software development
+framework that you can contribute to. We highly value community contributions,
+which significantly impact the development of the AWS CDK. This document will
+guide you through learning about contributions, getting started with creating
+contributions, and understanding what is required to ensure that your
+efforts are impactful and your contribution process goes smoothly.
 
-We highly value contributions, with roughly half of all commits to the CDK
-coming from the community. We want to recognize all your hard work
-by getting your code merged as quickly as we can, so please read the guidance
-here carefully to make sure the review process goes smoothly.
+Thank you for your interest in contributing to the AWS CDK! We look forward to
+working with you to improve the AWS CDK for everyone. ❤️
 
-The CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
-Any code you submit will be released under that license.
+The AWS CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
+Any code that you submit will be released under that license.
 
-This document describes how to set up a development environment and submit your changes. Please
-let us know if it's not up-to-date (even better, submit a PR with your corrections ;-)).
-
+- [What are contributions?](#what-are-contributions)
+- [How contributions work](#how-contributions-work)
 - [Where To Contribute](#where-to-contribute)
   - [Demonstrating Value](#demonstrating-value)
   - [Publishing Your Own Package](#publishing-your-own-package)
@@ -52,47 +54,58 @@ let us know if it's not up-to-date (even better, submit a PR with your correctio
 - [Badges (Pilot Program)](#badges-pilot-program)
 - [Related Repositories](#related-repositories)
 
-## Contribution Workflow Diagram
+## What are contributions?
+
+A *contribution* refers to any improvement or addition to the AWS CDK from the
+community. You make contributions to the AWS CDK through the `aws-cdk`
+repository. They can include the following:
+
+- **New features** - New functionality for existing L2 constructs or new L2
+  constructs for new or existing AWS services.
+- **Bug fixes** - Address and fix issues in the code to improve functionality
+  or correct errors.
+- **Documentation** - Improve documentation, such as adding examples, enhancing
+  readability, or updating existing content.
+- **Tests** - Add or improve tests to increase code coverage and ensure
+  stability.
+- **Refactoring** - Improve the code structure or performance without altering
+  its behavior.
+
+Contributions can be *major* or *minor* in scope and size:
+
+- **Major contributions** - Includes major new additions, such as new L2
+  constructs, updates that change how the AWS CDK works, or enhancements to
+  existing AWS CDK features and functionality that introduce breaking changes.
+- **Minor contributions** - Includes bug fixes, improvements to existing L2
+  constructs, and other updates that don't alter how the AWS CDK works, such
+  as the addition of tests and changes to documentation.
+
+## How contributions work
+
+The following diagram illustrates how contributions work, from creation to completion:
+
 ```mermaid
 flowchart TD
-    A(Identify Desired Functionality) --> B(Search For Existing Artifacts)
-    B --> C[External Packages]
-    B --> D[Relevant Issues And PRs]
-    C --> E{"Does A High Quality
-            Solution Exist?"}
-    D --> F{"Is There A PR In Progress"}
-    E --> |Yes| G(("Ask How You
-                    Can Help"))
-    F --> |Yes| G
-    E --> |No| H(Evaluate Where To Contribute)
-    F --> |No| H
-    H --> I{"Is There Clear Evidence
-            For Inclusion In AWS-CDK"}
-    I --> |Yes| subEvidence
-    I --> |No| J{"Do You Want To Pursue Eventual
-                  Inclusion In AWS-CDK"}
-    J --> |No| L(("Create Private
-                  Implementation"))
-    J --> |Yes| K((Publish A Package))
-    subEvidence --> M(Make Pull Request)
-    M --> N{"Passes CI Checks, Linters,
-            And Follows Design Guidelines"}
-    N --> O(Review)
-    O --> |Accepted| R(Hooray!)
-    O --> P(Changes Requested)
-    P --> Q(Make Changes)
-    Q --> O
-    O --> |Refused| K
-
-subgraph subEvidence[Gather Evidence]
-    direction LR
-    engagement[Engagement from Multiple users]
-    core[Intersects With Core Framework Concerns]
-    quality["Clear, Well Defined, Solution With
-            Limited Scope And Clear Boundaries"]
-    external[External Packages]
-    issues[Relevant Issues And PRs]
-end
+  A(Identify desired functionality) --> B(Consider a contribution)
+  B --> C[External packages]
+  B --> D[Relevant Issues and PRs]
+  C --> E{Is a contribution the right solution?}
+  D --> E
+  E --> |Yes|F{Is your contribution major or minor?}
+  E --> |No|G((Pursue alternative solutions))
+  F --> |Major|H(Submit an RFC to discuss)
+  F --> |Minor|I(Code your changes)
+  H --> Q{Is a contribution the right solution?}
+  I --> J(Submit your PR)
+  J --> K[PR passes checks, linters, and follows design guidelines]
+  K --> L[PR is reviewed]
+  L --> M{Should PR be approved?}
+  M --> |Yes|N((PR is approved and merged))
+  M --> |No|O{Should PR be modified or closed?}
+  O --> |Modified|I
+  O --> |Closed|P((PR is closed))
+  Q --> |Yes|I
+  Q --> |No|S((RFC is closed))
 ```
 
 ## Where to Contribute
@@ -123,7 +136,7 @@ All of this information will help make it clear to reviewers why your contributi
 
 This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, PyPI, Maven Central, NuGet, and GitHub (for Go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing its inclusion.
 
-#### Trust and Third Party Packages 
+#### Trust and Third Party Packages
 
 An argument we commonly hear why contributors don't want to publish their contributions in their own packages, is that organizations have restrictions on what packages they allow to be used and these restrictions commonly include limiting usage of packages to those owned and distributed only from trusted sources. We recognize trust is an important part of the software dependency chain, and we take that into consideration when evaluating contributions in aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a system that makes it, potentially, many multiple times bigger, has a cost on usability. Additionally, as the surface area widens, the aws-cdk team becomes stretched ever thinner and isn't able to properly maintain what we own.
 
@@ -676,13 +689,19 @@ CDK integration tests.
 
 * If not obvious (i.e. from unit tests), describe how you verified that your change works.
 
-* If this PR includes breaking changes, they must be listed at the end in the following format
+* If this PR includes breaking changes, they must be listed at the end in the following format *before* the `---` or else it will not be included in the CHANGELOG
   (notice how multiple breaking changes should be formatted):
 
   ```
   BREAKING CHANGE: Description of what broke and how to achieve this behavior now
   * **module-name:** Another breaking change
   * **module-name:** Yet another breaking change
+
+  ---
+  
+  *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
+  
+  ---
   ```
 
   Breaking changes are only allowed in experimental libraries. Experimental
@@ -717,6 +736,10 @@ mergeable state. This means that the pull request:
 To make this easier we have a `pr/needs-review` label that we can add to each
 PR. If you do not see this label on your PR then it means that something needs
 to be fixed before it can be reviewed.
+
+> [!NOTE]  
+> The `aws-cdk` repository is frequently updated, so PR branches may quickly become out-of-date, showing "This branch is out-of-date with the base branch." This is not an issue as long as there are no conflicts with the newly merged commits. Once the PR is approved, our automation will update it with the latest `main` branch and handle the merge. No action is needed on your part.
+
 
 #### Adding construct runtime dependencies
 
