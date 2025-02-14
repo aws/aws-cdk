@@ -14,12 +14,16 @@ import { type RollbackOptions } from '../actions/rollback';
 import { type SynthOptions } from '../actions/synth';
 import { patternsArrayForWatch, WatchOptions } from '../actions/watch';
 import { type SdkOptions } from '../api/aws-auth';
-import { DEFAULT_TOOLKIT_STACK_NAME, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups, formatTime, StackDetails } from '../api/aws-cdk';
+import { DEFAULT_TOOLKIT_STACK_NAME, Bootstrapper, BootstrapEnvironmentOptions, SdkProvider, SuccessfulDeployStackResult, StackCollection, Deployments, HotswapMode, StackActivityProgress, ResourceMigrator, obscureTemplate, serializeStructure, tagsForStack, CliIoHost, validateSnsTopicArn, Concurrency, WorkGraphBuilder, AssetBuildNode, AssetPublishNode, StackNode, formatErrorMessage, CloudWatchLogEventMonitor, findCloudWatchLogGroups, formatTime, StackDetails } from '../api/aws-cdk';
 import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, ICloudAssemblySource, StackSelectionStrategy } from '../api/cloud-assembly';
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
 import { asSdkLogger, withAction, Timer, confirm, error, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor, withTrimmedWhitespace } from '../api/io/private';
+
+// Must use a require() otherwise esbuild complains about calling a namespace
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pLimit: typeof import('p-limit') = require('p-limit');
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -151,6 +155,56 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
       ioHost: withAction(this.ioHost, 'assembly'),
       sdkProvider: await this.sdkProvider('assembly'),
     };
+  }
+
+  /**
+   * Bootstrap Action
+   *
+   * Bootstraps the CDK Toolkit stack in the environments used by the specified stack(s).
+   */
+
+  public async bootstrap(cx: ICloudAssemblySource, options: BootstrapEnvironmentOptions = {}): Promise<void> {
+    const ioHost = withAction(this.ioHost, 'bootstrap');
+    const assembly = await this.assemblyFromSource(cx);
+    const stackCollection = assembly.selectStacksV2({
+      patterns: ['**'],
+      strategy: StackSelectionStrategy.ALL_STACKS,
+    });
+
+    const bootstrapper = new Bootstrapper(options.source);
+
+    const environments = stackCollection.stackArtifacts.map(stack => stack.environment);
+    const sdkProvider = await this.sdkProvider('bootstrap');
+    const limit = pLimit(20);
+
+    // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+    await Promise.all(environments.map((environment: cxapi.Environment) => limit(async () => {
+      await ioHost.notify(info(`${chalk.bold(environment.name)}: bootstrapping...`));
+      const bootstrapTimer = Timer.start();
+
+      try {
+        const bootstrapResult = await bootstrapper.bootstrapEnvironment(environment, sdkProvider, {
+          toolkitStackName: this.toolkitStackName,
+          roleArn: options.roleArn,
+          terminationProtection: options.terminationProtection,
+          parameters: options.parameters,
+        });
+        const message = bootstrapResult.noOp
+          ? ` ✅  ${environment.name} (no changes)`
+          : ` ✅  ${environment.name}`;
+
+        await ioHost.notify(success('\n' + message));
+        await bootstrapTimer.endAs(ioHost, 'bootstrap');
+      } catch (e) {
+        await ioHost.notify({
+          time: new Date(),
+          level: 'error',
+          code: 'CDK_TOOLKIT_E9900' as IoMessageCode,
+          message: `\n ❌  ${chalk.bold(environment.name)} failed: ${formatErrorMessage(e)}`,
+        });
+        throw e;
+      }
+    })));
   }
 
   /**

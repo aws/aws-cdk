@@ -37,7 +37,7 @@ export class Timer {
    * Ends the current timer as a specified timing and notifies the IoHost.
    * @returns the elapsed time
    */
-  public async endAs(ioHost: ActionAwareIoHost, type: 'synth' | 'deploy' | 'rollback' | 'destroy') {
+  public async endAs(ioHost: ActionAwareIoHost, type: 'synth' | 'deploy' | 'rollback' | 'destroy' | 'bootstrap') {
     const duration = this.end();
     const { code, text } = timerMessageProps(type);
 
@@ -49,7 +49,7 @@ export class Timer {
   }
 }
 
-function timerMessageProps(type: 'synth' | 'deploy' | 'rollback'| 'destroy'): {
+function timerMessageProps(type: 'synth' | 'deploy' | 'rollback'| 'destroy' | 'bootstrap'): {
   code: VALID_CODE;
   text: string;
 } {
@@ -58,5 +58,6 @@ function timerMessageProps(type: 'synth' | 'deploy' | 'rollback'| 'destroy'): {
     case 'deploy': return { code: 'CDK_TOOLKIT_I5000', text: 'Deployment' };
     case 'rollback': return { code: 'CDK_TOOLKIT_I6000', text: 'Rollback' };
     case 'destroy': return { code: 'CDK_TOOLKIT_I7000', text: 'Destroy' };
+    case 'bootstrap': return { code: 'CDK_TOOLKIT_I9000', text: 'Bootstrap' };
   }
 }
