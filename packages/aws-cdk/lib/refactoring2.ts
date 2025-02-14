@@ -1,12 +1,13 @@
 import { createHash } from 'crypto';
 import type * as cxapi from '@aws-cdk/cx-api';
+import { Environment } from '@aws-cdk/cx-api';
 import {
   type CreateStackRefactorCommandInput,
   ResourceLocation,
   StackDefinition,
 } from '@aws-sdk/client-cloudformation';
 import { ResourceMapping } from '@aws-sdk/client-cloudformation/dist-types/models/models_0';
-import { ICloudFormationClient, SdkProvider, Template } from './api';
+import { CloudFormationStack, ICloudFormationClient, SdkProvider, Template } from './api';
 import { Mode } from './api/plugin';
 import { info } from './logging';
 
@@ -16,38 +17,45 @@ export class AmbiguityError extends Error {
   }
 }
 
+// TODO rename
 export interface StackFoo {
   readonly environment: cxapi.Environment;
   readonly stackName: string;
   readonly template: Template;
 }
 
-// TODO rename
-export async function refactorStacks(
-  before: StackFoo[],
-  after: StackFoo[],
-  sdkProvider: SdkProvider,
-): Promise<void> {
-  const foo: Map<cxapi.Environment, [StackFoo[], StackFoo[]]> = new Map();
+/**
+ * Performs a refactor if any resources were renamed or moved across stacks
+ */
+export async function tryRefactor(after: StackFoo[], sdkProvider: SdkProvider): Promise<void> {
+  const before = await maloca(after, sdkProvider);
+  const stackGroups: Map<string, [StackFoo[], StackFoo[]]> = new Map();
+  const environments: Map<string, Environment> = new Map();
 
+  // TODO Remove duplication
   before.forEach(stack => {
-    if (foo.has(stack.environment)) {
-      foo.get(stack.environment)![0].push(stack);
+    const key = hashObject(stack.environment);
+    environments.set(key, stack.environment);
+    if (stackGroups.has(key)) {
+      stackGroups.get(key)![0].push(stack);
     } else {
-      foo.set(stack.environment, [[stack], []]);
+      stackGroups.set(key, [[stack], []]);
     }
   });
 
   after.forEach(stack => {
-    if (foo.has(stack.environment)) {
-      foo.get(stack.environment)![1].push(stack);
+    const key = hashObject(stack.environment);
+    environments.set(key, stack.environment);
+    if (stackGroups.has(key)) {
+      stackGroups.get(key)![1].push(stack);
     } else {
-      foo.set(stack.environment, [[], [stack]]);
+      stackGroups.set(key, [[], [stack]]);
     }
   });
 
-  for (let [env, [oldStacks, newStacks]] of foo.entries()) {
-    const cfnClient = (await sdkProvider.forEnvironment(env, Mode.ForWriting, {
+  for (let [key, [oldStacks, newStacks]] of stackGroups.entries()) {
+    const environment = environments.get(key)!;
+    const cfnClient = (await sdkProvider.forEnvironment(environment, Mode.ForWriting, {
       // TODO use a parameterized ARN
       // eslint-disable-next-line @cdklabs/no-literal-partition
       assumeRoleArn: 'arn:aws:iam::669420849322:role/cdk-hnb659fds-deploy-role-669420849322-us-east-2',
@@ -57,7 +65,36 @@ export async function refactorStacks(
   }
 }
 
+async function maloca(stacks: StackFoo[], sdkProvider: SdkProvider): Promise<StackFoo[]> {
+  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+  return (await Promise.all(stacks.map(async s => {
+    const cfn = (await sdkProvider.forEnvironment(s.environment, Mode.ForWriting, {
+      // TODO use a parameterized ARN
+      // eslint-disable-next-line @cdklabs/no-literal-partition
+      assumeRoleArn: 'arn:aws:iam::669420849322:role/cdk-hnb659fds-deploy-role-669420849322-us-east-2',
+    })).sdk.cloudFormation();
+
+    const cfnStack = await CloudFormationStack.lookup(cfn, s.stackName, true);
+
+    if (cfnStack.exists) {
+      const result: StackFoo = {
+        environment: s.environment,
+        template: await cfnStack.template(),
+        stackName: s.stackName,
+      };
+
+      return result;
+    } else {
+      return undefined;
+    }
+  }))).filter(Boolean) as StackFoo[];
+}
+
 async function doRefactor(cfnClient: ICloudFormationClient, input: CreateStackRefactorCommandInput): Promise<void> {
+  if (input.ResourceMappings?.length === 0) {
+    return;
+  }
+
   const stackRefactor = await cfnClient.createStackRefactor(input);
 
   info(`Stack refactor created: ${stackRefactor.StackRefactorId}`);
@@ -123,21 +160,23 @@ function computeMappings(x: Record<string, [ResourceLocation[], ResourceLocation
 function removeCommonResources(
   m: Record<string, [ResourceLocation[], ResourceLocation[]]>,
 ): Record<string, [ResourceLocation[], ResourceLocation[]]> {
-  // iterate over m, removing, from each array in the pair,
-  // the elements that are in both
   const result: Record<string, [ResourceLocation[], ResourceLocation[]]> = {};
   for (const [hash, [before, after]] of Object.entries(m)) {
     const common = before.filter(b =>
-      after.some(a => a.LogicalResourceId === b.LogicalResourceId),
+      after.some(a => eq(a, b)),
     );
     result[hash] = [
       before.filter(b =>
-        !common.some(c => c.LogicalResourceId === b.LogicalResourceId),
+        !common.some(c => eq(b, c)),
       ),
       after.filter(a =>
-        !common.some(c => c.LogicalResourceId === a.LogicalResourceId),
+        !common.some(c => eq(a, c)),
       ),
     ];
+  }
+
+  function eq(a: ResourceLocation, b: ResourceLocation): boolean {
+    return a.LogicalResourceId === b.LogicalResourceId && a.StackName === b.StackName;
   }
 
   return result;
