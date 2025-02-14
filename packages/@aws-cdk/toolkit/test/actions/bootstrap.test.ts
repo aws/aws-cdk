@@ -15,7 +15,7 @@ import * as path from 'node:path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { StringWithoutPlaceholders } from '../../../../aws-cdk/lib/api/util/placeholders';
-import { BootstrapEnvironmentOptions, Mode, SdkProvider, Bootstrapper } from '../../lib/api/aws-cdk';
+import { BootstrapEnvironmentOptions, SdkProvider, Bootstrapper } from '../../lib/api/aws-cdk';
 import { Toolkit } from '../../lib/toolkit';
 import { TestIoHost } from '../_helpers';
 import { TestCloudAssemblySource } from '../_helpers/test-cloud-assembly-source';
