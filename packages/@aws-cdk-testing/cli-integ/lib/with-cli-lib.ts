@@ -41,7 +41,7 @@ export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext &
       // cli-lib-alpha has a magic alpha version in the old release pipeline,
       // but will just mirror the CLI version in the new pipeline.
       const cliLibVersion = process.env.CLI_LIB_VERSION_MIRRORS_CLI
-        ? fixture.packages.requestedCliVersion()
+        ? `${fixture.packages.requestedCliVersion()}-alpha.0`
         : alphaInstallationVersion;
 
       await installNpmPackages(fixture, {
