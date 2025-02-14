@@ -1433,7 +1433,7 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
 /**
  * The default values of each of these flags in the current major version.
  *
- * This is the effective value of the flag, unless it's overriden via
+ * This is the effective value of the flag, unless it's overridden via
  * context.
  *
  * Adding new flags here is only allowed during the pre-release period of a new
