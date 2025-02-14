@@ -180,6 +180,10 @@ export class CdkToolkit {
     let diffs = 0;
     const parameterMap = buildParameterMap(options.parameters);
 
+    if (options.importExistingResources && !(options.changeSet ?? true)) {
+      throw new ToolkitError('--import-existing-resources cannot be enabled without changeSet');
+    }
+
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
@@ -245,9 +249,13 @@ export class CdkToolkit {
               sdkProvider: this.props.sdkProvider,
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
+              importExistingResources: options.importExistingResources,
               stream,
             });
           } else {
+            if (options.importExistingResources) {
+              throw new ToolkitError(`--import-existing-resources diff cannot be enabled for a stack that does not exist yet. StackName: ${stack.stackName}`);
+            }
             debug(
               `the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`,
             );
@@ -1386,6 +1394,13 @@ export interface DiffOptions {
    * @default true
    */
   changeSet?: boolean;
+
+  /**
+   * Indicates if the stack set imports resources that already exist.
+   *
+   * @default - false
+   */
+  readonly importExistingResources?: boolean;
 }
 
 interface CfnDeployOptions {
