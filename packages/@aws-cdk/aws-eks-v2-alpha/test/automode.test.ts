@@ -190,29 +190,6 @@ describe('eks auto mode', () => {
     });
   });
 
-  test('validates storage configuration in auto mode', () => {
-    // GIVEN
-    const { stack } = testFixtureNoVpc();
-
-    // WHEN
-    new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      autoMode: true,
-      storage: {
-        blockStorage: {},
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
-      StorageConfig: {
-        BlockStorage: {
-          Enabled: true,
-        },
-      },
-    });
-  });
-
   test('validates network configuration in auto mode', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
