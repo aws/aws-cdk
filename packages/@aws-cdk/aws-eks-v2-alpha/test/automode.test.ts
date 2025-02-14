@@ -1,5 +1,6 @@
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 import { testFixtureNoVpc } from './util';
 
@@ -77,7 +78,7 @@ describe('eks auto mode', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
       ComputeConfig: {
         Enabled: false,
-        NodePools: ['system', 'general-purpose'],
+        NodePools: Match.absent(),
       },
       KubernetesNetworkConfig: {
         ElasticLoadBalancing: {
@@ -107,6 +108,188 @@ describe('eks auto mode', () => {
       ComputeConfig: {
         NodePools: Match.arrayEquals(['system', 'general-purpose']),
       },
+    });
+  });
+
+  test('validates node pool values', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN/THEN
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        autoMode: true,
+        compute: {
+          nodePools: ['invalid-pool'],
+        },
+      });
+    }).toThrow(/Invalid node pool values: invalid-pool. Valid values are: general-purpose, system/);
+  });
+
+  test('validates case-sensitive node pool values', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN/THEN
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        autoMode: true,
+        compute: {
+          nodePools: ['System', 'GENERAL-PURPOSE'],
+        },
+      });
+    }).toThrow(/Invalid node pool values: System, GENERAL-PURPOSE. Valid values are: general-purpose, system/);
+  });
+
+  test('accepts valid node pool values in any order', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      compute: {
+        nodePools: ['general-purpose', 'system'],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      ComputeConfig: {
+        NodePools: Match.arrayEquals(['general-purpose', 'system']),
+      },
+    });
+  });
+
+  test('can provide custom node role in auto mode', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      compute: {
+        nodeRole: customRole,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      ComputeConfig: {
+        NodeRoleArn: {
+          'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'],
+        },
+      },
+    });
+  });
+
+  test('validates storage configuration in auto mode', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      storage: {
+        blockStorage: {},
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      StorageConfig: {
+        BlockStorage: {
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('validates network configuration in auto mode', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      kubernetesNetwork: {
+        elasticLoadBalancing: {
+          enabled: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      KubernetesNetworkConfig: {
+        ElasticLoadBalancing: {
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('verifies node role has required managed policies in auto mode', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      compute: {
+        nodeRole: customRole,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: Match.arrayWith([
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSClusterPolicy']],
+        },
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSComputePolicy']],
+        },
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSBlockStoragePolicy']],
+        },
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSLoadBalancingPolicy']],
+        },
+      ]),
+    });
+  });
+
+  test('supports auto mode with private endpoint access', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      autoMode: true,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      ResourcesVpcConfig: Match.objectLike({
+        EndpointPrivateAccess: true,
+        EndpointPublicAccess: false,
+      }),
     });
   });
 

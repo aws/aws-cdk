@@ -581,6 +581,7 @@ export class EndpointAccess {
 export interface ComputeConfig {
   /**
    * Names of nodePools to include in Auto Mode.
+   * Node pool values are case-sensitive and must be `general-purpose` and/or `system`.
    *
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html
    *
@@ -1224,6 +1225,15 @@ export class Cluster extends ClusterBase {
 
     // for better readability
     const autoModeEnabled = !autoModeDisabled;
+
+    // Node pool values are case-sensitive and must be general-purpose and/or system
+    if (props.compute?.nodePools) {
+      const validNodePools = ['general-purpose', 'system'];
+      const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
+      if (invalidPools.length > 0) {
+        throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+      }
+    }
 
     // sts:TagSession is required for EKS Auto Mode or when using EKS Pod Identity features.
     // see https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
