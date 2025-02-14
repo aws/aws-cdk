@@ -1310,6 +1310,8 @@ pipeline.addStage({
 The `InspectorEcrImageScanAction` allows you to scan the image for vulnerabilities in your container applications.
 
 ```ts
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
 declare const pipeline: codepipeline.Pipeline;
 declare const repository: ecr.IRepository;
 
