@@ -12,6 +12,15 @@ export enum VpcSubnetGroupType {
 
   /** Isolated subnet group type. */
   ISOLATED = 'Isolated',
+
+  /** Public Outpost subnet group type. */
+  PUBLIC_OUTPOST = 'PublicOutpost',
+
+  /** Private Outpost subnet group type. */
+  PRIVATE_OUTPOST = 'PrivateOutpost',
+
+  /** Isolated Outpost subnet group type. */
+  ISOLATED_OUTPOST = 'IsolatedOutpost',
 }
 
 /**
@@ -145,6 +154,69 @@ export interface VpcContextResponse {
    * Element count: #(availabilityZones) · #(isolatedGroups)
    */
   readonly isolatedSubnetRouteTableIds?: string[];
+
+  /**
+   * IDs of all public outpost subnets
+   *
+   * Element count: #(availabilityZones) · #(publicOutpostGroups)
+   */
+  readonly publicOutpostSubnetIds?: string[];
+
+  /**
+   * Name of public outpost subnet groups
+   *
+   * Element count: #(publicOutpostGroups)
+   */
+  readonly publicOutpostSubnetNames?: string[];
+
+  /**
+   * Route Table IDs of public outpost subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(publicOutpostGroups)
+   */
+  readonly publicOutpostSubnetRouteTableIds?: string[];
+
+  /**
+   * IDs of all private outpost subnets
+   *
+   * Element count: #(availabilityZones) · #(privateOutpostGroups)
+   */
+  readonly privateOutpostSubnetIds?: string[];
+
+  /**
+   * Name of private outpost subnet groups
+   *
+   * Element count: #(privateOutpostGroups)
+   */
+  readonly privateOutpostSubnetNames?: string[];
+
+  /**
+   * Route Table IDs of private outpost subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(privateOutpostGroups)
+   */
+  readonly privateOutpostSubnetRouteTableIds?: string[];
+
+  /**
+   * IDs of all isolated outpost subnets
+   *
+   * Element count: #(availabilityZones) · #(isolatedOutpostGroups)
+   */
+  readonly isolatedOutpostSubnetIds?: string[];
+
+  /**
+   * Name of isolated outpost subnet groups
+   *
+   * Element count: #(isolatedOutpostGroups)
+   */
+  readonly isolatedOutpostSubnetNames?: string[];
+
+  /**
+   * Route Table IDs of isolated outpost subnet groups.
+   *
+   * Element count: #(availabilityZones) · #(isolatedOutpostGroups)
+   */
+  readonly isolatedOutpostSubnetRouteTableIds?: string[];
 
   /**
    * The VPN gateway ID

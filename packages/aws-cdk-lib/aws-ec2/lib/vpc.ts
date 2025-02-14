@@ -1,8 +1,9 @@
 import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
-  CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+  CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnLocalGatewayRouteTableVPCAssociation,
+  CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC,
+  CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
 import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
 import { NatProvider } from './nat';
@@ -280,6 +281,50 @@ export enum SubnetType {
    * Public subnets route outbound traffic via an Internet Gateway.
    */
   PUBLIC = 'Public',
+
+  /**
+   * Subnet deployed on an AWS Outpost that connects to the Internet
+   *
+   * Instances in a Public subnet can connect to the Internet and can be
+   * connected to from the Internet as long as they are launched with public
+   * IPs (controlled on the AutoScalingGroup or other constructs that launch
+   * instances).
+   *
+   * Public subnets route outbound traffic via an Internet Gateway.
+   */
+  PUBLIC_OUTPOST = 'Public_Outpost',
+
+  /**
+   * Subnet deployed on an AWS Outpost that routes to the internet, but not vice versa.
+   *
+   * Instances in a private subnet can connect to the Internet, but will not
+   * allow connections to be initiated from the Internet. Egress to the internet will
+   * need to be provided.
+   * NAT Gateway(s) are the default solution to providing this subnet type the ability to route Internet traffic.
+   * If a NAT Gateway is not required or desired, set `natGateways:0` or use
+   * `SubnetType.PRIVATE_OUTPOST_ISOLATED` instead.
+   *
+   * By default, a NAT gateway is created in every public subnet for maximum availability.
+   * Be aware that you will be charged for NAT gateways.
+   *
+   * Normally a Private subnet will use a NAT gateway in the same AZ, but
+   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
+   * gateway from another AZ will be used instead.
+   */
+  PRIVATE_OUTPOST_WITH_EGRESS = 'Private_Outpost',
+
+  /**
+   * Subnet deployed on an AWS Outpost that does not route traffic to the Internet (in this VPC),
+   * and as such, do not require NAT gateways.
+   *
+   * Isolated subnets can only connect to or be connected to from other
+   * instances in the same VPC. A default VPC configuration will not include
+   * isolated subnets.
+   *
+   * This can be good for subnets with RDS or Elasticache instances,
+   * or which route Internet traffic through a peer VPC.
+   */
+  PRIVATE_OUTPOST_ISOLATED = 'Isolated_Outpost',
 }
 
 /**
@@ -440,6 +485,21 @@ abstract class VpcBase extends Resource implements IVpc {
   public abstract readonly isolatedSubnets: ISubnet[];
 
   /**
+   * List of public subnets in this VPC deployed to an Outpost
+   */
+  public abstract readonly publicOutpostSubnets: ISubnet[];
+
+  /**
+   * List of private subnets in this VPC deployed to an Outpost
+   */
+  public abstract readonly privateOutpostSubnets: ISubnet[];
+
+  /**
+   * List of isolated subnets in this VPC deployed to an Outpost
+   */
+  public abstract readonly isolatedOutpostSubnets: ISubnet[];
+
+  /**
    * AZs for this VPC
    */
   public abstract readonly availabilityZones: string[];
@@ -476,11 +536,15 @@ abstract class VpcBase extends Resource implements IVpc {
     const pubs = new Set(this.publicSubnets);
 
     return {
-      subnetIds: subnets.map(s => s.subnetId),
-      get availabilityZones(): string[] { return subnets.map(s => s.availabilityZone); },
-      internetConnectivityEstablished: tap(new CompositeDependable(), d => subnets.forEach(s => d.add(s.internetConnectivityEstablished))),
+      subnetIds: subnets.map((s) => s.subnetId),
+      get availabilityZones(): string[] {
+        return subnets.map((s) => s.availabilityZone);
+      },
+      internetConnectivityEstablished: tap(new CompositeDependable(), (d) =>
+        subnets.forEach((s) => d.add(s.internetConnectivityEstablished)),
+      ),
       subnets,
-      hasPublic: subnets.some(s => pubs.has(s)),
+      hasPublic: subnets.some((s) => pubs.has(s)),
       isPendingLookup: this.incompleteSubnetDefinition,
     };
   }
@@ -507,7 +571,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     // Propagate routes on route tables associated with the right subnets
     const vpnRoutePropagation = options.vpnRoutePropagation ?? [{}];
-    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
+    const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map((s) => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
       Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
@@ -634,6 +698,9 @@ abstract class VpcBase extends Resource implements IVpc {
       [SubnetType.PRIVATE_WITH_EGRESS]: this.privateSubnets,
       [SubnetType.PRIVATE]: this.privateSubnets,
       [SubnetType.PUBLIC]: this.publicSubnets,
+      [SubnetType.PUBLIC_OUTPOST]: this.publicOutpostSubnets,
+      [SubnetType.PRIVATE_OUTPOST_WITH_EGRESS]: this.privateOutpostSubnets,
+      [SubnetType.PRIVATE_OUTPOST_ISOLATED]: this.isolatedOutpostSubnets,
     };
 
     const subnets = allSubnets[subnetType];
@@ -825,6 +892,114 @@ export interface VpcAttributes {
    * @default - Retrieving the IPv4 CIDR block of any isolated subnet will fail
    */
   readonly isolatedSubnetIpv4CidrBlocks?: string[];
+
+  /**
+   * List of public outpost subnet IDs
+   *
+   * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any public outpost subnets
+   */
+  readonly publicOutpostSubnetIds?: string[];
+
+  /**
+   * List of names for the public outpost subnets
+   *
+   * Must be undefined or have a name for every public outpost subnet group.
+   *
+   * @default - All public outpost subnets will have the name `PublicOutpost`
+   */
+  readonly publicOutpostSubnetNames?: string[];
+
+  /**
+   * List of IDs of route tables for the public outpost subnets.
+   *
+   * Must be undefined or have a name for every public outpost subnet group.
+   *
+   * @default - Retrieving the route table ID of any public outpost subnet will fail
+   */
+  readonly publicOutpostSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the public outpost subnets.
+   *
+   * Must be undefined or have an entry for every public outpost subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any public outpost subnet will fail
+   */
+  readonly publicOutpostSubnetIpv4CidrBlocks?: string[];
+
+  /**
+   * List of private outpost subnet IDs
+   *
+   * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any private outpost subnets
+   */
+  readonly privateOutpostSubnetIds?: string[];
+
+  /**
+   * List of names for the private outpost subnets
+   *
+   * Must be undefined or have a name for every private outpost subnet group.
+   *
+   * @default - All private outpost subnets will have the name `PrivateOutpost`
+   */
+  readonly privateOutpostSubnetNames?: string[];
+
+  /**
+   * List of IDs of route tables for the private outpost subnets.
+   *
+   * Must be undefined or have a name for every private outpost subnet group.
+   *
+   * @default - Retrieving the route table ID of any private outpost subnet will fail
+   */
+  readonly privateOutpostSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the private outpost subnets.
+   *
+   * Must be undefined or have an entry for every private outpost subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any private outpost subnet will fail
+   */
+  readonly privateOutpostSubnetIpv4CidrBlocks?: string[];
+
+  /**
+   * List of isolated outpost subnet IDs
+   *
+   * Must be undefined or match the availability zones in length and order.
+   *
+   * @default - The VPC does not have any isolated outpost subnets
+   */
+  readonly isolatedOutpostSubnetIds?: string[];
+
+  /**
+   * List of names for the isolated outpost subnets
+   *
+   * Must be undefined or have a name for every isolated outpost subnet group.
+   *
+   * @default - All isolated outpost subnets will have the name `IsolatedOutpost`
+   */
+  readonly isolatedOutpostSubnetNames?: string[];
+
+  /**
+   * List of IDs of route tables for the isolated outpost subnets.
+   *
+   * Must be undefined or have a name for every isolated outpost subnet group.
+   *
+   * @default - Retrieving the route table ID of any isolated outpost subnet will fail
+   */
+  readonly isolatedOutpostSubnetRouteTableIds?: string[];
+
+  /**
+   * List of IPv4 CIDR blocks for the isolated subnets.
+   *
+   * Must be undefined or have an entry for every isolated outpost subnet group.
+   *
+   * @default - Retrieving the IPv4 CIDR block of any isolated outpost subnet will fail
+   */
+  readonly isolatedOutpostSubnetIpv4CidrBlocks?: string[];
 
   /**
    * VPN gateway's identifier
@@ -1135,6 +1310,16 @@ export interface VpcProps {
    * @default Ipv6Addresses.amazonProvided
    */
   readonly ipv6Addresses?: IIpv6Addresses;
+
+  /**
+   * A list of Local Gateway Route Table IDs to associate with the VPC
+   *
+   * This is only valid if one or more subnet configurations contains a
+   * PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED subnet
+   *
+   * @default - No Local Gateway Route Table IDs will be associated with the VPC
+   */
+  readonly localGatewayRouteTableIds?: string[];
 }
 
 /**
@@ -1150,6 +1335,21 @@ export enum DefaultInstanceTenancy {
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
   DEDICATED = 'dedicated',
+}
+
+/**
+ * If the subnet is on an AWS Outpost, controls if the default route (0.0.0.0/0) routes traffic to the local gateway or the AWS Region
+ */
+export enum OutpostDefaultRoute {
+  /**
+   * Route traffic via the Local Gateway
+   */
+  ON_PREMISE = 'on-premise',
+
+  /**
+   * Route traffic to the AWS Region
+   */
+  REGION = 'region',
 }
 
 /**
@@ -1217,6 +1417,41 @@ export interface SubnetConfiguration {
    * @default true
    */
   readonly ipv6AssignAddressOnCreation?: boolean;
+
+  /**
+   * Provision the subnet on an Outpost rather than in a Region
+   *
+   * Note a subnet on an Outpost will only be deployed in the specified outpostAvailabilityZone
+   *
+   * @default - Throws an error if subnet type is an OUPOST subnet type
+   */
+  readonly outpostArn?: string;
+
+  /**
+   * The Availability Zone the Outpost is attached to
+   *
+   * Note that this value is only used for outpostArn is defined
+   *
+   * @default - Throws an error if subnet type is an OUPOST subnet type
+   */
+  readonly outpostAvailabilityZone?: string;
+
+  /**
+   * Controls if the default route (0.0.0.0/0) routes traffic to the local gateway or the AWS Region
+   *
+   * Note this is specific to IPv6 addresses.
+   *
+   * @default OutpostDefaultRoute.ON_PREMISE
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
+
+  /**
+   * The local gateway to route traffic if the subnet is an OUTPOST type subnet, and OutpostDefaultRoute
+   * is set to ON_PREMISE
+   *
+   * @default - Throws an error if subnet type is an OUTPOST subnet type and OutpostDefaultRoute is set to ON_PREMISE
+   */
+  readonly localGatewayId?: string;
 }
 
 /**
@@ -1416,6 +1651,21 @@ export class Vpc extends VpcBase {
    * List of isolated subnets in this VPC
    */
   public readonly isolatedSubnets: ISubnet[] = [];
+
+  /**
+   * List of public subnets in this VPC deployed to an Outpost
+   */
+  public readonly publicOutpostSubnets: ISubnet[] = [];
+
+  /**
+   * List of private subnets in this VPC deployed to an Outpost
+   */
+  public readonly privateOutpostSubnets: ISubnet[] = [];
+
+  /**
+   * List of isolated subnets in this VPC deployed to an Outpost
+   */
+  public readonly isolatedOutpostSubnets: ISubnet[] = [];
 
   /**
    * AZs for this VPC
@@ -1633,12 +1883,59 @@ export class Vpc extends VpcBase {
         }
       });
 
+      (this.publicOutpostSubnets as PublicSubnet[]).forEach(publicOutpostSubnet => {
+        const routerId =
+          publicOutpostSubnet.outpostDefaultRoute === OutpostDefaultRoute.ON_PREMISE ?
+            publicOutpostSubnet.localGatewayId! :
+            igw.ref;
+        const routerType =
+            publicOutpostSubnet.outpostDefaultRoute === OutpostDefaultRoute.ON_PREMISE
+              ? RouterType.LOCAL_GATEWAY
+              : RouterType.GATEWAY;
+        // configure IPv4 route
+        if (this.useIpv4) {
+          publicOutpostSubnet.addRoute('DefaultRoute', {
+            routerType: routerType,
+            routerId: routerId,
+            destinationCidrBlock: '0.0.0.0/0',
+          });
+        }
+        // configure IPv6 route if VPC is dual stack
+        if (this.useIpv6) {
+          publicOutpostSubnet.addRoute('DefaultRoute6', {
+            routerType: routerType,
+            routerId: routerId,
+            destinationIpv6CidrBlock: '::/0',
+          });
+        }
+      });
+
       // if gateways are needed create them
       if (natGatewayCount > 0) {
         const provider = props.natGatewayProvider || NatProvider.gateway();
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
+
+    (this.privateOutpostSubnets as PrivateSubnet[]).filter((subnet) =>
+      subnet.outpostDefaultRoute === OutpostDefaultRoute.ON_PREMISE,
+    ).forEach((subnet) => {
+      if (this.useIpv4) {
+        subnet.addRoute('DefaultRoute', {
+          routerType: RouterType.LOCAL_GATEWAY,
+          routerId: subnet.localGatewayId!,
+          destinationCidrBlock: '0.0.0.0/0',
+        });
+      }
+      if (this.useIpv6) {
+        subnet.addRoute('DefaultRoute', {
+          routerType: RouterType.LOCAL_GATEWAY,
+          routerId: subnet.localGatewayId!,
+          destinationCidrBlock: '0.0.0.0/0',
+          destinationIpv6CidrBlock: '::/0',
+        });
+      }
+    });
 
     // Create an Egress Only Internet Gateway and attach it if necessary
     if (this.useIpv6 && this.privateSubnets) {
@@ -1694,6 +1991,29 @@ export class Vpc extends VpcBase {
     if ((restrictFlag && props.restrictDefaultSecurityGroup !== false) || props.restrictDefaultSecurityGroup) {
       this.restrictDefaultSecurityGroup();
     }
+
+    const outpostSubnetTypes = [
+      SubnetType.PUBLIC_OUTPOST,
+      SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+      SubnetType.PRIVATE_OUTPOST_ISOLATED,
+    ];
+
+    const outpostSubnets = props.subnetConfiguration?.filter((subnet) => outpostSubnetTypes.includes(subnet.subnetType));
+    if (outpostSubnets && outpostSubnets.length > 0) {
+      if (!props.localGatewayRouteTableIds || props.localGatewayRouteTableIds.length === 0) {
+        throw new Error('A VPC with PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED must include one or more Local Gateway Route Table IDs');
+      }
+      props.localGatewayRouteTableIds.forEach((localGatewayRouteTableId, index) => {
+        new CfnLocalGatewayRouteTableVPCAssociation(
+          this,
+          `LocalGatewayRouteTableVpcAssociation${index}`,
+          {
+            localGatewayRouteTableId: localGatewayRouteTableId,
+            vpcId: this.vpcId,
+          },
+        );
+      });
+    }
   }
 
   /**
@@ -1732,10 +2052,13 @@ export class Vpc extends VpcBase {
       }
     }
 
+    const outpostSubnets = (this.privateOutpostSubnets as PrivateSubnet[])
+      .filter((subnet) => subnet.outpostDefaultRoute === OutpostDefaultRoute.REGION);
+
     provider.configureNat({
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
-      privateSubnets: this.privateSubnets as PrivateSubnet[],
+      privateSubnets: [...this.privateSubnets, ...outpostSubnets] as PrivateSubnet[],
     });
   }
 
@@ -1746,15 +2069,57 @@ export class Vpc extends VpcBase {
   private createSubnets() {
     const requestedSubnets: RequestedSubnet[] = [];
 
-    this.subnetConfiguration.forEach((configuration)=> (
-      this.availabilityZones.forEach((az, index) => {
+    const outpostSubnetTypes = [
+      SubnetType.PUBLIC_OUTPOST,
+      SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+      SubnetType.PRIVATE_OUTPOST_ISOLATED,
+    ];
+
+    this.subnetConfiguration
+      .filter((configuration) => !outpostSubnetTypes.includes(configuration.subnetType))
+      .forEach((configuration) => {
+        if (configuration.outpostArn || configuration.outpostAvailabilityZone || configuration.outpostDefaultRoute) {
+          throw new Error('outpost* properties should only be set when type is one of PUBLIC_OUTPOST, PRIVATE_OUTPOST_WITH_EGRESS, or PRIVATE_OUTPOST_ISOLATED');
+        }
+        this.availabilityZones.forEach((az, index) => {
+          requestedSubnets.push({
+            availabilityZone: az,
+            subnetConstructId: subnetId(configuration.name, index),
+            configuration,
+          });
+        });
+      });
+
+    this.subnetConfiguration
+      .filter((configuration) => outpostSubnetTypes.includes(configuration.subnetType))
+      .forEach((configuration, index)=> {
+        if (!configuration.outpostArn) {
+          throw new Error(
+            'outpostArn must be defined when an OUTPOST subnet type is configured',
+          );
+        }
+        if (!configuration.outpostAvailabilityZone) {
+          throw new Error('outpostAvailabilityZone must be defined when an OUTPOST subnet type is configured');
+        }
+        if (configuration.subnetType !== SubnetType.PRIVATE_ISOLATED &&
+            configuration.outpostDefaultRoute === OutpostDefaultRoute.ON_PREMISE &&
+            !configuration.localGatewayId) {
+          throw new Error('localGatewayId must be defined when OutpostDefaultRoute is ON_PREMISE');
+        }
+        if (
+          configuration.subnetType === SubnetType.PRIVATE_OUTPOST_ISOLATED &&
+            (configuration.outpostDefaultRoute || configuration.localGatewayId)
+        ) {
+          throw new Error(
+            'OutpostDefaultRoute and localGatewayId should not be set when subnetType is PRIVATE_ISOLATED',
+          );
+        }
         requestedSubnets.push({
-          availabilityZone: az,
+          availabilityZone: configuration.outpostAvailabilityZone,
           subnetConstructId: subnetId(configuration.name, index),
           configuration,
         });
-      },
-      )));
+      });
 
     let { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
       vpcCidr: this.vpcCidrBlock,
@@ -1818,7 +2183,7 @@ export class Vpc extends VpcBase {
    * Always defaults to false in non-public subnets and will error if set.
    */
   private calculateMapPublicIpOnLaunch(subnetConfig: SubnetConfiguration) {
-    if (subnetConfig.subnetType === SubnetType.PUBLIC) {
+    if (subnetConfig.subnetType === SubnetType.PUBLIC || (subnetConfig.subnetType === SubnetType.PUBLIC_OUTPOST)) {
       return (subnetConfig.mapPublicIpOnLaunch !== undefined)
         ? subnetConfig.mapPublicIpOnLaunch
         : !this.useIpv6; // changes default based on protocol of vpc
@@ -1859,6 +2224,7 @@ export class Vpc extends VpcBase {
         mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
         ipv6CidrBlock: allocated.ipv6Cidr,
         assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
+        outpost: subnetConfig.outpostArn ? subnetConfig.outpostArn : undefined,
       } satisfies SubnetProps;
 
       let subnet: Subnet;
@@ -1880,6 +2246,33 @@ export class Vpc extends VpcBase {
           const isolatedSubnet = new PrivateSubnet(this, subnetConstructId, subnetProps);
           this.isolatedSubnets.push(isolatedSubnet);
           subnet = isolatedSubnet;
+          break;
+        case SubnetType.PUBLIC_OUTPOST:
+          const publicOutpostSubnet = new PublicSubnet(this, subnetConstructId, {
+            ...subnetProps,
+            localGatewayId: subnetConfig.localGatewayId!,
+            outpostDefaultRoute: subnetConfig.outpostDefaultRoute!,
+          });
+          this.publicOutpostSubnets.push(publicOutpostSubnet);
+          subnet = publicOutpostSubnet;
+          break;
+        case SubnetType.PRIVATE_OUTPOST_WITH_EGRESS:
+          const privateOutpostSubnet = new PrivateSubnet(this, subnetConstructId, {
+            ...subnetProps,
+            localGatewayId: subnetConfig.localGatewayId!,
+            outpostDefaultRoute: subnetConfig.outpostDefaultRoute!,
+          });
+          this.privateOutpostSubnets.push(privateOutpostSubnet);
+          subnet = privateOutpostSubnet;
+          break;
+        case SubnetType.PRIVATE_OUTPOST_ISOLATED:
+          const isolatedOutpostSubnet = new PrivateSubnet(this, subnetConstructId, {
+            ...subnetProps,
+            localGatewayId: subnetConfig.localGatewayId!,
+            outpostDefaultRoute: subnetConfig.outpostDefaultRoute!,
+          });
+          this.isolatedOutpostSubnets.push(isolatedOutpostSubnet);
+          subnet = isolatedOutpostSubnet;
           break;
         default:
           throw new Error(`Unrecognized subnet type: ${subnetConfig.subnetType}`);
@@ -1950,6 +2343,9 @@ function subnetTypeTagValue(type: SubnetType) {
     case SubnetType.PRIVATE_ISOLATED:
     case SubnetType.ISOLATED:
       return 'Isolated';
+    case SubnetType.PUBLIC_OUTPOST: return 'PublicOutpost';
+    case SubnetType.PRIVATE_OUTPOST_WITH_EGRESS: return 'PrivateOutpost';
+    case SubnetType.PRIVATE_OUTPOST_ISOLATED: return 'IsolatedOutpost';
   }
 }
 
@@ -1997,6 +2393,13 @@ export interface SubnetProps {
    * @default false
    */
   readonly assignIpv6AddressOnCreation?: boolean;
+
+  /**
+   * The Amazon Resource Name (ARN) of the Outpost.
+   *
+   * @default - no Outpost ARN.
+   */
+  readonly outpost?: string;
 }
 
 /**
@@ -2096,6 +2499,7 @@ export class Subnet extends Resource implements ISubnet {
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
+      outpostArn: props.outpost,
     });
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
@@ -2363,10 +2767,34 @@ function routerTypeToPropName(routerType: RouterType) {
 }
 
 export interface PublicSubnetProps extends SubnetProps {
+  /**
+   * The ID of the Local Gateway to use for the default route
+   *
+   * @default - No local gateway is associated with the subnet
+   */
+  readonly localGatewayId?: string;
 
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   *
+   * @default - No default route is associated with the subnet
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
 }
 
-export interface IPublicSubnet extends ISubnet { }
+export interface IPublicSubnet extends ISubnet {
+  /**
+   * The ID of the Local Gateway to use for the default route
+   */
+  readonly localGatewayId?: string;
+
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
+}
 
 export interface PublicSubnetAttributes extends SubnetAttributes { }
 
@@ -2378,10 +2806,24 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
+  /**
+   * The ID of the Local Gateway to use for the default route
+   */
+  readonly localGatewayId?: string;
+
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
+
   constructor(scope: Construct, id: string, props: PublicSubnetProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.outpostDefaultRoute = props.outpostDefaultRoute;
+    this.localGatewayId = props.localGatewayId;
   }
 
   /**
@@ -2404,10 +2846,34 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
 }
 
 export interface PrivateSubnetProps extends SubnetProps {
+  /**
+   * The ID of the Local Gateway to use for the default route
+   *
+   * @default - No local gateway is associated with the subnet
+   */
+  readonly localGatewayId?: string;
 
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   *
+   * @default - No default route is associated with the subnet
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
 }
 
-export interface IPrivateSubnet extends ISubnet { }
+export interface IPrivateSubnet extends ISubnet {
+  /**
+   * The ID of the Local Gateway to use for the default route
+   */
+  readonly localGatewayId?: string;
+
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
+}
 
 export interface PrivateSubnetAttributes extends SubnetAttributes { }
 
@@ -2419,10 +2885,24 @@ export class PrivateSubnet extends Subnet implements IPrivateSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
+  /**
+   * The ID of the Local Gateway to use for the default route
+   */
+  readonly localGatewayId?: string;
+
+  /**
+   * Controls if the default route goes to the local gateway (ON_PREMISE)
+   * or the AWS Region
+   */
+  readonly outpostDefaultRoute?: OutpostDefaultRoute;
+
   constructor(scope: Construct, id: string, props: PrivateSubnetProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.outpostDefaultRoute = props.outpostDefaultRoute;
+    this.localGatewayId = props.localGatewayId;
   }
 }
 
@@ -2436,6 +2916,9 @@ class ImportedVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
+  public readonly publicOutpostSubnets: ISubnet[];
+  public readonly privateOutpostSubnets: ISubnet[];
+  public readonly isolatedOutpostSubnets: ISubnet[];
   public readonly availabilityZones: string[];
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   private readonly cidr?: string | undefined;
@@ -2469,11 +2952,17 @@ class ImportedVpc extends VpcBase {
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, props.publicSubnetIpv4CidrBlocks, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds', 'publicSubnetIpv4CidrBlocks');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, props.privateSubnetIpv4CidrBlocks, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds', 'privateSubnetIpv4CidrBlocks');
     const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, props.isolatedSubnetIpv4CidrBlocks, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds', 'isolatedSubnetIpv4CidrBlocks');
+    const pubOutpost = new ImportSubnetGroup(props.publicOutpostSubnetIds, props.publicOutpostSubnetNames, props.publicOutpostSubnetRouteTableIds, props.publicOutpostSubnetIpv4CidrBlocks, SubnetType.PUBLIC_OUTPOST, this.availabilityZones, 'publicOutpostSubnetIds', 'publicOutpostSubnetNames', 'publicOutpostSubnetRouteTableIds', 'publicOutpostSubnetIpv4CidrBlocks');
+    const privOutpost = new ImportSubnetGroup(props.privateOutpostSubnetIds, props.privateOutpostSubnetNames, props.privateOutpostSubnetRouteTableIds, props.privateOutpostSubnetIpv4CidrBlocks, SubnetType.PRIVATE_OUTPOST_WITH_EGRESS, this.availabilityZones, 'privateOutpostSubnetIds', 'privateOutpostSubnetNames', 'privateOutpostSubnetRouteTableIds', 'privateOutpostSubnetIpv4CidrBlocks');
+    const isoOutpost = new ImportSubnetGroup(props.isolatedOutpostSubnetIds, props.isolatedOutpostSubnetNames, props.isolatedOutpostSubnetRouteTableIds, props.isolatedOutpostSubnetIpv4CidrBlocks, SubnetType.PRIVATE_OUTPOST_ISOLATED, this.availabilityZones, 'isolatedOutpostSubnetIds', 'isolatedOutpostSubnetNames', 'isolatedOutpostSubnetRouteTableIds', 'isolatedOutpostSubnetIpv4CidrBlocks');
     /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);
     this.privateSubnets = priv.import(this);
     this.isolatedSubnets = iso.import(this);
+    this.publicOutpostSubnets = pubOutpost.import(this);
+    this.privateOutpostSubnets = privOutpost.import(this);
+    this.isolatedOutpostSubnets = isoOutpost.import(this);
   }
 
   public get vpcCidrBlock(): string {
@@ -2492,6 +2981,9 @@ class LookedUpVpc extends VpcBase {
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
+  public readonly publicOutpostSubnets: ISubnet[];
+  public readonly privateOutpostSubnets: ISubnet[];
+  public readonly isolatedOutpostSubnets: ISubnet[];
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: cxapi.VpcContextResponse, isIncomplete: boolean) {
@@ -2524,6 +3016,9 @@ class LookedUpVpc extends VpcBase {
     this.publicSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC);
     this.privateSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE);
     this.isolatedSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED);
+    this.publicOutpostSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PUBLIC_OUTPOST);
+    this.privateOutpostSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.PRIVATE_OUTPOST);
+    this.isolatedOutpostSubnets = this.extractSubnetsOfType(subnetGroups, cxapi.VpcSubnetGroupType.ISOLATED_OUTPOST);
   }
 
   public get vpcCidrBlock(): string {
@@ -2678,7 +3173,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  */
 function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
-    || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
+    || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT
+    || c.subnetType === SubnetType.PRIVATE_OUTPOST_WITH_EGRESS) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);
   const hasCustomEgress = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_EGRESS);
 
@@ -2691,7 +3187,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
 
   if (count > 0 && !hasPublicSubnets) {
     // eslint-disable-next-line max-len
-    throw new Error(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
+    throw new Error(`If you configure PRIVATE or PRIVATE_OUTPOST_WITH_EGRESS subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 
   return count;
