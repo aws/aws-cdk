@@ -547,26 +547,6 @@ export interface ComputeConfig {
 }
 
 /**
- * Options for configuring EKS Auto Mode block storage settings.
- * When enabled, EKS will automatically manage block storage resources.
- */
-export interface BlockStorageConfig {
-}
-
-/**
- * Options for configuring EKS Auto Mode storage settings.
- * Controls automatic management of storage resources in the cluster.
- */
-export interface StorageConfig {
-  /**
-   * Block storage configuration for Auto Mode.
-   * Controls how EKS automatically manages EBS volumes and storage classes.
-   * @default - Auto Mode storage disabled
-   */
-  readonly blockStorage?: BlockStorageConfig;
-}
-
-/**
  * Options for configuring EKS Auto Mode elastic load balancing settings.
  * When enabled, EKS will automatically manage load balancers.
  */
@@ -652,11 +632,13 @@ export interface ClusterProps extends ClusterCommonOptions {
   readonly compute?: ComputeConfig;
 
   /**
-   * Configuration for storage settings in Auto Mode.
+   * Configuration for storage settings.
    * When enabled, EKS will automatically manage storage resources.
-   * @default - Auto Mode storage disabled
+   * At this moment, only block storage is supported. While `autoMode` constrols the block storage enablement and no ther props available,
+   * this prop is reserved for future use.
+   *
+   * readonly storage?: StorageConfig;
    */
-  readonly storage?: StorageConfig;
 
   /**
    * Configuration for Kubernetes networking settings in Auto Mode.
