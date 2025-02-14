@@ -331,6 +331,7 @@ export enum ValidationMethod {
   DNS = 'DNS',
 }
 
+// eslint-disable-next-line max-len
 function renderDomainValidation(scope: Construct, validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
   const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
 
