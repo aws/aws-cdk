@@ -1158,7 +1158,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       throw new ValidationError(`The auto-pause duration must be between 300 seconds (5 minutes) and 86400 seconds (24 hours). 
         Received: ${autoPauseSeconds} seconds`, this);
     }
-
   }
 
   /**
