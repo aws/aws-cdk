@@ -581,6 +581,7 @@ export class EndpointAccess {
 export interface ComputeConfig {
   /**
    * Names of nodePools to include in Auto Mode.
+   * You cannot modify the built in system and general-purpose node pools. You can only enable or disable them.
    * Node pool values are case-sensitive and must be `general-purpose` and/or `system`.
    *
    * @see - https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html

@@ -1022,17 +1022,17 @@ By default, the Cluster construct enables EKS Auto mode.
 
 ```ts
 // Create EKS cluster with Auto Mode enabled
-const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
   version: eks.KubernetesVersion.V1_32,
 });
 ```
 
-When you explicitly turn `autoMode` to `false` or define any of `defaultCapacity`, `defaultCapacityType` or `defaultCapacityInstance`, the cluster falls back its 
+When you explicitly turn `autoMode` to `false` or define any of `defaultCapacity`, `defaultCapacityType` or `defaultCapacityInstance`, the cluster falls back its
 compute capacity to the default nodegroup.
 
 ```ts
 // Create EKS cluster with Auto Mode explicitly disabled
-const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
   version: eks.KubernetesVersion.V1_32,
   autoMode: false, // disables Auto Mode and provisions a default nodegroup instead
 });
@@ -1040,7 +1040,7 @@ const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
 
 ```ts
 // Create EKS cluster with Auto Mode explicitly disabled
-const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacity: 2 // implicitly disable Auto Mode and opt in the a nodegroup
 });
@@ -1050,7 +1050,7 @@ You can't opt in both Auto Mode and a default nodegroup
 
 ```ts
 // Create EKS cluster with Auto Mode explicitly disabled
-const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
   version: eks.KubernetesVersion.V1_32,
   autoMode: true,
   defaultCapacity: 2  // will throw an error
@@ -1064,12 +1064,5 @@ Auto Mode comes with two default node pools if `nodePool` is undefined:
 - `general-purpose`: For running your application workloads
 - `system`: For running system components and add-ons
 
-You can customize the node pools by providing your own list in the `nodePools` property of `compute`.
-
-```typescript
-const cluster = new eks.Cluster(stack, 'EksAutoCluster', {
-  // ...
-  compute: {
-    nodePools: ['custom-purpose'],  // Optional: defaults to ['general-purpose', 'system']
-  },
-});
+You cannot modify the built in `system` and `general-purpose` node pools. You can only enable or disable them. 
+For more information, see [Enable or Disable Built-in NodePools](https://docs.aws.amazon.com/eks/latest/userguide/set-builtin-node-pools.html).
