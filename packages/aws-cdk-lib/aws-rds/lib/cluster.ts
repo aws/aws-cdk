@@ -1155,7 +1155,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     const autoPauseSeconds = this.secondsUntilAutoPause;
     if (autoPauseSeconds && (autoPauseSeconds < 300 || autoPauseSeconds > 86400)) {
-      throw new ValidationError(`The auto-pause duration must be between 300 seconds (5 minutes) and 86400 seconds (24 hours). Received: ${autoPauseSeconds} seconds`, this);
+      throw new ValidationError(`The auto-pause duration must be between 300 seconds (5 minutes) and 86400 seconds (24 hours). 
+        Received: ${autoPauseSeconds} seconds`, this);
     }
 
   }
