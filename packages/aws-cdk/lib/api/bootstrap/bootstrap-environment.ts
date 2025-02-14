@@ -4,18 +4,23 @@ import * as cxapi from '@aws-cdk/cx-api';
 import type { BootstrapEnvironmentOptions, BootstrappingParameters } from './bootstrap-props';
 import { BootstrapStack, bootstrapVersionFromTemplate } from './deploy-bootstrap';
 import { legacyBootstrapTemplate } from './legacy-template';
-import { warning } from '../../logging';
+import { warn } from '../../cli/messages';
 import { loadStructuredFile, serializeStructure } from '../../serialize';
+import { IoMessaging } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { rootDir } from '../../util/directories';
 import type { SDK, SdkProvider } from '../aws-auth';
 import type { SuccessfulDeployStackResult } from '../deployments';
 import { Mode } from '../plugin/mode';
+import { DEFAULT_TOOLKIT_STACK_NAME } from '../toolkit-info';
 
 export type BootstrapSource = { source: 'legacy' } | { source: 'default' } | { source: 'custom'; templateFile: string };
 
 export class Bootstrapper {
-  constructor(private readonly source: BootstrapSource = { source: 'default' }) {}
+  constructor(
+    private readonly source: BootstrapSource = { source: 'default' },
+    private readonly msg: IoMessaging,
+  ) {}
 
   public bootstrapEnvironment(
     environment: cxapi.Environment,
@@ -61,7 +66,8 @@ export class Bootstrapper {
       throw new ToolkitError('--qualifier can only be passed for the modern bootstrap experience.');
     }
 
-    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
+    const toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+    const current = await BootstrapStack.lookup(sdkProvider, environment, toolkitStackName, this.msg);
     return current.update(
       await this.loadTemplate(params),
       {},
@@ -85,7 +91,8 @@ export class Bootstrapper {
 
     const bootstrapTemplate = await this.loadTemplate();
 
-    const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
+    const toolkitStackName = options.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
+    const current = await BootstrapStack.lookup(sdkProvider, environment, toolkitStackName, this.msg);
     const partition = await current.partition();
 
     if (params.createCustomerMasterKey !== undefined && params.kmsKeyId) {
@@ -141,9 +148,10 @@ export class Bootstrapper {
       // Would leave AdministratorAccess policies with a trust relationship, without the user explicitly
       // approving the trust policy.
       const implicitPolicy = `arn:${partition}:iam::aws:policy/AdministratorAccess`;
-      warning(
+      await this.msg.ioHost.notify(warn(
+        this.msg.action,
         `Using default execution policy of '${implicitPolicy}'. Pass '--cloudformation-execution-policies' to customize.`,
-      );
+      ));
     } else if (cloudFormationExecutionPolicies.length === 0) {
       throw new ToolkitError(
         `Please pass \'--cloudformation-execution-policies\' when using \'--trust\' to specify deployment permissions. Try a managed policy of the form \'arn:${partition}:iam::aws:policy/<PolicyName>\'.`,
@@ -189,11 +197,20 @@ export class Bootstrapper {
     }
     if (currentPermissionsBoundary !== policyName) {
       if (!currentPermissionsBoundary) {
-        warning(`Adding new permissions boundary ${policyName}`);
+        await this.msg.ioHost.notify(warn(
+          this.msg.action,
+          `Adding new permissions boundary ${policyName}`,
+        ));
       } else if (!policyName) {
-        warning(`Removing existing permissions boundary ${currentPermissionsBoundary}`);
+        await this.msg.ioHost.notify(warn(
+          this.msg.action,
+          `Removing existing permissions boundary ${currentPermissionsBoundary}`,
+        ));
       } else {
-        warning(`Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`);
+        await this.msg.ioHost.notify(warn(
+          this.msg.action,
+          `Changing permissions boundary from ${currentPermissionsBoundary} to ${policyName}`,
+        ));
       }
     }
 

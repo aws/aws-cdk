@@ -266,7 +266,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         const source: BootstrapSource = determineBootstrapVersion(args);
 
         if (args.showTemplate) {
-          const bootstrapper = new Bootstrapper(source);
+          const bootstrapper = new Bootstrapper(source, { ioHost: ioHost, action: ioHost.currentAction });
           return bootstrapper.showTemplate(args.json);
         }
 

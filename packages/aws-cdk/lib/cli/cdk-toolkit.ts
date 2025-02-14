@@ -962,7 +962,7 @@ export class CdkToolkit {
     userEnvironmentSpecs: string[],
     options: BootstrapEnvironmentOptions,
   ): Promise<void> {
-    const bootstrapper = new Bootstrapper(options.source);
+    const bootstrapper = new Bootstrapper(options.source, { ioHost: this.ioHost, action: 'bootstrap' });
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
