@@ -32,7 +32,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
   test('pipeline with InspectorSourceCodeScanAction', () => {
     // WHEN
-    const InspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+    const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
       actionName: 'InspectorScan',
       output: scanOutput,
       input: sourceOutput,
@@ -44,7 +44,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
     pipeline.addStage({
       stageName: 'InspectorScan',
-      actions: [InspectorSourceCodeScanAction],
+      actions: [inspectorSourceCodeScanAction],
     });
 
     // THEN
@@ -94,20 +94,20 @@ describe('InspectorSourceCodeScanAction', () => {
 
   test('can get variables', () => {
     // WHEN
-    const InspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+    const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
       actionName: 'InspectorScan',
       output: scanOutput,
       input: sourceOutput,
     });
 
     // THEN
-    expect(InspectorSourceCodeScanAction.variables.highestScannedSeverity).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.HighestScannedSeverity}$/);
+    expect(inspectorSourceCodeScanAction.variables.highestScannedSeverity).toMatch(/^#{\${Token\[TOKEN\.[0-9]*\]}.HighestScannedSeverity}$/);
   });
 
   describe('grant policy', () => {
     test('grant policy for inspector', () => {
       // WHEN
-      const InspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+      const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
         actionName: 'InspectorScan',
         output: scanOutput,
         input: sourceOutput,
@@ -115,7 +115,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
       pipeline.addStage({
         stageName: 'InspectorScan',
-        actions: [InspectorSourceCodeScanAction],
+        actions: [inspectorSourceCodeScanAction],
       });
 
       // THEN
@@ -135,7 +135,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
     test('grant policy for logs', () => {
       // WHEN
-      const InspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+      const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
         actionName: 'InspectorScan',
         output: scanOutput,
         input: sourceOutput,
@@ -143,7 +143,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
       pipeline.addStage({
         stageName: 'InspectorScan',
-        actions: [InspectorSourceCodeScanAction],
+        actions: [inspectorSourceCodeScanAction],
       });
 
       // THEN
@@ -213,9 +213,69 @@ describe('InspectorSourceCodeScanAction', () => {
       });
     });
 
+    test('grant write policy for buckets', () => {
+      // WHEN
+      const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+        actionName: 'InspectorScan',
+        output: scanOutput,
+        input: scanOutput,
+      });
+
+      pipeline.addStage({
+        stageName: 'InspectorScan',
+        actions: [inspectorSourceCodeScanAction],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'PipelineRoleDefaultPolicyC7A05455',
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+                's3:DeleteObject*',
+                's3:PutObject',
+                's3:PutObjectLegalHold',
+                's3:PutObjectRetention',
+                's3:PutObjectTagging',
+                's3:PutObjectVersionTagging',
+                's3:Abort*',
+              ],
+              Effect: 'Allow',
+              Resource: [
+                {
+                  'Fn::GetAtt': [
+                    'PipelineArtifactsBucket22248F97',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'PipelineArtifactsBucket22248F97',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+          ]),
+        },
+      });
+    });
+
     test('grant read policy for buckets', () => {
       // WHEN
-      const InspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
+      const inspectorSourceCodeScanAction = new cpactions.InspectorSourceCodeScanAction({
         actionName: 'InspectorScan',
         output: scanOutput,
         input: sourceOutput,
@@ -223,7 +283,7 @@ describe('InspectorSourceCodeScanAction', () => {
 
       pipeline.addStage({
         stageName: 'InspectorScan',
-        actions: [InspectorSourceCodeScanAction],
+        actions: [inspectorSourceCodeScanAction],
       });
 
       // THEN
