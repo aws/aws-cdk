@@ -3,6 +3,7 @@ import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-t
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
 import { IMetric } from '../metric-types';
+import { UnscopedValidationError } from '../../../core';
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -159,7 +160,7 @@ export class MetricSet<A> {
     if (id) {
       existingEntry = this.metricById.get(id);
       if (existingEntry && metricKey(existingEntry.metric) !== key) {
-        throw new Error(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
+        throw new UnscopedValidationError(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
       }
     }
 
