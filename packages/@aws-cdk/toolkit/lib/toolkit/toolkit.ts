@@ -19,7 +19,7 @@ import { CachedCloudAssemblySource, IdentityCloudAssemblySource, StackAssembly, 
 import { ALL_STACKS, CloudAssemblySourceBuilder } from '../api/cloud-assembly/private';
 import { ToolkitError } from '../api/errors';
 import { IIoHost, IoMessageCode, IoMessageLevel } from '../api/io';
-import { asSdkLogger, withAction, Timer, confirm, error, highlight, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor, withTrimmedWhitespace } from '../api/io/private';
+import { asSdkLogger, withAction, Timer, confirm, error, info, success, warn, ActionAwareIoHost, debug, result, withoutEmojis, withoutColor, withTrimmedWhitespace } from '../api/io/private';
 
 /**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
@@ -256,10 +256,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     }
 
     const deployments = await this.deploymentsForAction('deploy');
+    const migrator = new ResourceMigrator({ deployments, ioHost, action });
 
-    const migrator = new ResourceMigrator({
-      deployments,
-    });
     await migrator.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.NEVER;
@@ -275,7 +273,6 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     }
 
     const stacks = stackCollection.stackArtifacts;
-
     const stackOutputs: { [key: string]: any } = {};
     const outputsFile = options.outputsFile;
 
@@ -303,28 +300,31 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     const deployStack = async (stackNode: StackNode) => {
       const stack = stackNode.stack;
       if (stackCollection.stackCount !== 1) {
-        await ioHost.notify(highlight(stack.displayName));
+        await ioHost.notify(info(chalk.bold(stack.displayName)));
       }
 
       if (!stack.environment) {
-        // eslint-disable-next-line max-len
         throw new ToolkitError(
           `Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`,
         );
       }
 
+      // The generated stack has no resources
       if (Object.keys(stack.template.Resources || {}).length === 0) {
-        // The generated stack has no resources
-        if (!(await deployments.stackExists({ stack }))) {
-          await ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
-        } else {
-          await ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
-          await this._destroy(assembly, 'deploy', {
-            stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
-            roleArn: options.roleArn,
-            ci: options.ci,
-          });
+        // stack is empty and doesn't exist => do nothing
+        const stackExists = await deployments.stackExists({ stack });
+        if (!stackExists) {
+          return ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, skipping deployment.`));
         }
+
+        // stack is empty, but exists => delete
+        await ioHost.notify(warn(`${chalk.bold(stack.displayName)}: stack has no resources, deleting existing stack.`));
+        await this._destroy(assembly, 'deploy', {
+          stacks: { patterns: [stack.hierarchicalId], strategy: StackSelectionStrategy.PATTERN_MUST_MATCH_SINGLE },
+          roleArn: options.roleArn,
+          ci: options.ci,
+        });
+
         return;
       }
 
