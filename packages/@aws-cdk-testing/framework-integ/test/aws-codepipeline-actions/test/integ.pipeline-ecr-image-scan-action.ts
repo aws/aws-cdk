@@ -37,10 +37,10 @@ const image = new DockerImageAsset(stack, 'DockerImage', {
   directory: path.resolve(__dirname, './assets'),
 });
 
-const buildOutput = new codepipeline.Artifact();
-const buildAction = new cpactions.InspectorEcrImageScanAction({
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new cpactions.InspectorEcrImageScanAction({
   actionName: 'InspectorEcrImageScanAction',
-  output: buildOutput,
+  output: scanOutput,
   repository: image.repository,
   imageTag: image.imageTag,
   criticalThreshold: 1,
@@ -55,7 +55,7 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
 });
 const deployAction = new cpactions.S3DeployAction({
   actionName: 'DeployAction',
-  input: buildOutput,
+  input: scanOutput,
   bucket: deployBucket,
   objectKey: 'my-key',
 });
@@ -69,7 +69,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
     },
     {
       stageName: 'Invoke',
-      actions: [buildAction],
+      actions: [scanAction],
     },
     {
       stageName: 'Deploy',

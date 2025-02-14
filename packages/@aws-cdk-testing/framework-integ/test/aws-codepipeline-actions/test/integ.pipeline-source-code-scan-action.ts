@@ -41,11 +41,11 @@ const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
   repo,
 });
 
-const buildOutput = new codepipeline.Artifact();
-const buildAction = new cpactions.InspectorSourceCodeScanAction({
+const scanOutput = new codepipeline.Artifact();
+const scanAction = new cpactions.InspectorSourceCodeScanAction({
   actionName: 'InspectorSourceCodeScanAction',
   input: sourceOutput,
-  output: buildOutput,
+  output: scanOutput,
   criticalThreshold: 1,
   highThreshold: 1,
   mediumThreshold: 1,
@@ -58,7 +58,7 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
 });
 const deployAction = new cpactions.S3DeployAction({
   actionName: 'DeployAction',
-  input: buildOutput,
+  input: scanOutput,
   bucket: deployBucket,
   objectKey: 'my-key',
 });
@@ -72,7 +72,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
     },
     {
       stageName: 'Invoke',
-      actions: [buildAction],
+      actions: [scanAction],
     },
     {
       stageName: 'Deploy',
