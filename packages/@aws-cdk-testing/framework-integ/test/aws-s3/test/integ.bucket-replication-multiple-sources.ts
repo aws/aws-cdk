@@ -5,19 +5,14 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {
-  public readonly sourceBucket: s3.Bucket;
-  public readonly destinationBucket1: s3.Bucket;
-  public readonly destinationBucket2: s3.Bucket;
+  public readonly sourceBucket1: s3.Bucket;
+  public readonly sourceBucket2: s3.Bucket;
+  public readonly destinationBucket: s3.Bucket;
 
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    this.destinationBucket1 = new s3.Bucket(this, 'DestinationBucket1', {
-      versioned: true,
-      autoDeleteObjects: true,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-    this.destinationBucket2 = new s3.Bucket(this, 'DestinationBucket2', {
+    this.destinationBucket = new s3.Bucket(this, 'DestinationBucket', {
       versioned: true,
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -30,55 +25,56 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+    this.sourceBucket1 = new s3.Bucket(this, 'SourceBucket1', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       versioned: true,
       encryptionKey: sourceKmsKey,
       replicationRules: [
         {
-          destination: this.destinationBucket1,
+          destination: this.destinationBucket,
+          priority: 1,
+          sseKmsEncryptedObjects: true,
+          kmsKey: destinationKmsKey,
+          replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+          metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+        },
+      ],
+    });
+
+    this.sourceBucket2 = new s3.Bucket(this, 'SourceBucket2', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      versioned: true,
+      encryptionKey: sourceKmsKey,
+      replicationRules: [
+        {
+          destination: this.destinationBucket,
           priority: 2,
           sseKmsEncryptedObjects: true,
           kmsKey: destinationKmsKey,
           replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
           metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
         },
-        {
-          destination: this.destinationBucket2,
-          replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
-          metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
-          kmsKey: destinationKmsKey,
-          storageClass: s3.StorageClass.INFREQUENT_ACCESS,
-          sseKmsEncryptedObjects: true,
-          replicaModifications: true,
-          priority: 1,
-          deleteMarkerReplication: true,
-          id: 'full-settings-rule',
-          filter: {
-            prefix: 'prefix',
-          },
-        },
       ],
     });
   }
 }
 
-// Disabled SET_UNIQUE_REPLICATION_ROLE_NAME feature flag
 const app = new App({
   postCliContext: {
-    [SET_UNIQUE_REPLICATION_ROLE_NAME]: false,
+    [SET_UNIQUE_REPLICATION_ROLE_NAME]: true,
   },
 });
-const stack = new TestStack(app, 'BucketReplicationTestStack');
+const stack = new TestStack(app, 'BucketReplicationMultipleSourcesTestStack');
 const integ = new IntegTest(app, 'ReplicationInteg', {
   testCases: [stack],
 });
 
 const firstAssertion = integ.assertions
   .awsApiCall('S3', 'putObject', {
-    Bucket: stack.sourceBucket.bucketName,
-    Key: 'test-object',
+    Bucket: stack.sourceBucket1.bucketName,
+    Key: 'test-object-1',
     Body: 'test-object-body',
     ContentType: 'text/plain',
   })
@@ -93,8 +89,8 @@ firstAssertion.waiterProvider?.addToRolePolicy({
 
 const secondAssertion = integ.assertions
   .awsApiCall('S3', 'putObject', {
-    Bucket: stack.sourceBucket.bucketName,
-    Key: 'prefix-test-object',
+    Bucket: stack.sourceBucket2.bucketName,
+    Key: 'test-object-2',
     Body: 'test-object-body',
     ContentType: 'text/plain',
   })
@@ -104,8 +100,8 @@ const secondAssertion = integ.assertions
 
 const thirdAssertion = integ.assertions
   .awsApiCall('S3', 'getObject', {
-    Bucket: stack.destinationBucket1.bucketName,
-    Key: 'test-object',
+    Bucket: stack.destinationBucket.bucketName,
+    Key: 'test-object-1',
   })
   .waitForAssertions({
     totalTimeout: Duration.minutes(15),
@@ -118,17 +114,8 @@ thirdAssertion.waiterProvider?.addToRolePolicy({
 
 const fourthAssertion = integ.assertions
   .awsApiCall('S3', 'getObject', {
-    Bucket: stack.destinationBucket1.bucketName,
-    Key: 'prefix-test-object',
-  })
-  .waitForAssertions({
-    totalTimeout: Duration.minutes(15),
-  });
-
-const fifthAssertion = integ.assertions
-  .awsApiCall('S3', 'getObject', {
-    Bucket: stack.destinationBucket2.bucketName,
-    Key: 'prefix-test-object',
+    Bucket: stack.destinationBucket.bucketName,
+    Key: 'test-object-2',
   })
   .waitForAssertions({
     totalTimeout: Duration.minutes(15),
@@ -137,5 +124,4 @@ const fifthAssertion = integ.assertions
 firstAssertion
   .next(secondAssertion)
   .next(thirdAssertion)
-  .next(fourthAssertion)
-  .next(fifthAssertion);
+  .next(fourthAssertion);
