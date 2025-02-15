@@ -395,6 +395,16 @@ export async function makeConfig(): Promise<CliConfig> {
           },
         },
       },
+      refactor: {
+        description: 'Refactor a CloudFormation Stacks with CDK',
+        options: {
+          'from-stack': { type: 'string', desc: 'The name of the source stack to refactor', requiresArg: true },
+          'to-stack': { type: 'string', desc: 'The name of the target stack to refactor', requiresArg: true },
+          'source-resource': { type: 'string', desc: 'The name of the source resource to refactor', requiresArg: true },
+          'target-resource': { type: 'string', desc: 'The name of the target resource to refactor', requiresArg: true },
+          'dry-run': { type: 'boolean', desc: 'Run the refactor in dry-run mode', default: false },
+        },
+      },
       doctor: {
         description: 'Check your set-up for potential problems',
       },

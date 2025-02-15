@@ -833,6 +833,38 @@ export function parseCommandLineArguments(args: Array<string>): any {
         type: 'string',
       }),
     )
+    .command('refactor', 'Refactor a CloudFormation Stacks with CDK', (yargs: Argv) =>
+      yargs
+        .option('from-stack', {
+          default: undefined,
+          type: 'string',
+          desc: 'The name of the source stack to refactor',
+          requiresArg: true,
+        })
+        .option('to-stack', {
+          default: undefined,
+          type: 'string',
+          desc: 'The name of the target stack to refactor',
+          requiresArg: true,
+        })
+        .option('source-resource', {
+          default: undefined,
+          type: 'string',
+          desc: 'The name of the source resource to refactor',
+          requiresArg: true,
+        })
+        .option('target-resource', {
+          default: undefined,
+          type: 'string',
+          desc: 'The name of the target resource to refactor',
+          requiresArg: true,
+        })
+        .option('dry-run', {
+          default: false,
+          type: 'boolean',
+          desc: 'Run the refactor in dry-run mode',
+        }),
+    )
     .command('doctor', 'Check your set-up for potential problems')
     .version(helpers.cliVersion())
     .demandCommand(1, '')

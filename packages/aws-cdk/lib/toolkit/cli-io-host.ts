@@ -97,6 +97,7 @@ export type ToolkitAction =
 | 'notices'
 | 'init'
 | 'migrate'
+| 'refactor'
 | 'version';
 
 export interface IIoHost {

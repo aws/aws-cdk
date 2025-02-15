@@ -25,6 +25,7 @@ import {
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
 import { debug, warning } from '../../logging';
+import { toYAML } from '../../serialize';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
 import type { SdkProvider } from '../aws-auth/sdk-provider';
@@ -327,6 +328,14 @@ export interface DeploymentsProps {
   readonly quiet?: boolean;
 }
 
+export interface RefactorOptions {
+  sourceStack: cxapi.CloudFormationStackArtifact;
+  targetStack: cxapi.CloudFormationStackArtifact;
+  sourceResource: string;
+  targetResource: string;
+  dryRun: boolean;
+}
+
 /**
  * Scope for a single set of deployments from a set of Cloud Assembly Artifacts
  *
@@ -624,6 +633,62 @@ export class Deployments {
     }
     const stack = await CloudFormationStack.lookup(env.sdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
+  }
+
+  public async refactor(options: RefactorOptions): Promise<void> {
+    const env = await this.envs.accessStackForMutableStackOperations(options.sourceStack);
+    const cfn = env.sdk.cloudFormation();
+
+    const dryRun = options.dryRun;
+
+    let refactorId: string;
+    if (dryRun) {
+      debug('Will perform a dry-run refactor');
+      debug(
+        'Moving resource %s from stack %s to stack %s',
+        options.sourceResource,
+        options.sourceStack.stackName,
+        options.targetStack.stackName,
+      );
+      debug('Source resource template: %s', toYAML(options.sourceStack.template.Resources![options.sourceResource]));
+      debug('Target resource template: %s', toYAML(options.targetStack.template.Resources![options.targetResource]));
+    } else {
+      options.targetStack.template.Resources![options.targetResource] =
+        options.sourceStack.template.Resources![options.sourceResource];
+      delete options.sourceStack.template.Resources![options.sourceResource];
+
+      debug('Source resource template: %s', toYAML(options.sourceStack.template.Resources![options.sourceResource]));
+      debug('Target resource template: %s', toYAML(options.targetStack.template.Resources![options.targetResource]));
+      const createStackRefactor = await cfn.createStackRefactor({
+        EnableStackCreation: true,
+        StackDefinitions: [
+          {
+            StackName: options.sourceStack.stackName,
+            TemplateBody: toYAML(options.sourceStack.template),
+          },
+          {
+            StackName: options.targetStack.stackName,
+            TemplateBody: toYAML(options.targetStack.template),
+          },
+        ],
+      });
+      refactorId = createStackRefactor.StackRefactorId!;
+      await cfn.waitForStackRefactorCreateComplete({
+        StackRefactorId: refactorId,
+      });
+    }
+
+    if (dryRun) {
+      debug('Dry-run refactor complete');
+    } else {
+      await cfn.executeStackRefactor({
+        StackRefactorId: refactorId!,
+      });
+
+      await cfn.waitForStackRefactorExecuteComplete({
+        StackRefactorId: refactorId!,
+      });
+    }
   }
 
   /**

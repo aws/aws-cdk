@@ -102,6 +102,15 @@ import {
   UpdateTerminationProtectionCommand,
   type UpdateTerminationProtectionCommandInput,
   type UpdateTerminationProtectionCommandOutput,
+  CreateStackRefactorCommand,
+  type CreateStackRefactorCommandInput,
+  type CreateStackRefactorCommandOutput,
+  ExecuteStackRefactorCommand,
+  type ExecuteStackRefactorCommandInput,
+  type ExecuteStackRefactorCommandOutput,
+  waitUntilStackRefactorCreateComplete,
+  waitUntilStackRefactorExecuteComplete,
+  DescribeStackRefactorCommandInput,
 } from '@aws-sdk/client-cloudformation';
 import {
   CloudWatchLogsClient,
@@ -408,6 +417,10 @@ export interface ICloudFormationClient {
   // Pagination functions
   describeStackEvents(input: DescribeStackEventsCommandInput): Promise<DescribeStackEventsCommandOutput>;
   listStackResources(input: ListStackResourcesCommandInput): Promise<StackResourceSummary[]>;
+  createStackRefactor(input: CreateStackRefactorCommandInput): Promise<CreateStackRefactorCommandOutput>;
+  executeStackRefactor(input: ExecuteStackRefactorCommandInput): Promise<ExecuteStackRefactorCommandOutput>;
+  waitForStackRefactorCreateComplete(input: DescribeStackRefactorCommandInput): Promise<WaiterResult>;
+  waitForStackRefactorExecuteComplete(input: DescribeStackRefactorCommandInput): Promise<WaiterResult>;
 }
 
 export interface ICloudWatchLogsClient {
@@ -679,6 +692,30 @@ export class SDK {
         }
         return stackResources;
       },
+      createStackRefactor: (input: CreateStackRefactorCommandInput): Promise<CreateStackRefactorCommandOutput> =>
+        client.send(new CreateStackRefactorCommand(input)),
+      executeStackRefactor: (input: ExecuteStackRefactorCommandInput): Promise<ExecuteStackRefactorCommandOutput> =>
+        client.send(new ExecuteStackRefactorCommand(input)),
+      waitForStackRefactorCreateComplete: (input: DescribeStackRefactorCommandInput): Promise<WaiterResult> =>
+        waitUntilStackRefactorCreateComplete(
+          {
+            client,
+            maxWaitTime: 600,
+            minDelay: 6,
+            maxDelay: 6,
+          },
+          input,
+        ),
+      waitForStackRefactorExecuteComplete: (input: DescribeStackRefactorCommandInput): Promise<WaiterResult> =>
+        waitUntilStackRefactorExecuteComplete(
+          {
+            client,
+            maxWaitTime: 600,
+            minDelay: 6,
+            maxDelay: 6,
+          },
+          input,
+        ),
     };
   }
 

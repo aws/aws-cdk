@@ -247,6 +247,16 @@ export function convertYargsToUserInput(args: any): UserInput {
       };
       break;
 
+    case 'refactor':
+      commandOptions = {
+        fromStack: args.fromStack,
+        toStack: args.toStack,
+        sourceResource: args.sourceResource,
+        targetResource: args.targetResource,
+        dryRun: args.dryRun,
+      };
+      break;
+
     case 'doctor':
       commandOptions = {};
       break;
@@ -429,6 +439,13 @@ export function convertConfigToUserInput(config: any): UserInput {
   const docsOptions = {
     browser: config.docs?.browser,
   };
+  const refactorOptions = {
+    fromStack: config.refactor?.fromStack,
+    toStack: config.refactor?.toStack,
+    sourceResource: config.refactor?.sourceResource,
+    targetResource: config.refactor?.targetResource,
+    dryRun: config.refactor?.dryRun,
+  };
   const doctorOptions = {};
   const userInput: UserInput = {
     globalOptions,
@@ -449,6 +466,7 @@ export function convertConfigToUserInput(config: any): UserInput {
     migrate: migrateOptions,
     context: contextOptions,
     docs: docsOptions,
+    refactor: refactorOptions,
     doctor: doctorOptions,
   };
 

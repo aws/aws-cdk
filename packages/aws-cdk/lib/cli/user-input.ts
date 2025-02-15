@@ -115,6 +115,11 @@ export interface UserInput {
   readonly docs?: DocsOptions;
 
   /**
+   * Refactor a CloudFormation Stacks with CDK
+   */
+  readonly refactor?: RefactorOptions;
+
+  /**
    * Check your set-up for potential problems
    */
   readonly doctor?: DoctorOptions;
@@ -1324,6 +1329,48 @@ export interface DocsOptions {
    * @default - undefined
    */
   readonly browser?: string;
+}
+
+/**
+ * Refactor a CloudFormation Stacks with CDK
+ *
+ * @struct
+ */
+export interface RefactorOptions {
+  /**
+   * The name of the source stack to refactor
+   *
+   * @default - undefined
+   */
+  readonly fromStack?: string;
+
+  /**
+   * The name of the target stack to refactor
+   *
+   * @default - undefined
+   */
+  readonly toStack?: string;
+
+  /**
+   * The name of the source resource to refactor
+   *
+   * @default - undefined
+   */
+  readonly sourceResource?: string;
+
+  /**
+   * The name of the target resource to refactor
+   *
+   * @default - undefined
+   */
+  readonly targetResource?: string;
+
+  /**
+   * Run the refactor in dry-run mode
+   *
+   * @default - false
+   */
+  readonly dryRun?: boolean;
 }
 
 /**

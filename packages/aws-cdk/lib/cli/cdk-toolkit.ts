@@ -7,6 +7,7 @@ import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { Configuration, PROJECT_CONFIG } from './user-configuration';
+import { RefactorOptions } from './user-input';
 import { DEFAULT_TOOLKIT_STACK_NAME } from '../api';
 import { SdkProvider } from '../api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from '../api/bootstrap';
@@ -167,6 +168,39 @@ export class CdkToolkit {
     acks.push(Number(noticeId));
     this.props.configuration.context.set('acknowledged-issue-numbers', acks);
     await this.props.configuration.saveContext();
+  }
+
+  public async refactor(options: RefactorOptions) {
+    const stacks = await this.selectStacksForRefactor(options.fromStack!, options.toStack!);
+
+    const sourceStack = stacks.source;
+    const targetStack = stacks.target;
+
+    try {
+      await this.props.deployments.stackExists({
+        stack: targetStack,
+        deployName: targetStack.stackName,
+        tryLookupRole: true,
+      });
+    } catch (e: any) {
+      debug(formatErrorMessage(e));
+      throw new ToolkitError(
+        `Checking if the stack ${targetStack.stackName} exists before refactoring has failed. You need to deploy the destination stack first.`,
+      );
+    }
+
+    try {
+      await this.props.deployments.refactor({
+        sourceStack,
+        targetStack: targetStack,
+        sourceResource: options.sourceResource!,
+        targetResource: options.targetResource!,
+        dryRun: options.dryRun ?? false,
+      });
+    } catch (e: any) {
+      debug(formatErrorMessage(e));
+      throw new ToolkitError(`Refactoring failed: ${formatErrorMessage(e)}`);
+    }
   }
 
   public async diff(options: DiffOptions): Promise<number> {
@@ -1140,6 +1174,27 @@ export class CdkToolkit {
     // No validation
 
     return stacks;
+  }
+
+  private async selectStacksForRefactor(sourceStack: string, targetStack: string) {
+    const assembly = await this.assembly();
+    const sourceStacks = await assembly.selectStacks(
+      { patterns: [sourceStack] },
+      { defaultBehavior: DefaultSelection.None, extend: ExtendedStackSelection.Downstream },
+    );
+    const targetStacks = await assembly.selectStacks(
+      { patterns: [targetStack] },
+      { defaultBehavior: DefaultSelection.None, extend: ExtendedStackSelection.Downstream },
+    );
+
+    this.validateStacksSelected(sourceStacks, [sourceStack]);
+    this.validateStacksSelected(targetStacks, [targetStack]);
+    await this.validateStacks(sourceStacks.concat(targetStacks));
+
+    return {
+      source: sourceStacks.firstStack,
+      target: targetStacks.firstStack,
+    };
   }
 
   private async selectStacksForDeploy(

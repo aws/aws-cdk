@@ -496,6 +496,16 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         ioHost.currentAction = 'version';
         return result(version.displayVersion());
 
+      case 'refactor':
+        ioHost.currentAction = 'refactor';
+        return cli.refactor({
+          fromStack: args['from-stack'],
+          toStack: args['to-stack'],
+          sourceResource: args['source-resource'],
+          targetResource: args['target-resource'],
+          dryRun: args['dry-run'],
+        });
+
       default:
         throw new ToolkitError('Unknown command: ' + command);
     }
