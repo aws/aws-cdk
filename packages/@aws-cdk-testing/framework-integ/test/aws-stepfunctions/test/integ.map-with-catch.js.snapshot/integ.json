@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "DistributedMap-Catch/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-map-with-catch"
+      ],
+      "assertionStack": "DistributedMap-Catch/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapCatchDefaultTestDeployAssert25965E29"
+    }
+  }
+}
