@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "cdk-integ-s3-bucket-block-public-access/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3"
+      ],
+      "assertionStack": "cdk-integ-s3-bucket-block-public-access/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3bucketblockpublicaccessDefaultTestDeployAssert2B4C2503"
+    }
+  }
+}
