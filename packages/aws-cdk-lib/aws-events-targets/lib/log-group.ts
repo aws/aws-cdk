@@ -85,6 +85,14 @@ export interface LogGroupProps extends TargetBaseProps {
    * @default - install latest AWS SDK
    */
   readonly installLatestAwsSdk?: boolean;
+
+  /**
+   * Whether a CloudWatch LogGroup Resource Policy will be
+   * created to allow EventBridge to write to the LogGroup
+   *
+   * @default - true (create the CloudWatch LogGroup Resource Policy)
+   */
+  readonly createLogGroupResourcePolicy?: boolean;
 }
 
 /**
@@ -114,7 +122,9 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
 
     _rule.node.addValidation({ validate: () => this.validateInputTemplate() });
 
-    if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
+    const createLogGroupResourcePolicy = this.props.createLogGroupResourcePolicy ?? true;
+
+    if (!this.logGroup.node.tryFindChild(resourcePolicyId) && createLogGroupResourcePolicy) {
       new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
         installLatestAwsSdk: this.props.installLatestAwsSdk,
         policyStatements: [new iam.PolicyStatement({
