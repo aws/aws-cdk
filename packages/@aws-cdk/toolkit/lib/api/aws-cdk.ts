@@ -1,5 +1,7 @@
 /* eslint-disable import/no-restricted-paths */
 
+export { Bootstrapper, type BootstrapEnvironmentOptions } from '../../../../aws-cdk/lib/api';
+
 // APIs
 export { formatSdkLoggerContent, SdkProvider } from '../../../../aws-cdk/lib/api/aws-auth';
 export { Context, PROJECT_CONTEXT } from '../../../../aws-cdk/lib/api/context';
@@ -31,6 +33,7 @@ export type { AssetBuildNode, AssetPublishNode, StackNode } from '../../../../aw
 export { CloudWatchLogEventMonitor } from '../../../../aws-cdk/lib/api/logs/logs-monitor';
 export { findCloudWatchLogGroups } from '../../../../aws-cdk/lib/api/logs/find-cloudwatch-logs';
 export { HotswapPropertyOverrides, EcsHotswapProperties } from '../../../../aws-cdk/lib/api/hotswap/common';
+export { type StringWithoutPlaceholders } from '../../../../aws-cdk/lib/api/util/placeholders';
 
 // @todo Cloud Assembly and Executable - this is a messy API right now
 export { CloudAssembly, sanitizePatterns, type StackDetails, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';

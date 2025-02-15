@@ -45,6 +45,9 @@ export const CODES = {
   CDK_TOOLKIT_E7900: 'Stack deletion failed',
 
   // 9: Bootstrap
+  CDK_TOOLKIT_I9000: 'Provides bootstrap times',
+
+  CDK_TOOLKIT_E9900: 'Bootstrap failed',
 
   // Assembly codes
   CDK_ASSEMBLY_I0042: 'Writing updated context',
