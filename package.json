@@ -93,6 +93,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "**/@types/glob",
+      "**/@types/minimatch",
       "@aws-cdk/assertions-alpha/fs-extra",
       "@aws-cdk/assertions-alpha/fs-extra/**",
       "@aws-cdk/assertions/fs-extra",
