@@ -1,29 +1,29 @@
 {
   "version": "38.0.1",
   "artifacts": {
-    "kinesis-resource-policy.assets": {
+    "kinesis-stream-consumer.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "kinesis-resource-policy.assets.json",
+        "file": "kinesis-stream-consumer.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "kinesis-resource-policy": {
+    "kinesis-stream-consumer": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "kinesis-resource-policy.template.json",
+        "templateFile": "kinesis-stream-consumer.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1772e18de899d6961118c074890d20c1b2f65ac8abfc63b6cb92c0aa6ccea511.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52b6c32d15bf28e7bb9a43db853fe7f4ff5190a0fc21ca12439f1916bf38123b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "kinesis-resource-policy.assets"
+          "kinesis-stream-consumer.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,67 +32,67 @@
         }
       },
       "dependencies": [
-        "kinesis-resource-policy.assets"
+        "kinesis-stream-consumer.assets"
       ],
       "metadata": {
-        "/kinesis-resource-policy/MyStream/Resource": [
+        "/kinesis-stream-consumer/Stream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyStream5C050E93"
+            "data": "Stream790BDEE4"
           }
         ],
-        "/kinesis-resource-policy/MyStream/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyStreamPolicyC34ACF94"
-          }
-        ],
-        "/kinesis-resource-policy/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+        "/kinesis-stream-consumer/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
           }
         ],
-        "/kinesis-resource-policy/StreamConsumer/Resource": [
+        "/kinesis-stream-consumer/StreamConsumer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StreamConsumer58240CBA"
           }
         ],
-        "/kinesis-resource-policy/StreamConsumer/Policy/Resource": [
+        "/kinesis-stream-consumer/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StreamConsumerPolicy925BAE36"
+            "data": "Role1ABCC5F0"
           }
         ],
-        "/kinesis-resource-policy/BootstrapVersion": [
+        "/kinesis-stream-consumer/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/kinesis-stream-consumer/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/kinesis-resource-policy/CheckBootstrapVersion": [
+        "/kinesis-stream-consumer/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "kinesis-resource-policy"
+      "displayName": "kinesis-stream-consumer"
     },
-    "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C.assets": {
+    "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C.assets.json",
+        "file": "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C": {
+    "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C.template.json",
+        "templateFile": "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "notificationArns": [],
@@ -102,7 +102,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C.assets"
+          "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -111,23 +111,23 @@
         }
       },
       "dependencies": [
-        "integkinesisresourcepolicyDefaultTestDeployAssert52C5D16C.assets"
+        "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets"
       ],
       "metadata": {
-        "/integ-kinesis-resource-policy/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-kinesis-resource-policy/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-kinesis-resource-policy/DefaultTest/DeployAssert"
+      "displayName": "integ-kinesis-stream-consumer/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
