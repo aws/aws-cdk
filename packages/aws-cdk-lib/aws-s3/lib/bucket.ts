@@ -2850,7 +2850,7 @@ export class Bucket extends BucketBase {
         const isCrossAccount = sourceAccount !== destinationAccount;
 
         if (isCrossAccount) {
-          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() ');
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() ');
         } else if (rule.accessControlTransition) {
           throw new ValidationError('accessControlTranslation is only supported for cross-account replication', this);
         }
