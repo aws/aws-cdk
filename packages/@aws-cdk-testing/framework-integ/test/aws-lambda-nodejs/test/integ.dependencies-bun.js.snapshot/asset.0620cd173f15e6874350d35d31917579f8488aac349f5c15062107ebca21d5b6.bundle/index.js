@@ -152,7 +152,6 @@ var init_matcher = __esm({
        */
       toHumanStrings() {
         const failures = new Array();
-        debugger;
         recurse(this, []);
         return failures.map((r) => {
           const loc = r.path.length === 0 ? "" : ` at /${r.path.join("/")}`;
@@ -3304,13 +3303,17 @@ var require_dist_cjs19 = __commonJS({
       }
       return transformedHeaders;
     }, "getTransformedHeaders");
+    var timing = {
+      setTimeout: (cb, ms) => setTimeout(cb, ms),
+      clearTimeout: (timeoutId) => clearTimeout(timeoutId)
+    };
     var DEFER_EVENT_LISTENER_TIME = 1e3;
     var setConnectionTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       if (!timeoutInMs) {
         return -1;
       }
       const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        const timeoutId = setTimeout(() => {
+        const timeoutId = timing.setTimeout(() => {
           request2.destroy();
           reject(
             Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
@@ -3321,10 +3324,10 @@ var require_dist_cjs19 = __commonJS({
         const doWithSocket = /* @__PURE__ */ __name((socket) => {
           if (socket == null ? void 0 : socket.connecting) {
             socket.on("connect", () => {
-              clearTimeout(timeoutId);
+              timing.clearTimeout(timeoutId);
             });
           } else {
-            clearTimeout(timeoutId);
+            timing.clearTimeout(timeoutId);
           }
         }, "doWithSocket");
         if (request2.socket) {
@@ -3337,7 +3340,7 @@ var require_dist_cjs19 = __commonJS({
         registerTimeout(0);
         return 0;
       }
-      return setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
+      return timing.setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
     }, "setConnectionTimeout");
     var DEFER_EVENT_LISTENER_TIME2 = 3e3;
     var setSocketKeepAlive = /* @__PURE__ */ __name((request2, { keepAlive, keepAliveMsecs }, deferTimeMs = DEFER_EVENT_LISTENER_TIME2) => {
@@ -3357,21 +3360,27 @@ var require_dist_cjs19 = __commonJS({
         registerListener();
         return 0;
       }
-      return setTimeout(registerListener, deferTimeMs);
+      return timing.setTimeout(registerListener, deferTimeMs);
     }, "setSocketKeepAlive");
     var DEFER_EVENT_LISTENER_TIME3 = 3e3;
     var setSocketTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        request2.setTimeout(timeoutInMs - offset, () => {
+        const timeout = timeoutInMs - offset;
+        const onTimeout2 = /* @__PURE__ */ __name(() => {
           request2.destroy();
           reject(Object.assign(new Error(`Connection timed out after ${timeoutInMs} ms`), { name: "TimeoutError" }));
-        });
+        }, "onTimeout");
+        if (request2.socket) {
+          request2.socket.setTimeout(timeout, onTimeout2);
+        } else {
+          request2.setTimeout(timeout, onTimeout2);
+        }
       }, "registerTimeout");
       if (0 < timeoutInMs && timeoutInMs < 6e3) {
         registerTimeout(0);
         return 0;
       }
-      return setTimeout(
+      return timing.setTimeout(
         registerTimeout.bind(null, timeoutInMs === 0 ? 0 : DEFER_EVENT_LISTENER_TIME3),
         DEFER_EVENT_LISTENER_TIME3
       );
@@ -3382,26 +3391,29 @@ var require_dist_cjs19 = __commonJS({
       const headers = request2.headers ?? {};
       const expect = headers["Expect"] || headers["expect"];
       let timeoutId = -1;
-      let hasError = false;
+      let sendBody = true;
       if (expect === "100-continue") {
-        await Promise.race([
+        sendBody = await Promise.race([
           new Promise((resolve) => {
-            timeoutId = Number(setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
+            timeoutId = Number(timing.setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
           }),
           new Promise((resolve) => {
             httpRequest.on("continue", () => {
-              clearTimeout(timeoutId);
-              resolve();
+              timing.clearTimeout(timeoutId);
+              resolve(true);
+            });
+            httpRequest.on("response", () => {
+              timing.clearTimeout(timeoutId);
+              resolve(false);
             });
             httpRequest.on("error", () => {
-              hasError = true;
-              clearTimeout(timeoutId);
-              resolve();
+              timing.clearTimeout(timeoutId);
+              resolve(false);
             });
           })
         ]);
       }
-      if (!hasError) {
+      if (sendBody) {
         writeBody(httpRequest, request2.body);
       }
     }
@@ -3523,12 +3535,12 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           const timeouts = [];
           const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
-            timeouts.forEach(clearTimeout);
+            timeouts.forEach(timing.clearTimeout);
             _resolve(arg);
           }, "resolve");
           const reject = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
-            timeouts.forEach(clearTimeout);
+            timeouts.forEach(timing.clearTimeout);
             _reject(arg);
           }, "reject");
           if (!this.config) {
@@ -3543,7 +3555,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           const isSSL = request2.protocol === "https:";
           const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
           timeouts.push(
-            setTimeout(
+            timing.setTimeout(
               () => {
                 this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(
                   agent,
@@ -3629,7 +3641,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             );
           }
           writeRequestBodyPromise = writeRequestBody(req, request2, this.config.requestTimeout).catch((e) => {
-            timeouts.forEach(clearTimeout);
+            timeouts.forEach(timing.clearTimeout);
             return _reject(e);
           });
         });
@@ -3762,7 +3774,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         }
       }
       setMaxConcurrentStreams(maxConcurrentStreams) {
-        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
+        if (maxConcurrentStreams && maxConcurrentStreams <= 0) {
           throw new RangeError("maxConcurrentStreams must be greater than zero.");
         }
         this.config.maxConcurrency = maxConcurrentStreams;
@@ -4032,6 +4044,10 @@ var require_dist_cjs20 = __commonJS({
     module2.exports = __toCommonJS2(src_exports);
     var import_protocol_http8 = require_dist_cjs2();
     var import_querystring_builder = require_dist_cjs18();
+    function createRequest(url2, requestOptions) {
+      return new Request(url2, requestOptions);
+    }
+    __name(createRequest, "createRequest");
     function requestTimeout(timeoutInMs = 0) {
       return new Promise((resolve, reject) => {
         if (timeoutInMs) {
@@ -4067,7 +4083,7 @@ var require_dist_cjs20 = __commonJS({
         }
         if (keepAliveSupport.supported === void 0) {
           keepAliveSupport.supported = Boolean(
-            typeof Request !== "undefined" && "keepalive" in new Request("https://[::1]")
+            typeof Request !== "undefined" && "keepalive" in createRequest("https://[::1]")
           );
         }
       }
@@ -4126,7 +4142,7 @@ var require_dist_cjs20 = __commonJS({
         }
         let removeSignalEventListener = /* @__PURE__ */ __name(() => {
         }, "removeSignalEventListener");
-        const fetchRequest = new Request(url2, requestOptions);
+        const fetchRequest = createRequest(url2, requestOptions);
         const raceOfPromises = [
           fetch(fetchRequest).then((response) => {
             const fetchHeaders = response.headers;
@@ -4189,12 +4205,23 @@ var require_dist_cjs20 = __commonJS({
     };
     __name(_FetchHttpHandler, "FetchHttpHandler");
     var FetchHttpHandler = _FetchHttpHandler;
+    var import_util_base64 = require_dist_cjs16();
     var streamCollector = /* @__PURE__ */ __name(async (stream) => {
-      if (typeof Blob === "function" && stream instanceof Blob) {
-        return new Uint8Array(await stream.arrayBuffer());
+      var _a;
+      if (typeof Blob === "function" && stream instanceof Blob || ((_a = stream.constructor) == null ? void 0 : _a.name) === "Blob") {
+        if (Blob.prototype.arrayBuffer !== void 0) {
+          return new Uint8Array(await stream.arrayBuffer());
+        }
+        return collectBlob(stream);
       }
       return collectStream(stream);
     }, "streamCollector");
+    async function collectBlob(blob) {
+      const base64 = await readToBase64(blob);
+      const arrayBuffer = (0, import_util_base64.fromBase64)(base64);
+      return new Uint8Array(arrayBuffer);
+    }
+    __name(collectBlob, "collectBlob");
     async function collectStream(stream) {
       const chunks = [];
       const reader = stream.getReader();
@@ -4217,6 +4244,24 @@ var require_dist_cjs20 = __commonJS({
       return collected;
     }
     __name(collectStream, "collectStream");
+    function readToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.readyState !== 2) {
+            return reject(new Error("Reader aborted too early"));
+          }
+          const result = reader.result ?? "";
+          const commaIndex = result.indexOf(",");
+          const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
+          resolve(result.substring(dataOffset));
+        };
+        reader.onabort = () => reject(new Error("Read aborted"));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+    }
+    __name(readToBase64, "readToBase64");
   }
 });
 
@@ -4289,12 +4334,17 @@ var require_stream_type_check = __commonJS({
   "../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isReadableStream = void 0;
+    exports2.isBlob = exports2.isReadableStream = void 0;
     var isReadableStream2 = (stream) => {
       var _a;
       return typeof ReadableStream === "function" && (((_a = stream === null || stream === void 0 ? void 0 : stream.constructor) === null || _a === void 0 ? void 0 : _a.name) === ReadableStream.name || stream instanceof ReadableStream);
     };
     exports2.isReadableStream = isReadableStream2;
+    var isBlob2 = (blob) => {
+      var _a;
+      return typeof Blob === "function" && (((_a = blob === null || blob === void 0 ? void 0 : blob.constructor) === null || _a === void 0 ? void 0 : _a.name) === Blob.name || blob instanceof Blob);
+    };
+    exports2.isBlob = isBlob2;
   }
 });
 
@@ -4375,7 +4425,6 @@ var require_sdk_stream_mixin = __commonJS({
     var node_http_handler_1 = require_dist_cjs19();
     var util_buffer_from_1 = require_dist_cjs14();
     var stream_1 = require("stream");
-    var util_1 = require("util");
     var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin2 = (stream) => {
@@ -4403,7 +4452,7 @@ var require_sdk_stream_mixin = __commonJS({
           if (encoding === void 0 || Buffer.isEncoding(encoding)) {
             return (0, util_buffer_from_1.fromArrayBuffer)(buf.buffer, buf.byteOffset, buf.byteLength).toString(encoding);
           } else {
-            const decoder2 = new util_1.TextDecoder(encoding);
+            const decoder2 = new TextDecoder(encoding);
             return decoder2.decode(buf);
           }
         },
@@ -4453,7 +4502,7 @@ var require_splitStream = __commonJS({
     var splitStream_browser_1 = require_splitStream_browser();
     var stream_type_check_1 = require_stream_type_check();
     async function splitStream2(stream) {
-      if ((0, stream_type_check_1.isReadableStream)(stream)) {
+      if ((0, stream_type_check_1.isReadableStream)(stream) || (0, stream_type_check_1.isBlob)(stream)) {
         return (0, splitStream_browser_1.splitStream)(stream);
       }
       const stream1 = new stream_1.PassThrough();
@@ -4802,6 +4851,26 @@ var init_extended_encode_uri_component = __esm({
   }
 });
 
+// ../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js
+var resolvedPath2;
+var init_resolve_path = __esm({
+  "../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js"() {
+    init_extended_encode_uri_component();
+    resolvedPath2 = (resolvedPath3, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
+      if (input != null && input[memberName] !== void 0) {
+        const labelValue = labelValueProvider();
+        if (labelValue.length <= 0) {
+          throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
+        }
+        resolvedPath3 = resolvedPath3.replace(uriLabel, isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent2(segment)).join("/") : extendedEncodeURIComponent2(labelValue));
+      } else {
+        throw new Error("No value provided for input HTTP label: " + memberName + ".");
+      }
+      return resolvedPath3;
+    };
+  }
+});
+
 // ../../../node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js
 function requestBuilder(input, context) {
   return new RequestBuilder(input, context);
@@ -4809,8 +4878,8 @@ function requestBuilder(input, context) {
 var import_protocol_http2, RequestBuilder;
 var init_requestBuilder = __esm({
   "../../../node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js"() {
-    init_protocols();
     import_protocol_http2 = __toESM(require_dist_cjs2());
+    init_resolve_path();
     RequestBuilder = class {
       constructor(input, context) {
         this.input = input;
@@ -4872,26 +4941,6 @@ var init_requestBuilder = __esm({
         this.method = method;
         return this;
       }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js
-var resolvedPath2;
-var init_resolve_path = __esm({
-  "../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js"() {
-    init_extended_encode_uri_component();
-    resolvedPath2 = (resolvedPath3, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
-      if (input != null && input[memberName] !== void 0) {
-        const labelValue = labelValueProvider();
-        if (labelValue.length <= 0) {
-          throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
-        }
-        resolvedPath3 = resolvedPath3.replace(uriLabel, isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent2(segment)).join("/") : extendedEncodeURIComponent2(labelValue));
-      } else {
-        throw new Error("No value provided for input HTTP label: " + memberName + ".");
-      }
-      return resolvedPath3;
     };
   }
 });
@@ -5991,6 +6040,9 @@ var require_dist_cjs29 = __commonJS({
           case "builtInParams":
             endpointParams[name] = await createConfigValueProvider(instruction.name, name, clientConfig)();
             break;
+          case "operationContextParams":
+            endpointParams[name] = instruction.get(commandInput);
+            break;
           default:
             throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
         }
@@ -6518,9 +6570,9 @@ var require_dist_cjs30 = __commonJS({
       var _a, _b;
       return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
     }, "isThrottlingError");
-    var isTransientError = /* @__PURE__ */ __name((error) => {
+    var isTransientError = /* @__PURE__ */ __name((error, depth = 0) => {
       var _a;
-      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0) || error.cause !== void 0 && depth <= 10 && isTransientError(error.cause, depth + 1);
     }, "isTransientError");
     var isServerError = /* @__PURE__ */ __name((error) => {
       var _a;
@@ -6585,7 +6637,7 @@ var require_dist_cjs31 = __commonJS({
     var DEFAULT_MAX_ATTEMPTS = 3;
     var DEFAULT_RETRY_MODE = "standard";
     var import_service_error_classification = require_dist_cjs30();
-    var _DefaultRateLimiter = class _DefaultRateLimiter {
+    var _DefaultRateLimiter = class _DefaultRateLimiter2 {
       constructor(options) {
         this.currentCapacity = 0;
         this.enabled = false;
@@ -6618,7 +6670,7 @@ var require_dist_cjs31 = __commonJS({
         this.refillTokenBucket();
         if (amount > this.currentCapacity) {
           const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
-          await new Promise((resolve) => setTimeout(resolve, delay));
+          await new Promise((resolve) => _DefaultRateLimiter2.setTimeoutFn(resolve, delay));
         }
         this.currentCapacity = this.currentCapacity - amount;
       }
@@ -6685,6 +6737,7 @@ var require_dist_cjs31 = __commonJS({
       }
     };
     __name(_DefaultRateLimiter, "DefaultRateLimiter");
+    _DefaultRateLimiter.setTimeoutFn = setTimeout;
     var DefaultRateLimiter = _DefaultRateLimiter;
     var DEFAULT_RETRY_DELAY_BASE = 100;
     var MAXIMUM_RETRY_DELAY = 20 * 1e3;
@@ -7196,9 +7249,8 @@ var require_dist_cjs33 = __commonJS({
       NoOpLogger: () => NoOpLogger,
       SENSITIVE_STRING: () => SENSITIVE_STRING,
       ServiceException: () => ServiceException,
-      StringWrapper: () => StringWrapper,
       _json: () => _json,
-      collectBody: () => import_protocols3.collectBody,
+      collectBody: () => import_protocols2.collectBody,
       convertMap: () => convertMap,
       createAggregatedClient: () => createAggregatedClient,
       dateToUtcString: () => dateToUtcString,
@@ -7216,7 +7268,7 @@ var require_dist_cjs33 = __commonJS({
       expectShort: () => expectShort,
       expectString: () => expectString,
       expectUnion: () => expectUnion2,
-      extendedEncodeURIComponent: () => import_protocols3.extendedEncodeURIComponent,
+      extendedEncodeURIComponent: () => import_protocols2.extendedEncodeURIComponent,
       getArrayIfSingleItem: () => getArrayIfSingleItem,
       getDefaultClientConfiguration: () => getDefaultClientConfiguration,
       getDefaultExtensionConfiguration: () => getDefaultExtensionConfiguration,
@@ -7236,7 +7288,7 @@ var require_dist_cjs33 = __commonJS({
       parseRfc7231DateTime: () => parseRfc7231DateTime,
       quoteHeader: () => quoteHeader,
       resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig,
-      resolvedPath: () => import_protocols3.resolvedPath,
+      resolvedPath: () => import_protocols2.resolvedPath,
       serializeDateTime: () => serializeDateTime,
       serializeFloat: () => serializeFloat,
       splitEvery: () => splitEvery,
@@ -7302,7 +7354,7 @@ var require_dist_cjs33 = __commonJS({
     };
     __name(_Client, "Client");
     var Client = _Client;
-    var import_protocols3 = (init_protocols(), __toCommonJS(protocols_exports));
+    var import_protocols2 = (init_protocols(), __toCommonJS(protocols_exports));
     var import_types5 = require_dist_cjs();
     var _Command = class _Command {
       constructor() {
@@ -7959,6 +8011,15 @@ var require_dist_cjs33 = __commonJS({
         this.$fault = options.$fault;
         this.$metadata = options.$metadata;
       }
+      /**
+       * Checks if a value is an instance of ServiceException (duck typed)
+       */
+      static isInstance(value) {
+        if (!value)
+          return false;
+        const candidate = value;
+        return Boolean(candidate.$fault) && Boolean(candidate.$metadata) && (candidate.$fault === "client" || candidate.$fault === "server");
+      }
     };
     __name(_ServiceException, "ServiceException");
     var ServiceException = _ServiceException;
@@ -8099,40 +8160,29 @@ var require_dist_cjs33 = __commonJS({
     var isSerializableHeaderValue = /* @__PURE__ */ __name((value) => {
       return value != null;
     }, "isSerializableHeaderValue");
-    var StringWrapper = /* @__PURE__ */ __name(function() {
-      const Class = Object.getPrototypeOf(this).constructor;
-      const Constructor = Function.bind.apply(String, [null, ...arguments]);
-      const instance = new Constructor();
-      Object.setPrototypeOf(instance, Class.prototype);
-      return instance;
-    }, "StringWrapper");
-    StringWrapper.prototype = Object.create(String.prototype, {
-      constructor: {
-        value: StringWrapper,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    Object.setPrototypeOf(StringWrapper, String);
-    var _LazyJsonString = class _LazyJsonString2 extends StringWrapper {
-      deserializeJSON() {
-        return JSON.parse(super.toString());
-      }
-      toJSON() {
-        return super.toString();
-      }
-      static fromObject(object) {
-        if (object instanceof _LazyJsonString2) {
-          return object;
-        } else if (object instanceof String || typeof object === "string") {
-          return new _LazyJsonString2(object);
+    var LazyJsonString = /* @__PURE__ */ __name(function LazyJsonString2(val2) {
+      const str = Object.assign(new String(val2), {
+        deserializeJSON() {
+          return JSON.parse(String(val2));
+        },
+        toString() {
+          return String(val2);
+        },
+        toJSON() {
+          return String(val2);
         }
-        return new _LazyJsonString2(JSON.stringify(object));
+      });
+      return str;
+    }, "LazyJsonString");
+    LazyJsonString.from = (object) => {
+      if (object && typeof object === "object" && (object instanceof LazyJsonString || "deserializeJSON" in object)) {
+        return object;
+      } else if (typeof object === "string" || Object.getPrototypeOf(object) === String.prototype) {
+        return LazyJsonString(String(object));
       }
+      return LazyJsonString(JSON.stringify(object));
     };
-    __name(_LazyJsonString, "LazyJsonString");
-    var LazyJsonString = _LazyJsonString;
+    LazyJsonString.fromObject = LazyJsonString.from;
     var _NoOpLogger = class _NoOpLogger {
       trace() {
       }
@@ -11899,7 +11949,7 @@ function __importStar(mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) {
-    for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
   }
   __setModuleDefault(result, mod);
   return result;
@@ -11983,7 +12033,7 @@ function __rewriteRelativeImportExtension(path, preserveJsx) {
   }
   return path;
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
+var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
   "../../../node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
@@ -12021,6 +12071,14 @@ var init_tslib_es6 = __esm({
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
+    };
+    ownKeys = function(o) {
+      ownKeys = Object.getOwnPropertyNames || function(o2) {
+        var ar = [];
+        for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+        return ar;
+      };
+      return ownKeys(o);
     };
     _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
       var e = new Error(message);
@@ -23574,9 +23632,9 @@ var require_safer = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/lib/bom-handling.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js
 var require_bom_handling = __commonJS({
-  "../../../node_modules/iconv-lite/lib/bom-handling.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/lib/bom-handling.js"(exports2) {
     "use strict";
     var BOMChar = "\uFEFF";
     exports2.PrependBOM = PrependBOMWrapper;
@@ -23618,9 +23676,9 @@ var require_bom_handling = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/internal.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js
 var require_internal = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/internal.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/internal.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = {
@@ -23770,9 +23828,9 @@ var require_internal = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/utf32.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js
 var require_utf32 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/utf32.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf32.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._utf32 = Utf32Codec;
@@ -23989,9 +24047,9 @@ var require_utf32 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/utf16.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js
 var require_utf16 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/utf16.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf16.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2.utf16be = Utf16BECodec;
@@ -24123,9 +24181,9 @@ var require_utf16 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/utf7.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js
 var require_utf7 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/utf7.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/utf7.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2.utf7 = Utf7Codec;
@@ -24324,9 +24382,9 @@ var require_utf7 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/sbcs-codec.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js
 var require_sbcs_codec = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/sbcs-codec.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-codec.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._sbcs = SBCSCodec;
@@ -24380,9 +24438,9 @@ var require_sbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/sbcs-data.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js
 var require_sbcs_data = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/sbcs-data.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       // Not supported by iconv, not sure why.
@@ -24533,9 +24591,9 @@ var require_sbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js
 var require_sbcs_data_generated = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/sbcs-data-generated.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       "437": "cp437",
@@ -24988,9 +25046,9 @@ var require_sbcs_data_generated = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/dbcs-codec.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js
 var require_dbcs_codec = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/dbcs-codec.js"(exports2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-codec.js"(exports2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     exports2._dbcs = DBCSCodec;
@@ -25405,9 +25463,9 @@ var require_dbcs_codec = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/shiftjis.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json
 var require_shiftjis = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/shiftjis.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 128],
       ["a1", "\uFF61", 62],
@@ -25536,9 +25594,9 @@ var require_shiftjis = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/eucjp.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json
 var require_eucjp = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/eucjp.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/eucjp.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8ea1", "\uFF61", 62],
@@ -25724,9 +25782,9 @@ var require_eucjp = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/cp936.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json
 var require_cp936 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/cp936.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp936.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127, "\u20AC"],
       ["8140", "\u4E02\u4E04\u4E05\u4E06\u4E0F\u4E12\u4E17\u4E1F\u4E20\u4E21\u4E23\u4E26\u4E29\u4E2E\u4E2F\u4E31\u4E33\u4E35\u4E37\u4E3C\u4E40\u4E41\u4E42\u4E44\u4E46\u4E4A\u4E51\u4E55\u4E57\u4E5A\u4E5B\u4E62\u4E63\u4E64\u4E65\u4E67\u4E68\u4E6A", 5, "\u4E72\u4E74", 9, "\u4E7F", 6, "\u4E87\u4E8A"],
@@ -25994,9 +26052,9 @@ var require_cp936 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/gbk-added.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json
 var require_gbk_added = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gbk-added.json"(exports2, module2) {
     module2.exports = [
       ["a140", "\uE4C6", 62],
       ["a180", "\uE505", 32],
@@ -26056,16 +26114,16 @@ var require_gbk_added = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json
 var require_gb18030_ranges = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/gb18030-ranges.json"(exports2, module2) {
     module2.exports = { uChars: [128, 165, 169, 178, 184, 216, 226, 235, 238, 244, 248, 251, 253, 258, 276, 284, 300, 325, 329, 334, 364, 463, 465, 467, 469, 471, 473, 475, 477, 506, 594, 610, 712, 716, 730, 930, 938, 962, 970, 1026, 1104, 1106, 8209, 8215, 8218, 8222, 8231, 8241, 8244, 8246, 8252, 8365, 8452, 8454, 8458, 8471, 8482, 8556, 8570, 8596, 8602, 8713, 8720, 8722, 8726, 8731, 8737, 8740, 8742, 8748, 8751, 8760, 8766, 8777, 8781, 8787, 8802, 8808, 8816, 8854, 8858, 8870, 8896, 8979, 9322, 9372, 9548, 9588, 9616, 9622, 9634, 9652, 9662, 9672, 9676, 9680, 9702, 9735, 9738, 9793, 9795, 11906, 11909, 11913, 11917, 11928, 11944, 11947, 11951, 11956, 11960, 11964, 11979, 12284, 12292, 12312, 12319, 12330, 12351, 12436, 12447, 12535, 12543, 12586, 12842, 12850, 12964, 13200, 13215, 13218, 13253, 13263, 13267, 13270, 13384, 13428, 13727, 13839, 13851, 14617, 14703, 14801, 14816, 14964, 15183, 15471, 15585, 16471, 16736, 17208, 17325, 17330, 17374, 17623, 17997, 18018, 18212, 18218, 18301, 18318, 18760, 18811, 18814, 18820, 18823, 18844, 18848, 18872, 19576, 19620, 19738, 19887, 40870, 59244, 59336, 59367, 59413, 59417, 59423, 59431, 59437, 59443, 59452, 59460, 59478, 59493, 63789, 63866, 63894, 63976, 63986, 64016, 64018, 64021, 64025, 64034, 64037, 64042, 65074, 65093, 65107, 65112, 65127, 65132, 65375, 65510, 65536], gbChars: [0, 36, 38, 45, 50, 81, 89, 95, 96, 100, 103, 104, 105, 109, 126, 133, 148, 172, 175, 179, 208, 306, 307, 308, 309, 310, 311, 312, 313, 341, 428, 443, 544, 545, 558, 741, 742, 749, 750, 805, 819, 820, 7922, 7924, 7925, 7927, 7934, 7943, 7944, 7945, 7950, 8062, 8148, 8149, 8152, 8164, 8174, 8236, 8240, 8262, 8264, 8374, 8380, 8381, 8384, 8388, 8390, 8392, 8393, 8394, 8396, 8401, 8406, 8416, 8419, 8424, 8437, 8439, 8445, 8482, 8485, 8496, 8521, 8603, 8936, 8946, 9046, 9050, 9063, 9066, 9076, 9092, 9100, 9108, 9111, 9113, 9131, 9162, 9164, 9218, 9219, 11329, 11331, 11334, 11336, 11346, 11361, 11363, 11366, 11370, 11372, 11375, 11389, 11682, 11686, 11687, 11692, 11694, 11714, 11716, 11723, 11725, 11730, 11736, 11982, 11989, 12102, 12336, 12348, 12350, 12384, 12393, 12395, 12397, 12510, 12553, 12851, 12962, 12973, 13738, 13823, 13919, 13933, 14080, 14298, 14585, 14698, 15583, 15847, 16318, 16434, 16438, 16481, 16729, 17102, 17122, 17315, 17320, 17402, 17418, 17859, 17909, 17911, 17915, 17916, 17936, 17939, 17961, 18664, 18703, 18814, 18962, 19043, 33469, 33470, 33471, 33484, 33485, 33490, 33497, 33501, 33505, 33513, 33520, 33536, 33550, 37845, 37921, 37948, 38029, 38038, 38064, 38065, 38066, 38069, 38075, 38076, 38078, 39108, 39109, 39113, 39114, 39115, 39116, 39265, 39394, 189e3] };
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/cp949.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json
 var require_cp949 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/cp949.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp949.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["8141", "\uAC02\uAC03\uAC05\uAC06\uAC0B", 4, "\uAC18\uAC1E\uAC1F\uAC21\uAC22\uAC23\uAC25", 6, "\uAC2E\uAC32\uAC33\uAC34"],
@@ -26342,9 +26400,9 @@ var require_cp949 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/cp950.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json
 var require_cp950 = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/cp950.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/cp950.json"(exports2, module2) {
     module2.exports = [
       ["0", "\0", 127],
       ["a140", "\u3000\uFF0C\u3001\u3002\uFF0E\u2027\uFF1B\uFF1A\uFF1F\uFF01\uFE30\u2026\u2025\uFE50\uFE51\uFE52\xB7\uFE54\uFE55\uFE56\uFE57\uFF5C\u2013\uFE31\u2014\uFE33\u2574\uFE34\uFE4F\uFF08\uFF09\uFE35\uFE36\uFF5B\uFF5D\uFE37\uFE38\u3014\u3015\uFE39\uFE3A\u3010\u3011\uFE3B\uFE3C\u300A\u300B\uFE3D\uFE3E\u3008\u3009\uFE3F\uFE40\u300C\u300D\uFE41\uFE42\u300E\u300F\uFE43\uFE44\uFE59\uFE5A"],
@@ -26525,9 +26583,9 @@ var require_cp950 = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/tables/big5-added.json
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json
 var require_big5_added = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/tables/big5-added.json"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/tables/big5-added.json"(exports2, module2) {
     module2.exports = [
       ["8740", "\u43F0\u4C32\u4603\u45A6\u4578\u{27267}\u4D77\u45B3\u{27CB1}\u4CE2\u{27CC5}\u3B95\u4736\u4744\u4C47\u4C40\u{242BF}\u{23617}\u{27352}\u{26E8B}\u{270D2}\u4C57\u{2A351}\u474F\u45DA\u4C85\u{27C6C}\u4D07\u4AA4\u46A1\u{26B23}\u7225\u{25A54}\u{21A63}\u{23E06}\u{23F61}\u664D\u56FB"],
       ["8767", "\u7D95\u591D\u{28BB9}\u3DF4\u9734\u{27BEF}\u5BDB\u{21D5E}\u5AA4\u3625\u{29EB0}\u5AD1\u5BB7\u5CFC\u676E\u8593\u{29945}\u7461\u749D\u3875\u{21D53}\u{2369E}\u{26021}\u3EEC"],
@@ -26653,9 +26711,9 @@ var require_big5_added = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/dbcs-data.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js
 var require_dbcs_data = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/dbcs-data.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/dbcs-data.js"(exports2, module2) {
     "use strict";
     module2.exports = {
       // == Japanese/ShiftJIS ====================================================
@@ -26900,9 +26958,9 @@ var require_dbcs_data = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/encodings/index.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js
 var require_encodings = __commonJS({
-  "../../../node_modules/iconv-lite/encodings/index.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/encodings/index.js"(exports2, module2) {
     "use strict";
     var modules = [
       require_internal(),
@@ -26927,9 +26985,9 @@ var require_encodings = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/lib/streams.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js
 var require_streams = __commonJS({
-  "../../../node_modules/iconv-lite/lib/streams.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/lib/streams.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     module2.exports = function(stream_module) {
@@ -27022,9 +27080,9 @@ var require_streams = __commonJS({
   }
 });
 
-// ../../../node_modules/iconv-lite/lib/index.js
+// ../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js
 var require_lib2 = __commonJS({
-  "../../../node_modules/iconv-lite/lib/index.js"(exports2, module2) {
+  "../../../node_modules/encoding/node_modules/iconv-lite/lib/index.js"(exports2, module2) {
     "use strict";
     var Buffer2 = require_safer().Buffer;
     var bomHandling = require_bom_handling();
@@ -27333,7 +27391,7 @@ var require_lib3 = __commonJS({
         body = null;
       } else if (isURLSearchParams(body)) {
         body = Buffer.from(body.toString());
-      } else if (isBlob(body)) ;
+      } else if (isBlob2(body)) ;
       else if (Buffer.isBuffer(body)) ;
       else if (Object.prototype.toString.call(body) === "[object ArrayBuffer]") {
         body = Buffer.from(body);
@@ -27468,7 +27526,7 @@ var require_lib3 = __commonJS({
       if (body === null) {
         return Body.Promise.resolve(Buffer.alloc(0));
       }
-      if (isBlob(body)) {
+      if (isBlob2(body)) {
         body = body.stream();
       }
       if (Buffer.isBuffer(body)) {
@@ -27564,7 +27622,7 @@ var require_lib3 = __commonJS({
       }
       return obj.constructor.name === "URLSearchParams" || Object.prototype.toString.call(obj) === "[object URLSearchParams]" || typeof obj.sort === "function";
     }
-    function isBlob(obj) {
+    function isBlob2(obj) {
       return typeof obj === "object" && typeof obj.arrayBuffer === "function" && typeof obj.type === "string" && typeof obj.stream === "function" && typeof obj.constructor === "function" && typeof obj.constructor.name === "string" && /^(Blob|File)$/.test(obj.constructor.name) && /^(Blob|File)$/.test(obj[Symbol.toStringTag]);
     }
     function clone(instance) {
@@ -27590,7 +27648,7 @@ var require_lib3 = __commonJS({
         return "text/plain;charset=UTF-8";
       } else if (isURLSearchParams(body)) {
         return "application/x-www-form-urlencoded;charset=UTF-8";
-      } else if (isBlob(body)) {
+      } else if (isBlob2(body)) {
         return body.type || null;
       } else if (Buffer.isBuffer(body)) {
         return null;
@@ -27610,7 +27668,7 @@ var require_lib3 = __commonJS({
       const body = instance.body;
       if (body === null) {
         return 0;
-      } else if (isBlob(body)) {
+      } else if (isBlob2(body)) {
         return body.size;
       } else if (Buffer.isBuffer(body)) {
         return body.length;
@@ -27628,7 +27686,7 @@ var require_lib3 = __commonJS({
       const body = instance.body;
       if (body === null) {
         dest.end();
-      } else if (isBlob(body)) {
+      } else if (isBlob2(body)) {
         body.stream().pipe(dest);
       } else if (Buffer.isBuffer(body)) {
         dest.write(body);
@@ -28909,7 +28967,7 @@ var require_sdk_v3_metadata = __commonJS({
         iamPrefix: "logs"
       },
       cloudwatch: {
-        iamPrefix: "monitoring"
+        iamPrefix: "cloudwatch"
       },
       codeartifact: {
         iamPrefix: "codeartifact"
@@ -30058,13 +30116,13 @@ var require_lib4 = __commonJS({
 });
 
 // lib/assertions/providers/lambda-handler/index.ts
-var lambda_handler_exports = {};
-__export(lambda_handler_exports, {
+var index_exports = {};
+__export(index_exports, {
   handler: () => handler,
   isComplete: () => isComplete,
   onTimeout: () => onTimeout
 });
-module.exports = __toCommonJS(lambda_handler_exports);
+module.exports = __toCommonJS(index_exports);
 
 // lib/assertions/providers/lambda-handler/assertion.ts
 var import_helpers_internal = __toESM(require_helpers_internal());
