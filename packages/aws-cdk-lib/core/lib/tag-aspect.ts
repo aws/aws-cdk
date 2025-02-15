@@ -159,7 +159,7 @@ export class Tags {
    * add tags to the node of a construct and all its the taggable children
    */
   public add(key: string, value: string, props: TagProps = {}) {
-    Aspects.of(this.scope).add(new Tag(key, value, props)), { priority: AspectPriority.MUTATING };
+    Aspects.of(this.scope).add(new Tag(key, value, props), {priority: AspectPriority.MUTATING});
   }
 
   /**
