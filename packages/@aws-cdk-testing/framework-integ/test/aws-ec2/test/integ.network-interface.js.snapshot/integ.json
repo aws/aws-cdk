@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "network-interface-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-multi-vpc-eni-attachments"
+      ],
+      "assertionStack": "network-interface-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "networkinterfaceintegDefaultTestDeployAssert4752E4C4"
+    }
+  }
+}
