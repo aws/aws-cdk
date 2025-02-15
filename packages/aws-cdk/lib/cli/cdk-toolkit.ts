@@ -19,7 +19,7 @@ import {
 } from '../api/cxapp/cloud-assembly';
 import { CloudExecutable } from '../api/cxapp/cloud-executable';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../api/cxapp/environments';
-import { Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from '../api/deployments';
+import { type Deployments, DeploymentMethod, SuccessfulDeployStackResult, createDiffChangeSet } from '../api/deployments';
 import { GarbageCollector } from '../api/garbage-collection/garbage-collector';
 import { HotswapMode, HotswapPropertyOverrides, EcsHotswapProperties } from '../api/hotswap/common';
 import { findCloudWatchLogGroups } from '../api/logs/find-cloudwatch-logs';
@@ -237,7 +237,7 @@ export class CdkToolkit {
           }
 
           if (stackExists) {
-            changeSet = await createDiffChangeSet({
+            changeSet = await createDiffChangeSet({ ioHost: this.ioHost, action: 'diff' }, {
               stack,
               uuid: uuid.v4(),
               deployments: this.props.deployments,
@@ -551,7 +551,7 @@ export class CdkToolkit {
         );
       } finally {
         if (options.cloudWatchLogMonitor) {
-          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, { ioHost: this.ioHost, action: 'deploy' }, stack);
           options.cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
@@ -962,7 +962,7 @@ export class CdkToolkit {
     userEnvironmentSpecs: string[],
     options: BootstrapEnvironmentOptions,
   ): Promise<void> {
-    const bootstrapper = new Bootstrapper(options.source);
+    const bootstrapper = new Bootstrapper(options.source, { ioHost: this.ioHost, action: 'bootstrap' });
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise, use what the user said.
 
@@ -997,6 +997,10 @@ export class CdkToolkit {
       success(' ⏳  Garbage Collecting environment %s...', chalk.blue(environment.name));
       const gc = new GarbageCollector({
         sdkProvider: this.props.sdkProvider,
+        msg: {
+          ioHost: this.ioHost,
+          action: 'gc',
+        },
         resolvedEnvironment: environment,
         bootstrapStackName: options.bootstrapStackName,
         rollbackBufferDays: options.rollbackBufferDays,

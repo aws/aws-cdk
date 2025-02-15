@@ -13,7 +13,8 @@ import {
   type ISecretsManagerClient,
 } from 'cdk-assets';
 import type { SDK } from '..';
-import { debug, error, info } from '../../logging';
+import { formatMessage } from '../../cli/messages';
+import { IIoHost, IoMessageLevel, IoMessaging, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import type { SdkProvider } from '../aws-auth';
 import { Mode } from '../plugin';
@@ -42,6 +43,7 @@ export async function publishAssets(
   sdk: SdkProvider,
   targetEnv: Environment,
   options: PublishAssetsOptions,
+  { ioHost, action }: IoMessaging,
 ) {
   // This shouldn't really happen (it's a programming error), but we don't have
   // the types here to guide us. Do an runtime validation to be super super sure.
@@ -56,7 +58,7 @@ export async function publishAssets(
 
   const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
-    progressListener: new PublishingProgressListener(),
+    progressListener: new PublishingProgressListener({ ioHost, action }),
     throwOnError: false,
     publishInParallel: options.parallel ?? true,
     buildAssets: true,
@@ -163,30 +165,49 @@ export class PublishingAws implements IAws {
   }
 }
 
-function ignore() {
-}
-
-export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
-  build: debug,
-  cached: debug,
-  check: debug,
-  debug,
-  fail: error,
-  found: debug,
-  start: info,
-  success: info,
-  upload: debug,
-  shell_open: debug,
-  shell_stderr: ignore,
-  shell_stdout: ignore,
-  shell_close: ignore,
+export const EVENT_TO_LEVEL: Record<EventType, IoMessageLevel | false> = {
+  build: 'debug',
+  cached: 'debug',
+  check: 'debug',
+  debug: 'debug',
+  fail: 'error',
+  found: 'debug',
+  start: 'info',
+  success: 'info',
+  upload: 'debug',
+  shell_open: 'debug',
+  shell_stderr: false,
+  shell_stdout: false,
+  shell_close: false,
 };
 
-class PublishingProgressListener implements IPublishProgressListener {
-  constructor() {}
+export abstract class BasePublishProgressListener implements IPublishProgressListener {
+  protected readonly ioHost: IIoHost;
+  protected readonly action: ToolkitAction;
+
+  constructor({ ioHost, action }: IoMessaging) {
+    this.ioHost = ioHost;
+    this.action = action;
+  }
+
+  protected abstract getMessage(type: EventType, event: IPublishProgress): string;
 
   public onPublishEvent(type: EventType, event: IPublishProgress): void {
-    const handler = EVENT_TO_LOGGER[type];
-    handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
+    const level = EVENT_TO_LEVEL[type];
+    if (level) {
+      void this.ioHost.notify(
+        formatMessage({
+          level,
+          action: this.action,
+          message: this.getMessage(type, event),
+        }),
+      );
+    }
+  }
+}
+
+class PublishingProgressListener extends BasePublishProgressListener {
+  protected getMessage(type: EventType, event: IPublishProgress): string {
+    return `[${event.percentComplete}%] ${type}: ${event.message}`;
   }
 }

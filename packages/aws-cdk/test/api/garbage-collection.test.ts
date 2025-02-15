@@ -28,6 +28,7 @@ import {
   ListImagesCommand,
   PutImageCommand,
 } from '@aws-sdk/client-ecr';
+import { CliIoHost } from '../../lib/toolkit/cli-io-host';
 
 let garbageCollector: GarbageCollector;
 
@@ -68,6 +69,10 @@ function gc(props: {
 }): GarbageCollector {
   return new GarbageCollector({
     sdkProvider: new MockSdkProvider(),
+    msg: {
+      ioHost: CliIoHost.instance(),
+      action: 'gc',
+    },
     action: props.action,
     resolvedEnvironment: {
       account: '123456789012',

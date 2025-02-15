@@ -76,6 +76,14 @@ export const levelPriority: Record<IoMessageLevel, number> = {
 };
 
 /**
+ * Temporary helper to group required props for IoMessages
+ */
+export interface IoMessaging {
+  ioHost: IIoHost;
+  action: ToolkitAction;
+}
+
+/**
  * The current action being performed by the CLI. 'none' represents the absence of an action.
  */
 export type ToolkitAction =

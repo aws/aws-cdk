@@ -10,10 +10,11 @@ import {
   UpdateTerminationProtectionCommand,
 } from '@aws-sdk/client-cloudformation';
 import { parse } from 'yaml';
-import { Bootstrapper } from '../../lib/api/bootstrap';
-import { legacyBootstrapTemplate } from '../../lib/api/bootstrap/legacy-template';
-import { deserializeStructure, serializeStructure, toYAML } from '../../lib/serialize';
-import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../util/mock-sdk';
+import { Bootstrapper } from '../../../lib/api/bootstrap';
+import { legacyBootstrapTemplate } from '../../../lib/api/bootstrap/legacy-template';
+import { deserializeStructure, serializeStructure, toYAML } from '../../../lib/serialize';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
+import { MockSdkProvider, mockCloudFormationClient, restoreSdkMocksToDefault } from '../../util/mock-sdk';
 
 const env = {
   account: '123456789012',
@@ -24,7 +25,7 @@ const env = {
 const templateBody = toYAML(deserializeStructure(serializeStructure(legacyBootstrapTemplate({}), true)));
 const changeSetName = 'cdk-deploy-change-set';
 
-jest.mock('../../lib/api/deployments/checks', () => ({
+jest.mock('../../../lib/api/deployments/checks', () => ({
   determineAllowCrossAccountAssetPublishing: jest.fn().mockResolvedValue(true),
 }));
 let sdk: MockSdkProvider;
@@ -32,7 +33,7 @@ let changeSetTemplate: any | undefined;
 let bootstrapper: Bootstrapper;
 beforeEach(() => {
   sdk = new MockSdkProvider();
-  bootstrapper = new Bootstrapper({ source: 'legacy' });
+  bootstrapper = new Bootstrapper({ source: 'legacy' }, { ioHost: CliIoHost.instance(), action: 'bootstrap' });
   mockCloudFormationClient.reset();
   restoreSdkMocksToDefault();
   // First two calls, no stacks exist (first is for version checking, second is in deploy-stack.ts)

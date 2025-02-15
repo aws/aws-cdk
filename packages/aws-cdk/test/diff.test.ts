@@ -10,6 +10,7 @@ import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments, PrepareChangeSetOptions, type NestedStackTemplates } from '../lib/api/deployments';
 import * as cfn from '../lib/api/deployments/cloudformation';
 import { CdkToolkit } from '../lib/cli/cdk-toolkit';
+import { IoMessaging } from '../lib/toolkit/cli-io-host';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -107,7 +108,11 @@ describe('fixed template', () => {
 });
 
 describe('imports', () => {
-  let createDiffChangeSet: jest.SpyInstance<Promise<DescribeChangeSetCommandOutput | undefined>, [options: PrepareChangeSetOptions], any>;
+  let createDiffChangeSet: jest.SpyInstance<
+    Promise<DescribeChangeSetCommandOutput | undefined>,
+    [msg: IoMessaging, options: PrepareChangeSetOptions],
+    any
+  >;
 
   beforeEach(() => {
     const outputToJson = {

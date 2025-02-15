@@ -16,6 +16,7 @@ import { CloudFormationStack, createChangeSet, Deployments } from '../../../lib/
 import { deployStack } from '../../../lib/api/deployments/deploy-stack';
 import { HotswapMode } from '../../../lib/api/hotswap/common';
 import { ToolkitInfo } from '../../../lib/api/toolkit-info';
+import { CliIoHost } from '../../../lib/toolkit/cli-io-host';
 import { testStack } from '../../util';
 import {
   mockBootstrapStack,
@@ -40,7 +41,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
-  deployments = new Deployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider, ioHost: CliIoHost.instance(), action: 'deploy' });
 
   currentCfnStackResources = {};
   restoreSdkMocksToDefault();
@@ -82,6 +83,7 @@ test('passes through hotswap=true to deployStack()', async () => {
     expect.objectContaining({
       hotswap: HotswapMode.FALL_BACK,
     }),
+    expect.anything(),
   );
 });
 
@@ -99,6 +101,7 @@ test('placeholders are substituted in CloudFormation execution role', async () =
     expect.objectContaining({
       roleArn: 'bloop:here:123456789012',
     }),
+    expect.anything(),
   );
 });
 
@@ -1147,16 +1150,19 @@ test('tags are passed along to create change set', async () => {
     stack[methodName] = jest.fn();
   }
 
-  await createChangeSet({
-    stack: stack,
-    cfn: new MockSdk().cloudFormation(),
-    changeSetName: 'foo',
-    willExecute: false,
-    exists: true,
-    uuid: '142DF82A-8ED8-4944-8EEB-A5BAE141F13F',
-    bodyParameter: {},
-    parameters: {},
-  });
+  await createChangeSet(
+    { ioHost: CliIoHost.instance(), action: 'deploy' },
+    {
+      stack: stack,
+      cfn: new MockSdk().cloudFormation(),
+      changeSetName: 'foo',
+      willExecute: false,
+      exists: true,
+      uuid: '142DF82A-8ED8-4944-8EEB-A5BAE141F13F',
+      bodyParameter: {},
+      parameters: {},
+    },
+  );
 
   expect(mockCloudFormationClient).toHaveReceivedCommandWith(CreateChangeSetCommand, {
     Tags: [{ Key: 'SomeKey', Value: 'SomeValue' }],

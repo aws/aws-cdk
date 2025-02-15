@@ -476,7 +476,7 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
         if (options.traceLogs) {
           // deploy calls that originate from watch will come with their own cloudWatchLogMonitor
           const cloudWatchLogMonitor = options.cloudWatchLogMonitor ?? new CloudWatchLogEventMonitor();
-          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), stack);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(await this.sdkProvider('deploy'), { ioHost, action }, stack);
           cloudWatchLogMonitor.addLogGroups(
             foundLogGroupsResult.env,
             foundLogGroupsResult.sdk,
@@ -785,6 +785,8 @@ export class Toolkit extends CloudAssemblySourceBuilder implements AsyncDisposab
     return new Deployments({
       sdkProvider: await this.sdkProvider(action),
       toolkitStackName: this.toolkitStackName,
+      ioHost: this.ioHost as any, // @todo temporary while we have to separate IIoHost interfaces
+      action,
     });
   }
 

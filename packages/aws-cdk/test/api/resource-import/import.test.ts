@@ -80,7 +80,11 @@ beforeEach(() => {
   restoreSdkMocksToDefault();
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
-  deployments = new Deployments({ sdkProvider });
+  deployments = new Deployments({
+    sdkProvider,
+    ioHost: CliIoHost.instance(),
+    action: 'deploy',
+  });
   ioHost = CliIoHost.instance();
   props = {
     deployments,

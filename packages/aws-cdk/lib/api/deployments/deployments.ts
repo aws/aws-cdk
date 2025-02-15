@@ -4,7 +4,7 @@ import * as cdk_assets from 'cdk-assets';
 import * as chalk from 'chalk';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import {
-  EVENT_TO_LOGGER,
+  BasePublishProgressListener,
   PublishingAws,
 } from './asset-publishing';
 import { determineAllowCrossAccountAssetPublishing } from './checks';
@@ -24,7 +24,8 @@ import {
   loadCurrentTemplateWithNestedStacks,
   type RootTemplateWithNestedStacks,
 } from './nested-stack-helpers';
-import { debug, warning } from '../../logging';
+import { debug, warn } from '../../cli/messages';
+import { IIoHost, IoMessaging, ToolkitAction } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { formatErrorMessage } from '../../util/error';
 import type { SdkProvider } from '../aws-auth/sdk-provider';
@@ -322,9 +323,10 @@ export interface StackExistsOptions {
 }
 
 export interface DeploymentsProps {
-  sdkProvider: SdkProvider;
+  readonly sdkProvider: SdkProvider;
   readonly toolkitStackName?: string;
-  readonly quiet?: boolean;
+  readonly ioHost: IIoHost;
+  readonly action: ToolkitAction;
 }
 
 /**
@@ -358,10 +360,20 @@ export class Deployments {
   private readonly publisherCache = new Map<cdk_assets.AssetManifest, cdk_assets.AssetPublishing>();
 
   private _allowCrossAccountAssetPublishing: boolean | undefined;
+
+  private readonly ioHost: IIoHost;
+  private readonly action: ToolkitAction;
+
   constructor(private readonly props: DeploymentsProps) {
     this.assetSdkProvider = props.sdkProvider;
     this.deployStackSdkProvider = props.sdkProvider;
-    this.envs = new EnvironmentAccess(props.sdkProvider, props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME);
+    this.ioHost = props.ioHost;
+    this.action = props.action;
+    this.envs = new EnvironmentAccess(
+      props.sdkProvider,
+      props.toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME,
+      { ioHost: this.ioHost, action: this.action },
+    );
   }
 
   /**
@@ -380,7 +392,7 @@ export class Deployments {
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
-    debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
+    await this.ioHost.notify(debug(this.action, `Reading existing template for stack ${stackArtifact.displayName}.`));
     const env = await this.envs.accessStackForLookupBestEffort(stackArtifact);
     return loadCurrentTemplate(stackArtifact, env.sdk);
   }
@@ -388,7 +400,7 @@ export class Deployments {
   public async resourceIdentifierSummaries(
     stackArtifact: cxapi.CloudFormationStackArtifact,
   ): Promise<ResourceIdentifierSummaries> {
-    debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
+    await this.ioHost.notify(debug(this.action, `Retrieving template summary for stack ${stackArtifact.displayName}.`));
     // Currently, needs to use `deploy-role` since it may need to read templates in the staging
     // bucket which have been encrypted with a KMS key (and lookup-role may not read encrypted things)
     const env = await this.envs.accessStackForReadOnlyStackOperations(stackArtifact);
@@ -418,7 +430,7 @@ export class Deployments {
 
     const response = await cfn.getTemplateSummary(cfnParam);
     if (!response.ResourceIdentifierSummaries) {
-      debug('GetTemplateSummary API call did not return "ResourceIdentifierSummaries"');
+      await this.ioHost.notify(debug(this.action, 'GetTemplateSummary API call did not return "ResourceIdentifierSummaries"'));
     }
     return response.ResourceIdentifierSummaries ?? [];
   }
@@ -474,7 +486,7 @@ export class Deployments {
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
-    });
+    }, { ioHost: this.ioHost, action: this.action });
   }
 
   public async rollbackStack(options: RollbackStackOptions): Promise<RollbackStackResult> {
@@ -506,11 +518,11 @@ export class Deployments {
 
       switch (cloudFormationStack.stackStatus.rollbackChoice) {
         case RollbackChoice.NONE:
-          warning(`Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`);
+          await this.ioHost.notify(warn(this.action, `Stack ${deployName} does not need a rollback: ${cloudFormationStack.stackStatus}`));
           return { notInRollbackableState: true };
 
         case RollbackChoice.START_ROLLBACK:
-          debug(`Initiating rollback of stack ${deployName}`);
+          await this.ioHost.notify(debug(this.action, `Initiating rollback of stack ${deployName}`));
           await cfn.rollbackStack({
             StackName: deployName,
             RoleARN: executionRoleArn,
@@ -536,7 +548,7 @@ export class Deployments {
           }
 
           const skipDescription = resourcesToSkip.length > 0 ? ` (orphaning: ${resourcesToSkip.join(', ')})` : '';
-          warning(`Continuing rollback of stack ${deployName}${skipDescription}`);
+          await this.ioHost.notify(warn(this.action, `Continuing rollback of stack ${deployName}${skipDescription}`));
           await cfn.continueUpdateRollback({
             StackName: deployName,
             ClientRequestToken: randomUUID(),
@@ -546,9 +558,10 @@ export class Deployments {
           break;
 
         case RollbackChoice.ROLLBACK_FAILED:
-          warning(
+          await this.ioHost.notify(warn(
+            this.action,
             `Stack ${deployName} failed creation and rollback. This state cannot be rolled back. You can recreate this stack by running 'cdk deploy'.`,
-          );
+          ));
           return { notInRollbackableState: true };
 
         default:
@@ -564,7 +577,7 @@ export class Deployments {
       let stackErrorMessage: string | undefined = undefined;
       let finalStackState = cloudFormationStack;
       try {
-        const successStack = await stabilizeStack(cfn, deployName);
+        const successStack = await stabilizeStack(cfn, { ioHost: this.ioHost, action: this.action }, deployName);
 
         // This shouldn't really happen, but catch it anyway. You never know.
         if (!successStack) {
@@ -612,7 +625,7 @@ export class Deployments {
       deployName: options.deployName,
       quiet: options.quiet,
       ci: options.ci,
-    });
+    }, { ioHost: this.ioHost, action: this.action });
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
@@ -679,7 +692,10 @@ export class Deployments {
   private async allowCrossAccountAssetPublishingForEnv(stack: cxapi.CloudFormationStackArtifact): Promise<boolean> {
     if (this._allowCrossAccountAssetPublishing === undefined) {
       const env = await this.envs.accessStackForReadOnlyStackOperations(stack);
-      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(env.sdk, this.props.toolkitStackName);
+      this._allowCrossAccountAssetPublishing = await determineAllowCrossAccountAssetPublishing(env.sdk, {
+        ioHost: this.ioHost,
+        action: this.action,
+      }, this.props.toolkitStackName);
     }
     return this._allowCrossAccountAssetPublishing;
   }
@@ -725,7 +741,7 @@ export class Deployments {
       // The AssetPublishing class takes care of role assuming etc, so it's okay to
       // give it a direct `SdkProvider`.
       aws: new PublishingAws(this.assetSdkProvider, env),
-      progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
+      progressListener: new ParallelSafeAssetProgress(prefix, { ioHost: this.ioHost, action: this.action }),
     });
     this.publisherCache.set(assetManifest, publisher);
     return publisher;
@@ -735,15 +751,16 @@ export class Deployments {
 /**
  * Asset progress that doesn't do anything with percentages (currently)
  */
-class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
-  constructor(
-    private readonly prefix: string,
-    private readonly quiet: boolean,
-  ) {}
+class ParallelSafeAssetProgress extends BasePublishProgressListener {
+  private readonly prefix: string;
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
-    const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
-    handler(`${this.prefix}${type}: ${event.message}`);
+  constructor(prefix: string, { ioHost, action }: IoMessaging) {
+    super({ ioHost, action });
+    this.prefix = prefix;
+  }
+
+  protected getMessage(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): string {
+    return `${this.prefix}${type}: ${event.message}`;
   }
 }
 

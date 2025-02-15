@@ -1,6 +1,12 @@
 import { DescribeStacksCommand, StackStatus } from '@aws-sdk/client-cloudformation';
 import { determineAllowCrossAccountAssetPublishing, getBootstrapStackInfo } from '../../../lib/api/deployments/checks';
+import { CliIoHost, IoMessaging } from '../../../lib/toolkit/cli-io-host';
 import { mockCloudFormationClient, MockSdk } from '../../util/mock-sdk';
+
+let mockMsg: IoMessaging = {
+  ioHost: CliIoHost.instance(),
+  action: 'deploy',
+};
 
 describe('determineAllowCrossAccountAssetPublishing', () => {
   it('should return true when hasStagingBucket is false', async () => {
@@ -14,7 +20,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       }],
     });
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(true);
   });
 
@@ -32,7 +38,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       }],
     });
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(true);
   });
 
@@ -51,7 +57,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       }],
     });
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(true);
   });
 
@@ -59,7 +65,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     const mockSDK = new MockSdk();
     mockCloudFormationClient.on(DescribeStacksCommand).rejects(new Error('Could not read bootstrap stack'));
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(true);
   });
 
@@ -67,7 +73,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
     const mockSDK = new MockSdk();
     mockCloudFormationClient.on(DescribeStacksCommand).rejects(new Error('Could not read bootstrap stack'));
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(true);
   });
 
@@ -85,7 +91,7 @@ describe('determineAllowCrossAccountAssetPublishing', () => {
       }],
     });
 
-    const result = await determineAllowCrossAccountAssetPublishing(mockSDK);
+    const result = await determineAllowCrossAccountAssetPublishing(mockSDK, mockMsg);
     expect(result).toBe(false);
   });
 });

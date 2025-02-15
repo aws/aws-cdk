@@ -6,17 +6,20 @@ import { AssetManifestBuilder } from '../../../lib/api/deployments';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from '../../../lib/api/environment-resources';
 import { MockSdk } from '../../util/mock-sdk';
 import { MockToolkitInfo } from '../../util/mock-toolkitinfo';
+import { CliIoHost, IoMessaging } from '../../../lib/toolkit/cli-io-host';
 
 let assets: AssetManifestBuilder;
 let envRegistry: EnvironmentResourcesRegistry;
 let envResources: EnvironmentResources;
 let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
+let mockMsg: IoMessaging = { ioHost: CliIoHost.instance(), action: 'deploy' };
+
 beforeEach(() => {
   assets = new AssetManifestBuilder();
   envRegistry = new EnvironmentResourcesRegistry();
 
   const sdk = new MockSdk();
-  envResources = envRegistry.for({ account: '11111111', region: 'us-nowhere', name: 'aws://11111111/us-nowhere' }, sdk);
+  envResources = envRegistry.for({ account: '11111111', region: 'us-nowhere', name: 'aws://11111111/us-nowhere' }, sdk, mockMsg);
   toolkitMock = MockToolkitInfo.setup();
 });
 
@@ -41,7 +44,7 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, envResources);
+    const params = await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources);
 
     // THEN
     expect(params).toEqual({
@@ -80,7 +83,7 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    await addMetadataAssetsToManifest(stack, assets, envResources);
+    await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources);
 
     // THEN
     expect(assets.toManifest('.').entries).toEqual([
@@ -108,7 +111,7 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, envResources, ['SomeStackSomeResource4567']);
+    const params = await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources, ['SomeStackSomeResource4567']);
 
     // THEN
     expect(params).toEqual({
@@ -134,7 +137,7 @@ describe('docker assets', () => {
       mockFn(envResources.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
       // WHEN
-      const params = await addMetadataAssetsToManifest(stack, assets, envResources);
+      const params = await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources);
 
       // THEN
       expect(envResources.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
@@ -167,7 +170,7 @@ describe('docker assets', () => {
       },
     ]);
 
-    await expect(addMetadataAssetsToManifest(stack, assets, envResources)).rejects.toThrow('Invalid Docker image asset');
+    await expect(addMetadataAssetsToManifest(mockMsg, stack, assets, envResources)).rejects.toThrow('Invalid Docker image asset');
   });
 
   test('no parameter and repo/tag name (new)', async () => {
@@ -186,7 +189,7 @@ describe('docker assets', () => {
       mockFn(envResources.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
       // WHEN
-      const params = await addMetadataAssetsToManifest(stack, assets, envResources);
+      const params = await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources);
 
       // THEN
       expect(envResources.prepareEcrRepository).toHaveBeenCalledWith('reponame');
@@ -219,7 +222,7 @@ describe('docker assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, envResources, ['SomeStackSomeResource4567']);
+    const params = await addMetadataAssetsToManifest(mockMsg, stack, assets, envResources, ['SomeStackSomeResource4567']);
 
     // THEN
     expect(params).toEqual({

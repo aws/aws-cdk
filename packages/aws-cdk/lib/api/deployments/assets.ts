@@ -4,7 +4,8 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { AssetManifestBuilder } from './asset-manifest-builder';
-import { debug } from '../../logging';
+import { debug } from '../../cli/messages';
+import { IoMessaging } from '../../toolkit/cli-io-host';
 import { ToolkitError } from '../../toolkit/error';
 import { EnvironmentResources } from '../environment-resources';
 import { ToolkitInfo } from '../toolkit-info';
@@ -15,8 +16,13 @@ import { ToolkitInfo } from '../toolkit-info';
  * Returns the CloudFormation parameters that need to be sent to the template to
  * pass Asset coordinates.
  */
-// eslint-disable-next-line max-len
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, envResources: EnvironmentResources, reuse?: string[]): Promise<Record<string, string>> {
+export async function addMetadataAssetsToManifest(
+  { ioHost, action }: IoMessaging,
+  stack: cxapi.CloudFormationStackArtifact,
+  assetManifest: AssetManifestBuilder,
+  envResources: EnvironmentResources,
+  reuse?: string[],
+): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -38,27 +44,34 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
     const reuseAsset = reuse.indexOf(asset.id) > -1;
 
     if (reuseAsset) {
-      debug(`Reusing asset ${asset.id}: ${JSON.stringify(asset)}`);
+      await ioHost.notify(debug(action, `Reusing asset ${asset.id}: ${JSON.stringify(asset)}`));
       continue;
     }
 
-    debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
+    await ioHost.notify(debug(action, `Preparing asset ${asset.id}: ${JSON.stringify(asset)}`));
     if (!stack.assembly) {
       throw new ToolkitError('Unexpected: stack assembly is required in order to find assets in assembly directory');
     }
 
-    Object.assign(params, await prepareAsset(asset, assetManifest, envResources, toolkitInfo));
+    Object.assign(params, await prepareAsset({ ioHost, action }, asset, assetManifest, envResources, toolkitInfo));
   }
 
   return params;
 }
 
 // eslint-disable-next-line max-len
-async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: AssetManifestBuilder, envResources: EnvironmentResources, toolkitInfo: ToolkitInfo): Promise<Record<string, string>> {
+async function prepareAsset(
+  { ioHost, action }: IoMessaging,
+  asset: cxschema.AssetMetadataEntry,
+  assetManifest: AssetManifestBuilder,
+  envResources: EnvironmentResources,
+  toolkitInfo: ToolkitInfo,
+): Promise<Record<string, string>> {
   switch (asset.packaging) {
     case 'zip':
     case 'file':
       return prepareFileAsset(
+        { ioHost, action },
         asset,
         assetManifest,
         toolkitInfo,
@@ -71,11 +84,13 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
   }
 }
 
-function prepareFileAsset(
+async function prepareFileAsset(
+  { ioHost, action }: IoMessaging,
   asset: cxschema.FileAssetMetadataEntry,
   assetManifest: AssetManifestBuilder,
   toolkitInfo: ToolkitInfo,
-  packaging: cxschema.FileAssetPackaging): Record<string, string> {
+  packaging: cxschema.FileAssetPackaging,
+): Promise<Record<string, string>> {
 
   const extension = packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.path);
   const baseName = `${asset.sourceHash}${extension}`;
@@ -84,7 +99,7 @@ function prepareFileAsset(
   const key = `${s3Prefix}${baseName}`;
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
 
-  debug(`Storing asset ${asset.path} at ${s3url}`);
+  await ioHost.notify(debug(action, `Storing asset ${asset.path} at ${s3url}`));
 
   assetManifest.addFileAsset(asset.sourceHash, {
     path: asset.path,
