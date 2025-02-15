@@ -533,3 +533,25 @@ const domain = new Domain(this, 'Domain', {
   ipAddressType: IpAddressType.DUAL_STACK,
 });
 ```
+
+## Using Coordinator node with NodeOptions
+
+You can specify coordinator as a valid value for node type.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  capacity: {
+    nodeOptions: [
+      {
+        nodeType: 'coordinator',
+        nodeConfig: {
+          enabled: true,
+          count: 2,
+          type: 'm5.large.search',
+        },
+      },
+    ],
+  },
+})
+```
