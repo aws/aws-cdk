@@ -572,13 +572,13 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        statement: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Statement: [
           {
-            sid: 'audit-statement-cdk',
-            dataIdentifier: [
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -590,15 +590,15 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              audit: {
-                findingsDestination: {},
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
               },
             },
           },
           {
-            sid: 'redact-statement-cdk',
-            dataIdentifier: [
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -610,9 +610,9 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              deidentify: {
-                maskConfig: {},
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
               },
             },
           },
@@ -642,13 +642,13 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        statement: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Statement: [
           {
-            sid: 'audit-statement-cdk',
-            dataIdentifier: [
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -660,15 +660,15 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              audit: {
-                findingsDestination: {},
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
               },
             },
           },
           {
-            sid: 'redact-statement-cdk',
-            dataIdentifier: [
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -680,9 +680,9 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              deidentify: {
-                maskConfig: {},
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
               },
             },
           },
@@ -717,13 +717,13 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'data-protection-policy-cdk',
-        description: 'cdk generated data protection policy',
-        version: '2021-06-01',
-        statement: [
+        Name: 'data-protection-policy-cdk',
+        Description: 'cdk generated data protection policy',
+        Version: '2021-06-01',
+        Statement: [
           {
-            sid: 'audit-statement-cdk',
-            dataIdentifier: [
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -735,19 +735,19 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              audit: {
-                findingsDestination: {
-                  cloudWatchLogs: {
-                    logGroup: {
+            Operation: {
+              Audit: {
+                FindingsDestination: {
+                  CloudWatchLogs: {
+                    LogGroup: {
                       Ref: 'LogGroupAudit2C8B7F73',
                     },
                   },
-                  firehose: {
-                    deliveryStream: auditDeliveryStreamName,
+                  Firehose: {
+                    DeliveryStream: auditDeliveryStreamName,
                   },
-                  s3: {
-                    bucket: {
+                  S3: {
+                    Bucket: {
                       Ref: 'BucketAudit1DED3529',
                     },
                   },
@@ -756,8 +756,8 @@ describe('log group', () => {
             },
           },
           {
-            sid: 'redact-statement-cdk',
-            dataIdentifier: [
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
               {
                 'Fn::Join': [
                   '',
@@ -769,9 +769,9 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              deidentify: {
-                maskConfig: {},
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
               },
             },
           },
@@ -801,37 +801,37 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        configuration: {
-          customDataIdentifier: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Configuration: {
+          CustomDataIdentifier: [
             {
-              name: 'EmployeeId',
-              regex: 'EmployeeId-\\d{9}',
+              Name: 'EmployeeId',
+              Regex: 'EmployeeId-\\d{9}',
             },
           ],
         },
-        statement: [
+        Statement: [
           {
-            sid: 'audit-statement-cdk',
-            dataIdentifier: [
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
               'EmployeeId',
             ],
-            operation: {
-              audit: {
-                findingsDestination: {},
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
               },
             },
           },
           {
-            sid: 'redact-statement-cdk',
-            dataIdentifier: [
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
               'EmployeeId',
             ],
-            operation: {
-              deidentify: {
-                maskConfig: {},
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
               },
             },
           },
@@ -861,21 +861,21 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        name: 'test-policy-name',
-        description: 'test description',
-        version: '2021-06-01',
-        configuration: {
-          customDataIdentifier: [
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Configuration: {
+          CustomDataIdentifier: [
             {
-              name: 'EmployeeId',
-              regex: 'EmployeeId-\\d{9}',
+              Name: 'EmployeeId',
+              Regex: 'EmployeeId-\\d{9}',
             },
           ],
         },
-        statement: [
+        Statement: [
           {
-            sid: 'audit-statement-cdk',
-            dataIdentifier: [
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
               'EmployeeId',
               {
                 'Fn::Join': [
@@ -888,15 +888,15 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              audit: {
-                findingsDestination: {},
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
               },
             },
           },
           {
-            sid: 'redact-statement-cdk',
-            dataIdentifier: [
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
               'EmployeeId',
               {
                 'Fn::Join': [
@@ -909,9 +909,9 @@ describe('log group', () => {
                 ],
               },
             ],
-            operation: {
-              deidentify: {
-                maskConfig: {},
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
               },
             },
           },
