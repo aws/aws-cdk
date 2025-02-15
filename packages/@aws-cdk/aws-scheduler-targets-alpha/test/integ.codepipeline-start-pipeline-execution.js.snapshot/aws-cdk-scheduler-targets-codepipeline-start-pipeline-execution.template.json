@@ -232,18 +232,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "BucketDeploymentAwsCliLayerB018DCE1": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "BucketDeploymentCustomResourceCB7E2133": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -272,6 +260,18 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "awscdklambdalayerawscliAwsCliLayer437D4B14": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
    "Type": "AWS::IAM::Role",
@@ -415,7 +415,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "BucketDeploymentAwsCliLayerB018DCE1"
+      "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
      }
     ],
     "Role": {
@@ -465,7 +465,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -483,7 +482,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -515,7 +513,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ],
    "UpdateReplacePolicy": "Retain",
@@ -568,7 +565,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -589,7 +585,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -680,7 +675,6 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -770,7 +764,6 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133",
     "PipelineRoleDefaultPolicyC7A05455",
     "PipelineRoleD68726F7"
@@ -808,7 +801,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -907,7 +899,6 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -943,7 +934,6 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },
@@ -1041,7 +1031,6 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentAwsCliLayerB018DCE1",
     "BucketDeploymentCustomResourceCB7E2133"
    ]
   },

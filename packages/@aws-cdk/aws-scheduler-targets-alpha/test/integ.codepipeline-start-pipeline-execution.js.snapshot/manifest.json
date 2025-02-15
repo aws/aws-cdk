@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f3e0a7f514848c5292f5ef7ac5cb95255e24a115fc2f2591fe66e2fbde0a08a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83b1ea8064983e84164a6c88b162f1d074f17fa8b0f58d3c70d35142148a2504.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,10 +100,52 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/AwsCliLayer/Resource": [
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResourceHandler": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResource/Default": [
@@ -113,7 +154,59 @@
             "data": "BucketDeploymentCustomResourceCB7E2133"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/@aws-cdk--lambda-layer-awscli.AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdklambdalayerawscliAwsCliLayer437D4B14",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
           {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
@@ -123,10 +216,102 @@
             "data": 2
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
@@ -261,10 +446,9 @@
         "templateFile": "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9bd478fb13568f14d00e84faa959365cb68f42c0b1f4dd40faa535e82065ef86.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fae64b315c317ff308080b4992a69c1e3b8a554f8c3f40584478900402df13ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
