@@ -834,6 +834,7 @@ export class CdkToolkit {
   }
 
   public async destroy(options: DestroyOptions) {
+    process.env.CDK_COMMAND = 'destroy';
     let stacks = await this.selectStacksForDestroy(options.selector, options.exclusively);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
@@ -865,6 +866,8 @@ export class CdkToolkit {
         throw e;
       }
     }
+
+    delete process.env.CDK_COMMAND;
   }
 
   public async list(

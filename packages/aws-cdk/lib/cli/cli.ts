@@ -209,6 +209,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       sdkProvider,
     });
 
+    delete process.env.CDK_COMMAND;
+
     switch (command) {
       case 'context':
         ioHost.currentAction = 'context';
