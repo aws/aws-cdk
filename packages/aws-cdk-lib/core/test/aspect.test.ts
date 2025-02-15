@@ -4,6 +4,9 @@ import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
 import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
+import { RemovalPolicies } from '../lib/removal-policies';
+import { RemovalPolicy } from '../lib/removal-policy';
+
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
     return x.visitCounter !== undefined;
@@ -300,7 +303,7 @@ describe('aspect', () => {
   test('Infinitely recursing Aspect is caught with error', () => {
     const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const root = new Stack(app, 'My-Stack');
-    const child = new MyConstruct(root, 'MyConstruct');
+    new MyConstruct(root, 'MyConstruct');
 
     Aspects.of(root).add(new InfiniteAspect());
 
@@ -342,5 +345,163 @@ describe('aspect', () => {
     expect(() => {
       app.synth();
     }).not.toThrow();
+  });
+
+  test('Warning is displayed when applying a Removal Policy with both priority and overwrite set to true', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    const consoleWarnSpy = jest.spyOn(console, 'warn');
+
+    // WHEN
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    // THEN
+    expect(consoleWarnSpy).toHaveBeenCalledWith('Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.');
+
+    consoleWarnSpy.mockRestore();
+  });
+
+  test('RemovalPolicy: higher priority with overwrite wins', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 200,
+      overwrite: true,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('RemovalPolicy: last one wins when priorities are equal and overwrite is true', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('RemovalPolicy: default removal policy is respected when overwrite is false', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+      overwrite: false,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('RemovalPolicy: overwrite true wins over overwrite false (higher priority)', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 200,
+      overwrite: false,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 300,
+      overwrite: true,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    });
+  });
+
+  test('RemovalPolicy: multiple aspects in chain', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    const bucket = new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 200,
+      overwrite: true,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.SNAPSHOT, {
+      priority: 300,
+      overwrite: true,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Snapshot',
+      DeletionPolicy: 'Snapshot',
+    });
+  });
+
+  test('RemovalPolicy: different resource type', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new CfnResource(stack, 'my-resource', {
+      type: 'AWS::EC2::Instance',
+      properties: {
+        ImageId: 'ami-1234567890abcdef0',
+        InstanceType: 't2.micro',
+      },
+    }).applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 100,
+      overwrite: true,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+      Properties: {
+        ImageId: 'ami-1234567890abcdef0',
+        InstanceType: 't2.micro',
+      },
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
   });
 });
