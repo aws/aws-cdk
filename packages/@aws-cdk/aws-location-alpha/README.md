@@ -97,6 +97,32 @@ const tracker = new location.Tracker(this, 'Tracker', {
 tracker.addGeofenceCollections(geofenceCollectionForAdd);
 ```
 
+## API key
+
+API keys are a key value that is associated with specific Amazon Location Service resources or API in your AWS account, and specific actions that you can perform on those resources.
+You can use an API key in your application to make unauthenticated calls to the Amazon Location APIs for those resources.
+
+For more information, see [Use API keys to authenticate](https://docs.aws.amazon.com/location/latest/developerguide/using-apikeys.html).
+
+To create an API key, define an `ApiKey`:
+
+```ts
+new location.ApiKey(this, 'APIKeyAny', {
+  // specify allowed actions
+  allowMapsActions: [
+    location.AllowMapsAction.GET_STATIC_MAP,
+  ],
+  allowPlacesActions: [
+    location.AllowPlacesAction.GET_PLACE,
+  ],
+  allowRoutesActions: [
+    location.AllowRoutesAction.CALCULATE_ISOLINES,
+  ],
+});
+```
+
+> Note: `ApiKey` construct only supports [Enhanced Places, Routes, and Maps](https://aws.amazon.com/blogs/aws/announcing-new-apis-for-amazon-location-service-routes-places-and-maps/) This API key grants access to AWS-managed Places, Routes, and Maps.
+
 ## Legacy Resources
 
 AWS has released new [Enhanced Places, Routes, and Maps](https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-location-service-enhanced-places-routes-maps/?nc1=h_ls). Since these use AWS-managed resources, users no longer need to create Maps, Places, and Routes resources themselves.
