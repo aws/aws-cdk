@@ -520,8 +520,8 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', Match.anyValue());
   });
 
-  describe('default capacity', () => {
-    test('x2 m5.large by default', () => {
+  describe('no default capacity as auto mode is implicitly enabled', () => {
+    test('no default capacity by default', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -529,17 +529,8 @@ describe('cluster', () => {
       const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      expect(cluster.defaultNodegroup).toBeDefined();
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-        InstanceTypes: [
-          'm5.large',
-        ],
-        ScalingConfig: {
-          DesiredSize: 2,
-          MaxSize: 2,
-          MinSize: 2,
-        },
-      });
+      expect(cluster.defaultNodegroup).toBeUndefined();
+      Template.fromStack(stack).resourceCountIs('AWS::EKS::Nodegroup', 0);
     });
 
     test('quantity and type can be customized', () => {

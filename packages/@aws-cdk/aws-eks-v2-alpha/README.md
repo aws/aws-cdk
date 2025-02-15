@@ -1011,3 +1011,58 @@ const cluster = new eks.Cluster(this, 'Cluster', {
   ],
 });
 ```
+
+## EKS Auto Mode
+
+[Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
+
+### Using Auto Mode
+
+By default, the Cluster construct enables EKS Auto mode.
+
+```ts
+// Create EKS cluster with Auto Mode enabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+});
+```
+
+When you explicitly turn `autoMode` to `false` or define any of `defaultCapacity`, `defaultCapacityType` or `defaultCapacityInstance`, the cluster falls back its
+compute capacity to the default nodegroup.
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  autoMode: false, // disables Auto Mode and provisions a default nodegroup instead
+});
+```
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacity: 2 // implicitly disable Auto Mode and opt in the a nodegroup
+});
+```
+
+You can't opt in both Auto Mode and a default nodegroup
+
+```ts
+// Create EKS cluster with Auto Mode explicitly disabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  autoMode: true,
+  defaultCapacity: 2  // will throw an error
+});
+```
+
+### Node Pools
+
+Auto Mode comes with two default node pools if `nodePool` is undefined:
+
+- `general-purpose`: For running your application workloads
+- `system`: For running system components and add-ons
+
+You cannot modify the built in `system` and `general-purpose` node pools. You can only enable or disable them. 
+For more information, see [Enable or Disable Built-in NodePools](https://docs.aws.amazon.com/eks/latest/userguide/set-builtin-node-pools.html).
