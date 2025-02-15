@@ -9,22 +9,30 @@ export { PROJECT_CONTEXT } from '../api/context';
 export const USER_DEFAULTS = '~/.cdk.json';
 const CONTEXT_KEY = 'context';
 
+/**
+ * All available CDK commands.
+ */
 export enum Command {
+  // List operations (no bundling)
   LS = 'ls',
   LIST = 'list',
+
+  // Stack modification operations (require bundling)
   DIFF = 'diff',
-  BOOTSTRAP = 'bootstrap',
   DEPLOY = 'deploy',
-  DESTROY = 'destroy',
   SYNTHESIZE = 'synthesize',
   SYNTH = 'synth',
+  WATCH = 'watch',
+  IMPORT = 'import',
+
+  // Management operations (no bundling)
+  BOOTSTRAP = 'bootstrap',
+  DESTROY = 'destroy',
   METADATA = 'metadata',
   INIT = 'init',
   VERSION = 'version',
-  WATCH = 'watch',
   GC = 'gc',
   ROLLBACK = 'rollback',
-  IMPORT = 'import',
   ACKNOWLEDGE = 'acknowledge',
   ACK = 'ack',
   NOTICES = 'notices',
@@ -35,17 +43,67 @@ export enum Command {
   DOCTOR = 'doctor',
 }
 
-const BUNDLING_COMMANDS = [
-  Command.DEPLOY,
-  Command.DIFF,
-  Command.SYNTH,
-  Command.SYNTHESIZE,
-  Command.WATCH,
-  Command.IMPORT,
-];
+/**
+ * Metadata for each command specifying if it requires bundling.
+ * This must be kept in sync with the Command enum.
+ * TypeScript will enforce this by checking that all enum values are covered.
+ */
+export const CommandMetadata: { [K in Command]: { bundling: boolean } } = {
+  // List operations (no bundling)
+  [Command.LS]: { bundling: false },
+  [Command.LIST]: { bundling: false },
+
+  // Stack modification operations (require bundling)
+  [Command.DIFF]: { bundling: true },
+  [Command.DEPLOY]: { bundling: true },
+  [Command.SYNTHESIZE]: { bundling: true },
+  [Command.SYNTH]: { bundling: true },
+  [Command.WATCH]: { bundling: true },
+  [Command.IMPORT]: { bundling: true },
+
+  // Management operations (no bundling)
+  [Command.BOOTSTRAP]: { bundling: false },
+  [Command.DESTROY]: { bundling: false },
+  [Command.METADATA]: { bundling: false },
+  [Command.INIT]: { bundling: false },
+  [Command.VERSION]: { bundling: false },
+  [Command.GC]: { bundling: false },
+  [Command.ROLLBACK]: { bundling: false },
+  [Command.ACKNOWLEDGE]: { bundling: false },
+  [Command.ACK]: { bundling: false },
+  [Command.NOTICES]: { bundling: false },
+  [Command.MIGRATE]: { bundling: false },
+  [Command.CONTEXT]: { bundling: false },
+  [Command.DOCS]: { bundling: false },
+  [Command.DOC]: { bundling: false },
+  [Command.DOCTOR]: { bundling: false },
+};
+
+export interface ConfiguredCommand {
+  bundling: boolean;
+}
+
+type CommandType = {
+  [key: string]: ConfiguredCommand;
+};
+
+/**
+ * Available commands and their bundling configurations.
+ * Generated from CommandMetadata to ensure consistency.
+ *
+ * @example
+ * ConfiguredCommands['deploy'].bundling; // true
+ * ConfiguredCommands['ls'].bundling; // false
+ */
+export const ConfiguredCommands: CommandType = Object.entries(Command)
+  .filter(([key]) => isNaN(Number(key))) // Filter out reverse mapping
+  .reduce((acc, [_, value]) => ({
+    ...acc,
+    [value]: CommandMetadata[value as Command],
+  }), {});
 
 export type Arguments = {
-  readonly _: [Command, ...string[]];
+  readonly _: [keyof typeof ConfiguredCommands, ...string[]];
   readonly exclusively?: boolean;
   readonly STACKS?: string[];
   readonly lookups?: boolean;
@@ -201,7 +259,8 @@ export function commandLineArgumentsToSettings(argv: Arguments): Settings {
 
   // Determine bundling stacks
   let bundlingStacks: string[];
-  if (BUNDLING_COMMANDS.includes(argv._[0])) {
+  const command = argv._[0];
+  if (ConfiguredCommands[command].bundling) {
     // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
     bundlingStacks = argv.exclusively ? argv.STACKS ?? ['**'] : ['**'];
