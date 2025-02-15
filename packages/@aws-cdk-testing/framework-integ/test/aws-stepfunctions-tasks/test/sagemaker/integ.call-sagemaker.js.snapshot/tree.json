@@ -49,13 +49,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kms.Key",
+              "fqn": "aws-cdk-lib.aws_kms.Key",
               "version": "0.0.0"
             }
           },
@@ -87,13 +87,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3.Bucket",
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
             }
           },
@@ -109,7 +109,7 @@
                     "id": "ImportSagemakerRole",
                     "path": "aws-stepfunctions-integ-sagemaker/Train Task/SagemakerRole/ImportSagemakerRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -156,7 +156,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -264,25 +264,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SageMakerCreateTrainingJob",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateTrainingJob",
               "version": "0.0.0"
             }
           },
@@ -298,7 +298,7 @@
                     "id": "ImportSagemakerRole",
                     "path": "aws-stepfunctions-integ-sagemaker/Create Model/SagemakerRole/ImportSagemakerRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -345,7 +345,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -384,25 +384,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SageMakerCreateModel",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateModel",
               "version": "0.0.0"
             }
           },
@@ -410,7 +410,7 @@
             "id": "Create enpoint config",
             "path": "aws-stepfunctions-integ-sagemaker/Create enpoint config",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SageMakerCreateEndpointConfig",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateEndpointConfig",
               "version": "0.0.0"
             }
           },
@@ -418,7 +418,7 @@
             "id": "Create endpoint",
             "path": "aws-stepfunctions-integ-sagemaker/Create endpoint",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SageMakerCreateEndpoint",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SageMakerCreateEndpoint",
               "version": "0.0.0"
             }
           },
@@ -426,7 +426,7 @@
             "id": "Update endpoint",
             "path": "aws-stepfunctions-integ-sagemaker/Update endpoint",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SageMakerUpdateEndpoint",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SageMakerUpdateEndpoint",
               "version": "0.0.0"
             }
           },
@@ -434,7 +434,7 @@
             "id": "Start",
             "path": "aws-stepfunctions-integ-sagemaker/Start",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
               "version": "0.0.0"
             }
           },
@@ -450,7 +450,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-integ-sagemaker/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -475,7 +475,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -493,6 +493,7 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "sagemaker:AddTags",
                                     "sagemaker:CreateTrainingJob",
                                     "sagemaker:DescribeTrainingJob",
                                     "sagemaker:StopTrainingJob"
@@ -656,19 +657,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -678,12 +679,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
@@ -749,17 +744,23 @@
                           ":states:::sagemaker:updateEndpoint\",\"Parameters\":{\"EndpointConfigName.$\":\"$.Endpoint.Config\",\"EndpointName.$\":\"$.Endpoint.Name\"}}}}"
                         ]
                       ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -767,7 +768,7 @@
             "id": "StateMachineArn",
             "path": "aws-stepfunctions-integ-sagemaker/StateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -775,7 +776,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-integ-sagemaker/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -783,13 +784,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-integ-sagemaker/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -798,12 +799,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
