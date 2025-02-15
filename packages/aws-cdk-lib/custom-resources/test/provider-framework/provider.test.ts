@@ -5,7 +5,8 @@ import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import { LogLevel } from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import { App, Duration, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
@@ -456,9 +457,98 @@ it('can specify log group', () => {
 });
 
 describe('role', () => {
-  it('uses custom role when present', () => {
+  it('uses custom role when present @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+      }),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyRoleF48FFE04',
+          'Arn',
+        ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('uses custom role when present @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
 
     // WHEN
     new cr.Provider(stack, 'MyProvider', {
@@ -528,9 +618,94 @@ describe('role', () => {
     });
   });
 
-  it('uses default role otherwise', () => {
+  it('uses default role otherwise @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
     // GIVEN
-    const stack = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderframeworkonEventServiceRole8761E48D',
+          'Arn',
+        ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyHandler6B74D312',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyHandler6B74D312',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyHandler6B74D312',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('uses default role otherwise @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
 
     // WHEN
     new cr.Provider(stack, 'MyProvider', {

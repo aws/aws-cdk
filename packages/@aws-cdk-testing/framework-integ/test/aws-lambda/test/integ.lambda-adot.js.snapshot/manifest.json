@@ -43,7 +43,7 @@
         "/Stack1/MyFunc1/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc1ServiceRoleDefaultPolicy3C5E9573"
+            "data": "MyFunc1inlinePolicyAddedToExecutionRole050337A59"
           }
         ],
         "/Stack1/MyFunc1/Resource": [
@@ -61,7 +61,7 @@
         "/Stack1/MyFunc2/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc2ServiceRoleDefaultPolicyEF3319F6"
+            "data": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15"
           }
         ],
         "/Stack1/MyFunc2/Resource": [
@@ -79,7 +79,7 @@
         "/Stack1/MyFunc3/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc3ServiceRoleDefaultPolicy449C4CBA"
+            "data": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8"
           }
         ],
         "/Stack1/MyFunc3/Resource": [
@@ -97,7 +97,7 @@
         "/Stack1/MyFunc4/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc4ServiceRoleDefaultPolicy68C57CB2"
+            "data": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D"
           }
         ],
         "/Stack1/MyFunc4/Resource": [
@@ -115,7 +115,7 @@
         "/Stack1/MyFunc5/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc5ServiceRoleDefaultPolicy96ABEA66"
+            "data": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882"
           }
         ],
         "/Stack1/MyFunc5/Resource": [
@@ -181,7 +181,7 @@
         "/Stack2/MyFunc1/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc1ServiceRoleDefaultPolicy3C5E9573"
+            "data": "MyFunc1inlinePolicyAddedToExecutionRole050337A59"
           }
         ],
         "/Stack2/MyFunc1/Resource": [
@@ -199,7 +199,7 @@
         "/Stack2/MyFunc2/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc2ServiceRoleDefaultPolicyEF3319F6"
+            "data": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15"
           }
         ],
         "/Stack2/MyFunc2/Resource": [
@@ -217,7 +217,7 @@
         "/Stack2/MyFunc3/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc3ServiceRoleDefaultPolicy449C4CBA"
+            "data": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8"
           }
         ],
         "/Stack2/MyFunc3/Resource": [
@@ -235,7 +235,7 @@
         "/Stack2/MyFunc4/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc4ServiceRoleDefaultPolicy68C57CB2"
+            "data": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D"
           }
         ],
         "/Stack2/MyFunc4/Resource": [
@@ -253,7 +253,7 @@
         "/Stack2/MyFunc5/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunc5ServiceRoleDefaultPolicy96ABEA66"
+            "data": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882"
           }
         ],
         "/Stack2/MyFunc5/Resource": [

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "StackOutputPipelineStackAppStageStackB810E610.assets": {
       "type": "cdk:asset-manifest",

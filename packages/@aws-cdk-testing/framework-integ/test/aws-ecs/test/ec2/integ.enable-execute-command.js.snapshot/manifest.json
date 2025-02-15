@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-enable-execute-command.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9a76fcba4ced44546bf4b1f9cf657a8c109221e81feca9c7f01c078c620b4b8e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a32b630d70de4be9529aa5756f85f53a75809c378797c4cb6bb29e28ffec5711.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -268,12 +268,6 @@
             "data": "ASGDrainECSHookFunctionServiceRoleC12963BB"
           }
         ],
-        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27"
-          }
-        ],
         "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -290,6 +284,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B"
           }
         ],
         "/aws-ecs-integ-enable-execute-command/ASG/LifecycleHookDrainHook/Topic/Resource": [
@@ -328,6 +352,12 @@
             "data": "EC2CapacityProvider5A2E35CD"
           }
         ],
+        "/aws-ecs-integ-enable-execute-command/EC2CPCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
         "/aws-ecs-integ-enable-execute-command/EC2CPCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -338,6 +368,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EC2CPCluster4CFED4DD"
+          }
+        ],
+        "/aws-ecs-integ-enable-execute-command/EC2Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
           }
         ],
         "/aws-ecs-integ-enable-execute-command/EC2Service/Service": [
@@ -356,6 +392,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

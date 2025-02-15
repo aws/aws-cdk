@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-sfn-tasks-ecs-task.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3def9ee7b59a962a2c1b87f53788e50585c78f8b28084882a58d0b6796594f37.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aef5a0cc0f73d79d8b11f4894059de6f5c6914855417419ae9dd9f9ba39c2e8f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,27 @@
         "aws-sfn-tasks-ecs-task.assets"
       ],
       "metadata": {
+        "/aws-sfn-tasks-ecs-task/FargateCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "Cluster.handleCanContainersAccessInstanceRoleForAL2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:581:47)",
+              "Cluster.configureAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:486:26)",
+              "Cluster.addAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:452:14)",
+              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:405:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/ecs/integ.ec2-task.js:30:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/aws-sfn-tasks-ecs-task/FargateCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -220,12 +241,6 @@
             "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
           }
         ],
-        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343"
-          }
-        ],
         "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -242,6 +257,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole07DEB0033"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole19C1F9F76"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole204A3CD4E"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole344578453"
+          }
+        ],
+        "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole465531B88"
           }
         ],
         "/aws-sfn-tasks-ecs-task/FargateCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [

@@ -328,16 +328,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython39426A0480",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -369,11 +359,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -416,8 +401,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -495,6 +485,70 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.9/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Lambdapython39426A0480",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340",
+                            "roles": [
+                              {
+                                "Ref": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -820,16 +874,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "Lambdapython310815BD7E9",
-                                          "Arn"
-                                        ]
-                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -861,11 +905,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -908,8 +947,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -987,6 +1031,70 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "Lambdapython310815BD7E9",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D",
+                            "roles": [
+                              {
+                                "Ref": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
