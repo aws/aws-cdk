@@ -451,7 +451,7 @@ export class NatGateway extends Resource implements IRouteTarget {
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.allocationId) {
         let eip = new CfnEIP(this, 'EIP', {
-          domain: props.vpc?.vpcId,
+          domain: 'vpc',
         });
         aId = eip.attrAllocationId;
       } else {
