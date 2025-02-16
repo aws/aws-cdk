@@ -152,6 +152,8 @@ export class BackgroundStackRefresh {
     await refreshStacks(this.props.cfn, this.props.activeAssets, this.props.qualifier);
     this.justRefreshedStacks();
 
+    // Clear the current setTimeout before setting a new one
+    clearTimeout(this.timeout);
     // If the last invocation of refreshStacks takes <5 minutes, the next invocation starts 5 minutes after the last one started.
     // If the last invocation of refreshStacks takes >5 minutes, the next invocation starts immediately.
     this.timeout = setTimeout(() => this.refresh(), Math.max(startTime + 300_000 - Date.now(), 0));
