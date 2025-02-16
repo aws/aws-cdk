@@ -4,8 +4,9 @@ USER root
 
 # Setup oh-my-zsh
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends zsh vim \
+    && apt-get -y install --no-install-recommends zsh vim git-lfs \
     && rm -rf /var/lib/apt/lists/* \
+    && git lfs install \
     && chsh -s $(which zsh) superchain
 
 # Required, otherwise shell is extermly slow due the size of the aws-cdk
