@@ -58,12 +58,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.0.tgz#6d3c7860354d4856a7e75375f2f0ecab313b4989"
   integrity sha512-7bY3J8GCVxLupn/kNmpPc5VJz8grx+4RKfnnJiO1LG+uxkZfANZG3RMHhE+qQxxwkyQ9/MfPtTpf748UhR425A==
 
-"@aws-cdk/aws-service-spec@^0.1.55":
-  version "0.1.55"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.55.tgz#b8a9153de64b3236a10198c5459ddded5912fed9"
-  integrity sha512-FM8ywYMtxbi3EVah1/3B8ex/xTTTapXhODsjfCEVF61IP8NQQ4HjaXY8LiWTKmr+rHaHxtiJhoniWLrl4Xjt1Q==
+"@aws-cdk/aws-service-spec@^0.1.56":
+  version "0.1.56"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.56.tgz#af8071513bcb290c8d19b2ae7557251541f1a666"
+  integrity sha512-6Pt4W7wRgx8D2DTRJiDRJV3qV4enbiZEeBotmAtvJa/cbe7iKlZoYDz3eKFSGc63hhmg+25xbf9leyLol4zhyg==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.121"
+    "@aws-cdk/service-spec-types" "^0.0.122"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^39.2.0":
@@ -139,6 +139,13 @@
   version "0.0.121"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.121.tgz#f9f2e91838bb93f48b98e1b8e29bc0cdacccc559"
   integrity sha512-skPyQa4tV4ozC7wtMiJTjSR8mbJ7DQaheTkPxz0NRYUe7kNiGw2hnFzkTrFcMMFtwwLOzAtVxMsDlrVsa68GPA==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.122":
+  version "0.0.122"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.122.tgz#32c0963089dbe656db62420c7d357e5729fc5f38"
+  integrity sha512-nRoxJpP9rA+vwDgAlTBJWudzpTaQdKmr18TB6JMJhDE7fe8lhhs7EoX+hc6AVdoygcun+FuxNNAhRLetd7dI9Q==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
