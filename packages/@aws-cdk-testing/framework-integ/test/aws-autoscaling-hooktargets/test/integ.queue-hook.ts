@@ -43,7 +43,6 @@ class TestStack extends cdk.Stack {
       notificationTarget: new QueueHook(queue),
     });
     this.hookName = hook.lifecycleHookName;
-
   }
 }
 

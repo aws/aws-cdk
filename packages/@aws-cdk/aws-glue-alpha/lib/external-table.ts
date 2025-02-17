@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { IConnection } from './connection';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -52,6 +53,8 @@ export class ExternalTable extends TableBase {
 
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.connection = props.connection;
     this.tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -115,6 +118,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     return ret;
@@ -125,6 +129,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
     return ret;
@@ -135,6 +140,7 @@ export class ExternalTable extends TableBase {
    *
    * @param grantee the principal
    */
+  @MethodMetadata()
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     return ret;

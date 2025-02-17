@@ -1,4 +1,4 @@
-import { CidrBlock } from '../lib/util';
+import { CidrBlock, CidrBlockIpv6, NetworkUtils } from '../lib/util';
 
 describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges overlap', () =>{
   test('Should return false for non-overlapping IP ranges', () => {
@@ -34,5 +34,40 @@ describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges o
     const range1 = ['10.0.0.0', '10.0.15.255'] as [string, string];
     const range2 = ['10.0.16.0', '10.0.19.255'] as [string, string];
     expect(testCidr.rangesOverlap(range1, range2)).toBe(false);
+  });
+
+  test('Should return false for non-overlapping IPv6 ranges with prefix', () => {
+    const testCidr = new CidrBlockIpv6('2001:db8::/32');
+    expect(testCidr.rangesOverlap('2001:db8:8::/56', '2001:db8:9::/56')).toBe(false);
+  });
+
+  test('Should return true for overlapping IPv6 ranges with prefix', () => {
+    const testCidr = new CidrBlockIpv6('2001:db8::/32');
+    expect(testCidr.rangesOverlap('2001:db8::1/64', '2001:db8::1/60')).toBe(true);
+  });
+
+  test('valid IPv4 addresses return true', () => {
+    const validIps = [
+      '192.168.1.1',
+      '10.0.0.0',
+      '172.16.254.1',
+      '0.0.0.0',
+      '255.255.255.255',
+    ];
+
+    validIps.forEach(ip => {
+      expect(NetworkUtils.validIp(ip)).toBe(true);
+    });
+  });
+
+  test('invalid IP addresses return false', () => {
+    const invalidIps = [
+      '256.1.2.3', // octet > 255
+      '1.2.3.256', // octet > 255
+      '1.2.3.4.5',
+    ];
+    invalidIps.forEach(ip => {
+      expect(NetworkUtils.validIp(ip)).toBe(false);
+    });
   });
 });

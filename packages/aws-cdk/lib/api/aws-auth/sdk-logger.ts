@@ -1,16 +1,33 @@
-import { inspect } from 'util';
+import { inspect, format } from 'util';
 import { Logger } from '@smithy/types';
-import { trace } from '../../logging';
+import { replacerBufferWithInfo } from '../../serialize';
+import type { IIoHost } from '../../toolkit/cli-io-host';
 
 export class SdkToCliLogger implements Logger {
+  private readonly ioHost: IIoHost;
+
+  public constructor(ioHost: IIoHost) {
+    this.ioHost = ioHost;
+  }
+
+  private notify(level: 'debug' | 'info' | 'warn' | 'error', ...content: any[]) {
+    void this.ioHost.notify({
+      time: new Date(),
+      level: 'trace', // always log all SDK logs at trace level, no matter what level they are coming from the SDK
+      action: 'none' as any,
+      code: 'CDK_SDK_I0000',
+      message: format('[SDK %s] %s', level, formatSdkLoggerContent(content)),
+    });
+  }
+
   public trace(..._content: any[]) {
     // This is too much detail for our logs
-    // trace('[SDK trace] %s', fmtContent(content));
+    // this.notify('trace', ...content);
   }
 
   public debug(..._content: any[]) {
     // This is too much detail for our logs
-    // trace('[SDK debug] %s', fmtContent(content));
+    // this.notify('debug', ...content);
   }
 
   /**
@@ -41,11 +58,11 @@ export class SdkToCliLogger implements Logger {
    * ```
    */
   public info(...content: any[]) {
-    trace('[sdk info] %s', formatSdkLoggerContent(content));
+    this.notify('info', ...content);
   }
 
   public warn(...content: any[]) {
-    trace('[sdk warn] %s', formatSdkLoggerContent(content));
+    this.notify('warn', ...content);
   }
 
   /**
@@ -70,7 +87,7 @@ export class SdkToCliLogger implements Logger {
    * ```
    */
   public error(...content: any[]) {
-    trace('[sdk error] %s', formatSdkLoggerContent(content));
+    this.notify('error', ...content);
   }
 }
 
@@ -105,7 +122,7 @@ function formatApiCall(content: any): string | undefined {
     parts.push(`[${content.metadata?.attempts} attempts, ${content.metadata?.totalRetryDelay}ms retry]`);
   }
 
-  parts.push(`${service}.${api}(${JSON.stringify(content.input)})`);
+  parts.push(`${service}.${api}(${JSON.stringify(content.input, replacerBufferWithInfo)})`);
 
   if (isSdkApiCallSuccess(content)) {
     parts.push('-> OK');

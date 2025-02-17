@@ -20,6 +20,7 @@ import {
   BackgroundStackRefresh,
   BackgroundStackRefreshProps,
 } from '../../lib/api/garbage-collection/stack-refresh';
+import { ProgressPrinter } from '../../lib/api/garbage-collection/progress-printer';
 import {
   BatchDeleteImageCommand,
   BatchGetImageCommand,
@@ -571,6 +572,91 @@ describe('ECR Garbage Collection', () => {
       imageTag: expect.stringContaining(`1-${ECR_ISOLATED_TAG}`),
     });
   });
+
+  test('listImagesCommand returns nextToken', async () => {
+    // This test is to ensure that the garbage collector can handle paginated responses from the ECR API
+    // If not handled correctly, the garbage collector will continue to make requests to the ECR API
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
+
+    prepareDefaultEcrMock();
+    ecrClient.on(ListImagesCommand).resolves({ // default response
+      imageIds: [
+        {
+          imageDigest: 'digest1',
+          imageTag: 'abcde',
+        },
+        {
+          imageDigest: 'digest2',
+          imageTag: 'fghij',
+        },
+      ],
+      nextToken: 'nextToken',
+    }).on(ListImagesCommand, { // response when nextToken is provided
+      repositoryName: 'REPO_NAME',
+      nextToken: 'nextToken',
+    }).resolves({
+      imageIds: [
+        {
+          imageDigest: 'digest3',
+          imageTag: 'klmno',
+        },
+      ],
+    });
+    ecrClient.on(BatchGetImageCommand).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest1' } },
+        { imageId: { imageDigest: 'digest2' } },
+      ],
+    }).resolvesOnce({
+      images: [
+        { imageId: { imageDigest: 'digest3' } },
+      ],
+    });
+    ecrClient.on(DescribeImagesCommand).resolvesOnce({
+      imageDetails: [
+        {
+          imageDigest: 'digest1',
+          imageTags: ['abcde'],
+          imagePushedAt: daysInThePast(100),
+          imageSizeInBytes: 1_000_000_000,
+        },
+        { imageDigest: 'digest2', imageTags: ['fghij'], imagePushedAt: daysInThePast(10), imageSizeInBytes: 300_000_000 },
+      ],
+    }).resolvesOnce({
+      imageDetails: [
+        { imageDigest: 'digest3', imageTags: ['klmno'], imagePushedAt: daysInThePast(2), imageSizeInBytes: 100 },
+      ],
+    });
+    prepareDefaultCfnMock();
+
+    garbageCollector = gc({
+      type: 'ecr',
+      rollbackBufferDays: 0,
+      action: 'full',
+    });
+    await garbageCollector.garbageCollect();
+
+    expect(ecrClient).toHaveReceivedCommandTimes(DescribeImagesCommand, 2);
+    expect(ecrClient).toHaveReceivedCommandTimes(ListImagesCommand, 4);
+
+    // no tagging
+    expect(ecrClient).toHaveReceivedCommandTimes(PutImageCommand, 0);
+
+    expect(ecrClient).toHaveReceivedCommandWith(BatchDeleteImageCommand, {
+      repositoryName: 'REPO_NAME',
+      imageIds: [
+        { imageDigest: 'digest2' },
+        { imageDigest: 'digest3' },
+      ],
+    });
+  });
 });
 
 describe('CloudFormation API calls', () => {
@@ -914,6 +1000,33 @@ describe('BackgroundStackRefresh', () => {
     jest.advanceTimersByTime(120000); // Advance time by 2 minutes
 
     await expect(waitPromise).rejects.toThrow('refreshStacks took too long; the background thread likely threw an error');
+  });
+});
+
+describe('ProgressPrinter', () => {
+  let progressPrinter: ProgressPrinter;
+  let setInterval: jest.SpyInstance;
+  let clearInterval: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setInterval = jest.spyOn(global, 'setInterval');
+    clearInterval = jest.spyOn(global, 'clearInterval');
+
+    progressPrinter = new ProgressPrinter(0, 1000);
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    setInterval.mockRestore();
+    clearInterval.mockRestore();
+  });
+
+  test('throws if start is called twice without stop', () => {
+    progressPrinter.start();
+
+    expect(setInterval).toHaveBeenCalledTimes(1);
+    expect(() => progressPrinter.start()).toThrow('ProgressPrinter is already running. Stop it first using the stop() method before starting it again.');
   });
 });
 

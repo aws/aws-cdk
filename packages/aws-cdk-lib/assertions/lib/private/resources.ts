@@ -46,7 +46,6 @@ export function allResourcesProperties(template: Template, type: string, props: 
   return allResources(amended, type, Match.objectLike({
     Properties: props,
   }));
-
 }
 
 export function hasResource(template: Template, type: string, props: any): string | void {

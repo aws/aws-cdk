@@ -167,7 +167,6 @@ describe('stack', () => {
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
   // so this can be implemented by jsii languages as well.
   test('Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis', () => {
-
     const stack = new StackWithPostProcessor();
 
     new CfnResource(stack, 'myResource', {
@@ -199,7 +198,6 @@ describe('stack', () => {
   });
 
   test('Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)', () => {
-
     const stack = new Stack();
 
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
@@ -2157,7 +2155,6 @@ describe('stack', () => {
   });
 
   test('stack notification arns defaults to undefined', () => {
-
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1', {});
 
@@ -2490,7 +2487,6 @@ describe('regionalFact', () => {
         },
       },
     });
-
   });
 
   test('regional facts generate a mapping if necessary', () => {
@@ -2536,9 +2532,6 @@ describe('regionalFact', () => {
 });
 
 class StackWithPostProcessor extends Stack {
-
-  // ...
-
   public _toCloudFormation() {
     const template = super._toCloudFormation();
 

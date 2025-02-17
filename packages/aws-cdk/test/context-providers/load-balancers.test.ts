@@ -4,7 +4,7 @@ import {
   DescribeLoadBalancersCommand,
   DescribeTagsCommand,
 } from '@aws-sdk/client-elastic-load-balancing-v2';
-import { SDK, SdkForEnvironment } from '../../lib';
+import { SDK, SdkForEnvironment } from '../../lib/api';
 import {
   LoadBalancerListenerContextProviderPlugin,
   LoadBalancerContextProviderPlugin,

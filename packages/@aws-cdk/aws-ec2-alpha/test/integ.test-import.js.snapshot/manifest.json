@@ -16,10 +16,9 @@
         "templateFile": "vpcv2-import-integ-test.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/10cbe304a3bd42e3465787e1f8f7f9ab051a9af6b83f2eeb56422e7e3c6e60b1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/8d0cc39a7654b1458eb5fc1ac13d5f826a7b955db0db668fcf3fef226ee7b130.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -86,10 +85,7 @@
         "/vpcv2-import-integ-test/AddnewImportedSubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet53655C69",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "AddnewImportedSubnet53655C69"
           }
         ],
         "/vpcv2-import-integ-test/AddnewImportedSubnet/RouteTable/RouteTable": [
@@ -107,10 +103,7 @@
         "/vpcv2-import-integ-test/AddnewImportedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AddnewImportedSubnet2SubnetD9533DC5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
-            ]
+            "data": "AddnewImportedSubnet2SubnetD9533DC5"
           }
         ],
         "/vpcv2-import-integ-test/AddnewImportedSubnet2/RouteTable/RouteTable": [
@@ -160,24 +153,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCAddnewImportedSubnetDefaultIPv6Route98D952A0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedNewVPCAddnewImportedSubnet2DefaultIPv6Route1EBC364B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "vpcv2-import-integ-test"
@@ -197,7 +172,6 @@
         "templateFile": "integtestmodelDefaultTestDeployAssertCF40BD53.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

@@ -1,6 +1,8 @@
 import { Match, Template } from '../../assertions';
+import { Role, ServicePrincipal } from '../../aws-iam';
+import { CfnApp } from '../../aws-pinpoint';
 import { Stack, Duration } from '../../core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes, AnalyticsConfiguration } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -43,7 +45,6 @@ describe('User Pool Client', () => {
   });
 
   describe('Client with secret', () => {
-
     test('generate secret', () => {
       // GIVEN
       const stack = new Stack();
@@ -1342,4 +1343,123 @@ describe('User Pool Client', () => {
     ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
 
+  describe('analytics configuration', () => {
+    test('analytics configuration can be added to userPoolClients by specifying application', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const pinpointApp = new CfnApp(stack, 'PinpointApp', {
+        name: 'SamplePinpointApp',
+      });
+
+      // WHEN
+      new UserPoolClient(stack, 'Client', {
+        userPool: pool,
+        analytics: {
+          application: pinpointApp,
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationArn: Match.objectLike({
+            'Fn::GetAtt': ['PinpointApp', 'Arn'],
+          }),
+          UserDataShared: true,
+        },
+      });
+    });
+
+    test('analytics configuration can be added to userPoolClients by specifying applicationId, externalId, and role', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
+
+      // WHEN
+      new UserPoolClient(stack, 'Client', {
+        userPool: pool,
+        analytics: {
+          applicationId: '12345678-1234-1234-1234-123456789012',
+          externalId: 'sample-external-id',
+          role,
+          shareUserData: true,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        AnalyticsConfiguration: {
+          ApplicationId: '12345678-1234-1234-1234-123456789012',
+          ExternalId: 'sample-external-id',
+          RoleArn: stack.resolve(role.roleArn),
+          UserDataShared: true,
+        },
+      });
+    });
+
+    test('throws an error when both application and applicationId are specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const pinpointApp = new CfnApp(stack, 'PinpointApp', {
+        name: 'SamplePinpointApp',
+      });
+
+      // WHEN
+      const createUserPoolClient = () => new UserPoolClient(stack, 'PoolClient', {
+        userPool: pool,
+        analytics: {
+          application: pinpointApp,
+          applicationId: '12345678-1234-1234-1234-123456789012',
+        },
+      });
+
+      // THEN
+      expect(() => createUserPoolClient()).toThrow('Either `application` or all of `applicationId`, `externalId` and `role` must be specified.');
+    });
+
+    test('throws an error when either applicationId, externalId or role is not specified', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      const role = new Role(stack, 'Role', {
+        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com'),
+      });
+
+      // WHEN
+      const createUserPoolClient = (id: string, analytics: AnalyticsConfiguration) => new UserPoolClient(stack, id, {
+        userPool: pool,
+        analytics,
+      });
+
+      // THEN
+      expect(
+        () =>
+          createUserPoolClient('PoolClient1', {
+            applicationId: '12345678-1234-1234-1234-123456789012',
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
+
+      expect(
+        () =>
+          createUserPoolClient('PoolClient2', {
+            externalId: 'sample-external-id',
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
+
+      expect(
+        () =>
+          createUserPoolClient('PoolClient3', {
+            role,
+          }),
+      ).toThrow('Either all of `applicationId`, `externalId` and `role` must be specified or `application` must be specified.');
+    });
+  });
 });
