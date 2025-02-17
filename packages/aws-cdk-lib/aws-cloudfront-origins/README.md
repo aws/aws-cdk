@@ -686,7 +686,7 @@ VPC origin will create a security group named `CloudFront-VPCOrigins-Service-SG`
 It can be further restricted to allow only traffic from your VPC origins.
 
 The id of the security group is not provided by CloudFormation currently.
-You can retrieve it dynamically using custom resource.
+You can retrieve it dynamically using a custom resource.
 
 ``` ts
 import * as cr from 'aws-cdk-lib/custom-resources';
