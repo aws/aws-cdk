@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* reset L1 CloudFormation resource definitions to last known working version ([#33445](https://github.com/aws/aws-cdk/pull/33481))
+* reset L1 CloudFormation resource definitions to last known working version ([#33481](https://github.com/aws/aws-cdk/pull/33481))
 * **cloudtrail:** throw `ValidationErrors` instead of untyped Errors ([#33455](https://github.com/aws/aws-cdk/issues/33455)) ([11a75b2](https://github.com/aws/aws-cdk/commit/11a75b287bbbc6067df52cf5946634877351d515)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
 * update L1 CloudFormation resource definitions ([#33445](https://github.com/aws/aws-cdk/issues/33445)) ([531280f](https://github.com/aws/aws-cdk/commit/531280f0bf8f73d173cd420a1642277119181dca))
 * update L1 CloudFormation resource definitions ([#33475](https://github.com/aws/aws-cdk/issues/33475)) ([a7cacb8](https://github.com/aws/aws-cdk/commit/a7cacb8278896d54a2e7ff6384a8d4218fed0b33))
