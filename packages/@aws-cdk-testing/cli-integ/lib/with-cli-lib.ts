@@ -37,9 +37,16 @@ export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext &
       }
 
       const alphaInstallationVersion = fixture.packages.requestedAlphaVersion();
+
+      // cli-lib-alpha has a magic alpha version in the old release pipeline,
+      // but will just mirror the CLI version in the new pipeline.
+      const cliLibVersion = process.env.CLI_LIB_VERSION_MIRRORS_CLI
+        ? `${fixture.packages.requestedCliVersion()}-alpha.0`
+        : alphaInstallationVersion;
+
       await installNpmPackages(fixture, {
         'aws-cdk-lib': installationVersion,
-        '@aws-cdk/cli-lib-alpha': alphaInstallationVersion,
+        '@aws-cdk/cli-lib-alpha': cliLibVersion,
         '@aws-cdk/aws-lambda-go-alpha': alphaInstallationVersion,
         '@aws-cdk/aws-lambda-python-alpha': alphaInstallationVersion,
         'constructs': '^10',
