@@ -39,7 +39,7 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
    *
    * It is configurable up to 86400 minutes (60 days) with a minimum value of 5 minutes.
    *
-   * @default - 7 days
+   * @default - 10080 minutes (7 days)
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
    */
   readonly timeout?: Duration;
