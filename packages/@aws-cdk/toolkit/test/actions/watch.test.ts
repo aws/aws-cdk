@@ -144,6 +144,9 @@ describe('watch', () => {
     expect(deploySpy).toHaveBeenCalledWith(expect.anything(), 'watch', expect.objectContaining({
       cloudWatchLogMonitor: expect.anything(), // Not undefined
     }));
+
+    // Deactivate the cloudWatchLogMonitor that we created, otherwise the tests won't exit
+    (deploySpy.mock.calls[0]?.[2] as any).cloudWatchLogMonitor?.deactivate();
   });
 
   describe.each([
