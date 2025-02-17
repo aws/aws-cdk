@@ -44,7 +44,6 @@ describe('AwsApiCall', () => {
         param2: '2',
       },
     });
-
   });
 
   test('restrict output paths', () => {

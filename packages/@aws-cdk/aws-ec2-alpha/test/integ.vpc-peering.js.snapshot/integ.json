@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "VpcSameAccountInteg/DefaultTest": {
+      "stacks": [
+        "VpcPeeringSameAccountIntegStack"
+      ],
+      "assertionStack": "VpcSameAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D"
+    }
+  }
+}

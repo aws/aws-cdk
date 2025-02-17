@@ -2,7 +2,7 @@ import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import { info } from '../../lib/logging';
-import * as version from '../../lib/version';
+import * as version from '../cli/version';
 
 export async function doctor(): Promise<number> {
   let exitStatus: number = 0;
@@ -24,7 +24,7 @@ const verifications: Array<() => boolean | Promise<boolean>> = [
 // ### Verifications ###
 
 function displayVersionInformation() {
-  info(`ℹ️ CDK Version: ${chalk.green(version.DISPLAY_VERSION)}`);
+  info(`ℹ️ CDK Version: ${chalk.green(version.displayVersion())}`);
   return true;
 }
 

@@ -121,6 +121,8 @@ export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aw
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
+export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1351,9 +1353,38 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       Using a feature flag to make sure existing customers who might be relying
       on the overly restrictive permissions are not broken.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.176.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to only allow IPv4 ingress in the default security group rules.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default behaviour of OIDC provider will reject unauthorized connections',
+    detailsMd: `
+      When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
+      default to reject unauthorized connections when downloading CA Certificates.
+      
+      When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
+      thumbprints from unsecure connections.`,
+    introducedIn: { v2: '2.177.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ADDITIONAL_METADATA_COLLECTION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.',
+    detailsMd: `
+    When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+      * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+    `,
+    introducedIn: { v2: '2.178.0' },
+    recommendedValue: true,
   },
 };
 
@@ -1388,7 +1419,7 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
 /**
  * The default values of each of these flags in the current major version.
  *
- * This is the effective value of the flag, unless it's overriden via
+ * This is the effective value of the flag, unless it's overridden via
  * context.
  *
  * Adding new flags here is only allowed during the pre-release period of a new
@@ -1401,6 +1432,8 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

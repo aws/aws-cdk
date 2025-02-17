@@ -18,6 +18,36 @@ describe('Wait State', () => {
     });
   });
 
+  test('wait time from JSONata expression as timestamp', () => {
+    // GIVEN
+    const jsonataExpression = '{% $timestamp %}';
+
+    // WHEN
+    const waitTime = WaitTime.timestamp(jsonataExpression);
+
+    // THEN
+    expect(waitTime).toEqual({
+      json: {
+        Timestamp: '{% $timestamp %}',
+      },
+    });
+  });
+
+  test('wait time from JSONata expression as seconds', () => {
+    // GIVEN
+    const jsonataExpression = '{% $seconds %}';
+
+    // WHEN
+    const waitTime = WaitTime.seconds(jsonataExpression);
+
+    // THEN
+    expect(waitTime).toEqual({
+      json: {
+        Seconds: '{% $seconds %}',
+      },
+    });
+  });
+
   test('wait time from seconds path in state object', () => {
     // GIVEN
     const secondsPath = '$.waitSeconds';
@@ -95,5 +125,4 @@ describe('Wait State', () => {
       },
     });
   });
-
 });

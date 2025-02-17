@@ -4,6 +4,7 @@ import { IStream } from './stream';
 import { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties to associate a data stream with a policy
@@ -57,6 +58,8 @@ export class ResourcePolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: ResourcePolicyProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.stream && props.streamConsumer) {
       throw new Error('Only one of stream or streamConsumer can be set');

@@ -276,7 +276,7 @@ describe('Vpc V2 with full control', () => {
   test('Adds tag to IPAM and IPAM Scope and Pool', () => {
     const ipam = new Ipam(stack, 'TestIpam', {
       ipamName: 'TestIpam',
-      operatingRegion: ['us-west-1'],
+      operatingRegions: ['us-west-1'],
     });
 
     ipam.addScope(stack, 'TestScope', {

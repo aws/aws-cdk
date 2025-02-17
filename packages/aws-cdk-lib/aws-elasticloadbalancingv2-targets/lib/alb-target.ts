@@ -36,13 +36,13 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
 }
 
 /**
-  * A single Application Load Balancer as the target for load balancing.
-  * @deprecated Use `AlbListenerTarget` instead or
-  * `AlbArnTarget` for an imported load balancer. This target does not automatically
-  * add a dependency between the ALB listener and resulting NLB target group,
-  * without which may cause stack deployments to fail if the NLB target group is provisioned
-  * before the listener has been fully created.
-  */
+ * A single Application Load Balancer as the target for load balancing.
+ * @deprecated Use `AlbListenerTarget` instead or
+ * `AlbArnTarget` for an imported load balancer. This target does not automatically
+ * add a dependency between the ALB listener and resulting NLB target group,
+ * without which may cause stack deployments to fail if the NLB target group is provisioned
+ * before the listener has been fully created.
+ */
 export class AlbTarget extends AlbArnTarget {
   /**
    * @param alb The application load balancer to load balance to
