@@ -37,6 +37,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-cognito',
   'aws-cloudfront',
   'aws-cloudfront-origins',
+  'aws-cloudtrail',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
