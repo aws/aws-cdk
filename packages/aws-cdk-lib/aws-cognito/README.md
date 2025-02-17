@@ -23,6 +23,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Code Verification](#code-verification)
       - [Link Verification](#link-verification)
     - [Sign In](#sign-in)
+      - [Choise-based authentication](#choice-based-authentication-passwordless-sign-in--passkey-sign-in)
     - [Attributes](#attributes)
     - [Attribute verification](#attribute-verification)
     - [Security](#security)
@@ -39,6 +40,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Resource Servers](#resource-servers)
     - [Domains](#domains)
     - [Deletion protection](#deletion-protection)
+    - [Analytics Configuration](#analytics-configuration)
+      - [When specifying a Pinpoint application from the same account](#when-specifying-a-pinpoint-application-from-the-same-account)
+      - [When specifying a Pinpoint application from a different account](#when-specifying-a-pinpoint-application-from-a-different-account)
 
 ## User Pools
 
@@ -207,6 +211,84 @@ new cognito.UserPool(this, 'myuserpool', {
 
 A user pool can optionally ignore case when evaluating sign-ins. When `signInCaseSensitive` is false, Cognito will not
 check the capitalization of the alias when signing in. Default is true.
+
+#### Choice-based authentication: passwordless sign-in / passkey sign-in
+
+User pools can be configured to allow the following authentication methods in choice-based authentication:
+- Passwordless sign-in with email message one-time password
+- Passwordless sign-in with SMS message one-time password
+- Passkey (WebAuthn) sign-in
+
+To use choice-based authentication, [User pool feature plan](#user-pool-feature-plans) should be Essentials or higher.
+
+For details of authentication methods and client implementation, see [Manage authentication methods in AWS SDKs](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html).
+
+The following code configures a user pool with choice-based authentication enabled:
+
+```ts
+const userPool = new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: {
+      password: true, // password authentication must be enabled
+      emailOtp: true, // enables email message one-time password
+      smsOtp: true,   // enables SMS message one-time password
+      passkey: true,  // enables passkey sign-in
+    },
+  },
+});
+
+// You should also configure the user pool client with USER_AUTH authentication flow allowed
+userPool.addClient('myclient', {
+  authFlows: { user: true },
+});
+```
+
+⚠️ Enabling SMS message one-time password requires the AWS account be activated to SMS message sending.
+Learn more about [SMS message settings for Amazon Cognito user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html).
+
+When enabling passkey sign-in, you should specify the authentication domain used as the relying party ID.
+Learn more about [passkey sign-in of user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html#amazon-cognito-user-pools-authentication-flow-methods-passkey) and [Web Authentication API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+```ts
+// Use the hosted Amazon Cognito domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'myclientname.auth.region-name.amazoncognito.com',
+});
+
+// Use the custom domain as the relying party ID
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+});
+```
+
+You can configure user verification to be preferred (default) or required. When you set user verification to preferred, users can set up authenticators that don't have the user verification capability, and registration and authentication operations can succeed without user verification. To mandate user verification in passkey registration and authentication, specify `passkeyUserVerification` to `PasskeyUserVerification.REQUIRED`.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+});
+```
+
+To disable choice-based authentication explicitly, specify `password` only.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true },
+  },
+  featurePlan: cognito.FeaturePlan.LITE,
+});
+```
 
 ### Attributes
 
@@ -1110,5 +1192,68 @@ new cognito.UserPoolGroup(this, 'UserPoolGroup', {
 // You can also add a group by using addGroup method.
 userPool.addGroup('AnotherUserPoolGroup', {
   groupName: 'another-group-name'
+});
+```
+
+### Analytics Configuration
+
+User pool clients can be configured with Amazon Pinpoint analytics to collect user activity metrics. This integration enables you to track user engagement and campaign effectiveness.
+
+📝 Note: Amazon Pinpoint isn't available in all AWS Regions. For a list of available Regions, see [Amazon Cognito and Amazon Pinpoint Region availability](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-pinpoint-integration.html#cognito-user-pools-find-region-mappings).
+
+The following example shows how to configure analytics for a user pool client:
+
+#### When specifying a Pinpoint application from the same account
+
+If you specify the `application` property, do not specify the `applicationId`, `externalId`, or `roleArn` properties.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project
+    application: pinpointApp,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
+});
+```
+
+#### When specifying a Pinpoint application from a different account
+
+If you specify the `applicationId`, `externalId`, or `roleArn` properties, do not specify the `application` property.  
+(In this case, the `applicationId`, `externalId`, and `roleArn` must all be specified.)
+
+Those three attributes are for the cases when Cognito user pool need to be connected to Pinpoint app in other account.
+
+```ts
+import * as pinpoint from 'aws-cdk-lib/aws-pinpoint';
+
+declare const userPool: cognito.UserPool;
+declare const pinpointApp: pinpoint.CfnApp;
+declare const pinpointRole: iam.Role;
+
+new cognito.UserPoolClient(this, 'Client', {
+  userPool,
+  analytics: {
+    // Your Pinpoint project ID
+    applicationId: pinpointApp.ref,
+
+    // External ID for the IAM role
+    externalId: "sample-external-id",
+
+    // IAM role that Cognito can assume to publish to Pinpoint
+    role: pinpointRole,
+
+    // Whether to include user data in analytics events
+    shareUserData: true,
+  },
 });
 ```
