@@ -107,7 +107,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
     if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
       return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, Token.asString(resolvedValue))) as IResolvable;
-
     } else {
       return resolvedValue;
     }
