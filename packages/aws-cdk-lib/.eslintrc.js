@@ -33,6 +33,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-backup',
   'aws-batch',
   'aws-chatbot',
+  'aws-certificatemanager',
   'aws-cognito',
   'aws-cloudfront',
   'aws-cloudfront-origins',
