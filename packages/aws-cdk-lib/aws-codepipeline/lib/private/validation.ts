@@ -1,5 +1,5 @@
 import * as cdk from '../../../core';
-import { ActionCategory, IAction, IAction } from '../action';
+import { ActionCategory } from '../action';
 import { Artifact } from '../artifact';
 
 /**
