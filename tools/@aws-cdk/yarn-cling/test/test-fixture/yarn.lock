@@ -1,0 +1,9 @@
+"aws-cdk@^1.2.3":
+  version "1.2.999"
+  resolved "https://registry.bla.com/stuff"
+  integrity sha512-banana
+
+"aws-cdk-lib@^2.3.4":
+  version "2.3.999"
+  resolved "https://registry.bla.com/stuff"
+  integrity sha512-pineapple
