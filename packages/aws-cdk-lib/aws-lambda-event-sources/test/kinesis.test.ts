@@ -429,6 +429,5 @@ describe('KinesisEventSource', () => {
       'BatchSize': 100,
       'StartingPosition': 'TRIM_HORIZON',
     });
-
   });
 });

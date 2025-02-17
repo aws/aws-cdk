@@ -152,7 +152,6 @@ export interface StreamConsumerProps {
  * A Kinesis Stream Consumer
  */
 export class StreamConsumer extends StreamConsumerBase {
-
   /**
    * Imports an existing Kinesis Stream Consumer by its arn.
    *

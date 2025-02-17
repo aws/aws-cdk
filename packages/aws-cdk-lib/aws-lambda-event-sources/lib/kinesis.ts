@@ -14,6 +14,9 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
   readonly startingPositionTimestamp?: number;
 }
 
+/**
+ * Props for use with {@link KinesisEventSourceBase}
+ */
 interface KinesisSource {
   readonly node: constructs.Node;
   readonly sourceArn: string;
@@ -21,6 +24,9 @@ interface KinesisSource {
   grantRead(grantee: iam.IGrantable): iam.Grant;
 }
 
+/**
+ * Base class for {@link KinesisEventSource} and {@link KinesisConsumerEventSource}
+ */
 abstract class KinesisEventSourceBase extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
   private _eventSourceMappingArn?: string = undefined;

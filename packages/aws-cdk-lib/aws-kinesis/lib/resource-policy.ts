@@ -70,11 +70,14 @@ export class ResourcePolicy extends Resource {
 
     this.document = props.policyDocument ?? this.document;
 
-    if (props.stream) this.resourcePolicy(props.stream.streamArn);
-    else if (props.streamConsumer) this.resourcePolicy(props.streamConsumer.streamConsumerArn);
+    if (props.stream) {
+      this.createResourcePolicy(props.stream.streamArn);
+    } else if (props.streamConsumer) {
+      this.createResourcePolicy(props.streamConsumer.streamConsumerArn);
+    }
   }
 
-  private resourcePolicy(resourceArn: string): CfnResourcePolicy {
+  private createResourcePolicy(resourceArn: string): CfnResourcePolicy {
     return new CfnResourcePolicy(this, 'Resource', {
       resourcePolicy: this.document,
       resourceArn,
