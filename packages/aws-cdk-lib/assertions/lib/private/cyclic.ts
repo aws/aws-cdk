@@ -1,3 +1,4 @@
+import { AssertionError } from './error';
 import { Resource, Template } from './template';
 
 /**
@@ -28,7 +29,7 @@ export function checkTemplateForCyclicDependencies(template: Template): void {
         cycleResources[logicalId] = template.Resources?.[logicalId];
       }
 
-      throw new Error(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}:\n\n${JSON.stringify(cycleResources, undefined, 2)}`);
+      throw new AssertionError(`Template is undeployable, these resources have a dependency cycle: ${cycle.join(' -> ')}:\n\n${JSON.stringify(cycleResources, undefined, 2)}`);
     }
 
     for (const [logicalId, _] of free) {
@@ -163,7 +164,7 @@ function findCycle(deps: ReadonlyMap<string, ReadonlySet<string>>): string[] {
     const cycle = recurse(node, [node]);
     if (cycle) { return cycle; }
   }
-  throw new Error('No cycle found. Assertion failure!');
+  throw new AssertionError('No cycle found. Assertion failure!');
 
   function recurse(node: string, path: string[]): string[] | undefined {
     for (const dep of deps.get(node) ?? []) {

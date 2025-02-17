@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import {
   Classification, VirtualClusterInput, EksClusterInput, EmrContainersDeleteVirtualCluster,
   EmrContainersCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
@@ -29,6 +30,7 @@ const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
   version: eks.KubernetesVersion.V1_30,
   defaultCapacity: 3,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
 });
 
 const jobExecutionRole = new iam.Role(stack, 'JobExecutionRole', {

@@ -41,10 +41,10 @@ module.exports = async ({ github }) => {
   console.log(`Total PRs fetched: ${allPRs.length}`);
 
   // Get project fields
-  const projectFields = await fetchProjectFields({ 
-    github, 
+  const projectFields = await fetchProjectFields({
+    github,
     org: PROJECT_CONFIG.org,
-    number: PROJECT_CONFIG.projectNumber 
+    number: PROJECT_CONFIG.projectNumber
   });
 
   const priorityField = projectFields.organization.projectV2.fields.nodes.find(
@@ -65,27 +65,27 @@ module.exports = async ({ github }) => {
 
  for (const pr of allPRs) {
    try {
-     
+     console.log(`Processing PR #${pr.number}....`);
+
       // Check PR status
-      const isApproved = pr.reviews.nodes.some(
+      const approvals = pr.reviews.nodes.filter(
         (review) => review.state === "APPROVED"
       );
 
-     // Skip if PR is not approved
-      if (!isApproved) {
+      if (approvals.length < 2) {
+        console.log(`Observed approval count: ${approvals.length}. Skipping as it is less than 2...`);
         continue;
       }
-     
+
       // Check status of checks
       const checksState = pr.commits.nodes[0]?.commit.statusCheckRollup?.state;
       const checksNotPassing = checksState !== "SUCCESS";
 
      // Skip if PR checks is not passing
       if (!checksNotPassing) {
+        console.log(`PR checks are failing. Skipping...`);
         continue;
       }
-     
-      console.log(`Processing PR #${pr.number} for ${PRIORITIES.R2} priority consideration`);
 
        // Get all projects the PR added to
       const result = await fetchProjectItem({
@@ -94,19 +94,19 @@ module.exports = async ({ github }) => {
       });
 
       // Filter our specific project
-      const projectItem = result.node.projectItems.nodes
-        .find(item => item.project.id === PROJECT_CONFIG.projectId);
-     
+     const projectItem = result?.node?.projectItems?.nodes
+       ?.find(item => item.project.id === PROJECT_CONFIG.projectId);
+
       if (projectItem) {
         // PR already in project
         const currentPriority = projectItem.fieldValues.nodes
           .find(fv => fv.field?.name === 'Priority')?.name;
-  
+
         if (currentPriority === PRIORITIES.R2) {
           console.log(`PR #${pr.number} already has ${PRIORITIES.R2} priority. Skipping.`);
           continue;
         }
-  
+
         // Update priority only, maintain existing status
         console.log(`Updating PR #${pr.number} from ${currentPriority} to ${PRIORITIES.R2} priority`);
         await updateProjectField({
