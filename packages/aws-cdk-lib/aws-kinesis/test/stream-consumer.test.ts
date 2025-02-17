@@ -237,10 +237,7 @@ describe('Kinesis stream consumer', () => {
                 'kinesis:GetRecords',
                 'kinesis:GetShardIterator',
                 'kinesis:ListShards',
-                'kinesis:SubscribeToShard',
                 'kinesis:DescribeStream',
-                'kinesis:ListStreams',
-                'kinesis:DescribeStreamConsumer',
               ],
               Effect: 'Allow',
               Principal: {

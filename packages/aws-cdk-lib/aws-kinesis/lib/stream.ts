@@ -19,6 +19,12 @@ const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
 ];
 
+const UNSUPPORTED_RESOURCE_POLICY_READ_OPERATIONS = new Set<string>([
+  'kinesis:DescribeStreamConsumer',
+  'kinesis:ListStreams',
+  'kinesis:SubscribeToShard',
+]);
+
 const WRITE_OPERATIONS = [
   'kinesis:ListShards',
   'kinesis:PutRecord',
@@ -427,7 +433,23 @@ abstract class StreamBase extends Resource implements IStream {
       grantee,
       actions,
       resourceArns: [this.streamArn],
-      resource: this,
+      resource: {
+        addToResourcePolicy: (statement) => {
+          // filter out actions not supported by stream resource policy (defined in {@link READ_OPERATIONS} and {@link WRITE_OPERATIONS})
+          const filteredActions = statement.actions.filter(action => !UNSUPPORTED_RESOURCE_POLICY_READ_OPERATIONS.has(action));
+          if (filteredActions.length > 0) {
+            const filteredActionsStatement = statement.copy({
+              actions: filteredActions,
+            });
+            return this.addToResourcePolicy(filteredActionsStatement);
+          }
+          return { statementAdded: false };
+        },
+        node: this.node,
+        stack: this.stack,
+        env: this.env,
+        applyRemovalPolicy: this.applyRemovalPolicy,
+      },
     });
   }
 
