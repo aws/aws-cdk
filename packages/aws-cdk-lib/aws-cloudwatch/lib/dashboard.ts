@@ -3,7 +3,7 @@ import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
 import { IVariable } from './variable';
 import { IWidget } from './widget';
-import { Lazy, Resource, Stack, Token, Annotations, Duration } from '../../core';
+import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -127,19 +127,19 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new Error([
+        throw new ValidationError([
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
-        ].join(' '));
+        ].join(' '), this);
       }
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new Error('both properties defaultInterval and start cannot be set at once');
+      throw new ValidationError('both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new ValidationError('If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
