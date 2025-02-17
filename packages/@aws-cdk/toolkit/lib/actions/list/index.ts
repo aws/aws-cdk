@@ -4,5 +4,5 @@ export interface ListOptions {
   /**
    * Select the stacks
    */
-  readonly stacks: StackSelector;
+  readonly stacks?: StackSelector;
 }

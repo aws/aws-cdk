@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, printAvailableTemplates } from '../lib/init';
+import { availableInitLanguages, availableInitTemplates, cliInit, currentlyRecommendedAwsCdkLibFlags, expandPlaceholders, printAvailableTemplates } from '../lib/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {
@@ -289,6 +289,21 @@ test('check available init languages', async () => {
 
 test('exercise printing available templates', async () => {
   await printAvailableTemplates();
+});
+
+describe('expandPlaceholders', () => {
+  test('distinguish library and CLI version', () => {
+    const translated = expandPlaceholders('%cdk-version% and %cdk-cli-version%', 'javascript', {
+      name: 'test',
+      versions: {
+        'aws-cdk': '1',
+        'aws-cdk-lib': '2',
+        'constructs': '3',
+      },
+    });
+
+    expect(translated).toEqual('2 and 1');
+  });
 });
 
 function cliTest(name: string, handler: (dir: string) => void | Promise<any>): void {

@@ -1,173 +1,23 @@
-import { testFixture, testFixtureCluster } from './util';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { App, Stack } from '../../core';
 import * as eks from '../lib';
+import { Cluster, KubernetesVersion } from '../lib';
 
 /* eslint-disable max-len */
 
 describe('service account', () => {
   describe('add Service Account', () => {
-    test('defaults should have default namespace and lowercase unique id', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      // WHEN
-      new eks.ServiceAccount(stack, 'MyServiceAccount', { cluster });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
-          ],
-        },
-        Manifest: {
-          'Fn::Join': [
-            '',
-            [
-              '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
-              {
-                'Fn::GetAtt': [
-                  'MyServiceAccountRoleB41709FF',
-                  'Arn',
-                ],
-              },
-              '\"}}}]',
-            ],
-          ],
-        },
-      });
-      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
-        AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Action: 'sts:AssumeRoleWithWebIdentity',
-              Effect: 'Allow',
-              Principal: {
-                Federated: {
-                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
-                },
-              },
-              Condition: {
-                StringEquals: {
-                  'Fn::GetAtt': [
-                    'MyServiceAccountConditionJson1ED3BC54',
-                    'Value',
-                  ],
-                },
-              },
-            },
-          ],
-          Version: '2012-10-17',
-        },
-      });
-    });
-
-    test('it is possible to add annotations and labels', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      // WHEN
-      new eks.ServiceAccount(stack, 'MyServiceAccount', {
-        cluster,
-        annotations: {
-          'eks.amazonaws.com/sts-regional-endpoints': 'false',
-        },
-        labels: {
-          'some-label': 'with-some-value',
-        },
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
-          ],
-        },
-        Manifest: {
-          'Fn::Join': [
-            '',
-            [
-              '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackmyserviceaccount58b9529e\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackmyserviceaccount58b9529e\",\"some-label\":\"with-some-value\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
-              {
-                'Fn::GetAtt': [
-                  'MyServiceAccountRoleB41709FF',
-                  'Arn',
-                ],
-              },
-              '\",\"eks.amazonaws.com/sts-regional-endpoints\":\"false\"}}}]',
-            ],
-          ],
-        },
-      });
-      Template.fromStack(stack).hasResourceProperties(iam.CfnRole.CFN_RESOURCE_TYPE_NAME, {
-        AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Action: 'sts:AssumeRoleWithWebIdentity',
-              Effect: 'Allow',
-              Principal: {
-                Federated: {
-                  Ref: 'ClusterOpenIdConnectProviderE7EB0530',
-                },
-              },
-              Condition: {
-                StringEquals: {
-                  'Fn::GetAtt': [
-                    'MyServiceAccountConditionJson1ED3BC54',
-                    'Value',
-                  ],
-                },
-              },
-            },
-          ],
-          Version: '2012-10-17',
-        },
-      });
-    });
-
-    test('should have allow multiple services accounts', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      // WHEN
-      cluster.addServiceAccount('MyServiceAccount');
-      cluster.addServiceAccount('MyOtherServiceAccount');
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.StackawscdkawseksKubectlProviderframeworkonEvent8897FD9BArn',
-          ],
-        },
-        Manifest: {
-          'Fn::Join': [
-            '',
-            [
-              '[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"stackclustermyotherserviceaccounta472761a\",\"namespace\":\"default\",\"labels\":{\"app.kubernetes.io/name\":\"stackclustermyotherserviceaccounta472761a\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"',
-              {
-                'Fn::GetAtt': [
-                  'ClusterMyOtherServiceAccountRole764583C5',
-                  'Arn',
-                ],
-              },
-              '\"}}}]',
-            ],
-          ],
-        },
-      });
-    });
-
     test('should have unique resource name', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
       cluster.addServiceAccount('MyServiceAccount');
 
       // THEN
@@ -241,10 +91,14 @@ describe('service account', () => {
 
   describe('Service Account name must follow Kubernetes spec', () => {
     test('throw error on capital letters', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'XXX',
       }))
@@ -253,10 +107,14 @@ describe('service account', () => {
     });
 
     test('throw error if ends with dot', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'test.',
       }))
@@ -266,7 +124,12 @@ describe('service account', () => {
 
     test('dot in the name is allowed', () => {
       // GIVEN
-      const { cluster } = testFixtureCluster();
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
       const valueWithDot = 'test.name';
 
       // WHEN
@@ -279,10 +142,14 @@ describe('service account', () => {
     });
 
     test('throw error if name is too long', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         name: 'x'.repeat(255),
       }))
@@ -293,22 +160,31 @@ describe('service account', () => {
 
   describe('Service Account namespace must follow Kubernetes spec', () => {
     test('throw error on capital letters', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'XXX',
       }))
+
       // THEN
         .toThrow(RangeError);
     });
 
     test('throw error if ends with dot', () => {
-      // GIVEN
-      const { cluster } = testFixtureCluster();
-
       // WHEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
         namespace: 'test.',
       }))
@@ -318,8 +194,13 @@ describe('service account', () => {
 
     test('throw error if dot is in the name', () => {
       // GIVEN
-      const { cluster } = testFixtureCluster();
       const valueWithDot = 'test.name';
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
@@ -331,7 +212,12 @@ describe('service account', () => {
 
     test('throw error if name is too long', () => {
       // GIVEN
-      const { cluster } = testFixtureCluster();
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       expect(() => cluster.addServiceAccount('InvalidServiceAccount', {
@@ -345,7 +231,12 @@ describe('service account', () => {
   describe('Service Account with eks.IdentityType.POD_IDENTITY', () => {
     test('default', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster();
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       new eks.ServiceAccount(stack, 'MyServiceAccount', {
@@ -381,10 +272,15 @@ describe('service account', () => {
     });
     test('throw error when adding service account to Fargate cluster', () => {
       // GIVEN
-      const { cluster } = testFixtureCluster(undefined, undefined, { isFargate: true });
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const fargateCluster = new eks.FargateCluster(stack, 'FargateCluster', {
+        version: eks.KubernetesVersion.V1_25,
+        kubectlLayer: new KubectlV31Layer(stack, 'FargateKubectlLayer'),
+      });
 
       // WHEN
-      expect(() => cluster.addServiceAccount('MyServiceAccount', {
+      expect(() => fargateCluster.addServiceAccount('MyServiceAccount', {
         identityType: eks.IdentityType.POD_IDENTITY,
       })).toThrow(
         'Pod Identity is not supported in Fargate. Use IRSA identity type instead.',
@@ -394,7 +290,12 @@ describe('service account', () => {
   describe('Service Account with eks.IdentityType.IRSA', () => {
     test('default', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster();
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       new eks.ServiceAccount(stack, 'MyServiceAccount', {

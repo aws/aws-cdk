@@ -76,6 +76,8 @@ To set up the prioritization automation, we need to get the field IDs of the pro
 `R3` -> Non-draft PRs that needs maintainer review (`pr/needs-maintainer-review`)
 `R4` -> PRs that needs clarification or exemption (`pr/reviewer-clarification-requested, pr-linter/exemption-requested`), draft state allowed
 `R5` -> Non-draft PRs that are in needs-community-review more than 21 days (`pr/needs-community-review`)
+`R6` -> P1 Bugs
+`R7` -> Issues that needs SDE Input
 
 ### Work Status Labels
 `Ready` -> Means the PR is ready to be picked up for review
@@ -99,6 +101,8 @@ These `Needs Attention` states apply to items in the following status labels:
 
 ### Prioritized Backlog Workflow
 1. PRs are automatically categorized by priority (`R1-R5`)
+2. P1 Bugs are automatically categorized `R6` priority
+3. Issues that needs SDE input are added manually to `R7` priority
 2. Team members can select PRs from the Ready state
 3. Status updates flow through: `Assigned` → `In Progress` → `Done/Paused`
 4. Time-based monitoring labels are automatically applied in `Needs Attention` based on duration in each state
@@ -110,6 +114,6 @@ These `Needs Attention` states apply to items in the following status labels:
 4. Monitor time-based alerts for your assignments
 
 ## Automation
-- Priority labels are automatically assigned based on PR labels
+- Priority labels are automatically assigned based on PR/Issue labels
 - Time-based monitoring states are automatically updated daily
 - Status changes trigger automatic label updates

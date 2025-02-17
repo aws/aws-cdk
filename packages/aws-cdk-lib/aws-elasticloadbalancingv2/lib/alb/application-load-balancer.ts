@@ -7,7 +7,7 @@ import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
 import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
+import { CfnResource, Duration, Lazy, Names, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
@@ -187,6 +187,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    const minimumCapacityUnit = props.minimumCapacityUnit;
+    if (
+      minimumCapacityUnit &&
+      !Token.isUnresolved(minimumCapacityUnit) &&
+      (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100 || minimumCapacityUnit > 1500)
+    ) {
+      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer between 100 and 1500 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
+    }
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 

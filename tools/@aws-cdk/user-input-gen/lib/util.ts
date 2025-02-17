@@ -1,5 +1,7 @@
 import { code, Expression } from '@cdklabs/typewriter';
 
+export const SOURCE_OF_TRUTH = 'packages/aws-cdk/lib/cli/cli-config.ts';
+
 export function lit(value: any): Expression {
   switch (value) {
     case undefined:

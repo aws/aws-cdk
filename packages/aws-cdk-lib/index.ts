@@ -283,7 +283,6 @@ export * as cloudformation_include from './cloudformation-include';
 export * as custom_resources from './custom-resources';
 export * as cx_api from './cx-api';
 export * as lambda_layer_awscli from './lambda-layer-awscli';
-export * as lambda_layer_kubectl from './lambda-layer-kubectl';
 export * as lambda_layer_node_proxy_agent from './lambda-layer-node-proxy-agent';
 export * as pipelines from './pipelines';
 export * as region_info from './region-info';

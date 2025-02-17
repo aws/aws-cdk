@@ -346,7 +346,7 @@ export class Application extends ApplicationBase {
     const parsedArn = cdk.Stack.of(scope).splitArn(applicationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
     const applicationId = parsedArn.resourceName;
     if (!applicationId) {
-      throw new Error('Missing required application id from application ARN');
+      throw new cdk.ValidationError('Missing required application id from application ARN', scope);
     }
 
     class Import extends ApplicationBase {

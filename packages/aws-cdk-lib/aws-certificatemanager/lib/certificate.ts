@@ -4,7 +4,7 @@ import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as route53 from '../../aws-route53';
-import { IResource, Token, Tags } from '../../core';
+import { IResource, Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -287,7 +287,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new Error('Domain name must be 64 characters or less');
+      throw new ValidationError('Domain name must be 64 characters or less', this);
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
@@ -300,7 +300,7 @@ export class Certificate extends CertificateBase implements ICertificate {
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      domainValidationOptions: renderDomainValidation(validation, allDomainNames),
+      domainValidationOptions: renderDomainValidation(this, validation, allDomainNames),
       validationMethod: validation.method,
       certificateTransparencyLoggingPreference,
       keyAlgorithm: props.keyAlgorithm?.name,
@@ -332,7 +332,7 @@ export enum ValidationMethod {
 }
 
 // eslint-disable-next-line max-len
-function renderDomainValidation(validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
+function renderDomainValidation(scope: Construct, validation: CertificateValidation, domainNames: string[]): CfnCertificate.DomainValidationOptionProperty[] | undefined {
   const domainValidation: CfnCertificate.DomainValidationOptionProperty[] = [];
 
   switch (validation.method) {
@@ -348,13 +348,13 @@ function renderDomainValidation(validation: CertificateValidation, domainNames: 
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new Error('When using Tokens for domain names, \'validationDomains\' needs to be supplied');
+          throw new ValidationError('When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
         }
         domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
       }
       break;
     default:
-      throw new Error(`Unknown validation method ${validation.method}`);
+      throw new ValidationError(`Unknown validation method ${validation.method}`, scope);
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;

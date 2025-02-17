@@ -41,7 +41,10 @@
     "markdown-it": "^12.3.2",
     "string-width": "^4.2.3",
     "@types/babel__traverse": "7.18.2",
-    "@smithy/types": "3.5.0"
+    "@smithy/types": "3.5.0",
+    "@aws-cdk/aws-service-spec": "0.1.51",
+    "@aws-cdk/service-spec-importers": "0.0.64",
+    "@aws-cdk/service-spec-types": "0.0.117"
   },
   "repository": {
     "type": "git",
@@ -93,6 +96,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "**/@types/glob",
+      "**/@types/minimatch",
       "@aws-cdk/assertions-alpha/fs-extra",
       "@aws-cdk/assertions-alpha/fs-extra/**",
       "@aws-cdk/assertions/fs-extra",
@@ -177,5 +182,6 @@
   },
   "dependencies": {
     "string-width": "^4.2.3"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

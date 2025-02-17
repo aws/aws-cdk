@@ -280,7 +280,7 @@ export interface SecurityGroupProps {
    * Inlining rules is an optimization for producing smaller stack templates. Sometimes
    * this is not desirable, for example when security group access is managed via tags.
    *
-   * The default value can be overriden globally by setting the context variable
+   * The default value can be overridden globally by setting the context variable
    * '@aws-cdk/aws-ec2.securityGroupDisableInlineRules'.
    *
    * @default false

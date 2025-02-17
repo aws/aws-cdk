@@ -16,6 +16,7 @@ export enum Exemption {
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
   CODECOV = "pr-linter/exempt-codecov",
+  SIZE_CHECK = "pr-linter/exempt-size-check",
 }
 
 const CODECOV_PREFIX = 'codecov/';

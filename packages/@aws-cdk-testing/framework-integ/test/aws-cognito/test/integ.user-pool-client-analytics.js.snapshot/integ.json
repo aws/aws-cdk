@@ -1,0 +1,16 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-user-pool-client-test/DefaultTest": {
+      "stacks": [
+        "IntegUserPoolClientAnalytics",
+        "IntegUserPoolClientAnalytics2"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "integ-user-pool-client-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclienttestDefaultTestDeployAssertB83B7A3F"
+    }
+  }
+}

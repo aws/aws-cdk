@@ -1,9 +1,8 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { UserPool, UserPoolClient, UserPoolIdentityProvider } from 'aws-cdk-lib/aws-cognito';
-import { Role, ServicePrincipal, ArnPrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Role, ServicePrincipal, AnyPrincipal, OpenIdConnectProvider, SamlProvider, SamlMetadataDocument, PolicyStatement, Effect, PolicyDocument, ArnPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Fn, Lazy, Stack } from 'aws-cdk-lib';
-import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
-import { RoleMappingMatchType } from '../lib/identitypool-role-attachment';
+import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
 describe('identity pool', () => {
@@ -547,7 +546,7 @@ describe('role mappings', () => {
     const customRole = new Role(stack, 'customRole', {
       assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/CustomUser'),
     });
-    const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
+    new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       roleMappings: [{
         mappingKey: 'cognito',
         providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
@@ -569,30 +568,29 @@ describe('role mappings', () => {
             mappedRole: nonAdminRole,
           },
         ],
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.FACEBOOK,
+        rules: [
+          {
+            claim: 'iss',
+            claimValue: 'https://graph.facebook.com',
+            mappedRole: facebookRole,
+          },
+        ],
+      },
+      {
+        providerUrl: IdentityPoolProviderUrl.custom('example.com'),
+        rules: [
+          {
+            claim: 'iss',
+            claimValue: 'https://example.com',
+            mappedRole: customRole,
+          },
+        ],
       }],
     });
-    idPool.addRoleMappings({
-      providerUrl: IdentityPoolProviderUrl.FACEBOOK,
-      rules: [
-        {
-          claim: 'iss',
-          claimValue: 'https://graph.facebook.com',
-          mappedRole: facebookRole,
-        },
-      ],
-    },
-    {
-      providerUrl: IdentityPoolProviderUrl.custom('example.com'),
-      rules: [
-        {
-          claim: 'iss',
-          claimValue: 'https://example.com',
-          mappedRole: customRole,
-        },
-      ],
-    });
     const temp = Template.fromStack(stack);
-    temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
         Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
@@ -639,27 +637,6 @@ describe('role mappings', () => {
           },
           Type: 'Rules',
         },
-      },
-      Roles: {
-        authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7',
-            'Arn',
-          ],
-        },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99',
-            'Arn',
-          ],
-        },
-      },
-    });
-    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
-      IdentityPoolId: {
-        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
-      },
-      RoleMappings: {
         'graph.facebook.com': {
           AmbiguousRoleResolution: 'Deny',
           IdentityProvider: 'graph.facebook.com',

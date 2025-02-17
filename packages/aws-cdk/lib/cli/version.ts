@@ -15,7 +15,9 @@ const UPGRADE_DOCUMENTATION_LINKS: Record<number, string> = {
   1: 'https://docs.aws.amazon.com/cdk/v2/guide/migrating-v2.html',
 };
 
-export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
+export function displayVersion() {
+  return `${versionNumber()} (build ${commit()})`;
+}
 
 export function isDeveloperBuild(): boolean {
   return versionNumber() === '0.0.0';

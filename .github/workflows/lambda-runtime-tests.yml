@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -44,6 +44,7 @@ jobs:
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git checkout -B ${{ github.event.pull_request.head.ref }}
           git add .
           git commit -m "chore: update lambda runtime integration tests"
           git push origin ${{ github.event.pull_request.head.ref }}

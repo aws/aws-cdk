@@ -175,7 +175,7 @@
     "@smithy/util-waiter": "^3.2.0",
     "archiver": "^5.3.2",
     "camelcase": "^6.3.0",
-    "cdk-assets": "^3.0.0-rc.127",
+    "cdk-assets": "3.0.0-rc.143",
     "cdk-from-cfn": "^0.162.0",
     "chalk": "^4",
     "chokidar": "^3.6.0",

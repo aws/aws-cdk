@@ -1419,7 +1419,7 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
 /**
  * The default values of each of these flags in the current major version.
  *
- * This is the effective value of the flag, unless it's overriden via
+ * This is the effective value of the flag, unless it's overridden via
  * context.
  *
  * Adding new flags here is only allowed during the pre-release period of a new
@@ -1432,6 +1432,8 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

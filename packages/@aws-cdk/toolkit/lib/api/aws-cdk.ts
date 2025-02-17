@@ -7,6 +7,7 @@ export { Deployments, type SuccessfulDeployStackResult } from '../../../../aws-c
 export { Settings } from '../../../../aws-cdk/lib/api/settings';
 export { tagsForStack } from '../../../../aws-cdk/lib/api/tags';
 export { DEFAULT_TOOLKIT_STACK_NAME } from '../../../../aws-cdk/lib/api/toolkit-info';
+export { ResourceMigrator } from '../../../../aws-cdk/lib/api/resource-import';
 
 // Context Providers
 export * as contextproviders from '../../../../aws-cdk/lib/context-providers';
@@ -19,7 +20,6 @@ export { formatTime } from '../../../../aws-cdk/lib/api/util/string-manipulation
 
 // @todo Not yet API probably should be
 export { formatErrorMessage } from '../../../../aws-cdk/lib/util/error';
-export { ResourceMigrator } from '../../../../aws-cdk/lib/migrator';
 export { obscureTemplate, serializeStructure } from '../../../../aws-cdk/lib/serialize';
 export { loadTree, some } from '../../../../aws-cdk/lib/tree';
 export { splitBySize } from '../../../../aws-cdk/lib/util';
@@ -33,7 +33,7 @@ export { findCloudWatchLogGroups } from '../../../../aws-cdk/lib/api/logs/find-c
 export { HotswapPropertyOverrides, EcsHotswapProperties } from '../../../../aws-cdk/lib/api/hotswap/common';
 
 // @todo Cloud Assembly and Executable - this is a messy API right now
-export { CloudAssembly, sanitizePatterns, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
+export { CloudAssembly, sanitizePatterns, type StackDetails, StackCollection, ExtendedStackSelection } from '../../../../aws-cdk/lib/api/cxapp/cloud-assembly';
 export { prepareDefaultEnvironment, prepareContext, spaceAvailableForContext } from '../../../../aws-cdk/lib/api/cxapp/exec';
 export { guessExecutable } from '../../../../aws-cdk/lib/api/cxapp/exec';
 
