@@ -16,7 +16,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as aws_wafv2 from '../../aws-wafv2';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
 
@@ -347,7 +347,7 @@ export class Distribution extends Resource implements IDistribution {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+        throw new ValidationError(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
 
       if ((props.domainNames ?? []).length === 0) {
@@ -506,7 +506,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('OriginLatency', props);
   }
@@ -523,7 +523,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('CacheHitRate', props);
   }
@@ -538,7 +538,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('401ErrorRate', props);
   }
@@ -553,7 +553,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('403ErrorRate', props);
   }
@@ -568,7 +568,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('404ErrorRate', props);
   }
@@ -583,7 +583,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('502ErrorRate', props);
   }
@@ -598,7 +598,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('503ErrorRate', props);
   }
@@ -613,7 +613,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+      throw new ValidationError('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('504ErrorRate', props);
   }
@@ -628,7 +628,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
-      throw new Error('Only the default behavior can have a path pattern of \'*\'');
+      throw new ValidationError('Only the default behavior can have a path pattern of \'*\'', this);
     }
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
@@ -696,7 +696,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public attachWebAclId(webAclId: string) {
     if (this.webAclId) {
-      throw new Error('A WebACL has already been attached to this distribution');
+      throw new ValidationError('A WebACL has already been attached to this distribution', this);
     }
     this.validateWebAclId(webAclId);
     this.webAclId = webAclId;
@@ -706,7 +706,7 @@ export class Distribution extends Resource implements IDistribution {
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
-        throw new Error(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`);
+        throw new ValidationError(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`, this);
       }
     }
   }
@@ -726,13 +726,13 @@ export class Distribution extends Resource implements IDistribution {
       const originId = originBindConfig.originProperty?.id ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {
-        throw new Error(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`);
+        throw new ValidationError(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`, this);
       }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
-          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+          throw new ValidationError('An Origin cannot use an Origin with its own failover configuration as its fallback origin!', this);
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
@@ -761,7 +761,7 @@ export class Distribution extends Resource implements IDistribution {
   ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
-      throw new Error('fallbackStatusCodes cannot be empty');
+      throw new ValidationError('fallbackStatusCodes cannot be empty', this);
     }
     this.originGroups.push({
       failoverCriteria: {
@@ -811,7 +811,7 @@ export class Distribution extends Resource implements IDistribution {
 
     return this.errorResponses.map(errorConfig => {
       if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
-        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+        throw new ValidationError('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.', this);
       }
 
       return {
@@ -828,7 +828,7 @@ export class Distribution extends Resource implements IDistribution {
   private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
     if (!props.enableLogging && !props.logBucket) { return undefined; }
     if (props.enableLogging === false && props.logBucket) {
-      throw new Error('Explicitly disabled logging but provided a logging bucket.');
+      throw new ValidationError('Explicitly disabled logging but provided a logging bucket.', this);
     }
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {

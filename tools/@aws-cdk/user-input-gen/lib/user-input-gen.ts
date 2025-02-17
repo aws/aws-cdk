@@ -1,14 +1,14 @@
 import { Module, SelectiveModuleImport, StructType, Type, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { EsLintRules } from '@cdklabs/typewriter/lib/eslint-rules';
 import * as prettier from 'prettier';
-import { kebabToCamelCase, kebabToPascal } from './util';
+import { kebabToCamelCase, kebabToPascal, SOURCE_OF_TRUTH } from './util';
 import { CliConfig } from './yargs-types';
 
 export async function renderUserInputType(config: CliConfig): Promise<string> {
   const scope = new Module('aws-cdk');
 
   scope.documentation.push( '-------------------------------------------------------------------------------------------');
-  scope.documentation.push('GENERATED FROM packages/aws-cdk/lib/config.ts.');
+  scope.documentation.push(`GENERATED FROM ${SOURCE_OF_TRUTH}.`);
   scope.documentation.push('Do not edit by hand; all changes will be overwritten at build time from the config file.');
   scope.documentation.push('-------------------------------------------------------------------------------------------');
 

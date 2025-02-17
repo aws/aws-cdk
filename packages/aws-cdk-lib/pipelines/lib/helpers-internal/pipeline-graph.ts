@@ -1,5 +1,6 @@
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
+import { ValidationError } from '../../../core';
 import { AssetType, FileSet, StackAsset, StackDeployment, StageDeployment, Step, Wave } from '../blueprint';
 import { PipelineBase } from '../main/pipeline-base';
 
@@ -82,7 +83,7 @@ export class PipelineGraph {
 
     const cloudAssembly = pipeline.synth.primaryOutput?.primaryOutput;
     if (!cloudAssembly) {
-      throw new Error(`The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`);
+      throw new ValidationError(`The synth step must produce the cloud assembly artifact, but doesn't: ${pipeline.synth}`, this.pipeline);
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;
@@ -166,7 +167,7 @@ export class PipelineGraph {
         if (prepareNode) {
           this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
         } else {
-          throw new Error(`Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`);
+          throw new ValidationError(`Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`, this.pipeline);
         }
       }
 
@@ -185,7 +186,7 @@ export class PipelineGraph {
       // add the template asset
       if (this.publishTemplate) {
         if (!stack.templateAsset) {
-          throw new Error(`"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`);
+          throw new ValidationError(`"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`, this.pipeline);
         }
 
         firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
@@ -210,10 +211,10 @@ export class PipelineGraph {
         const stackNode = stackGraphs.get(stack);
         const depNode = stackGraphs.get(dep);
         if (!stackNode) {
-          throw new Error(`cannot find node for ${stack.stackName}`);
+          throw new ValidationError(`cannot find node for ${stack.stackName}`, this.pipeline);
         }
         if (!depNode) {
-          throw new Error(`cannot find node for ${dep.stackName}`);
+          throw new ValidationError(`cannot find node for ${dep.stackName}`, this.pipeline);
         }
         stackNode.dependOn(depNode);
       }
@@ -315,17 +316,17 @@ export class PipelineGraph {
         const leftMostConsumer = new GraphNodeCollection(builder.consumers).first();
         const parent = leftMostConsumer.parentGraph;
         if (!parent) {
-          throw new Error(`Consumer doesn't have a parent graph: ${leftMostConsumer}`);
+          throw new ValidationError(`Consumer doesn't have a parent graph: ${leftMostConsumer}`, this.pipeline);
         }
         this.addStepNode(step, parent);
       }
     }
 
     const unsatisfied = this.nodeDependencies.unsatisfiedBuilders();
-    throw new Error([
+    throw new ValidationError([
       'Recursion depth too large while adding dependency nodes:',
       unsatisfied.map(([step, builder]) => `${builder.consumersAsString()} awaiting ${step}.`),
-    ].join(' '));
+    ].join(' '), this.pipeline);
   }
 
   private publishAsset(stackAsset: StackAsset): AGraphNode {
@@ -354,7 +355,7 @@ export class PipelineGraph {
 
     const data = assetNode.data;
     if (data?.type !== 'publish-assets') {
-      throw new Error(`${assetNode} has the wrong data.type: ${data?.type}`);
+      throw new ValidationError(`${assetNode} has the wrong data.type: ${data?.type}`, this.pipeline);
     }
 
     if (!data.assets.some(a => a.assetSelector === stackAsset.assetSelector)) {

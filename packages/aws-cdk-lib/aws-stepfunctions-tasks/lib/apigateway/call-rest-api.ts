@@ -19,6 +19,13 @@ export interface CallApiGatewayRestApiEndpointOptions {
    * Name of the stage where the API is deployed to in API Gateway
    */
   readonly stageName: string;
+
+  /**
+   * Specify a custom Region where the API is deployed, e.g. 'us-east-1'.
+   *
+   * @default - Uses the Region of the stack containing the `api`.
+   */
+  readonly region?: string;
 }
 
 /**
@@ -128,15 +135,15 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
   constructor(scope: Construct, id: string, private readonly props: CallApiGatewayRestApiEndpointProps) {
     super(scope, id, props);
 
-    this.apiEndpoint = this.getApiEndpoint();
+    this.apiEndpoint = this.getApiEndpoint(props.region);
     this.arnForExecuteApi = props.api.arnForExecuteApi(props.method, props.apiPath, props.stageName);
     this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();
   }
 
-  private getApiEndpoint(): string {
+  private getApiEndpoint(region?: string): string {
     const apiStack = cdk.Stack.of(this.props.api);
-    return `${this.props.api.restApiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
+    return `${this.props.api.restApiId}.execute-api.${region ?? apiStack.region}.${apiStack.urlSuffix}`;
   }
 }
