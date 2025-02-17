@@ -667,7 +667,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 ### Restrict traffic coming to the VPC origin
 
-You may needed to update the security group for your VPC private origin (Application Load Balancer, Network Load Balancer, or EC2 instance) to explicitly allow the traffic from your VPC origins.
+You may need to update the security group for your VPC private origin (Application Load Balancer, Network Load Balancer, or EC2 instance) to explicitly allow the traffic from your VPC origins.
 
 #### The CloudFront managed prefix list
 
