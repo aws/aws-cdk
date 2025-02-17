@@ -1,7 +1,21 @@
 {
   "version": "39.0.0",
   "files": {
-    "fabe4aa1da170a79b8e66dba2e97436559c6adec6692bd5b17452d108fb6ca05": {
+    "e7f43ee3831feaa8c622c2bca7576a224a644e24b0ac4c601b7bbc1a81a1a959": {
+      "source": {
+        "path": "asset.e7f43ee3831feaa8c622c2bca7576a224a644e24b0ac4c601b7bbc1a81a1a959.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "e7f43ee3831feaa8c622c2bca7576a224a644e24b0ac4c601b7bbc1a81a1a959.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    },
+    "e3f76e724c593597ac1c3398b3f0ce418dc738f1d07fb9ed3d649477ba7ec69d": {
       "source": {
         "path": "cloudfront-waf-protection.template.json",
         "packaging": "file"
@@ -9,7 +23,7 @@
       "destinations": {
         "current_account-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "fabe4aa1da170a79b8e66dba2e97436559c6adec6692bd5b17452d108fb6ca05.json",
+          "objectKey": "e3f76e724c593597ac1c3398b3f0ce418dc738f1d07fb9ed3d649477ba7ec69d.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

@@ -15,7 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import * as aws_wafv2 from '../../aws-wafv2';
+import * as wafv2 from '../../aws-wafv2';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -667,7 +667,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public enableWafProtection(config: WafProtectionConfig) {
     if (this.webAclId) {
-      throw new Error('This distribution already had WAF WebAcl attached');
+      throw new ValidationError('This distribution already had WAF WebAcl attached', this);
     }
 
     if (!config.enableCoreProtection) {
@@ -676,12 +676,12 @@ export class Distribution extends Resource implements IDistribution {
 
     const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
     if (!regionIsUsEast1) {
-      throw new Error(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`);
+      throw new ValidationError(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`, this);
     }
 
     const webAclName = Names.uniqueId(this);
 
-    const webAcl = new aws_wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
+    const webAcl = new wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
 
     this.attachWebAclId(webAcl.attrArn);
   }

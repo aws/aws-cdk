@@ -101,6 +101,114 @@
      "SampledRequestsEnabled": true
     }
    }
+  },
+  "AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3": {
+   "Type": "Custom::DeployAssert@SdkCallWAFV2getWebACL",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "WAFV2",
+    "api": "getWebACL",
+    "expected": "{\"$ObjectLike\":{\"WebACL\":{\"DefaultAction\":{\"Allow\":{}},\"VisibilityConfig\":{\"CloudWatchMetricsEnabled\":true,\"MetricName\":\"cloudfrontwafprotectionDistroB056DD41\",\"SampledRequestsEnabled\":true},\"Rules\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"AWS-AWSManagedRulesAmazonIpReputationList\",\"Priority\":0,\"Statement\":{\"ManagedRuleGroupStatement\":{\"VendorName\":\"AWS\",\"Name\":\"AWSManagedRulesAmazonIpReputationList\"}},\"OverrideAction\":{\"None\":{}},\"VisibilityConfig\":{\"SampledRequestsEnabled\":true,\"CloudWatchMetricsEnabled\":true,\"MetricName\":\"AWS-AWSManagedRulesAmazonIpReputationList\"}}},{\"$ObjectLike\":{\"Name\":\"AWS-AWSManagedRulesCommonRuleSet\",\"Priority\":1,\"Statement\":{\"ManagedRuleGroupStatement\":{\"VendorName\":\"AWS\",\"Name\":\"AWSManagedRulesCommonRuleSet\"}},\"OverrideAction\":{\"None\":{}},\"VisibilityConfig\":{\"SampledRequestsEnabled\":true,\"CloudWatchMetricsEnabled\":true,\"MetricName\":\"AWS-AWSManagedRulesCommonRuleSet\"}}},{\"$ObjectLike\":{\"Name\":\"AWS-AWSManagedRulesKnownBadInputsRuleSet\",\"Priority\":2,\"Statement\":{\"ManagedRuleGroupStatement\":{\"VendorName\":\"AWS\",\"Name\":\"AWSManagedRulesKnownBadInputsRuleSet\"}},\"OverrideAction\":{\"None\":{}},\"VisibilityConfig\":{\"SampledRequestsEnabled\":true,\"CloudWatchMetricsEnabled\":true,\"MetricName\":\"AWS-AWSManagedRulesKnownBadInputsRuleSet\"}}}]}}}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "DistroWebAclD7C0F39D",
+          "Id"
+         ]
+        },
+        "\""
+       ]
+      ]
+     },
+     "Name": "\"cloudfrontwafprotectionDistroB056DD41\"",
+     "Scope": "\"CLOUDFRONT\""
+    },
+    "flattenResponse": "false",
+    "salt": "1739784733539"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "wafv2:GetWebACL"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs20.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "e7f43ee3831feaa8c622c2bca7576a224a644e24b0ac4c601b7bbc1a81a1a959.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3",
+     "assertion"
+    ]
+   }
   }
  },
  "Parameters": {

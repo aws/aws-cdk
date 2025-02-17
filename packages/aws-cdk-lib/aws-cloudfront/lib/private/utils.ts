@@ -1,5 +1,5 @@
 import { IDistribution } from '..';
-import * as aws_wafv2 from '../../../aws-wafv2';
+import * as wafv2 from '../../../aws-wafv2';
 import { Stack } from '../../../core';
 
 /**
@@ -19,7 +19,7 @@ export function formatDistributionArn(dist: IDistribution) {
  *
  * TODO: how to keep this up-to-date
  */
-export function getCoreProtectionWAFWebAclProps(webAclName: string): aws_wafv2.CfnWebACLProps {
+export function getCoreProtectionWAFWebAclProps(webAclName: string): wafv2.CfnWebACLProps {
   return {
     name: webAclName,
     defaultAction: {

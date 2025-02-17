@@ -8,8 +8,8 @@
       "regions": [
         "us-east-1"
       ],
-      "assertionStack": "integ-cloudfront-waf-protection-test/DefaultTest/DeployAssert",
-      "assertionStackName": "integcloudfrontwafprotectiontestDefaultTestDeployAssert9F601634"
+      "assertionStack": "cloudfront-waf-protection",
+      "assertionStackName": "cloudfront-waf-protection"
     }
   }
 }
