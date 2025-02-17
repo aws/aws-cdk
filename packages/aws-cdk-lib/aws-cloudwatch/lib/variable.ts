@@ -1,4 +1,4 @@
-import { UnscopedValidationError } from "../../core";
+import { UnscopedValidationError } from '../../core';
 
 export enum VariableInputType {
   /**

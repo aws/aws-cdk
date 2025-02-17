@@ -1,5 +1,5 @@
-import { UnscopedValidationError } from '../../core';
 import { IMetric } from './metric-types';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The width of the grid we're filling
