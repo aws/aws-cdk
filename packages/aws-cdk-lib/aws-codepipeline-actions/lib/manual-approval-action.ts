@@ -35,8 +35,7 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
   readonly externalEntityLink?: string;
 
   /**
-   * A timeout duration that can be applied against the ActionType’s default timeout value
-   * specified in Quotas for AWS CodePipeline.
+   * A timeout duration.
    *
    * It is configurable up to 86400 minutes (60 days) with a minimum value of 5 minutes.
    *
