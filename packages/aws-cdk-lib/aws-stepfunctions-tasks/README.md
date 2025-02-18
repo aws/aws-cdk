@@ -155,6 +155,21 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
+By default, the API endpoint URI will be constructed using the AWS region of
+the stack in which the provided `api` is created.
+
+To construct the endpoint with a different region, use the `region` parameter:
+```ts
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: tasks.HttpMethod.GET,
+  region: 'us-west-2',
+});
+```
+
 Be aware that the header values must be arrays. When passing the Task Token
 in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
 `JsonPath.array()` to wrap the token in an array:
@@ -264,6 +279,8 @@ const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
 ```
 
 Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
+
+Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
 
 ## Athena
 
@@ -1241,10 +1258,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_32,
   clusterName: 'myEksCluster',
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {

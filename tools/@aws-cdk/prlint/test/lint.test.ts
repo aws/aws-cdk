@@ -5,6 +5,8 @@ import { PullRequestLinter } from '../lint';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { createOctomock, OctoMock } from './octomock';
 
+type GitHubFileName = Omit<GitHubFile, 'deletions' | 'additions'>;
+
 let mockRemoveLabel = jest.fn();
 let mockAddLabel = jest.fn();
 
@@ -1138,7 +1140,7 @@ describe('integration tests required on features', () => {
   });
 
   describe('metadata file changed', () => {
-    const files: GitHubFile[] = [{
+    const files: GitHubFileName[] = [{
       filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
     }];
 
@@ -1170,6 +1172,100 @@ describe('integration tests required on features', () => {
       await expect(legacyValidatePullRequestTarget(prLinter)).rejects.toThrow();
     });
   });
+
+  describe('PR size check', () => {
+    const pr = {
+      title: 'chore: update regions',
+      number: 1234,
+      labels: [],
+      user: {
+        login: 'aws-cdk-automation',
+      },
+    };
+
+    test('PR too large', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk/foo.ts',
+        additions: 1001,
+        deletions: 1002,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: {
+          exemptionRequest: false,
+          failures: [
+            'The number of lines added (1001) is greater than 1000',
+            'The number of lines removed (1002) is greater than 1000',
+          ]
+        }
+      }));
+    });
+
+    test('PR size within bounds', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk/foo.ts',
+        additions: 1000,
+        deletions: 1000,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined,
+      }));
+    });
+
+    test('PR exempt from size check', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk/foo.ts',
+        additions: 2000,
+        deletions: 111,
+      }];
+
+      const exemptPr = {
+        ...pr,
+        labels: [
+          { name: 'pr-linter/exempt-size-check' },
+        ],
+      }
+
+      const prLinter = configureMock(exemptPr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined,
+      }));
+    });
+
+    test('Only CLI is subject to verification', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk-lib/foo.ts',
+        additions: 1001,
+        deletions: 1002,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined
+      }));
+    });
+
+    test('Tests are exempt', async () => {
+      const files: GitHubFile[] = [{
+        filename: 'packages/aws-cdk/test/bootstrap.test.ts',
+        additions: 1001,
+        deletions: 1002,
+      }];
+
+      const prLinter = configureMock(pr, files);
+
+      await expect(prLinter.validatePullRequestTarget()).resolves.toEqual(expect.objectContaining({
+        requestChanges: undefined
+      }));
+    });
+  });
 });
 
 describe('for any PR', () => {
@@ -1182,8 +1278,8 @@ describe('for any PR', () => {
     },
   };
 
-  const ARBITRARY_FILES: GitHubFile[] = [{
-    filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
+  const ARBITRARY_FILES: GitHubFileName[] = [{
+    filename: 'README.md',
   }];
 
   test('deletes old comments', async () => {
@@ -1212,7 +1308,8 @@ describe('for any PR', () => {
     }));
   });
 
-  test('missing CodeCov runs lead to a failure', async () => {
+  test('missing CodeCov run does not lead to request changes', async () => {
+    // Not ideal, but https://github.com/aws/aws-cdk/issues/33136
     // GIVEN
     const prLinter = configureMock(ARBITRARY_PR, ARBITRARY_FILES);
     prLinter.octomock.checks.listForRef.mockReturnValue({ data: [] });
@@ -1221,9 +1318,7 @@ describe('for any PR', () => {
     const result = await prLinter.validatePullRequestTarget();
 
     // THEN
-    expect(result.requestChanges?.failures).toContainEqual(
-      expect.stringContaining('Still waiting for CodeCov results'),
-    );
+    expect(result.requestChanges).toBeUndefined();
   });
 
   test('failing CodeCov runs lead to a failure', async () => {
@@ -1248,7 +1343,7 @@ describe('for any PR', () => {
   });
 });
 
-function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFile[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter & { octomock: OctoMock } {
+function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existingComments?: Array<{ id: number, login: string, body: string }>): PullRequestLinter & { octomock: OctoMock } {
   const octomock = createOctomock();
 
   octomock.pulls.get.mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) => ({

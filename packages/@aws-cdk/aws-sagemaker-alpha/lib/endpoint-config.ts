@@ -7,6 +7,7 @@ import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { sameEnv } from './private/util';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -206,6 +207,8 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     super(scope, id, {
       physicalName: props.endpointConfigName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     (props.instanceProductionVariants || []).map(p => this.addInstanceProductionVariant(p));
 
@@ -228,6 +231,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    *
    * @param props The properties of a production variant to add.
    */
+  @MethodMetadata()
   public addInstanceProductionVariant(props: InstanceProductionVariantProps): void {
     if (props.variantName in this.instanceProductionVariantsByName) {
       throw new Error(`There is already a Production Variant with name '${props.variantName}'`);

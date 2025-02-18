@@ -165,78 +165,78 @@ export class MariaDbEngineVersion {
   /**
    * Version "10.0" (only a major version, without a specific minor version).
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0 = MariaDbEngineVersion.of('10.0', '10.0');
   /**
    * Version "10.0.17".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_17 = MariaDbEngineVersion.of('10.0.17', '10.0');
   /**
    * Version "10.0.24".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_24 = MariaDbEngineVersion.of('10.0.24', '10.0');
   /**
    * Version "10.0.28".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_28 = MariaDbEngineVersion.of('10.0.28', '10.0');
   /**
    * Version "10.0.31".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_31 = MariaDbEngineVersion.of('10.0.31', '10.0');
   /**
    * Version "10.0.32".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_32 = MariaDbEngineVersion.of('10.0.32', '10.0');
   /**
    * Version "10.0.34".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_34 = MariaDbEngineVersion.of('10.0.34', '10.0');
   /**
    * Version "10.0.35".
    * @deprecated MariaDB 10.0 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_0_35 = MariaDbEngineVersion.of('10.0.35', '10.0');
 
   /**
    * Version "10.1" (only a major version, without a specific minor version).
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1 = MariaDbEngineVersion.of('10.1', '10.1');
   /**
    * Version "10.1.14".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_14 = MariaDbEngineVersion.of('10.1.14', '10.1');
   /**
    * Version "10.1.19".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_19 = MariaDbEngineVersion.of('10.1.19', '10.1');
   /**
    * Version "10.1.23".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_23 = MariaDbEngineVersion.of('10.1.23', '10.1');
   /**
    * Version "10.1.26".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_26 = MariaDbEngineVersion.of('10.1.26', '10.1');
   /**
    * Version "10.1.31".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_31 = MariaDbEngineVersion.of('10.1.31', '10.1');
   /**
    * Version "10.1.34".
    * @deprecated MariaDB 10.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1_34 = MariaDbEngineVersion.of('10.1.34', '10.1');
 
   /**
@@ -247,7 +247,7 @@ export class MariaDbEngineVersion {
   /**
    * Version "10.2.11".
    * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_2_11 = MariaDbEngineVersion.of('10.2.11', '10.2');
   /**
    * Version "10.2.12".
@@ -262,17 +262,17 @@ export class MariaDbEngineVersion {
   /**
    * Version "10.2.21".
    * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_2_21 = MariaDbEngineVersion.of('10.2.21', '10.2');
   /**
    * Version "10.2.32".
    * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
   /**
    * Version "10.2.37".
    * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
   /**
    * Version "10.2.39".
@@ -636,17 +636,17 @@ export class MysqlEngineVersion {
   /**
    * Version "5.5" (only a major version, without a specific minor version).
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5 = MysqlEngineVersion.of('5.5', '5.5');
   /**
    * Version "5.5.46".
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5_46 = MysqlEngineVersion.of('5.5.46', '5.5');
   /**
    * Version "5.5.53".
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5_53 = MysqlEngineVersion.of('5.5.53', '5.5');
   /**
    * Version "5.5.54"
@@ -656,83 +656,83 @@ export class MysqlEngineVersion {
   /**
    * Version "5.5.57".
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5_57 = MysqlEngineVersion.of('5.5.57', '5.5');
   /**
    * Version "5.5.59".
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5_59 = MysqlEngineVersion.of('5.5.59', '5.5');
   /**
    * Version "5.5.61".
    * @deprecated MySQL 5.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_5_61 = MysqlEngineVersion.of('5.5.61', '5.5');
 
   /**
    * Version "5.6" (only a major version, without a specific minor version).
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6 = MysqlEngineVersion.of('5.6', '5.6');
   /**
    * Version "5.6.34".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_34 = MysqlEngineVersion.of('5.6.34', '5.6');
   /**
    * Version "5.6.35".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_35 = MysqlEngineVersion.of('5.6.35', '5.6');
   /**
    * Version "5.6.37".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_37 = MysqlEngineVersion.of('5.6.37', '5.6');
   /**
    * Version "5.6.39".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_39 = MysqlEngineVersion.of('5.6.39', '5.6');
   /**
    * Version "5.6.40".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_40 = MysqlEngineVersion.of('5.6.40', '5.6');
   /**
    * Version "5.6.41".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_41 = MysqlEngineVersion.of('5.6.41', '5.6');
   /**
    * Version "5.6.43".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_43 = MysqlEngineVersion.of('5.6.43', '5.6');
   /**
    * Version "5.6.44".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_44 = MysqlEngineVersion.of('5.6.44', '5.6');
   /**
    * Version "5.6.46".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_46 = MysqlEngineVersion.of('5.6.46', '5.6');
   /**
    * Version "5.6.48".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_48 = MysqlEngineVersion.of('5.6.48', '5.6');
   /**
    * Version "5.6.49".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_49 = MysqlEngineVersion.of('5.6.49', '5.6');
   /**
    * Version "5.6.51".
    * @deprecated MySQL 5.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_5_6_51 = MysqlEngineVersion.of('5.6.51', '5.6');
 
   /** Version "5.7" (only a major version, without a specific minor version). */
@@ -1040,324 +1040,324 @@ export class PostgresEngineVersion {
   /**
    * Version "9.5" (only a major version, without a specific minor version).
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5 = PostgresEngineVersion.of('9.5', '9.5');
   /**
    * Version "9.5.2".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_2 = PostgresEngineVersion.of('9.5.2', '9.5');
   /**
    * Version "9.5.4".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_4 = PostgresEngineVersion.of('9.5.4', '9.5');
   /**
    * Version "9.5.6".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_6 = PostgresEngineVersion.of('9.5.6', '9.5');
   /**
    * Version "9.5.7".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_7 = PostgresEngineVersion.of('9.5.7', '9.5');
   /**
    * Version "9.5.9".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_9 = PostgresEngineVersion.of('9.5.9', '9.5');
   /**
    * Version "9.5.10".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_10 = PostgresEngineVersion.of('9.5.10', '9.5');
   /**
    * Version "9.5.12".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_12 = PostgresEngineVersion.of('9.5.12', '9.5');
   /**
    * Version "9.5.13".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_13 = PostgresEngineVersion.of('9.5.13', '9.5');
   /**
    * Version "9.5.14".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_14 = PostgresEngineVersion.of('9.5.14', '9.5');
   /**
    * Version "9.5.15".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_15 = PostgresEngineVersion.of('9.5.15', '9.5');
   /**
    * Version "9.5.16".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_16 = PostgresEngineVersion.of('9.5.16', '9.5');
   /**
    * Version "9.5.18".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_18 = PostgresEngineVersion.of('9.5.18', '9.5');
   /**
    * Version "9.5.19".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_19 = PostgresEngineVersion.of('9.5.19', '9.5');
   /**
    * Version "9.5.20".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_20 = PostgresEngineVersion.of('9.5.20', '9.5');
   /**
    * Version "9.5.21".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
   /**
    * Version "9.5.22".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
   /**
    * Version "9.5.23".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
   /**
    * Version "9.5.24".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_24 = PostgresEngineVersion.of('9.5.24', '9.5');
   /**
    * Version "9.5.25".
    * @deprecated PostgreSQL 9.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_5_25 = PostgresEngineVersion.of('9.5.25', '9.5');
 
   /**
    * Version "9.6" (only a major version, without a specific minor version).
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
   /**
    * Version "9.6.1".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_1 = PostgresEngineVersion.of('9.6.1', '9.6');
   /**
    * Version "9.6.2".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_2 = PostgresEngineVersion.of('9.6.2', '9.6');
   /**
    * Version "9.6.3".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_3 = PostgresEngineVersion.of('9.6.3', '9.6');
   /**
    * Version "9.6.5".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_5 = PostgresEngineVersion.of('9.6.5', '9.6');
   /**
    * Version "9.6.6".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_6 = PostgresEngineVersion.of('9.6.6', '9.6');
   /**
    * Version "9.6.8".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_8 = PostgresEngineVersion.of('9.6.8', '9.6');
   /**
    * Version "9.6.9".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_9 = PostgresEngineVersion.of('9.6.9', '9.6');
   /**
    * Version "9.6.10".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_10 = PostgresEngineVersion.of('9.6.10', '9.6');
   /**
    * Version "9.6.11".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_11 = PostgresEngineVersion.of('9.6.11', '9.6');
   /**
    * Version "9.6.12".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_12 = PostgresEngineVersion.of('9.6.12', '9.6');
   /**
    * Version "9.6.14".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_14 = PostgresEngineVersion.of('9.6.14', '9.6');
   /**
    * Version "9.6.15".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_15 = PostgresEngineVersion.of('9.6.15', '9.6');
   /**
    * Version "9.6.16".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_16 = PostgresEngineVersion.of('9.6.16', '9.6');
   /**
    * Version "9.6.17".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
   /**
    * Version "9.6.18".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
   /**
    * Version "9.6.19".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
   /**
    * Version "9.6.20".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_20 = PostgresEngineVersion.of('9.6.20', '9.6');
   /**
    * Version "9.6.21".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_21 = PostgresEngineVersion.of('9.6.21', '9.6');
   /**
    * Version "9.6.22".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_22 = PostgresEngineVersion.of('9.6.22', '9.6');
   /**
    * Version "9.6.23".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_23 = PostgresEngineVersion.of('9.6.23', '9.6');
   /**
    * Version "9.6.24".
    * @deprecated PostgreSQL 9.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_9_6_24 = PostgresEngineVersion.of('9.6.24', '9.6');
 
   /**
    * Version "10" (only a major version, without a specific minor version).
    * @deprecated PostgreSQL 10 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
   /**
    * Version "10.1".
    * @deprecated PostgreSQL 10 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_1 = PostgresEngineVersion.of('10.1', '10');
   /**
    * Version "10.3".
    * @deprecated PostgreSQL 10.3 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_3 = PostgresEngineVersion.of('10.3', '10');
   /**
    * Version "10.4".
    * @deprecated PostgreSQL 10.4 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_4 = PostgresEngineVersion.of('10.4', '10');
   /**
    * Version "10.5".
    * @deprecated PostgreSQL 10.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_5 = PostgresEngineVersion.of('10.5', '10');
   /**
    * Version "10.6".
    * @deprecated PostgreSQL 10.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_6 = PostgresEngineVersion.of('10.6', '10');
   /**
    * Version "10.7".
    * @deprecated PostgreSQL 10.7 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_7 = PostgresEngineVersion.of('10.7', '10', { s3Import: true });
   /**
    * Version "10.9".
    * @deprecated PostgreSQL 10.9 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_9 = PostgresEngineVersion.of('10.9', '10', { s3Import: true });
   /**
    * Version "10.10".
    * @deprecated PostgreSQL 10.10 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_10 = PostgresEngineVersion.of('10.10', '10', { s3Import: true });
   /**
    * Version "10.11".
    * @deprecated PostgreSQL 10.11 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_11 = PostgresEngineVersion.of('10.11', '10', { s3Import: true });
   /**
    * Version "10.12".
    * @deprecated PostgreSQL 10.12 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10', { s3Import: true });
   /**
    * Version "10.13".
    * @deprecated PostgreSQL 10.13 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
   /**
    * Version "10.14".
    * @deprecated PostgreSQL 10.14 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.15".
    * @deprecated PostgreSQL 10.15 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_15 = PostgresEngineVersion.of('10.15', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.16".
    * @deprecated PostgreSQL 10.16 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_16 = PostgresEngineVersion.of('10.16', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.17".
    * @deprecated PostgreSQL 10.17 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_17 = PostgresEngineVersion.of('10.17', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.18".
    * @deprecated PostgreSQL 10.18 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_18 = PostgresEngineVersion.of('10.18', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.19".
    * @deprecated PostgreSQL 10.19 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_19 = PostgresEngineVersion.of('10.19', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.20".
    * @deprecated PostgreSQL 10.20 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_20 = PostgresEngineVersion.of('10.20', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.21".
    * @deprecated PostgreSQL 10.21 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_21 = PostgresEngineVersion.of('10.21', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.22".
    * @deprecated PostgreSQL 10.22 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_22 = PostgresEngineVersion.of('10.22', '10', { s3Import: true, s3Export: true });
   /**
    * Version "10.23".
    * @deprecated PostgreSQL 10.23 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_10_23 = PostgresEngineVersion.of('10.23', '10', { s3Import: true, s3Export: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
@@ -1365,42 +1365,42 @@ export class PostgresEngineVersion {
   /**
    * Version "11.1".
    * @deprecated PostgreSQL 11.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_1 = PostgresEngineVersion.of('11.1', '11', { s3Import: true });
   /**
    * Version "11.2".
    * @deprecated PostgreSQL 11.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_2 = PostgresEngineVersion.of('11.2', '11', { s3Import: true });
   /**
    * Version "11.4".
    * @deprecated PostgreSQL 11.4 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_4 = PostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /**
    * Version "11.5".
    * @deprecated PostgreSQL 11.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_5 = PostgresEngineVersion.of('11.5', '11', { s3Import: true });
   /**
    * Version "11.6".
    * @deprecated PostgreSQL 11.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_6 = PostgresEngineVersion.of('11.6', '11', { s3Import: true });
   /**
    * Version "11.7".
    * @deprecated PostgreSQL 11.7 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11', { s3Import: true });
   /**
    * Version "11.8".
    * @deprecated PostgreSQL 11.8 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11', { s3Import: true });
   /**
    * Version "11.9".
    * @deprecated PostgreSQL 11.9 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true, s3Export: true });
   /**
    * Version "11.10"
@@ -1486,42 +1486,42 @@ export class PostgresEngineVersion {
   /**
    * Version "12.2".
    * @deprecated PostgreSQL 12.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12', { s3Import: true });
   /**
    * Version "12.3".
    * @deprecated PostgreSQL 12.3 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
   /**
    * Version "12.4".
    * @deprecated PostgreSQL 12.4 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.5".
    * @deprecated PostgreSQL 12.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.6".
    * @deprecated PostgreSQL 12.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_6 = PostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.7".
    * @deprecated PostgreSQL 12.7 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_7 = PostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.8".
    * @deprecated PostgreSQL 12.8 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_8 = PostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.9".
    * @deprecated PostgreSQL 12.9 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_9 = PostgresEngineVersion.of('12.9', '12', { s3Import: true, s3Export: true });
   /**
    * Version "12.10"
@@ -1570,32 +1570,32 @@ export class PostgresEngineVersion {
   /**
    * Version "13.1".
    * @deprecated PostgreSQL 13.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.2".
    * @deprecated PostgreSQL 13.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_2 = PostgresEngineVersion.of('13.2', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.3".
    * @deprecated PostgreSQL 13.3 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_3 = PostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.4".
    * @deprecated PostgreSQL 13.4 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_4 = PostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.5".
    * @deprecated PostgreSQL 13.5 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_5 = PostgresEngineVersion.of('13.5', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.6".
    * @deprecated PostgreSQL 13.6 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_13_6 = PostgresEngineVersion.of('13.6', '13', { s3Import: true, s3Export: true });
   /**
    * Version "13.7"
@@ -1639,12 +1639,12 @@ export class PostgresEngineVersion {
   /**
    * Version "14.1".
    * @deprecated PostgreSQL 14.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_14_1 = PostgresEngineVersion.of('14.1', '14', { s3Import: true, s3Export: true });
   /**
    * Version "14.2".
    * @deprecated PostgreSQL 14.2 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_14_2 = PostgresEngineVersion.of('14.2', '14', { s3Import: true, s3Export: true });
   /**
    * Version "14.3"
@@ -1894,7 +1894,7 @@ export class OracleEngineVersion {
   /**
    * Version "12.1" (only a major version, without a specific minor version).
    * @deprecated Oracle 12.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_1 = OracleEngineVersion.of('12.1', '12.1');
   /**
    * Version "12.1.0.2.v1"
@@ -2045,7 +2045,7 @@ export class OracleEngineVersion {
   /**
    * Version "12.1" (only a major version, without a specific minor version).
    * @deprecated Oracle 12.1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
   /**
    * Version "12.2.0.1.ru-2018-10.rur-2018-10.r1"
@@ -2121,7 +2121,7 @@ export class OracleEngineVersion {
   /**
    * Version "18" (only a major version, without a specific minor version).
    * @deprecated Oracle 18 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_18 = OracleEngineVersion.of('18', '18');
   /**
    * Version "18.0.0.0.ru-2019-07.rur-2019-07.r1"
@@ -2214,6 +2214,8 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2024_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-07.rur-2024-07.r1', '19');
   /** Version "19.0.0.0.ru-2024-10.rur-2024-10.r1". */
   public static readonly VER_19_0_0_0_2024_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-10.rur-2024-10.r1', '19');
+  /** Version "19.0.0.0.ru-2025-01.rur-2025-01.r1". */
+  public static readonly VER_19_0_0_0_2025_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2025-01.rur-2025-01.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -2243,6 +2245,8 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2024_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-07.rur-2024-07.r1', '21');
   /** Version "21.0.0.0.ru-2024-10.rur-2024-10.r1". */
   public static readonly VER_21_0_0_0_2024_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-10.rur-2024-10.r1', '21');
+  /** Version "21.0.0.0.ru-2025-01.rur-2025-01.r1". */
+  public static readonly VER_21_0_0_0_2025_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2025-01.rur-2025-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -2659,7 +2663,7 @@ export class SqlServerEngineVersion {
   /**
    * Version "14.00.3192.2.v1".
    * @deprecated SQL Server 14.00.3192.2.v1 is no longer supported by Amazon RDS.
-  */
+   */
   public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.00');
   /**
    * Version "14.00.3223.3.v1".
@@ -2736,6 +2740,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4395_2_V1 = SqlServerEngineVersion.of('15.00.4395.2.v1', '15.00');
   /** Version "15.00.4410.1.v1". */
   public static readonly VER_15_00_4410_1_V1 = SqlServerEngineVersion.of('15.00.4410.1.v1', '15.00');
+  /** Version "15.00.4415.2.v1". */
+  public static readonly VER_15_00_4415_2_V1 = SqlServerEngineVersion.of('15.00.4415.2.v1', '15.00');
 
   /** Version "16.00" (only a major version, without a specific minor version). */
   public static readonly VER_16 = SqlServerEngineVersion.of('16.00', '16.00');
@@ -2761,6 +2767,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4150_1_V1 = SqlServerEngineVersion.of('16.00.4150.1.v1', '16.00');
   /** Version "16.00.4165.4.v1". */
   public static readonly VER_16_00_4165_4_V1 = SqlServerEngineVersion.of('16.00.4165.4.v1', '16.00');
+  /** Version "16.00.4175.1.v1". */
+  public static readonly VER_16_00_4175_1_V1 = SqlServerEngineVersion.of('16.00.4175.1.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

@@ -26,7 +26,6 @@ class PipelineStack extends Stack {
     });
 
     pipeline.addStage(new AppStage(this, 'Beta'));
-
   }
 }
 

@@ -7,10 +7,11 @@ import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
+import { isGpuInstanceType } from '../lib/private/nodegroup';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
 
 describe('node group', () => {
   test('default ami type is not applied when launch template is configured', () => {
@@ -1674,5 +1675,56 @@ describe('node group', () => {
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
+  });
+});
+
+describe('isGpuInstanceType', () => {
+  it('should return true for known GPU instance types', () => {
+    const gpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.P2, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G3, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P4D, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.G6E, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.INF1, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.INF2, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P3DN, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P4DE, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G4AD, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G4DN, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G3S, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
+    ];
+    gpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(true);
+    });
+  });
+  it('should return false for non-GPU instance types', () => {
+    const nonGpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+      ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.XLARGE),
+    ];
+    nonGpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(false);
+    });
+  });
+  it('should return true for different sizes of GPU instance types', () => {
+    const gpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE16),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.SMALL),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.NANO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MICRO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.METAL),
+    ];
+    gpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(true);
+    });
   });
 });

@@ -30,8 +30,29 @@ export interface GitHubLabel {
   readonly name: string;
 }
 
-export interface GitHubFile {
+export interface Delta {
+  readonly additions: number;
+  readonly deletions: number;
+}
+
+export interface GitHubFile extends Delta {
   readonly filename: string;
+}
+
+export function sumChanges(files: GitHubFile[]) {
+  function add(d1: Delta, d2: Delta): Delta {
+    return {
+      additions: d1.additions + d2.additions,
+      deletions: d1.deletions + d2.deletions,
+    };
+  }
+
+  const identity = {
+    additions: 0,
+    deletions: 0
+  };
+
+  return files.reduce(add, identity);
 }
 
 
@@ -41,25 +62,17 @@ export interface GitHubFile {
  * Returns `success` if they all return a positive result, `failure` if
  * one of them failed for some reason, and `waiting` if the result isn't available
  * yet.
+ *
+ * 'failure' takes precedence over 'waiting' if there's any reason for it.
  */
 export function summarizeRunConclusions(conclusions: Array<CheckRun['conclusion'] | undefined>): 'success' | 'failure' | 'waiting' {
-  for (const concl of conclusions) {
-    switch (concl) {
-      case null:
-      case undefined:
-      case 'action_required':
-        return 'waiting';
-
-      case 'failure':
-      case 'cancelled':
-      case 'timed_out':
-        return 'failure';
-
-      case 'neutral':
-      case 'skipped':
-      case 'success':
-        break;
-    }
+  if (conclusions.some(c => ['failure', 'cancelled', 'timed_out'].includes(c ?? ''))) {
+    return 'failure';
   }
+
+  if (conclusions.some(c => c === 'action_required' || c === null || c === undefined)) {
+    return 'waiting';
+  }
+
   return 'success';
 }

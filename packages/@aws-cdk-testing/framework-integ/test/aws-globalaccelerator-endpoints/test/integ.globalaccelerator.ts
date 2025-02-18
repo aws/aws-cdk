@@ -53,7 +53,6 @@ class GaStack extends Stack {
     });
 
     alb.connections.allowFrom(group.connectionsPeer('Peer', vpc), ec2.Port.tcp(443));
-
   }
 }
 

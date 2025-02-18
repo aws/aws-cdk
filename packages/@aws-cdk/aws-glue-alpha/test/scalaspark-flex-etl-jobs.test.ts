@@ -23,7 +23,6 @@ describe('Job', () => {
   });
 
   describe('Create new Scala Spark ETL Flex Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ImportedJob', { role, script, className });
     });
@@ -80,7 +79,6 @@ describe('Job', () => {
   });
 
   describe('Create new ScalaSpark ETL Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexETLJob', {
         jobName: 'ScalaSparkFlexETLJob',
@@ -115,11 +113,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new ScalaSpark ETL Flex Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexETLJob', {
         jobName: 'ScalaSparkFlexETLJob',
@@ -144,7 +140,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark Flex ETL Job with optional properties', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {
         jobName: 'ScalaSparkFlexEtlJob',
@@ -259,7 +254,6 @@ describe('Job', () => {
   });
 
   describe('Create ScalaSpark Flex ETL Job with extraJars and extraFiles', () => {
-
     beforeEach(() => {
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {
         role,
@@ -321,7 +315,6 @@ describe('Job', () => {
   });
 
   describe('Override SparkUI properties for ScalaSpark Flex ETL Job', () => {
-
     beforeEach(() => {
       sparkUIBucket = new s3.Bucket(stack, 'sparkUIbucket', { bucketName: 'bucket-name' });
       job = new glue.ScalaSparkFlexEtlJob(stack, 'ScalaSparkFlexEtlJob', {

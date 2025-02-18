@@ -153,10 +153,10 @@ const updateProjectField = async ({
   };
 
   /**
-   * Fetches project item details for a specific PR
+   * Fetches project item details for a specific PR or Issue
    * @param {Object} params - The parameters for fetching project item
    * @param {Object} params.github - The GitHub API client
-   * @param {string} params.contentId - PR node ID
+   * @param {string} params.contentId - PR/Issue node ID
    * @returns {Promise<Object>} Project item details if PR is in project
    */
   const fetchProjectItem = async ({ github, contentId }) => {
@@ -186,10 +186,76 @@ const updateProjectField = async ({
               }
             }
           }
+          ... on Issue {
+            projectItems(first: 100) {
+              nodes {
+                id
+                project {
+                  id
+                }
+                fieldValues(first: 8) {
+                  nodes {
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                      field {
+                        ... on ProjectV2SingleSelectField {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
       `,
       { contentId }
+    );
+  };
+
+  /**
+   * Fetches all items from a GitHub Project with their status and update times
+   * @param {Object} params - The parameters for fetching project items
+   * @param {Object} params.github - The GitHub API client
+   * @param {string} params.org - The organization name
+   * @param {number} params.number - The project number
+   * @param {string} [params.cursor] - The pagination cursor
+   * @returns {Promise<Object>} Project items with their field values
+   */
+  const fetchProjectItems = async ({ github, org, number, cursor }) => {
+    return github.graphql(
+      `
+      query($org: String!, $number: Int!, $cursor: String) {
+        organization(login: $org) {
+          projectV2(number: $number) {
+            items(first: 100, after: $cursor) {
+              nodes {
+                id
+                fieldValues(first: 20) {
+                  nodes {
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                      field {
+                        ... on ProjectV2SingleSelectField {
+                          name
+                        }
+                      }
+                      updatedAt
+                    }
+                  }
+                }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+      }`,
+      { org, number, cursor }
     );
   };
 
@@ -198,5 +264,6 @@ const updateProjectField = async ({
     addItemToProject,
     fetchProjectFields,
     fetchOpenPullRequests,
-    fetchProjectItem
+    fetchProjectItem,
+    fetchProjectItems
   };

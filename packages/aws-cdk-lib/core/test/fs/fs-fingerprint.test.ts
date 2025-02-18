@@ -25,7 +25,6 @@ describe('fs fingerprint', () => {
       // THEN
       expect(hash1).toEqual(hash2);
       expect(hash3).not.toEqual(hash1);
-
     });
 
     test('works on empty files', () => {
@@ -42,7 +41,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hash1).toEqual(hash2);
-
     });
   });
 
@@ -59,7 +57,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);
-
     });
 
     test('ignores requested files', () => {
@@ -76,7 +73,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);
-
     });
 
     test('does not include requested files', () => {
@@ -128,7 +124,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).not.toEqual(hashCopy);
-
     });
   });
 
@@ -185,7 +180,6 @@ describe('fs fingerprint', () => {
       // THEN
       expect(original).toEqual(afterChange);
       expect(afterRevert).toEqual(original);
-
     });
   });
 
@@ -208,7 +202,6 @@ describe('fs fingerprint', () => {
       expect(crlfHash).toEqual(lfHash); // Same hash
 
       fs.unlinkSync(crlf);
-
     });
   });
 

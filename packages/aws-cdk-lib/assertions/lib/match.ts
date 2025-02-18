@@ -1,4 +1,5 @@
 import { Matcher, MatchResult } from './matcher';
+import { AssertionError } from './private/error';
 import { AbsentMatch } from './private/matchers/absent';
 import { sortKeyComparator } from './private/sorting';
 import { SparseMatrix } from './private/sparse-matrix';
@@ -112,12 +113,11 @@ class LiteralMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: any,
     options: LiteralMatchOptions = {}) {
-
     super();
     this.partialObjects = options.partialObjects ?? false;
 
     if (Matcher.isMatcher(this.pattern)) {
-      throw new Error('LiteralMatch cannot directly contain another matcher. ' +
+      throw new AssertionError('LiteralMatch cannot directly contain another matcher. ' +
         'Remove the top-level matcher or nest it more deeply.');
     }
   }
@@ -184,7 +184,6 @@ class ArrayMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: any[],
     options: ArrayMatchOptions = {}) {
-
     super();
     this.subsequence = options.subsequence ?? true;
     this.partialObjects = options.partialObjects ?? false;
@@ -255,7 +254,7 @@ class ArrayMatch extends Matcher {
       const matcherName = matcher.name;
       if (matcherName == 'absent' || matcherName == 'anyValue') {
         // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
-        throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
+        throw new AssertionError(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
 
       const innerResult = matcher.test(actual[actualIdx]);
@@ -334,7 +333,6 @@ class ObjectMatch extends Matcher {
     public readonly name: string,
     private readonly pattern: {[key: string]: any},
     options: ObjectMatchOptions = {}) {
-
     super();
     this.partial = options.partial ?? true;
   }
@@ -387,7 +385,7 @@ class SerializedJson extends Matcher {
     private readonly pattern: any,
   ) {
     super();
-  };
+  }
 
   public test(actual: any): MatchResult {
     if (getType(actual) !== 'string') {
@@ -429,7 +427,6 @@ class NotMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: {[key: string]: any}) {
-
     super();
   }
 
@@ -471,7 +468,6 @@ class StringLikeRegexpMatch extends Matcher {
   constructor(
     public readonly name: string,
     private readonly pattern: string) {
-
     super();
   }
 

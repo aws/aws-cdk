@@ -25,8 +25,10 @@ export async function startProxyServer(certDirRoot?: string): Promise<ProxyServe
     .forAnyRequest()
     .thenPassThrough();
 
-  server.enableDebug();
-  await server.start();
+  const port = 9000 + Math.floor(Math.random() * 10000);
+
+  // server.enableDebug();
+  await server.start(port);
 
   return {
     certPath,

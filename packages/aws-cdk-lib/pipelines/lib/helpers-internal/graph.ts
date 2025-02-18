@@ -2,6 +2,7 @@
  * A library for nested graphs
  */
 import { topoSort } from './toposort';
+import { UnscopedValidationError } from '../../../core';
 import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
@@ -40,7 +41,7 @@ export class GraphNode<A> {
 
   public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
     if (dependencies.includes(this)) {
-      throw new Error(`Cannot add dependency on self: ${this}`);
+      throw new UnscopedValidationError(`Cannot add dependency on self: ${this}`);
     }
     this.dependencies.push(...dependencies.filter(isDefined));
   }
@@ -76,7 +77,7 @@ export class GraphNode<A> {
   public get rootGraph(): Graph<A> {
     const root = this.root;
     if (!(root instanceof Graph)) {
-      throw new Error(`Expecting a graph as root, got: ${root}`);
+      throw new UnscopedValidationError(`Expecting a graph as root, got: ${root}`);
     }
     return root;
   }
@@ -90,7 +91,7 @@ export class GraphNode<A> {
    */
   public _setParentGraph(parentGraph: Graph<A>) {
     if (this._parentGraph) {
-      throw new Error('Node already has a parent');
+      throw new UnscopedValidationError('Node already has a parent');
     }
     this._parentGraph = parentGraph;
   }
@@ -242,7 +243,7 @@ export class Graph<A> extends GraphNode<A> {
     for (const node of nodes) {
       node._setParentGraph(this);
       if (this.children.has(node.id)) {
-        throw new Error(`Node with duplicate id: ${node.id}`);
+        throw new UnscopedValidationError(`Node with duplicate id: ${node.id}`);
       }
       this.children.set(node.id, node);
     }
@@ -473,12 +474,12 @@ export class GraphNodeCollection<A> {
       }
     }
 
-    throw new Error(`Could not calculate first node between ${this}`);
+    throw new UnscopedValidationError(`Could not calculate first node between ${this}`);
   }
 
   /**
-  * Returns the graph node that's shared between these nodes
-  */
+   * Returns the graph node that's shared between these nodes
+   */
   public commonAncestor() {
     const paths = new Array<GraphNode<A>[]>();
     for (const x of this.nodes) {
@@ -486,13 +487,13 @@ export class GraphNodeCollection<A> {
     }
 
     if (paths.length === 0) {
-      throw new Error('Cannot find common ancestor between an empty set of nodes');
+      throw new UnscopedValidationError('Cannot find common ancestor between an empty set of nodes');
     }
     if (paths.length === 1) {
       const path = paths[0];
 
       if (path.length < 2) {
-        throw new Error(`Cannot find ancestor of node without ancestor: ${path[0]}`);
+        throw new UnscopedValidationError(`Cannot find ancestor of node without ancestor: ${path[0]}`);
       }
       return path[path.length - 2];
     }
@@ -512,7 +513,7 @@ export class GraphNodeCollection<A> {
 
     // If any of the paths are left with 1 element, there's no shared parent.
     if (paths.some(path => path.length < 2)) {
-      throw new Error(`Could not determine a shared parent between nodes: ${originalPaths.map(nodes => nodes.map(n => n.id).join('/'))}`);
+      throw new UnscopedValidationError(`Could not determine a shared parent between nodes: ${originalPaths.map(nodes => nodes.map(n => n.id).join('/'))}`);
     }
 
     return paths[0][0];
