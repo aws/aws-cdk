@@ -1,4 +1,5 @@
 import { Matcher, MatchResult } from './matcher';
+import { AssertionError } from './private/error';
 import { AbsentMatch } from './private/matchers/absent';
 import { sortKeyComparator } from './private/sorting';
 import { SparseMatrix } from './private/sparse-matrix';
@@ -116,7 +117,7 @@ class LiteralMatch extends Matcher {
     this.partialObjects = options.partialObjects ?? false;
 
     if (Matcher.isMatcher(this.pattern)) {
-      throw new Error('LiteralMatch cannot directly contain another matcher. ' +
+      throw new AssertionError('LiteralMatch cannot directly contain another matcher. ' +
         'Remove the top-level matcher or nest it more deeply.');
     }
   }
@@ -253,7 +254,7 @@ class ArrayMatch extends Matcher {
       const matcherName = matcher.name;
       if (matcherName == 'absent' || matcherName == 'anyValue') {
         // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
-        throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
+        throw new AssertionError(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
 
       const innerResult = matcher.test(actual[actualIdx]);
