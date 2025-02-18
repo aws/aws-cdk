@@ -242,7 +242,7 @@ export class GaugeWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.metrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -440,7 +440,7 @@ export class GraphWidget extends ConcreteWidget {
     props.verticalAnnotations?.forEach(annotation => {
       const date = annotation.date;
       if (!GraphWidget.isIso8601(date)) {
-        throw new Error(`Given date ${date} is not in ISO 8601 format`);
+        throw new cdk.UnscopedValidationError(`Given date ${date} is not in ISO 8601 format`);
       }
     });
     this.props = props;
@@ -449,7 +449,7 @@ export class GraphWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.leftMetrics, ...this.rightMetrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -756,7 +756,7 @@ export class TableWidget extends ConcreteWidget {
     this.copyMetricWarnings(...this.metrics);
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
   }
 
@@ -885,11 +885,11 @@ export class SingleValueWidget extends ConcreteWidget {
     this.copyMetricWarnings(...props.metrics);
 
     if (props.setPeriodToTimeRange && props.sparkline) {
-      throw new Error('You cannot use setPeriodToTimeRange with sparkline');
+      throw new cdk.UnscopedValidationError('You cannot use setPeriodToTimeRange with sparkline');
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new Error('If you specify a value for end, you must also specify a value for start.');
+      throw new cdk.UnscopedValidationError('If you specify a value for end, you must also specify a value for start.');
     }
   }
 
