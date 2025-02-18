@@ -1,0 +1,298 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EventApiLambdaAuthStack": {
+        "id": "EventApiLambdaAuthStack",
+        "path": "EventApiLambdaAuthStack",
+        "children": {
+          "AuthorizerFunction": {
+            "id": "AuthorizerFunction",
+            "path": "EventApiLambdaAuthStack/AuthorizerFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EventApiLambdaAuthStack/AuthorizerFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EventApiLambdaAuthStack/AuthorizerFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EventApiLambdaAuthStack/AuthorizerFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiLambdaAuthStack/AuthorizerFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\n            exports.handler = async (event) => {\n              console.log(\"Authorization event:\", JSON.stringify(event));\n\n              const isAuthorized = true;\n              if (isAuthorized) {\n                return {\n                  isAuthorized: true,\n                  resolverContext: {\n                    userId: 'user-id-example'\n                  }\n                };\n              } else {\n                return {\n                  isAuthorized: false\n                };\n              }\n            };\n          "
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AuthorizerFunctionServiceRole5B2A061B",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "EventApiLambdaAuth-appsync": {
+                "id": "EventApiLambdaAuth-appsync",
+                "path": "EventApiLambdaAuthStack/AuthorizerFunction/EventApiLambdaAuth-appsync",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "AuthorizerFunctionB4DBAA43",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "appsync.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "EventApiLambdaAuth51CBDC5F",
+                        "ApiArn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "EventApiLambdaAuth": {
+            "id": "EventApiLambdaAuth",
+            "path": "EventApiLambdaAuthStack/EventApiLambdaAuth",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EventApiLambdaAuthStack/EventApiLambdaAuth/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "eventConfig": {
+                      "authProviders": [
+                        {
+                          "authType": "AWS_LAMBDA",
+                          "lambdaAuthorizerConfig": {
+                            "authorizerUri": {
+                              "Fn::GetAtt": [
+                                "AuthorizerFunctionB4DBAA43",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "connectionAuthModes": [
+                        {
+                          "authType": "AWS_LAMBDA"
+                        }
+                      ],
+                      "defaultPublishAuthModes": [
+                        {
+                          "authType": "AWS_LAMBDA"
+                        }
+                      ],
+                      "defaultSubscribeAuthModes": [
+                        {
+                          "authType": "AWS_LAMBDA"
+                        }
+                      ]
+                    },
+                    "name": "api-iam-auth-test",
+                    "ownerContact": "test-owner-contact"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "EventApiLambdaAuthStack/EventApiLambdaAuth/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.EventApi",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events HTTP endpoint": {
+            "id": "AWS AppSync Events HTTP endpoint",
+            "path": "EventApiLambdaAuthStack/AWS AppSync Events HTTP endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "AWS AppSync Events Realtime endpoint": {
+            "id": "AWS AppSync Events Realtime endpoint",
+            "path": "EventApiLambdaAuthStack/AWS AppSync Events Realtime endpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EventApiLambdaAuthStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EventApiLambdaAuthStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "appsync-event-api-lambda-auth": {
+        "id": "appsync-event-api-lambda-auth",
+        "path": "appsync-event-api-lambda-auth",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appsync-event-api-lambda-auth/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appsync-event-api-lambda-auth/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appsync-event-api-lambda-auth/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appsync-event-api-lambda-auth/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appsync-event-api-lambda-auth/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

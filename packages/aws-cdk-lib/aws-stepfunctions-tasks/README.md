@@ -155,6 +155,21 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API'
 });
 ```
 
+By default, the API endpoint URI will be constructed using the AWS region of
+the stack in which the provided `api` is created.
+
+To construct the endpoint with a different region, use the `region` parameter:
+```ts
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: tasks.HttpMethod.GET,
+  region: 'us-west-2',
+});
+```
+
 Be aware that the header values must be arrays. When passing the Task Token
 in the headers field `WAIT_FOR_TASK_TOKEN` integration, use
 `JsonPath.array()` to wrap the token in an array:
@@ -264,6 +279,8 @@ const getObject = new tasks.CallAwsServiceCrossRegion(this, 'GetObject', {
 ```
 
 Other properties such as `additionalIamStatements` can be used in the same way as the `CallAwsService` task.
+
+Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
 
 ## Athena
 
@@ -1241,10 +1258,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_32,
   clusterName: 'myEksCluster',
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1360,14 +1379,31 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
-You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+You can configure workers by setting the `workerTypeV2` and `numberOfWorkers` properties.
+`workerType` is deprecated and no longer recommended. Use `workerTypeV2` which is
+a ENUM-like class for more powerful worker configuration around using pre-defined values or
+dynamic values.
 
 ```ts
 new tasks.GlueStartJobRun(this, 'Task', {
   glueJobName: 'my-glue-job',
   workerConfiguration: {
-    workerType: tasks.WorkerType.G_1X, // Worker type
+    workerTypeV2: tasks.WorkerTypeV2.G_1X, // Worker type
     numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
+
+To configure the worker type or number of workers dynamically from StateMachine's input,
+you can configure it using JSON Path values using `workerTypeV2` like this:
+
+```ts
+new tasks.GlueStartJobRun(this, 'Glue Job Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerTypeV2: tasks.WorkerTypeV2.of(sfn.JsonPath.stringAt('$.glue_jobs_configs.executor_type')),
+    numberOfWorkers: sfn.JsonPath.numberAt('$.glue_jobs_configs.max_number_workers'),
   },
 });
 ```

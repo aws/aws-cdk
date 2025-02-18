@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
 import { IGeofenceCollection } from './geofence-collection';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Tracker
@@ -172,13 +173,18 @@ export class Tracker extends Resource implements ITracker {
   public readonly trackerUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: TrackerProps = {}) {
-
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
 
-    if (props.trackerName && !Token.isUnresolved(props.trackerName) && !/^[-.\w]{1,100}$/.test(props.trackerName)) {
-      throw new Error(`Invalid tracker name. The tracker name must be between 1 and 100 characters and contain only alphanumeric characters, hyphens, periods and underscores. Received: ${props.trackerName}`);
+    if (props.trackerName !== undefined && !Token.isUnresolved(props.trackerName)) {
+      if (props.trackerName.length < 1 || props.trackerName.length > 100) {
+        throw new Error(`\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`);
+      }
+
+      if (!/^[-._\w]+$/.test(props.trackerName)) {
+        throw new Error(`\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`);
+      }
     }
 
     if (!Token.isUnresolved(props.kmsKey)
@@ -191,6 +197,8 @@ export class Tracker extends Resource implements ITracker {
     super(scope, id, {
       physicalName: props.trackerName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const tracker = new CfnTracker(this, 'Resource', {
       trackerName: this.physicalName,
@@ -217,6 +225,7 @@ export class Tracker extends Resource implements ITracker {
   /**
    * Add Geofence Collections which are associated to the tracker resource.
    */
+  @MethodMetadata()
   public addGeofenceCollections(...geofenceCollections: IGeofenceCollection[]) {
     geofenceCollections.forEach((collection) => {
       new CfnTrackerConsumer(this, `TrackerConsumer${collection.node.id}`, {
@@ -229,6 +238,7 @@ export class Tracker extends Resource implements ITracker {
   /**
    * Grant the given principal identity permissions to perform the actions on this tracker.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -242,6 +252,7 @@ export class Tracker extends Resource implements ITracker {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
+  @MethodMetadata()
   public grantUpdateDevicePositions(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:BatchUpdateDevicePosition',
@@ -253,6 +264,7 @@ export class Tracker extends Resource implements ITracker {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,

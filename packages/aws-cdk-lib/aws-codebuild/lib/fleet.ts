@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
+import { Arn, ArnFormat, IResource, Resource, Size, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Construction properties of a CodeBuild {@link Fleet}.
@@ -35,6 +36,69 @@ export interface FleetProps {
    * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
+
+  /**
+   * The compute configuration of the compute fleet.
+   *
+   * This is only required if `computeType` is set to ATTRIBUTE_BASED.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
+   *
+   * @default - do not specify compute configuration
+   */
+  readonly computeConfiguration?: ComputeConfiguration;
+}
+
+/**
+ * The compute type of the fleet.
+ */
+export enum MachineType {
+  /**
+   * General purpose compute type.
+   */
+  GENERAL = 'GENERAL',
+  /**
+   * Non-Volatile Memory Express (NVMe) storage optimized compute type.
+   */
+  NVME = 'NVME',
+}
+
+/**
+ * The compute configuration for the fleet.
+ *
+ *  Despite what the CloudFormation schema says, the numeric properties (disk, memory, vCpu) are not optional.
+ *  An `undefined` value will cause the CloudFormation deployment to fail, e.g.
+ *  > Cannot invoke "java.lang.Integer.intValue()" because the return value of "software.amazon.codebuild.fleet.ComputeConfiguration.getMemory()" is null
+ * Therefore, these properties default value is set to 0.
+ */
+export interface ComputeConfiguration {
+  /**
+   * The amount of disk space of the instance type included in your fleet.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly disk?: Size;
+
+  /**
+   * The machine type of the instance type included in your fleet.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly machineType?: MachineType;
+
+  /**
+   * The amount of memory of the instance type included in your fleet.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly memory?: Size;
+
+  /**
+   * The number of vCPUs of the instance type included in your fleet.
+   *
+   * @default - No requirement, the actual value will be based on the other selected configuration properties
+   */
+  readonly vCpu?: number;
 }
 
 /**
@@ -96,6 +160,9 @@ export class Fleet extends Resource implements IFleet {
       public get environmentType(): EnvironmentType {
         throw new Error('Cannot retrieve environmentType property from an imported Fleet');
       }
+      public get computeConfiguration(): ComputeConfiguration | undefined {
+        throw new Error('Cannot retrieve computeConfiguration property from an imported Fleet');
+      }
     }
 
     return new Import(scope, id);
@@ -125,6 +192,10 @@ export class Fleet extends Resource implements IFleet {
   public readonly environmentType: EnvironmentType;
 
   constructor(scope: Construct, id: string, props: FleetProps) {
+    super(scope, id, { ...props, physicalName: props.fleetName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
         throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
@@ -138,13 +209,39 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
-    super(scope, id, { physicalName: props.fleetName });
+    if (
+      props.computeType === FleetComputeType.ATTRIBUTE_BASED &&
+      (!props.computeConfiguration || Object.keys(props.computeConfiguration).length === 0)
+    ) {
+      throw new Error('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
+    }
+    if (props.computeConfiguration && props.computeType !== FleetComputeType.ATTRIBUTE_BASED) {
+      throw new Error(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${props.computeType}`);
+    }
+
+    // Despite what the CloudFormation schema says, the numeric properties are not optional.
+    // An undefined value will cause the CloudFormation deployment to fail, e.g.
+    // > Cannot invoke "java.lang.Integer.intValue()" because the return value of "software.amazon.codebuild.fleet.ComputeConfiguration.getMemory()" is null
+    const computeConfig = props.computeConfiguration;
+    const diskGiB = computeConfig?.disk?.toGibibytes() ?? 0;
+    const memoryGiB = computeConfig?.memory?.toGibibytes() ?? 0;
+    const vCpu = computeConfig?.vCpu ?? 0;
+
+    this.validatePositiveInteger(diskGiB, 'disk size');
+    this.validatePositiveInteger(memoryGiB, 'memory size');
+    this.validatePositiveInteger(vCpu, 'vCPU count');
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
+      computeConfiguration: props.computeConfiguration ? {
+        disk: diskGiB,
+        machineType: props.computeConfiguration.machineType,
+        memory: memoryGiB,
+        vCpu,
+      } : undefined,
     });
 
     this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
@@ -156,6 +253,12 @@ export class Fleet extends Resource implements IFleet {
     this.fleetName = this.getResourceNameAttribute(resource.ref);
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
+  }
+
+  private validatePositiveInteger(value: number, fieldName: string) {
+    if (!Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
+      throw new Error(`${fieldName} must be a positive integer, got: ${value}`);
+    }
   }
 }
 
@@ -203,4 +306,13 @@ export enum FleetComputeType {
    * for more information.
    **/
   X2_LARGE = ComputeType.X2_LARGE,
+
+  /**
+   * Specify the amount of vCPUs, memory, disk space, and the type of machine.
+   *
+   * AWS CodeBuild will select the cheapest instance that satisfies your specified attributes from `computeConfiguration`.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
+   */
+  ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
 }

@@ -69,7 +69,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     appconfig.on(ActionPoint.ON_DEPLOYMENT_STEP, new LambdaDestination(func));
@@ -116,7 +116,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     appconfig.preCreateHostedConfigurationVersion(new LambdaDestination(func), {
@@ -178,7 +178,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -231,7 +231,7 @@ describe('appconfig', () => {
     });
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -281,7 +281,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -331,7 +331,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -381,7 +381,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -431,7 +431,7 @@ describe('appconfig', () => {
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {
@@ -476,12 +476,62 @@ describe('appconfig', () => {
     });
   });
 
+  test('at deployment tick', () => {
+    const stack = new cdk.Stack();
+    const appconfig = new Application(stack, 'MyAppConfig');
+    const func = new Function(stack, 'MyFunc', {
+      handler: 'index.handler',
+      runtime: Runtime.PYTHON_3_9,
+      code: Code.fromInline('# this is my code'),
+    });
+    Object.defineProperty(func, 'functionArn', {
+      value: 'arn:lambda:us-east-1:123456789012:function:my-function',
+    });
+    appconfig.atDeploymentTick(new LambdaDestination(func));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
+      Name: 'MyAppConfig-Extension',
+      Actions: {
+        AT_DEPLOYMENT_TICK: [
+          {
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
+            Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
+          },
+        ],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
+      ExtensionIdentifier: {
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
+      },
+      ExtensionVersionNumber: {
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
+      },
+      ResourceIdentifier: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':appconfig:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':application/',
+            { Ref: 'MyAppConfigB4B63E75' },
+          ],
+        ],
+      },
+    });
+  });
+
   test('create same extension twice', () => {
     const stack = new cdk.Stack();
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
       handler: 'index.handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_9,
       code: Code.fromInline('# this is my code'),
     });
     Object.defineProperty(func, 'functionArn', {

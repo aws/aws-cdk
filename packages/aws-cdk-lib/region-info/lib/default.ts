@@ -5,7 +5,6 @@
  * @deprecated - Service principals are now globally `<SERVICE>.amazonaws.com`, use iam.ServicePrincipal instead.
  */
 export class Default {
-
   /**
    * The default value for a VPC Endpoint Service name prefix, useful if you do
    * not have a synthesize-time region literal available (all you have is
@@ -115,9 +114,8 @@ export class Default {
         // Services with a universal principal across all regions/partitions (the default case)
         default:
           return universal;
-
       }
-    };
+    }
 
     const configuration = determineConfiguration(serviceName);
     return configuration(serviceName, region, urlSuffix);

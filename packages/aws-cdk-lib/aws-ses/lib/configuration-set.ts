@@ -4,6 +4,7 @@ import { IDedicatedIpPool } from './dedicated-ip-pool';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
 import { Duration, IResource, Resource, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A configuration set
@@ -65,6 +66,14 @@ export interface ConfigurationSetProps {
    * @default - use account level settings
    */
   readonly suppressionReasons?: SuppressionReasons;
+
+  /**
+   * If true, account-level suppression list is disabled; email sent with this configuration set
+   * will not use any suppression settings at all
+   *
+   * @default false
+   */
+  readonly disableSuppressionList?: boolean;
 
   /**
    * The custom subdomain that is used to redirect email recipients to the
@@ -166,7 +175,12 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     super(scope, id, {
       physicalName: props.configurationSetName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
+    if (props.disableSuppressionList && props.suppressionReasons) {
+      throw new Error('When disableSuppressionList is true, suppressionReasons must not be specified.');
+    }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
         throw new Error(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`);
@@ -190,7 +204,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         sendingEnabled: props.sendingEnabled,
       }),
       suppressionOptions: undefinedIfNoKeys({
-        suppressedReasons: renderSuppressedReasons(props.suppressionReasons),
+        suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -202,8 +216,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         guardianOptions: props.vdmOptions?.optimizedSharedDelivery !== undefined ? {
           optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
         } : undefined,
-      },
-      ),
+      }),
     });
 
     this.configurationSetName = configurationSet.ref;
@@ -212,6 +225,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   /**
    * Adds an event destination to this configuration set
    */
+  @MethodMetadata()
   public addEventDestination(id: string, options: ConfigurationSetEventDestinationOptions): ConfigurationSetEventDestination {
     return new ConfigurationSetEventDestination(this, id, {
       ...options,

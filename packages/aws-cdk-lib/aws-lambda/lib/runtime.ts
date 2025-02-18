@@ -152,6 +152,7 @@ export class Runtime {
 
   /**
    * The Python 3.8 runtime (python3.8)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -299,8 +300,8 @@ export class Runtime {
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
-  * The Ruby 3.3 runtime (ruby3.3)
-  */
+   * The Ruby 3.3 runtime (ruby3.3)
+   */
   public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
 
   /**
