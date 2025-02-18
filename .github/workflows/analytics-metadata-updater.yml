@@ -47,6 +47,7 @@ jobs:
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git checkout -B ${{ github.event.pull_request.head.ref }}
           git add .
           git commit -m "chore: update analytics metadata blueprints"
           git push origin ${{ github.event.pull_request.head.ref }}

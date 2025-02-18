@@ -295,6 +295,8 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 
 * `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
+* `FilterPattern.regexValue(field, comparison, string)`: matches if the given
+  field compares as indicated with the given regex pattern.
 * `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
 * `FilterPattern.isNull(field)`: matches if the given field exists and has the
@@ -324,6 +326,7 @@ const pattern = logs.FilterPattern.all(
     logs.FilterPattern.booleanValue('$.error', true),
     logs.FilterPattern.numberValue('$.latency', '>', 1000),
   ),
+  logs.FilterPattern.regexValue('$.message', '=', 'bind address already in use'),
 );
 ```
 
