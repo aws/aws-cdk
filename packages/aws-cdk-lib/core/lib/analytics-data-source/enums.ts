@@ -51,7 +51,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Test',
     'Approval',
     'Deploy',
-    'Invoke'
+    'Invoke',
+    'Compute'
   ],
   'ActionOnFailure': [
     'TERMINATE_CLUSTER',
@@ -733,7 +734,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BUILD_LAMBDA_2GB',
     'BUILD_LAMBDA_4GB',
     'BUILD_LAMBDA_8GB',
-    'BUILD_LAMBDA_10GB'
+    'BUILD_LAMBDA_10GB',
+    'ATTRIBUTE_BASED_COMPUTE'
   ],
   'ConditionLogicalOperator': [
     'EQUALS'
@@ -766,6 +768,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'COMPLETE',
     'SUCCESS',
     'HEALTHY'
+  ],
+  'ContainerFormat': [
+    'TS',
+    'FRAGMENTED_MP4'
   ],
   'ContainerInsights': [
     'enabled',
@@ -860,6 +866,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Esri',
     'Grab',
     'Here'
+  ],
+  'DatabaseInsightsMode': [
+    'standard',
+    'advanced'
   ],
   'DayOfWeek': [
     'SUN',
@@ -1257,7 +1267,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BUILD_GENERAL1_MEDIUM',
     'BUILD_GENERAL1_LARGE',
     'BUILD_GENERAL1_XLARGE',
-    'BUILD_GENERAL1_2XLARGE'
+    'BUILD_GENERAL1_2XLARGE',
+    'ATTRIBUTE_BASED_COMPUTE'
   ],
   'FlowLogDestinationType': [
     'cloud-watch-logs',
@@ -2206,6 +2217,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'MachineType': [
+    'GENERAL',
+    'NVME'
+  ],
   'MailFromBehaviorOnMxFailure': [
     'USE_DEFAULT_VALUE',
     'REJECT_MESSAGE'
@@ -2228,6 +2243,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Six_Hours',
     'Twelve_Hours',
     'TwentyFour_Hours'
+  ],
+  'MaximumResolution': [
+    'FULL_HD',
+    'HD',
+    'SD'
   ],
   'MergeType': [
     'MANUAL_MERGE',
@@ -2512,6 +2532,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'EventTime',
     'DeliveryTime'
   ],
+  'PasskeyUserVerification': [
+    'preferred',
+    'required'
+  ],
   'PassthroughBehavior': [
     'WHEN_NO_MATCH',
     'NEVER',
@@ -2612,6 +2636,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'Platform': [
     'x86-64',
     'ARM64'
+  ],
+  'Policy': [
+    'ALLOW',
+    'REQUIRE'
   ],
   'PolicyValidationReportStatusBeta1': [
     'success',
