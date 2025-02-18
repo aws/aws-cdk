@@ -43,16 +43,6 @@ describe('KinesisEventSource', () => {
               ],
             },
           },
-          {
-            'Action': 'kinesis:DescribeStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::GetAtt': [
-                'S509448A1',
-                'Arn',
-              ],
-            },
-          },
         ],
         'Version': '2012-10-17',
       },
@@ -363,6 +353,81 @@ describe('KinesisEventSource', () => {
       MetricsConfig: {
         Metrics: ['EventCount'],
       },
+    });
+  });
+
+  test('KinesisConsumerEventSource sufficiently complex example', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const streamConsumer = new kinesis.StreamConsumer(stack, 'SC', {
+      stream,
+      streamConsumerName: 'MyStreamConsumer',
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisConsumerEventSource(streamConsumer, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:SubscribeToShard',
+              'kinesis:DescribeStream',
+              'kinesis:ListStreams',
+              'kinesis:DescribeStreamConsumer',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn',
+              ],
+            },
+          },
+          {
+            'Action': [
+              'kinesis:DescribeStreamConsumer',
+              'kinesis:SubscribeToShard',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'SC0855C491',
+                'ConsumerARN',
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'SC0855C491',
+          'ConsumerARN',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON',
     });
   });
 });

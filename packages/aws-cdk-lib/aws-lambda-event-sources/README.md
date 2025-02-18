@@ -235,7 +235,7 @@ behavior:
 * __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp. Note that 'AT_TIMESTAMP' is only supported for Amazon Kinesis streams.
 * __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
 * __tumblingWindow__: The duration in seconds of a processing window when using streams.
-* __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
+* __enabled__: If the event source mapping should be enabled. The default is true.
 
 ```ts
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
@@ -245,6 +245,25 @@ const stream = new kinesis.Stream(this, 'MyStream');
 
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new KinesisEventSource(stream, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+}));
+```
+
+To use a dedicated-throughput consumer with enhanced fan-out
+
+```ts
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import { KinesisConsumerEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  stream,
+  streamConsumerName: 'MyStreamConsumer',
+});
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new KinesisConsumerEventSource(streamConsumer, {
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));
