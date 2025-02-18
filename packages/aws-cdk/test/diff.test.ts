@@ -195,7 +195,7 @@ describe('imports', () => {
     fs.rmSync('migrate.json');
   });
 
-  test('imports render correctly for a nonexistant stack without creating a changeset', async () => {
+  test('imports render correctly for a nonexistent stack without creating a changeset', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -246,6 +246,26 @@ Resources
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
+  });
+
+  test('--import-existing-resources is propagated to createChangeSet', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+      importExistingResources: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(createDiffChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      importExistingResources: true,
+    }));
   });
 });
 
@@ -558,6 +578,23 @@ describe('stack exists checks', () => {
     // THEN
     expect(exitCode).toBe(0);
     expect(cloudFormation.stackExists).not.toHaveBeenCalled();
+  });
+
+  test('diff throws error when --import-existing-resources is passed but stack does not exist', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    await expect(() =>
+      toolkit.diff({
+        stackNames: ['A', 'A'],
+        stream: buffer,
+        fail: false,
+        quiet: true,
+        changeSet: true,
+        importExistingResources: true,
+      }),
+    ).rejects.toThrow(/diff cannot be enabled for a stack that does not exist yet/);
   });
 
   test('diff falls back to classic diff when stack does not exist', async () => {

@@ -4,6 +4,7 @@ var constructs = require('constructs');
 if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('@aws-cdk/core');
   var ec2 = require('@aws-cdk/aws-ec2');
+  var ecr = require('@aws-cdk/aws-ecr');
   var ecs = require('@aws-cdk/aws-ecs');
   var s3 = require('@aws-cdk/aws-s3');
   var ssm = require('@aws-cdk/aws-ssm');
@@ -21,6 +22,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     DefaultStackSynthesizer,
     LegacyStackSynthesizer,
     aws_ec2: ec2,
+    aws_ecr: ecr,
     aws_ecs: ecs,
     aws_sso: sso,
     aws_s3: s3,
@@ -821,6 +823,21 @@ class AppSyncHotswapStack extends cdk.Stack {
   }
 }
 
+class SimplifiedImportStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+    // create a random resource because we cannot deploy a stack without any resources.
+    new sns.Topic(this, 'RandomTopic');
+
+    if (process.env.IMPORTED_REPOSITORY_NAME) {
+      new ecr.Repository(this, 'ImportedRepository', { 
+        repositoryName: process.env.IMPORTED_REPOSITORY_NAME,
+        removalPolicy: cdk.RemovalPolicy.RETAIN,
+      });
+    }
+  }
+}
+
 class MetadataStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -869,6 +886,8 @@ switch (stackSet) {
 
     // This stack is used to test diff with large templates by creating a role with a ton of metadata
     new IamRolesStack(app, `${stackPrefix}-iam-roles`);
+
+    new SimplifiedImportStack(app, `${stackPrefix}-simplified-import`);
 
     if (process.env.ENABLE_VPC_TESTING == 'IMPORT') {
       // this stack performs a VPC lookup so we gate synth
