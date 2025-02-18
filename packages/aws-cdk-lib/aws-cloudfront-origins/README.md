@@ -555,9 +555,6 @@ An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In or
 accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
@@ -573,8 +570,6 @@ new cloudfront.Distribution(this, 'myDist', {
 The origin can also be customized to respond on different ports, have different connection properties, etc.
 
 ```ts
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
   connectionAttempts: 3,
@@ -600,6 +595,131 @@ new cloudfront.Distribution(this, 'myDist', {
 ```
 
 See the documentation of `aws-cdk-lib/aws-cloudfront` for more information.
+
+## VPC origins
+
+You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
+You can use Application Load Balancers (ALBs), Network Load Balancers (NLBs), and EC2 instances in private subnets as VPC origins.
+
+Learn more about [Restrict access with VPC origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html).
+
+### From an Application Load Balancer
+
+An Application Load Balancer (ALB) can be used as a VPC origin.
+It is not needed to be publicly accessible.
+
+``` ts
+// Creates a distribution from an Application Load Balancer
+declare const vpc: ec2.Vpc;
+// Create an application load balancer in a VPC. 'internetFacing' can be 'false'.
+const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', {
+  vpc,
+  internetFacing: false,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withApplicationLoadBalancer(alb) },
+});
+```
+
+### From a Network Load Balancer
+
+A Network Load Balancer (NLB) can also be use as a VPC origin.
+It is not needed to be publicly accessible.
+
+- A Network Load Balancer must have a security group attached to it.
+- Dual-stack Network Load Balancers and Network Load Balancers with TLS listeners can't be added as origins.
+
+``` ts
+// Creates a distribution from a Network Load Balancer
+declare const vpc: ec2.Vpc;
+// Create a network load balancer in a VPC. 'internetFacing' can be 'false'.
+const nlb = new elbv2.NetworkLoadBalancer(this, 'NLB', {
+  vpc,
+  internetFacing: false,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  securityGroups: [new ec2.SecurityGroup(this, 'NLB-SG', { vpc })],
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withNetworkLoadBalancer(nlb) },
+});
+```
+
+### From an EC2 instance
+
+An EC2 instance can also be used directly as a VPC origin.
+It can be in a private subnet.
+
+``` ts
+// Creates a distribution from an EC2 instance
+declare const vpc: ec2.Vpc;
+// Create an EC2 instance in a VPC. 'subnetType' can be private.
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: origins.VpcOrigin.withEc2Instance(instance) },
+});
+```
+
+### Restrict traffic coming to the VPC origin
+
+You may need to update the security group for your VPC private origin (Application Load Balancer, Network Load Balancer, or EC2 instance) to explicitly allow the traffic from your VPC origins.
+
+#### The CloudFront managed prefix list
+
+You can allow the traffic from the CloudFront managed prefix list named **com.amazonaws.global.cloudfront.origin-facing**. For more information, see [Use an AWS-managed prefix list](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-aws-managed-prefix-lists.html#use-aws-managed-prefix-list).
+
+``` ts
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+const peer = ec2.Peer.prefixList('pl-xxxxxxxx'); // See the management console to find actual PrefixList Id.
+alb.connections.allowFrom(peer, ec2.Port.HTTP);
+```
+
+#### The VPC origin service security group
+
+VPC origin will create a security group named `CloudFront-VPCOrigins-Service-SG`.
+It can be further restricted to allow only traffic from your VPC origins.
+
+The id of the security group is not provided by CloudFormation currently.
+You can retrieve it dynamically using a custom resource.
+
+``` ts
+import * as cr from 'aws-cdk-lib/custom-resources';
+
+declare const vpc: ec2.Vpc;
+declare const distribution: cloudfront.Distribution;
+declare const alb: elbv2.ApplicationLoadBalancer;
+
+// Call ec2:DescribeSecurityGroups API to retrieve the VPC origins security group.
+const getSg = new cr.AwsCustomResource(this, 'GetSecurityGroup', {
+  onCreate: {
+    service: 'ec2',
+    action: 'describeSecurityGroups',
+    parameters: {
+      Filters: [
+        { Name: 'vpc-id', Values: [vpc.vpcId] },
+        { Name: 'group-name', Values: ['CloudFront-VPCOrigins-Service-SG'] },
+      ],
+    },
+    physicalResourceId: cr.PhysicalResourceId.of('CloudFront-VPCOrigins-Service-SG'),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: ['*'] }),
+});
+// The security group may be available after the distributon is deployed
+getSg.node.addDependency(distribution);
+const sgVpcOrigins = ec2.SecurityGroup.fromSecurityGroupId(
+  this,
+  'VpcOriginsSecurityGroup',
+  getSg.getResponseField('SecurityGroups.0.GroupId'),
+);
+// Allow connections from the security group
+alb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
+```
 
 ## Failover Origins (Origin Groups)
 
