@@ -1,1 +1,0 @@
-The output of this test is changed by the sdk upgrade. The type and content of the error have changed from sdkv2 to sdkv3. We now receive more specific information about the error type.

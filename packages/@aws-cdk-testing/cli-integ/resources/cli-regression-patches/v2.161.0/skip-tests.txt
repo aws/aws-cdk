@@ -1,5 +1,0 @@
-# Skipping the test to fix issue https://github.com/aws/aws-cdk/issues/31654. 
-# cli-integ tests failing for the old tests with the new cli changes for nested stacks.
-
-test cdk rollback
-test cdk rollback --force

@@ -63,6 +63,7 @@
     "@aws-sdk/client-kms": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cloudwatch": "3.632.0",
+    "proxy-agent": "^6.4.0",
     "p-limit": "^3.1.0"
   },
   "repository": {

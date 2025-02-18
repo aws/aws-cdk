@@ -1,7 +1,0 @@
-
-.LAST_BUILD
-*.snk
-junit.xml
-.eslintrc.js
-# exclude cdk artifacts
-**/cdk.out
