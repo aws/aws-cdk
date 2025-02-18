@@ -38,6 +38,8 @@ const enableNoThrowDefaultErrorIn = [
   'aws-cloudfront',
   'aws-cloudfront-origins',
   'aws-cloudtrail',
+  'aws-cloudwatch',
+  'aws-cloudwatch-actions',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
   'aws-elasticloadbalancingv2-actions',
