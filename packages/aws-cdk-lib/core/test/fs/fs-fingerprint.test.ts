@@ -89,7 +89,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);
-
     });
 
     test('includes requested files', () => {
@@ -106,7 +105,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).not.toEqual(hashCopy);
-
     });
 
     test('changes with file names', () => {
