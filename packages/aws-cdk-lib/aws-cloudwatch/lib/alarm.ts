@@ -9,7 +9,7 @@ import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
 import { MetricSet } from './private/rendering';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
-import { ArnFormat, Lazy, Stack, Token, Annotations } from '../../core';
+import { ArnFormat, Lazy, Stack, Token, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -272,7 +272,7 @@ export class Alarm extends AlarmBase {
       // Check per-instance metric
       const metricConfig = this.metric.toMetricConfig();
       if (metricConfig.metricStat?.dimensions?.length != 1 || !metricConfig.metricStat?.dimensions?.some(dimension => dimension.name === 'InstanceId')) {
-        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
+        throw new ValidationError(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`, this);
       }
     }
     return actionArn;
@@ -355,7 +355,7 @@ export class Alarm extends AlarmBase {
               const hasSubmetrics = mathExprHasSubmetrics(expr);
 
               if (hasSubmetrics) {
-                assertSubmetricsCount(expr);
+                assertSubmetricsCount(self, expr);
               }
 
               self.validateMetricExpression(expr);
@@ -381,7 +381,7 @@ export class Alarm extends AlarmBase {
     const stack = Stack.of(this);
 
     if (definitelyDifferent(stat.region, stack.region)) {
-      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+      throw new ValidationError(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`, this);
     }
   }
 
@@ -391,7 +391,7 @@ export class Alarm extends AlarmBase {
    */
   private validateMetricExpression(expr: MetricExpressionConfig) {
     if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
-      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
+      throw new ValidationError('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion', this);
     }
   }
 
@@ -462,10 +462,10 @@ function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
   return Object.keys(expr.usingMetrics).length > 0;
 }
 
-function assertSubmetricsCount(expr: MetricExpressionConfig) {
+function assertSubmetricsCount(scope: Construct, expr: MetricExpressionConfig) {
   if (Object.keys(expr.usingMetrics).length > 10) {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
-    throw new Error('Alarms on math expressions cannot contain more than 10 individual metrics');
+    throw new ValidationError('Alarms on math expressions cannot contain more than 10 individual metrics', scope);
   }
 }
 
