@@ -22,7 +22,7 @@ export class EksAutoModeCluster extends Stack {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
       },
-      autoMode: true,
+      defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
     });
   }
 }

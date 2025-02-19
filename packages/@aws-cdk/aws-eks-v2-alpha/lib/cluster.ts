@@ -572,6 +572,29 @@ export interface KubernetesNetworkConfig {
  */
 export interface ClusterProps extends ClusterCommonOptions {
   /**
+   * Configuration for compute settings in Auto Mode.
+   * When enabled, EKS will automatically manage compute resources.
+   * @default - Auto Mode compute disabled
+   */
+  readonly compute?: ComputeConfig;
+
+  /**
+   * Configuration for storage settings.
+   * When enabled, EKS will automatically manage storage resources.
+   * At this moment, only block storage is supported. While Auto Mode constrols the block storage enablement and no ther props available,
+   * this prop is reserved for future use.
+   *
+   * readonly storage?: StorageConfig;
+   */
+
+  /**
+   * Configuration for Kubernetes networking settings in Auto Mode.
+   * When enabled, EKS will automatically manage networking resources.
+   * @default - Auto Mode networking disabled
+   */
+  readonly kubernetesNetwork?: KubernetesNetworkConfig;
+
+  /**
    * Number of instances to allocate as an initial capacity for this cluster.
    * Instance type can be configured through `defaultCapacityInstanceType`,
    * which defaults to `m5.large`.
@@ -616,36 +639,6 @@ export interface ClusterProps extends ClusterCommonOptions {
    * @default true
    */
   readonly outputConfigCommand?: boolean;
-
-  /**
-   * Whether to enable EKS Auto Mode. When enabled, EKS will automatically manage compute, storage, and networking resources.
-   *
-   * @default - true
-   */
-  readonly autoMode?: boolean;
-
-  /**
-   * Configuration for compute settings in Auto Mode.
-   * When enabled, EKS will automatically manage compute resources.
-   * @default - Auto Mode compute disabled
-   */
-  readonly compute?: ComputeConfig;
-
-  /**
-   * Configuration for storage settings.
-   * When enabled, EKS will automatically manage storage resources.
-   * At this moment, only block storage is supported. While `autoMode` constrols the block storage enablement and no ther props available,
-   * this prop is reserved for future use.
-   *
-   * readonly storage?: StorageConfig;
-   */
-
-  /**
-   * Configuration for Kubernetes networking settings in Auto Mode.
-   * When enabled, EKS will automatically manage networking resources.
-   * @default - Auto Mode networking disabled
-   */
-  readonly kubernetesNetwork?: KubernetesNetworkConfig;
 }
 
 /**
@@ -1141,13 +1134,12 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const autoModeDisabled = props.autoMode === false ||
-      props.defaultCapacity !== undefined ||
-      props.defaultCapacityType !== undefined ||
-      props.defaultCapacityInstance !== undefined;
+    const autoModeEnabled = !(props.defaultCapacityType !== undefined && props.defaultCapacityType !== DefaultCapacityType.AUTOMODE);
 
-    // for better readability
-    const autoModeEnabled = !autoModeDisabled;
+    // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
+    if (autoModeEnabled && (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined)) {
+      throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+    }
 
     // Node pool values are case-sensitive and must be general-purpose and/or system
     if (props.compute?.nodePools) {
@@ -1228,22 +1220,22 @@ export class Cluster extends ClusterBase {
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       computeConfig: {
-        enabled: autoModeDisabled ? false : true,
+        enabled: !autoModeEnabled ? false : true,
         // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
         // the request must not include values for the nodeRoleArn or nodePools fields.
-        nodePools: autoModeDisabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
-        nodeRoleArn: autoModeDisabled ? undefined : props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
+        nodePools: !autoModeEnabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
+        nodeRoleArn: !autoModeEnabled ? undefined : props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
       },
       storageConfig: {
         blockStorage: {
-          enabled: autoModeDisabled ? false : true,
+          enabled: !autoModeEnabled ? false : true,
         },
       },
       kubernetesNetworkConfig: {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
         elasticLoadBalancing: {
-          enabled: autoModeDisabled ? false : true,
+          enabled: !autoModeEnabled ? false : true,
         },
       },
       resourcesVpcConfig: {
@@ -1272,6 +1264,26 @@ export class Cluster extends ClusterBase {
         'AmazonEKSNetworkingPolicy', 'AmazonEKSClusterPolicy'].forEach((policyName) => {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
       });
+    }
+
+    // if any of defaultCapacity* properties are set, we need a default capacity(nodegroup)
+    if (props.defaultCapacity !== undefined ||
+      props.defaultCapacityType !== undefined ||
+      props.defaultCapacityInstance !== undefined) {
+      const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
+      if (minCapacity > 0) {
+        const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
+        // If defaultCapacityType is undefined, use AUTOMODE as the default
+        const capacityType = props.defaultCapacityType ?? DefaultCapacityType.AUTOMODE;
+
+        // Only create EC2 or Nodegroup capacity if not using AUTOMODE
+        if (capacityType === DefaultCapacityType.EC2) {
+          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity });
+        } else if (capacityType === DefaultCapacityType.NODEGROUP) {
+          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity });
+        }
+        // For AUTOMODE, we don't create any explicit capacity as it's managed by EKS
+      }
     }
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
@@ -1358,38 +1370,6 @@ export class Cluster extends ClusterBase {
 
     if (props.albController) {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
-    }
-
-    /**
-     * allocate default capacity for the following cases:
-     * 1. autoMode is explicitly false
-     * 2. defaultCapacity is defined
-     * 3. defaultCapacityType is defined
-     * 4. defaultCapacityInstance is defined
-     */
-
-    // if any of defaultCapacity* properties are set with autoMode explicitly enabled, throw an error
-    if (props.defaultCapacity !== undefined ||
-      props.defaultCapacityType !== undefined ||
-      props.defaultCapacityInstance !== undefined) {
-      if (props.autoMode === true) {
-        throw new Error('defaultCapacity* properties are not supported when autoMode is explicitly enabled');
-      }
-    }
-
-    if (autoModeDisabled) {
-      const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
-      if (minCapacity > 0) {
-        const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-        this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-          this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
-
-        this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-          this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
-      }
-
-      // we only need this if we are not using auto mode or if we are using fargate
-      this.defineCoreDnsComputeType(CoreDnsComputeType.EC2);
     }
 
     // ensure FARGATE still applies here
@@ -2126,6 +2106,10 @@ export enum DefaultCapacityType {
    * EC2 autoscaling group
    */
   EC2,
+  /**
+   * Auto Mode
+   */
+  AUTOMODE,
 }
 
 /**
