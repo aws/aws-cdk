@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnResponseHeadersPolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Token, withResolved } from '../../core';
+import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -135,9 +135,9 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     withResolved(behavior.accessControlAllowMethods, (methods) => {
       const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
       if (methods.includes('ALL') && methods.length !== 1) {
-        throw new Error("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
+        throw new ValidationError("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.", this);
       } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
-        throw new Error(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`);
+        throw new ValidationError(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`, this);
       }
     });
 
@@ -178,7 +178,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     return {
       items: headers.map(header => {
         if (!Token.isUnresolved(header) && readonlyHeaders.includes(header.toLowerCase())) {
-          throw new Error(`Cannot remove read-only header ${header}`);
+          throw new ValidationError(`Cannot remove read-only header ${header}`, this);
         }
         return { header };
       }),
@@ -188,11 +188,11 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   private _renderServerTimingHeadersConfig(samplingRate: number): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
     if (!Token.isUnresolved(samplingRate)) {
       if ((samplingRate < 0 || samplingRate > 100)) {
-        throw new Error(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`);
+        throw new ValidationError(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`, this);
       }
 
       if (!hasMaxDecimalPlaces(samplingRate, 4)) {
-        throw new Error(`Sampling rate can have up to four decimal places, received ${samplingRate}`);
+        throw new ValidationError(`Sampling rate can have up to four decimal places, received ${samplingRate}`, this);
       }
     }
 

@@ -396,7 +396,7 @@ export interface IBucket extends IResource {
    * Function to add required permissions to the destination bucket for cross account
    * replication. These permissions will be added as a resource based policy on the bucket.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
    * account ID in which destination bucket is hosted. For more information on accessControlTransition
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
    */
@@ -966,7 +966,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Function to add required permissions to the destination bucket for cross account
    * replication. These permissions will be added as a resource based policy on the bucket
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overriden, set accessControlTransition to true and provide
+   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
    * account ID in which destination bucket is hosted. For more information on accessControlTransition
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
    */
@@ -2850,7 +2850,7 @@ export class Bucket extends BucketBase {
         const isCrossAccount = sourceAccount !== destinationAccount;
 
         if (isCrossAccount) {
-          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on source bucket using method addReplicationPolicy() ');
+          Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() ');
         } else if (rule.accessControlTransition) {
           throw new ValidationError('accessControlTranslation is only supported for cross-account replication', this);
         }

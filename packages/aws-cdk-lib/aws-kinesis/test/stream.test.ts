@@ -898,6 +898,52 @@ describe('Kinesis data streams', () => {
         },
       },
     });
+    Template.fromStack(stack).resourceCountIs('AWS::Kinesis::ResourcePolicy', 0);
+  }),
+  test('grant when stream/consumer and grantee are in different accounts', () => {
+    const stackA = new Stack(undefined, 'StackA', { env: { account: '123456789012' } });
+    const streamFromStackA = new Stream(stackA, 'Stream', {
+      streamName: 'MyStream',
+    });
+
+    const stackB = new Stack(undefined, 'StackB', { env: { account: '234567890123' } });
+    const roleFromStackB = new iam.Role(stackB, 'MyRole', {
+      assumedBy: new iam.AccountPrincipal('234567890123'),
+      roleName: 'MyRole',
+    });
+
+    streamFromStackA.grant(roleFromStackB, 'kinesis:GetRecords');
+
+    Template.fromStack(stackA).hasResourceProperties('AWS::Kinesis::ResourcePolicy', {
+      ResourceArn: stackA.resolve(streamFromStackA.streamArn),
+      ResourcePolicy: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'kinesis:GetRecords',
+            Effect: 'Allow',
+            Principal: {
+              AWS: stackA.resolve(roleFromStackB.roleArn),
+            },
+            Resource: stackA.resolve(streamFromStackA.streamArn),
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [stackB.resolve(roleFromStackB.roleName)],
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          // stream read permissions
+          {
+            Action: 'kinesis:GetRecords',
+            Effect: 'Allow',
+            Resource: stackB.resolve(streamFromStackA.streamArn),
+          },
+        ]),
+      },
+    });
   }),
 
   test('cross-stack permissions - no encryption', () => {
@@ -1304,6 +1350,7 @@ describe('Kinesis data streams', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::ResourcePolicy', {
+      ResourceArn: stack.resolve(stream.streamArn),
       ResourcePolicy: {
         Version: '2012-10-17',
         Statement: [

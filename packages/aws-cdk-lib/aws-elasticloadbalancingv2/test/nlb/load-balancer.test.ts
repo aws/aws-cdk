@@ -6,6 +6,43 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  test('specify minimum capacity unit', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      minimumCapacityUnit: 5500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      MinimumLoadBalancerCapacity: {
+        CapacityUnits: 5500,
+      },
+    });
+  });
+
+  test.each([-1, 2750, 5499, 10000.1, 90001])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    // two AZs
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const capacityUnitPerAz = minimumCapacityUnit / vpc.availabilityZones.length;
+
+    // THEN
+    expect(() => {
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        minimumCapacityUnit,
+      });
+    }).toThrow(`'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`);
+  });
+
   test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();

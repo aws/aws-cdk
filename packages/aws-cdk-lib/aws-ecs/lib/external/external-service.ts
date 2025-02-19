@@ -123,15 +123,15 @@ export class ExternalService extends BaseService implements IExternalService {
     }
 
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
-      throw new Error (`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
+      throw new Error(`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
     }
 
     if (props.cloudMapOptions !== undefined) {
-      throw new Error ('Cloud map options are not supported for External service');
+      throw new Error('Cloud map options are not supported for External service');
     }
 
     if (props.capacityProviderStrategies !== undefined) {
-      throw new Error ('Capacity Providers are not supported for External service');
+      throw new Error('Capacity Providers are not supported for External service');
     }
 
     const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
@@ -167,7 +167,7 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
+   * Overridden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
   @MethodMetadata()
   public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -175,7 +175,7 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
+   * Overridden method to throw error as `loadBalancerTarget` is not supported for external service
    */
   @MethodMetadata()
   public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
@@ -183,7 +183,7 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `registerLoadBalancerTargets` is not supported for external service
+   * Overridden method to throw error as `registerLoadBalancerTargets` is not supported for external service
    */
   @MethodMetadata()
   public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
@@ -191,15 +191,15 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `configureAwsVpcNetworkingWithSecurityGroups` is not supported for external service
+   * Overridden method to throw error as `configureAwsVpcNetworkingWithSecurityGroups` is not supported for external service
    */
   // eslint-disable-next-line max-len, no-unused-vars
   protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
-    throw new Error ('Only Bridge network mode is supported for external service');
+    throw new Error('Only Bridge network mode is supported for external service');
   }
 
   /**
-   * Overriden method to throw error as `autoScaleTaskCount` is not supported for external service
+   * Overridden method to throw error as `autoScaleTaskCount` is not supported for external service
    */
   @MethodMetadata()
   public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
@@ -207,7 +207,7 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `enableCloudMap` is not supported for external service
+   * Overridden method to throw error as `enableCloudMap` is not supported for external service
    */
   @MethodMetadata()
   public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
@@ -215,7 +215,7 @@ export class ExternalService extends BaseService implements IExternalService {
   }
 
   /**
-   * Overriden method to throw error as `associateCloudMapService` is not supported for external service
+   * Overridden method to throw error as `associateCloudMapService` is not supported for external service
    */
   @MethodMetadata()
   public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {

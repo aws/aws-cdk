@@ -4,7 +4,7 @@ import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceAct
 import { IStage } from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
 import * as sns from '../../../aws-sns';
-import { Stage } from '../../../core';
+import { Stage, ValidationError } from '../../../core';
 import { Step } from '../blueprint';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 
@@ -76,7 +76,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     const existing = Node.of(pipeline).tryFindChild(id);
     if (existing) {
       if (!(existing instanceof ApplicationSecurityCheck)) {
-        throw new Error(`Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`);
+        throw new ValidationError(`Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`, pipeline);
       }
       return existing;
     }
