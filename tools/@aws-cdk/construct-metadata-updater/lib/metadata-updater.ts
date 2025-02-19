@@ -502,9 +502,11 @@ export class EnumsUpdater extends MetadataUpdater {
    */
   public execute() {
     const enumBlueprint: Record<string, (string | number)[]> = {};
-    const moduleEnumBlueprint: Record<string, (string | number)[]> = {};
+    const moduleEnumBlueprint: Record<string, Record<string, (string | number)[]>> = {};
 
     this.project.getSourceFiles().forEach((sourceFile) => {
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1].replace(".ts", "")
+      let fileBlueprint: Record<string, (string | number)[]> = {};
       sourceFile.forEachChild((node) => {
         if (node.getKindName() === "EnumDeclaration") {
           const enumDeclaration = node.asKindOrThrow(SyntaxKind.EnumDeclaration);
@@ -516,27 +518,29 @@ export class EnumsUpdater extends MetadataUpdater {
 
           // Add to the blueprint
           enumBlueprint[enumName] = enumValues;
-          moduleEnumBlueprint[sourceFile.getFilePath().split("aws-cdk/packages/")[1].replace(".ts", "") + "." + enumName] = enumValues;
+          fileBlueprint[enumName] = enumValues;
         }
       });
+      if (Object.values(fileBlueprint).length > 0) {
+        moduleEnumBlueprint[sourceFileName] = fileBlueprint;
+      }
     });
 
     // Generate the file content
     const content = this.generateFileContent(enumBlueprint);
-    const moduleContent = this.generateFileContent(moduleEnumBlueprint);
     const outputPath = path.resolve(
       __dirname,
       "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts"
     );
     const moduleOutputPath = path.resolve(
       __dirname,
-      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.ts"
+      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json"
     );
-
+    
     // Write the generated file
     fs.writeFileSync(outputPath, content);
     console.log(`Metadata file written to: ${outputPath}`);
-    fs.writeFileSync(moduleOutputPath, moduleContent);
+    this.writeModuleFileContent(moduleOutputPath, moduleEnumBlueprint);
     console.log(`Metadata file written to: ${moduleOutputPath}`);
   }
 
@@ -566,6 +570,21 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);
+  }
+
+  /**
+   * Generate the file content for the enum metadats.
+   */
+  private writeModuleFileContent(outputPath: string, enumlikes: Record<string, Record<string, (string | number)[]>> = {}) {
+    // Sort the keys of the enumlikes object
+    const sortedEnumlikes = Object.keys(enumlikes).sort().reduce<Record<string, Record<string, (string | number)[]>>>((acc, key) => {
+      acc[key] = enumlikes[key];
+      return acc;
+    }, {});
+    const content = JSON.stringify(sortedEnumlikes, null, 2);
+
+    // Write the generated file
+    fs.writeFileSync(outputPath, content);
   }
 }
 
@@ -686,27 +705,31 @@ export class EnumLikeUpdater extends MetadataUpdater {
    * Parse the repository for any enum-like classes and generate a JSON blueprint.
    */
   public execute(): void {
-    const enumlikeBlueprint: Record<string, string[]> = {};
+    const enumlikeBlueprint: Record<string, Record<string, string[]>> = {};
 
     // Retrieve enum-like classes
     this.project.getSourceFiles().forEach((sourceFile) => {
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1].replace(".ts", "")
+      let fileBlueprint: Record<string, string[]> = {};
       sourceFile.forEachChild((node) => {
         if (node instanceof ClassDeclaration) {
           const className = node.getName();
           if (className) {
-            let classBlueprint: string[] = [];
             node.forEachChild((classField) => {
               if (classField instanceof PropertyDeclaration) {
                 // enum-likes have `public static readonly` attributes that map to non-string values
                 if (classField.getText().startsWith("public static readonly") && classField.getInitializer()?.getKind() !== SyntaxKind.StringLiteral) {
                   // This is an enum-like; add to blueprint
                   const enumlikeName = classField.getName();
-                  classBlueprint.push(enumlikeName);
+                  if (!fileBlueprint[className]) {
+                    fileBlueprint[className] = [];
+                  }
+                  fileBlueprint[className].push(enumlikeName);
                 }
               }
             });
-            if (classBlueprint.length > 0) {
-              enumlikeBlueprint[sourceFile.getFilePath().split("aws-cdk/packages/")[1].replace(".ts", "") + "::" + className] = classBlueprint;
+            if (Object.values(fileBlueprint).length > 0) {
+              enumlikeBlueprint[sourceFileName] = fileBlueprint;
             }
           }
         }
@@ -714,44 +737,30 @@ export class EnumLikeUpdater extends MetadataUpdater {
     });
 
     // Generate the file content
-    const content = this.generateFileContent(enumlikeBlueprint);
     const outputPath = path.resolve(
       __dirname,
-      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.ts"
+      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json"
     );
-
+    
     // Write the generated file
-    fs.writeFileSync(outputPath, content);
+    this.writeFileContent(outputPath, enumlikeBlueprint);
     console.log(`Metadata file written to: ${outputPath}`);
   }
 
 
 
   /**
-   * Generate the file content for the enum metadats.
+   * Write the file content for the enum metadats.
    */
-  private generateFileContent(enumlikes: Record<string, (string | number)[]> = {}): string {
-    const template = `/* eslint-disable quote-props */
-/* eslint-disable @stylistic/comma-dangle */
-/* eslint-disable @cdklabs/no-literal-partition */
-/*
- * Do not edit this file manually. To prevent misconfiguration, this file
- * should only be modified by an automated GitHub workflow, that ensures
- * that the ENUMLIKEs present in this list
- *
- */
-
-export const AWS_CDK_ENUMLIKES: { [key: string]: any } = $ENUMLIKES;
-`;
-
+  private writeFileContent(outputPath: string, enumlikes: Record<string, Record<string, string[]>> = {}) {
     // Sort the keys of the enumlikes object
-    const sortedEnumlikes = Object.keys(enumlikes).sort().reduce<Record<string, (string | number)[]>>((acc, key) => {
+    const sortedEnumlikes = Object.keys(enumlikes).sort().reduce<Record<string, Record<string, string[]>>>((acc, key) => {
       acc[key] = enumlikes[key];
       return acc;
     }, {});
-    const jsonContent = JSON.stringify(sortedEnumlikes, null, 2).replace(/"/g, "'");
+    const content = JSON.stringify(sortedEnumlikes, null, 2);
 
-    // Replace the placeholder with the JSON object
-    return template.replace("$ENUMLIKES", jsonContent);
+    // Write the generated file
+    fs.writeFileSync(outputPath, content);
   }
 }

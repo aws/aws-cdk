@@ -444,7 +444,7 @@ describe('EnumLikeUpdater', () => {
       // Mock the source files
       const mockSourceFiles = [
         { 
-          getFilePath: () => '/packages/aws-cdk-lib/aws-lambda/Function.ts',
+          getFilePath: () => '/aws-cdk/packages/aws-cdk-lib/aws-lambda/Function.ts',
           forEachChild: jest.fn(() => {})
         }
       ] as any;
@@ -452,7 +452,7 @@ describe('EnumLikeUpdater', () => {
       // Setup spies
       const getSourceFilesSpy = jest.spyOn(enumLikeUpdater['project'], 'getSourceFiles')
         .mockReturnValue(mockSourceFiles);
-      const generateFileContentSpy = jest.spyOn(enumLikeUpdater as any, 'generateFileContent');
+      const generateFileContentSpy = jest.spyOn(enumLikeUpdater as any, 'writeFileContent');
 
       // Execute the method
       enumLikeUpdater.execute();
@@ -467,20 +467,31 @@ describe('EnumLikeUpdater', () => {
     it('should generate correct file content and write to file', () => {
       // Mock the enumLikes
       let enumlikes = {
-        'aws-cdk/some-module/enum::Enum': [
-          'value'
-        ],
+        'aws-cdk/some-module/enum': {
+          'Enum': [
+            'value'
+          ],
+        },
       };
 
       // Mock path.resolve
       (path.resolve as jest.Mock).mockReturnValue('/mock/output/path');
 
       // Execute the method
-      const content = enumLikeUpdater['generateFileContent'](enumlikes);
+      enumLikeUpdater['writeFileContent']('/mock/output/path', enumlikes);
+      
+      // Verify file write
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        '/mock/output/path',
+        expect.stringContaining('aws-cdk/some-module/enum')
+      );
 
-      expect(content).toContain('eslint-disable');
-      expect(content).toContain('AWS_CDK_ENUMLIKES');
-      expect(content).toContain("'aws-cdk/some-module/enum::Enum'");
+      // Verify content format
+      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
+      const content = writeCall[1];
+      
+      expect(content).toContain("'aws-cdk/some-module/enum'");
+      expect(content).toContain("'Enum'");
       expect(content).toContain("'value'");
     });
   });
