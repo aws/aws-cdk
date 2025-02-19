@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
@@ -54,6 +55,8 @@ export interface CustomResourceProps {
    *   serviceToken: myTopic.topicArn,
    * });
    * ```
+   *
+   * serviceToken is passed to properties with key "ServiceToken"
    */
   readonly serviceToken: string;
 
@@ -62,12 +65,18 @@ export interface CustomResourceProps {
    *
    * The value must be between 1 second and 3600 seconds.
    *
+   * serviceTimeout is passed to properties with key "ServiceTimeout"
+   *
    * @default Duration.seconds(3600)
    */
   readonly serviceTimeout?: Duration;
 
   /**
    * Properties to pass to the Lambda
+   *
+   * Some propery values are passed into this dictionary automatically.
+   * Please keep in mind that these keys should not be repeated in this prop or they will be overwritten.
+   * E.g. `ServiceToken`, `ServiceTimeout`
    *
    * @default - No properties.
    */
@@ -154,11 +163,21 @@ export class CustomResource extends Resource {
       }
     }
 
+    const constructPropertiesPassed = {
+      ServiceToken: props.serviceToken,
+      ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+    };
+
+    const hasCommonKeys = Object.keys(properties).some(key => key in constructPropertiesPassed);
+
+    if (hasCommonKeys) {
+      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropDuplicate', `CustomResource properties should not contain keys that are automatically added by the CDK. Found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
+    }
+
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.serviceToken,
-        ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+        ...constructPropertiesPassed,
         ...properties,
       },
     });
