@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5186e951f469ea8e615892ba5e275c8d10861c611945ad7f91447b00da5ad60.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7557db017e172540900b6b3422042f6a23323d004d999613775e56ac929feec3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,16 +40,16 @@
             "data": "MyLambdaServiceRole4539ECB6"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
-          }
-        ],
         "/aws-cdk-lambda-1/MyLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdainlinePolicyAddedToExecutionRole0E0144580"
           }
         ],
         "/aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource": [
@@ -91,7 +91,7 @@
         "/aws-cdk-lambda-1/MySnapStartLambda": [
           {
             "type": "aws:cdk:warning",
-            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
           }
         ],
         "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/Resource": [
@@ -109,7 +109,7 @@
         "/aws-cdk-lambda-1/MySnapStartLambdaArm": [
           {
             "type": "aws:cdk:warning",
-            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
           }
         ],
         "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/Resource": [
@@ -134,6 +134,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLambdaPolicyEEA76B97": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaPolicyEEA76B97",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

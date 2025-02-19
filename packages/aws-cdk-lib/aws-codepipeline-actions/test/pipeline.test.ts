@@ -8,6 +8,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import { App, Aws, CfnParameter, SecretValue, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as cpactions from '../lib';
 
 /* eslint-disable quote-props */
@@ -417,8 +418,13 @@ describe('pipeline', () => {
     });
   });
 
-  test('Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline', () => {
-    const stack = new Stack();
+  test('Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
 
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
@@ -535,6 +541,137 @@ describe('pipeline', () => {
         'Version': '2012-10-17',
       },
       'PolicyName': 'FunctionServiceRoleDefaultPolicy2F49994A',
+      'Roles': [
+        {
+          'Ref': 'FunctionServiceRole675BB04A',
+        },
+      ],
+    });
+  });
+
+  test('Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+
+    const lambdaFun = new lambda.Function(stack, 'Function', {
+      code: new lambda.InlineCode('bla'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const source1Output = new codepipeline.Artifact('sourceArtifact1');
+    const source1 = new cpactions.S3SourceAction({
+      actionName: 'SourceAction1',
+      bucketKey: 'some/key',
+      output: source1Output,
+      bucket,
+    });
+    const source2Output = new codepipeline.Artifact('sourceArtifact2');
+    const source2 = new cpactions.S3SourceAction({
+      actionName: 'SourceAction2',
+      bucketKey: 'another/key',
+      output: source2Output,
+      bucket,
+    });
+    pipeline.addStage({
+      stageName: 'Source',
+      actions: [
+        source1,
+        source2,
+      ],
+    });
+
+    const lambdaAction = new cpactions.LambdaInvokeAction({
+      actionName: 'InvokeAction',
+      lambda: lambdaFun,
+      inputs: [
+        source2Output,
+        source1Output,
+      ],
+      outputs: [
+        new codepipeline.Artifact('lambdaOutput1'),
+        new codepipeline.Artifact('lambdaOutput2'),
+        new codepipeline.Artifact('lambdaOutput3'),
+      ],
+    });
+    pipeline.addStage({
+      stageName: 'Stage',
+      actions: [lambdaAction],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'ArtifactStore': {
+        'Location': {
+          'Ref': 'PipelineArtifactsBucket22248F97',
+        },
+        'Type': 'S3',
+      },
+      'RoleArn': {
+        'Fn::GetAtt': [
+          'PipelineRoleD68726F7',
+          'Arn',
+        ],
+      },
+      'Stages': [
+        {
+          'Name': 'Source',
+        },
+        {
+          'Actions': [
+            {
+              'ActionTypeId': {
+                'Category': 'Invoke',
+                'Owner': 'AWS',
+                'Provider': 'Lambda',
+                'Version': '1',
+              },
+              'Configuration': {
+                'FunctionName': {
+                  'Ref': 'Function76856677',
+                },
+              },
+              'InputArtifacts': [
+                { 'Name': 'sourceArtifact2' },
+                { 'Name': 'sourceArtifact1' },
+              ],
+              'Name': 'InvokeAction',
+              'OutputArtifacts': [
+                { 'Name': 'lambdaOutput1' },
+                { 'Name': 'lambdaOutput2' },
+                { 'Name': 'lambdaOutput3' },
+              ],
+              'RunOrder': 1,
+            },
+          ],
+          'Name': 'Stage',
+        },
+      ],
+    });
+
+    expect((lambdaAction.actionProperties.outputs || []).length).toEqual(3);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'codepipeline:PutJobSuccessResult',
+              'codepipeline:PutJobFailureResult',
+            ],
+            'Effect': 'Allow',
+            'Resource': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'FunctioninlinePolicyAddedToExecutionRole0B553FD2F',
       'Roles': [
         {
           'Ref': 'FunctionServiceRole675BB04A',

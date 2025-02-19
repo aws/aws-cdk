@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-bottlerocket.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-bottlerocket.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23efb012af109a2b701accba88ab31415b5012b2ff3ce7c0de38ee461130c4a3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ba9cdc6b1b2f647cabd19eb62d6a0ac2545434b18fe1e9d203ecf591b9ffe28.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,12 +208,6 @@
             "data": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E"
-          }
-        ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -229,6 +224,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole07C0DC0DA"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole10E3DC628"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole2C85CCD01"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole367C81881"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole43085D216"
           }
         ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
@@ -273,10 +298,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": [
+        "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

@@ -1,31 +1,33 @@
+import { describe } from 'node:test';
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack } from '../../../core';
+import { App, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, ApplicationConfiguration, Classification, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
 
-let stack: Stack;
-let clusterId: string;
-let defaultProps: EmrContainersStartJobRunProps;
-
-beforeEach(() => {
-  stack = new Stack();
-  clusterId = 'clusterId';
-  defaultProps = {
-    virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-    releaseLabel: ReleaseLabel.EMR_6_2_0,
-    jobDriver: {
-      sparkSubmitJobDriver: {
-        entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
-        sparkSubmitParameters: '--conf spark.executor.instances=2',
-      },
-    },
-  };
-});
-
 describe('Invoke EMR Containers Start Job Run with ', () => {
+  let stack: Stack;
+  let clusterId: string;
+  let defaultProps: EmrContainersStartJobRunProps;
+
+  beforeEach(() => {
+    stack = new Stack();
+    clusterId = 'clusterId';
+    defaultProps = {
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+    };
+  });
+
   test('using JSONata', () => {
     // WHEN
     const task = EmrContainersStartJobRun.jsonata(stack, 'EMR Containers Start Job Run', {
@@ -1009,8 +1011,145 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       },
     });
   });
+});
 
-  test('Custom resource is created that has correct EKS namespace, environment, AWSCLI layer, and IAM policy permissions', () => {
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+  const stack = new Stack();
+  const clusterId = 'clusterId';
+
+  expect(() => {
+    new EmrContainersStartJobRun(stack, 'Task', {
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('job-location'),
+        },
+      },
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+    });
+  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+});
+
+describe('Custom resource is created that has correct EKS namespace, environment, AWSCLI layer, and IAM policy permissions', () => {
+  test('@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new Stack(app);
+    const clusterId = 'clusterId';
+    const defaultProps = {
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+    };
+
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'Task', defaultProps);
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'eks:DescribeCluster',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':eks:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':cluster/',
+                  {
+                    'Fn::GetAtt': [
+                      'TaskGetEksClusterInfo2F156985',
+                      'virtualCluster.containerProvider.id',
+                    ],
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'iam:GetRole',
+              'iam:UpdateAssumeRolePolicy',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'TaskJobExecutionRole5D5BBA5A',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Layers: [
+        {
+          Ref: 'TaskawsclilayerB1A11740',
+        },
+      ],
+      MemorySize: 256,
+      Runtime: 'python3.11',
+      Timeout: 30,
+    });
+  });
+
+  test('@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new Stack(app);
+    const clusterId = 'clusterId';
+    const defaultProps = {
+      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
+      releaseLabel: ReleaseLabel.EMR_6_2_0,
+      jobDriver: {
+        sparkSubmitJobDriver: {
+          entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+          sparkSubmitParameters: '--conf spark.executor.instances=2',
+        },
+      },
+    };
+
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'Task', defaultProps);
 
@@ -1082,19 +1221,4 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       Timeout: 30,
     });
   });
-});
-
-test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
-  expect(() => {
-    new EmrContainersStartJobRun(stack, 'Task', {
-      virtualCluster: VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
-      releaseLabel: ReleaseLabel.EMR_6_2_0,
-      jobDriver: {
-        sparkSubmitJobDriver: {
-          entryPoint: sfn.TaskInput.fromText('job-location'),
-        },
-      },
-      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    });
-  }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });

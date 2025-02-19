@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-alb-idle-timeout.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-alb-idle-timeout.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e998d64c71fcde81ce9134b23f899cc4deb0958c9a214bc510573dea498650ec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a8b2c235c9a27ab2db5823e04dfe1cbd8c4a8ba404f9e65e0abbd98bf872656.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +178,27 @@
             "data": "HostedZoneDB99F866"
           }
         ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "Cluster.handleCanContainersAccessInstanceRoleForAL2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:584:47)",
+              "Cluster.configureAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:489:26)",
+              "Cluster.addAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:455:14)",
+              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:408:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service-idle-timeout.js:25:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/aws-ecs-integ-alb-idle-timeout/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -189,7 +211,7 @@
             "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B:32768-65535": [
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelb1SecurityGroup378D68EF:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelb1SecurityGroup378D68EF32768655356B9A3535"
@@ -237,12 +259,6 @@
             "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E"
-          }
-        ],
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -259,6 +275,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole02E489EC0"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole13AF1063A"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole2D53500AD"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole386EBB933"
+          }
+        ],
+        "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole4F316D036"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -291,64 +337,64 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1FA8CBE12"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1SecurityGroup342C51EA"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/to awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE:32768-65535": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/SecurityGroup/to awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1SecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE327686553594C8842C"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/listener/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listener94ADDDDF"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb80Group/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/listener/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Group/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/listener/ECSTargetGroupweb90Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Rule/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/lb1/listener/ECSTargetGroupweb90Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb1listenerECSTargetGroupweb90Rule88D36BAE"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/DNSlb/Resource": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/DNSlb1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceDNSlb1447CEC86"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/LoadBalancerDNSlb": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/LoadBalancerDNSlb1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLoadBalancerDNSlbDE816AD2"
+            "data": "myServiceLoadBalancerDNSlb1341EE21A"
           }
         ],
-        "/aws-ecs-integ-alb-idle-timeout/myService/ServiceURLlbhttps": [
+        "/aws-ecs-integ-alb-idle-timeout/myService/ServiceURLlb1https": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceServiceURLlbhttps4348F098"
+            "data": "myServiceServiceURLlb1https6C9C5530"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb2/Resource": [
@@ -447,6 +493,27 @@
             "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
           }
         ],
+        "/aws-ecs-integ-alb-idle-timeout/myService/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "new BaseService (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:270:43)",
+              "new Ec2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:75:9)",
+              "ApplicationMultipleTargetGroupsEc2Service.createEc2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/ecs/application-multiple-target-groups-ecs-service.js:85:16)",
+              "new ApplicationMultipleTargetGroupsEc2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/ecs/application-multiple-target-groups-ecs-service.js:71:29)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service-idle-timeout.js:27:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/aws-ecs-integ-alb-idle-timeout/myService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
@@ -481,6 +548,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "multiAlbEcsEc2TestDefaultTestDeployAssertE5F6E3B0.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

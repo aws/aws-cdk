@@ -844,7 +844,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "2e670e0c40dc05a34d602c35c948edefcb81afaeea05b9f6240341173af6164e.zip"
+                      "s3Key": "25c16d2ab30e35800b3ea63c44c93deb85584076eb09a2db9f971803252b22dc.zip"
                     },
                     "description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.0",
                     "licenseInfo": "Apache-2.0"
@@ -858,7 +858,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v32.KubectlV32Layer",
-              "version": "2.0.1",
+              "version": "2.0.2",
               "metadata": [
                 "*"
               ]
@@ -1654,16 +1654,6 @@
                                                   ]
                                                 }
                                               ]
-                                            },
-                                            {
-                                              "Action": "lambda:GetFunction",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "ClusterKubectlProviderHandler2E05C68A",
-                                                  "Arn"
-                                                ]
-                                              }
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1695,11 +1685,6 @@
                                     {
                                       "attachToRole": [
                                         "*"
-                                      ]
-                                    },
-                                    {
-                                      "addStatements": [
-                                        {}
                                       ]
                                     },
                                     {
@@ -1745,8 +1730,13 @@
                                   ]
                                 },
                                 {
-                                  "addToPrincipalPolicy": [
-                                    {}
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
                                   ]
                                 }
                               ]
@@ -1842,6 +1832,70 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "ClusterKubectlProviderHandler2E05C68A",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A",
+                                    "roles": [
+                                      {
+                                        "Ref": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },

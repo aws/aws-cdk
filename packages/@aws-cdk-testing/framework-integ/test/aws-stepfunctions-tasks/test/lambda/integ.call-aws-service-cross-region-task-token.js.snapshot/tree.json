@@ -98,7 +98,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
                       "metadata": [
-                        "*"
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
                       ]
                     }
                   }
@@ -112,6 +127,21 @@
                         "principalAccount": "*",
                         "assumeRoleAction": "*"
                       }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -154,6 +184,11 @@
               "metadata": [
                 {
                   "definitionBody": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
                 }
               ]
             }
@@ -165,6 +200,69 @@
               "Handler": {
                 "id": "Handler",
                 "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler",
+                "children": {
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/StartExecution/Handler/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "states:startExecution",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "AcceptorStateMachine3C18A968"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "StartExecutionHandlerinlinePolicyAddedToExecutionRole08677ED81",
+                            "roles": [
+                              {
+                                "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                   "version": "0.0.0",
@@ -176,6 +274,18 @@
                       "code": "*",
                       "handler": "*",
                       "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -251,50 +361,6 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-stepfunctions-aws-sdk-cross-region-task-token-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "states:startExecution",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "AcceptorStateMachine3C18A968"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF",
-                            "roles": [
-                              {
-                                "Ref": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
-                    }
                   }
                 },
                 "constructInfo": {
@@ -310,6 +376,16 @@
                         {
                           "managedPolicyArn": "*"
                         }
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
                       ]
                     }
                   ]
@@ -495,7 +571,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
                       "metadata": [
-                        "*"
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
                       ]
                     }
                   }
@@ -509,6 +600,21 @@
                         "principalAccount": "*",
                         "assumeRoleAction": "*"
                       }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -566,6 +672,11 @@
               "metadata": [
                 {
                   "definitionBody": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
                 }
               ]
             }
@@ -669,6 +780,8 @@
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
                           "metadata": [
+                            "*",
+                            "*",
                             "*"
                           ]
                         }
@@ -760,6 +873,8 @@
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
                           "metadata": [
+                            "*",
+                            "*",
                             "*"
                           ]
                         }

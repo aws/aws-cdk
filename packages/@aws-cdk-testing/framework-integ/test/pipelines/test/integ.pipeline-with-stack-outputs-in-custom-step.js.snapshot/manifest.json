@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "assembly-StackOutputPipelineStack-AppStage": {
       "type": "cdk:cloud-assembly",
@@ -25,7 +25,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e63d39049c7ed56197529f9507a93449bbde94dd62b1d355685065831df14af2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b959a8dc44ab7c5b285c13467b2ae679bf99bfa30db9e26eaae41afc44f2de4e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,16 +131,16 @@
             "data": "PipelineAppStageCustomFunctionServiceRole3CD45B89"
           }
         ],
-        "/StackOutputPipelineStack/Pipeline/Pipeline/AppStage/CustomFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829"
-          }
-        ],
         "/StackOutputPipelineStack/Pipeline/Pipeline/AppStage/CustomFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineAppStageCustomFunction1C605D4D"
+          }
+        ],
+        "/StackOutputPipelineStack/Pipeline/Pipeline/AppStage/CustomFunction/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAppStageCustomFunctioninlinePolicyAddedToExecutionRole0ACB505FB"
           }
         ],
         "/StackOutputPipelineStack/Pipeline/Pipeline/AppStage/CustomStep/CodePipelineActionRole/Resource": [
@@ -177,6 +177,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
