@@ -3,7 +3,7 @@
   "testCases": {
     "ReplicationInteg/DefaultTest": {
       "stacks": [
-        "BucketReplicationTestStack"
+        "BucketReplicationMultipleSourcesTestStack"
       ],
       "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
