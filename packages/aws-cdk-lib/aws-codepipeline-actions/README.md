@@ -1080,6 +1080,7 @@ const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
     'some_email@example.com',
   ], // optional
   additionalInformation: 'additional info', // optional
+  timeout: Duration.minutes(10), // optional
 });
 approveStage.addAction(manualApprovalAction);
 // `manualApprovalAction.notificationTopic` can be used to access the Topic
