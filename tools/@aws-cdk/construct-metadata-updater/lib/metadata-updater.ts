@@ -121,6 +121,23 @@ export abstract class MetadataUpdater {
 
     return resourceClasses;
   }
+
+  /**
+   * Write the file content for the enum metadats.
+   * @param outputPath The file to write to
+   * @param values The values, as a nested dictionary, to write. 
+   */
+  protected writeFileContent(outputPath: string, values: Record<string, Record<string, (string | number)[]>> = {}) {
+    // Sort the keys of the enumlikes object
+    const sortedValues = Object.keys(values).sort().reduce<Record<string, Record<string, (string | number)[]>>>((acc, key) => {
+      acc[key] = values[key];
+      return acc;
+    }, {});
+    const content = JSON.stringify(sortedValues, null, 2);
+
+    // Write the generated file
+    fs.writeFileSync(outputPath, content);
+  }
 }
 
 export class ConstructsUpdater extends MetadataUpdater {
@@ -540,7 +557,7 @@ export class EnumsUpdater extends MetadataUpdater {
     // Write the generated file
     fs.writeFileSync(outputPath, content);
     console.log(`Metadata file written to: ${outputPath}`);
-    this.writeModuleFileContent(moduleOutputPath, moduleEnumBlueprint);
+    this.writeFileContent(moduleOutputPath, moduleEnumBlueprint);
     console.log(`Metadata file written to: ${moduleOutputPath}`);
   }
 
@@ -570,21 +587,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);
-  }
-
-  /**
-   * Generate the file content for the enum metadats.
-   */
-  private writeModuleFileContent(outputPath: string, enumlikes: Record<string, Record<string, (string | number)[]>> = {}) {
-    // Sort the keys of the enumlikes object
-    const sortedEnumlikes = Object.keys(enumlikes).sort().reduce<Record<string, Record<string, (string | number)[]>>>((acc, key) => {
-      acc[key] = enumlikes[key];
-      return acc;
-    }, {});
-    const content = JSON.stringify(sortedEnumlikes, null, 2);
-
-    // Write the generated file
-    fs.writeFileSync(outputPath, content);
   }
 }
 
@@ -745,22 +747,5 @@ export class EnumLikeUpdater extends MetadataUpdater {
     // Write the generated file
     this.writeFileContent(outputPath, enumlikeBlueprint);
     console.log(`Metadata file written to: ${outputPath}`);
-  }
-
-
-
-  /**
-   * Write the file content for the enum metadats.
-   */
-  private writeFileContent(outputPath: string, enumlikes: Record<string, Record<string, string[]>> = {}) {
-    // Sort the keys of the enumlikes object
-    const sortedEnumlikes = Object.keys(enumlikes).sort().reduce<Record<string, Record<string, string[]>>>((acc, key) => {
-      acc[key] = enumlikes[key];
-      return acc;
-    }, {});
-    const content = JSON.stringify(sortedEnumlikes, null, 2);
-
-    // Write the generated file
-    fs.writeFileSync(outputPath, content);
   }
 }
