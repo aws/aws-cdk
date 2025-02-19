@@ -813,8 +813,9 @@ export class Distribution extends Resource implements IDistribution {
     if (!cacheBehavior.grpcEnabled) {
       return;
     }
-    if (![HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3].includes(this.httpVersion)) {
-      throw new Error(`'httpVersion' must be HttpVersion.HTTP2 or HttpVersion.HTTP2_AND_3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
+    const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
+    if (!validHttpVersions.includes(this.httpVersion)) {
+      throw new Error(`'httpVersion' must be ${validHttpVersions.join(", ")} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
     }
   }
 }
