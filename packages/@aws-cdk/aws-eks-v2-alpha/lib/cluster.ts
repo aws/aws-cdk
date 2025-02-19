@@ -1266,26 +1266,6 @@ export class Cluster extends ClusterBase {
       });
     }
 
-    // if any of defaultCapacity* properties are set, we need a default capacity(nodegroup)
-    if (props.defaultCapacity !== undefined ||
-      props.defaultCapacityType !== undefined ||
-      props.defaultCapacityInstance !== undefined) {
-      const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
-      if (minCapacity > 0) {
-        const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-        // If defaultCapacityType is undefined, use AUTOMODE as the default
-        const capacityType = props.defaultCapacityType ?? DefaultCapacityType.AUTOMODE;
-
-        // Only create EC2 or Nodegroup capacity if not using AUTOMODE
-        if (capacityType === DefaultCapacityType.EC2) {
-          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity });
-        } else if (capacityType === DefaultCapacityType.NODEGROUP) {
-          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity });
-        }
-        // For AUTOMODE, we don't create any explicit capacity as it's managed by EKS
-      }
-    }
-
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1370,6 +1350,26 @@ export class Cluster extends ClusterBase {
 
     if (props.albController) {
       this.albController = AlbController.create(this, { ...props.albController, cluster: this });
+    }
+
+    // if any of defaultCapacity* properties are set, we need a default capacity(nodegroup)
+    if (props.defaultCapacity !== undefined ||
+        props.defaultCapacityType !== undefined ||
+        props.defaultCapacityInstance !== undefined) {
+      const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
+      if (minCapacity > 0) {
+        const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
+        // If defaultCapacityType is undefined, use AUTOMODE as the default
+        const capacityType = props.defaultCapacityType ?? DefaultCapacityType.AUTOMODE;
+
+        // Only create EC2 or Nodegroup capacity if not using AUTOMODE
+        if (capacityType === DefaultCapacityType.EC2) {
+          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity });
+        } else if (capacityType === DefaultCapacityType.NODEGROUP) {
+          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity });
+        }
+        // For AUTOMODE, we don't create any explicit capacity as it's managed by EKS
+      }
     }
 
     // ensure FARGATE still applies here

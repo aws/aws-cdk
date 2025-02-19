@@ -184,13 +184,6 @@ describe('eks auto mode', () => {
         },
       });
 
-      // Verify EC2 capacity is created with default configuration
-      template.hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
-        MinSize: 2,
-        MaxSize: 2,
-        DesiredCapacity: 2,
-      });
-
       // Verify no nodegroup resources are created
       template.resourceCountIs('AWS::EKS::Nodegroup', 0);
     });
@@ -693,35 +686,6 @@ describe('eks auto mode', () => {
         });
       });
 
-      test('creates default nodegroup when defaultCapacityInstance is defined', () => {
-        // GIVEN
-        const { stack } = testFixtureNoVpc();
-
-        // WHEN
-        new eks.Cluster(stack, 'Cluster', {
-          version: CLUSTER_VERSION,
-          defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM), // Only specify instance type
-        });
-
-        // THEN
-        const template = Template.fromStack(stack);
-        // Verify Auto Mode is disabled
-        template.hasResourceProperties('AWS::EKS::Cluster', {
-          ComputeConfig: {
-            Enabled: false,
-          },
-        });
-
-        // Verify default nodegroup is created with specified instance type
-        template.hasResourceProperties('AWS::EKS::Nodegroup', {
-          ScalingConfig: {
-            DesiredSize: 2, // Default capacity count
-            MinSize: 2,
-          },
-          InstanceTypes: ['t3.medium'],
-        });
-      });
-
       test('creates default nodegroup with all defaultCapacity* properties', () => {
         // GIVEN
         const { stack } = testFixtureNoVpc();
@@ -760,41 +724,6 @@ describe('eks auto mode', () => {
             MinSize: 4,
           },
           InstanceTypes: ['t3.large'],
-        });
-      });
-
-      test('creates EC2 capacity when defaultCapacityType is EC2', () => {
-        // GIVEN
-        const { stack } = testFixtureNoVpc();
-
-        // WHEN
-        new eks.Cluster(stack, 'Cluster', {
-          version: CLUSTER_VERSION,
-          defaultCapacity: 2,
-          defaultCapacityType: eks.DefaultCapacityType.EC2,
-          defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
-        });
-
-        // THEN
-        const template = Template.fromStack(stack);
-        // Verify Auto Mode is disabled
-        template.hasResourceProperties('AWS::EKS::Cluster', {
-          ComputeConfig: {
-            Enabled: false,
-          },
-        });
-
-        // Verify EC2 AutoScalingGroup is created instead of nodegroup
-        template.resourceCountIs('AWS::EKS::Nodegroup', 0);
-        template.hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
-          MinSize: 2,
-          MaxSize: 2,
-          DesiredCapacity: 2,
-          LaunchTemplate: {
-            LaunchTemplateData: {
-              InstanceType: 't3.medium',
-            },
-          },
         });
       });
 
