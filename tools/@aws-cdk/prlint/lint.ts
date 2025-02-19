@@ -244,6 +244,8 @@ export class PullRequestLinter extends PullRequestLinterBase {
         { test: noMetadataChanges },
         { test: noAnalyticsClassesChanges },
         { test: noAnalyticsEnumsChanges },
+        { test: noAnalyticsEnumAutomationChanges },
+        { test: noAnalyticsEnumLikeAutomationChanges },
       ],
     });
 
@@ -578,6 +580,20 @@ function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult
   const result = new TestResult();
   const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts');
   result.assessFailure(condition, 'Manual changes to the enums.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumAutomationChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json');
+  result.assessFailure(condition, 'Manual changes to the module-enums.json file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumLikeAutomationChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json');
+  result.assessFailure(condition, 'Manual changes to the module-enumlikes.json file are not allowed.');
   return result;
 }
 
