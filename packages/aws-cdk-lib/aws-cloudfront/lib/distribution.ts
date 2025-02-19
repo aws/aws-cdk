@@ -341,6 +341,9 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
+    this.validateGrpc(props.defaultBehavior);
+
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
     if (props.additionalBehaviors) {
@@ -357,9 +360,6 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
-    this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
-
-    this.validateGrpc(this.defaultBehavior);
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -603,6 +603,7 @@ export class Distribution extends Resource implements IDistribution {
     if (pathPattern === '*') {
       throw new Error('Only the default behavior can have a path pattern of \'*\'');
     }
+    this.validateGrpc(behaviorOptions);
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
@@ -743,10 +744,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => {
-      this.validateGrpc(behavior);
-      return behavior._renderBehavior();
-    });
+    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
@@ -809,8 +807,8 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
-  private validateGrpc(cacheBehavior: CacheBehavior) {
-    if (!cacheBehavior.grpcEnabled) {
+  private validateGrpc(behaviorOptions: AddBehaviorOptions) {
+    if (!behaviorOptions.enableGrpc) {
       return;
     }
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];

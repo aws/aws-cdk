@@ -22,14 +22,12 @@ export interface CacheBehaviorProps extends AddBehaviorOptions {
  * CloudFrontWebDistribution implementation.
  */
 export class CacheBehavior {
-  public readonly grpcEnabled?: boolean;
   private readonly originId: string;
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
-    this.grpcEnabled = props.enableGrpc;
 
-    if (this.grpcEnabled) {
+    if (props.enableGrpc) {
       if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
         throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
       }
@@ -73,9 +71,9 @@ export class CacheBehavior {
         includeBody: edgeLambda.includeBody,
       })),
       trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
-      grpcConfig: this.grpcEnabled !== undefined
+      grpcConfig: this.props.enableGrpc !== undefined
         ? {
-          enabled: this.grpcEnabled,
+          enabled: this.props.enableGrpc,
         }
         : undefined,
     };

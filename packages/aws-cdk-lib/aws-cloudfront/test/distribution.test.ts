@@ -1461,29 +1461,28 @@ describe('gRPC', () => {
   ])('throws if httpVersion is %s and enableGrpc in additionalBehaviors is true', (httpVersion) => {
     const origin = defaultOrigin();
     const msg = `'httpVersion' must be http2, http2and3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${httpVersion}`;
-    new Distribution(stack, 'MyDist', {
-      httpVersion,
-      defaultBehavior: {
-        origin,
-        enableGrpc: false,
-        allowedMethods: AllowedMethods.ALLOW_ALL,
-      },
-      additionalBehaviors: {
-        '/second': {
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        httpVersion,
+        defaultBehavior: {
           origin,
           enableGrpc: false,
           allowedMethods: AllowedMethods.ALLOW_ALL,
         },
-        '/third': {
-          origin,
-          enableGrpc: true,
-          allowedMethods: AllowedMethods.ALLOW_ALL,
+        additionalBehaviors: {
+          '/second': {
+            origin,
+            enableGrpc: false,
+            allowedMethods: AllowedMethods.ALLOW_ALL,
+          },
+          '/third': {
+            origin,
+            enableGrpc: true,
+            allowedMethods: AllowedMethods.ALLOW_ALL,
+          },
         },
-      },
-    });
-
-    expect(() => {
-      app.synth();
+      });
     }).toThrow(msg);
   });
 });
