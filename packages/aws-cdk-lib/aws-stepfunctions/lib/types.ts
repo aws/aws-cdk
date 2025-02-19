@@ -202,7 +202,7 @@ export interface CatchProps {
    * Using workflow variables, you can store data in a step and retrieve that data in future steps.
    *
    * @see
-   * https://docs.aws.amazon.com/ja_jp/step-functions/latest/dg/workflow-variables.html
+   * https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html
    *
    * @default - Not assign variables
    */

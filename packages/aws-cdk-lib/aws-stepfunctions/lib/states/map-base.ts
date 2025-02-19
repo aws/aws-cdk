@@ -90,7 +90,7 @@ export interface MapBaseJsonataOptions extends JsonataCommonOptions {
 /**
  * Base properties for defining a Map state
  */
-export interface MapBaseOptions {
+export interface MapBaseOptions extends AssignableStateOptions {
   /**
    * MaxConcurrency
    *
