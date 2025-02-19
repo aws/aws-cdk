@@ -951,3 +951,8 @@ changed-type:aws-cdk-lib.cx_api.CloudFormationStackArtifact.notificationArns
 # See: https://github.com/cdklabs/cloud-assembly-schema/pull/121
 weakened:aws-cdk-lib.cloud_assembly_schema.MetadataEntry
 weakened:aws-cdk-lib.cx_api.MetadataEntryResult
+
+# Making kubectlLayer prop required from optional so we can remove the outdated kubectl layer dependency
+strengthened:aws-cdk-lib.aws_eks.ClusterProps
+strengthened:aws-cdk-lib.aws_eks.FargateClusterProps
+removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer

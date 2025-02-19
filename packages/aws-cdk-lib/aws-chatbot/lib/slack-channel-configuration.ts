@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new Slack channel configuration
@@ -219,7 +219,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new Error('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>');
+      throw new cdk.ValidationError('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
     }
 
     class Import extends SlackChannelConfigurationBase {
@@ -329,6 +329,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
   /**
    * Adds a SNS topic that deliver notifications to AWS Chatbot.
    */
+  @MethodMetadata()
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
     this.notificationTopics.push(notificationTopic);
   }

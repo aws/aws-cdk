@@ -3,7 +3,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the Amazon Location Service Map
@@ -313,6 +313,7 @@ export class Map extends Resource implements IMap {
   /**
    * Grant the given principal identity permissions to perform the actions on this map.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -325,6 +326,7 @@ export class Map extends Resource implements IMap {
    * Grant the given identity permissions to rendering a map resource
    * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
+  @MethodMetadata()
   public grantRendering(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:GetMapTile',

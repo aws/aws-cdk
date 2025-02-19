@@ -68,6 +68,15 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### VPC origins
+
+You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
+You can use Application Load Balancers (ALBs), Network Load Balancers (NLBs), and EC2 instances in private subnets as VPC origins.
+
+Learn more about [Restrict access with VPC origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html).
+
+See the README of the `aws-cdk-lib/aws-cloudfront-origins` module for more information on setting up VPC origins.
+
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can

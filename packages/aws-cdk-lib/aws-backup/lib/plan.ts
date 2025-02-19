@@ -3,8 +3,8 @@ import { CfnBackupPlan } from './backup.generated';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
-import { IResource, Lazy, Resource } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { IResource, Lazy, Resource, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A backup plan
@@ -172,6 +172,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
    *
    * @param rule the rule to add
    */
+  @MethodMetadata()
   public addRule(rule: BackupPlanRule) {
     let vault: IBackupVault;
     if (rule.props.backupVault) {
@@ -216,7 +217,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public get backupVault(): IBackupVault {
     if (!this._backupVault) {
       // This cannot happen but is here to make TypeScript happy
-      throw new Error('No backup vault!');
+      throw new ValidationError('No backup vault!', this);
     }
 
     return this._backupVault;
@@ -225,6 +226,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Adds a selection to this plan
    */
+  @MethodMetadata()
   public addSelection(id: string, options: BackupSelectionOptions): BackupSelection {
     return new BackupSelection(this, id, {
       backupPlan: this,

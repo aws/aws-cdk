@@ -20,6 +20,7 @@ import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Authorization configuration for the Event API
@@ -413,7 +414,8 @@ export class EventApi extends EventApiBase {
   public readonly defaultSubscribeModeTypes: AppSyncAuthorizationType[];
 
   /**
-   * the configured API keys, if present
+   * The configured API keys, if present.
+   * The key of this object is an apiKey name (apiKeyConfig.name) if specified, `Default` otherwise.
    *
    * @default - no api key
    * @attribute ApiKeys
@@ -445,6 +447,8 @@ export class EventApi extends EventApiBase {
           }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const defaultAuthType: AppSyncAuthorizationType = AppSyncAuthorizationType.API_KEY;
     const defaultAuthProviders: AppSyncAuthProvider[] = [{ authorizationType: defaultAuthType }];
