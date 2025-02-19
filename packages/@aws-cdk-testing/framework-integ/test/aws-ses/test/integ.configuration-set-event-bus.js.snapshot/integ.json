@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "ses-configuration-set-event-bus-test/DefaultTest": {
+      "stacks": [
+        "ses-configuration-set-event-bus"
+      ],
+      "assertionStack": "ses-configuration-set-event-bus-test/DefaultTest/DeployAssert",
+      "assertionStackName": "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9"
+    }
+  }
+}
