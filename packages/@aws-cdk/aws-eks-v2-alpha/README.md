@@ -1056,6 +1056,8 @@ const cluster = new eks.Cluster(this, 'EksAutoCluster', {
 });
 ```
 
+For more information, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
+
 ### Node Groups as the default capacity type
 
 If you prefer to manage your own node groups instead of using Auto Mode, you can use the traditional node group approach by specifying `defaultCapacityType` as `NODEGROUP`:

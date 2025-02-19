@@ -579,15 +579,6 @@ export interface ClusterProps extends ClusterCommonOptions {
   readonly compute?: ComputeConfig;
 
   /**
-   * Configuration for storage settings.
-   * When enabled, EKS will automatically manage storage resources.
-   * At this moment, only block storage is supported. While Auto Mode constrols the block storage enablement and no ther props available,
-   * this prop is reserved for future use.
-   *
-   * readonly storage?: StorageConfig;
-   */
-
-  /**
    * Configuration for Kubernetes networking settings in Auto Mode.
    * When enabled, EKS will automatically manage networking resources.
    * @default - Auto Mode networking disabled
@@ -1602,9 +1593,9 @@ export class Cluster extends ClusterBase {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       // to be able to access the AWSLoadBalancerController
       managedPolicies: [
+        // see https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#auto-mode-create-roles
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'),
       ],
     });
 
