@@ -879,16 +879,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FargateTestClusterKubectlProviderHandler57BDDF1A",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -970,6 +960,38 @@
     "FargateTestClusterDefaultVpcPrivateSubnet2RouteTableAssociation946F8D20",
     "FargateTestClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicy84061E77",
     "FargateTestClusterKubectlProviderframeworkonEventServiceRole7B0EE1EE"
+   ]
+  },
+  "FargateTestClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0885AE23E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "FargateTestClusterKubectlProviderHandler57BDDF1A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FargateTestClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0885AE23E",
+    "Roles": [
+     {
+      "Ref": "FargateTestClusterKubectlProviderframeworkonEventServiceRole7B0EE1EE"
+     }
+    ]
+   },
+   "DependsOn": [
+    "FargateTestClusterDefaultVpcPrivateSubnet1DefaultRoute35B62A47",
+    "FargateTestClusterDefaultVpcPrivateSubnet1RouteTableAssociationD89FE653",
+    "FargateTestClusterDefaultVpcPrivateSubnet2DefaultRouteF087CC47",
+    "FargateTestClusterDefaultVpcPrivateSubnet2RouteTableAssociation946F8D20"
    ]
   },
   "FargateTestClusterClusterAdminRoleAccess9EFE9888": {
