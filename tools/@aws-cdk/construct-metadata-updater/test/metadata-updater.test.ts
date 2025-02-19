@@ -490,9 +490,9 @@ describe('EnumLikeUpdater', () => {
       const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
       const content = writeCall[1];
       
-      expect(content).toContain("'aws-cdk/some-module/enum'");
-      expect(content).toContain("'Enum'");
-      expect(content).toContain("'value'");
+      expect(content).toContain('"aws-cdk/some-module/enum"');
+      expect(content).toContain('"Enum"');
+      expect(content).toContain('"value"');
     });
   });
 });
