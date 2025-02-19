@@ -18,6 +18,8 @@ const cluster = new DatabaseCluster(stack, 'Database', {
     vpc,
   },
   storageType: DBClusterStorageType.AURORA_IOPT1,
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

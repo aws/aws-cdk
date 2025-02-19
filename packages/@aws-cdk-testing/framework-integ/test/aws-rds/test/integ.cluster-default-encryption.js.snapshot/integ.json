@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegClusterDefaultEncryption/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-default-encryption"
+      ],
+      "assertionStack": "IntegClusterDefaultEncryption/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegClusterDefaultEncryptionDefaultTestDeployAssertBA282386"
+    }
+  }
+}
