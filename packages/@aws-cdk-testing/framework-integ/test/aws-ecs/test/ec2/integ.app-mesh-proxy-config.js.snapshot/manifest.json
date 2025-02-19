@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-appmesh-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8f5ad6cffd747394e512b6f3a65777a3ff3c8e9882a276fe1c1974881bd8f15.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02a513dca7dc9c83b30b0cf81c1a94b635c4d61a4f9d1eada8d5d36b630ee05d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,6 +172,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
         "/aws-ecs-integ-appmesh-proxy/EcsCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -220,12 +226,6 @@
             "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
           }
         ],
-        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
-          }
-        ],
         "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -242,6 +242,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394"
+          }
+        ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole075025F00"
+          }
+        ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole19CB19D22"
+          }
+        ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole25F218D50"
+          }
+        ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole30F54BDDC"
+          }
+        ],
+        "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole4C9B545F3"
           }
         ],
         "/aws-ecs-integ-appmesh-proxy/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -286,6 +316,12 @@
             "data": "TaskDef54694570"
           }
         ],
+        "/aws-ecs-integ-appmesh-proxy/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          }
+        ],
         "/aws-ecs-integ-appmesh-proxy/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
@@ -308,6 +344,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

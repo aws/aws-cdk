@@ -29,7 +29,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "audit-bucket-id": {
@@ -51,7 +54,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "LogGroupLambda": {
@@ -65,21 +71,13 @@
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
                     "dataProtectionPolicy": {
-                      "name": "policy-name",
-                      "description": "policy description",
-                      "version": "2021-06-01",
-                      "configuration": {
-                        "customDataIdentifier": [
-                          {
-                            "name": "EmployeeId",
-                            "regex": "EmployeeId-\\d{9}"
-                          }
-                        ]
-                      },
-                      "statement": [
+                      "Name": "policy-name",
+                      "Description": "policy description",
+                      "Version": "2021-06-01",
+                      "Statement": [
                         {
-                          "sid": "audit-statement-cdk",
-                          "dataIdentifier": [
+                          "Sid": "audit-statement-cdk",
+                          "DataIdentifier": [
                             {
                               "Fn::Join": [
                                 "",
@@ -106,16 +104,16 @@
                             },
                             "EmployeeId"
                           ],
-                          "operation": {
-                            "audit": {
-                              "findingsDestination": {
-                                "cloudWatchLogs": {
-                                  "logGroup": {
+                          "Operation": {
+                            "Audit": {
+                              "FindingsDestination": {
+                                "CloudWatchLogs": {
+                                  "LogGroup": {
                                     "Ref": "LogGroupLambdaAuditF8F47F46"
                                   }
                                 },
-                                "s3": {
-                                  "bucket": {
+                                "S3": {
+                                  "Bucket": {
                                     "Ref": "auditbucketidE6660EBD"
                                   }
                                 }
@@ -124,8 +122,8 @@
                           }
                         },
                         {
-                          "sid": "redact-statement-cdk",
-                          "dataIdentifier": [
+                          "Sid": "redact-statement-cdk",
+                          "DataIdentifier": [
                             {
                               "Fn::Join": [
                                 "",
@@ -152,13 +150,21 @@
                             },
                             "EmployeeId"
                           ],
-                          "operation": {
-                            "deidentify": {
-                              "maskConfig": {}
+                          "Operation": {
+                            "Deidentify": {
+                              "MaskConfig": {}
                             }
                           }
                         }
-                      ]
+                      ],
+                      "Configuration": {
+                        "CustomDataIdentifier": [
+                          {
+                            "Name": "EmployeeId",
+                            "Regex": "EmployeeId-\\d{9}"
+                          }
+                        ]
+                      }
                     },
                     "retentionInDays": 731
                   }
@@ -171,7 +177,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "dataProtectionPolicy": "*"
+                }
+              ]
             }
           },
           "BootstrapVersion": {
@@ -209,7 +220,7 @@
                 "path": "LogGroupInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -255,7 +266,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

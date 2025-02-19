@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2d6a43fdb6674c1ab0e5681643e0c54475897db4bfc97956acb7f31161b9637.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7891e7f17eebe46a8793878cfcc750a25464f4454722ee679fa45b1f857de029.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -135,14 +135,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -169,25 +161,17 @@
             "data": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
           }
         ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/DefaultPolicy": [
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymentonevent974704DA"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
+              "statements": "*"
             }
           },
           {
@@ -197,18 +181,28 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E"
-          }
-        ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "amplifyassetdeploymentonevent974704DA"
+            "data": "amplifyassetdeploymentoneventinlinePolicyAddedToExecutionRole0C600B4AD"
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete": [
@@ -243,14 +237,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
               "attachInlinePolicy": [
                 "*"
               ]
@@ -277,25 +263,17 @@
             "data": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
           }
         ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/DefaultPolicy": [
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymentiscomplete236D9453"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/inlinePolicyAddedToExecutionRole-0": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
+              "statements": "*"
             }
           },
           {
@@ -305,18 +283,28 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/DefaultPolicy/Resource": [
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321"
-          }
-        ],
-        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "amplifyassetdeploymentiscomplete236D9453"
+            "data": "amplifyassetdeploymentiscompleteinlinePolicyAddedToExecutionRole032FCEDB8"
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent": [
@@ -407,8 +395,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -423,8 +419,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -493,22 +497,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -521,6 +509,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "amplifyassetdeploymenthandlerproviderframeworkonEvent35FFCB5C"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole02E6AC2A2"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole1ADBFD04E"
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete": [
@@ -602,8 +666,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -618,8 +690,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -672,22 +752,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
@@ -700,6 +764,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "amplifyassetdeploymenthandlerproviderframeworkisComplete2A696873"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DD8A5B26"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole16EE4B599"
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout": [
@@ -781,8 +921,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -797,8 +945,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -851,22 +1007,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
@@ -879,6 +1019,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0536E72EC"
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole15B2CDE6B"
           }
         ],
         "/cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role": [
