@@ -2,6 +2,7 @@ import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
+import { QueryLanguage } from '../../types';
 
 /**
  * Base interface for Item Reader configurations
@@ -32,7 +33,7 @@ export interface IItemReader {
   /**
    * Render the ItemReader as JSON object
    */
-  render(): any;
+  render(queryLanguage?: QueryLanguage): any;
 
   /**
    * Compile policy statements to provide relevent permissions to the state machine
@@ -144,15 +145,20 @@ export class S3ObjectsItemReader implements IItemReader {
    * Renders the ItemReader configuration as JSON object
    * @returns - JSON object
    */
-  public render(): any {
+  public render(queryLanguage?: QueryLanguage): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      ...(this.prefix && { Prefix: this.prefix }),
+    };
     return FieldUtils.renderObject({
       Resource: this.resource,
       ...(this.maxItems && { ReaderConfig: { MaxItems: this.maxItems } }),
-      Parameters: {
-        ...(this._bucket && { Bucket: this._bucket.bucketName }),
-        ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
-        ...(this.prefix && { Prefix: this.prefix }),
-      },
+      ...(queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      } : {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 
@@ -255,18 +261,24 @@ abstract class S3FileItemReader implements IItemReader {
    * Renders the ItemReader configuration as JSON object
    * @returns - JSON object
    */
-  public render(): any {
+  public render(queryLanguage?: QueryLanguage): any {
+    const parameterOrArgument = {
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
+      Key: this.key,
+    };
+
     return FieldUtils.renderObject({
       Resource: this.resource,
       ReaderConfig: {
         InputType: this.inputType,
         ...(this.maxItems && { MaxItems: this.maxItems }),
       },
-      Parameters: {
-        ...(this._bucket && { Bucket: this._bucket.bucketName }),
-        ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
-        Key: this.key,
-      },
+      ...(queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: parameterOrArgument,
+      }: {
+        Parameters: parameterOrArgument,
+      }),
     });
   }
 
@@ -394,8 +406,8 @@ export class S3CsvItemReader extends S3FileItemReader {
     this.csvHeaders = props.csvHeaders ?? CsvHeaders.useFirstRow();
   }
 
-  public render(): any {
-    let rendered = super.render();
+  public render(queryLanguage?: QueryLanguage): any {
+    let rendered = super.render(queryLanguage);
 
     rendered.ReaderConfig = FieldUtils.renderObject({
       ...rendered.ReaderConfig,
