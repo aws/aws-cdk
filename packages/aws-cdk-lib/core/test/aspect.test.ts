@@ -1,4 +1,5 @@
 import { Construct, IConstruct } from 'constructs';
+import { getWarnings } from './util';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -350,7 +351,6 @@ describe('aspect', () => {
   test('Warning is displayed when applying a Removal Policy with both priority and overwrite set to true', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
-    const consoleWarnSpy = jest.spyOn(console, 'warn');
 
     // WHEN
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
@@ -359,9 +359,12 @@ describe('aspect', () => {
     });
 
     // THEN
-    expect(consoleWarnSpy).toHaveBeenCalledWith('Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.');
-
-    consoleWarnSpy.mockRestore();
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/My-Stack',
+        message: 'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and overwrite in My-Stack]',
+      },
+    ]);
   });
 
   test('RemovalPolicy: higher priority with overwrite wins', () => {

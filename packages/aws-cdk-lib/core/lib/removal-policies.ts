@@ -1,4 +1,5 @@
 import { IConstruct } from 'constructs';
+import { Annotations } from './annotations';
 import { Aspects, IAspect, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
 import { RemovalPolicy } from './removal-policy';
@@ -120,8 +121,10 @@ export class RemovalPolicies {
     });
 
     if (props.priority !== undefined && props.overwrite === true) {
-      // eslint-disable-next-line no-console
-      console.warn('Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.');
+      Annotations.of(this.scope).addWarningV2(
+        `Warning Removal Policies with both priority and overwrite in ${this.scope.node.path}`,
+        'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.'
+      );
     }
   }
 

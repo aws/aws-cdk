@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnResource, CfnDeletionPolicy, Stack } from '../lib';
+import { getWarnings } from './util';
+import { App, CfnResource, CfnDeletionPolicy, Stack } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { RemovalPolicies } from '../lib/removal-policies';
 
@@ -206,20 +207,19 @@ describe('removal-policies', () => {
 
   test('warns when both priority and overwrite are set', () => {
     // GIVEN:
-    const stack = new Stack();
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
     const resource = new TestResource(stack, 'Resource');
 
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
     // WHEN:
-    RemovalPolicies.of(resource).destroy({ priority: 1, overwrite: true });
-    synthesize(stack);
+    RemovalPolicies.of(resource).destroy({ priority: 100, overwrite: true });
 
-    // THEN:
-    expect(warnSpy).toHaveBeenCalledWith(
-      'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.',
-    );
-
-    warnSpy.mockRestore();
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([
+      {
+        path: '/My-Stack/Resource',
+        message: 'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and overwrite in My-Stack/Resource]',
+      },
+    ]);
   });
 });
