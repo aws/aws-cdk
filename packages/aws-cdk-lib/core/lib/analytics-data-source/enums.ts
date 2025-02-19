@@ -3981,7 +3981,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Windows_Server-2022-English-Full-SQL_2022_Express',
     'Windows_Server-2022-English-Full-SQL_2022_Standard',
     'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise'
+    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-Chinese_Simplified-Full-Base',
+    'Windows_Server-2025-Chinese_Traditional-Full-Base',
+    'Windows_Server-2025-English-Core-Base',
+    'Windows_Server-2025-English-Full-Base',
+    'Windows_Server-2025-English-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-English-Full-SQL_2022_Express',
+    'Windows_Server-2025-English-Full-SQL_2022_Standard',
+    'Windows_Server-2025-English-Full-SQL_2022_Web',
+    'Windows_Server-2025-Japanese-Full-Base',
+    'Windows_Server-2025-Korean-Full-Base'
   ],
   'WorkerType': [
     'Standard',
