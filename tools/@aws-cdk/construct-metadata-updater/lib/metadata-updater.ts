@@ -505,7 +505,7 @@ export class EnumsUpdater extends MetadataUpdater {
     const moduleEnumBlueprint: Record<string, Record<string, (string | number)[]>> = {};
 
     this.project.getSourceFiles().forEach((sourceFile) => {
-      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1].replace(".ts", "")
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
       let fileBlueprint: Record<string, (string | number)[]> = {};
       sourceFile.forEachChild((node) => {
         if (node.getKindName() === "EnumDeclaration") {
@@ -709,7 +709,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     // Retrieve enum-like classes
     this.project.getSourceFiles().forEach((sourceFile) => {
-      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1].replace(".ts", "")
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
       let fileBlueprint: Record<string, string[]> = {};
       sourceFile.forEachChild((node) => {
         if (node instanceof ClassDeclaration) {
