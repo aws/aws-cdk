@@ -226,6 +226,16 @@ export interface ClusterInstanceOptions {
   readonly publiclyAccessible?: boolean;
 
   /**
+   * The Availability Zone (AZ) where the database will be created.
+   *
+   * For Amazon Aurora, each Aurora DB cluster hosts copies of its storage in three separate Availability Zones.
+   * Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.
+   *
+   * @default - A random, system-chosen Availability Zone in the endpoint's AWS Region.
+   */
+  readonly availabilityZone?: string;
+
+  /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
    *
    * Example: 'Sun:23:45-Mon:00:15'
@@ -538,6 +548,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
+        availabilityZone: props.availabilityZone,
         preferredMaintenanceWindow: props.preferredMaintenanceWindow,
         enablePerformanceInsights: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
