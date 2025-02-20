@@ -1445,8 +1445,8 @@ describe('gRPC', () => {
     new Distribution(stack, 'MyDist', {
       httpVersion: HttpVersion.HTTP2,
       defaultBehavior: {
-        allowedMethods: AllowedMethods.ALLOW_ALL,
         origin,
+        allowedMethods: AllowedMethods.ALLOW_ALL,
         enableGrpc,
       },
     });
