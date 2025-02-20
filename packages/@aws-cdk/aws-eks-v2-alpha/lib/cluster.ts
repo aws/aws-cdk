@@ -1257,7 +1257,7 @@ export class Cluster extends ClusterBase {
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
-        'AmazonEKSNetworkingPolicy', 'AmazonEKSClusterPolicy'].forEach((policyName) => {
+        'AmazonEKSNetworkingPolicy'].forEach((policyName) => {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
       });
     }
