@@ -86,13 +86,14 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-To encrypt the fargate ephemeral storage configure a KMS key.
+To encrypt the fargate ephemeral storage or managed storage:
 ```ts
 declare const key: kms.Key;
 
 const cluster = new ecs.Cluster(this, 'Cluster', {
   managedStorageConfiguration: {
     fargateEphemeralStorageKmsKey: key,
+    kmsKey: key,
   },
 });
 ```

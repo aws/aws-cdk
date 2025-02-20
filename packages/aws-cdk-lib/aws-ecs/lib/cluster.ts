@@ -429,6 +429,7 @@ export class Cluster extends Resource implements ICluster {
       },
       managedStorageConfiguration: this._managedStorageConfiguration && {
         fargateEphemeralStorageKmsKeyId: this._managedStorageConfiguration.fargateEphemeralStorageKmsKey?.keyId,
+        kmsKeyId: this._managedStorageConfiguration.kmsKey?.keyId,
       },
     };
   }
@@ -1473,6 +1474,15 @@ export interface ManagedStorageConfiguration {
    * @default No encryption will be applied
    */
   readonly fargateEphemeralStorageKmsKey?: IKey;
+
+  /**
+   * KMS Key used to encrypt ECS managed Storage.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-managedstorageconfiguration.html#cfn-ecs-cluster-managedstorageconfiguration-kmskeyid
+   *
+   * @default No encryption will be applied
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
