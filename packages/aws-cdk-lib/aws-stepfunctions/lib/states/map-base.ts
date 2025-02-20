@@ -117,7 +117,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
 /**
  * Properties for defining a Map state
  */
-export interface MapBaseProps extends StateBaseProps, AssignableStateOptions, MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
+export interface MapBaseProps extends StateBaseProps, MapBaseOptions, MapBaseJsonPathOptions, MapBaseJsonataOptions {}
 
 /**
  * Returns true if the value passed is a positive integer
