@@ -1437,6 +1437,34 @@ describe('attachWebAclId', () => {
 
 describe('gRPC', () => {
   test.each([
+    true,
+    false,
+    undefined,
+  ])('set gRPC to %s', (enableGrpc) => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: {
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        origin,
+        enableGrpc,
+      },
+    });
+
+    const grpcConfig = enableGrpc !== undefined ? {
+      Enabled: enableGrpc,
+    } : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          GrpcConfig: grpcConfig,
+        },
+      },
+    });
+  });
+
+  test.each([
     HttpVersion.HTTP1_1,
     HttpVersion.HTTP3,
   ])('throws if httpVersion is %s and enableGrpc in defaultBehavior is true', (httpVersion) => {
