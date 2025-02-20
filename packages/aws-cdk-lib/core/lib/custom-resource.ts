@@ -56,7 +56,7 @@ export interface CustomResourceProps {
    * });
    * ```
    *
-   * serviceToken is passed to properties with key "ServiceToken"
+   * Maps to [ServiceToken](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetoken) property for the `AWS::CloudFormation::CustomResource` resource
    */
   readonly serviceToken: string;
 
@@ -65,7 +65,7 @@ export interface CustomResourceProps {
    *
    * The value must be between 1 second and 3600 seconds.
    *
-   * serviceTimeout is passed to properties with key "ServiceTimeout"
+   * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
    *
    * @default Duration.seconds(3600)
    */
@@ -74,9 +74,9 @@ export interface CustomResourceProps {
   /**
    * Properties to pass to the Lambda
    *
-   * Some propery values are passed into this dictionary automatically.
-   * Please keep in mind that these keys should not be repeated in this prop or they will be overwritten.
-   * E.g. `ServiceToken`, `ServiceTimeout`
+   * Values in this `properties` dictionary can possibly overwrite other values in `CustomResourceProps`
+   * E.g. `ServiceToken` and `ServiceTimeout`
+   * It is recommended to avoid using same keys that exist in `CustomResourceProps`
    *
    * @default - No properties.
    */
@@ -171,7 +171,7 @@ export class CustomResource extends Resource {
     const hasCommonKeys = Object.keys(properties).some(key => key in constructPropertiesPassed);
 
     if (hasCommonKeys) {
-      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropDuplicate', `CustomResource properties should not contain keys that are automatically added by the CDK. Found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
+      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropConflict', `The following keys will be overwritten as they exist in the 'properties' prop. Keys found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
     }
 
     this.resource = new CfnResource(this, 'Default', {

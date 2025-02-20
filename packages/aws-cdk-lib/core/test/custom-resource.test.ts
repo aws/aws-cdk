@@ -227,6 +227,6 @@ describe('custom resource', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/MyCustomResource', 'CustomResource properties should not contain keys that are automatically added by the CDK. Found: ServiceToken [ack: @aws-cdk/core:customResourcePropDuplicate]');
+    Annotations.fromStack(stack).hasWarning('/Default/MyCustomResource', 'The following keys will be overwritten as they exist in the \'properties\' prop. Keys found: ServiceToken [ack: @aws-cdk/core:customResourcePropConflict]');
   });
 });
