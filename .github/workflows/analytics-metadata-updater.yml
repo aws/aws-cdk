@@ -47,7 +47,14 @@ jobs:
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
-          git checkout -B ${{ github.event.pull_request.head.ref }}
+
+          git fetch origin ${{ github.event.pull_request.head.ref }}
+
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.event.pull_request.head.ref }})" ]; then
+            echo "Remote branch updated since approved commit; aborting."
+            exit 1
+          fi
+
           git add .
           git commit -m "chore: update analytics metadata blueprints"
           git push origin ${{ github.event.pull_request.head.ref }}
