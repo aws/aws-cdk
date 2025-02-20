@@ -1146,10 +1146,17 @@ export class Cluster extends ClusterBase {
       }
     }
 
-    // sts:TagSession is required for EKS Auto Mode or when using EKS Pod Identity features.
-    // see https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
-    // https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#_create_an_eks_auto_mode_cluster_iam_role
     if (autoModeEnabled) {
+      // attach required managed policy for the cluster role in EKS Auto Mode
+      // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
+      ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
+        'AmazonEKSNetworkingPolicy'].forEach((policyName) => {
+        this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
+      });
+
+      // sts:TagSession is required for EKS Auto Mode or when using EKS Pod Identity features.
+      // see https://docs.aws.amazon.com/eks/latest/userguide/pod-id-role.html
+      // https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#_create_an_eks_auto_mode_cluster_iam_role
       if (this.role instanceof iam.Role) {
         this.role.assumeRolePolicy?.addStatements(
           new iam.PolicyStatement({
@@ -1252,15 +1259,6 @@ export class Cluster extends ClusterBase {
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
     });
-
-    if (autoModeEnabled) {
-      // attach required managed policy for the cluster role in EKS Auto Mode
-      // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
-      ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
-        'AmazonEKSNetworkingPolicy'].forEach((policyName) => {
-        this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
-      });
-    }
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
