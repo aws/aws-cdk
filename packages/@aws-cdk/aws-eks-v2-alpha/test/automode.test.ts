@@ -210,7 +210,6 @@ describe('eks auto mode', () => {
         },
       });
     });
-
   });
 
   describe('mixed scenarios', () => {
