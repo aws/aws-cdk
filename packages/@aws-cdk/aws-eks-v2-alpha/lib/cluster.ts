@@ -1126,9 +1126,9 @@ export class Cluster extends ClusterBase {
     });
 
     const autoModeEnabled = !(props.defaultCapacityType !== undefined && props.defaultCapacityType !== DefaultCapacityType.AUTOMODE);
-    
+
     // Throw when using nodePools or nodeRole without using AUTOMODE
-    if(!autoModeEnabled && (props.compute?.nodePools || props.compute?.nodeRole)) {
+    if (!autoModeEnabled && (props.compute?.nodePools || props.compute?.nodeRole)) {
       throw new Error('Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE');
     }
 
