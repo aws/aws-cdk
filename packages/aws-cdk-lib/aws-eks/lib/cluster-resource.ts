@@ -13,6 +13,8 @@ export interface ClusterResourceProps {
   readonly roleArn: string;
   readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
   readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
+  readonly computeConfig?: CfnCluster.ComputeConfigProperty;
+  readonly storageConfig?: CfnCluster.StorageConfigProperty;
   readonly name: string;
   readonly version?: string;
   readonly endpointPrivateAccess: boolean;
@@ -92,6 +94,8 @@ export class ClusterResource extends Construct {
           logging: props.logging,
           accessConfig: props.accessconfig,
           remoteNetworkConfig: props.remoteNetworkConfig,
+          computeConfig: props.computeConfig,
+          storageConfig: props.storageConfig,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -100,7 +104,7 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 4,
+        AttributesRevision: 5,
       },
     });
 

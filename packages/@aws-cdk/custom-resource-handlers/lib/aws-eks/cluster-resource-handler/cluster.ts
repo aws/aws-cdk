@@ -134,6 +134,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       updateAccess: boolean;
       updateVpc: boolean;
       updateAuthMode: boolean;
+      updateAutoMode: boolean;
     };
     // validate updates
     const updateTypes = Object.keys(updates) as (keyof UpdateTypes)[];
@@ -202,7 +203,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateAutoMode) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -266,6 +267,20 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+
+      const updateAutoMode = updates.updateAutoMode;
+      if (updateAutoMode) {
+        const autoModeEnabled = this.newProps.computeConfig?.enabled;
+        config.computeConfig = this.newProps.computeConfig;
+
+        if (config.storageConfig && config.storageConfig.blockStorage) {
+          config.storageConfig.blockStorage.enabled = autoModeEnabled;
+        }
+
+        if (config.kubernetesNetworkConfig && config.kubernetesNetworkConfig.elasticLoadBalancing) {
+          config.kubernetesNetworkConfig.elasticLoadBalancing.enabled = autoModeEnabled;
+        }
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -406,6 +421,18 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (typeof (parsed.computeConfig?.enabled) === 'string') {
+    parsed.computeConfig.enabled = parsed.computeConfig.enabled === 'true';
+  }
+
+  if (typeof (parsed.storageConfig?.blockStorage?.enabled) === 'string') {
+    parsed.storageConfig.blockStorage.enabled = parsed.storageConfig.blockStorage.enabled === 'true';
+  }
+
+  if (typeof (parsed.kubernetesNetworkConfig?.elasticLoadBalancing?.enabled) === 'string') {
+    parsed.kubernetesNetworkConfig.elasticLoadBalancing.enabled = parsed.kubernetesNetworkConfig.elasticLoadBalancing.enabled === 'true';
+  }
+
   return parsed;
 }
 
@@ -421,6 +448,7 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateAutoMode: boolean; // computeConfig.enabled, computeConfig.nodePools and computeConfig.nodeRoleArn
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -454,6 +482,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
+    updateAutoMode: JSON.stringify(newProps.computeConfig) !== JSON.stringify(oldProps.computeConfig ),
   };
 }
 

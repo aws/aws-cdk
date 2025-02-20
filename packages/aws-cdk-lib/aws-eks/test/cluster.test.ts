@@ -679,6 +679,20 @@ describe('cluster', () => {
             { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
           ],
         },
+        computeConfig: {
+          enabled: false,
+          nodePools: Match.absent(),
+        },
+        kubernetesNetworkConfig: {
+          elasticLoadBalancing: {
+            enabled: false,
+          },
+        },
+        storageConfig: {
+          blockStorage: {
+            enabled: false,
+          },
+        },
       },
     });
   });
