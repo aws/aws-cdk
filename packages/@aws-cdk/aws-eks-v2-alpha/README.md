@@ -106,6 +106,8 @@ new eks.Cluster(this, 'hello-eks', {
 
 ### Using Auto Mode
 
+While `aws-eks` uses `DefaultCapacityType.NODEGROUP` by default, `aws-eks-v2` uses `DefaultCapacityType.AUTOMODE` as the default capacity type.
+
 Auto Mode is enabled by default when creating a new cluster without specifying any capacity-related properties:
 
 ```ts
