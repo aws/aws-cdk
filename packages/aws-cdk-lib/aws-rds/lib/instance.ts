@@ -741,8 +741,8 @@ export interface DatabaseInstanceNewProps {
   readonly caCertificate?: CaCertificate;
 
   /**
-   * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the PreferredMaintenanceWindow setting.
-   * If set to false, changes are applied during the next maintenance window.
+   * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
+   * If set to `false`, changes are applied during the next maintenance window.
    *
    * Until RDS applies the changes, the DB instance remains in a drift state.
    * As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
