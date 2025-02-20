@@ -107,15 +107,21 @@ With Amazon EKS managed node groups, you don't need to separately provision or r
 
 > For more details visit [Amazon EKS Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html).
 
-**Managed Node Groups are the recommended way to allocate cluster capacity.**
+By default, when using `DefaultCapacityType.NODEGROUP`, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
 
-By default, this library will allocate a managed node group with 2 *m5.large* instances (this instance type suits most common use-cases, and is good value for money).
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+});
+```
 
 At cluster instantiation time, you can customize the number of instances and their type:
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -128,6 +134,7 @@ Additional customizations are available post instantiation. To apply them, set t
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_32,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
 
@@ -1089,12 +1096,12 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-### Hybrid Mode with Auto Mode and Node Groups
+### Mixed with Auto Mode and Node Groups
 
 You can combine Auto Mode with traditional node groups for specific workload requirements:
 
 ```ts
-const cluster = new eks.Cluster(this, 'HybridCluster', {
+const cluster = new eks.Cluster(this, 'Cluster', {
   version: eks.KubernetesVersion.V1_32,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
