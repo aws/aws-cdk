@@ -32,6 +32,7 @@ export class HttpApiCall extends ApiCallBase {
         parameters: props,
         expected: Lazy.any({ produce: () => this.expectedResult }),
         stateMachineArn: Lazy.string({ produce: () => this.stateMachineArn }),
+        flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
         salt: Date.now().toString(),
       },
       resourceType: `${HTTP_RESOURCE_TYPE}${name}`.substring(0, 60),
@@ -64,5 +65,5 @@ export class HttpApiCall extends ApiCallBase {
     this.stateMachineArn = waiter.stateMachineArn;
     this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');
     return this;
-  };
+  }
 }

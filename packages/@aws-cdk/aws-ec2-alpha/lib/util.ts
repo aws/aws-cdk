@@ -1,4 +1,4 @@
-/*eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
+/* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
 import { ISubnet } from 'aws-cdk-lib/aws-ec2';
 
@@ -16,6 +16,29 @@ export function subnetGroupNameFromConstructId(subnet: ISubnet) {
  */
 export function subnetId(name: string, i: number) {
   return `${name}Subnet${i + 1}`;
+}
+
+/**
+ * The status of a Transit Gateway feature.
+ */
+export enum TransitGatewayFeatureStatus {
+  /**
+   * The feature is enabled.
+   */
+  ENABLE = 'enable',
+
+  /**
+   * The feature is disabled.
+   */
+  DISABLE = 'disable',
+}
+
+export function getFeatureStatus(status?: boolean): TransitGatewayFeatureStatus | undefined {
+  if (status === undefined) {
+    return undefined;
+  } else {
+    return status ? TransitGatewayFeatureStatus.ENABLE : TransitGatewayFeatureStatus.DISABLE;
+  }
 }
 
 /**
@@ -39,7 +62,6 @@ export function flatten<A>(xs: A[][]): A[] {
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
  */
 export class NetworkUtils {
-
   /**
    * Validates an IPv4 address string.
    *
@@ -116,7 +138,6 @@ export class NetworkUtils {
  * and CIDR validation
  */
 export class CidrBlock {
-
   /**
    * Calculates the netmask for a given CIDR mask
    *
@@ -274,7 +295,6 @@ export class CidrBlock {
     // Check if ranges overlap
     return start1 <= end2 && start2 <= end1;
   }
-
 }
 
 /**
@@ -285,7 +305,6 @@ export class CidrBlock {
  * IP addresses in a CIDR block, and checking if two CIDR blocks overlap.
  */
 export class CidrBlockIpv6 {
-
   /**
    * Ipv6 CIDR range
    */
@@ -398,7 +417,6 @@ export class CidrBlockIpv6 {
   }
 
   /**
-   * @param ipv6Address
    * @returns Converts given ipv6 address range to big int number
    */
   private ipv6ToNumber(ipv6Address: string): bigint {

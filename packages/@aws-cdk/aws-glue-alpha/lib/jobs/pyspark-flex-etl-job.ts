@@ -7,6 +7,7 @@ import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, Execution
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for PySparkFlexEtlJob
@@ -47,6 +48,13 @@ export interface PySparkFlexEtlJobProps extends JobProperties {
    */
   readonly extraFiles?: Code[];
 
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
+
 }
 
 /**
@@ -82,6 +90,8 @@ export class PySparkFlexEtlJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -157,6 +167,9 @@ export class PySparkFlexEtlJob extends Job {
     if (props.extraFiles && props.extraFiles.length > 0) {
       args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
+    if (props.extraJars && props.extraJars?.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
 
     return args;
   }
@@ -168,7 +181,6 @@ export class PySparkFlexEtlJob extends Job {
    */
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-
     validateSparkUiPrefix(sparkUiProps.prefix);
     const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
     bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));

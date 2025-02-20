@@ -9,7 +9,168 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-## Example
+## State Machine
+
+A `stepfunctions.StateMachine` is a resource that takes a state machine
+definition. The definition is specified by its start state, and encompasses
+all states reachable from the start state:
+
+```ts
+const startState = sfn.Pass.jsonata(this, 'StartState');
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(startState),
+});
+```
+
+State machines are made up of a sequence of **Steps**, which represent different actions
+taken in sequence. Some of these steps represent *control flow* (like `Choice`, `Map` and `Wait`)
+while others represent calls made against other AWS services (like `LambdaInvoke`).
+The second category are called `Task`s and they can all be found in the module [`aws-stepfunctions-tasks`].
+
+[`aws-stepfunctions-tasks`]: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks-readme.html
+
+State machines execute using an IAM Role, which will automatically have all
+permissions added that are required to make all state machine tasks execute
+properly (for example, permissions to invoke any Lambda functions you add to
+your workflow). A role will be created by default, but you can supply an
+existing one as well.
+
+Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
+history when CloudFormation deletes your state machine.
+
+Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
+
+```ts
+new sfn.StateMachine(this, 'StateMachineFromString', {
+  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+});
+
+new sfn.StateMachine(this, 'StateMachineFromFile', {
+  definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
+});
+```
+
+## Query Language
+
+Step Functions now provides the ability to select the `QueryLanguage` for the state machine or its states: `JSONata` or `JSONPath`.
+
+For new state machines, we recommend using `JSONata` by specifying it at the state machine level.
+If you do not specify a `QueryLanguage`, the state machine will default to using `JSONPath`.
+
+If a state contains a specified `QueryLanguage`, Step Functions will use the specified query language for that state.
+If the state does not specify a `QueryLanguage`, then it will use the query language specified in the state machine level, or `JSONPath` if none.
+
+If the state machine level `QueryLanguage`  is set to `JSONPath`, then any individual state-level `QueryLanguage` can be set to either `JSONPath` or `JSONata` to support incremental upgrades.
+If the state-level `QueryLanguage` is set to `JSONata`, then any individual state-level `QueryLanguage` can either be `JSONata` or not set.
+
+```ts
+const jsonata = sfn.Pass.jsonata(this, 'JSONata');
+const jsonPath = sfn.Pass.jsonPath(this, 'JSONPath');
+const definition = jsonata.next(jsonPath);
+
+new sfn.StateMachine(this, 'MixedStateMachine', {
+  // queryLanguage: sfn.QueryLanguage.JSON_PATH, // default
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+
+// This throws an error. If JSONata is specified at the top level, JSONPath cannot be used in the state machine definition.
+new sfn.StateMachine(this, 'JSONataOnlyStateMachine', {
+  queryLanguage: sfn.QueryLanguage.JSONATA,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+});
+```
+
+The AWS CDK defines state constructs, and there are 3 ways to initialize them.
+
+| Method | Query Language | Description |
+| ------ | ------- | ------- |
+| `State.jsonata()` | `JSONata` | Use this method to specify a state definition using JSONata only fields.  |
+| `State.jsonPath()` | `JSONPath` | Use this method to specify a state definition using JSONPath only fields. |
+| `new State()` | `JSONata` or `JSONPath` | This is a legacy pattern. Since fields for both JSONata and JSONPath can be used, it is recommended to use `State.jsonata()` or `State.jsonPath()` for better type safety and clarity. |
+
+Code examples for initializing a `Pass` State with each pattern are shown below.
+
+```ts
+// JSONata Pattern
+sfn.Pass.jsonata(this, 'JSONata Pattern', {
+  outputs: { foo: 'bar' },
+  // The outputPath does not exist in the props type
+  // outputPath: '$.status',
+});
+
+// JSONPath Pattern
+sfn.Pass.jsonPath(this, 'JSONPath Pattern', {
+  // The outputs does not exist in the props type
+  // outputs: { foo: 'bar' },
+  outputPath: '$.status',
+});
+
+// Constructor (Legacy) Pattern
+new sfn.Pass(this, 'Constructor Pattern', {
+  queryLanguage: sfn.QueryLanguage.JSONATA, // or JSON_PATH
+  // Both outputs and outputPath exist as prop types.
+  outputs: { foo: 'bar' }, // For JSONata
+  // or
+  outputPath: '$.status', // For JSONPath
+});
+```
+
+Learn more in the blog post [Simplifying developer experience with variables and JSONata in AWS Step Functions](https://aws.amazon.com/jp/blogs/compute/simplifying-developer-experience-with-variables-and-jsonata-in-aws-step-functions/).
+
+### JSONata example
+
+The following example defines a state machine in `JSONata` that calls a fictional service API to update issue labels.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+declare const connection: events.Connection;
+
+const getIssue = tasks.HttpInvoke.jsonata(this, 'Get Issue', {
+  connection,
+  apiRoot: "{% 'https://' & $states.input.hostname %}",
+  apiEndpoint: sfn.TaskInput.fromText("{% 'issues/' & $states.input.issue.id %}"),
+  method: sfn.TaskInput.fromText('GET'),
+  // Parse the API call result to object and set to the variables
+  assign: {
+    hostname: '{% $states.input.hostname %}',
+    issue: '{% $parse($states.result.ResponseBody) %}',
+  },
+});
+
+const updateLabels = tasks.HttpInvoke.jsonata(this, 'Update Issue Labels', {
+  connection,
+  apiRoot: "{% 'https://' & $states.input.hostname %}",
+  apiEndpoint: sfn.TaskInput.fromText("{% 'issues/' & $states.input.issue.id & 'labels' %}"),
+  method: sfn.TaskInput.fromText('POST'),
+  body: sfn.TaskInput.fromObject({ 
+    labels: '{% [$type, $component] %}',
+  }),
+});
+const notMatchTitleTemplate = sfn.Pass.jsonata(this, 'Not Match Title Template');
+
+const definition = getIssue
+  .next(sfn.Choice.jsonata(this, 'Match Title Template?')
+    // Look at the "title" field of issue in variables using Regex
+    .when(sfn.Condition.jsonata('{% $contains($issue.title, /(feat)|(fix)|(chore)\(\w*\):.*/) %}'), updateLabels, {
+      assign: {
+        type: '{% $match($states.input.title, /(\w*)\((.*)\)/).groups[0] %}',
+        component: '{% $match($states.input.title, /(\w*)\((.*)\)/).groups[1] %}',
+      }
+    })
+    .otherwise(notMatchTitleTemplate));
+
+new sfn.StateMachine(this, 'StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
+  timeout: Duration.minutes(5),
+  comment: 'automate issue labeling state machine',
+});
+```
+
+### JSONPath (Legacy pattern) example
+
+Defining a workflow looks like this (for the [Step Functions Job Poller
+example](https://docs.aws.amazon.com/step-functions/latest/dg/sample-project-job-poller.html)):
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -66,49 +227,67 @@ new sfn.StateMachine(this, 'StateMachine', {
 You can find more sample snippets and learn more about the service integrations
 in the `aws-cdk-lib/aws-stepfunctions-tasks` package.
 
-## State Machine
-
-A `stepfunctions.StateMachine` is a resource that takes a state machine
-definition. The definition is specified by its start state, and encompasses
-all states reachable from the start state:
-
-```ts
-const startState = new sfn.Pass(this, 'StartState');
-
-new sfn.StateMachine(this, 'StateMachine', {
-  definitionBody: sfn.DefinitionBody.fromChainable(startState),
-});
-```
-
-State machines are made up of a sequence of **Steps**, which represent different actions
-taken in sequence. Some of these steps represent *control flow* (like `Choice`, `Map` and `Wait`)
-while others represent calls made against other AWS services (like `LambdaInvoke`).
-The second category are called `Task`s and they can all be found in the module [`aws-stepfunctions-tasks`].
-
-[`aws-stepfunctions-tasks`]: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_stepfunctions_tasks-readme.html
-
-State machines execute using an IAM Role, which will automatically have all
-permissions added that are required to make all state machine tasks execute
-properly (for example, permissions to invoke any Lambda functions you add to
-your workflow). A role will be created by default, but you can supply an
-existing one as well.
-
-Set the `removalPolicy` prop to `RemovalPolicy.RETAIN` if you want to retain the execution
-history when CloudFormation deletes your state machine.
-
-Alternatively you can specify an existing step functions definition by providing a string or a file that contains the ASL JSON.
-
-```ts
-new sfn.StateMachine(this, 'StateMachineFromString', {
-  definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
-});
-
-new sfn.StateMachine(this, 'StateMachineFromFile', {
-  definitionBody: sfn.DefinitionBody.fromFile('./asl.json'),
-});
-```
-
 ## State Machine Data
+
+With variables and state output, you can pass data between the steps of your workflow.
+
+Using workflow variables, you can store data in a step and retrieve that data in future steps. For example, you could store an API response that contains data you might need later. Conversely, state output can only be used as input to the very next step. 
+
+### Variable
+
+With workflow variables, you can store data to reference later. For example, Step 1 might store the result from an API request so a part of that request can be re-used later in Step 5.
+
+In the following scenario, the state machine fetches data from an API once. In Step 1, the workflow stores the returned API data (up to 256 KiB per state) in a variable ‘x’ to use in later steps.
+
+Without variables, you would need to pass the data through output from Step 1 to Step 2 to Step 3 to Step 4 to use it in Step 5. What if those intermediate steps do not need the data? Passing data from state to state through outputs and input would be unnecessary effort.
+
+With variables, you can store data and use it in any future step. You can also modify, rearrange, or add steps without disrupting the flow of your data. Given the flexibility of variables, you might only need to use output to return data from `Parallel` and `Map` sub-workflows, and at the end of your state machine execution.
+
+```txt
+(Start)
+   ↓
+[Step 1]→[Return from API]
+   ↓             ↓
+[Step 2] [Assign data to $x]
+   ↓             │
+[Step 3]         │
+   ↓             │
+[Step 4]         │
+   ↓             │
+[Step 5]←────────┘
+   ↓     Use variable $x
+ (End)
+```
+
+Use `assign` to express the above example in AWS CDK. You can use both JSONata and JSONPath to assign.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const callApiFunc: lambda.Function;
+declare const useVariableFunc: lambda.Function;
+const step1 = tasks.LambdaInvoke.jsonata(this, 'Step 1', {
+  lambdaFunction: callApiFunc,
+  assign: {
+    x: '{% $states.result.Payload.x %}', // JSONata
+    // x: sfn.JsonPath.stringAt('$.Payload.x'), // When use JSONPath
+  },
+});
+const step2 = sfn.Pass.jsonata(this, 'Step 2');
+const step3 = sfn.Pass.jsonata(this, 'Step 3');
+const step4 = sfn.Pass.jsonata(this, 'Step 4');
+const step5 = tasks.LambdaInvoke.jsonata(this, 'Step 5', {
+  lambdaFunction: useVariableFunc,
+  payload: sfn.TaskInput.fromObject({
+    x: '{% $x %}',  // JSONata
+    // x: sfn.JsonPath.stringAt('$x'), // When use JSONPath
+  }),
+});
+```
+
+For more details, see the [official documentation](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-variables.html)
+
+### State Output
 
 An Execution represents each time the State Machine is run. Every Execution has [State Machine
 Data](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-state-machine-data.html):
@@ -117,10 +296,95 @@ gets modified by individual steps as the state machine progresses, and finally
 is produced as output.
 
 By default, the entire Data object is passed into every state, and the return data of the step
-becomes new the new Data object. This behavior can be modified by supplying values for `inputPath`,
-`resultSelector`, `resultPath` and `outputPath`.
+becomes new the new Data object. You can change this behavior, but the way you specify it differs depending on the query language you use.
 
-### Manipulating state machine data using inputPath, resultSelector, resultPath and outputPath
+#### JSONata
+
+To change the default behavior of using a JSONata, supplying values for `outputs`. When a string in the value of an ASL field, a JSON object field, or a JSON array element is surrounded by `{% %}` characters, that string will be evaluated as JSONata . Note, the string must start with `{%` with no leading spaces, and must end with `%}` with no trailing spaces. Improperly opening or closing the expression will result in a validation error.
+
+The following example uses JSONata expressions for `outputs` and `time`.
+
+```ts
+sfn.Wait.jsonata(this, 'Wait', {
+  time: sfn.WaitTime.timestamp('{% $timestamp %}'),
+  outputs: {
+    stringArgument: 'inital-task',
+    numberArgument: 123,
+    booleanArgument: true,
+    arrayArgument: [1, '{% $number %}', 3],
+    intrinsicFunctionsArgument: "{% $join($each($obj, function($v) { $v }), ', ') %}",
+  },
+});
+```
+
+For a brief introduction and complete JSONata reference, see [JSONata.org documentation](https://docs.jsonata.org/overview.html).
+
+##### Reserved variable : $states
+
+Step Functions defines a single reserved variable called $states. In JSONata states, the following structures are assigned to $states for use in JSONata expressions:
+
+```js
+// Reserved $states variable in JSONata states
+const $states = {
+  "input":      // Original input to the state
+  "result":     // API or sub-workflow's result (if successful)
+  "errorOutput":// Error Output in a Catch
+  "context":    // Context object
+}
+```
+
+The structure is as follows when expressed as a type.
+
+```ts
+interface JsonataStates {
+  input: any;
+  result?: any;
+  errorOutput?: {
+    Error: string;
+    Cause: string;
+  };
+  context: {
+    Execution: {
+      Id: string;
+      Input: any;
+      Name: string;
+      RoleArn: string;
+      StartTime: string; // Format: ISO 8601;
+      RedriveCount: number;
+      RedriveTime: string; // Format: ISO 8601
+    };
+    State: {
+        EnteredTime: string; // Format: ISO 8601;
+        Name: string;
+        RetryCount: number;
+    };
+    StateMachine: {
+        Id: string;
+        Name: string;
+    };
+    Task: {
+        Token: string;
+    };
+  };
+}
+```
+
+You can access reserved variables as follows:
+
+```ts
+sfn.Pass.jsonata(this, 'Pass', {
+  outputs: {
+    foo: '{% $states.input.foo %}',
+  },
+});
+```
+
+
+#### JSONPath
+
+To change the default behavior of using a JSON path, supplying values for `inputPath`, `resultSelector`, `resultPath`, and `outputPath`.
+
+##### Manipulating state machine data using inputPath, resultSelector, resultPath and outputPath
 
 These properties impact how each individual step interacts with the state machine data:
 
@@ -279,6 +543,16 @@ const nextState = new sfn.Pass(this, 'NextState');
 pass.next(nextState);
 ```
 
+When using JSONata, you can use only `outputs`.
+
+```ts
+const pass = new sfn.Pass(this, 'Add Hello World', {
+  outputs: {
+    subObject: { hello: 'world' }
+  },
+});
+```
+
 The `Pass` state also supports passing key-value pairs as input. Values can
 be static, or selected from the input with a path.
 
@@ -314,6 +588,11 @@ const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
   time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 
+// When using JSONata
+// const wait = sfn.Wait.jsonata(this, 'Wait For Trigger Time', {
+//   time: sfn.WaitTime.timestamp('{% $triggerTime %}'),
+// });
+
 // Set the next state
 const startTheWork = new sfn.Pass(this, 'StartTheWork');
 wait.next(startTheWork);
@@ -332,6 +611,10 @@ const successState = new sfn.Pass(this, 'SuccessState');
 const failureState = new sfn.Pass(this, 'FailureState');
 choice.when(sfn.Condition.stringEquals('$.status', 'SUCCESS'), successState);
 choice.when(sfn.Condition.numberGreaterThan('$.attempts', 5), failureState);
+
+// When using JSONata
+// choice.when(sfn.Condition.jsonata("{% $status = 'SUCCESS'"), successState);
+// choice.when(sfn.Condition.jsonata('{% $attempts > 5 %}'), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
 const tryAgainState = new sfn.Pass(this, 'TryAgainState');
@@ -375,6 +658,21 @@ the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
 
 #### Available Conditions
+
+#### JSONata
+
+When you're using JSONata, use the `jsonata` function to specify the condition using a JSONata expression: 
+
+```ts
+sfn.Condition.jsonata('{% 1+1 = 2 %}'); // true
+sfn.Condition.jsonata('{% 1+1 != 3 %}'); // true
+sfn.Condition.jsonata("{% 'world' in ['hello', 'world'] %}"); // true
+sfn.Condition.jsonata("{% $contains('abracadabra', /a.*a/) %}"); // true
+```
+
+See the [JSONata comparison operators](https://docs.jsonata.org/comparison-operators) to find more operators.
+
+##### JSONPath
 
 see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
 
@@ -497,6 +795,15 @@ const fail = new sfn.Fail(this, 'Fail', {
 });
 ```
 
+When you use JSONata, you can use JSONata expression in the `error` or `cause` properties.
+
+```ts
+const fail = new sfn.Fail(this, 'Fail', {
+  error: "{% 'error:' & $someError & '.' %}",
+  cause: "{% 'cause:' & $someCause & '.' %}",
+});
+```
+
 ### Map
 
 A `Map` state can be used to run a set of steps for each element of an input array.
@@ -606,7 +913,9 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
 * Objects in a S3 bucket with an optional prefix.
-  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source. Note that `S3ObjectsItemReader` will default to use Distributed map's query language. If the
+  map does not specify a query language, then it falls back to the State machine's query language. An exmaple of using `S3ObjectsItemReader`
+  is as follows:
   ```ts
   import * as s3 from 'aws-cdk-lib/aws-s3';
 
@@ -704,6 +1013,9 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 * S3 inventory manifest stored in S3
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
+
+ResultWriter object will default to use the Distributed map's query language. If the Distributed map's does not specify a query language, then it
+will fall back to the State machine's query langauge.
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';

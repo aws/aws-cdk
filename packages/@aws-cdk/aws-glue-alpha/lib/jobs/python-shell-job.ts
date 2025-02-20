@@ -3,16 +3,17 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Shell job
  */
 export interface PythonShellJobProps extends JobProperties {
   /**
-  * Python Version
-  * The version of Python to use to execute this job
-  * @default 3.9 for Shell Jobs
-  **/
+   * Python Version
+   * The version of Python to use to execute this job
+   * @default 3.9 for Shell Jobs
+   **/
   readonly pythonVersion?: PythonVersion;
 
   /**
@@ -49,10 +50,12 @@ export class PythonShellJob extends Job {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
-  * PythonShellJob constructor
-  */
+   * PythonShellJob constructor
+   */
   constructor(scope: Construct, id: string, props: PythonShellJobProps) {
     super(scope, id, { physicalName: props.jobName });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -105,17 +108,17 @@ export class PythonShellJob extends Job {
   }
 
   /**
-  * Set the executable arguments with best practices enabled by default
-  *
-  * @returns An array of arguments for Glue to use on execution
-  */
+   * Set the executable arguments with best practices enabled by default
+   *
+   * @returns An array of arguments for Glue to use on execution
+   */
   private executableArguments(props: PythonShellJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
 
-    //If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
+    // If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
     if (!props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE) {
-      //Selecting this option includes common libraries for Python 3.9
+      // Selecting this option includes common libraries for Python 3.9
       args['library-set'] = 'analytics';
     }
 

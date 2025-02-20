@@ -1,8 +1,12 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { constructInfoFromConstruct } from './helpers-internal';
+import type { AssertionError } from '../../assertions/lib/private/error';
+import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
+const ASSERTION_ERROR_SYMBOL = Symbol.for('@aws-cdk/assertions.AssertionError');
+const ASSEMBLY_ERROR_SYMBOL = Symbol.for('@aws-cdk/cx-api.CloudAssemblyError');
 
 /**
  * Helper to check if an error is of a certain type.
@@ -26,6 +30,24 @@ export class Errors {
    */
   public static isValidationError(x: any): x is ValidationError {
     return Errors.isConstructError(x) && VALIDATION_ERROR_SYMBOL in x;
+  }
+
+  /**
+   * Test whether the given error is a AssertionError.
+   *
+   * An AssertionError is thrown when an assertion fails.
+   */
+  public static isAssertionError(x: any): x is AssertionError {
+    return Errors.isConstructError(x) && ASSERTION_ERROR_SYMBOL in x;
+  }
+
+  /**
+   * Test whether the given error is a CloudAssemblyError.
+   *
+   * A CloudAssemblyError is thrown for unexpected problems with the synthesized assembly.
+   */
+  public static isCloudAssemblyError(x: any): x is CloudAssemblyError {
+    return x !== null && typeof(x) === 'object' && ASSEMBLY_ERROR_SYMBOL in x;
   }
 }
 
@@ -142,6 +164,8 @@ abstract class ConstructError extends Error {
  *
  * A ValidationError is always attached to a Construct scope. To a user, the error will present with additional
  * information on the construct that caused the validation to fail.
+ *
+ * @internal
  */
 export class ValidationError extends ConstructError {
   public get type(): 'validation' {
@@ -162,6 +186,8 @@ export class ValidationError extends ConstructError {
  *
  * To a User, these errors still present themselves as a "ValidationError".
  * However they do not contain any information about the location in the construct tree.
+ *
+ * @internal
  */
 export class UnscopedValidationError extends ConstructError {
   public get type(): 'validation' {

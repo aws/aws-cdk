@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../../../aws-eks';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
@@ -7,11 +8,12 @@ let stack: Stack;
 let cluster: eks.Cluster;
 
 beforeEach(() => {
-  //GIVEN
+  // GIVEN
   stack = new Stack();
   cluster = new eks.Cluster(stack, 'Cluster', {
     version: eks.KubernetesVersion.V1_21,
     clusterName: 'eksCluster',
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
   });
 });
 
@@ -43,6 +45,59 @@ test('Call an EKS endpoint', () => {
     },
     End: true,
     Parameters: {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      CertificateAuthority: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      Endpoint: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      Method: 'GET',
+      Path: 'path',
+      RequestBody: {
+        Body: 'requestBody',
+      },
+    },
+  });
+});
+
+test('Call an EKS endpoint - using JSONata', () => {
+  // WHEN
+  const task = EksCall.jsonata(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromObject({
+      Body: 'requestBody',
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
@@ -199,6 +254,7 @@ test('Task throws if cluster supplied does not have clusterEndpoint configured',
   const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
     clusterName: 'importedCluster',
     clusterCertificateAuthorityData: 'clusterCertificateAuthorityData',
+    kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
   });
   expect(() => {
     new EksCall(stack, 'Call', {
@@ -218,6 +274,7 @@ test('Task throws if cluster supplied does not have clusterCertificateAuthorityD
   const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
     clusterName: 'importedCluster',
     clusterEndpoint: 'clusterEndpoint',
+    kubectlLayer: new KubectlV31Layer(stack, 'ImportKubectlLayer'),
   });
   expect(() => {
     new EksCall(stack, 'Call', {

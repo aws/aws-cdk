@@ -979,7 +979,6 @@ test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () =
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     AvailabilityZoneName: 'us-east-1a',
   });
-
 });
 
 test('one zone file system with vpcSubnets.availabilityZones having more than 1 AZ.', () => {

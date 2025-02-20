@@ -1,10 +1,9 @@
-import { execSync } from 'child_process';
 import * as path from 'path';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { GitHubFile, GitHubPr, Review } from "./github";
+import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from "./github";
 import { TestResult, ValidationCollector } from './results';
-import { CODE_BUILD_CONTEXT, Exemption } from './constants';
+import { CODE_BUILD_CONTEXT, CODECOV_CHECKS, Exemption } from './constants';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
@@ -33,7 +32,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
   public async validateStatusEvent(status: StatusEvent): Promise<LinterActions> {
     if (status.context === CODE_BUILD_CONTEXT && status.state === 'success') {
-      return await this.assessNeedsReview();
+      return this.assessNeedsReview();
     }
     return {};
   }
@@ -60,7 +59,12 @@ export class PullRequestLinter extends PullRequestLinterBase {
     const pr = await this.pr();
 
     const reviewsData = await this.client.paginate(this.client.pulls.listReviews, this.prParams);
-    console.log(JSON.stringify(reviewsData));
+    console.log(JSON.stringify(reviewsData.map(r => ({
+      user: r.user?.login,
+      state: r.state,
+      author_association: r.author_association,
+      submitted_at: r.submitted_at,
+    })), undefined, 2));
 
     // NOTE: MEMBER = a member of the organization that owns the repository
     // COLLABORATOR = has been invited to collaborate on the repository
@@ -89,8 +93,10 @@ export class PullRequestLinter extends PullRequestLinterBase {
     //         be dismissed by a maintainer to respect another reviewer's requested changes.
     //   5. Checking if any reviewers' most recent review requested changes
     //      -> If so, the PR is considered to still need changes to meet community review.
+    const trustedCommunityMembers = await this.getTrustedCommunityMembers();
+
     const reviewsByTrustedCommunityMembers = reviewsData
-      .filter(review => this.getTrustedCommunityMembers().includes(review.user?.login ?? ''))
+      .filter(review => trustedCommunityMembers.includes(review.user?.login ?? ''))
       .filter(review => review.state !== 'PENDING' && review.state !== 'COMMENTED')
       .reduce((grouping, review) => {
         // submitted_at is not present for PENDING comments but is present for other states.
@@ -171,10 +177,10 @@ export class PullRequestLinter extends PullRequestLinterBase {
    * Trusted community reviewers is derived from the source of truth at this wiki:
    * https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews
    */
-  private getTrustedCommunityMembers(): string[] {
+  private async getTrustedCommunityMembers(): Promise<string[]> {
     if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
 
-    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
+    const wiki = await (await fetch('https://raw.githubusercontent.com/wiki/aws/aws-cdk/CDK-Community-PR-Reviews.md')).text();
     const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
     for (let i = 2; i < rawMdTable.length; i++) {
       this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());
@@ -233,8 +239,14 @@ export class PullRequestLinter extends PullRequestLinterBase {
     });
 
     validationCollector.validateRuleSet({
-      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
-      testRuleSet: [{ test: noMetadataChanges }],
+      exemption: shouldExemptAnalyticsMetadataChange,
+      testRuleSet: [
+        { test: noMetadataChanges },
+        { test: noAnalyticsClassesChanges },
+        { test: noAnalyticsEnumsChanges },
+        { test: noAnalyticsEnumAutomationChanges },
+        { test: noAnalyticsEnumLikeAutomationChanges },
+      ],
     });
 
     validationCollector.validateRuleSet({
@@ -246,6 +258,57 @@ export class PullRequestLinter extends PullRequestLinterBase {
         { test: validateBranch },
       ],
     });
+
+    validationCollector.validateRuleSet({
+      exemption: shouldExemptSizeCheck,
+      testRuleSet: [
+        { test: prIsSmall },
+      ],
+    })
+
+    if (pr.base.ref === 'main') {
+      // Only check CodeCov for PRs targeting 'main'
+      const runs = await this.checkRuns(sha);
+      const codeCovRuns = CODECOV_CHECKS.map(c => runs[c] as CheckRun | undefined);
+
+      validationCollector.validateRuleSet({
+        exemption: () => hasLabel(pr, Exemption.CODECOV),
+        testRuleSet: [{
+          test: () => {
+            const summary = summarizeRunConclusions(codeCovRuns.map(r => r?.conclusion));
+            console.log('CodeCov Summary:', summary);
+
+            switch (summary) {
+              case 'failure': return TestResult.failure('CodeCov is indicating a drop in code coverage');
+              // If we don't know the result of the CodeCov results yet, we pretend that there isn't a problem.
+              //
+              // It would be safer to ask for changes until we're confident that CodeCov has passed, but if we do
+              // that the following sequence of events happens:
+              //
+              // 1. PR is ready to be merged (approved, everything passes)
+              // 2. Mergify enqueues it and merges from main
+              // 3. CodeCov needs to run again
+              // 4. PR linter requests changes because CodeCov result is uncertain
+              // 5. Mergify dequeues the PR because PR linter requests changes
+              //
+              // This looks very confusing and noisy, and also will never fix itself, so the PR ends up unmerged.
+              //
+              // The better solution would probably be not to do a "Request Changes" review, but leave a comment
+              // and create a GitHub "status" on the PR to say 'success/pending/failure', and make it required.
+              // (https://github.com/aws/aws-cdk/issues/33136)
+              //
+              // For now, not doing anything with a 'waiting' status is a smaller delta, and the race condition posed by it is
+              // unlikely to happen given that there are much slower jobs that the merge is blocked on anyway.
+              case 'waiting': return TestResult.success();
+              case 'success': return TestResult.success();
+            }
+          },
+        }],
+      });
+    }
+
+    // We always delete all comments; in the future we will just communicate via reviews.
+    ret.deleteComments = await this.findExistingPRLinterComments();
 
     ret = mergeLinterActions(ret, await this.validationToActions(validationCollector));
 
@@ -270,7 +333,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
    */
   private async validationToActions(result: ValidationCollector): Promise<LinterActions> {
     if (result.isValid()) {
-      console.log('✅  Success');
+      console.log('✅ Success');
       return {
         dismissPreviousReview: true,
       };
@@ -367,6 +430,14 @@ function shouldExemptCliIntegTested(pr: GitHubPr): boolean {
   return (hasLabel(pr, Exemption.CLI_INTEG_TESTED) || pr.user?.login === 'aws-cdk-automation');
 }
 
+function shouldExemptSizeCheck(pr: GitHubPr): boolean {
+  return hasLabel(pr, Exemption.SIZE_CHECK);
+}
+
+function shouldExemptAnalyticsMetadataChange(pr: GitHubPr): boolean {
+  return (hasLabel(pr, Exemption.ANALYTICS_METADATA_CHANGE) || pr.user?.login === 'aws-cdk-automation');
+}
+
 function hasLabel(pr: GitHubPr, labelName: string): boolean {
   return pr.labels.some(function (l: any) {
     return l.name === labelName;
@@ -401,16 +472,17 @@ function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestR
  */
 function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const titleRe = /^(feat|fix|build|chore|ci|docs|style|refactor|perf|test|(r|R)evert)(\([\w_-]+\))?: /;
+  const validTypes = "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert";
+  const titleRe = new RegExp(`^(${validTypes})(\\([\\w_-]+\\))?: `);
   const m = titleRe.exec(pr.title);
   result.assessFailure(
     !m,
-    'The title of this pull request does not follow the Conventional Commits format, see https://www.conventionalcommits.org/.');
+    `The title prefix of this pull request must be one of "${validTypes}"`);
   return result;
 }
 
 /**
- * Check that the PR title uses the typical convention for package names.
+ * Check that the PR title uses the typical convention for package names, and is lowercase.
  *
  * For example, "fix(s3)" is preferred over "fix(aws-s3)".
  */
@@ -427,7 +499,17 @@ function validateTitleScope(pr: GitHubPr): TestResult {
   if (m && !scopesExemptFromThisRule.includes(m[2])) {
     result.assessFailure(
       !!(m[2] && m[3]),
-      `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+      `The title scope of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
+    );
+  }
+
+  // Title scope is lowercase
+  const scopeRe = /^\w+\(([\w_-]+)\)?: /; // Isolate the scope
+  const scope = scopeRe.exec(pr.title);
+  if (scope && scope[1]) {
+    result.assessFailure(
+      scope[1] !== scope[1].toLocaleLowerCase(),
+      `The title scope of the pull request should be entirely in lowercase. Use '${scope[1].toLocaleLowerCase()}' instead.`,
     );
   }
   return result;
@@ -484,6 +566,59 @@ function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
   result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsClassesChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/classes.ts');
+  result.assessFailure(condition, 'Manual changes to the classes.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumsChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts');
+  result.assessFailure(condition, 'Manual changes to the enums.ts file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumAutomationChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json');
+  result.assessFailure(condition, 'Manual changes to the module-enums.json file are not allowed.');
+  return result;
+}
+
+function noAnalyticsEnumLikeAutomationChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json');
+  result.assessFailure(condition, 'Manual changes to the module-enumlikes.json file are not allowed.');
+  return result;
+}
+
+function prIsSmall(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const folders = ['packages/aws-cdk/', 'packages/@aws-cdk-testing/cli-integ/'];
+  const exclude = [/THIRD_PARTY_LICENSES/, /.*\.md/, /.*\.test\.ts/];
+  const maxLinesAdded = 1000;
+  const maxLinesRemoved = 1000;
+
+  const filesToCheck: GitHubFile[] = files
+    .filter(r => folders.some(folder => r.filename.startsWith(folder)))
+    .filter(r => exclude.every(re => !re.test(r.filename)));
+
+  const sum = sumChanges(filesToCheck);
+
+  const result = new TestResult();
+  result.assessFailure(
+    sum.additions > maxLinesAdded,
+    `The number of lines added (${sum.additions}) is greater than ${maxLinesAdded}`
+  );
+  result.assessFailure(
+    sum.deletions > maxLinesRemoved,
+    `The number of lines removed (${sum.deletions}) is greater than ${maxLinesAdded}`
+  );
+
   return result;
 }
 

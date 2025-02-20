@@ -103,7 +103,6 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
-
   }),
 
   test('Instantiate Standard State Machine With Comment', () => {
@@ -124,7 +123,6 @@ describe('State Machine', () => {
       StateMachineType: 'STANDARD',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"Comment":"zorp"}',
     });
-
   }),
 
   test('Instantiate Express State Machine', () => {
@@ -144,7 +142,6 @@ describe('State Machine', () => {
       StateMachineType: 'EXPRESS',
       DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
     });
-
   }),
 
   test('Instantiate State Machine With Distributed Map State', () => {
@@ -307,6 +304,37 @@ describe('State Machine', () => {
         },
       ],
     });
+  });
+
+  test('log configuration with level OFF', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      logs: { level: sfn.LogLevel.OFF },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      LoggingConfiguration: {
+        Level: 'OFF',
+      },
+    });
+  });
+
+  test('log configuration throws when no destination specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+        logs: { level: sfn.LogLevel.ERROR },
+      });
+    }).toThrow('Logs destination is required when level is not OFF.');
   });
 
   test('tracing configuration', () => {

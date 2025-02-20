@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import * as codepipeline from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
-import { SecretValue, Stack } from '../../core';
+import { Duration, SecretValue, Stack } from '../../core';
 import * as cpactions from '../lib';
 
 /* eslint-disable quote-props */
@@ -21,7 +21,6 @@ describe('manual approval', () => {
       stage.addAction(manualApprovalAction);
 
       expect(manualApprovalAction.notificationTopic).toEqual(topic);
-
     });
 
     test('allows granting manual approval permissions to role', () => {
@@ -108,7 +107,6 @@ describe('manual approval', () => {
           },
         ],
       });
-
     });
 
     test('rejects granting manual approval permissions before binding action to stage', () => {
@@ -121,7 +119,6 @@ describe('manual approval', () => {
       expect(() => {
         manualApprovalAction.grantManualApproval(role);
       }).toThrow('Cannot grant permissions before binding action to a stage');
-
     });
 
     test('renders CustomData and ExternalEntityLink even if notificationTopic was not passed', () => {
@@ -170,7 +167,70 @@ describe('manual approval', () => {
           },
         ],
       });
+    });
 
+    describe('timeout', () => {
+      test('can set timeout', () => {
+        const stack = new Stack();
+        new codepipeline.Pipeline(stack, 'pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new cpactions.GitHubSourceAction({
+                actionName: 'Source',
+                output: new codepipeline.Artifact(),
+                oauthToken: SecretValue.unsafePlainText('secret'),
+                owner: 'aws',
+                repo: 'aws-cdk',
+              })],
+            },
+            {
+              stageName: 'Approve',
+              actions: [
+                new cpactions.ManualApprovalAction({
+                  actionName: 'Approval',
+                  timeout: Duration.minutes(10),
+                }),
+              ],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          'Stages': [
+            {
+              'Name': 'Source',
+            },
+            {
+              'Name': 'Approve',
+              'Actions': [
+                {
+                  'Name': 'Approval',
+                  'TimeoutInMinutes': 10,
+                },
+              ],
+            },
+          ],
+        });
+      });
+
+      test('throws if timeout is less than 5 minutes', () => {
+        expect(() => {
+          new cpactions.ManualApprovalAction({
+            actionName: 'Approval',
+            timeout: Duration.minutes(4),
+          });
+        }).toThrow('timeout must be between 5 minutes and 86400 minutes (60 days), got 4 minutes');
+      });
+
+      test('throws if timeout is greater than 60 days', () => {
+        expect(() => {
+          new cpactions.ManualApprovalAction({
+            actionName: 'Approval',
+            timeout: Duration.minutes(86401),
+          });
+        }).toThrow('timeout must be between 5 minutes and 86400 minutes (60 days), got 86401 minutes');
+      });
     });
   });
 });
