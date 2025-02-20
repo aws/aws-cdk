@@ -1,4 +1,4 @@
-import { ConstructsUpdater, PropertyUpdater } from '../lib/metadata-updater';
+import { ConstructsUpdater, EnumLikeUpdater, PropertyUpdater } from '../lib/metadata-updater';
 import { Project, ClassDeclaration, SourceFile, QuoteKind, IndentationText } from 'ts-morph';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -426,6 +426,73 @@ describe('PropertyUpdater', () => {
 
       const result = propertyUpdater['getPropertyType'](mockType, processedTypes);
       expect(result).toBeUndefined();
+    });
+  });
+});
+
+describe('EnumLikeUpdater', () => {
+  let enumLikeUpdater: EnumLikeUpdater;
+  
+  beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+    enumLikeUpdater = new EnumLikeUpdater('/mock/dir');
+  });
+
+  describe('execute', () => {
+    it('should process source files and generate content', () => {
+      // Mock the source files
+      const mockSourceFiles = [
+        { 
+          getFilePath: () => '/aws-cdk/packages/aws-cdk-lib/aws-lambda/Function.ts',
+          forEachChild: jest.fn(() => {})
+        }
+      ] as any;
+
+      // Setup spies
+      const getSourceFilesSpy = jest.spyOn(enumLikeUpdater['project'], 'getSourceFiles')
+        .mockReturnValue(mockSourceFiles);
+      const generateFileContentSpy = jest.spyOn(enumLikeUpdater as any, 'writeFileContent');
+
+      // Execute the method
+      enumLikeUpdater.execute();
+
+      // Assertions
+      expect(getSourceFilesSpy).toHaveBeenCalled();
+      expect(generateFileContentSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('generateFileContent', () => {
+    it('should generate correct file content and write to file', () => {
+      // Mock the enumLikes
+      let enumlikes = {
+        'aws-cdk/some-module/enum': {
+          'Enum': [
+            'value'
+          ],
+        },
+      };
+
+      // Mock path.resolve
+      (path.resolve as jest.Mock).mockReturnValue('/mock/output/path');
+
+      // Execute the method
+      enumLikeUpdater['writeFileContent']('/mock/output/path', enumlikes);
+      
+      // Verify file write
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        '/mock/output/path',
+        expect.stringContaining('aws-cdk/some-module/enum')
+      );
+
+      // Verify content format
+      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls[0];
+      const content = writeCall[1];
+      
+      expect(content).toContain('"aws-cdk/some-module/enum"');
+      expect(content).toContain('"Enum"');
+      expect(content).toContain('"value"');
     });
   });
 });

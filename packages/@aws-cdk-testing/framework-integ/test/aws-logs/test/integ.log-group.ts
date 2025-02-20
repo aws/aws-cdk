@@ -28,4 +28,3 @@ class LogGroupIntegStack extends Stack {
 const app = new App();
 const stack = new LogGroupIntegStack(app, 'aws-cdk-log-group-integ');
 new IntegTest(app, 'LogGroupInteg', { testCases: [stack] });
-app.synth();

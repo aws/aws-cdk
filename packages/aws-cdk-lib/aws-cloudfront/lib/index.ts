@@ -13,6 +13,7 @@ export * from './realtime-log-config';
 export * from './response-headers-policy';
 export * from './web-distribution';
 export * from './origin-access-control';
+export * from './vpc-origin';
 
 export * as experimental from './experimental';
 
