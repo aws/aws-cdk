@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b771d0a5b01eb7cd8f9683ae7489ea0a68c481137d54bc81063bd51549966c60.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c40caf7f4fbdcc6a69a3e831ed0e4749d8a80f4147b45429bbb385d684ae01ea.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -445,9 +445,6 @@
                 },
                 {
                   "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
                 }
               ]
             }
@@ -468,10 +465,7 @@
         "/aws-cdk-eks-helm-test/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/KubectlReadyBarrier": [
@@ -884,10 +878,7 @@
         "/aws-cdk-eks-helm-test/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/mastersRoleAccess": [
@@ -899,10 +890,7 @@
         "/aws-cdk-eks-helm-test/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/ConfigCommand": [
@@ -1128,24 +1116,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityDA0920A3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -69,7 +69,7 @@ class EksClusterStack extends Stack {
 
     // testing the disable mechanism of the installation of CRDs
     // https://gallery.ecr.aws/aws-controllers-k8s/rds-chart
-    this.cluster.addHelmChart('test-skip-crd-installation', {
+    const rdsChart = this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'rds-chart',
       release: 'rds-chart-release',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
@@ -82,10 +82,16 @@ class EksClusterStack extends Stack {
 
     // testing installation with atomic flag set to true
     // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
-
+    // this service account has to be created in `ack-system`
+    // we need to ensure that the namespace is created before the service account
     const sa = this.cluster.addServiceAccount('ec2-controller-sa', {
       namespace: 'ack-system',
     });
+
+    // rdsChart should create the namespace `ack-system` if not available
+    // adding the dependency ensures that the namespace is created before the service account
+    sa.node.addDependency(rdsChart);
+
     sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
 
     this.cluster.addHelmChart('test-atomic-installation', {
@@ -103,6 +109,7 @@ class EksClusterStack extends Stack {
           name: sa.serviceAccountName,
           create: false,
           annotations: {
+            // implicit dependency on the service account
             'eks.amazonaws.com/role-arn': sa.role.roleArn,
           },
         },

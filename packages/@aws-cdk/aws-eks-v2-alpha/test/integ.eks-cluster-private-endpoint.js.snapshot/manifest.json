@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/422353ef47de2c4c799fd5e93f5017b7ed4f9a492832cafe41b881d2bdd8a6a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29073dbdb7659149c126e8485f80b201da0ca1ec43353837a1261b112cdea210.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -446,9 +446,6 @@
                 },
                 {
                   "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
                 }
               ]
             }
@@ -469,10 +466,7 @@
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlReadyBarrier": [
@@ -869,10 +863,7 @@
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/mastersRoleAccess": [
@@ -884,10 +875,7 @@
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ConfigCommand": [
@@ -930,24 +918,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityDA0920A3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

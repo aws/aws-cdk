@@ -681,18 +681,6 @@
         ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEKS_CNI_Policy"
-       ]
-      ]
      }
     ]
    }
@@ -1061,16 +1049,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "helloeksKubectlProviderHandler788A3C17",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -1140,6 +1118,38 @@
    "DependsOn": [
     "helloeksKubectlProviderframeworkonEventServiceRoleDefaultPolicy62B3F050",
     "helloeksKubectlProviderframeworkonEventServiceRole68309EF1",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "helloeksKubectlProviderHandler788A3C17",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE",
+    "Roles": [
+     {
+      "Ref": "helloeksKubectlProviderframeworkonEventServiceRole68309EF1"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",

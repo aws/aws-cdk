@@ -577,18 +577,6 @@
         ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
        ]
       ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonEKS_CNI_Policy"
-       ]
-      ]
      }
     ]
    }
@@ -852,7 +840,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "de8fd3e1db60af6c94c41cf772ba29b177107f25678a3edfc700f3fa1c53615a.zip"
+     "S3Key": "7633376387df35dc59230d4039be5a7b77bfbcb6d38fa9a2c6e53ed61ab00cf0.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -1361,6 +1349,9 @@
      ]
     }
    },
+   "DependsOn": [
+    "ClustercharttestskipcrdinstallationB8323954"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -1403,7 +1394,10 @@
       ]
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "ClustercharttestskipcrdinstallationB8323954"
+   ]
   },
   "Clusterec2controllersamanifestec2controllersaServiceAccountResource90211140": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
@@ -1435,6 +1429,7 @@
     "PruneLabel": "aws.cdk.eks/prune-c821e718a8b33d4c46414e77b9f9f05e76fc714e10"
    },
    "DependsOn": [
+    "ClustercharttestskipcrdinstallationB8323954",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",

@@ -1174,18 +1174,6 @@
                                 ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
                               ]
                             ]
-                          },
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/AmazonEKS_CNI_Policy"
-                              ]
-                            ]
                           }
                         ]
                       }
@@ -1206,9 +1194,6 @@
                         "assumeRoleAction": "*"
                       },
                       "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        },
                         {
                           "managedPolicyArn": "*"
                         },
@@ -1863,16 +1848,6 @@
                                                   ]
                                                 }
                                               ]
-                                            },
-                                            {
-                                              "Action": "lambda:GetFunction",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "helloeksKubectlProviderHandler788A3C17",
-                                                  "Arn"
-                                                ]
-                                              }
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1904,11 +1879,6 @@
                                     {
                                       "attachToRole": [
                                         "*"
-                                      ]
-                                    },
-                                    {
-                                      "addStatements": [
-                                        {}
                                       ]
                                     },
                                     {
@@ -1954,8 +1924,13 @@
                                   ]
                                 },
                                 {
-                                  "addToPrincipalPolicy": [
-                                    {}
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
                                   ]
                                 }
                               ]
@@ -2043,6 +2018,70 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "helloeksKubectlProviderHandler788A3C17",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE",
+                                    "roles": [
+                                      {
+                                        "Ref": "helloeksKubectlProviderframeworkonEventServiceRole68309EF1"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },

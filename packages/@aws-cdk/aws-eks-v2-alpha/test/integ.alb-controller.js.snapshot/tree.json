@@ -1056,18 +1056,6 @@
                                 ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
                               ]
                             ]
-                          },
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/AmazonEKS_CNI_Policy"
-                              ]
-                            ]
                           }
                         ]
                       }
@@ -1088,9 +1076,6 @@
                         "assumeRoleAction": "*"
                       },
                       "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        },
                         {
                           "managedPolicyArn": "*"
                         },

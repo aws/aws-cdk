@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cac9b5611661096d7dc22260ea8b1c440806a3d24a67792f0ada8df75530388c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2b3141b758a960629455deaa95af4b9d6ffdc38ba62e15b70a46bd3c621b8898.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -474,9 +474,6 @@
                 },
                 {
                   "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
                 }
               ]
             }
@@ -497,10 +494,7 @@
         "/eks-auto-mode-stack/hello-eks/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksBE273F5A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "helloeksBE273F5A"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/KubectlReadyBarrier": [
@@ -782,8 +776,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -828,14 +830,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -850,6 +844,44 @@
             "data": "helloeksKubectlProviderframeworkonEvent1E7B4950"
           }
         ],
+        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-auto-mode-stack/hello-eks/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "helloeksKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0883D9EBE"
+          }
+        ],
         "/eks-auto-mode-stack/hello-eks/ClusterAdminRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -859,10 +891,7 @@
         "/eks-auto-mode-stack/hello-eks/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksClusterAdminRoleAccess3B9D74AE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "helloeksClusterAdminRoleAccess3B9D74AE"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/mastersRoleAccess": [
@@ -874,10 +903,7 @@
         "/eks-auto-mode-stack/hello-eks/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "helloeksmastersRoleAccessF848B5EF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "helloeksmastersRoleAccessF848B5EF"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/ConfigCommand": [

@@ -183,9 +183,6 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     if atomic:
         cmnd.append('--atomic')    
     cmnd.extend(['--kubeconfig', kubeconfig])
-    
-    # print the full command
-    logger.info(' '.join(cmnd))
 
     maxAttempts = 3
     retry = maxAttempts
