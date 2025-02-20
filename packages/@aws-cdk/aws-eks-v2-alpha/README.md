@@ -205,19 +205,14 @@ cluster.addNodegroupCapacity('specialized-workload', {
 
 ### Important Notes
 
-1. Auto Mode and traditional capacity management are mutually exclusive at the default capacity level. You cannot specify both Auto Mode and `defaultCapacity` or `defaultCapacityInstance`.
+1. Auto Mode and traditional capacity management are mutually exclusive at the default capacity level. You cannot opt in to Auto Mode and specify `defaultCapacity` or `defaultCapacityInstance`.
 
 2. When Auto Mode is enabled:
    - The cluster will automatically manage compute resources
    - Node pools cannot be modified, only enabled or disabled
    - EKS will handle scaling and management of the node pools
 
-3. Auto Mode requires specific IAM permissions. The construct will automatically attach the required managed policies:
-   - AmazonEKSComputePolicy
-   - AmazonEKSBlockStoragePolicy
-   - AmazonEKSLoadBalancingPolicy
-   - AmazonEKSNetworkingPolicy
-   - AmazonEKSClusterPolicy
+3. Auto Mode requires specific IAM permissions. The construct will automatically attach the required managed policies.
 
 ### Managed node groups
 
