@@ -12,7 +12,7 @@ import * as apigw from '../lib';
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
-})
+});
 
 describe('restapi', () => {
   test('minimal setup', () => {
@@ -143,7 +143,7 @@ describe('restapi', () => {
   test('fails in synthesis if there are no methods or definition', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'my-stack');
+    stack = new Stack(app, 'my-stack');
     const api = new apigw.RestApi(stack, 'API');
 
     // WHEN
@@ -204,7 +204,6 @@ describe('restapi', () => {
   });
 
   test('"addMethod" can be used to add methods to resources', () => {
-
     const api = new apigw.RestApi(stack, 'restapi', { deploy: false, cloudWatchRole: false });
     const r1 = api.root.addResource('r1');
 
@@ -306,8 +305,6 @@ describe('restapi', () => {
   });
 
   test('fails if "deployOptions" is set with "deploy" disabled', () => {
-
-    // THEN
     expect(() => new apigw.RestApi(stack, 'myapi', {
       deploy: false,
       deployOptions: { cachingEnabled: true },
@@ -347,7 +344,7 @@ describe('restapi', () => {
         '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
       },
     });
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -740,7 +737,6 @@ describe('restapi', () => {
   });
 
   test('creates output with given "exportName"', () => {
-
     // WHEN
     const api = new apigw.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
     api.root.addMethod('GET');
@@ -831,7 +827,7 @@ describe('restapi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minCompressionSize: Size.bytes(1024),
     });
@@ -854,7 +850,7 @@ describe('restapi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minimumCompressionSize: 1024,
     });
@@ -878,7 +874,7 @@ describe('restapi', () => {
     });
 
     // WHEN
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     // THEN
     expect(() => new apigw.RestApi(stack, 'RestApi', {
@@ -1052,7 +1048,7 @@ describe('SpecRestApi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1074,7 +1070,7 @@ describe('SpecRestApi', () => {
       },
     });
 
-    const stack = new Stack(app);
+    stack = new Stack(app);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       minCompressionSize: Size.bytes(1024),
@@ -1897,7 +1893,7 @@ describe('telemetry metadata', () => {
   it('redaction happens when feature flag is enabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
@@ -1932,7 +1928,7 @@ describe('telemetry metadata', () => {
   it('redaction happens when feature flag is disabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
-    const stack = new Stack(app);
+    stack = new Stack(app);
 
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
