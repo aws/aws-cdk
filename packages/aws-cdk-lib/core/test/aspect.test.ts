@@ -355,14 +355,14 @@ describe('aspect', () => {
     // WHEN
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     // THEN
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/My-Stack',
-        message: 'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and overwrite in My-Stack]',
+        message: 'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and respectPreviousPolicy in My-Stack]',
       },
     ]);
   });
@@ -376,12 +376,12 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -399,12 +399,12 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -422,7 +422,7 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      overwrite: false,
+      respectPreviousPolicy: true,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -440,12 +440,12 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      overwrite: false,
+      respectPreviousPolicy: true,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 300,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -463,17 +463,17 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.SNAPSHOT, {
       priority: 300,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -495,7 +495,7 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 100,
-      overwrite: true,
+      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::EC2::Instance', {

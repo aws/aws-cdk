@@ -26,9 +26,9 @@ export interface RemovalPolicyProps {
    * If true, overwrite any user-specified removal policy that has been previously set.
    * This means even if the user has already called `applyRemovalPolicy()` on the resource,
    * it will be overwritten with the new policy.
-   * @default false - do not overwrite user-specified policies
+   * @default false - do not respect previous removal policies set by the user, overwrite.
    */
-  readonly overwrite?: boolean;
+  readonly respectPreviousPolicy?: boolean;
 
   /**
    * The priority to use when applying this policy.
@@ -75,7 +75,7 @@ class RemovalPolicyAspect implements IAspect {
       cfnResource.cfnOptions.deletionPolicy !== undefined ||
       cfnResource.cfnOptions.updateReplacePolicy !== undefined;
 
-    if (!this.props.overwrite && userAlreadySetPolicy) {
+    if ((this.props.respectPreviousPolicy === undefined || this.props.respectPreviousPolicy === true) && userAlreadySetPolicy) {
       return;
     }
 
@@ -120,10 +120,10 @@ export class RemovalPolicies {
       priority: props.priority ?? AspectPriority.MUTATING,
     });
 
-    if (props.priority !== undefined && props.overwrite === true) {
+    if (props.priority !== undefined && props.respectPreviousPolicy === false) {
       Annotations.of(this.scope).addWarningV2(
-        `Warning Removal Policies with both priority and overwrite in ${this.scope.node.path}`,
-        'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details.',
+        `Warning Removal Policies with both priority and respectPreviousPolicy in ${this.scope.node.path}`,
+        'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details.',
       );
     }
   }

@@ -23,7 +23,6 @@ RemovalPolicies.of(stack).retain({
   priority: 50,
 });
 RemovalPolicies.of(destroyBucket).destroy({
-  overwrite: true,
   priority: 100,
 });
 

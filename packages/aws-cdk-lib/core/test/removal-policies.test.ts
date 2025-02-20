@@ -132,7 +132,7 @@ describe('removal-policies', () => {
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Delete');
 
-    RemovalPolicies.of(resource).snapshot({ overwrite: true });
+    RemovalPolicies.of(resource).snapshot({ respectPreviousPolicy: false });
     synthesize(stack);
     expect(resource.cfnOptions.deletionPolicy).toBe('Snapshot');
   });
@@ -154,7 +154,7 @@ describe('removal-policies', () => {
     expect(parentResource.cfnOptions.deletionPolicy).toBe('Delete');
     expect(childResource.cfnOptions.deletionPolicy).toBe('Delete');
 
-    RemovalPolicies.of(child).retain({ overwrite: true });
+    RemovalPolicies.of(child).retain({ respectPreviousPolicy: false });
     synthesize(stack);
     expect(childResource.cfnOptions.deletionPolicy).toBe('Retain');
   });
@@ -198,7 +198,7 @@ describe('removal-policies', () => {
 
     // WHEN
     RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 10 });
-    RemovalPolicies.of(stack).destroy({ priority: 250, overwrite: true });
+    RemovalPolicies.of(stack).destroy({ priority: 250, respectPreviousPolicy: false });
 
     // THEN
     synthesize(stack);
@@ -212,13 +212,13 @@ describe('removal-policies', () => {
     const resource = new TestResource(stack, 'Resource');
 
     // WHEN:
-    RemovalPolicies.of(resource).destroy({ priority: 100, overwrite: true });
+    RemovalPolicies.of(resource).destroy({ priority: 100, respectPreviousPolicy: false });
 
     // THEN
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/My-Stack/Resource',
-        message: 'Applying a Removal Policy with both `priority` and `overwrite` set to true can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and overwrite in My-Stack/Resource]',
+        message: 'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and respectPreviousPolicy in My-Stack/Resource]',
       },
     ]);
   });
