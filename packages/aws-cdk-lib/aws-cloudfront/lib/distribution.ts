@@ -832,7 +832,7 @@ export class Distribution extends Resource implements IDistribution {
     }
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
-      throw new Error(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`);
+      throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
     }
   }
 }

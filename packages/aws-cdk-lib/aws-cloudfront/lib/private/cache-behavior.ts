@@ -30,10 +30,10 @@ export class CacheBehavior {
 
     if (props.enableGrpc) {
       if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
-        throw new Error('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+        throw new UnscopedValidationError('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
       }
       if (props.edgeLambdas !== undefined && props.edgeLambdas.length > 0) {
-        throw new Error('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
+        throw new UnscopedValidationError('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
       }
     }
 
