@@ -108,6 +108,54 @@ describe('eks auto mode', () => {
   });
 
   describe('node pool configuration', () => {
+    test('throws when nodePools specified without auto mode', () => {
+      const { stack } = testFixtureNoVpc();
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+          compute: {
+            nodePools: ['system', 'general-purpose'],
+          },
+        });
+      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+    });
+
+    test('throws when nodeRole specified without auto mode', () => {
+      const { stack } = testFixtureNoVpc();
+      const customRole = new iam.Role(stack, 'CustomRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+          compute: {
+            nodeRole: customRole,
+          },
+        });
+      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+    });
+
+    test('throws when both nodePools and nodeRole specified without auto mode', () => {
+      const { stack } = testFixtureNoVpc();
+      const customRole = new iam.Role(stack, 'CustomRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
+
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+          compute: {
+            nodePools: ['system', 'general-purpose'],
+            nodeRole: customRole,
+          },
+        });
+      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+    });
+
     test('validates node pool values', () => {
       const { stack } = testFixtureNoVpc();
       expect(() => {
