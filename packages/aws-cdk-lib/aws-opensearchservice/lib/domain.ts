@@ -474,13 +474,24 @@ export interface NodeConfig {
 }
 
 /**
+ * NodeType is a string enum of the node types in OpenSearch domain
+ * 
+ */
+export enum NodeType {
+  /**
+   * Coordinator node type
+   */
+  COORDINATOR = 'coordinator',
+}
+
+/**
  * Configuration for node options in OpenSearch domain
  */
 export interface NodeOptions {
   /**
    * The type of node. Currently only 'coordinator' is supported.
    */
-  readonly nodeType: 'coordinator';
+  readonly nodeType: NodeType;
 
   /**
    * Configuration for the node type
@@ -1914,7 +1925,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.capacity?.nodeOptions) {
       // Validate coordinator node configuration
-      const coordinatorConfig = props.capacity.nodeOptions.find(opt => opt.nodeType === 'coordinator')?.nodeConfig;
+      const coordinatorConfig = props.capacity.nodeOptions.find(opt => opt.nodeType === NodeType.COORDINATOR)?.nodeConfig;
       if (coordinatorConfig?.enabled) {
         const coordinatorType = initializeInstanceType(defaultCoordinatorInstanceType, coordinatorConfig.type);
         if (!cdk.Token.isUnresolved(coordinatorType) && !coordinatorType.endsWith('.search')) {
