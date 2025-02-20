@@ -5,7 +5,6 @@ import * as iam from '../lib';
 const arnOfProvider = 'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
 
 describe('OpenIdConnectProvider resource', () => {
-
   test('minimal configuration (no clients and no thumbprint)', () => {
     // GIVEN
     const stack = new Stack();
@@ -32,6 +31,29 @@ describe('OpenIdConnectProvider resource', () => {
 
     // THEN
     expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+  });
+
+  it.each(
+    [true, false, undefined],
+  )('Check the status of RejectUnauthorized when IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS is set to different values', (flag) => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': flag,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new iam.OpenIdConnectProvider(stack, 'MyProvider', {
+      url: 'https://my-issuer',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
+      Url: 'https://my-issuer',
+      RejectUnauthorized: flag ?? false,
+    });
   });
 
   test('static fromOpenIdConnectProviderArn can be used to import a provider', () => {
@@ -63,11 +85,9 @@ describe('OpenIdConnectProvider resource', () => {
       ThumbprintList: ['thumb1'],
     });
   });
-
 });
 
 describe('custom resource provider infrastructure', () => {
-
   test('two resources share the same cr provider', () => {
     // GIVEN
     const app = new App();

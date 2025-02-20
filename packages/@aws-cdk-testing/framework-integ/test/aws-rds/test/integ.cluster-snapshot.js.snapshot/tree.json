@@ -84,7 +84,8 @@
                     "path": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -199,7 +200,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -251,7 +276,8 @@
                     "path": "cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -318,7 +344,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -370,7 +415,8 @@
                     "path": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -437,7 +483,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -489,7 +554,8 @@
                     "path": "cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -556,7 +622,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -600,7 +685,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "maxAzs": "*",
+                  "natGateways": "*",
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "Cluster": {
@@ -636,7 +728,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "removalPolicy": "*"
+                    }
+                  ]
                 }
               },
               "SecurityGroup": {
@@ -670,7 +770,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
@@ -678,7 +784,8 @@
                 "path": "cdk-integ-cluster-snapshot/Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "Secret": {
@@ -742,13 +849,34 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "secret": "*",
+                          "target": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "encryptionKey": "*",
+                      "secretName": "*",
+                      "replicaRegions": "*"
+                    },
+                    {
+                      "username": "*",
+                      "secretName": "*",
+                      "encryptionKey": "*",
+                      "excludeCharacters": "*",
+                      "replaceOnPasswordCriteriaChanges": "*",
+                      "replicaRegions": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -808,7 +936,10 @@
                 "path": "cdk-integ-cluster-snapshot/Cluster/Instance1Wrapper",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Instance1": {
@@ -837,7 +968,10 @@
                 "path": "cdk-integ-cluster-snapshot/Cluster/Instance2Wrapper",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Instance2": {
@@ -864,7 +998,27 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "engine": {
+                    "engineType": "*",
+                    "singleUserRotationApplication": "*",
+                    "engineVersion": {
+                      "fullVersion": "*",
+                      "majorVersion": "*"
+                    },
+                    "parameterGroupFamily": "*",
+                    "engineFamily": "*",
+                    "supportedLogTypes": "*",
+                    "combineImportAndExportRoles": true
+                  },
+                  "writer": "*",
+                  "readers": "*",
+                  "vpc": "*",
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "Snapshoter": {
@@ -884,7 +1038,10 @@
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -925,97 +1082,34 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": [
-                                        "rds:CreateDBClusterSnapshot",
-                                        "rds:DeleteDBClusterSnapshot"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":rds:",
-                                              {
-                                                "Ref": "AWS::Region"
-                                              },
-                                              ":",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":cluster-snapshot:cdk-integ-cluster-snapshot"
-                                            ]
-                                          ]
-                                        },
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":rds:",
-                                              {
-                                                "Ref": "AWS::Region"
-                                              },
-                                              ":",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":cluster:",
-                                              {
-                                                "Ref": "ClusterEB0386A7"
-                                              }
-                                            ]
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57",
-                                "roles": [
-                                  {
-                                    "Ref": "SnapshoterOnEventHandlerServiceRole7F84B26D"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Code": {
@@ -1035,7 +1129,8 @@
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -1070,11 +1165,124 @@
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "rds:CreateDBClusterSnapshot",
+                                    "rds:DeleteDBClusterSnapshot"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":rds:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":cluster-snapshot:cdk-integ-cluster-snapshot"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":rds:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":cluster:",
+                                          {
+                                            "Ref": "ClusterEB0386A7"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "SnapshoterOnEventHandlerinlinePolicyAddedToExecutionRole0AEE7BA05",
+                            "roles": [
+                              {
+                                "Ref": "SnapshoterOnEventHandlerServiceRole7F84B26D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "code": "*",
+                      "runtime": "*",
+                      "handler": "*"
+                    }
+                  ]
                 }
               },
               "IsCompleteHandler": {
@@ -1090,7 +1298,10 @@
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -1131,94 +1342,34 @@
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "rds:DescribeDBClusterSnapshots",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":rds:",
-                                              {
-                                                "Ref": "AWS::Region"
-                                              },
-                                              ":",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":cluster-snapshot:cdk-integ-cluster-snapshot"
-                                            ]
-                                          ]
-                                        },
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":rds:",
-                                              {
-                                                "Ref": "AWS::Region"
-                                              },
-                                              ":",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":cluster:",
-                                              {
-                                                "Ref": "ClusterEB0386A7"
-                                              }
-                                            ]
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222",
-                                "roles": [
-                                  {
-                                    "Ref": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Resource": {
@@ -1247,11 +1398,121 @@
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
                     }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "rds:DescribeDBClusterSnapshots",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":rds:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":cluster-snapshot:cdk-integ-cluster-snapshot"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":rds:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":cluster:",
+                                          {
+                                            "Ref": "ClusterEB0386A7"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "SnapshoterIsCompleteHandlerinlinePolicyAddedToExecutionRole0847096B9",
+                            "roles": [
+                              {
+                                "Ref": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "code": "*",
+                      "runtime": "*",
+                      "handler": "*"
+                    }
+                  ]
                 }
               },
               "SnapshotProvider": {
@@ -1271,7 +1532,10 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -1397,13 +1661,99 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              },
+                              "managedPolicies": [
+                                {
+                                  "managedPolicyArn": "*"
+                                }
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       },
                       "Code": {
@@ -1423,7 +1773,8 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -1442,7 +1793,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -1487,11 +1838,173 @@
                           "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
+                      },
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterOnEventHandlerDF82DF85",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole079D50682",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-1": {
+                        "id": "inlinePolicyAddedToExecutionRole-1",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterIsCompleteHandler93DE2591",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "code": "*",
+                          "description": "*",
+                          "runtime": "*",
+                          "handler": "*",
+                          "timeout": "*",
+                          "logGroup": "*",
+                          "vpc": "*",
+                          "vpcSubnets": "*",
+                          "securityGroups": "*",
+                          "role": "*",
+                          "functionName": "*",
+                          "environmentEncryption": "*"
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "framework-isComplete": {
@@ -1507,7 +2020,10 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -1626,13 +2142,89 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              },
+                              "managedPolicies": [
+                                {
+                                  "managedPolicyArn": "*"
+                                }
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       },
                       "Code": {
@@ -1652,7 +2244,8 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -1671,7 +2264,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -1713,11 +2306,167 @@
                           "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
+                      },
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterOnEventHandlerDF82DF85",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole060DC0CFE",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-1": {
+                        "id": "inlinePolicyAddedToExecutionRole-1",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterIsCompleteHandler93DE2591",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "code": "*",
+                          "description": "*",
+                          "runtime": "*",
+                          "handler": "*",
+                          "timeout": "*",
+                          "logGroup": "*",
+                          "vpc": "*",
+                          "vpcSubnets": "*",
+                          "securityGroups": "*",
+                          "role": "*",
+                          "functionName": "*",
+                          "environmentEncryption": "*"
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "framework-onTimeout": {
@@ -1733,7 +2482,10 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -1852,13 +2604,89 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              },
+                              "managedPolicies": [
+                                {
+                                  "managedPolicyArn": "*"
+                                }
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       },
                       "Code": {
@@ -1878,7 +2706,8 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -1897,7 +2726,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+                              "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -1939,11 +2768,167 @@
                           "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "0.0.0"
                         }
+                      },
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterOnEventHandlerDF82DF85",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0D9321580",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "inlinePolicyAddedToExecutionRole-1": {
+                        "id": "inlinePolicyAddedToExecutionRole-1",
+                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:GetFunction",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "SnapshoterIsCompleteHandler93DE2591",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D",
+                                "roles": [
+                                  {
+                                    "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "code": "*",
+                          "description": "*",
+                          "runtime": "*",
+                          "handler": "*",
+                          "timeout": "*",
+                          "logGroup": "*",
+                          "vpc": "*",
+                          "vpcSubnets": "*",
+                          "securityGroups": "*",
+                          "role": "*",
+                          "functionName": "*",
+                          "environmentEncryption": "*"
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        },
+                        {
+                          "addEnvironment": [
+                            "*",
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "waiter-state-machine": {
@@ -1959,7 +2944,10 @@
                             "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2080,13 +3068,74 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       },
                       "LogGroup": {
@@ -2122,7 +3171,12 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "logGroupName": "*"
+                            }
+                          ]
                         }
                       },
                       "Resource": {
@@ -2209,7 +3263,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               }
             },
@@ -2259,7 +3318,15 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "removalPolicy": "*"
+                    }
+                  ]
                 }
               },
               "SecurityGroup": {
@@ -2332,7 +3399,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    },
+                    {
+                      "addIngressRule": [
+                        "*",
+                        {},
+                        "*",
+                        false
+                      ]
+                    }
+                  ]
                 }
               },
               "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
@@ -2340,7 +3421,8 @@
                 "path": "cdk-integ-cluster-snapshot/FromSnapshot/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "SnapshotSecret": {
@@ -2433,13 +3515,32 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "secret": "*",
+                              "rotationLambda": "*",
+                              "automaticallyAfter": "*",
+                              "rotateImmediatelyOnUpdate": "*"
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "secret": "*",
+                          "target": "*"
+                        },
+                        {
+                          "addToResourcePolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Policy": {
@@ -2493,13 +3594,32 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "secret": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "encryptionKey": "*",
+                      "secretName": "*",
+                      "replicaRegions": "*"
+                    },
+                    {
+                      "username": "*",
+                      "encryptionKey": "*",
+                      "excludeCharacters": "*",
+                      "replaceOnPasswordCriteriaChanges": true,
+                      "replicaRegions": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2553,7 +3673,10 @@
                 "path": "cdk-integ-cluster-snapshot/FromSnapshot/Instance1Wrapper",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Instance1": {
@@ -2582,7 +3705,10 @@
                 "path": "cdk-integ-cluster-snapshot/FromSnapshot/Instance2Wrapper",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Instance2": {
@@ -2641,7 +3767,20 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "vpc": "*"
+                        },
+                        {
+                          "addEgressRule": [
+                            "*",
+                            {},
+                            "*",
+                            true
+                          ]
+                        }
+                      ]
                     }
                   },
                   "SARMapping": {
@@ -2729,7 +3868,8 @@
                     "path": "cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/RotationLambda",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2741,7 +3881,29 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_rds.DatabaseClusterFromSnapshot",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "snapshotIdentifier": "*",
+                  "snapshotCredentials": "*",
+                  "engine": {
+                    "engineType": "*",
+                    "singleUserRotationApplication": "*",
+                    "engineVersion": {
+                      "fullVersion": "*",
+                      "majorVersion": "*"
+                    },
+                    "parameterGroupFamily": "*",
+                    "engineFamily": "*",
+                    "supportedLogTypes": "*",
+                    "combineImportAndExportRoles": true
+                  },
+                  "writer": "*",
+                  "readers": "*",
+                  "vpc": "*",
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "BootstrapVersion": {

@@ -7,9 +7,10 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip"
+     "S3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
     },
-    "Description": "/opt/kubectl/kubectl and /opt/helm/helm"
+    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+    "LicenseInfo": "Apache-2.0"
    }
   },
   "Lambdapython39ServiceRoleE2CFED77": {
@@ -152,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -187,6 +188,32 @@
     "Providerpython39frameworkonEventServiceRoleDefaultPolicy16A4767C",
     "Providerpython39frameworkonEventServiceRoleA299F5C1"
    ]
+  },
+  "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Lambdapython39426A0480",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340",
+    "Roles": [
+     {
+      "Ref": "Providerpython39frameworkonEventServiceRoleA299F5C1"
+     }
+    ]
+   }
   },
   "CustomResourcepython39": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -341,7 +368,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ebfbf95d93057cd65617a9d6f72a0e7dd31520f28cf423c3afd3cbaf0662e6b.zip"
+     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.10)",
     "Environment": {
@@ -376,6 +403,32 @@
     "Providerpython310frameworkonEventServiceRoleDefaultPolicyC0E8697B",
     "Providerpython310frameworkonEventServiceRoleB6DF2879"
    ]
+  },
+  "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Lambdapython310815BD7E9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Providerpython310frameworkonEventinlinePolicyAddedToExecutionRole0B240717D",
+    "Roles": [
+     {
+      "Ref": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+     }
+    ]
+   }
   },
   "CustomResourcepython310": {
    "Type": "AWS::CloudFormation::CustomResource",
@@ -439,10 +492,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -493,10 +546,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

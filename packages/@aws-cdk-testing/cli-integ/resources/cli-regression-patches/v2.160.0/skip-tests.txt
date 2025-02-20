@@ -1,2 +1,0 @@
-# This test asserts too much about the output of the CLI.
-security related changes without a CLI are expected to fail when approval is required
