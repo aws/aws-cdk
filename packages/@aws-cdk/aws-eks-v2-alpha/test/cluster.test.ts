@@ -563,7 +563,7 @@ describe('cluster', () => {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster', { 
+      const cluster = new eks.Cluster(stack, 'cluster', {
         ...commonProps,
         prune: false,
       });

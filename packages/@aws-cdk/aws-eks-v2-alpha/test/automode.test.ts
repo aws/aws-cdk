@@ -148,7 +148,7 @@ describe('eks auto mode', () => {
       });
     });
 
-    test('supports custom node role', () => {
+    test('supports custom node role(new role)', () => {
       const { stack } = testFixtureNoVpc();
       const customRole = new iam.Role(stack, 'CustomRole', {
         assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -162,13 +162,29 @@ describe('eks auto mode', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
-        ManagedPolicyArns: Match.arrayWith([
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSClusterPolicy']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSComputePolicy']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSBlockStoragePolicy']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonEKSLoadBalancingPolicy']] },
-        ]),
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        ComputeConfig: {
+          NodeRoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
+        },
+      });
+    });
+
+    test('supports custom node role(imported role)', () => {
+      const { stack } = testFixtureNoVpc();
+      const customRole = iam.Role.fromRoleArn(stack, 'CustomRole', 'arn:aws:iam::123456789012:role/CustomRole');
+
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+        compute: {
+          nodeRole: customRole,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+        ComputeConfig: {
+          NodeRoleArn: 'arn:aws:iam::123456789012:role/CustomRole',
+        },
       });
     });
   });
@@ -187,22 +203,6 @@ describe('eks auto mode', () => {
           EndpointPrivateAccess: true,
           EndpointPublicAccess: false,
         }),
-      });
-    });
-
-    test('validates network configuration', () => {
-      const { stack } = testFixtureNoVpc();
-      new eks.Cluster(stack, 'Cluster', {
-        version: CLUSTER_VERSION,
-        defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
-        kubernetesNetwork: {
-          elasticLoadBalancing: {
-            enabled: true,
-          },
-        },
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
         KubernetesNetworkConfig: {
           ElasticLoadBalancing: {
             Enabled: true,
@@ -210,9 +210,10 @@ describe('eks auto mode', () => {
         },
       });
     });
+
   });
 
-  describe('hybrid scenarios', () => {
+  describe('mixed scenarios', () => {
     test('supports auto mode with explicit node groups', () => {
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -241,6 +242,24 @@ describe('eks auto mode', () => {
       });
 
       template.resourceCountIs('AWS::EKS::Nodegroup', 2);
+      // cluster should support auto mode
+      template.hasResourceProperties('AWS::EKS::Cluster', {
+        ComputeConfig: {
+          Enabled: true,
+          NodePools: ['system', 'general-purpose'],
+        },
+        StorageConfig: {
+          BlockStorage: {
+            Enabled: true,
+          },
+        },
+        KubernetesNetworkConfig: {
+          ElasticLoadBalancing: {
+            Enabled: true,
+          },
+        },
+      });
+      // as well as nodegroups
       template.hasResourceProperties('AWS::EKS::Nodegroup', {
         ScalingConfig: { MinSize: 1 },
         InstanceTypes: ['c5.xlarge'],
