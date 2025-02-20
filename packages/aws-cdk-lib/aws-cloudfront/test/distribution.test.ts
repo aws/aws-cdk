@@ -1440,7 +1440,7 @@ describe('gRPC', () => {
     true,
     false,
     undefined,
-  ])('set gRPC to %s', (enableGrpc) => {
+  ])('set gRPC to %s in defaultBehavior', (enableGrpc) => {
     const origin = defaultOrigin();
     new Distribution(stack, 'MyDist', {
       httpVersion: HttpVersion.HTTP2,
@@ -1460,6 +1460,40 @@ describe('gRPC', () => {
         DefaultCacheBehavior: {
           GrpcConfig: grpcConfig,
         },
+      },
+    });
+  });
+
+  test.each([
+    true,
+    false,
+    undefined,
+  ])('set gRPC to %s in additionalBehaviors', (enableGrpc) => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: {
+        origin,
+      },
+      additionalBehaviors: {
+        '/second': {
+          origin,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          enableGrpc,
+        },
+      },
+    });
+
+    const grpcConfig = enableGrpc !== undefined ? {
+      Enabled: enableGrpc,
+    } : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheBehaviors: [{
+          PathPattern: '/second',
+          GrpcConfig: grpcConfig,
+        }],
       },
     });
   });
