@@ -475,7 +475,7 @@ export interface NodeConfig {
 
 /**
  * NodeType is a string enum of the node types in OpenSearch domain
- * 
+ *
  */
 export enum NodeType {
   /**
