@@ -719,8 +719,11 @@ export class EnumLikeUpdater extends MetadataUpdater {
           if (className) {
             node.forEachChild((classField) => {
               if (classField instanceof PropertyDeclaration) {
-                // enum-likes have `public static readonly` attributes that map to non-string values
-                if (classField.getText().startsWith("public static readonly") && classField.getInitializer()?.getKind() !== SyntaxKind.StringLiteral) {
+                // enum-likes have `public static readonly` attributes that map to either new or call expressions
+                const initializerKind = classField.getInitializer()?.getKind();
+                if (initializerKind && classField.getText().startsWith("public static readonly") && 
+                  (initializerKind === SyntaxKind.NewExpression || initializerKind === SyntaxKind.CallExpression || initializerKind === SyntaxKind.PropertyAccessExpression)
+                ) {
                   // This is an enum-like; add to blueprint
                   const enumlikeName = classField.getName();
                   if (!fileBlueprint[className]) {
