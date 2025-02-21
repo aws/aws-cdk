@@ -70,6 +70,7 @@ export interface CustomResourceProps {
    * A token can be specified for this property, but it must be specified with `Duration.seconds()`.
    *
    * @example
+   * const stack = new Stack();
    * const durToken = new CfnParameter(stack, 'MyParameter', {
    *   type: 'Number',
    *   default: 60,
