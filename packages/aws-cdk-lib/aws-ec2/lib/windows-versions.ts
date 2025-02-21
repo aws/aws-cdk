@@ -417,4 +417,16 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_STANDARD = 'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
   WINDOWS_SERVER_2022_JAPANESE_FULL_SQL_2022_ENTERPRISE = 'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
   /** 2022 - End */
+  /** 2025 - Start */
+  WINDOWS_SERVER_2025_CHINESE_SIMPLIFIED_FULL_BASE = 'Windows_Server-2025-Chinese_Simplified-Full-Base',
+  WINDOWS_SERVER_2025_CHINESE_TRADITIONAL_FULL_BASE = 'Windows_Server-2025-Chinese_Traditional-Full-Base',
+  WINDOWS_SERVER_2025_ENGLISH_CORE_BASE = 'Windows_Server-2025-English-Core-Base',
+  WINDOWS_SERVER_2025_ENGLISH_FULL_BASE = 'Windows_Server-2025-English-Full-Base',
+  WINDOWS_SERVER_2025_ENGLISH_FULL_SQL_2022_ENTERPRISE = 'Windows_Server-2025-English-Full-SQL_2022_Enterprise',
+  WINDOWS_SERVER_2025_ENGLISH_FULL_SQL_2022_EXPRESS = 'Windows_Server-2025-English-Full-SQL_2022_Express',
+  WINDOWS_SERVER_2025_ENGLISH_FULL_SQL_2022_STANDARD = 'Windows_Server-2025-English-Full-SQL_2022_Standard',
+  WINDOWS_SERVER_2025_ENGLISH_FULL_SQL_2022_WEB = 'Windows_Server-2025-English-Full-SQL_2022_Web',
+  WINDOWS_SERVER_2025_JAPANESE_FULL_BASE = 'Windows_Server-2025-Japanese-Full-Base',
+  WINDOWS_SERVER_2025_KOREAN_FULL_BASE = 'Windows_Server-2025-Korean-Full-Base',
+  /** 2025 - End */
 }
