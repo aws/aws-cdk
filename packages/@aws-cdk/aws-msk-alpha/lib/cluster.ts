@@ -436,6 +436,52 @@ export class ClientAuthentication {
 }
 
 /**
+ * Cluster bootstrap broker endpoints.
+ */
+export interface BrokerEndpoints {
+  /**
+   * A string containing one or more hostname:port pairs.
+   */
+  readonly bootstrapBrokers: string;
+  /**
+   * A string containing one or more DNS names (or IP) and TLS port pairs.
+   */
+  readonly bootstrapBrokersTls: string;
+  /**
+   * A string containing one or more DNS names (or IP) and Sasl Scram port pairs.
+   */
+  readonly bootstrapBrokersSaslScram: string;
+  /**
+   * A string that contains one or more DNS names (or IP addresses) and SASL IAM port pairs.
+   */
+  readonly bootstrapBrokersSaslIam: string;
+  /**
+   * A string containing one or more DNS names (or IP) and TLS port pairs.
+   */
+  readonly bootstrapBrokersPublicTls: string;
+  /**
+   * A string containing one or more DNS names (or IP) and Sasl Scram port pairs.
+   */
+  readonly bootstrapBrokersPublicSaslScram: string;
+  /**
+   *  string that contains one or more DNS names (or IP addresses) and SASL IAM port pairs.
+   */
+  readonly bootstrapBrokersPublicSaslIam: string;
+  /**
+   * A string containing one or more DNS names (or IP) and TLS port pairs for VPC connectivity.
+   */
+  readonly bootstrapBrokersVpcConnectivityTls: string;
+  /**
+   * A string containing one or more DNS names (or IP) and SASL/SCRAM port pairs for VPC connectivity.
+   */
+  readonly bootstrapBrokersVpcConnectivitySaslScram: string;
+  /**
+   * A string containing one or more DNS names (or IP) and SASL/IAM port pairs for VPC connectivity.
+   */
+  readonly bootstrapBrokersVpcConnectivitySaslIam: string;
+}
+
+/**
  * Create a MSK Cluster.
  *
  * @resource AWS::MSK::Cluster
@@ -459,6 +505,7 @@ export class Cluster extends ClusterBase {
   public readonly saslScramAuthenticationKey?: kms.IKey;
   private _clusterDescription?: cr.AwsCustomResource;
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
+  private _brokerEndpoints?: BrokerEndpoints;
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
     super(scope, id, { physicalName: props.clusterName });
@@ -834,6 +881,47 @@ export class Cluster extends ClusterBase {
    */
   public get bootstrapBrokersSaslIam() {
     return this._bootstrapBrokers('BootstrapBrokerStringSaslIam');
+  }
+
+  /**
+   * Get a {@link BrokerEndpoints} object with all available broker endpoints.
+   *
+   * Uses a Custom Resource to send a `GetBootstrapBrokersCommand` request using the Javascript SDK.
+   *
+   * @returns - A {@link BrokerEndpoints} object with all available broker endpoints.
+   */
+  public get brokerEndpoints(): BrokerEndpoints {
+    if (!this._brokerEndpoints) {
+      const bootstrapBrokers = new cr.AwsCustomResource(this, 'BootstrapBrokers', {
+        onUpdate: {
+          service: '@aws-sdk/client-kafka',
+          action: 'GetBootstrapBrokersCommand',
+          parameters: {
+            ClusterArn: this.clusterArn,
+          },
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+        installLatestAwsSdk: false,
+      });
+
+      this._brokerEndpoints = {
+        bootstrapBrokers: bootstrapBrokers.getResponseField('BootstrapBrokerString'),
+        bootstrapBrokersTls: bootstrapBrokers.getResponseField('BootstrapBrokerStringTls'),
+        bootstrapBrokersSaslScram: bootstrapBrokers.getResponseField('BootstrapBrokerStringSaslScram'),
+        bootstrapBrokersSaslIam: bootstrapBrokers.getResponseField('BootstrapBrokerStringSaslIam'),
+        bootstrapBrokersPublicTls: bootstrapBrokers.getResponseField('BootstrapBrokerStringPublicTls'),
+        bootstrapBrokersPublicSaslScram: bootstrapBrokers.getResponseField('BootstrapBrokerStringPublicSaslScram'),
+        bootstrapBrokersPublicSaslIam: bootstrapBrokers.getResponseField('BootstrapBrokerStringPublicSaslIam'),
+        bootstrapBrokersVpcConnectivityTls: bootstrapBrokers.getResponseField('BootstrapBrokerStringVpcConnectivityTls'),
+        bootstrapBrokersVpcConnectivitySaslScram: bootstrapBrokers.getResponseField('BootstrapBrokerStringVpcConnectivitySaslScram'),
+        bootstrapBrokersVpcConnectivitySaslIam: bootstrapBrokers.getResponseField('BootstrapBrokerStringVpcConnectivitySaslIam'),
+      };
+    }
+
+    return this._brokerEndpoints;
   }
 
   /**
