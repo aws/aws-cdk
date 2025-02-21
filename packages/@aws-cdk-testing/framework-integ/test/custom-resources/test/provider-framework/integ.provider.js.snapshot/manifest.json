@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e63ff56bc0c96fa91be96ceb71d5032df4a610e19f532b678d6c0e31f84d656e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2657cf4de387ac37a2a3b575de4717375b638cf27978f673927674907192089c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -257,8 +257,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -303,14 +311,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -323,6 +323,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEvent34F66A68"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventinlinePolicyAddedToExecutionRole0380B1E60"
           }
         ],
         "/integ-provider-framework/LatestNodeRuntimeMap": [
@@ -652,8 +690,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -668,8 +714,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -738,22 +792,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -766,6 +804,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEvent0FE4BD4B"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventinlinePolicyAddedToExecutionRole077C19BE0"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventinlinePolicyAddedToExecutionRole1E6548A02"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete": [
@@ -847,8 +961,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -863,8 +985,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -917,22 +1047,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
@@ -945,6 +1059,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteinlinePolicyAddedToExecutionRole031DB97C4"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteinlinePolicyAddedToExecutionRole1C8EBFCC2"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout": [
@@ -1026,8 +1216,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           },
@@ -1042,8 +1240,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -1096,22 +1302,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
@@ -1124,6 +1314,82 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole01175B1A4"
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole12A2AB95F"
           }
         ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/Role": [

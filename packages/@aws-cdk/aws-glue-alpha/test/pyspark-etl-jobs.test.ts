@@ -365,7 +365,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create PySpark ETL Job with extraPythonFiles and extraFiles', () => {
+  describe('Create PySpark ETL Job with extraPythonFiles, extraFiles and extraJars', () => {
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
@@ -380,6 +380,11 @@ describe('Job', () => {
           glue.Code.fromBucket(
             s3.Bucket.fromBucketName(stack, 'extraFilesBucket', 'extra-files-bucket'),
             'prefix/file.txt'),
+        ],
+        extraJars: [
+          glue.Code.fromBucket(
+            s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
+            'prefix/file.jar'),
         ],
       });
     });
@@ -408,6 +413,7 @@ describe('Job', () => {
           '--enable-continuous-cloudwatch-log': 'true',
           '--extra-py-files': 's3://extra-python-files-bucket/prefix/file.py',
           '--extra-files': 's3://extra-files-bucket/prefix/file.txt',
+          '--extra-jars': 's3://extra-jars-bucket/prefix/file.jar',
         }),
       });
     });
