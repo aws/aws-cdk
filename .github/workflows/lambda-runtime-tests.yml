@@ -52,6 +52,7 @@ jobs:
             exit 1
           fi
 
+          git checkout -B ${{ github.event.pull_request.head.ref }}
           git add .
           git commit -m "chore: update lambda runtime integration tests"
           git push origin ${{ github.event.pull_request.head.ref }}
