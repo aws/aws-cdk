@@ -1397,7 +1397,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
   },
 };
