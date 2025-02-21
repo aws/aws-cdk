@@ -1,5 +1,6 @@
 import { IResource, Resource, Stack } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
@@ -165,6 +166,13 @@ export interface PipeProps {
   readonly tags?: {
     [key: string]: string;
   };
+
+  /**
+   * The AWS KMS customer managed key to encrypt pipe data.
+   *
+   * @default undefined - AWS managed key is used
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 abstract class PipeBase extends Resource implements IPipe {
@@ -295,6 +303,7 @@ export class Pipe extends PipeBase {
       targetParameters: target.targetParameters,
       desiredState: props.desiredState,
       logConfiguration: logConfiguration,
+      kmsKeyIdentifier: props.kmsKey?.keyArn,
       tags: props.tags,
     });
 
