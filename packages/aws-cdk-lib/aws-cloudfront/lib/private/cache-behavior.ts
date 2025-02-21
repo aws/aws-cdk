@@ -2,7 +2,7 @@ import * as iam from '../../../aws-iam';
 import { UnscopedValidationError } from '../../../core';
 import { CachePolicy } from '../cache-policy';
 import { CfnDistribution } from '../cloudfront.generated';
-import { AddBehaviorOptions, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
+import { AddBehaviorOptions, AllowedMethods, EdgeLambda, LambdaEdgeEventType, ViewerProtocolPolicy } from '../distribution';
 
 /**
  * Properties for specifying custom behaviors for origins.
@@ -27,6 +27,15 @@ export class CacheBehavior {
 
   constructor(originId: string, private readonly props: CacheBehaviorProps) {
     this.originId = originId;
+
+    if (props.enableGrpc) {
+      if (props.allowedMethods !== AllowedMethods.ALLOW_ALL) {
+        throw new UnscopedValidationError('\'allowedMethods\' can only be AllowedMethods.ALLOW_ALL if \'enableGrpc\' is true');
+      }
+      if (props.edgeLambdas !== undefined && props.edgeLambdas.length > 0) {
+        throw new UnscopedValidationError('\'edgeLambdas\' cannot be specified if \'enableGrpc\' is true');
+      }
+    }
 
     this.validateEdgeLambdas(props.edgeLambdas);
     this.grantEdgeLambdaFunctionExecutionRole(props.edgeLambdas);
@@ -63,6 +72,11 @@ export class CacheBehavior {
         includeBody: edgeLambda.includeBody,
       })),
       trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
+      grpcConfig: this.props.enableGrpc !== undefined
+        ? {
+          enabled: this.props.enableGrpc,
+        }
+        : undefined,
     };
   }
 
