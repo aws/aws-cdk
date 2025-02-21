@@ -1,14 +1,20 @@
 import { App, Stack, Duration } from 'aws-cdk-lib/core';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_32;
 
 describe('k8s object value', () => {
   test('creates the correct custom resource with explicit values for all properties', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
@@ -29,12 +35,11 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'MyClusterKubectlProviderframeworkonEvent7B04B277',
+            'Arn',
           ],
         },
         ClusterName: { Ref: 'MyCluster4C1BA579' },
-        RoleArn: { 'Fn::GetAtt': ['MyClusterkubectlRole29979636', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'mynamespace',
@@ -52,7 +57,12 @@ describe('k8s object value', () => {
   test('creates the correct custom resource with defaults', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     const attribute = new KubernetesObjectValue(stack, 'MyAttribute', {
@@ -70,12 +80,11 @@ describe('k8s object value', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B',
-            'Outputs.awscdkawseksKubectlProviderframeworkonEvent0A650005Arn',
+            'MyClusterKubectlProviderframeworkonEvent7B04B277',
+            'Arn',
           ],
         },
         ClusterName: { Ref: 'MyCluster4C1BA579' },
-        RoleArn: { 'Fn::GetAtt': ['MyClusterkubectlRole29979636', 'Arn'] },
         ObjectType: 'deployment',
         ObjectName: 'mydeployment',
         ObjectNamespace: 'default',

@@ -6,8 +6,9 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Duration, Stack } from '../../core';
+import { App, Aws, Duration, Stack } from '../../core';
 import {
+  AllowedMethods,
   CfnDistribution,
   Distribution,
   Endpoint,
@@ -36,7 +37,7 @@ beforeEach(() => {
 
 test('minimal example renders correctly', () => {
   const origin = defaultOrigin();
-  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+  const dist = new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -58,6 +59,19 @@ test('minimal example renders correctly', () => {
       }],
     },
   });
+
+  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
+});
+
+test('existing distributions can be imported', () => {
+  const dist = Distribution.fromDistributionAttributes(stack, 'ImportedDist', {
+    domainName: 'd111111abcdef8.cloudfront.net',
+    distributionId: '012345ABCDEF',
+  });
+
+  expect(dist.distributionDomainName).toEqual('d111111abcdef8.cloudfront.net');
+  expect(dist.distributionId).toEqual('012345ABCDEF');
+  expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/012345ABCDEF`);
 });
 
 test('exhaustive example of props renders correctly and SSL method sni-only', () => {
@@ -1419,5 +1433,118 @@ describe('attachWebAclId', () => {
       }).toThrow(/WebACL for CloudFront distributions must be created in the us-east-1 region; received ap-northeast-1/);
     });
   });
+});
 
+describe('gRPC', () => {
+  test.each([
+    true,
+    false,
+    undefined,
+  ])('set gRPC to %s in defaultBehavior', (enableGrpc) => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: {
+        origin,
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        enableGrpc,
+      },
+    });
+
+    const grpcConfig = enableGrpc !== undefined ? {
+      Enabled: enableGrpc,
+    } : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          GrpcConfig: grpcConfig,
+        },
+      },
+    });
+  });
+
+  test.each([
+    true,
+    false,
+    undefined,
+  ])('set gRPC to %s in additionalBehaviors', (enableGrpc) => {
+    const origin = defaultOrigin();
+    new Distribution(stack, 'MyDist', {
+      httpVersion: HttpVersion.HTTP2,
+      defaultBehavior: {
+        origin,
+      },
+      additionalBehaviors: {
+        '/second': {
+          origin,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          enableGrpc,
+        },
+      },
+    });
+
+    const grpcConfig = enableGrpc !== undefined ? {
+      Enabled: enableGrpc,
+    } : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        CacheBehaviors: [{
+          PathPattern: '/second',
+          GrpcConfig: grpcConfig,
+        }],
+      },
+    });
+  });
+
+  test.each([
+    HttpVersion.HTTP1_1,
+    HttpVersion.HTTP3,
+  ])('throws if httpVersion is %s and enableGrpc in defaultBehavior is true', (httpVersion) => {
+    const origin = defaultOrigin();
+    const msg = `'httpVersion' must be http2 or http2and3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${httpVersion}`;
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        httpVersion,
+        defaultBehavior: {
+          origin,
+          enableGrpc: true,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+        },
+      });
+    }).toThrow(msg);
+  });
+
+  test.each([
+    HttpVersion.HTTP1_1,
+    HttpVersion.HTTP3,
+  ])('throws if httpVersion is %s and enableGrpc in additionalBehaviors is true', (httpVersion) => {
+    const origin = defaultOrigin();
+    const msg = `'httpVersion' must be http2 or http2and3 if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${httpVersion}`;
+
+    expect(() => {
+      new Distribution(stack, 'MyDist', {
+        httpVersion,
+        defaultBehavior: {
+          origin,
+          enableGrpc: false,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+        },
+        additionalBehaviors: {
+          '/second': {
+            origin,
+            enableGrpc: false,
+            allowedMethods: AllowedMethods.ALLOW_ALL,
+          },
+          '/third': {
+            origin,
+            enableGrpc: true,
+            allowedMethods: AllowedMethods.ALLOW_ALL,
+          },
+        },
+      });
+    }).toThrow(msg);
+  });
 });

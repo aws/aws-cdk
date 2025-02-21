@@ -8,6 +8,41 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  test('specify minimum capacity unit', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      minimumCapacityUnit: 1500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      MinimumLoadBalancerCapacity: {
+        CapacityUnits: 1500,
+      },
+    });
+  });
+
+  test.each([-1, 99, 100.5, 1501])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        minimumCapacityUnit,
+      });
+    }).toThrow(`'minimumCapacityUnit' must be a positive integer between 100 and 1500 for Application Load Balancer, got: ${minimumCapacityUnit}.`);
+  });
+
   test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -353,7 +388,6 @@ describe('tests', () => {
   });
 
   describe('logAccessLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -391,7 +425,7 @@ describe('tests', () => {
       // WHEN
       lb.logAccessLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -533,7 +567,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
@@ -542,7 +576,6 @@ describe('tests', () => {
       // THEN
       // verify failure in case the access log bucket is encrypted with KMS
       expect(logAccessLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
     });
 
     test('access logging on imported bucket', () => {
@@ -691,7 +724,6 @@ describe('tests', () => {
   });
 
   describe('logConnectionLogs', () => {
-
     class ExtendedLB extends elbv2.ApplicationLoadBalancer {
       constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
         super(scope, id, { vpc });
@@ -729,7 +761,7 @@ describe('tests', () => {
       // WHEN
       lb.logConnectionLogs(bucket);
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
         LoadBalancerAttributes: Match.arrayWith([
           {
@@ -871,7 +903,7 @@ describe('tests', () => {
     });
 
     test('bucket with KMS throws validation error', () => {
-      //GIVEN
+      // GIVEN
       const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
@@ -880,7 +912,6 @@ describe('tests', () => {
       // THEN
       // verify failure in case the connection log bucket is encrypted with KMS
       expect(logConnectionLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
-
     });
 
     test('connection logging on imported bucket', () => {
@@ -1286,7 +1317,6 @@ describe('tests', () => {
           crossZoneEnabled: false,
         });
       }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
-
     });
   });
 

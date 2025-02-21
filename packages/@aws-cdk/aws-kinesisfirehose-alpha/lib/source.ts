@@ -51,7 +51,6 @@ export interface ISource {
  * A Kinesis Data Firehose delivery stream source.
  */
 export class KinesisStreamSource implements ISource {
-
   /**
    * Creates a new KinesisStreamSource.
    */

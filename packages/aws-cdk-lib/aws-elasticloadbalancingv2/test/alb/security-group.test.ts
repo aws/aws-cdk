@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
+import { UnscopedValidationError } from '../../../core/lib/errors';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -283,7 +284,7 @@ class TestFixture {
   }
 
   public get listener(): elbv2.ApplicationListener {
-    if (this._listener === undefined) { throw new Error('Did not create a listener'); }
+    if (this._listener === undefined) { throw new UnscopedValidationError('Did not create a listener'); }
     return this._listener;
   }
 }

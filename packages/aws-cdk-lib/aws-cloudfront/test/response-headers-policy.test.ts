@@ -180,4 +180,30 @@ describe('ResponseHeadersPolicy', () => {
       },
     });
   });
+
+  describe('corsBehavior', () => {
+    test('throws if accessControlAllowMethods is mixed with `ALL` and other values', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['ALL', 'GET'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.");
+    });
+
+    test('throws if accessControlAllowMethods contains unallowed value', () => {
+      expect(() => new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['PROPFIND'],
+          accessControlAllowOrigins: ['*'],
+          originOverride: true,
+        },
+      })).toThrow(/accessControlAllowMethods contains unexpected method name/);
+    });
+  });
 });

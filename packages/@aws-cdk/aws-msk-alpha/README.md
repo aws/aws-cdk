@@ -124,7 +124,7 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
-### SASL/IAM
+### IAM
 
 Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html):
 
@@ -229,5 +229,26 @@ const cluster = new msk.Cluster(this, 'cluster', {
   kafkaVersion: msk.KafkaVersion.V3_6_0,
   vpc,
   storageMode: msk.StorageMode.TIERED,
+});
+```
+
+## MSK Serverless
+
+You can also use MSK Serverless by using `ServerlessCluster` class.
+
+MSK Serverless is a cluster type for Amazon MSK that makes it possible for you to run Apache Kafka without having to manage and scale cluster capacity.
+
+MSK Serverless requires IAM access control for all clusters.
+
+For more infomation, see [Use MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-getting-started.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const serverlessCluster = new msk.ServerlessCluster(this, 'ServerlessCluster', {
+  clusterName: 'MyServerlessCluster',
+  vpcConfigs: [
+    { vpc },
+  ],
 });
 ```

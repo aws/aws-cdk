@@ -39,6 +39,37 @@ test('create endpoint', () => {
   });
 });
 
+test('create endpoint - using JSONata', () => {
+  // WHEN
+  const task = tasks.SageMakerCreateEndpoint.jsonata(stack, 'SagemakerEndpoint', {
+    endpointName: 'MyEndpoint',
+    endpointConfigName: 'MyEndpointConfig',
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::sagemaker:createEndpoint',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      EndpointConfigName: 'MyEndpointConfig',
+      EndpointName: 'MyEndpoint',
+    },
+  });
+});
+
 test('create endpoint with tags', () => {
   // WHEN
   const task = new tasks.SageMakerCreateEndpoint(stack, 'SagemakerEndpoint', {

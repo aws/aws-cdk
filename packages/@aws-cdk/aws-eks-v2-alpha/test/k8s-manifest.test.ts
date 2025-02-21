@@ -1,17 +1,24 @@
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import { CfnResource, Stack } from 'aws-cdk-lib/core';
-import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart, KubectlProvider } from '../lib';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = KubernetesVersion.V1_16;
+const CLUSTER_VERSION = KubernetesVersion.V1_32;
 
 describe('k8s manifest', () => {
   test('basic usage', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'cluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     const manifest = [
       {
@@ -79,9 +86,14 @@ describe('k8s manifest', () => {
   test('can be added to an imported cluster with minimal config', () => {
     // GIVEN
     const stack = new Stack();
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      role: handlerRole,
+    });
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
-      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      kubectlProvider: kubectlProvider,
     });
 
     // WHEN
@@ -92,12 +104,10 @@ describe('k8s manifest', () => {
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":2334}]',
       ClusterName: 'my-cluster-name',
-      RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
     });
 
     Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
       ClusterName: 'my-cluster-name',
-      RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
       Release: 'myclustercharthelm78d2c26a',
       Chart: 'hello-world',
       Namespace: 'default',
@@ -107,9 +117,14 @@ describe('k8s manifest', () => {
 
   test('default child is a CfnResource', () => {
     const stack = new Stack();
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      serviceToken: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      role: handlerRole,
+    });
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
-      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      kubectlProvider: kubectlProvider,
     });
 
     const manifest = cluster.addManifest('foo', { bar: 2334 });
@@ -123,7 +138,10 @@ describe('k8s manifest', () => {
 
       // prune is enabled by default
       const cluster = new Cluster(stack, 'Cluster', {
-        version: KubernetesVersion.V1_16,
+        version: KubernetesVersion.V1_32,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        },
       });
 
       expect(cluster.prune).toEqual(true);
@@ -311,8 +329,11 @@ describe('k8s manifest', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new Cluster(stack, 'Cluster', {
-        version: KubernetesVersion.V1_16,
+        version: KubernetesVersion.V1_32,
         prune: false,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
+        },
       });
 
       // WHEN
