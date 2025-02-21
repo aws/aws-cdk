@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.180.0](https://github.com/aws/aws-cdk/compare/v2.179.0...v2.180.0) (2025-02-21)
+
+
+### Features
+
+* **cloudfront-origins:** read versioned access level ([#33038](https://github.com/aws/aws-cdk/issues/33038)) ([315be88](https://github.com/aws/aws-cdk/commit/315be8876cf246196376f2470d53ff2c16fbd392)), closes [#33034](https://github.com/aws/aws-cdk/issues/33034)
+* update L1 CloudFormation resource definitions ([#33531](https://github.com/aws/aws-cdk/issues/33531)) ([93a3348](https://github.com/aws/aws-cdk/commit/93a3348ffc7ac9b833aa16e1d1aa766587fe7bca)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html/issues/cfn-ec2)
+* **cloudfront:** support gRPC for distribution ([#32535](https://github.com/aws/aws-cdk/issues/32535)) ([1b116b9](https://github.com/aws/aws-cdk/commit/1b116b9dd4f387d405160ba7ed6ef128eb3abbbe)), closes [#32534](https://github.com/aws/aws-cdk/issues/32534)
+* **cloudfront:** vpc origins ([#33318](https://github.com/aws/aws-cdk/issues/33318)) ([8f3e793](https://github.com/aws/aws-cdk/commit/8f3e79387ec34fa3a9f84ad0a0cfa8b22b456ae7)), closes [#32396](https://github.com/aws/aws-cdk/issues/32396)
+* **cloudwatch:** throw `ValidationErrors` instead of untyped Errors ([#33456](https://github.com/aws/aws-cdk/issues/33456)) ([6098816](https://github.com/aws/aws-cdk/commit/60988169cacd1e541058011f0c37993dd9b0f2e5)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **codepipeline-actions:** support `timeout` for `ManualApprovalAction` ([#33472](https://github.com/aws/aws-cdk/issues/33472)) ([7901f07](https://github.com/aws/aws-cdk/commit/7901f07b1d3d4358bca1506904837538a6527ed0)), closes [#33473](https://github.com/aws/aws-cdk/issues/33473)
+* **kinesis:** support stream consumers ([#32087](https://github.com/aws/aws-cdk/issues/32087)) ([f4453c7](https://github.com/aws/aws-cdk/commit/f4453c7bc9be0d84f44e67a1632e0f60e32805c8)), closes [#32050](https://github.com/aws/aws-cdk/issues/32050)
+* **ses:** configurationset support default event bus and firehose as destination ([#33093](https://github.com/aws/aws-cdk/issues/33093)) ([d8b0da7](https://github.com/aws/aws-cdk/commit/d8b0da7705823147473caa863bd6231515f7585d)), closes [#32835](https://github.com/aws/aws-cdk/issues/32835) [#30671](https://github.com/aws/aws-cdk/issues/30671)
+
+
+### Bug Fixes
+
+* **core:** adding warnings to alert when properties will be overwritten ([#33507](https://github.com/aws/aws-cdk/issues/33507)) ([b06daf8](https://github.com/aws/aws-cdk/commit/b06daf836bcbb690d34d1a3439fd6db36cb1f203)), closes [#32468](https://github.com/aws/aws-cdk/issues/32468)
+* **lambda:** updating addToRolePolicy to avoid circular dependency potential (under feature flag) ([#33291](https://github.com/aws/aws-cdk/issues/33291)) ([d946eb7](https://github.com/aws/aws-cdk/commit/d946eb729a731c1877a95f3db9b6aceab84a6a15))
+* **logs:** `DataProtectionPolicy` template key must be PascalCase ([#33462](https://github.com/aws/aws-cdk/issues/33462)) ([0379878](https://github.com/aws/aws-cdk/commit/0379878c2f573450f1839a61580e1332dad999eb)), closes [#33408](https://github.com/aws/aws-cdk/issues/33408) [#26728](https://github.com/aws/aws-cdk/issues/26728)
+* **stepfunctions:** disabling logging still requires LogGroup ([#30816](https://github.com/aws/aws-cdk/issues/30816)) ([a2cd7ae](https://github.com/aws/aws-cdk/commit/a2cd7ae80168610db2df515a11e2a68571c662fb)), closes [#30814](https://github.com/aws/aws-cdk/issues/30814)
+* **stepfunctions:** various JSONata query language fix ([#33404](https://github.com/aws/aws-cdk/issues/33404)) ([b16fac2](https://github.com/aws/aws-cdk/commit/b16fac2cc3e86f7409c7ef990338e9c0e1d96c2f)), closes [#33403](https://github.com/aws/aws-cdk/issues/33403) [#33374](https://github.com/aws/aws-cdk/issues/33374) [#33396](https://github.com/aws/aws-cdk/issues/33396) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-stepfunctions/lib/states/state.ts#L398](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-stepfunctions/lib/states/state.ts/issues/L398)
+
 ## [2.179.0](https://github.com/aws/aws-cdk/compare/v2.178.2...v2.179.0) (2025-02-17)
 
 
