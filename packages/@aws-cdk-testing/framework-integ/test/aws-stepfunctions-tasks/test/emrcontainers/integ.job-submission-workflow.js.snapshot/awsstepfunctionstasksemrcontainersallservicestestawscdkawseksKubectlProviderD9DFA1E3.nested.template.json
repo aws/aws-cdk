@@ -21,7 +21,7 @@
       "Ref": "AwsCliLayerF44AAF94"
      },
      {
-      "Ref": "KubectlLayer600207B5"
+      "Ref": "referencetoawsstepfunctionstasksemrcontainersallservicestestKubectlLayerC003171BRef"
      }
     ],
     "MemorySize": 1024,
@@ -57,18 +57,6 @@
      "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
     },
     "Description": "/opt/awscli/aws"
-   }
-  },
-  "KubectlLayer600207B5": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip"
-    },
-    "Description": "/opt/kubectl/kubectl and /opt/helm/helm"
    }
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
@@ -144,16 +132,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Handler886CB40B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -223,6 +201,32 @@
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
    ]
+  },
+  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Handler886CB40B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
+     }
+    ]
+   }
   }
  },
  "Mappings": {
@@ -360,6 +364,9 @@
   }
  },
  "Parameters": {
+  "referencetoawsstepfunctionstasksemrcontainersallservicestestKubectlLayerC003171BRef": {
+   "Type": "String"
+  },
   "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn": {
    "Type": "String"
   },

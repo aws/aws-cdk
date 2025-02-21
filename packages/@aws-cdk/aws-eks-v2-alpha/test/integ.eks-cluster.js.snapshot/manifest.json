@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/15e134798f48757c5deb29b97a7f00884580c8b2527a601e5c1a16ce75d9588f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a651d68bfff218ab4bca4c5a91af18728555db9dcca4f9d3b8ba36656ed1f430.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1115,8 +1115,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -1161,14 +1169,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -1181,6 +1181,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterAdminRoleAccess": [
@@ -1365,7 +1403,30 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
+              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
+              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "EksClusterStack.assertCapacityX86 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:278:22)",
+              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:53:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1703,7 +1764,30 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
+              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
+              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "EksClusterStack.assertCapacityArm (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:286:22)",
+              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:54:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2042,7 +2126,30 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
+              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
+              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "EksClusterStack.assertBottlerocket (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:269:22)",
+              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:55:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2381,7 +2488,30 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
+              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
+              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
+              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
+              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
+              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
+              "EksClusterStack.assertSpotCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:257:22)",
+              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:56:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -3199,22 +3329,22 @@
             "data": "ClusterMyExtendedServiceAccountmanifestMyExtendedServiceAccountServiceAccountResource90162712"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.31--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami131amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.31--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2-arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami131amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.31--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--bottlerocket--aws-k8s-1.32--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsk8s131x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicebottlerocketawsk8s132x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster/SsmParameterValue:--aws--service--eks--optimized-ami--1.25--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [

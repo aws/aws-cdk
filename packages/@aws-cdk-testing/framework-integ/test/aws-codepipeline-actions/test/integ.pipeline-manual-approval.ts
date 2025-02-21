@@ -33,6 +33,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
         new cpactions.ManualApprovalAction({
           actionName: 'ManualApproval',
           notifyEmails: ['adamruka85@gmail.com'],
+          timeout: cdk.Duration.minutes(10),
         }),
       ],
     },
