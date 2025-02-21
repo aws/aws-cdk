@@ -1,6 +1,6 @@
 import { toCloudFormation } from './util';
 import { Annotations } from '../../assertions';
-import { CustomResource, Duration, RemovalPolicy, Stack } from '../lib';
+import { CfnParameter, CustomResource, Duration, RemovalPolicy, Stack } from '../lib';
 
 describe('custom resource', () => {
   test('simple case provider identified by service token', () => {
@@ -193,6 +193,44 @@ describe('custom resource', () => {
           Properties: {
             ServiceToken: 'MyServiceToken',
             ServiceTimeout: '60',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
+        },
+      },
+    });
+  });
+
+  test('set serviceTimeout with token', () => {
+    // GIVEN
+    const stack = new Stack();
+    const durToken = new CfnParameter(stack, 'MyParameter', {
+      type: 'Number',
+      default: 60,
+    });
+
+    // WHEN
+    new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+      serviceTimeout: Duration.seconds(durToken.valueAsNumber),
+    });
+
+    // THEN
+    expect(toCloudFormation(stack)).toEqual({
+      Parameters: {
+        MyParameter: {
+          Default: 60,
+          Type: 'Number',
+        },
+      },
+      Resources: {
+        MyCustomResource: {
+          Type: 'AWS::CloudFormation::CustomResource',
+          Properties: {
+            ServiceToken: 'MyServiceToken',
+            ServiceTimeout: {
+              Ref: 'MyParameter',
+            },
           },
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',

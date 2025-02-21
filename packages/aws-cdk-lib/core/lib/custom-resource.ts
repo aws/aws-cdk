@@ -154,8 +154,7 @@ export class CustomResource extends Resource {
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
-    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)
-    ) {
+    if (props.serviceTimeout !== undefined && !props.serviceTimeout.isUnresolved()) {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
