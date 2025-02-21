@@ -557,6 +557,138 @@ describe('create model customization job', () => {
     });
   });
 
+  test('with Evaluate percentage hyperparameter', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+
+    // WHEN
+    const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customizationType: CustomizationType.FINE_TUNING,
+      customModelName: 'custom-model',
+      hyperParameters: { 'Evaluation percentage': '10' },
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        path: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        path: 'training-data',
+      },
+      role: new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      }),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(
+        sfn.Chain
+          .start(new sfn.Pass(stack, 'Start'))
+          .next(task)
+          .next(new sfn.Pass(stack, 'Done')),
+      ),
+      timeout: cdk.Duration.seconds(30),
+    });
+
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:createModelCustomizationJob',
+          ],
+        ],
+      },
+      Next: 'Done',
+      Parameters: {
+        BaseModelIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':bedrock:',
+              {
+                Ref: 'AWS::Region',
+              },
+              '::foundation-model/anthropic.claude-instant-v1',
+            ],
+          ],
+        },
+        CustomModelName: 'custom-model',
+        CustomizationType: 'FINE_TUNING',
+        JobName: 'job-name',
+        OutputDataConfig: {
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'OutputBucket7114EB27',
+                },
+                '/output-data',
+              ],
+            ],
+          },
+        },
+        RoleArn: {
+          'Fn::GetAtt': [
+            'Role1ABCC5F0',
+            'Arn',
+          ],
+        },
+        TrainingDataConfig: {
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'TrainingDataBucketC87619AE',
+                },
+                '/training-data',
+              ],
+            ],
+          },
+        },
+        HyperParameters: { 'Evaluation percentage': '10' },
+      },
+    });
+  });
+
+  test('throe eerror for invalid validation data config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+
+    // THEN
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customModelName: 'custom-model',
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        path: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        path: 'training-data',
+      },
+    })).toThrow('validationData or Evaluation percentage hyperparameter must be provided.');
+  });
+
   test.each([
     0,
     257,

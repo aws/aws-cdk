@@ -209,8 +209,11 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
 
   /**
    * The S3 bucket configuration where the validation data is stored.
+   * If you don't provide a validation dataset, specify the evaluation percentage by the `Evaluation percentage` hyperparameter.
    *
    * The maximum number is 10.
+   *
+   * @default undefined - validate using a subset of the training data
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
    */
@@ -256,6 +259,10 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     this.validateArrayLength('subnets', 1, 16, props.vpcConfig?.subnets);
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
+
+    if (!this.props.validationData && !this.props.hyperParameters?.['Evaluation percentage']) {
+      throw new ValidationError('validationData or Evaluation percentage hyperparameter must be provided.', this);
+    }
 
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
