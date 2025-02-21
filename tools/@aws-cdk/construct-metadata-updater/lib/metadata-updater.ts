@@ -722,7 +722,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
                 // enum-likes have `public static readonly` attributes that map to either new or call expressions
                 const initializerKind = classField.getInitializer()?.getKind();
                 if (initializerKind && classField.getText().startsWith("public static readonly") && 
-                  (initializerKind === SyntaxKind.NewExpression || initializerKind === SyntaxKind.CallExpression)
+                  (initializerKind === SyntaxKind.NewExpression || initializerKind === SyntaxKind.CallExpression || initializerKind === SyntaxKind.PropertyAccessExpression)
                 ) {
                   // This is an enum-like; add to blueprint
                   const enumlikeName = classField.getName();

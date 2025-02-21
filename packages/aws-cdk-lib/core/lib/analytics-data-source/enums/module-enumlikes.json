@@ -807,6 +807,9 @@
       "AMAZON_LINUX_2_CORETTO_11",
       "AMAZON_LINUX_2023_CORETTO_8",
       "AMAZON_LINUX_2023_CORETTO_11",
+      "AMAZON_LINUX_2_ARM",
+      "AMAZON_LINUX_2_ARM_2",
+      "AMAZON_LINUX_2_ARM_3",
       "UBUNTU_14_04_BASE",
       "UBUNTU_14_04_ANDROID_JAVA8_24_4_1",
       "UBUNTU_14_04_ANDROID_JAVA8_26_1_1",
@@ -1948,7 +1951,8 @@
       "V1_31_0",
       "V1_30_0",
       "V1_28_1",
-      "V1_19_0"
+      "V1_19_0",
+      "LATEST"
     ],
     "AdotLambdaLayerJavaAutoInstrumentationVersion": [
       "V1_32_0_1",
@@ -1956,7 +1960,8 @@
       "V1_31_0",
       "V1_30_0",
       "V1_28_1",
-      "V1_19_2"
+      "V1_19_2",
+      "LATEST"
     ],
     "AdotLambdaLayerPythonSdkVersion": [
       "V1_29_0",
@@ -1971,7 +1976,8 @@
       "V1_16_0",
       "V1_15_0",
       "V1_14_0",
-      "V1_13_0"
+      "V1_13_0",
+      "LATEST"
     ],
     "AdotLambdaLayerJavaScriptSdkVersion": [
       "V1_30_0",
@@ -1979,7 +1985,8 @@
       "V1_17_1",
       "V1_16_0",
       "V1_15_0_1",
-      "V1_7_0"
+      "V1_7_0",
+      "LATEST"
     ],
     "AdotLambdaLayerGenericVersion": [
       "V0_115_0",
@@ -1989,7 +1996,8 @@
       "V0_88_0",
       "V0_84_0",
       "V0_82_0",
-      "V0_62_1"
+      "V0_62_1",
+      "LATEST"
     ]
   },
   "packages/aws-cdk-lib/aws-lambda/lib/architecture.ts": {
