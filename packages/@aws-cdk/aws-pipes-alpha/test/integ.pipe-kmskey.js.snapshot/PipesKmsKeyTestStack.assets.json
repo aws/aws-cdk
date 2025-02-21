@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "08f7ff70a6c3cc72d96cc639f710cafde899d6588c8b51c36a3a4ac40c7d95de": {
+      "source": {
+        "path": "PipesKmsKeyTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "08f7ff70a6c3cc72d96cc639f710cafde899d6588c8b51c36a3a4ac40c7d95de.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
