@@ -1,4 +1,5 @@
 import { toCloudFormation } from './util';
+import { Annotations } from '../../assertions';
 import { CustomResource, Duration, RemovalPolicy, Stack } from '../lib';
 
 describe('custom resource', () => {
@@ -211,5 +212,21 @@ describe('custom resource', () => {
         serviceTimeout: Duration.seconds(invalidSeconds),
       });
     }).toThrow(`serviceTimeout must either be between 1 and 3600 seconds, got ${invalidSeconds}`);
+  });
+
+  test('send warning if customResource construct property key is added to properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+      properties: {
+        ServiceToken: 'RepeatedToken', // this is repeated because serviceToken prop above will resolve as property ServiceToken
+      },
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/MyCustomResource', 'The following keys will be overwritten as they exist in the \'properties\' prop. Keys found: ServiceToken [ack: @aws-cdk/core:customResourcePropConflict]');
   });
 });

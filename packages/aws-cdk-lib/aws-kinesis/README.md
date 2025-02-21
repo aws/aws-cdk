@@ -15,7 +15,9 @@ intake and aggregation.
     - [Write Permissions](#write-permissions)
     - [Custom Permissions](#custom-permissions)
   - [Metrics](#metrics)
-  - [Resource Policy](#resource-policy)
+- [Stream Consumers](#stream-consumers)
+  - [Read Permissions](#read-permissions-1)
+- [Resource Policy](#resource-policy)
 
 
 ## Streams
@@ -189,9 +191,54 @@ stream.metricGetRecordsSuccess();
 stream.metricGetRecordsSuccess({ statistic: 'Maximum' });
 ```
 
-### Resource Policy
+## Stream Consumers
 
-You can create a resource policy for a data stream.
+Creating stream consumers allow consumers to receive data from the stream using enhanced fan-out at a rate of up to 2 MiB per second for every shard.
+This rate is unaffected by the total number of consumers that read from the same stream.
+
+For more information, see [Develop enhanced fan-out consumers with dedicated throughput](https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html).
+
+To create and associate a stream consumer with a stream
+
+```ts
+const stream = new kinesis.Stream(this, 'MyStream');
+
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  streamConsumerName: 'MyStreamConsumer',
+  stream,
+});
+```
+
+#### Read Permissions
+
+Grant `read` access to a stream consumer, and the stream it is registered with, by calling the `grantRead()` API.
+
+```ts
+const lambdaRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Example role...',
+});
+
+const stream = new kinesis.Stream(this, 'MyEncryptedStream', {
+  encryption: kinesis.StreamEncryption.KMS,
+});
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  streamConsumerName: 'MyStreamConsumer',
+  stream,
+});
+
+// give lambda permissions to read stream via the stream consumer
+streamConsumer.grantRead(lambdaRole);
+```
+
+In addition to stream's permissions, the following permissions are provided to a service principal by the `grantRead()` API:
+
+- `kinesis:DescribeStreamConsumer`,
+- `kinesis:SubscribeToShard`,
+
+## Resource Policy
+
+You can create a resource policy for a data stream or a stream consumer.
 For more information, see [Controlling access to Amazon Kinesis Data Streams resources using IAM](https://docs.aws.amazon.com/streams/latest/dev/controlling-access.html).
 
 A resource policy is automatically created when `addToResourcePolicy` is called, if one doesn't already exist.
@@ -200,11 +247,22 @@ Using `addToResourcePolicy` is the simplest way to add a resource policy:
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  streamConsumerName: 'MyStreamConsumer',
+  stream,
+});
 
-// create a resource policy via addToResourcePolicy method
+// create a stream resource policy via addToResourcePolicy method
 stream.addToResourcePolicy(new iam.PolicyStatement({
   resources: [stream.streamArn],
   actions: ['kinesis:GetRecords'],
+  principals: [new iam.AnyPrincipal()],
+}));
+
+// create a stream consumer resource policy via addToResourcePolicy method
+streamConsumer.addToResourcePolicy(new iam.PolicyStatement({
+  resources: [stream.streamArn],
+  actions: ['kinesis:DescribeStreamConsumer'],
   principals: [new iam.AnyPrincipal()],
 }));
 ```
@@ -215,6 +273,10 @@ If not, a blank policy document will be set.
 
 ```ts
 const stream = new kinesis.Stream(this, 'MyStream');
+const streamConsumer = new kinesis.StreamConsumer(this, 'MyStreamConsumer', {
+  streamConsumerName: 'MyStreamConsumer',
+  stream,
+});
 
 // create a custom policy document
 const policyDocument = new iam.PolicyDocument({
@@ -228,9 +290,15 @@ const policyDocument = new iam.PolicyDocument({
   ],
 });
 
-// create a resource policy manually
+// create a stream resource policy manually
 new kinesis.ResourcePolicy(this, 'ResourcePolicy', {
   stream,
+  policyDocument,
+});
+
+// create a stream consumer resource policy manually
+new kinesis.ResourcePolicy(this, 'ResourcePolicy', {
+  streamConsumer,
   policyDocument,
 });
 ```

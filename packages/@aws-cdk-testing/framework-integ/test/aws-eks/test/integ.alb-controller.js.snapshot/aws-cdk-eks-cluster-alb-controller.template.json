@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/51b37b360cb98c4e98b78616a832625031bea5cdcf324ecf1b8663e1731dcf96.json"
+       "/53db54d8828517691edd4bedc13a539c5704c68cc57c70bce99faacbfde3aafe.json"
       ]
      ]
     }
@@ -1107,7 +1107,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/749dabbdf26f365fed4ba5b0bf8a9be111b5ebb8345919195347b06659ddc839.json"
+       "/0c6a94c973efc9b648088a96fdc402663619305106dc84e00c6cd7f55b94ff53.json"
       ]
      ]
     }
@@ -1976,16 +1976,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IngressPingerFunction54746D9B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -2043,6 +2033,35 @@
     "Clusterechoserver5815619F",
     "IngressPingerProviderframeworkonEventServiceRoleDefaultPolicy7CC73E26",
     "IngressPingerProviderframeworkonEventServiceRole89300FAD"
+   ]
+  },
+  "IngressPingerProviderframeworkonEventinlinePolicyAddedToExecutionRole097789944": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "IngressPingerFunction54746D9B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IngressPingerProviderframeworkonEventinlinePolicyAddedToExecutionRole097789944",
+    "Roles": [
+     {
+      "Ref": "IngressPingerProviderframeworkonEventServiceRole89300FAD"
+     }
+    ]
+   },
+   "DependsOn": [
+    "Clusterechoserver5815619F"
    ]
   },
   "IngressPinger1AD9E831": {

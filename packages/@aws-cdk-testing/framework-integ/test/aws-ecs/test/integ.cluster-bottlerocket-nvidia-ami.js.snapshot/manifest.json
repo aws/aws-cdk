@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-bottlerocket-nvidia-ami.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25ecc9ee1f79cd8a912202279ab524c1d49216ee0be93a5179ef19f50cd1b1ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5db38c6b12b833d10c5cd43feb6894f1b0cbabb0f2bf2e05eb8d8e8374f6c835.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -220,12 +220,6 @@
             "data": "ClusterbottlerocketasgDrainECSHookFunctionServiceRole91B0C3B3"
           }
         ],
-        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyBD9C646C"
-          }
-        ],
         "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -242,6 +236,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole05DFD3C41"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole1874CBCD0"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole26FBFE002"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole3746338DC"
+          }
+        ],
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole49EA5332E"
           }
         ],
         "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
@@ -284,6 +308,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyBD9C646C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyBD9C646C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

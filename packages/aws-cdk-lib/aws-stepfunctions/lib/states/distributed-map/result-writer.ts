@@ -2,9 +2,10 @@ import * as iam from '../../../../aws-iam';
 import { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
+import { QueryLanguage } from '../../types';
 
 /**
- * Interface for Result Writer configuration properties
+ * Interface for Result Writer configuration props
  */
 export interface ResultWriterProps {
   /**
@@ -44,7 +45,7 @@ export class ResultWriter {
   /**
    * Render ResultWriter in ASL JSON format
    */
-  public render(): any {
+  public render(queryLanguage?: QueryLanguage): any {
     const resource = Arn.format({
       region: '',
       account: '',
@@ -54,12 +55,19 @@ export class ResultWriter {
       resourceName: 'putObject',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    const argumentOrParameter = {
+      Bucket: this.bucket.bucketName,
+      ...(this.prefix && { Prefix: this.prefix }),
+    };
+
     return FieldUtils.renderObject({
       Resource: resource,
-      Parameters: {
-        Bucket: this.bucket.bucketName,
-        ...(this.prefix && { Prefix: this.prefix }),
-      },
+      ...(queryLanguage === QueryLanguage.JSONATA ? {
+        Arguments: argumentOrParameter,
+      } : {
+        Parameters: argumentOrParameter,
+      }),
     });
   }
 

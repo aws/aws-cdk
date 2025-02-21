@@ -314,6 +314,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
 
+  private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
@@ -339,6 +340,9 @@ export class Distribution extends Resource implements IDistribution {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
       }
     }
+
+    this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
+    this.validateGrpc(props.defaultBehavior);
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
@@ -374,7 +378,7 @@ export class Distribution extends Resource implements IDistribution {
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
-        httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+        httpVersion: this.httpVersion,
         ipv6Enabled: props.enableIpv6 ?? true,
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
@@ -615,6 +619,7 @@ export class Distribution extends Resource implements IDistribution {
     if (pathPattern === '*') {
       throw new ValidationError('Only the default behavior can have a path pattern of \'*\'', this);
     }
+    this.validateGrpc(behaviorOptions);
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
@@ -819,6 +824,16 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
+  }
+
+  private validateGrpc(behaviorOptions: AddBehaviorOptions) {
+    if (!behaviorOptions.enableGrpc) {
+      return;
+    }
+    const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
+    if (!validHttpVersions.includes(this.httpVersion)) {
+      throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+    }
   }
 }
 
@@ -1115,6 +1130,19 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
   readonly trustedKeyGroups?: IKeyGroup[];
+
+  /**
+   * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.
+   *
+   * If the `enableGrpc` is set to true, the following restrictions apply:
+   * - The `allowedMethods` property must be `AllowedMethods.ALLOW_ALL` to include POST method because gRPC only supports POST method.
+   * - The `httpVersion` property must be `HttpVersion.HTTP2` or `HttpVersion.HTTP2_AND_3` because gRPC only supports versions including HTTP/2.
+   * - The `edgeLambdas` property can't be specified because gRPC is not supported with Lambda@Edge.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
+   */
+  readonly enableGrpc?: boolean;
 }
 
 /**

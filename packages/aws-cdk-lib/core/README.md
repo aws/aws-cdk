@@ -594,6 +594,8 @@ new CustomResource(this, 'MyMagicalResource', {
   resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
 
   // the resource properties
+  // properties like serviceToken or serviceTimeout are ported into properties automatically
+  // try not to use key names similar to these or there will be a risk of overwriting those values
   properties: {
     Property1: 'foo',
     Property2: 'bar',

@@ -13,6 +13,7 @@ interface BucketPolicyAction {
 
 const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
   READ: [{ action: 's3:GetObject' }],
+  READ_VERSIONED: [{ action: 's3:GetObjectVersion' }],
   LIST: [{ action: 's3:ListBucket', needsBucketArn: true }],
   WRITE: [{ action: 's3:PutObject' }],
   DELETE: [{ action: 's3:DeleteObject' }],

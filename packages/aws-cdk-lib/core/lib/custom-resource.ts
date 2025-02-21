@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
@@ -54,6 +55,8 @@ export interface CustomResourceProps {
    *   serviceToken: myTopic.topicArn,
    * });
    * ```
+   *
+   * Maps to [ServiceToken](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetoken) property for the `AWS::CloudFormation::CustomResource` resource
    */
   readonly serviceToken: string;
 
@@ -62,12 +65,18 @@ export interface CustomResourceProps {
    *
    * The value must be between 1 second and 3600 seconds.
    *
+   * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
+   *
    * @default Duration.seconds(3600)
    */
   readonly serviceTimeout?: Duration;
 
   /**
    * Properties to pass to the Lambda
+   *
+   * Values in this `properties` dictionary can possibly overwrite other values in `CustomResourceProps`
+   * E.g. `ServiceToken` and `ServiceTimeout`
+   * It is recommended to avoid using same keys that exist in `CustomResourceProps`
    *
    * @default - No properties.
    */
@@ -154,11 +163,21 @@ export class CustomResource extends Resource {
       }
     }
 
+    const constructPropertiesPassed = {
+      ServiceToken: props.serviceToken,
+      ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+    };
+
+    const hasCommonKeys = Object.keys(properties).some(key => key in constructPropertiesPassed);
+
+    if (hasCommonKeys) {
+      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropConflict', `The following keys will be overwritten as they exist in the 'properties' prop. Keys found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
+    }
+
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.serviceToken,
-        ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+        ...constructPropertiesPassed,
         ...properties,
       },
     });

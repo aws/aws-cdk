@@ -296,38 +296,41 @@ export class DistributedMap extends MapBase implements INextable {
     }
     rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
+    // ItemReader and ResultWriter configuration will base on the Map's query language.
+    // If Map's query language is not specified, then use state machine's query language.
+    const stateQueryLanguage = this.queryLanguage ?? stateMachineQueryLanguage;
     return {
       ...rendered,
-      ...this.renderItemReader(),
+      ...this.renderItemReader(stateQueryLanguage),
       ...this.renderItemBatcher(),
       ...(this.toleratedFailurePercentage && { ToleratedFailurePercentage: this.toleratedFailurePercentage }),
       ...(this.toleratedFailurePercentagePath && { ToleratedFailurePercentagePath: this.toleratedFailurePercentagePath }),
       ...(this.toleratedFailureCount && { ToleratedFailureCount: this.toleratedFailureCount }),
       ...(this.toleratedFailureCountPath && { ToleratedFailureCountPath: this.toleratedFailureCountPath }),
       ...(this.label && { Label: this.label }),
-      ...this.renderResultWriter(),
+      ...this.renderResultWriter(stateQueryLanguage),
     };
   }
 
   /**
    * Render the ItemReader as JSON object
    */
-  private renderItemReader(): any {
+  private renderItemReader(queryLanguage?: QueryLanguage): any {
     if (!this.itemReader) { return undefined; }
 
     return FieldUtils.renderObject({
-      ItemReader: this.itemReader.render(),
+      ItemReader: this.itemReader.render(queryLanguage),
     });
   }
 
   /**
    * Render ResultWriter in ASL JSON format
    */
-  private renderResultWriter(): any {
+  private renderResultWriter(queryLanguage?: QueryLanguage): any {
     if (!this.resultWriter) { return undefined; }
 
     return FieldUtils.renderObject({
-      ResultWriter: this.resultWriter.render(),
+      ResultWriter: this.resultWriter.render(queryLanguage),
     });
   }
 

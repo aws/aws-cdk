@@ -64,8 +64,10 @@ export enum LogLevel {
 export interface LogOptions {
   /**
    * The log group where the execution history events will be logged.
+   *
+   * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination: logs.ILogGroup;
+  readonly destination?: logs.ILogGroup;
 
   /**
    * Determines whether execution data is included in your log.
@@ -456,6 +458,9 @@ export class StateMachine extends StateMachineBase {
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
     }
+    if (props.logs) {
+      this.validateLogOptions(props.logs);
+    }
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
@@ -573,27 +578,38 @@ export class StateMachine extends StateMachineBase {
     }
   }
 
+  private validateLogOptions(logOptions: LogOptions) {
+    if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
+      throw new Error('Logs destination is required when level is not OFF.');
+    }
+  }
+
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
-    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-    this.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'logs:CreateLogDelivery',
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries',
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+    let destinations;
+
+    if (logOptions.destination) {
+      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+      this.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+      destinations = [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }];
+    }
 
     return {
-      destinations: [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
-      }],
+      destinations,
       includeExecutionData: logOptions.includeExecutionData,
       level: logOptions.level || 'ERROR',
     };

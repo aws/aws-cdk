@@ -36,27 +36,6 @@
     ]
    }
   },
-  "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:TagResource",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9",
-    "Roles": [
-     {
-      "Ref": "TargetLambdaFunctionServiceRole2FBA8508"
-     }
-    ]
-   }
-  },
   "TargetLambdaFunctionBCDA1A4E": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -64,7 +43,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6f50ad1670be7195f01a64eddc86541c357b2087e992904bdcb9f5ae67c82ecb.zip"
+     "S3Key": "17f11fcd08888571765fa70b9736c3bbb0d5098be088eadfa080ecba1f52b09b.zip"
     },
     "FunctionName": "TestCdkPipesTargetLambdaFunction",
     "Handler": "handler.handler",
@@ -78,9 +57,29 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "TargetLambdaFunctionServiceRoleDefaultPolicy8CA7D5D9",
     "TargetLambdaFunctionServiceRole2FBA8508"
    ]
+  },
+  "TargetLambdaFunctioninlinePolicyAddedToExecutionRole00E8E6F3A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:TagResource",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TargetLambdaFunctioninlinePolicyAddedToExecutionRole00E8E6F3A",
+    "Roles": [
+     {
+      "Ref": "TargetLambdaFunctionServiceRole2FBA8508"
+     }
+    ]
+   }
   },
   "PipeRole7D4AFC73": {
    "Type": "AWS::IAM::Role",

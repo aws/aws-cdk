@@ -1065,6 +1065,70 @@
                   "Handler": {
                     "id": "Handler",
                     "path": "aws-cdk-redshift-distkey-create/Table/Resource/Handler",
+                    "children": {
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "aws-cdk-redshift-distkey-create/Table/Resource/Handler/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-redshift-distkey-create/Table/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "redshift-data:DescribeStatement",
+                                        "redshift-data:ExecuteStatement"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "TableHandlerinlinePolicyAddedToExecutionRole0310C5507",
+                                "roles": [
+                                  {
+                                    "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0",
@@ -1160,6 +1224,70 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-redshift-distkey-create/Table/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "TableProviderframeworkonEventinlinePolicyAddedToExecutionRole05365DAD8",
+                                    "roles": [
+                                      {
+                                        "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
@@ -1309,14 +1437,6 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "redshift-data:DescribeStatement",
-                                    "redshift-data:ExecuteStatement"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
                                     "secretsmanager:DescribeSecret",
                                     "secretsmanager:GetSecretValue"
                                   ],
@@ -1361,11 +1481,6 @@
                           "addStatements": [
                             {}
                           ]
-                        },
-                        {
-                          "addStatements": [
-                            {}
-                          ]
                         }
                       ]
                     }
@@ -1387,11 +1502,6 @@
                       ]
                     },
                     {
-                      "addToPrincipalPolicy": [
-                        {}
-                      ]
-                    },
-                    {
                       "attachInlinePolicy": [
                         "*"
                       ]
@@ -1404,6 +1514,16 @@
                     {
                       "addToPrincipalPolicy": [
                         {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
                       ]
                     }
                   ]
@@ -1577,16 +1697,6 @@
                                   ]
                                 }
                               ]
-                            },
-                            {
-                              "Action": "lambda:GetFunction",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                  "Arn"
-                                ]
-                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -1618,11 +1728,6 @@
                     {
                       "attachToRole": [
                         "*"
-                      ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
                       ]
                     },
                     {
@@ -1665,8 +1770,13 @@
                   ]
                 },
                 {
-                  "addToPrincipalPolicy": [
-                    {}
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
                   ]
                 }
               ]
@@ -2755,6 +2865,70 @@
                   "Handler": {
                     "id": "Handler",
                     "path": "aws-cdk-redshift-distkey-update/Table/Resource/Handler",
+                    "children": {
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "aws-cdk-redshift-distkey-update/Table/Resource/Handler/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-redshift-distkey-update/Table/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "redshift-data:DescribeStatement",
+                                        "redshift-data:ExecuteStatement"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "TableHandlerinlinePolicyAddedToExecutionRole0310C5507",
+                                "roles": [
+                                  {
+                                    "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "statements": "*"
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0",
@@ -2850,6 +3024,70 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "aws-cdk-redshift-distkey-update/Table/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "TableProviderframeworkonEventinlinePolicyAddedToExecutionRole05365DAD8",
+                                    "roles": [
+                                      {
+                                        "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
@@ -2999,14 +3237,6 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "redshift-data:DescribeStatement",
-                                    "redshift-data:ExecuteStatement"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": [
                                     "secretsmanager:DescribeSecret",
                                     "secretsmanager:GetSecretValue"
                                   ],
@@ -3051,11 +3281,6 @@
                           "addStatements": [
                             {}
                           ]
-                        },
-                        {
-                          "addStatements": [
-                            {}
-                          ]
                         }
                       ]
                     }
@@ -3077,11 +3302,6 @@
                       ]
                     },
                     {
-                      "addToPrincipalPolicy": [
-                        {}
-                      ]
-                    },
-                    {
                       "attachInlinePolicy": [
                         "*"
                       ]
@@ -3094,6 +3314,16 @@
                     {
                       "addToPrincipalPolicy": [
                         {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
                       ]
                     }
                   ]
@@ -3267,16 +3497,6 @@
                                   ]
                                 }
                               ]
-                            },
-                            {
-                              "Action": "lambda:GetFunction",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
-                                  "Arn"
-                                ]
-                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -3308,11 +3528,6 @@
                     {
                       "attachToRole": [
                         "*"
-                      ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
                       ]
                     },
                     {
@@ -3355,8 +3570,13 @@
                   ]
                 },
                 {
-                  "addToPrincipalPolicy": [
-                    {}
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
                   ]
                 }
               ]

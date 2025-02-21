@@ -13,9 +13,10 @@ import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token, Stack } from '../../core';
+import { Annotations, ArnFormat, IResource, Resource, Token, Stack, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
+import * as cxapi from '../../cx-api';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -324,6 +325,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   protected _functionUrlInvocationGrants: Record<string, iam.Grant> = {};
 
   /**
+   * The number of permissions added to this function
+   * @internal
+   */
+  private _policyCounter: number = 0;
+
+  /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
    * - function.currentVersion is invoked before or after the permission is created.
@@ -388,11 +395,19 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Adds a statement to the IAM role assumed by the instance.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
+    const useCreateNewPolicies = FeatureFlags.of(this).isEnabled(cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY);
     if (!this.role) {
       return;
     }
 
-    this.role.addToPrincipalPolicy(statement);
+    if (useCreateNewPolicies) {
+      const policyToAdd = new iam.Policy(this, `inlinePolicyAddedToExecutionRole-${this._policyCounter++}`, {
+        statements: [statement],
+      });
+      this.role.attachInlinePolicy(policyToAdd);
+    } else {
+      this.role.addToPrincipalPolicy(statement);
+    }
   }
 
   /**

@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-spot.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf00b8198a39732704b1095530660c98a6d05146b8860ce8d8630847e4c16d70.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62682e2c70d94947dd2e07fd836ef45b728d6f6226a68465b4e9607dc4936e0d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,6 +172,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ-spot/EcsCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
         "/aws-ecs-integ-spot/EcsCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -226,12 +232,6 @@
             "data": "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C"
-          }
-        ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -248,6 +248,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole09C74CDAF"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole18626061D"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole2225E6E90"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole35C617151"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctioninlinePolicyAddedToExecutionRole43F8D9D49"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Topic/Resource": [
@@ -322,12 +352,6 @@
             "data": "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794"
-          }
-        ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -344,6 +368,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole094FADA95"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole14F1028A8"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole2274F3C3D"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole35969A0F5"
+          }
+        ],
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctioninlinePolicyAddedToExecutionRole48C7C27F2"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Topic/Resource": [
@@ -388,6 +442,12 @@
             "data": "Task79114B6B"
           }
         ],
+        "/aws-ecs-integ-spot/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          }
+        ],
         "/aws-ecs-integ-spot/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
@@ -404,6 +464,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctionServiceRoleDefaultPolicy96377D7C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctionServiceRoleDefaultPolicyE54F1794",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

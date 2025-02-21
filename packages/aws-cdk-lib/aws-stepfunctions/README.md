@@ -913,7 +913,9 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
 * Objects in a S3 bucket with an optional prefix.
-  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source. Note that `S3ObjectsItemReader` will default to use Distributed map's query language. If the
+  map does not specify a query language, then it falls back to the State machine's query language. An exmaple of using `S3ObjectsItemReader`
+  is as follows:
   ```ts
   import * as s3 from 'aws-cdk-lib/aws-s3';
 
@@ -1011,6 +1013,9 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 * S3 inventory manifest stored in S3
 
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
+
+ResultWriter object will default to use the Distributed map's query language. If the Distributed map's does not specify a query language, then it
+will fall back to the State machine's query langauge.
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';

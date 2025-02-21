@@ -149,7 +149,7 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 });
 ```
 
-Use `addEventDestination()` to publish email sending events to Amazon SNS or Amazon CloudWatch:
+Use `addEventDestination()` to publish email sending events to Amazon SNS, Amazon CloudWatch, Amazon Kinesis Firehose or Amazon EventBridge:
 
 ```ts
 declare const myConfigurationSet: ses.ConfigurationSet;
@@ -157,6 +157,46 @@ declare const myTopic: sns.Topic;
 
 myConfigurationSet.addEventDestination('ToSns', {
   destination: ses.EventDestination.snsTopic(myTopic),
+})
+```
+
+**Note**: For EventBridge, you must specify the default EventBus:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+declare const myConfigurationSet: ses.ConfigurationSet;
+
+const bus = events.EventBus.fromEventBusName(this, 'EventBus', 'default');
+
+myConfigurationSet.addEventDestination('ToEventBus', {
+  destination: ses.EventDestination.eventBus(bus),
+})
+```
+
+For Firehose, if you don't specify IAM Role ARN for Amazon SES to send events. An IAM Role will be created automatically following https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const myConfigurationSet: ses.ConfigurationSet;
+declare const firehoseDeliveryStream: firehose.IDeliveryStream;
+declare const iamRole: iam.IRole;
+
+// Create IAM Role automatically
+myConfigurationSet.addEventDestination('ToFirehose', {
+  destination: ses.EventDestination.firehoseDeliveryStream({
+    deliveryStream: firehoseDeliveryStream,
+  }),
+})
+
+// Specify your IAM Role
+myConfigurationSet.addEventDestination('ToFirehose', {
+  destination: ses.EventDestination.firehoseDeliveryStream({
+    deliveryStream: firehoseDeliveryStream,
+    role: iamRole,
+  }),
 })
 ```
 

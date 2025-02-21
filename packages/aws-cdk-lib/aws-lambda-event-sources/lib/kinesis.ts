@@ -1,4 +1,6 @@
+import * as constructs from 'constructs';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
+import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -13,14 +15,24 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
 }
 
 /**
- * Use an Amazon Kinesis stream as an event source for AWS Lambda.
+ * Props for use with {@link KinesisEventSourceBase}
  */
-export class KinesisEventSource extends StreamEventSource {
+interface KinesisSource {
+  readonly node: constructs.Node;
+  readonly sourceArn: string;
+  readonly eventSourceName: string;
+  grantRead(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Base class for {@link KinesisEventSource} and {@link KinesisConsumerEventSource}
+ */
+abstract class KinesisEventSourceBase extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
   private _eventSourceMappingArn?: string = undefined;
   private startingPositionTimestamp?: number;
 
-  constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
+  constructor(readonly source: KinesisSource, props: KinesisEventSourceProps) {
     super(props);
     this.startingPositionTimestamp = props.startingPositionTimestamp;
 
@@ -32,9 +44,9 @@ export class KinesisEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    const eventSourceMapping = target.addEventSourceMapping(`KinesisEventSource:${cdk.Names.nodeUniqueId(this.stream.node)}`,
+    const eventSourceMapping = target.addEventSourceMapping(`${this.source.eventSourceName}:${cdk.Names.nodeUniqueId(this.source.node)}`,
       this.enrichMappingOptions({
-        eventSourceArn: this.stream.streamArn,
+        eventSourceArn: this.source.sourceArn,
         startingPositionTimestamp: this.startingPositionTimestamp,
         metricsConfig: this.props.metricsConfig,
       }),
@@ -42,14 +54,7 @@ export class KinesisEventSource extends StreamEventSource {
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
 
-    this.stream.grantRead(target);
-
-    // The `grantRead` API provides all the permissions recommended by the Kinesis team for reading a stream.
-    // `DescribeStream` permissions are not required to read a stream as it's covered by the `DescribeStreamSummary`
-    // and `SubscribeToShard` APIs.
-    // The Lambda::EventSourceMapping resource validates against the `DescribeStream` permission. So we add it explicitly.
-    // FIXME This permission can be removed when the event source mapping resource drops it from validation.
-    this.stream.grant(target, 'kinesis:DescribeStream');
+    this.source.grantRead(target);
   }
 
   /**
@@ -57,7 +62,7 @@ export class KinesisEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new Error('KinesisEventSource is not yet bound to an event source mapping');
+      throw new Error(`${this.source.eventSourceName} is not yet bound to an event source mapping`);
     }
     return this._eventSourceMappingId;
   }
@@ -67,8 +72,26 @@ export class KinesisEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new Error('KinesisEventSource is not yet bound to an event source mapping');
+      throw new Error(`${this.source.eventSourceName} is not yet bound to an event source mapping`);
     }
     return this._eventSourceMappingArn;
+  }
+}
+
+/**
+ * Use an Amazon Kinesis stream as an event source for AWS Lambda.
+ */
+export class KinesisEventSource extends KinesisEventSourceBase {
+  constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
+    super({ ...stream, eventSourceName: 'KinesisEventSource', sourceArn: stream.streamArn, grantRead: stream.grantRead.bind(stream) }, props);
+  }
+}
+
+/**
+ * Use an Amazon Kinesis stream consumer as an event source for AWS Lambda.
+ */
+export class KinesisConsumerEventSource extends KinesisEventSourceBase {
+  constructor(readonly streamConsumer: kinesis.IStreamConsumer, props: KinesisEventSourceProps) {
+    super({ ...streamConsumer, eventSourceName: 'KinesisConsumerEventSource', sourceArn: streamConsumer.streamConsumerArn, grantRead: streamConsumer.grantRead.bind(streamConsumer) }, props);
   }
 }

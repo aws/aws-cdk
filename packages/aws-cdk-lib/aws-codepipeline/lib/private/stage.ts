@@ -176,6 +176,7 @@ export class Stage implements IStage {
       commands: action.commands,
       outputVariables: action.outputVariables,
       runOrder: action.runOrder,
+      timeoutInMinutes: action.timeout?.toMinutes(),
       roleArn: action.role ? action.role.roleArn : undefined,
       region: action.region,
       namespace: action.namespace,

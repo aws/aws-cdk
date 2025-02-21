@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "s3-origin-oac-read-versioned-access/DefaultTest": {
+      "stacks": [
+        "cloudfront-s3-bucket-origin-oac-read-versioned-access"
+      ],
+      "assertionStack": "s3-origin-oac-read-versioned-access/DefaultTest/DeployAssert",
+      "assertionStackName": "s3originoacreadversionedaccessDefaultTestDeployAssert4EB06593"
+    }
+  }
+}

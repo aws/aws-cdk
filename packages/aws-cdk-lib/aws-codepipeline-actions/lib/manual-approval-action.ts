@@ -4,6 +4,7 @@ import * as codepipeline from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
+import { Duration } from '../../core';
 
 /**
  * Construction properties of the `ManualApprovalAction`.
@@ -32,6 +33,16 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
    * @default - the approval request will not have an external link
    */
   readonly externalEntityLink?: string;
+
+  /**
+   * A timeout duration.
+   *
+   * It is configurable up to 86400 minutes (60 days) with a minimum value of 5 minutes.
+   *
+   * @default - 10080 minutes (7 days)
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -54,6 +65,10 @@ export class ManualApprovalAction extends Action {
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
     });
+
+    if (props.timeout && (props.timeout.toMinutes() < 5 || props.timeout.toMinutes() > 86400)) {
+      throw new Error(`timeout must be between 5 minutes and 86400 minutes (60 days), got ${props.timeout.toMinutes()} minutes`);
+    }
 
     this.props = props;
   }

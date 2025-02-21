@@ -1,5 +1,0 @@
-# The fix for upgrading lambda runtimes from python 3.7 to 3.12 is not relased yet: https://github.com/aws/aws-cdk/pull/29305
-# Skipping the bootstrapping test as it is flakey; only doing so to get the 2.131.0 release out this week.
-
-sam can locally test the synthesized cdk application
-switch on termination protection, switch is left alone on re-bootstrap

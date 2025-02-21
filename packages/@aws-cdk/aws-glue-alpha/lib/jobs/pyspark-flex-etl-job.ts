@@ -48,6 +48,13 @@ export interface PySparkFlexEtlJobProps extends JobProperties {
    */
   readonly extraFiles?: Code[];
 
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
+
 }
 
 /**
@@ -159,6 +166,9 @@ export class PySparkFlexEtlJob extends Job {
     }
     if (props.extraFiles && props.extraFiles.length > 0) {
       args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+    if (props.extraJars && props.extraJars?.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
 
     return args;

@@ -67,6 +67,65 @@
      "Version": "2012-10-17"
     }
    }
+  },
+  "StreamConsumer58240CBA": {
+   "Type": "AWS::Kinesis::StreamConsumer",
+   "Properties": {
+    "ConsumerName": "stream-consumer",
+    "StreamARN": {
+     "Fn::GetAtt": [
+      "MyStream5C050E93",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "StreamConsumerPolicy925BAE36": {
+   "Type": "AWS::Kinesis::ResourcePolicy",
+   "Properties": {
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "StreamConsumer58240CBA",
+      "ConsumerARN"
+     ]
+    },
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStreamConsumer",
+        "kinesis:SubscribeToShard"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "StreamConsumer58240CBA",
+         "ConsumerARN"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   }
  },
  "Conditions": {
