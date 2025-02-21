@@ -9,14 +9,14 @@ import {
 } from 'aws-cdk-lib';
 import * as hello from './hello-k8s';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as eks from '../lib';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private importedCluster: eks.ICluster;
   private vpc: ec2.IVpc;
@@ -41,27 +41,29 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
       mastersRole,
     });
 
-    // import this cluster
-    const kubectlProvider = this.cluster.stack.node.tryFindChild('@aws-cdk--aws-eks.KubectlProvider') as eks.KubectlProvider;
+    const mainStack = this.cluster.stack.node.findChild('Cluster') as eks.Cluster;
+
+    const kubectlProvider = mainStack.node.findChild('KubectlProvider') as eks.KubectlProvider;
+
     const crProvider = kubectlProvider.node.tryFindChild('Provider') as cr.Provider;
 
     // import the kubectl provider
     const importedKubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
-      functionArn: crProvider.serviceToken,
-      kubectlRoleArn: this.cluster.kubectlRole!.roleArn,
-      handlerRole: kubectlProvider.handlerRole,
+      serviceToken: crProvider.serviceToken,
+      role: kubectlProvider.role,
     });
 
     this.importedCluster = eks.Cluster.fromClusterAttributes(this, 'ImportedCluster', {
       clusterName: this.cluster.clusterName,
       openIdConnectProvider: this.cluster.openIdConnectProvider,
       vpc: this.vpc,
-      kubectlLayer: this.cluster.kubectlLayer,
-      kubectlRoleArn: this.cluster.kubectlRole?.roleArn,
       kubectlProvider: importedKubectlProvider,
     });
 
@@ -83,12 +85,6 @@ class EksClusterStack extends Stack {
 
     // EKS service role
     new CfnOutput(this, 'ClusterRole', { value: this.cluster.role.roleArn });
-    // EKS cluster creation role
-    new CfnOutput(this, 'ClusterAdminRole', { value: this.cluster.adminRole.roleArn });
-    // Kubectl Role(this should be the cluster creation role)
-    new CfnOutput(this, 'KubectlRole', { value: this.cluster.kubectlRole!.roleArn });
-    // Kubectl Lambda Role
-    new CfnOutput(this, 'KubectlLambdaRole', { value: this.cluster.kubectlLambdaRole!.roleArn });
     // EKS masters role(this role will be added in system:masters)
     new CfnOutput(this, 'EksMastersRoleOutput', { value: mastersRole.roleArn });
   }
@@ -156,7 +152,6 @@ class EksClusterStack extends Stack {
             clusterName: cluster.clusterName,
           },
         });
-
       }
     }
     const app = new cdk8s.App();
@@ -206,7 +201,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
 new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
@@ -221,5 +220,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
     },
   },
 });
-
-app.synth();

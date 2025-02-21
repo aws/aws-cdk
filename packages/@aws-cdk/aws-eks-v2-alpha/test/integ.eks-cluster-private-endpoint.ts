@@ -3,8 +3,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from '../lib';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -21,10 +21,11 @@ class EksClusterStack extends Stack {
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
       mastersRole,
-      defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      prune: false,
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
     });
 
     // this is the valdiation. it won't work if the private access is not setup properly.
@@ -38,7 +39,6 @@ class EksClusterStack extends Stack {
         name: 'config-map',
       },
     });
-
   }
 }
 

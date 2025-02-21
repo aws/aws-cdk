@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -47,6 +48,14 @@ export enum AccessLevel {
    * Grants read permissions to CloudFront Distribution
    */
   READ = 'READ',
+  /**
+   * Grants versioned read permissions to CloudFront Distribution
+   */
+  READ_VERSIONED = 'READ_VERSIONED',
+  /**
+   * Grants list permissions to CloudFront Distribution
+   */
+  LIST = 'LIST',
   /**
    * Grants write permission to CloudFront Distribution
    */
@@ -195,6 +204,8 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: S3OriginAccessControlProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
@@ -237,6 +248,8 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: FunctionUrlOriginAccessControlProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {

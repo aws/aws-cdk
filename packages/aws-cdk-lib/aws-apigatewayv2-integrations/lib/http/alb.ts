@@ -3,6 +3,7 @@ import { HttpPrivateIntegration } from './private/integration';
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import { ValidationError } from '../../../core/lib/errors';
 
 /**
  * Properties to initialize `HttpAlbIntegration`.
@@ -23,7 +24,6 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
     id: string,
     private readonly listener: elbv2.IApplicationListener,
     private readonly props: HttpAlbIntegrationProps = {}) {
-
     super(id);
   }
 
@@ -33,7 +33,7 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
       vpc = this.listener.loadBalancer.vpc;
     }
     if (!vpc) {
-      throw new Error('The vpcLink property must be specified when using an imported Application Listener.');
+      throw new ValidationError('The vpcLink property must be specified when using an imported Application Listener.', options.scope);
     }
 
     const vpcLink = this._configureVpcLink(options, {

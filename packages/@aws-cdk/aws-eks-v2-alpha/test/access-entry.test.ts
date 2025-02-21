@@ -2,7 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib/core';
 import {
   AccessEntry, AccessEntryProps, AccessEntryType,
-  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
+  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion,
 } from '../lib';
 
 describe('AccessEntry', () => {
@@ -17,7 +17,6 @@ describe('AccessEntry', () => {
     stack = new Stack(app, 'test-stack');
     cluster = new Cluster(stack, 'Cluster', {
       version: KubernetesVersion.V1_29,
-      authenticationMode: AuthenticationMode.API,
     });
 
     mockAccessPolicies = [
@@ -47,7 +46,7 @@ describe('AccessEntry', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-      ClusterName: { Ref: 'Cluster9EE0221C' },
+      ClusterName: { Ref: 'ClusterEB0386A7' },
       PrincipalArn: 'mock-principal-arn',
       AccessPolicies: [
         {
@@ -74,7 +73,7 @@ describe('AccessEntry', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-        ClusterName: { Ref: 'Cluster9EE0221C' },
+        ClusterName: { Ref: 'ClusterEB0386A7' },
         PrincipalArn: 'mock-principal-arn',
         Type: accessEntryType,
       });
@@ -92,7 +91,7 @@ describe('AccessEntry', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-      ClusterName: { Ref: 'Cluster9EE0221C' },
+      ClusterName: { Ref: 'ClusterEB0386A7' },
       PrincipalArn: mockProps.principal,
       AccessPolicies: [
         { PolicyArn: mockProps.accessPolicies[0].policy },

@@ -2,16 +2,16 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { testFixture } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 import { CfnNodegroup } from 'aws-cdk-lib/aws-eks';
+import { isGpuInstanceType } from '../lib/private/nodegroup';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
 
 describe('node group', () => {
   test('default ami type is not applied when launch template is configured', () => {
@@ -112,7 +112,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -155,7 +155,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -199,7 +199,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -243,7 +243,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -287,7 +287,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -338,7 +338,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -396,7 +396,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -454,7 +454,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -512,7 +512,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -648,7 +648,7 @@ describe('node group', () => {
         new ec2.InstanceType('p3.large'),
         new ec2.InstanceType('g3.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_X86_64_GPU, AL2023_X86_64_NEURON, AL2023_X86_64_NVIDIA, BOTTLEROCKET_X86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
   });
 
   /**
@@ -1017,65 +1017,6 @@ describe('node group', () => {
     });
   });
 
-  test('aws-auth will be updated', () => {
-    // GIVEN
-    const { stack, vpc } = testFixture();
-
-    // WHEN
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
-      mastersRole: new iam.Role(stack, 'MastersRole', {
-        assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
-      }),
-    });
-    new eks.Nodegroup(stack, 'Nodegroup', { cluster });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'MastersRole0257C11B',
-                'Arn',
-              ],
-            },
-            '\\",\\"groups\\":[\\"system:masters\\"]},{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'NodegroupNodeGroupRole038A128B',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"system:node:{{EC2PrivateDNSName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
-      },
-      ClusterName: {
-        Ref: 'Cluster9EE0221C',
-      },
-      RoleArn: {
-        'Fn::GetAtt': [
-          'ClusterCreationRole360249B6',
-          'Arn',
-        ],
-      },
-      PruneLabel: 'aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76',
-    });
-  });
-
   test('create nodegroup correctly with security groups provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -1384,7 +1325,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       NodeRole: {
         'Fn::GetAtt': [
@@ -1432,7 +1373,7 @@ describe('node group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       ClusterName: {
-        Ref: 'Cluster9EE0221C',
+        Ref: 'ClusterEB0386A7',
       },
       Taints: [
         {
@@ -1734,5 +1675,56 @@ describe('node group', () => {
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
+  });
+});
+
+describe('isGpuInstanceType', () => {
+  it('should return true for known GPU instance types', () => {
+    const gpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.P2, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G3, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P4D, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.G6E, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.INF1, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.INF2, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P3DN, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.P4DE, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G4AD, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G4DN, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G3S, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
+    ];
+    gpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(true);
+    });
+  });
+  it('should return false for non-GPU instance types', () => {
+    const nonGpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+      ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.XLARGE),
+    ];
+    nonGpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(false);
+    });
+  });
+  it('should return true for different sizes of GPU instance types', () => {
+    const gpuInstanceTypes = [
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE16),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.LARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.SMALL),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.NANO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MICRO),
+      ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.METAL),
+    ];
+    gpuInstanceTypes.forEach(instanceType => {
+      expect(isGpuInstanceType(instanceType)).toBe(true);
+    });
   });
 });

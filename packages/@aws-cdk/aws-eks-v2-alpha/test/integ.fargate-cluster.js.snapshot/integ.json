@@ -1,14 +1,13 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "testCases": {
-    "aws-cdk-eks-fargate-cluster/DefaultTest": {
+    "eks-fargate-cluster/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-fargate-cluster-test-stack1",
-        "aws-cdk-eks-fargate-cluster-test-stack2"
+        "eks-fargate-cluster-test-stack"
       ],
       "diffAssets": false,
-      "assertionStack": "aws-cdk-eks-fargate-cluster/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkeksfargateclusterDefaultTestDeployAssert7DCC5E4C"
+      "assertionStack": "eks-fargate-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "eksfargateclusterDefaultTestDeployAssertAA8FD90E"
     }
   }
 }

@@ -4,13 +4,13 @@ import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 import * as eks from '../lib';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
 class EksClusterAlbControllerStack extends Stack {
-
   constructor(scope: App, id: string) {
     super(scope, id);
 
@@ -19,9 +19,12 @@ class EksClusterAlbControllerStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
+      version: eks.KubernetesVersion.V1_32,
       albController: {
         version: LATEST_VERSION,
+      },
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -65,15 +68,17 @@ class EksClusterAlbControllerStack extends Stack {
     new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
-
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+  },
+});
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-app.synth();

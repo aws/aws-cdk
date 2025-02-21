@@ -5,6 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -114,15 +115,15 @@ export enum ThroughputMode {
   PROVISIONED = 'provisioned',
 
   /**
-  * This mode scales the throughput automatically regardless of file system size.
-  */
+   * This mode scales the throughput automatically regardless of file system size.
+   */
   ELASTIC = 'elastic',
 }
 
 /**
  * The status of the file system's replication overwrite protection.
  *
- * @see https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
  */
 export enum ReplicationOverwriteProtection {
   /**
@@ -552,12 +553,12 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly connections: ec2.Connections;
 
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemId: string;
   /**
-  * @attribute
-  */
+   * @attribute
+   */
   public abstract readonly fileSystemArn: string;
 
   /**
@@ -728,6 +729,8 @@ export class FileSystem extends FileSystemBase {
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.props = props;
 
@@ -749,7 +752,7 @@ export class FileSystem extends FileSystemBase {
       throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
     }
 
-    // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
+    // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
@@ -855,7 +858,7 @@ export class FileSystem extends FileSystemBase {
 
     // We now have to create the mount target for each of the mentioned subnet
 
-    // we explictly use FeatureFlags to maintain backwards compatibility
+    // we explicitly use FeatureFlags to maintain backwards compatibility
     const useMountTargetOrderInsensitiveLogicalID = FeatureFlags.of(this).isEnabled(cxapi.EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID);
     this.mountTargetsAvailable = [];
     if (useMountTargetOrderInsensitiveLogicalID) {
@@ -911,6 +914,7 @@ export class FileSystem extends FileSystemBase {
   /**
    * create access point from this filesystem
    */
+  @MethodMetadata()
   public addAccessPoint(id: string, accessPointOptions: AccessPointOptions = {}): AccessPoint {
     return new AccessPoint(this, id, {
       fileSystem: this,
@@ -942,6 +946,8 @@ class ImportedFileSystem extends FileSystemBase {
 
   constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
       throw new Error('One of fileSystemId or fileSystemArn, but not both, must be provided.');

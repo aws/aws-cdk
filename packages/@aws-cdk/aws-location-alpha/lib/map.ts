@@ -3,6 +3,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnMap } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents the Amazon Location Service Map
@@ -52,7 +53,7 @@ export interface MapProps {
   /**
    * Specifies the custom layers for the style.
    *
-   * @default - no custom layes
+   * @default - no custom layers
    */
   readonly customLayers?: CustomLayer[];
 
@@ -290,6 +291,8 @@ export class Map extends Resource implements IMap {
     super(scope, id, {
       physicalName: props.mapName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const map = new CfnMap(this, 'Resource', {
       configuration: {
@@ -310,6 +313,7 @@ export class Map extends Resource implements IMap {
   /**
    * Grant the given principal identity permissions to perform the actions on this map.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -322,6 +326,7 @@ export class Map extends Resource implements IMap {
    * Grant the given identity permissions to rendering a map resource
    * @See https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-get-map-tiles
    */
+  @MethodMetadata()
   public grantRendering(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:GetMapTile',

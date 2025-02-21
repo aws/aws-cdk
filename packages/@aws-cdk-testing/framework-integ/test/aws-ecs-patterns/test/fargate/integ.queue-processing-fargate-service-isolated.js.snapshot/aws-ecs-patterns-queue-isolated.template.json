@@ -318,6 +318,12 @@
       ]
      ]
     },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-patterns-queue-isolated/VPC"
+     }
+    ],
     "VpcEndpointType": "Gateway",
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
@@ -404,6 +410,12 @@
      },
      {
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-patterns-queue-isolated/VPC"
      }
     ],
     "VpcEndpointType": "Interface",
@@ -494,6 +506,12 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-patterns-queue-isolated/VPC"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
@@ -582,6 +600,12 @@
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
      }
     ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-patterns-queue-isolated/VPC"
+     }
+    ],
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
@@ -668,6 +692,12 @@
      },
      {
       "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-ecs-patterns-queue-isolated/VPC"
      }
     ],
     "VpcEndpointType": "Interface",
@@ -783,7 +813,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:95cefedd43575452a70cdeeeceb0f1c5728fd58c9ff8e81e760c3dac33c46417"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",

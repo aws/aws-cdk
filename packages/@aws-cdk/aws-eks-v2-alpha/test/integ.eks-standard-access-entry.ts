@@ -2,9 +2,9 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as eks from '../lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import * as eks from '../lib';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 class EksStandardAccessEntry extends Stack {
   constructor(scope: App, id: string) {
@@ -17,9 +17,11 @@ class EksStandardAccessEntry extends Stack {
     });
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       defaultCapacity: 0,
-      authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
     });
 
     const role = new iam.Role(this, 'Role', {
@@ -53,4 +55,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
     },
   },
 });
-app.synth();

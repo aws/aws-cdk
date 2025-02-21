@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-lambda-pce-1.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-lambda-pce-1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94eb787de5b73b68d1daa3b92361b24a2e5dae708997ec2f1bea10f616a099c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31d9cae6a8887857ad183b56854ee22afad3351f5dbc2079af1766c174e99b2f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,16 +40,16 @@
             "data": "MyLambdaAliasPCEServiceRoleF7C9F212"
           }
         ],
-        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56"
-          }
-        ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaAliasPCED0B8D751"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaAliasPCEinlinePolicyAddedToExecutionRole0F563738B"
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
@@ -75,16 +76,16 @@
             "data": "MyLambdaVersionPCEServiceRole2ACFB73E"
           }
         ],
-        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552"
-          }
-        ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaVersionPCEA3A0D86B"
+          }
+        ],
+        "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaVersionPCEinlinePolicyAddedToExecutionRole0C74308E8"
           }
         ],
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
@@ -117,19 +118,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4": [
+        "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4",
+            "data": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357": [
+        "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357",
+            "data": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

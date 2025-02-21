@@ -3,19 +3,16 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from '../lib';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
-
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
   constructor(scope: App, id: string) {
     super(scope, id);
-    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
     // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
@@ -30,7 +27,10 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this),
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
     });
 
     this.cluster.addNodegroupCapacity('LinuxNodegroup', {

@@ -3,6 +3,7 @@ import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from 'aws-cdk-lib/
 import { Construct } from 'constructs';
 import { CfnRouteCalculator } from 'aws-cdk-lib/aws-location';
 import { generateUniqueId, DataSource } from './util';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * A Route Calculator
@@ -109,7 +110,6 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   public readonly routeCalculatorUpdateTime: string;
 
   constructor(scope: Construct, id: string, props: RouteCalculatorProps) {
-
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
       throw new Error(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`);
     }
@@ -127,6 +127,8 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     super(scope, id, {
       physicalName: props.routeCalculatorName ?? Lazy.string({ produce: () => generateUniqueId(this) }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const routeCalculator = new CfnRouteCalculator(this, 'Resource', {
       calculatorName: this.physicalName,
@@ -143,6 +145,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
   /**
    * Grant the given principal identity permissions to perform the actions on this route calculator.
    */
+  @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
@@ -156,6 +159,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
    */
+  @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee,
       'geo:CalculateRoute',

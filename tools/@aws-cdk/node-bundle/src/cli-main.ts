@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
-import { Bundle, BundleProps, BundleValidateOptions } from './api';
+import { Bundle, BundlePackOptions, BundleProps, BundleValidateOptions } from './api';
 
 function versionNumber(): string {
   return fs.readJSONSync(path.join(__dirname, '..', 'package.json')).version;
@@ -16,11 +16,14 @@ export async function cliMain(cliArgs: string[]) {
     .option('resource', { type: 'array', nargs: 1, default: [], desc: 'List of resources that need to be explicitly copied to the bundle (example: node_modules/proxy-agent/contextify.js:bin/contextify.js)' })
     .option('dont-attribute', { type: 'string', desc: 'Dependencies matching this regular expressions wont be added to the notice file' })
     .option('test', { type: 'string', desc: 'Validation command to sanity test the bundle after its created' })
+    .option('minify-whitespace', { type: 'boolean', default: false, desc: 'Minify whitespace' })
     .command('validate', 'Validate the package is ready for bundling', args => args
       .option('fix', { type: 'boolean', default: false, alias: 'f', desc: 'Fix any fixable violations' }),
     )
     .command('write', 'Write the bundled version of the project to a temp directory')
-    .command('pack', 'Write the bundle and create the tarball')
+    .command('pack', 'Write the bundle and create the tarball', args => args
+      .option('destination', { type: 'string', desc: 'Directory to write the tarball to', nargs: 1, requiresArg: true })
+    )
     .demandCommand() // require a subcommand
     .strict() // require a VALID subcommand, and only supported options
     .fail((msg, err) => {
@@ -76,6 +79,7 @@ export async function cliMain(cliArgs: string[]) {
     resources: resources,
     dontAttribute: argv['dont-attribute'],
     test: argv.test,
+    minifyWhitespace: argv['minify-whitespace'],
   };
 
   const bundle = new Bundle(props);
@@ -91,7 +95,10 @@ export async function cliMain(cliArgs: string[]) {
       write(bundle);
       break;
     case 'pack':
-      pack(bundle);
+      const target = argv.destination as string | undefined;
+      pack(bundle, {
+        target,
+      });
       break;
     default:
       throw new Error(`Unknown command: ${command}`);
@@ -110,6 +117,6 @@ function validate(bundle: Bundle, options: BundleValidateOptions = {}) {
   }
 }
 
-function pack(bundle: Bundle) {
-  bundle.pack();
+function pack(bundle: Bundle, options?: BundlePackOptions) {
+  bundle.pack(options);
 }

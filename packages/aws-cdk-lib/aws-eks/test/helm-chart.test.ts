@@ -1,18 +1,29 @@
 import * as path from 'path';
-import { testFixtureCluster } from './util';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
-import { Duration } from '../../core';
+import { App, Duration, Stack } from '../../core';
 import * as eks from '../lib';
+import { Cluster, KubernetesVersion } from '../lib';
 
 /* eslint-disable max-len */
 
 describe('helm chart', () => {
   describe('add Helm chart', () => {
-    test('should have default namespace', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
+    let app: App;
+    let stack: Stack;
+    let cluster: Cluster;
 
+    beforeEach(() => {
+      app = new App();
+      stack = new Stack(app, 'Stack');
+      cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+    });
+
+    test('should have default namespace', () => {
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
@@ -21,9 +32,6 @@ describe('helm chart', () => {
     });
 
     test('should have a lowercase default release name', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
@@ -34,22 +42,16 @@ describe('helm chart', () => {
     });
 
     test('should throw when chart and chartAsset not specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       const t = () => {
         new eks.HelmChart(stack, 'MyChart', { cluster });
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chart and repository specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       const t = () => {
         const chartAsset = new Asset(stack, 'ChartAsset', {
@@ -63,13 +65,10 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chartAsset and version specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       const t = () => {
         const chartAsset = new Asset(stack, 'ChartAsset', {
@@ -83,13 +82,10 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should handle chart from S3 asset', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       const chartAsset = new Asset(stack, 'ChartAsset', {
         path: path.join(__dirname, 'test-chart'),
@@ -100,15 +96,12 @@ describe('helm chart', () => {
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, {
         ChartAssetURL: {
           'Fn::Sub':
-            's3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf.zip',
+            's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf.zip',
         },
       });
     });
 
     test('should use the last 53 of the default release name', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChartNameWhichISMostProbablyLongerThanFiftyThreeCharacters', {
         cluster,
@@ -122,9 +115,6 @@ describe('helm chart', () => {
     });
 
     test('with values', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', values: { foo: 123 } });
 
@@ -133,9 +123,6 @@ describe('helm chart', () => {
     });
 
     test('should support create namespaces by default', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
@@ -144,9 +131,6 @@ describe('helm chart', () => {
     });
 
     test('should support create namespaces when explicitly specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: true });
 
@@ -155,9 +139,6 @@ describe('helm chart', () => {
     });
 
     test('should not create namespaces when disabled', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false });
 
@@ -167,9 +148,6 @@ describe('helm chart', () => {
     });
 
     test('should support waiting until everything is completed before marking release as successful', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: true });
 
@@ -178,9 +156,6 @@ describe('helm chart', () => {
     });
 
     test('should default to not waiting before marking release as successful', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart' });
 
@@ -190,9 +165,6 @@ describe('helm chart', () => {
     });
 
     test('should enable waiting when specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: true });
 
@@ -201,9 +173,6 @@ describe('helm chart', () => {
     });
 
     test('should disable waiting when specified as false', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyWaitingChart', { cluster, chart: 'chart', wait: false });
 
@@ -213,33 +182,23 @@ describe('helm chart', () => {
     });
 
     test('should enable atomic operations when specified', () => {
-      //GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      //WHEN
+      // WHEN
       new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', atomic: true });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
     });
 
     test('should disable atomic operations by default', () => {
-      //GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
-      //WHEN
+      // WHEN
       new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart' });
 
-      //THEN
+      // THEN
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
       expect(Object.keys(charts).length).toEqual(0);
-
     });
 
     test('should timeout only after 10 minutes', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', {
         cluster,
@@ -252,9 +211,6 @@ describe('helm chart', () => {
     });
 
     test('should disable skip crds by default', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
 
@@ -263,9 +219,6 @@ describe('helm chart', () => {
       expect(Object.keys(charts).length).toEqual(0);
     });
     test('should enable atomic operations when specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', skipCrds: true });
 
@@ -273,9 +226,6 @@ describe('helm chart', () => {
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: true });
     });
     test('should use private ecr repo when specified', () => {
-      // GIVEN
-      const { stack, cluster } = testFixtureCluster();
-
       // WHEN
       new eks.HelmChart(stack, 'MyPrivateChart', { cluster, chart: 'chart', repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
 

@@ -3,16 +3,21 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack, Tags } from 'aws-cdk-lib/core';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../lib';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
-const KUBERNETES_MANIFEST_RESOURCE_TYPE = eks.KubernetesManifest.RESOURCE_TYPE;
 
 describe('fargate', () => {
   test('can be added to a cluster', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -21,7 +26,7 @@ describe('fargate', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
       Selectors: [{ Namespace: 'default' }],
     });
@@ -30,7 +35,12 @@ describe('fargate', () => {
   test('supports specifying a profile name', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -40,7 +50,7 @@ describe('fargate', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
       Selectors: [{ Namespace: 'default' }],
       FargateProfileName: 'MyProfileName',
@@ -50,7 +60,12 @@ describe('fargate', () => {
   test('supports custom execution role', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
     const myRole = new iam.Role(stack, 'MyRole', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
@@ -61,7 +76,7 @@ describe('fargate', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
       Selectors: [{ Namespace: 'default' }],
     });
@@ -70,7 +85,12 @@ describe('fargate', () => {
   test('supports tags through aspects', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -83,7 +103,7 @@ describe('fargate', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
       Selectors: [{ Namespace: 'default' }],
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
       Tags: [
         {
@@ -101,7 +121,12 @@ describe('fargate', () => {
   test('supports specifying vpc', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
     const vpc = ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
       vpcId: 'vpc123',
       availabilityZones: ['az1'],
@@ -116,7 +141,7 @@ describe('fargate', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfilePodExecutionRole4795C054', 'Arn'] },
       Selectors: [{ Namespace: 'default' }],
       Subnets: ['priv1'],
@@ -126,7 +151,12 @@ describe('fargate', () => {
   test('fails if there are no selectors or if there are more than 5', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // THEN
     expect(() => cluster.addFargateProfile('MyProfile', { selectors: [] }));
@@ -147,7 +177,12 @@ describe('fargate', () => {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -156,13 +191,13 @@ describe('fargate', () => {
       ApplyPatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"fargate"}}}}}',
       RestorePatchJson: '{"spec":{"template":{"metadata":{"annotations":{"eks.amazonaws.com/compute-type":"ec2"}}}}}',
       ClusterName: {
-        Ref: 'FargateCluster019F03E8',
+        Ref: 'FargateCluster7CCD5F93',
       },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
       ClusterName: {
-        Ref: 'FargateCluster019F03E8',
+        Ref: 'FargateCluster7CCD5F93',
       },
       PodExecutionRoleArn: {
         'Fn::GetAtt': [
@@ -187,12 +222,15 @@ describe('fargate', () => {
         fargateProfileName: 'my-app', selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
       ClusterName: {
-        Ref: 'FargateCluster019F03E8',
+        Ref: 'FargateCluster7CCD5F93',
       },
       FargateProfileName: 'my-app',
       PodExecutionRoleArn: {
@@ -218,12 +256,15 @@ describe('fargate', () => {
         selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
       ClusterName: {
-        Ref: 'FargateCluster019F03E8',
+        Ref: 'FargateCluster7CCD5F93',
       },
       PodExecutionRoleArn: {
         'Fn::GetAtt': [
@@ -241,7 +282,12 @@ describe('fargate', () => {
   test('multiple Fargate profiles added to a cluster are processed sequentially', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile1', {
@@ -253,13 +299,13 @@ describe('fargate', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::FargateProfile', {
-      ClusterName: { Ref: 'MyCluster8AD82BF8' },
+      ClusterName: { Ref: 'MyCluster4C1BA579' },
       PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37', 'Arn'] },
       Selectors: [{ Namespace: 'namespace1' }],
     });
     Template.fromStack(stack).hasResource('AWS::EKS::FargateProfile', {
       Properties: {
-        ClusterName: { Ref: 'MyCluster8AD82BF8' },
+        ClusterName: { Ref: 'MyCluster4C1BA579' },
         PodExecutionRoleArn: { 'Fn::GetAtt': ['MyClusterfargateprofileMyProfile2PodExecutionRoleD1151CCF', 'Arn'] },
         Selectors: [{ Namespace: 'namespace2' }],
       },
@@ -267,117 +313,6 @@ describe('fargate', () => {
         'MyClusterfargateprofileMyProfile1PodExecutionRole794E9E37',
         'MyClusterfargateprofileMyProfile1879D501A',
       ],
-    });
-  });
-
-  test('fargate role is added to RBAC', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesResource', {
-      Manifest: {
-        'Fn::Join': [
-          '',
-          [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c858eb9c291620a59a3334f61f9b8a259e9786af60":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-            {
-              'Fn::GetAtt': [
-                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-                'Arn',
-              ],
-            },
-            '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-          ],
-        ],
-      },
-    });
-  });
-
-  test('allow cluster creation role to iam:PassRole on fargate pod execution role', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'iam:PassRole',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'FargateClusterRole8E36B33A',
-                'Arn',
-              ],
-            },
-          },
-          {
-            Action: [
-              'eks:CreateCluster',
-              'eks:DescribeCluster',
-              'eks:DescribeUpdate',
-              'eks:DeleteCluster',
-              'eks:UpdateClusterVersion',
-              'eks:UpdateClusterConfig',
-              'eks:CreateFargateProfile',
-              'eks:TagResource',
-              'eks:UntagResource',
-            ],
-            Effect: 'Allow',
-            Resource: [
-              '*',
-            ],
-          },
-          {
-            Action: [
-              'eks:DescribeFargateProfile',
-              'eks:DeleteFargateProfile',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: ['iam:GetRole', 'iam:listAttachedRolePolicies'],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'iam:CreateServiceLinkedRole',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
-              'ec2:DescribeInstances',
-              'ec2:DescribeNetworkInterfaces',
-              'ec2:DescribeSecurityGroups',
-              'ec2:DescribeSubnets',
-              'ec2:DescribeRouteTables',
-              'ec2:DescribeDhcpOptions',
-              'ec2:DescribeVpcs',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'iam:PassRole',
-            Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'FargateClusterfargateprofiledefaultPodExecutionRole66F2610E',
-                'Arn',
-              ],
-            },
-          },
-        ],
-      },
     });
   });
 
@@ -390,23 +325,24 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', {
       version: CLUSTER_VERSION,
       secretsEncryptionKey: new kms.Key(stack, 'Key'),
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        encryptionConfig: [{
-          provider: {
-            keyArn: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      EncryptionConfig: [{
+        Provider: {
+          KeyArn: {
+            'Fn::GetAtt': [
+              'Key961B73FD',
+              'Arn',
+            ],
           },
-          resources: ['secrets'],
-        }],
-      },
+        },
+        Resources: ['secrets'],
+      }],
     });
   });
 
@@ -423,56 +359,22 @@ describe('fargate', () => {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
     });
 
-    //THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: {
-        logging: {
-          clusterLogging: [
-            { enabled: true, types: ['api', 'authenticator', 'scheduler'] },
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
+      Logging: {
+        ClusterLogging: {
+          EnabledTypes: [
+            { Type: 'api' },
+            { Type: 'authenticator' },
+            { Type: 'scheduler' },
           ],
         },
       },
     });
-  });
-});
-
-describe('FargateCluster authentication mode', () => {
-  test.each([
-    [eks.AuthenticationMode.API, 0],
-    [eks.AuthenticationMode.API_AND_CONFIG_MAP, 1],
-    [eks.AuthenticationMode.CONFIG_MAP, 1],
-    [undefined, 1],
-  ])('creates correct number of AwsAuth resources for mode %p', (authenticationMode, expectedResourceCount) => {
-    const stack = new Stack();
-
-    new eks.FargateCluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      authenticationMode,
-    });
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs(KUBERNETES_MANIFEST_RESOURCE_TYPE, expectedResourceCount);
-
-    if (expectedResourceCount > 0) {
-      template.hasResourceProperties(KUBERNETES_MANIFEST_RESOURCE_TYPE, {
-        Manifest: {
-          'Fn::Join': [
-            '',
-            [
-              '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c89d3ef2163dfb30f38b127f20b71024bf7995ca21":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
-              {
-                'Fn::GetAtt': [
-                  'ClusterfargateprofiledefaultPodExecutionRole09952CFF',
-                  'Arn',
-                ],
-              },
-              '\\",\\"username\\":\\"system:node:{{SessionName}}\\",\\"groups\\":[\\"system:bootstrappers\\",\\"system:nodes\\",\\"system:node-proxier\\"]}]","mapUsers":"[]","mapAccounts":"[]"}}]',
-            ],
-          ],
-        },
-      });
-    }
   });
 });

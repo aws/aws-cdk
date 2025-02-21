@@ -1,5 +1,6 @@
 import { toCloudFormation } from './util';
-import { CustomResource, RemovalPolicy, Stack } from '../lib';
+import { Annotations } from '../../assertions';
+import { CustomResource, Duration, RemovalPolicy, Stack } from '../lib';
 
 describe('custom resource', () => {
   test('simple case provider identified by service token', () => {
@@ -172,5 +173,60 @@ describe('custom resource', () => {
         },
       },
     });
+  });
+
+  test('set serviceTimeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+      serviceTimeout: Duration.seconds(60),
+    });
+
+    // THEN
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        MyCustomResource: {
+          Type: 'AWS::CloudFormation::CustomResource',
+          Properties: {
+            ServiceToken: 'MyServiceToken',
+            ServiceTimeout: '60',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
+        },
+      },
+    });
+  });
+
+  test.each([0, 4000])('throw an error when serviceTimeout is set to %d seconds.', (invalidSeconds: number) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new CustomResource(stack, 'MyCustomResource', {
+        serviceToken: 'MyServiceToken',
+        serviceTimeout: Duration.seconds(invalidSeconds),
+      });
+    }).toThrow(`serviceTimeout must either be between 1 and 3600 seconds, got ${invalidSeconds}`);
+  });
+
+  test('send warning if customResource construct property key is added to properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new CustomResource(stack, 'MyCustomResource', {
+      serviceToken: 'MyServiceToken',
+      properties: {
+        ServiceToken: 'RepeatedToken', // this is repeated because serviceToken prop above will resolve as property ServiceToken
+      },
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/MyCustomResource', 'The following keys will be overwritten as they exist in the \'properties\' prop. Keys found: ServiceToken [ack: @aws-cdk/core:customResourcePropConflict]');
   });
 });

@@ -1,6 +1,0 @@
-#!/usr/bin/env node
-
-// source maps must be enabled before importing files
-process.setSourceMapsEnabled(true);
-
-require('./cdk.js');

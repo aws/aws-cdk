@@ -24,7 +24,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly secret?: secretsmanager.ISecret;
   /**
-   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
@@ -201,8 +201,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   /**
-  * The identifier for this EventSourceMapping
-  */
+   * The identifier for this EventSourceMapping
+   */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
       throw new Error('KafkaEventSource is not yet bound to an event source mapping');
@@ -241,11 +241,10 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new Error('secret must be set if Kafka brokers accessed over Internet');
     }
     this.innerProps = props;
-
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(target instanceof Construct)) { throw new Error('Function is not a construct. Unexpected error.'); }
+    if (!(Construct.isConstruct(target))) { throw new Error('Function is not a construct. Unexpected error.'); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({

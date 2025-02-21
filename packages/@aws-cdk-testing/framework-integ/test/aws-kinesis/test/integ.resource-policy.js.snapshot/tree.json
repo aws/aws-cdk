@@ -118,6 +118,101 @@
               "version": "0.0.0"
             }
           },
+          "StreamConsumer": {
+            "id": "StreamConsumer",
+            "path": "kinesis-resource-policy/StreamConsumer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "kinesis-resource-policy/StreamConsumer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::StreamConsumer",
+                  "aws:cdk:cloudformation:props": {
+                    "consumerName": "stream-consumer",
+                    "streamArn": {
+                      "Fn::GetAtt": [
+                        "MyStream5C050E93",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesis.CfnStreamConsumer",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "kinesis-resource-policy/StreamConsumer/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "kinesis-resource-policy/StreamConsumer/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Kinesis::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "resourceArn": {
+                          "Fn::GetAtt": [
+                            "StreamConsumer58240CBA",
+                            "ConsumerARN"
+                          ]
+                        },
+                        "resourcePolicy": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "kinesis:DescribeStreamConsumer",
+                                "kinesis:SubscribeToShard"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "StreamConsumer58240CBA",
+                                  "ConsumerARN"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_kinesis.CfnResourcePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesis.ResourcePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesis.StreamConsumer",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "kinesis-resource-policy/BootstrapVersion",

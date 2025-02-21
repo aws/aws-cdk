@@ -5,8 +5,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from '../lib';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -27,16 +27,10 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
-      defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
-      tags: {
-        foo: 'bar',
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
-      clusterLogging: [
-        eks.ClusterLoggingTypes.API,
-        eks.ClusterLoggingTypes.AUTHENTICATOR,
-        eks.ClusterLoggingTypes.SCHEDULER,
-      ],
     });
 
     this.assertHelmChartAsset();
@@ -61,14 +55,6 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       values: { aws: { region: this.region } },
     });
-
-    // there is no opinionated way of testing charts from private ECR, so there is description of manual steps needed to reproduce:
-    // 1. `export AWS_PROFILE=youraccountprofile; aws ecr create-repository --repository-name helm-charts-test/s3-chart --region YOUR_REGION`
-    // 2. `helm pull oci://public.ecr.aws/aws-controllers-k8s/s3-chart --version v0.1.0`
-    // 3. Login to ECR (howto: https://docs.aws.amazon.com/AmazonECR/latest/userguide/push-oci-artifact.html )
-    // 4. `helm push s3-chart-v0.1.0.tgz oci://YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/helm-charts-test/`
-    // 5. Change `repository` in above test to oci://YOUR_ACCOUNT_ID.dkr.ecr.YOUR_REGION.amazonaws.com/helm-charts-test
-    // 6. Run integration tests as usual
 
     // https://gallery.ecr.aws/aws-controllers-k8s/lambda-chart
     this.cluster.addHelmChart('test-oci-chart-different-release-name', {
@@ -128,5 +114,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-helm', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();
