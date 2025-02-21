@@ -201,7 +201,7 @@ describe('custom resource', () => {
     });
   });
 
-  test('set serviceTimeout with token', () => {
+  test('set serviceTimeout with token as seconds', () => {
     // GIVEN
     const stack = new Stack();
     const durToken = new CfnParameter(stack, 'MyParameter', {
@@ -237,6 +237,23 @@ describe('custom resource', () => {
         },
       },
     });
+  });
+
+  test('throws error when serviceTimeout is set with token as units other than seconds', () => {
+    // GIVEN
+    const stack = new Stack();
+    const durToken = new CfnParameter(stack, 'MyParameter', {
+      type: 'Number',
+      default: 60,
+    });
+
+    // WHEN
+    expect(() => {
+      new CustomResource(stack, 'MyCustomResource', {
+        serviceToken: 'MyServiceToken',
+        serviceTimeout: Duration.minutes(durToken.valueAsNumber),
+      });
+    }).toThrow('Duration must be specified as \'Duration.seconds()\' here since its value comes from a token and cannot be converted (got Duration.minutes)');
   });
 
   test.each([0, 4000])('throw an error when serviceTimeout is set to %d seconds.', (invalidSeconds: number) => {

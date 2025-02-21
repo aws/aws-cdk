@@ -65,6 +65,8 @@ export interface CustomResourceProps {
    *
    * The value must be between 1 second and 3600 seconds.
    *
+   * A token can be specified for this property, but it must be specified with `Duration.seconds()`.
+   *
    * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
    *
    * @default Duration.seconds(3600)
