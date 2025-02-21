@@ -600,6 +600,49 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputRefidentitypoolE2A6D099E51DBB61": {
+   "Value": {
+    "Ref": "identitypoolE2A6D099"
+   },
+   "Export": {
+    "Name": "integ-idp:ExportsOutputRefidentitypoolE2A6D099E51DBB61"
+   }
+  },
+  "ExportsOutputFnGetAttidentitypoolE2A6D099Name3FFCBBDD": {
+   "Value": {
+    "Fn::GetAtt": [
+     "identitypoolE2A6D099",
+     "Name"
+    ]
+   },
+   "Export": {
+    "Name": "integ-idp:ExportsOutputFnGetAttidentitypoolE2A6D099Name3FFCBBDD"
+   }
+  },
+  "ExportsOutputFnGetAttidentitypoolAuthenticatedRoleB074B49DArnF2BA4F08": {
+   "Value": {
+    "Fn::GetAtt": [
+     "identitypoolAuthenticatedRoleB074B49D",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-idp:ExportsOutputFnGetAttidentitypoolAuthenticatedRoleB074B49DArnF2BA4F08"
+   }
+  },
+  "ExportsOutputFnGetAttidentitypoolUnauthenticatedRoleE61CAC70Arn1E3CB7FC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "identitypoolUnauthenticatedRoleE61CAC70",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-idp:ExportsOutputFnGetAttidentitypoolUnauthenticatedRoleE61CAC70Arn1E3CB7FC"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
