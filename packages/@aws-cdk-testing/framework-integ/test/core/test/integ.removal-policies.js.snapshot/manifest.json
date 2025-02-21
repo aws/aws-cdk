@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "TestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f317d1d8eb0f6b3d1c8990bc82107ef6959bc53324190e036a7734ea3b5189a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7a2fa35a975947e383aaa28fd06ff4989df7a4c55f145afa785f8075dcedc7e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,27 @@
         "TestStack.assets"
       ],
       "metadata": {
+        "/TestStack/TestBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/TestStack/TestBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucket560B80BC"
+          }
+        ],
+        "/TestStack/TestTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              }
+            }
           }
         ],
         "/TestStack/TestTable/Resource": [
@@ -46,13 +63,31 @@
             "data": "TestTable5769773A"
           }
         ],
+        "/TestStack/TestTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TestStack/TestUser": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/TestStack/TestUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestUser6A619381"
           }
         ],
-        "/TestStack/DestroyBucket/Resource": [
+        "/TestStack/DestroyBucket/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TestStack/DestroyBucket/Default/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DestroyBucket924C7F03"

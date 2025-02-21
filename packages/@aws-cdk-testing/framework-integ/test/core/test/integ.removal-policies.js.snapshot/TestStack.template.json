@@ -35,8 +35,8 @@
   },
   "DestroyBucket924C7F03": {
    "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {
