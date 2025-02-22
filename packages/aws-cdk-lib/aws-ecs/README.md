@@ -86,7 +86,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
-To encrypt the fargate ephemeral storage or managed storage:
+By default, storage is encrypted with AWS-managed key. You can specify customer-managed key using:
 ```ts
 declare const key: kms.Key;
 
