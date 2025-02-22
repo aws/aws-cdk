@@ -538,7 +538,7 @@ const domain = new Domain(this, 'Domain', {
 
 You can specify coordinator as a valid value for node type.
 
-> Visit [Node options in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/Dedicated-coordinator-nodes.html) for more details.
+> Visit [Dedicated coordinator nodes in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/Dedicated-coordinator-nodes.html) for more details.
 
 ```ts
 const domain = new Domain(this, 'Domain', {
