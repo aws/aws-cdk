@@ -189,21 +189,6 @@
       "TSV"
     ]
   },
-  "packages/@aws-cdk/aws-glue-alpha/lib/schema.ts": {
-    "Schema": [
-      "BOOLEAN",
-      "BINARY",
-      "BIG_INT",
-      "DOUBLE",
-      "FLOAT",
-      "INTEGER",
-      "SMALL_INT",
-      "TINY_INT",
-      "DATE",
-      "TIMESTAMP",
-      "STRING"
-    ]
-  },
   "packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
     "DayOfMonth": [
       "LAST_DAY"
@@ -287,9 +272,6 @@
     ],
     "LogType": [
       "AUDIT"
-    ],
-    "DatabaseCluster": [
-      "DEFAULT_NUM_INSTANCES"
     ]
   },
   "packages/@aws-cdk/aws-neptune-alpha/lib/instance.ts": {
@@ -465,13 +447,6 @@
       "T2_LARGE",
       "T2_MEDIUM",
       "T2_XLARGE"
-    ]
-  },
-  "packages/aws-cdk-lib/aws-apigateway/lib/cors.ts": {
-    "Cors": [
-      "ALL_METHODS",
-      "ALL_ORIGINS",
-      "DEFAULT_HEADERS"
     ]
   },
   "packages/aws-cdk-lib/aws-apigateway/lib/gateway-response.ts": {
@@ -1372,12 +1347,6 @@
       "EC2_TRANSIT_GATEWAY_MULTICAST_DOMAIN"
     ]
   },
-  "packages/aws-cdk-lib/aws-docdb/lib/cluster.ts": {
-    "DatabaseCluster": [
-      "DEFAULT_NUM_INSTANCES",
-      "DEFAULT_PORT"
-    ]
-  },
   "packages/aws-cdk-lib/aws-ec2/lib/machine-image/amazon-linux-2022.ts": {
     "AmazonLinux2022Kernel": [
       "CDK_LATEST",
@@ -1397,11 +1366,6 @@
       "CDK_LATEST",
       "DEFAULT",
       "KERNEL_5_10"
-    ]
-  },
-  "packages/aws-cdk-lib/aws-ec2/lib/nat.ts": {
-    "NatInstanceProviderV2": [
-      "DEFAULT_USER_DATA_COMMANDS"
     ]
   },
   "packages/aws-cdk-lib/aws-ec2/lib/port.ts": {
@@ -1836,12 +1800,6 @@
       "ALL_DEFAULT_FIELDS"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/vpc.ts": {
-    "Vpc": [
-      "DEFAULT_SUBNETS",
-      "DEFAULT_SUBNETS_NO_NAT"
-    ]
-  },
   "packages/aws-cdk-lib/aws-ecr-assets/lib/image-asset.ts": {
     "NetworkMode": [
       "DEFAULT",
@@ -1864,11 +1822,6 @@
       "LATEST"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
-    "ContainerDefinition": [
-      "CONTAINER_PORT_USE_RANGE"
-    ]
-  },
   "packages/aws-cdk-lib/aws-ecs/lib/runtime-platform.ts": {
     "CpuArchitecture": [
       "ARM64",
@@ -1883,11 +1836,6 @@
       "WINDOWS_SERVER_2022_CORE",
       "WINDOWS_SERVER_2022_FULL",
       "WINDOWS_SERVER_20H2_CORE"
-    ]
-  },
-  "packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts": {
-    "FileSystem": [
-      "DEFAULT_PORT"
     ]
   },
   "packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
@@ -2391,7 +2339,8 @@
       "VER_3_06_1",
       "VER_3_07_0",
       "VER_3_07_1",
-      "VER_3_08_0"
+      "VER_3_08_0",
+      "VER_3_08_1"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2852,6 +2801,7 @@
       "VER_16_4",
       "VER_16_5",
       "VER_16_6",
+      "VER_16_7",
       "VER_17",
       "VER_17_1",
       "VER_17_2"
@@ -3623,11 +3573,6 @@
     ],
     "JsonNull": [
       "INSTANCE"
-    ]
-  },
-  "packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.ts": {
-    "AwsCustomResourcePolicy": [
-      "ANY_RESOURCE"
     ]
   },
   "packages/aws-cdk-lib/pipelines/lib/helpers-internal/pipeline-graph.ts": {
