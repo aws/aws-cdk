@@ -48,9 +48,7 @@ class KafkaVersionTest extends Stack {
 
 const app = new App();
 new IntegTest(app, 'KafkaVersionIntegTest', {
-  enableLookups: true,
   testCases: [
     new KafkaVersionTest(app, 'KafkaVersionTestStack'),
   ],
 });
-app.synth();
