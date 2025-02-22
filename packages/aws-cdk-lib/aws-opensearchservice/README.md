@@ -541,6 +541,8 @@ You can specify coordinator as a valid value for node type.
 > Visit [Dedicated coordinator nodes in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/Dedicated-coordinator-nodes.html) for more details.
 
 ```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+
 const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_3,
   capacity: {
