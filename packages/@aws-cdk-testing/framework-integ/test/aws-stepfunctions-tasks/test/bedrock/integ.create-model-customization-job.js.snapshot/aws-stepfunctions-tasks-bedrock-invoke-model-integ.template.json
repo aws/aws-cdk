@@ -1296,32 +1296,12 @@
            ]
           },
           {
-           "Fn::GetAtt": [
-            "ValidationBucket984F58C6",
-            "Arn"
-           ]
-          },
-          {
            "Fn::Join": [
             "",
             [
              {
               "Fn::GetAtt": [
                "TrainingBucketEB7BB5C9",
-               "Arn"
-              ]
-             },
-             "/*"
-            ]
-           ]
-          },
-          {
-           "Fn::Join": [
-            "",
-            [
-             {
-              "Fn::GetAtt": [
-               "ValidationBucket984F58C6",
                "Arn"
               ]
              },
@@ -1568,7 +1548,7 @@
          "Arn"
         ]
        },
-       "\",\"CustomModelName\":\"MyCustomModel2\",\"CustomModelTags\":[{\"Key\":\"key1\",\"Value\":\"value1\"}],\"HyperParameters\":{\"batchSize\":\"10\"},\"JobName\":\"MyCustomizationJob2\",\"JobTags\":[{\"Key\":\"key2\",\"Value\":\"value2\"}],\"OutputDataConfig\":{\"S3Uri\":\"s3://",
+       "\",\"CustomModelName\":\"MyCustomModel2\",\"CustomModelTags\":[{\"Key\":\"key1\",\"Value\":\"value1\"}],\"HyperParameters\":{\"Evaluation percentage\":\"10\"},\"JobName\":\"MyCustomizationJob2\",\"JobTags\":[{\"Key\":\"key2\",\"Value\":\"value2\"}],\"OutputDataConfig\":{\"S3Uri\":\"s3://",
        {
         "Ref": "OutputBucket7114EB27"
        },
@@ -1583,15 +1563,7 @@
        {
         "Ref": "TrainingBucketEB7BB5C9"
        },
-       "/training-data\"},\"ValidationDataConfig\":{\"Validators\":[{\"S3Uri\":\"s3://",
-       {
-        "Ref": "ValidationBucket984F58C6"
-       },
-       "/validation-data1\"},{\"S3Uri\":\"s3://",
-       {
-        "Ref": "ValidationBucket984F58C6"
-       },
-       "/validation-data2\"}]}}},\"Done\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+       "/training-data\"}}},\"Done\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
      ]
     },
