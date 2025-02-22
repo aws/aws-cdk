@@ -28,7 +28,7 @@
      "PartitionKey": "\"1\""
     },
     "flattenResponse": "false",
-    "salt": "1734558475679"
+    "salt": "1740190592091"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -151,7 +151,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1734558475679"
+    "salt": "1740190592091"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
