@@ -73,14 +73,16 @@ new cloudfront.Distribution(this, 'myDist', {
 
 When creating a standard S3 origin using `origins.S3BucketOrigin.withOriginAccessControl()`, an [Origin Access Control resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-originaccesscontrol-originaccesscontrolconfig.html) is automatically created with the origin type set to `s3` and signing behavior set to `always`.
 
-You can grant read, list, write or delete access to the OAC using the `originAccessLevels` property:
+You can grant read, read versioned, list, write or delete access to the OAC using the `originAccessLevels` property:
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
-const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, {
-  originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
+const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(myBucket, { originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.READ_VERSIONED, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.DELETE],
 });
 ```
+
+The read versioned permission does contain the read permission, so it's required to set both `AccessLevel.READ` and
+`AccessLevel.READ_VERSIONED`.
 
 For details of list permission, see [Setting up OAC with LIST permission](#setting-up-oac-with-list-permission).
 
