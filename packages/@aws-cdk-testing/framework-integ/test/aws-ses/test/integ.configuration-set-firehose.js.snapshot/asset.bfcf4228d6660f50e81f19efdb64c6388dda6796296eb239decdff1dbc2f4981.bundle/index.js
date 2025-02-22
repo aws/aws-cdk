@@ -3303,17 +3303,13 @@ var require_dist_cjs19 = __commonJS({
       }
       return transformedHeaders;
     }, "getTransformedHeaders");
-    var timing = {
-      setTimeout: (cb, ms) => setTimeout(cb, ms),
-      clearTimeout: (timeoutId) => clearTimeout(timeoutId)
-    };
     var DEFER_EVENT_LISTENER_TIME = 1e3;
     var setConnectionTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       if (!timeoutInMs) {
         return -1;
       }
       const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        const timeoutId = timing.setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           request2.destroy();
           reject(
             Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
@@ -3324,10 +3320,10 @@ var require_dist_cjs19 = __commonJS({
         const doWithSocket = /* @__PURE__ */ __name((socket) => {
           if (socket == null ? void 0 : socket.connecting) {
             socket.on("connect", () => {
-              timing.clearTimeout(timeoutId);
+              clearTimeout(timeoutId);
             });
           } else {
-            timing.clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
           }
         }, "doWithSocket");
         if (request2.socket) {
@@ -3340,7 +3336,7 @@ var require_dist_cjs19 = __commonJS({
         registerTimeout(0);
         return 0;
       }
-      return timing.setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
+      return setTimeout(registerTimeout.bind(null, DEFER_EVENT_LISTENER_TIME), DEFER_EVENT_LISTENER_TIME);
     }, "setConnectionTimeout");
     var DEFER_EVENT_LISTENER_TIME2 = 3e3;
     var setSocketKeepAlive = /* @__PURE__ */ __name((request2, { keepAlive, keepAliveMsecs }, deferTimeMs = DEFER_EVENT_LISTENER_TIME2) => {
@@ -3360,27 +3356,21 @@ var require_dist_cjs19 = __commonJS({
         registerListener();
         return 0;
       }
-      return timing.setTimeout(registerListener, deferTimeMs);
+      return setTimeout(registerListener, deferTimeMs);
     }, "setSocketKeepAlive");
     var DEFER_EVENT_LISTENER_TIME3 = 3e3;
     var setSocketTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       const registerTimeout = /* @__PURE__ */ __name((offset) => {
-        const timeout = timeoutInMs - offset;
-        const onTimeout2 = /* @__PURE__ */ __name(() => {
+        request2.setTimeout(timeoutInMs - offset, () => {
           request2.destroy();
           reject(Object.assign(new Error(`Connection timed out after ${timeoutInMs} ms`), { name: "TimeoutError" }));
-        }, "onTimeout");
-        if (request2.socket) {
-          request2.socket.setTimeout(timeout, onTimeout2);
-        } else {
-          request2.setTimeout(timeout, onTimeout2);
-        }
+        });
       }, "registerTimeout");
       if (0 < timeoutInMs && timeoutInMs < 6e3) {
         registerTimeout(0);
         return 0;
       }
-      return timing.setTimeout(
+      return setTimeout(
         registerTimeout.bind(null, timeoutInMs === 0 ? 0 : DEFER_EVENT_LISTENER_TIME3),
         DEFER_EVENT_LISTENER_TIME3
       );
@@ -3391,29 +3381,26 @@ var require_dist_cjs19 = __commonJS({
       const headers = request2.headers ?? {};
       const expect = headers["Expect"] || headers["expect"];
       let timeoutId = -1;
-      let sendBody = true;
+      let hasError = false;
       if (expect === "100-continue") {
-        sendBody = await Promise.race([
+        await Promise.race([
           new Promise((resolve) => {
-            timeoutId = Number(timing.setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
+            timeoutId = Number(setTimeout(resolve, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
           }),
           new Promise((resolve) => {
             httpRequest.on("continue", () => {
-              timing.clearTimeout(timeoutId);
-              resolve(true);
-            });
-            httpRequest.on("response", () => {
-              timing.clearTimeout(timeoutId);
-              resolve(false);
+              clearTimeout(timeoutId);
+              resolve();
             });
             httpRequest.on("error", () => {
-              timing.clearTimeout(timeoutId);
-              resolve(false);
+              hasError = true;
+              clearTimeout(timeoutId);
+              resolve();
             });
           })
         ]);
       }
-      if (sendBody) {
+      if (!hasError) {
         writeBody(httpRequest, request2.body);
       }
     }
@@ -3535,12 +3522,12 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           const timeouts = [];
           const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
-            timeouts.forEach(timing.clearTimeout);
+            timeouts.forEach(clearTimeout);
             _resolve(arg);
           }, "resolve");
           const reject = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
-            timeouts.forEach(timing.clearTimeout);
+            timeouts.forEach(clearTimeout);
             _reject(arg);
           }, "reject");
           if (!this.config) {
@@ -3555,7 +3542,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           const isSSL = request2.protocol === "https:";
           const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
           timeouts.push(
-            timing.setTimeout(
+            setTimeout(
               () => {
                 this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(
                   agent,
@@ -3641,7 +3628,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             );
           }
           writeRequestBodyPromise = writeRequestBody(req, request2, this.config.requestTimeout).catch((e) => {
-            timeouts.forEach(timing.clearTimeout);
+            timeouts.forEach(clearTimeout);
             return _reject(e);
           });
         });
@@ -3774,7 +3761,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         }
       }
       setMaxConcurrentStreams(maxConcurrentStreams) {
-        if (maxConcurrentStreams && maxConcurrentStreams <= 0) {
+        if (this.config.maxConcurrency && this.config.maxConcurrency <= 0) {
           throw new RangeError("maxConcurrentStreams must be greater than zero.");
         }
         this.config.maxConcurrency = maxConcurrentStreams;
@@ -4044,10 +4031,6 @@ var require_dist_cjs20 = __commonJS({
     module2.exports = __toCommonJS2(src_exports);
     var import_protocol_http8 = require_dist_cjs2();
     var import_querystring_builder = require_dist_cjs18();
-    function createRequest(url2, requestOptions) {
-      return new Request(url2, requestOptions);
-    }
-    __name(createRequest, "createRequest");
     function requestTimeout(timeoutInMs = 0) {
       return new Promise((resolve, reject) => {
         if (timeoutInMs) {
@@ -4083,7 +4066,7 @@ var require_dist_cjs20 = __commonJS({
         }
         if (keepAliveSupport.supported === void 0) {
           keepAliveSupport.supported = Boolean(
-            typeof Request !== "undefined" && "keepalive" in createRequest("https://[::1]")
+            typeof Request !== "undefined" && "keepalive" in new Request("https://[::1]")
           );
         }
       }
@@ -4142,7 +4125,7 @@ var require_dist_cjs20 = __commonJS({
         }
         let removeSignalEventListener = /* @__PURE__ */ __name(() => {
         }, "removeSignalEventListener");
-        const fetchRequest = createRequest(url2, requestOptions);
+        const fetchRequest = new Request(url2, requestOptions);
         const raceOfPromises = [
           fetch(fetchRequest).then((response) => {
             const fetchHeaders = response.headers;
@@ -4205,23 +4188,12 @@ var require_dist_cjs20 = __commonJS({
     };
     __name(_FetchHttpHandler, "FetchHttpHandler");
     var FetchHttpHandler = _FetchHttpHandler;
-    var import_util_base64 = require_dist_cjs16();
     var streamCollector = /* @__PURE__ */ __name(async (stream) => {
-      var _a;
-      if (typeof Blob === "function" && stream instanceof Blob || ((_a = stream.constructor) == null ? void 0 : _a.name) === "Blob") {
-        if (Blob.prototype.arrayBuffer !== void 0) {
-          return new Uint8Array(await stream.arrayBuffer());
-        }
-        return collectBlob(stream);
+      if (typeof Blob === "function" && stream instanceof Blob) {
+        return new Uint8Array(await stream.arrayBuffer());
       }
       return collectStream(stream);
     }, "streamCollector");
-    async function collectBlob(blob) {
-      const base64 = await readToBase64(blob);
-      const arrayBuffer = (0, import_util_base64.fromBase64)(base64);
-      return new Uint8Array(arrayBuffer);
-    }
-    __name(collectBlob, "collectBlob");
     async function collectStream(stream) {
       const chunks = [];
       const reader = stream.getReader();
@@ -4244,24 +4216,6 @@ var require_dist_cjs20 = __commonJS({
       return collected;
     }
     __name(collectStream, "collectStream");
-    function readToBase64(blob) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (reader.readyState !== 2) {
-            return reject(new Error("Reader aborted too early"));
-          }
-          const result = reader.result ?? "";
-          const commaIndex = result.indexOf(",");
-          const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
-          resolve(result.substring(dataOffset));
-        };
-        reader.onabort = () => reject(new Error("Read aborted"));
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(blob);
-      });
-    }
-    __name(readToBase64, "readToBase64");
   }
 });
 
@@ -4334,17 +4288,12 @@ var require_stream_type_check = __commonJS({
   "../../../node_modules/@smithy/util-stream/dist-cjs/stream-type-check.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isBlob = exports2.isReadableStream = void 0;
+    exports2.isReadableStream = void 0;
     var isReadableStream2 = (stream) => {
       var _a;
       return typeof ReadableStream === "function" && (((_a = stream === null || stream === void 0 ? void 0 : stream.constructor) === null || _a === void 0 ? void 0 : _a.name) === ReadableStream.name || stream instanceof ReadableStream);
     };
     exports2.isReadableStream = isReadableStream2;
-    var isBlob2 = (blob) => {
-      var _a;
-      return typeof Blob === "function" && (((_a = blob === null || blob === void 0 ? void 0 : blob.constructor) === null || _a === void 0 ? void 0 : _a.name) === Blob.name || blob instanceof Blob);
-    };
-    exports2.isBlob = isBlob2;
   }
 });
 
@@ -4425,6 +4374,7 @@ var require_sdk_stream_mixin = __commonJS({
     var node_http_handler_1 = require_dist_cjs19();
     var util_buffer_from_1 = require_dist_cjs14();
     var stream_1 = require("stream");
+    var util_1 = require("util");
     var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin2 = (stream) => {
@@ -4452,7 +4402,7 @@ var require_sdk_stream_mixin = __commonJS({
           if (encoding === void 0 || Buffer.isEncoding(encoding)) {
             return (0, util_buffer_from_1.fromArrayBuffer)(buf.buffer, buf.byteOffset, buf.byteLength).toString(encoding);
           } else {
-            const decoder2 = new TextDecoder(encoding);
+            const decoder2 = new util_1.TextDecoder(encoding);
             return decoder2.decode(buf);
           }
         },
@@ -4502,7 +4452,7 @@ var require_splitStream = __commonJS({
     var splitStream_browser_1 = require_splitStream_browser();
     var stream_type_check_1 = require_stream_type_check();
     async function splitStream2(stream) {
-      if ((0, stream_type_check_1.isReadableStream)(stream) || (0, stream_type_check_1.isBlob)(stream)) {
+      if ((0, stream_type_check_1.isReadableStream)(stream)) {
         return (0, splitStream_browser_1.splitStream)(stream);
       }
       const stream1 = new stream_1.PassThrough();
@@ -4851,26 +4801,6 @@ var init_extended_encode_uri_component = __esm({
   }
 });
 
-// ../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js
-var resolvedPath2;
-var init_resolve_path = __esm({
-  "../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js"() {
-    init_extended_encode_uri_component();
-    resolvedPath2 = (resolvedPath3, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
-      if (input != null && input[memberName] !== void 0) {
-        const labelValue = labelValueProvider();
-        if (labelValue.length <= 0) {
-          throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
-        }
-        resolvedPath3 = resolvedPath3.replace(uriLabel, isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent2(segment)).join("/") : extendedEncodeURIComponent2(labelValue));
-      } else {
-        throw new Error("No value provided for input HTTP label: " + memberName + ".");
-      }
-      return resolvedPath3;
-    };
-  }
-});
-
 // ../../../node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js
 function requestBuilder(input, context) {
   return new RequestBuilder(input, context);
@@ -4878,8 +4808,8 @@ function requestBuilder(input, context) {
 var import_protocol_http2, RequestBuilder;
 var init_requestBuilder = __esm({
   "../../../node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js"() {
+    init_protocols();
     import_protocol_http2 = __toESM(require_dist_cjs2());
-    init_resolve_path();
     RequestBuilder = class {
       constructor(input, context) {
         this.input = input;
@@ -4941,6 +4871,26 @@ var init_requestBuilder = __esm({
         this.method = method;
         return this;
       }
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js
+var resolvedPath2;
+var init_resolve_path = __esm({
+  "../../../node_modules/@smithy/core/dist-es/submodules/protocols/resolve-path.js"() {
+    init_extended_encode_uri_component();
+    resolvedPath2 = (resolvedPath3, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
+      if (input != null && input[memberName] !== void 0) {
+        const labelValue = labelValueProvider();
+        if (labelValue.length <= 0) {
+          throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
+        }
+        resolvedPath3 = resolvedPath3.replace(uriLabel, isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent2(segment)).join("/") : extendedEncodeURIComponent2(labelValue));
+      } else {
+        throw new Error("No value provided for input HTTP label: " + memberName + ".");
+      }
+      return resolvedPath3;
     };
   }
 });
@@ -6040,9 +5990,6 @@ var require_dist_cjs29 = __commonJS({
           case "builtInParams":
             endpointParams[name] = await createConfigValueProvider(instruction.name, name, clientConfig)();
             break;
-          case "operationContextParams":
-            endpointParams[name] = instruction.get(commandInput);
-            break;
           default:
             throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
         }
@@ -6570,9 +6517,9 @@ var require_dist_cjs30 = __commonJS({
       var _a, _b;
       return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
     }, "isThrottlingError");
-    var isTransientError = /* @__PURE__ */ __name((error, depth = 0) => {
+    var isTransientError = /* @__PURE__ */ __name((error) => {
       var _a;
-      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0) || error.cause !== void 0 && depth <= 10 && isTransientError(error.cause, depth + 1);
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
     }, "isTransientError");
     var isServerError = /* @__PURE__ */ __name((error) => {
       var _a;
@@ -6637,7 +6584,7 @@ var require_dist_cjs31 = __commonJS({
     var DEFAULT_MAX_ATTEMPTS = 3;
     var DEFAULT_RETRY_MODE = "standard";
     var import_service_error_classification = require_dist_cjs30();
-    var _DefaultRateLimiter = class _DefaultRateLimiter2 {
+    var _DefaultRateLimiter = class _DefaultRateLimiter {
       constructor(options) {
         this.currentCapacity = 0;
         this.enabled = false;
@@ -6670,7 +6617,7 @@ var require_dist_cjs31 = __commonJS({
         this.refillTokenBucket();
         if (amount > this.currentCapacity) {
           const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
-          await new Promise((resolve) => _DefaultRateLimiter2.setTimeoutFn(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
         this.currentCapacity = this.currentCapacity - amount;
       }
@@ -6737,7 +6684,6 @@ var require_dist_cjs31 = __commonJS({
       }
     };
     __name(_DefaultRateLimiter, "DefaultRateLimiter");
-    _DefaultRateLimiter.setTimeoutFn = setTimeout;
     var DefaultRateLimiter = _DefaultRateLimiter;
     var DEFAULT_RETRY_DELAY_BASE = 100;
     var MAXIMUM_RETRY_DELAY = 20 * 1e3;
@@ -7249,8 +7195,9 @@ var require_dist_cjs33 = __commonJS({
       NoOpLogger: () => NoOpLogger,
       SENSITIVE_STRING: () => SENSITIVE_STRING,
       ServiceException: () => ServiceException,
+      StringWrapper: () => StringWrapper,
       _json: () => _json,
-      collectBody: () => import_protocols2.collectBody,
+      collectBody: () => import_protocols3.collectBody,
       convertMap: () => convertMap,
       createAggregatedClient: () => createAggregatedClient,
       dateToUtcString: () => dateToUtcString,
@@ -7268,7 +7215,7 @@ var require_dist_cjs33 = __commonJS({
       expectShort: () => expectShort,
       expectString: () => expectString,
       expectUnion: () => expectUnion2,
-      extendedEncodeURIComponent: () => import_protocols2.extendedEncodeURIComponent,
+      extendedEncodeURIComponent: () => import_protocols3.extendedEncodeURIComponent,
       getArrayIfSingleItem: () => getArrayIfSingleItem,
       getDefaultClientConfiguration: () => getDefaultClientConfiguration,
       getDefaultExtensionConfiguration: () => getDefaultExtensionConfiguration,
@@ -7288,7 +7235,7 @@ var require_dist_cjs33 = __commonJS({
       parseRfc7231DateTime: () => parseRfc7231DateTime,
       quoteHeader: () => quoteHeader,
       resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig,
-      resolvedPath: () => import_protocols2.resolvedPath,
+      resolvedPath: () => import_protocols3.resolvedPath,
       serializeDateTime: () => serializeDateTime,
       serializeFloat: () => serializeFloat,
       splitEvery: () => splitEvery,
@@ -7354,7 +7301,7 @@ var require_dist_cjs33 = __commonJS({
     };
     __name(_Client, "Client");
     var Client = _Client;
-    var import_protocols2 = (init_protocols(), __toCommonJS(protocols_exports));
+    var import_protocols3 = (init_protocols(), __toCommonJS(protocols_exports));
     var import_types5 = require_dist_cjs();
     var _Command = class _Command {
       constructor() {
@@ -8011,15 +7958,6 @@ var require_dist_cjs33 = __commonJS({
         this.$fault = options.$fault;
         this.$metadata = options.$metadata;
       }
-      /**
-       * Checks if a value is an instance of ServiceException (duck typed)
-       */
-      static isInstance(value) {
-        if (!value)
-          return false;
-        const candidate = value;
-        return Boolean(candidate.$fault) && Boolean(candidate.$metadata) && (candidate.$fault === "client" || candidate.$fault === "server");
-      }
     };
     __name(_ServiceException, "ServiceException");
     var ServiceException = _ServiceException;
@@ -8160,29 +8098,40 @@ var require_dist_cjs33 = __commonJS({
     var isSerializableHeaderValue = /* @__PURE__ */ __name((value) => {
       return value != null;
     }, "isSerializableHeaderValue");
-    var LazyJsonString = /* @__PURE__ */ __name(function LazyJsonString2(val2) {
-      const str = Object.assign(new String(val2), {
-        deserializeJSON() {
-          return JSON.parse(String(val2));
-        },
-        toString() {
-          return String(val2);
-        },
-        toJSON() {
-          return String(val2);
-        }
-      });
-      return str;
-    }, "LazyJsonString");
-    LazyJsonString.from = (object) => {
-      if (object && typeof object === "object" && (object instanceof LazyJsonString || "deserializeJSON" in object)) {
-        return object;
-      } else if (typeof object === "string" || Object.getPrototypeOf(object) === String.prototype) {
-        return LazyJsonString(String(object));
+    var StringWrapper = /* @__PURE__ */ __name(function() {
+      const Class = Object.getPrototypeOf(this).constructor;
+      const Constructor = Function.bind.apply(String, [null, ...arguments]);
+      const instance = new Constructor();
+      Object.setPrototypeOf(instance, Class.prototype);
+      return instance;
+    }, "StringWrapper");
+    StringWrapper.prototype = Object.create(String.prototype, {
+      constructor: {
+        value: StringWrapper,
+        enumerable: false,
+        writable: true,
+        configurable: true
       }
-      return LazyJsonString(JSON.stringify(object));
+    });
+    Object.setPrototypeOf(StringWrapper, String);
+    var _LazyJsonString = class _LazyJsonString2 extends StringWrapper {
+      deserializeJSON() {
+        return JSON.parse(super.toString());
+      }
+      toJSON() {
+        return super.toString();
+      }
+      static fromObject(object) {
+        if (object instanceof _LazyJsonString2) {
+          return object;
+        } else if (object instanceof String || typeof object === "string") {
+          return new _LazyJsonString2(object);
+        }
+        return new _LazyJsonString2(JSON.stringify(object));
+      }
     };
-    LazyJsonString.fromObject = LazyJsonString.from;
+    __name(_LazyJsonString, "LazyJsonString");
+    var LazyJsonString = _LazyJsonString;
     var _NoOpLogger = class _NoOpLogger {
       trace() {
       }
@@ -11949,7 +11898,7 @@ function __importStar(mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) {
-    for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+    for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
   }
   __setModuleDefault(result, mod);
   return result;
@@ -12033,7 +11982,7 @@ function __rewriteRelativeImportExtension(path, preserveJsx) {
   }
   return path;
 }
-var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
+var extendStatics, __assign, __createBinding, __setModuleDefault, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
   "../../../node_modules/tslib/tslib.es6.mjs"() {
     extendStatics = function(d, b) {
@@ -12071,14 +12020,6 @@ var init_tslib_es6 = __esm({
       Object.defineProperty(o, "default", { enumerable: true, value: v });
     } : function(o, v) {
       o["default"] = v;
-    };
-    ownKeys = function(o) {
-      ownKeys = Object.getOwnPropertyNames || function(o2) {
-        var ar = [];
-        for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
-        return ar;
-      };
-      return ownKeys(o);
     };
     _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
       var e = new Error(message);
@@ -27391,7 +27332,7 @@ var require_lib3 = __commonJS({
         body = null;
       } else if (isURLSearchParams(body)) {
         body = Buffer.from(body.toString());
-      } else if (isBlob2(body)) ;
+      } else if (isBlob(body)) ;
       else if (Buffer.isBuffer(body)) ;
       else if (Object.prototype.toString.call(body) === "[object ArrayBuffer]") {
         body = Buffer.from(body);
@@ -27526,7 +27467,7 @@ var require_lib3 = __commonJS({
       if (body === null) {
         return Body.Promise.resolve(Buffer.alloc(0));
       }
-      if (isBlob2(body)) {
+      if (isBlob(body)) {
         body = body.stream();
       }
       if (Buffer.isBuffer(body)) {
@@ -27622,7 +27563,7 @@ var require_lib3 = __commonJS({
       }
       return obj.constructor.name === "URLSearchParams" || Object.prototype.toString.call(obj) === "[object URLSearchParams]" || typeof obj.sort === "function";
     }
-    function isBlob2(obj) {
+    function isBlob(obj) {
       return typeof obj === "object" && typeof obj.arrayBuffer === "function" && typeof obj.type === "string" && typeof obj.stream === "function" && typeof obj.constructor === "function" && typeof obj.constructor.name === "string" && /^(Blob|File)$/.test(obj.constructor.name) && /^(Blob|File)$/.test(obj[Symbol.toStringTag]);
     }
     function clone(instance) {
@@ -27648,7 +27589,7 @@ var require_lib3 = __commonJS({
         return "text/plain;charset=UTF-8";
       } else if (isURLSearchParams(body)) {
         return "application/x-www-form-urlencoded;charset=UTF-8";
-      } else if (isBlob2(body)) {
+      } else if (isBlob(body)) {
         return body.type || null;
       } else if (Buffer.isBuffer(body)) {
         return null;
@@ -27668,7 +27609,7 @@ var require_lib3 = __commonJS({
       const body = instance.body;
       if (body === null) {
         return 0;
-      } else if (isBlob2(body)) {
+      } else if (isBlob(body)) {
         return body.size;
       } else if (Buffer.isBuffer(body)) {
         return body.length;
@@ -27686,7 +27627,7 @@ var require_lib3 = __commonJS({
       const body = instance.body;
       if (body === null) {
         dest.end();
-      } else if (isBlob2(body)) {
+      } else if (isBlob(body)) {
         body.stream().pipe(dest);
       } else if (Buffer.isBuffer(body)) {
         dest.write(body);
@@ -28967,7 +28908,7 @@ var require_sdk_v3_metadata = __commonJS({
         iamPrefix: "logs"
       },
       cloudwatch: {
-        iamPrefix: "cloudwatch"
+        iamPrefix: "monitoring"
       },
       codeartifact: {
         iamPrefix: "codeartifact"
@@ -30116,13 +30057,13 @@ var require_lib4 = __commonJS({
 });
 
 // lib/assertions/providers/lambda-handler/index.ts
-var index_exports = {};
-__export(index_exports, {
+var lambda_handler_exports = {};
+__export(lambda_handler_exports, {
   handler: () => handler,
   isComplete: () => isComplete,
   onTimeout: () => onTimeout
 });
-module.exports = __toCommonJS(index_exports);
+module.exports = __toCommonJS(lambda_handler_exports);
 
 // lib/assertions/providers/lambda-handler/assertion.ts
 var import_helpers_internal = __toESM(require_helpers_internal());

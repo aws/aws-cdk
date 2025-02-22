@@ -17,7 +17,7 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/test/lambda-data-processor.js
+// packages/@aws-cdk-testing/framework-integ/test/aws-kinesisfirehose/test/lambda-data-processor.js
 var lambda_data_processor_exports = {};
 __export(lambda_data_processor_exports, {
   handler: () => handler
