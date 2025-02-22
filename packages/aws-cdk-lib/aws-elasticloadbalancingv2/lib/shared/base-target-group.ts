@@ -87,6 +87,56 @@ export interface BaseTargetGroupProps {
    * @default undefined - ELB defaults to IPv4
    */
   readonly ipAddressType?: TargetGroupIpAddressType;
+
+  /**
+   * Configuring target group health.
+   *
+   * @default undefined - use default configuration
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+   */
+  readonly targetGroupHealth?: TargetGroupHealthAttribute;
+}
+
+/**
+ * Properties for configuring a target group health
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+ */
+export interface TargetGroupHealthAttribute {
+  /**
+   * The minimum number of targets that must be healthy.
+   * If the number of healthy targets is below this value, mark the zone as unhealthy in DNS, so that traffic is routed only to healthy zones.
+   * The possible values are off or an integer from 1 to the maximum number of targets.
+   *
+   * @default - 0
+   */
+  readonly dnsFailoverMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy.
+   * If the percentage of healthy targets is below this value, mark the zone as unhealthy in DNS, so that traffic is routed only to healthy zones.
+   * The possible values are off or an integer from 1 to 100.
+   *
+   * @default - 0
+   */
+  readonly dnsFailoverMinimumHealthyTargetPercentage?: number;
+
+  /**
+   * The minimum number of targets that must be healthy.
+   * If the number of healthy targets is below this value, send traffic to all targets, including unhealthy targets.
+   * The possible values are 1 to the maximum number of targets.
+   *
+   * @default - 1
+   */
+  readonly unhealthyStateRoutingMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy.
+   * If the percentage of healthy targets is below this value, send traffic to all targets, including unhealthy targets.
+   * The possible values are off or an integer from 1 to 100.
+   *
+   * @default - 0
+   */
+  readonly unhealthyStateRoutingMinimumHealthyTargetPercentage?: number;
 }
 
 /**
@@ -274,6 +324,38 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
+    if (baseProps.targetGroupHealth) {
+      this.validateTargetGroupHealth(baseProps.targetGroupHealth);
+
+      if (baseProps.targetGroupHealth.dnsFailoverMinimumHealthyTargetCount) {
+        this.setAttribute(
+          'target_group_health.dns_failover.minimum_healthy_targets.count',
+          baseProps.targetGroupHealth.dnsFailoverMinimumHealthyTargetCount.toString(),
+        );
+      }
+
+      if (baseProps.targetGroupHealth.dnsFailoverMinimumHealthyTargetPercentage) {
+        this.setAttribute(
+          'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+          baseProps.targetGroupHealth.dnsFailoverMinimumHealthyTargetPercentage.toString(),
+        );
+      }
+
+      if (baseProps.targetGroupHealth.unhealthyStateRoutingMinimumHealthyTargetCount) {
+        this.setAttribute(
+          'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count',
+          baseProps.targetGroupHealth.unhealthyStateRoutingMinimumHealthyTargetCount.toString(),
+        );
+      }
+
+      if (baseProps.targetGroupHealth.unhealthyStateRoutingMinimumHealthyTargetPercentage) {
+        this.setAttribute(
+          'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+          baseProps.targetGroupHealth.unhealthyStateRoutingMinimumHealthyTargetPercentage.toString(),
+        );
+      }
+    }
+
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -403,6 +485,58 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       }
     }
     return ret;
+  }
+
+  private validateTargetGroupHealth(props: TargetGroupHealthAttribute) {
+    if (props.dnsFailoverMinimumHealthyTargetCount !== undefined &&
+      (
+        !Number.isInteger(props.dnsFailoverMinimumHealthyTargetCount) ||
+        props.dnsFailoverMinimumHealthyTargetCount < 1
+      )
+    ) {
+      throw new ValidationError(
+        `DNS failover minimum healthy target count must be an integer greater than 0. Received: ${props.dnsFailoverMinimumHealthyTargetCount}`,
+        this,
+      );
+    }
+
+    if (props.dnsFailoverMinimumHealthyTargetPercentage !== undefined &&
+      (
+        !Number.isInteger(props.dnsFailoverMinimumHealthyTargetPercentage) ||
+        props.dnsFailoverMinimumHealthyTargetPercentage < 1 ||
+        props.dnsFailoverMinimumHealthyTargetPercentage > 100
+      )
+    ) {
+      throw new ValidationError(
+        `DNS failover minimum healthy target percentage must be an integer from 1 to 100. Received: ${props.dnsFailoverMinimumHealthyTargetPercentage}`,
+        this,
+      );
+    }
+
+    if (props.unhealthyStateRoutingMinimumHealthyTargetCount !== undefined &&
+      (
+        !Number.isInteger(props.unhealthyStateRoutingMinimumHealthyTargetCount) ||
+        props.unhealthyStateRoutingMinimumHealthyTargetCount < 1
+      )
+    ) {
+      throw new ValidationError(
+        `Unhealthy state routing minimum healthy target count must be an integer greater than 0. Received: ${props.unhealthyStateRoutingMinimumHealthyTargetCount}`,
+        this,
+      );
+    }
+
+    if (props.unhealthyStateRoutingMinimumHealthyTargetPercentage !== undefined &&
+      (
+        !Number.isInteger(props.unhealthyStateRoutingMinimumHealthyTargetPercentage) ||
+        props.unhealthyStateRoutingMinimumHealthyTargetPercentage < 1 ||
+        props.unhealthyStateRoutingMinimumHealthyTargetPercentage > 100
+      )
+    ) {
+      throw new ValidationError(
+        `Unhealthy state routing minimum healthy target percentage must be an integer from 1 to 100. Received ${props.unhealthyStateRoutingMinimumHealthyTargetPercentage}`,
+        this,
+      );
+    }
   }
 }
 
