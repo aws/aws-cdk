@@ -67,6 +67,19 @@ export interface CustomResourceProps {
    *
    * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
    *
+   * A token can be specified for this property, but it must be specified with `Duration.seconds()`.
+   *
+   * @example
+   * const stack = new Stack();
+   * const durToken = new CfnParameter(stack, 'MyParameter', {
+   *   type: 'Number',
+   *   default: 60,
+   * });
+   * new CustomResource(stack, 'MyCustomResource', {
+   *   serviceToken: 'MyServiceToken',
+   *   serviceTimeout: Duration.seconds(durToken.valueAsNumber),
+   * });
+   *
    * @default Duration.seconds(3600)
    */
   readonly serviceTimeout?: Duration;
@@ -154,8 +167,7 @@ export class CustomResource extends Resource {
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
-    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)
-    ) {
+    if (props.serviceTimeout !== undefined && !props.serviceTimeout.isUnresolved()) {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
