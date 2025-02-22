@@ -544,7 +544,7 @@ const domain = new Domain(this, 'Domain', {
   capacity: {
     nodeOptions: [
       {
-        nodeType: 'coordinator',
+        nodeType: NodeType.COORDINATOR,
         nodeConfig: {
           enabled: true,
           count: 2,
