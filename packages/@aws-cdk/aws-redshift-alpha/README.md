@@ -716,6 +716,7 @@ limits on the number of nodes you can add to a cluster. See the [AWS Redshift Do
 
 When Amazon Redshift releases a new cluster version, your cluster is updated during its maintenance window.
 You can control whether your cluster is updated to the most recent approved release or to the previous release.
+See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks) for more details.
 
 To control which cluster version is applied during a maintenance window, set the `maintenanceTrackName` property for the cluster.
 
