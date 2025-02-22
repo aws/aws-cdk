@@ -21,7 +21,7 @@ class TestStack extends Stack {
         dataNodes: 2,
         nodeOptions: [
           {
-            nodeType: 'coordinator',
+            nodeType: opensearch.NodeType.COORDINATOR,
             nodeConfig: {
               enabled: true,
               count: 2,
