@@ -170,6 +170,19 @@ export class KafkaVersion {
   public static readonly V3_7_X_KRAFT = KafkaVersion.of('3.7.x.kraft', { tieredStorage: true });
 
   /**
+   * Kafka version 3.8.x with ZooKeeper metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#msk-get-connection-string
+   */
+    public static readonly V3_8_X = KafkaVersion.of('3.8.x', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.8.x with KRaft (Apache Kafka Raft) metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
+   */
+  public static readonly V3_8_X_KRAFT = KafkaVersion.of('3.8.x.kraft', { tieredStorage: true });
+  /**
    * Custom cluster version
    * @param version custom version number
    */
