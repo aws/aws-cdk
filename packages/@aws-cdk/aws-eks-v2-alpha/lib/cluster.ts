@@ -1223,7 +1223,7 @@ export class Cluster extends ClusterBase {
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       computeConfig: {
-        enabled: !autoModeEnabled ? false : true,
+        enabled: autoModeEnabled,
         // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
         // the request must not include values for the nodeRoleArn or nodePools fields.
         nodePools: !autoModeEnabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
