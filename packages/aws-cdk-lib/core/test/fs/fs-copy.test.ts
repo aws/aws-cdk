@@ -478,6 +478,76 @@ describe('fs copy', () => {
       });
     });
 
+    describe('include with symlinks', () => {
+      test('include a symlink as a symlink path if SymlinkFollowMode NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.NEVER,
+          include: [
+            'external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-link.txt => ../test1/subdir2/subdir3/file3.txt',
+        ]);
+      });
+
+      test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.NEVER,
+          include: [
+            'file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([]);
+      });
+
+      test('include a symlink that matches but whose target file path does not match if SymlinkFollowMode other than NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.ALWAYS,
+          include: [
+            'external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-link.txt',
+        ]);
+      });
+
+      test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode other than NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.ALWAYS,
+          include: [
+            'file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([]);
+      });
+    });
+
     describe('negate exclude with symlinks', () => {
       test('include a symlink as a symlink path with negate exclude pattern if SymlinkFollowMode NEVER', () => {
         // GIVEN
@@ -544,76 +614,6 @@ describe('fs copy', () => {
           exclude: [
             '*',
             '!file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
-          ],
-        });
-
-        // THEN
-        expect(tree(outdir)).toEqual([]);
-      });
-    });
-
-    describe('include with symlinks', () => {
-      test('include a symlink as a symlink path if SymlinkFollowMode NEVER', () => {
-        // GIVEN
-        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-
-        // WHEN
-        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-          follow: SymlinkFollowMode.NEVER,
-          include: [
-            'external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
-          ],
-        });
-
-        // THEN
-        expect(tree(outdir)).toEqual([
-          'external-link.txt => ../test1/subdir2/subdir3/file3.txt',
-        ]);
-      });
-
-      test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode NEVER', () => {
-        // GIVEN
-        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-
-        // WHEN
-        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-          follow: SymlinkFollowMode.NEVER,
-          include: [
-            'file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
-          ],
-        });
-
-        // THEN
-        expect(tree(outdir)).toEqual([]);
-      });
-
-      test('include a symlink that matches but whose target file path does not match if SymlinkFollowMode other than NEVER', () => {
-        // GIVEN
-        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-
-        // WHEN
-        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-          follow: SymlinkFollowMode.ALWAYS,
-          include: [
-            'external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
-          ],
-        });
-
-        // THEN
-        expect(tree(outdir)).toEqual([
-          'external-link.txt',
-        ]);
-      });
-
-      test('do not include a symlink that does not match but whose target file path matches if SymlinkFollowMode other than NEVER', () => {
-        // GIVEN
-        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
-
-        // WHEN
-        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-          follow: SymlinkFollowMode.ALWAYS,
-          include: [
-            'file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
           ],
         });
 
