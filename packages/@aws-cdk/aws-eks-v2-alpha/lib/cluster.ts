@@ -1125,16 +1125,12 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    const autoModeEnabled = !(props.defaultCapacityType !== undefined && props.defaultCapacityType !== DefaultCapacityType.AUTOMODE);
+    // autoMode enabled when defaultCapacityType is undefined or set to AUTOMODE
+    const autoModeEnabled = props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
 
     // Throw when using nodePools or nodeRole without using AUTOMODE
     if (!autoModeEnabled && (props.compute?.nodePools || props.compute?.nodeRole)) {
       throw new Error('Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE');
-    }
-
-    // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
-    if (autoModeEnabled && (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined)) {
-      throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
     }
 
     // Node pool values are case-sensitive and must be general-purpose and/or system
@@ -1147,6 +1143,11 @@ export class Cluster extends ClusterBase {
     }
 
     if (autoModeEnabled) {
+      // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
+      if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
+        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+      }
+
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
