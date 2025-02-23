@@ -370,6 +370,114 @@ describe('fs copy', () => {
       });
     });
 
+    describe('negate include with symlinks', () => {
+      test('exclude a symlink as a symlink path with negate include pattern if SymlinkFollowMode NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.NEVER,
+          include: [
+            '*',
+            '!external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-dir-link => ../test1/subdir',
+          'indirect-external-link.txt => external-link.txt',
+          'local-dir-link => normal-dir',
+          'local-link.txt => normal-file.txt',
+          'normal-dir (D)',
+          '    file-in-subdir.txt',
+          'normal-file.txt',
+        ]);
+      });
+
+      test('do not exclude a symlink that does not match but whose target file path matches with negate include pattern if SymlinkFollowMode NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.NEVER,
+          include: [
+            '*',
+            '!file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-dir-link => ../test1/subdir',
+          'external-link.txt => ../test1/subdir2/subdir3/file3.txt',
+          'indirect-external-link.txt => external-link.txt',
+          'local-dir-link => normal-dir',
+          'local-link.txt => normal-file.txt',
+          'normal-dir (D)',
+          '    file-in-subdir.txt',
+          'normal-file.txt',
+        ]);
+      });
+
+      test('exclude a symlink that matches but whose target file path does not match with negate include pattern if SymlinkFollowMode other than NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.ALWAYS,
+          include: [
+            '*',
+            '!external-link.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-dir-link (D)',
+          '    file2.txt',
+          'indirect-external-link.txt',
+          'local-dir-link (D)',
+          '    file-in-subdir.txt',
+          'local-link.txt',
+          'normal-dir (D)',
+          '    file-in-subdir.txt',
+          'normal-file.txt',
+        ]);
+      });
+
+      test('do not exclude a symlink that does not match but whose target file path matches with negate include pattern if SymlinkFollowMode other than NEVER', () => {
+        // GIVEN
+        const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+        // WHEN
+        FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+          follow: SymlinkFollowMode.ALWAYS,
+          include: [
+            '*',
+            '!file3.txt', // external-link.txt => ../test1/subdir2/subdir3/file3.txt
+          ],
+        });
+
+        // THEN
+        expect(tree(outdir)).toEqual([
+          'external-dir-link (D)',
+          '    file2.txt',
+          'external-link.txt',
+          'indirect-external-link.txt',
+          'local-dir-link (D)',
+          '    file-in-subdir.txt',
+          'local-link.txt',
+          'normal-dir (D)',
+          '    file-in-subdir.txt',
+          'normal-file.txt',
+        ]);
+      });
+    });
+
     describe('negate exclude with symlinks', () => {
       test('include a symlink as a symlink path with negate exclude pattern if SymlinkFollowMode NEVER', () => {
         // GIVEN
