@@ -682,7 +682,7 @@ export class AuroraMysqlEngineVersion {
   ) {
     this.auroraMysqlFullVersion = auroraMysqlFullVersion;
     this.auroraMysqlMajorVersion = auroraMysqlMajorVersion;
-    this._combineImportAndExportRoles = combineImportAndExportRoles;
+    this._combineImportAndExportRoles = combineImportAndExportRoles ?? auroraMysqlMajorVersion !== '5.7';
   }
 }
 

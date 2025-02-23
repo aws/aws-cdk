@@ -120,6 +120,11 @@ describe('cluster engine', () => {
     expect(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_16_3 }).supportedLogTypes).toEqual(['postgresql']);
   });
 
+  test('auroraMysqlEngineVersion of', () => {
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')).toEqual(AuroraMysqlEngineVersion.VER_2_12_3);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')).toEqual(AuroraMysqlEngineVersion.VER_3_07_1);
+  });
+
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL 14 (and other) and given version', () => {
     // GIVEN
     const engine_VER_14_3 = DatabaseClusterEngine.auroraPostgres({
