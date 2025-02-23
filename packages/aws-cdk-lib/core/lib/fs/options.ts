@@ -66,7 +66,7 @@ interface FileOptions {
    * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
    *
    * If matching the symlink but not its target, it is excluded (i.e. the `exclude` patterns match
-   * the symlink path itself, regardless of its target). This is the same behavior when `follow`
+   * the symlink path itself, regardless of its target). This is the same behavior even if `follow`
    * is not `SymlinkFollowMode.NEVER`.
    *
    * @default - nothing is excluded
@@ -87,8 +87,8 @@ interface FileOptions {
    * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
    *
    * If matching the symlink but not its target, it is included (i.e. the `include` patterns match
-   * the symlink path itself, regardless of its target). This is the same behavior when `follow` is
-   * not `SymlinkFollowMode.NEVER`.
+   * the symlink path itself, regardless of its target). This is the same behavior even if `follow`
+   * is not `SymlinkFollowMode.NEVER`.
    *
    * @default - everything is included
    */
