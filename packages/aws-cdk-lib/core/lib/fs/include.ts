@@ -5,8 +5,11 @@ import * as path from 'path';
 const minimatch = require('minimatch');
 
 export function matchIncludePatterns(patterns: string[], absoluteRootPath: string, absoluteFilePath: string): boolean {
-  if (!path.isAbsolute(absoluteRootPath) || !path.isAbsolute(absoluteFilePath)) {
-    throw new Error('Paths expect absolute paths');
+  if (!path.isAbsolute(absoluteRootPath)) {
+    throw new Error(`absoluteRootPath expects absolute path, got ${absoluteRootPath}`);
+  }
+  if (!path.isAbsolute(absoluteFilePath)) {
+    throw new Error(`absoluteFilePath expects absolute path, got ${absoluteFilePath}`);
   }
 
   const relativePath = path.relative(absoluteRootPath, absoluteFilePath);

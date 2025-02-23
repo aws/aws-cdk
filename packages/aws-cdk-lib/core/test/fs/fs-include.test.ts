@@ -103,7 +103,7 @@ describe('Match include patterns', () => {
       '/tmp/some/important/file.txt',
     ];
 
-    expect(() => include(patterns, rootPath, permits)).toThrow(/Paths expect absolute paths/);
+    expect(() => include(patterns, rootPath, permits)).toThrow(/absoluteRootPath expects absolute path, got path/);
   });
 
   test('throws error if file path is not absolute', () => {
@@ -114,6 +114,6 @@ describe('Match include patterns', () => {
       'file.txt',
     ];
 
-    expect(() => include(patterns, rootPath, permits)).toThrow(/Paths expect absolute paths/);
+    expect(() => include(patterns, rootPath, permits)).toThrow(/absoluteFilePath expects absolute path, got file.txt/);
   });
 });
