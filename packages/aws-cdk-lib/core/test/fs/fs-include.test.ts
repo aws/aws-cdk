@@ -87,6 +87,7 @@ describe('Match include patterns', () => {
       '/tmp/some/dir/file.md',
     ];
     const permits = [
+      '/main.js',
       '/tmp/other/file.md',
     ];
 
