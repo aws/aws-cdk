@@ -10,10 +10,20 @@ export function matchIncludePatterns(patterns: string[], absoluteRootPath: strin
   }
 
   const relativePath = path.relative(absoluteRootPath, absoluteFilePath);
+  let includeOutput = false;
+
   for (const pattern of patterns) {
-    if (minimatch(relativePath, pattern, { matchBase: true })) {
-      return true;
+    const negate = pattern.startsWith('!');
+    const match = minimatch(relativePath, pattern, { matchBase: true, flipNegate: true });
+
+    if (!negate && match) {
+      includeOutput = true;
+    }
+
+    if (negate && match) {
+      includeOutput = false;
     }
   }
-  return false;
+
+  return includeOutput;
 }

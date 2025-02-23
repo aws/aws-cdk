@@ -75,6 +75,25 @@ describe('Match include patterns', () => {
     expect(include(patterns, rootPath, permits)).toEqual(permits);
   });
 
+  test('does not include files that match with negative pattern', () => {
+    const rootPath = '/tmp';
+    const patterns :string[] = ['*', '!file.txt', '!some/**/*.md'];
+
+    const ignores = [
+      '/file.txt',
+      '/tmp/file.txt',
+      '/tmp/some/file.txt',
+      '/tmp/some/file.md',
+      '/tmp/some/dir/file.md',
+    ];
+    const permits = [
+      '/tmp/other/file.md',
+    ];
+
+    expect(notInclude(patterns, rootPath, ignores)).toEqual(ignores);
+    expect(include(patterns, rootPath, permits)).toEqual(permits);
+  });
+
   test('throws error if root path is not absolute', () => {
     const rootPath = 'path';
     const patterns :string[] = ['**/*'];
