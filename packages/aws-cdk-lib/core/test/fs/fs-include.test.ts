@@ -74,4 +74,27 @@ describe('Match include patterns', () => {
 
     expect(include(patterns, rootPath, permits)).toEqual(permits);
   });
+
+  test('throws error if root path is not absolute', () => {
+    const rootPath = 'path';
+    const patterns :string[] = ['**/*'];
+
+    const permits = [
+      '/tmp/other/file.txt',
+      '/tmp/some/important/file.txt',
+    ];
+
+    expect(() => include(patterns, rootPath, permits)).toThrow(/Paths expect absolute paths/);
+  });
+
+  test('throws error if file path is not absolute', () => {
+    const rootPath = '/tmp';
+    const patterns :string[] = ['**/*'];
+
+    const permits = [
+      'file.txt',
+    ];
+
+    expect(() => include(patterns, rootPath, permits)).toThrow(/Paths expect absolute paths/);
+  });
 });
