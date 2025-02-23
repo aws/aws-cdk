@@ -1439,6 +1439,8 @@ When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ign
 
 The `ignoreMode` property can be used with the `exclude` property to specify the file paths to ignore based on the [.gitignore specification](https://git-scm.com/docs/gitignore) or the [.dockerignore specification](https://docs.docker.com/engine/reference/builder/#dockerignore-file). The default behavior is to ignore file paths based on simple glob patterns.
 
+If matching the symlink but not its target, it is excluded (i.e. the `exclude` patterns match the symlink path itself, regardless of its target). This is the same behavior when `follow` is not `SymlinkFollowMode.NEVER`.
+
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
@@ -1466,7 +1468,7 @@ An `include` property also allows you to more easily specify particular files fo
 
 If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
 
-If matching the symlink but not its target, it is included (i.e. the `include` patterns match the symlink path itself, regardless of its target).
+If matching the symlink but not its target, it is included (i.e. the `include` patterns match the symlink path itself, regardless of its target). This is the same behavior when `follow` is not `SymlinkFollowMode.NEVER`.
 
 ```ts
 new lambda.Function(this, 'Function', {
