@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eebea849f4344a11d34ac850355164c44b2778d3a1f213a5a7cd7392315ac1c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93744f008fcf3b9e6c467c4abb949ab1457ed06220d6c3244c531e5bb4e878db.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,37 @@
         "EventApiCognitoAuthStack.assets"
       ],
       "metadata": {
+        "/EventApiCognitoAuthStack/Pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPoolName": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/EventApiCognitoAuthStack/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PoolD3F588B8"
+          }
+        ],
+        "/EventApiCognitoAuthStack/EventApiCognitoAuth": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*",
+              "authorizationConfig": {
+                "authProviders": [
+                  {
+                    "authorizationType": "AMAZON_COGNITO_USER_POOLS",
+                    "cognitoConfig": {
+                      "userPool": "*"
+                    }
+                  }
+                ]
+              }
+            }
           }
         ],
         "/EventApiCognitoAuthStack/EventApiCognitoAuth/Resource": [

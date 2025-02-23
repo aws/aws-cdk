@@ -21,7 +21,10 @@
                     "path": "integ-user-pool-signup-link/myuserpool/smsRole/ImportsmsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -72,7 +75,16 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -119,6 +131,10 @@
                       }
                     },
                     "smsVerificationMessage": "integ-test: Account verification code is {####}",
+                    "userPoolAddOns": {
+                      "advancedSecurityAdditionalFlows": {},
+                      "advancedSecurityMode": "OFF"
+                    },
                     "userPoolName": "MyUserPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_LINK",
@@ -157,13 +173,44 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "userPool": "*",
+                      "cognitoDomain": {
+                        "domainPrefix": "*"
+                      }
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "userPoolName": "*",
+                  "autoVerify": {
+                    "email": true,
+                    "phone": true
+                  },
+                  "selfSignUpEnabled": true,
+                  "userVerification": {
+                    "emailStyle": "CONFIRM_WITH_LINK",
+                    "emailSubject": "*",
+                    "emailBody": "*",
+                    "smsMessage": "*"
+                  },
+                  "passwordPolicy": {
+                    "requireUppercase": false,
+                    "requireLowercase": false,
+                    "requireDigits": false,
+                    "requireSymbols": false
+                  }
+                }
+              ]
             }
           },
           "myuserpoolclient": {
@@ -209,7 +256,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "userPool": "*",
+                  "userPoolClientName": "*",
+                  "generateSecret": false
+                }
+              ]
             }
           },
           "user-pool-id": {
@@ -255,7 +309,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

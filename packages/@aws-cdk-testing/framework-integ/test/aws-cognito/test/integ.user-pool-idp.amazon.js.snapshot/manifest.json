@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool-idp-amazon.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d47d8fd4088fe7061e68e934c34bbd73769b73329280be05866a09b78d6958b8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a48acb95fb094e6a8eea6094d59e2a22de412ef1b281ba078d6e270dcebf6413.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,26 @@
         "integ-user-pool-idp-amazon.assets"
       ],
       "metadata": {
+        "/integ-user-pool-idp-amazon/pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-user-pool-idp-amazon/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pool056F3F7E"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/pool/client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*"
+            }
           }
         ],
         "/integ-user-pool-idp-amazon/pool/client/Resource": [
@@ -46,10 +62,46 @@
             "data": "poolclient2623294C"
           }
         ],
+        "/integ-user-pool-idp-amazon/pool/domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "signInUrl": [
+                "*",
+                {
+                  "redirectUri": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "baseUrl": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integ-user-pool-idp-amazon/pool/domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pooldomain430FA744"
+          }
+        ],
+        "/integ-user-pool-idp-amazon/amazon": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool-idp-amazon/amazon/Resource": [

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7253c171dd493c91d49e70e9d3f5326c0817f3fb036cbef8a3b43a746e1833c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f077b14a3272eebc2c55b8d2f9dab864cd225d2342b87622965475f8ad6d550d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,43 @@
         "integ-user-pool-passwordless.assets"
       ],
       "metadata": {
+        "/integ-user-pool-passwordless/myuserpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "signInPolicy": {
+                "allowedFirstAuthFactors": {
+                  "password": true,
+                  "emailOtp": true,
+                  "passkey": true
+                }
+              },
+              "passkeyRelyingPartyId": "*",
+              "passkeyUserVerification": "required",
+              "removalPolicy": "destroy",
+              "deletionProtection": false
+            }
+          }
+        ],
         "/integ-user-pool-passwordless/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool-passwordless/myuserpool-disabled-passwordless": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "signInPolicy": {
+                "allowedFirstAuthFactors": {
+                  "password": true
+                }
+              },
+              "featurePlan": "LITE",
+              "removalPolicy": "destroy",
+              "deletionProtection": false
+            }
           }
         ],
         "/integ-user-pool-passwordless/myuserpool-disabled-passwordless/Resource": [

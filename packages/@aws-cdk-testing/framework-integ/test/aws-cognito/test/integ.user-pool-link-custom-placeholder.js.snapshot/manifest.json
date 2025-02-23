@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool-link-custom-placeholder.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8933ce2d15790f339b208cf26b074a443813cb433115af260ab927c97e241c47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/86c76ca5bf2c2f3661e4e151d4e5d42147a0bf4d6ac95f6af554300f361f002b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,21 @@
         "integ-user-pool-link-custom-placeholder.assets"
       ],
       "metadata": {
+        "/integ-user-pool-link-custom-placeholder/myuserpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPoolName": "*",
+              "removalPolicy": "destroy",
+              "deletionProtection": false,
+              "userVerification": {
+                "emailStyle": "CONFIRM_WITH_LINK",
+                "emailSubject": "*",
+                "emailBody": "*"
+              }
+            }
+          }
+        ],
         "/integ-user-pool-link-custom-placeholder/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",

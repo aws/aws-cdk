@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5b6aa16b6bac960a7a3ed7d6c8b0e73fe65651b4a8796cf31d88273baabcec1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5e5efe180722dafc9e27ad6e81a89dc44cdbc9ab8d6879ec02be77d0a969aab2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,16 @@
         "integ-user-pool-password-history-size.assets"
       ],
       "metadata": {
+        "/integ-user-pool-password-history-size/Pool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "passwordPolicy": {
+                "passwordHistorySize": "*"
+              }
+            }
+          }
+        ],
         "/integ-user-pool-password-history-size/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",

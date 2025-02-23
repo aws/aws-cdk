@@ -906,9 +906,11 @@
      ]
     },
     "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {},
      "AdvancedSecurityMode": "ENFORCED"
     },
     "UserPoolName": "MyUserPool",
+    "UserPoolTier": "PLUS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
      "EmailMessage": "verification email body from the integ test. Code is {####}.",

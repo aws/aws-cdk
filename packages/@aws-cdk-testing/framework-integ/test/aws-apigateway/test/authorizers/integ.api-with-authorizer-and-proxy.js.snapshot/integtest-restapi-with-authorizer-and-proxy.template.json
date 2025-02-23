@@ -24,6 +24,10 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {},
+     "AdvancedSecurityMode": "OFF"
+    },
     "UsernameAttributes": [
      "email"
     ],

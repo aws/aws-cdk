@@ -13,7 +13,8 @@
             "path": "appsync-event-api-stack/HostedZone",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "Certificate": {
@@ -50,7 +51,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_certificatemanager.Certificate",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "domainName": "*",
+                  "validation": "*"
+                }
+              ]
             }
           },
           "Pool": {
@@ -81,6 +88,10 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolAddOns": {
+                      "advancedSecurityAdditionalFlows": {},
+                      "advancedSecurityMode": "OFF"
+                    },
                     "userPoolName": "myPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -98,7 +109,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "userPoolName": "*",
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "AuthorizerFunction": {
@@ -114,7 +131,10 @@
                     "path": "appsync-event-api-stack/AuthorizerFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -159,7 +179,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -216,7 +249,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "code": "*",
+                  "handler": "*"
+                }
+              ]
             }
           },
           "EventApi": {
@@ -232,7 +272,10 @@
                     "path": "appsync-event-api-stack/EventApi/ApiLogsRole/ImportApiLogsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -277,7 +320,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -431,7 +487,8 @@
                 "path": "appsync-event-api-stack/EventApi/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "AnotherChannelNamespace": {
@@ -462,13 +519,64 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "api": "*",
+                      "channelNamespaceName": "*",
+                      "code": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.EventApi",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "apiName": "*",
+                  "ownerContact": "*",
+                  "authorizationConfig": {
+                    "authProviders": [
+                      {
+                        "authorizationType": "AMAZON_COGNITO_USER_POOLS",
+                        "cognitoConfig": {
+                          "userPool": "*"
+                        }
+                      },
+                      {
+                        "authorizationType": "AWS_LAMBDA",
+                        "lambdaAuthorizerConfig": {
+                          "handler": "*"
+                        }
+                      },
+                      {
+                        "authorizationType": "API_KEY"
+                      },
+                      {
+                        "authorizationType": "AWS_IAM"
+                      }
+                    ],
+                    "connectionAuthModeTypes": [
+                      "API_KEY"
+                    ],
+                    "defaultPublishAuthModeTypes": [
+                      "AMAZON_COGNITO_USER_POOLS"
+                    ],
+                    "defaultSubscribeAuthModeTypes": [
+                      "AWS_IAM"
+                    ]
+                  },
+                  "logConfig": {
+                    "fieldLogLevel": "ERROR"
+                  },
+                  "domainName": {
+                    "certificate": "*",
+                    "domainName": "*"
+                  }
+                }
+              ]
             }
           },
           "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
@@ -492,7 +600,8 @@
                     "path": "appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -510,7 +619,10 @@
                     "path": "appsync-event-api-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -591,13 +703,59 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -643,7 +801,8 @@
                     "path": "appsync-event-api-stack/ChannelNamespace/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -688,7 +847,21 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.ChannelNamespace",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "api": "*",
+                  "authorizationConfig": {
+                    "publishAuthModeTypes": [
+                      "AWS_LAMBDA"
+                    ],
+                    "subscribeAuthModeTypes": [
+                      "AWS_LAMBDA"
+                    ]
+                  },
+                  "code": "*"
+                }
+              ]
             }
           },
           "WebAcl": {

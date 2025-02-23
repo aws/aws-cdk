@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PublicSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PrivateSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PrivateSubnet1"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PrivateSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc/PrivateSubnet2"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Vpc"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Vpc"
      }
     ]
    }
@@ -518,17 +518,17 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "test.nefcc.flux.amazon.dev",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "test.nefcc.flux.amazon.dev",
+      "HostedZoneId": "Z04111251C8LF7UAO9K0E"
      }
     ],
     "Tags": [
      {
       "Key": "Name",
-      "Value": "IntegAlbOidc/Certificate"
+      "Value": "integ-alb-oidc/IntegAlbOidc/Certificate"
      }
     ],
     "ValidationMethod": "DNS"
@@ -558,6 +558,10 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {},
+     "AdvancedSecurityMode": "OFF"
+    },
     "UsernameAttributes": [
      "email"
     ],
@@ -574,7 +578,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z04111251c8lf7uao9k0e",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -595,7 +599,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://test.nefcc.flux.amazon.dev/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -735,7 +739,7 @@
   "LoadBalancerSecurityGroupA28D6DD7": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB IntegAlbOidcLoadBalancer3609D530",
+    "GroupDescription": "Automatically created Security Group for ELB integalboidcIntegAlbOidcLoadBalancerD2045757",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -952,196 +956,10 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z04111251C8LF7UAO9K0E",
+    "Name": "nefcc.flux.amazon.dev.",
     "Type": "A"
    }
-  },
-  "UserFDDCDD17": {
-   "Type": "Custom::CognitoUser",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"adminCreateUser\",\"parameters\":{\"UserPoolId\":\"",
-       {
-        "Ref": "UserPool6BA7E5F2"
-       },
-       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"}}"
-      ]
-     ]
-    },
-    "InstallLatestAwsSdk": false
-   },
-   "DependsOn": [
-    "UserCustomResourcePolicyC2EB5139"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "UserCustomResourcePolicyC2EB5139": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "cognito-idp:AdminCreateUser",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "UserPool6BA7E5F2",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserCustomResourcePolicyC2EB5139",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   }
-  },
-  "UserSetUserPasswordAD2F2A64": {
-   "Type": "Custom::CognitoUserPassword",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"adminSetUserPassword\",\"parameters\":{\"UserPoolId\":\"",
-       {
-        "Ref": "UserPool6BA7E5F2"
-       },
-       "\",\"Username\":\"",
-       {
-        "Fn::GetAtt": [
-         "UserFDDCDD17",
-         "User.Username"
-        ]
-       },
-       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"}}"
-      ]
-     ]
-    },
-    "InstallLatestAwsSdk": false
-   },
-   "DependsOn": [
-    "UserCustomResourcePolicyC2EB5139",
-    "UserFDDCDD17",
-    "UserSetUserPasswordCustomResourcePolicy7B250C76"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "UserSetUserPasswordCustomResourcePolicy7B250C76": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "cognito-idp:AdminSetUserPassword",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "UserPool6BA7E5F2",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "UserSetUserPasswordCustomResourcePolicy7B250C76",
-    "Roles": [
-     {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "UserCustomResourcePolicyC2EB5139",
-    "UserFDDCDD17"
-   ]
-  },
-  "SigninServiceRole24B8BB32": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "Signin352C80E6": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "5630dddea01df446e7bfb15f6c335c43060ac31110774634ff6bf3f50d0fbad5.zip"
-    },
-    "Environment": {
-     "Variables": {
-      "TEST_USERNAME": "test-user@example.com",
-      "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
-     }
-    },
-    "FunctionName": "cdk-integ-alb-oidc-signin-handler",
-    "Handler": "index.handler",
-    "MemorySize": 1024,
-    "Role": {
-     "Fn::GetAtt": [
-      "SigninServiceRole24B8BB32",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x",
-    "Timeout": 300
-   },
-   "DependsOn": [
-    "SigninServiceRole24B8BB32"
-   ]
   }
  },
  "Mappings": {
@@ -1269,20 +1087,23 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefSignin352C80E64BA58F71": {
-   "Value": {
-    "Ref": "Signin352C80E6"
-   },
-   "Export": {
-    "Name": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
-   }
-  },
   "ExportsOutputRefUserPool6BA7E5F296FD7236": {
    "Value": {
     "Ref": "UserPool6BA7E5F2"
    },
    "Export": {
-    "Name": "IntegAlbOidc:ExportsOutputRefUserPool6BA7E5F296FD7236"
+    "Name": "integalboidcIntegAlbOidc690E4965:ExportsOutputRefUserPool6BA7E5F296FD7236"
+   }
+  },
+  "ExportsOutputFnGetAttUserPool6BA7E5F2Arn686ACC00": {
+   "Value": {
+    "Fn::GetAtt": [
+     "UserPool6BA7E5F2",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "integalboidcIntegAlbOidc690E4965:ExportsOutputFnGetAttUserPool6BA7E5F2Arn686ACC00"
    }
   }
  },

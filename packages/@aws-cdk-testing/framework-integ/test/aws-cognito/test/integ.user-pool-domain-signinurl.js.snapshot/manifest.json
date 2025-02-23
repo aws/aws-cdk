@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool-domain-signinurl.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1452111f27d79b13117edc6b14935d54619f77beceed9af7e2a44cefef963343.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c556f48b599b2cb9685da7496c2cd3ba29d3ba551c534effc22d73709589f13b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,65 @@
         "integ-user-pool-domain-signinurl.assets"
       ],
       "metadata": {
+        "/integ-user-pool-domain-signinurl/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-user-pool-domain-signinurl/UserPool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPool6BA7E5F2"
           }
         ],
+        "/integ-user-pool-domain-signinurl/UserPool/Domain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "signInUrl": [
+                "*",
+                {
+                  "redirectUri": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "baseUrl": [
+                {}
+              ]
+            }
+          }
+        ],
         "/integ-user-pool-domain-signinurl/UserPool/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "UserPoolDomainD0EA232A"
+          }
+        ],
+        "/integ-user-pool-domain-signinurl/UserPool/UserPoolClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "oAuth": {
+                "callbackUrls": "*"
+              }
+            }
           }
         ],
         "/integ-user-pool-domain-signinurl/UserPool/UserPoolClient/Resource": [

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool-resource-server.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4035d45bd2e868a7b73e20bba5f21f1082f8c5c57759056a2c355b73eada7e4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92c10e2cdc26bc01b3297ce165514716bd791bd6bcf0ca87383695f45b9996b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,51 @@
         "integ-user-pool-resource-server.assets"
       ],
       "metadata": {
+        "/integ-user-pool-resource-server/myuserpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPoolName": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/integ-user-pool-resource-server/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpool01998219"
           }
         ],
+        "/integ-user-pool-resource-server/myuserpool/myserver": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "identifier": "*",
+              "scopes": "*"
+            }
+          }
+        ],
         "/integ-user-pool-resource-server/myuserpool/myserver/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyserver50C4D8E9"
+          }
+        ],
+        "/integ-user-pool-resource-server/myuserpool/client": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "userPoolClientName": "*",
+              "generateSecret": true,
+              "oAuth": {
+                "flows": {
+                  "clientCredentials": true
+                },
+                "scopes": "*"
+              }
+            }
           }
         ],
         "/integ-user-pool-resource-server/myuserpool/client/Resource": [

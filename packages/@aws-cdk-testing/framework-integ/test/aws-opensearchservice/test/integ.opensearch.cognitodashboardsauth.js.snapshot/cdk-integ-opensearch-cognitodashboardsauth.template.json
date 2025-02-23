@@ -27,6 +27,10 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {},
+     "AdvancedSecurityMode": "OFF"
+    },
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
      "EmailMessage": "The verification code to your new account is {####}",
@@ -84,8 +88,8 @@
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
      "InstanceType": "r5.large.search",
-     "ZoneAwarenessEnabled": false,
-     "MultiAZWithStandbyEnabled": false
+     "MultiAZWithStandbyEnabled": false,
+     "ZoneAwarenessEnabled": false
     },
     "CognitoOptions": {
      "Enabled": true,

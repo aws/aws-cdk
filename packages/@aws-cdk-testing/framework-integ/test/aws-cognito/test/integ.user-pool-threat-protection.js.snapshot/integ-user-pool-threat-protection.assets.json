@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "c55017f0eb4d481a77aa19893807b32b63fa22241fd83b4960406c0c25e4eed4": {
+      "source": {
+        "path": "integ-user-pool-threat-protection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c55017f0eb4d481a77aa19893807b32b63fa22241fd83b4960406c0c25e4eed4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
