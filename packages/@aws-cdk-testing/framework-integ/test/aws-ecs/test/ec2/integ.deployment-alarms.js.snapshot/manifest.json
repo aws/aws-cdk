@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-deployment-alarms.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94b57f48c4ad1e5e41a4073ffc4e4a63a940dbf53ba5cb4c795ec90b42a48547.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03f20d7f3bc29dccf2d40e009230b06dd07046b4d983e070005d56e182aa0cd3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -184,6 +184,12 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/integ-deployment-alarms/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
         "/integ-deployment-alarms/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -250,12 +256,6 @@
             "data": "ASGDrainECSHookFunctionServiceRoleC12963BB"
           }
         ],
-        "/integ-deployment-alarms/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27"
-          }
-        ],
         "/integ-deployment-alarms/ASG/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -272,6 +272,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+          }
+        ],
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole00371FEB3"
+          }
+        ],
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole17E852E01"
+          }
+        ],
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole22C962AF2"
+          }
+        ],
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole3E4846C2B"
+          }
+        ],
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctioninlinePolicyAddedToExecutionRole48434A97B"
           }
         ],
         "/integ-deployment-alarms/ASG/LifecycleHookDrainHook/Topic/Resource": [
@@ -310,6 +340,12 @@
             "data": "EC2CapacityProvider5A2E35CD"
           }
         ],
+        "/integ-deployment-alarms/EC2CPCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
+          }
+        ],
         "/integ-deployment-alarms/EC2CPCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -320,6 +356,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EC2CPCluster4CFED4DD"
+          }
+        ],
+        "/integ-deployment-alarms/EC2Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
           }
         ],
         "/integ-deployment-alarms/EC2Service/Service": [
@@ -344,6 +386,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
