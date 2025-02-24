@@ -1097,21 +1097,15 @@ export class Cluster extends ClusterBase {
       ],
     });
 
-    // autoMode enabled when defaultCapacityType is undefined or set to AUTOMODE
-    const autoModeEnabled = props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
-
     // validate all automode relevant configurations
-    this.validateAutoMode(autoModeEnabled, props);
+    const autoModeEnabled = this.isValidAutoModeConfig(props);
 
     if (autoModeEnabled) {
-      // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
-      if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
-        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
-      }
-
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
-      ['AmazonEKSComputePolicy', 'AmazonEKSBlockStoragePolicy', 'AmazonEKSLoadBalancingPolicy',
+      ['AmazonEKSComputePolicy',
+        'AmazonEKSBlockStoragePolicy',
+        'AmazonEKSLoadBalancingPolicy',
         'AmazonEKSNetworkingPolicy'].forEach((policyName) => {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
       });
@@ -1557,11 +1551,11 @@ export class Cluster extends ClusterBase {
    * validate all autoMode relevant configurations to ensure they are correct and throw
    * errors if they are not.
    *
-   * @param autoModeEnabled boolean
    * @param props ClusterProps
    *
    */
-  private validateAutoMode(autoModeEnabled: boolean, props: ClusterProps): void {
+  private isValidAutoModeConfig(props: ClusterProps): boolean {
+    const autoModeEnabled = props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
     // if using AUTOMODE
     if (autoModeEnabled) {
       // When using AUTOMODE, nodePools values are case-sensitive and must be general-purpose and/or system
@@ -1584,6 +1578,8 @@ export class Cluster extends ClusterBase {
         throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
       }
     }
+
+    return autoModeEnabled;
   }
 
   private addNodePoolRole(id: string): iam.Role {
