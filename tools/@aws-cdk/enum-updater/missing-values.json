@@ -1,0 +1,225 @@
+{
+  "ec2": {
+    "InstanceArchitecture": {
+      "cdk_path": "packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts",
+      "missing_values": [
+        "i386"
+      ]
+    },
+    "VpcEndpointType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts",
+      "missing_values": [
+        "Resource",
+        "Servicenetwork"
+      ]
+    },
+    "DefaultInstanceTenancy": {
+      "cdk_path": "packages/aws-cdk-lib/aws-ec2/lib/vpc.ts",
+      "missing_values": [
+        "host"
+      ]
+    }
+  },
+  "eks-v2": {
+    "CapacityType": {
+      "cdk_path": "packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts",
+      "missing_values": [
+        "CAPACITY_BLOCK"
+      ]
+    }
+  },
+  "glue": {
+    "S3EncryptionMode": {
+      "cdk_path": "packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
+      "missing_values": [
+        "DISABLED"
+      ]
+    },
+    "CloudWatchEncryptionMode": {
+      "cdk_path": "packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
+      "missing_values": [
+        "DISABLED"
+      ]
+    },
+    "JobBookmarksEncryptionMode": {
+      "cdk_path": "packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
+      "missing_values": [
+        "DISABLED"
+      ]
+    },
+    "ConnectionType": {
+      "cdk_path": "packages/@aws-cdk/aws-glue-alpha/lib/connection.ts",
+      "missing_values": [
+        "SFTP"
+      ]
+    }
+  },
+  "kinesisanalytics-flink": {
+    "Runtime": {
+      "cdk_path": "packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/types.ts",
+      "missing_values": [
+        "SQL_1_0",
+        "ZEPPELIN_FLINK_1_0",
+        "ZEPPELIN_FLINK_2_0",
+        "ZEPPELIN_FLINK_3_0"
+      ]
+    }
+  },
+  "kinesisfirehose": {
+    "Compression": {
+      "cdk_path": "packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts",
+      "missing_values": [
+        "UNCOMPRESSED"
+      ]
+    }
+  },
+  "kinesisfirehose-destinations": {
+    "Compression": {
+      "cdk_path": "packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts",
+      "missing_values": [
+        "UNCOMPRESSED"
+      ]
+    }
+  },
+  "apigatewayv2": {
+    "HttpIntegrationType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts",
+      "missing_values": [
+        "MOCK"
+      ]
+    }
+  },
+  "applicationautoscaling": {
+    "ServiceNamespace": {
+      "cdk_path": "packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.ts",
+      "missing_values": [
+        "cassandra",
+        "workspaces"
+      ]
+    }
+  },
+  "certificatemanager": {
+    "KeyAlgorithm": {
+      "cdk_path": "packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts",
+      "missing_values": [
+        "RSA_1024",
+        "RSA_3072",
+        "RSA_4096",
+        "EC_SECP521R1"
+      ]
+    }
+  },
+  "cloudfront": {
+    "FunctionEventType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-cloudfront/lib/function.ts",
+      "missing_values": [
+        "origin-request",
+        "origin-response"
+      ]
+    }
+  },
+  "codebuild": {
+    "FleetComputeType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts",
+      "missing_values": [
+        "BUILD_LAMBDA_1GB",
+        "BUILD_LAMBDA_2GB",
+        "BUILD_LAMBDA_4GB",
+        "BUILD_LAMBDA_8GB",
+        "BUILD_LAMBDA_10GB"
+      ]
+    },
+    "WebhookFilterTypes": {
+      "cdk_path": "packages/aws-cdk-lib/aws-codebuild/lib/source.ts",
+      "missing_values": [
+        "EVENT",
+        "WORKFLOW_NAME",
+        "TAG_NAME",
+        "RELEASE_NAME"
+      ]
+    }
+  },
+  "ecs": {
+    "FileSystemType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-ecs/lib/base/service-managed-volume.ts",
+      "missing_values": [
+        "ntfs"
+      ]
+    }
+  },
+  "efs": {
+    "ReplicationOverwriteProtection": {
+      "cdk_path": "packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts",
+      "missing_values": [
+        "REPLICATING"
+      ]
+    }
+  },
+  "eks": {
+    "CapacityType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts",
+      "missing_values": [
+        "CAPACITY_BLOCK"
+      ]
+    }
+  },
+  "elasticloadbalancingv2": {
+    "Protocol": {
+      "cdk_path": "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts",
+      "missing_values": [
+        "GENEVE"
+      ]
+    }
+  },
+  "elasticsearch": {
+    "TLSSecurityPolicy": {
+      "cdk_path": "packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts",
+      "missing_values": [
+        "Policy-Min-TLS-1-2-PFS-2023-10"
+      ]
+    }
+  },
+  "fsx": {
+    "StorageType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-fsx/lib/file-system.ts",
+      "missing_values": [
+        "INTELLIGENT_TIERING"
+      ]
+    }
+  },
+  "lambda": {
+    "SourceAccessConfigurationType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts",
+      "missing_values": [
+        "VIRTUAL_HOST"
+      ]
+    }
+  },
+  "rds": {
+    "ClientPasswordAuthType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-rds/lib/proxy.ts",
+      "missing_values": [
+        "MYSQL_CACHING_SHA2_PASSWORD"
+      ]
+    }
+  },
+  "s3-deployment": {
+    "StorageClass": {
+      "cdk_path": "packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts",
+      "missing_values": [
+        "OUTPOSTS",
+        "SNOW",
+        "EXPRESS_ONEZONE"
+      ]
+    }
+  },
+  "s3": {
+    "EventType": {
+      "cdk_path": "packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
+      "missing_values": [
+        "s3_ObjectRestore_*",
+        "s3_Replication_*"
+      ]
+    }
+  }
+}
