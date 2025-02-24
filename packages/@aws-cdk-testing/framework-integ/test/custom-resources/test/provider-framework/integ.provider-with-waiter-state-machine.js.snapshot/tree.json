@@ -1234,24 +1234,6 @@
                                       ]
                                     },
                                     {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
                                       "Action": "states:StartExecution",
                                       "Effect": "Allow",
                                       "Resource": {
@@ -1288,16 +1270,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -1353,8 +1325,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -1363,8 +1340,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -1474,6 +1456,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole01895580B",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkonEventServiceRole8761E48D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkonEventinlinePolicyAddedToExecutionRole1B6EE7537",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkonEventServiceRole8761E48D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -1647,24 +1757,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1696,16 +1788,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -1756,8 +1838,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -1766,8 +1853,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -1869,6 +1961,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole02B272400",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkisCompleteServiceRoleD0A6BA11"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkisCompleteinlinePolicyAddedToExecutionRole13AD2CC44",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkisCompleteServiceRoleD0A6BA11"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -2036,24 +2256,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -2085,16 +2287,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -2145,8 +2337,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -2155,8 +2352,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -2258,6 +2460,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole07080B90B",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkonTimeoutServiceRole1A667BCA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole1F978A754",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderframeworkonTimeoutServiceRole1A667BCA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -2707,24 +3037,6 @@
                                       ]
                                     },
                                     {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
-                                    },
-                                    {
                                       "Action": "states:StartExecution",
                                       "Effect": "Allow",
                                       "Resource": {
@@ -2761,16 +3073,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -2826,8 +3128,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -2836,8 +3143,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -2947,6 +3259,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole023A88689",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkonEventinlinePolicyAddedToExecutionRole197B8A054",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -3120,24 +3560,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3169,16 +3591,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -3229,8 +3641,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -3239,8 +3656,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -3342,6 +3764,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole0144D0073",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkisCompleteinlinePolicyAddedToExecutionRole14BEEF1C9",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
@@ -3509,24 +4059,6 @@
                                           ]
                                         }
                                       ]
-                                    },
-                                    {
-                                      "Action": "lambda:GetFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "IsComplete544AE5AD",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::GetAtt": [
-                                            "OnEvent74718524",
-                                            "Arn"
-                                          ]
-                                        }
-                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -3558,16 +4090,6 @@
                             {
                               "attachToRole": [
                                 "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
                               ]
                             },
                             {
@@ -3618,8 +4140,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         },
                         {
@@ -3628,8 +4155,13 @@
                           ]
                         },
                         {
-                          "addToPrincipalPolicy": [
-                            {}
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
                           ]
                         }
                       ]
@@ -3731,6 +4263,134 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                       "version": "0.0.0"
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-0": {
+                    "id": "inlinePolicyAddedToExecutionRole-0",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/inlinePolicyAddedToExecutionRole-0",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "OnEvent74718524",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole0F8CB55CF",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "inlinePolicyAddedToExecutionRole-1": {
+                    "id": "inlinePolicyAddedToExecutionRole-1",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/inlinePolicyAddedToExecutionRole-1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "lambda:GetFunction",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "IsComplete544AE5AD",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyProviderWithoutLogOptionsframeworkonTimeoutinlinePolicyAddedToExecutionRole12CB775D8",
+                            "roles": [
+                              {
+                                "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "statements": "*"
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   }
                 },

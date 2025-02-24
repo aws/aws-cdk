@@ -613,6 +613,22 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
+
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+  }
+}
+```
+
 * `@aws-cdk/aws-s3:blockPublicAccessPropertiesDefaultToTrue`
 
 Without this flag, the `blockPublicAccess` property has a counter-intuitive and inconsistent behavior.
@@ -623,7 +639,6 @@ was specified will also default to `false`.
 
 Intuitively, if the property is not set explicitly, it must default to `true`. Enabling this flag will exhibit
 this behavior.
-
 
 _cdk.json_
 

@@ -1030,54 +1030,6 @@
     "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
    ]
   },
-  "TestFunction0ServiceRoleDefaultPolicy02794024": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "execute-api:Invoke",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":execute-api:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":",
-          {
-           "Ref": "ApiF70053CD"
-          },
-          "/*/*/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TestFunction0ServiceRoleDefaultPolicy02794024",
-    "Roles": [
-     {
-      "Ref": "TestFunction0ServiceRoleD0765191"
-     }
-    ]
-   },
-   "DependsOn": [
-    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
-    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
-   ]
-  },
   "TestFunction0SecurityGroup749DC118": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -1160,8 +1112,55 @@
     }
    },
    "DependsOn": [
-    "TestFunction0ServiceRoleDefaultPolicy02794024",
     "TestFunction0ServiceRoleD0765191",
+    "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
+    "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
+   ]
+  },
+  "TestFunction0inlinePolicyAddedToExecutionRole00B5803B5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "execute-api:Invoke",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":",
+          {
+           "Ref": "ApiF70053CD"
+          },
+          "/*/*/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestFunction0inlinePolicyAddedToExecutionRole00B5803B5",
+    "Roles": [
+     {
+      "Ref": "TestFunction0ServiceRoleD0765191"
+     }
+    ]
+   },
+   "DependsOn": [
     "Vpc1IsolatedSubnet1RouteTableAssociation5CB6A296",
     "Vpc1IsolatedSubnet2RouteTableAssociation6394B926"
    ]
@@ -1205,54 +1204,6 @@
         ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
        ]
       ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
-    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
-   ]
-  },
-  "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "execute-api:Invoke",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":execute-api:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":",
-          {
-           "Ref": "ApiF70053CD"
-          },
-          "/*/*/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
-    "Roles": [
-     {
-      "Ref": "TestFunction1ServiceRoleFF9BD7F5"
      }
     ]
    },
@@ -1343,8 +1294,55 @@
     }
    },
    "DependsOn": [
-    "TestFunction1ServiceRoleDefaultPolicyEA6A8ACA",
     "TestFunction1ServiceRoleFF9BD7F5",
+    "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
+    "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
+   ]
+  },
+  "TestFunction1inlinePolicyAddedToExecutionRole054C03DAF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "execute-api:Invoke",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":",
+          {
+           "Ref": "ApiF70053CD"
+          },
+          "/*/*/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestFunction1inlinePolicyAddedToExecutionRole054C03DAF",
+    "Roles": [
+     {
+      "Ref": "TestFunction1ServiceRoleFF9BD7F5"
+     }
+    ]
+   },
+   "DependsOn": [
     "Vpc2IsolatedSubnet1RouteTableAssociation4E22797D",
     "Vpc2IsolatedSubnet2RouteTableAssociation0186F707"
    ]
