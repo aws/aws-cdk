@@ -664,34 +664,7 @@ new ec2.Vpc(this, 'OutpostVPC', {
 
 When configuring your subnets to be deployed to an Outpost, you must specify the `outpostArn`, `outpostAvailabilityZone`, and the `localGatewayRouteTableIds`. If no `outpostDefaultRoute` is set then the subnet will be configured to route traffic via the AWS Region. `localGatewayId` is only required if you have specified `outpostDefaultRoute` to be `ON_PREMISE`.
 
-The key difference in the routing for Outpost subnets is the option to have internet traffic routed via the local gateway, removing the need for NAT gateways or internet gateways to be deployed. For a completely on premise solution, the following is a valid and complete VPC configuration:
-
-```ts
-new ec2.Vpc(this, 'OutpostVPC', {
-    cidr: '10.50.48.0/20',
-    localGatewayRouteTableIds: ['lgwrt-1234'],
-    subnetConfiguration: [
-        {
-            cidrMask: 26,
-            name: 'OutpostPublic',
-            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
-            outpostAvailabilityZone: 'us-east-1a',
-            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
-            localGatewayId: 'lgw-1234',
-            subnetType: ec2.SubnetType.PUBLIC_OUTPOST,
-        },
-        {
-            cidrMask: 26,
-            name: 'OutpostPrivate',
-            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
-            outpostAvailabilityZone: 'us-east-1a',
-            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
-            localGatewayId: 'lgw-1234',
-            subnetType: ec2.SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
-        },
-    ],
-});
-```
+The key difference in the routing for Outpost subnets is the option to have internet traffic routed via the local gateway, removing the need for NAT gateways or internet gateways to be deployed.
 
 Note that unlike in region deployments, deploying a subnet to an Outpost will result in only a single subnet being created per configuration,
 as each Outpost is associated with a single region.
