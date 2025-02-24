@@ -58,10 +58,7 @@ export class PythonShellJob extends Job {
     addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
+    this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice

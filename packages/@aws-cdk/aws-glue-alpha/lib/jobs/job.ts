@@ -5,11 +5,16 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
-import { Code } from '..';
+import { Code } from '../code';
 import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
-import { SparkUIProps, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import {
+  SparkUIConfiguration,
+  SparkUIProps,
+  validateSparkUiPrefix,
+  cleanSparkUiPrefixForGrant,
+} from './spark-ui-utils';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -453,9 +458,9 @@ export interface JobProps {
 }
 
 /**
- * @internal
+ * Code props for different {@link Code} assets used by different types of Spark jobs.
  */
-interface SparkCodeArgumentsProps {
+export interface SparkExtraCodeProps {
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
@@ -578,7 +583,10 @@ export abstract class Job extends JobBase {
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
 
-  protected setupSparkCodeArguments(args: { [key: string]: string }, props: SparkCodeArgumentsProps) {
+  /**
+   * Set the arguments for extra {@link Code}-related properties
+   */
+  protected setupSparkExtraCodeArguments(args: { [key: string]: string }, props: SparkExtraCodeProps) {
     if (props.extraJars && props.extraJars.length > 0) {
       args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
@@ -595,22 +603,19 @@ export abstract class Job extends JobBase {
 
   /**
    * Set the arguments for sparkUI with best practices enabled by default
-   *
-   * @returns An array of arguments for enabling sparkUI
    */
-
-  protected setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-    validateSparkUiPrefix(sparkUiProps.prefix);
-    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
-    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
+  protected setupSparkUI(role: iam.IRole, props: SparkUIProps): SparkUIConfiguration {
+    validateSparkUiPrefix(props.prefix);
+    const bucket = props.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
+    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(props.prefix));
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
+      '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix).replace(/\/?$/, '/'), // path will always end with a slash
     };
 
     return {
       location: {
-        prefix: sparkUiProps.prefix,
+        prefix: props.prefix,
         bucket,
       },
       args,

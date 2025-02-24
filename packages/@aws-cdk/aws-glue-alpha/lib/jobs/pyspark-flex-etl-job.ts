@@ -163,7 +163,7 @@ export class PySparkFlexEtlJob extends Job {
   private executableArguments(props: PySparkFlexEtlJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
-    this.setupSparkCodeArguments(args, props);
+    this.setupSparkExtraCodeArguments(args, props);
     return args;
   }
 }

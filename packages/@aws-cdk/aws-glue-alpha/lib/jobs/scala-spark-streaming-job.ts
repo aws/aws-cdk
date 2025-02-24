@@ -172,7 +172,7 @@ export class ScalaSparkStreamingJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
-    this.setupSparkCodeArguments(args, props);
+    this.setupSparkExtraCodeArguments(args, props);
     return args;
   }
 }

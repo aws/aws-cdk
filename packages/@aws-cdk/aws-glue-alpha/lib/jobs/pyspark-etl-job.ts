@@ -117,11 +117,11 @@ export class PySparkEtlJob extends Job {
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
     // Gather executable arguments
-    const execuatbleArgs = this.executableArguments(props);
+    const executableArgs = this.executableArguments(props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {
-      ...execuatbleArgs,
+      ...executableArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,
@@ -164,7 +164,7 @@ export class PySparkEtlJob extends Job {
   private executableArguments(props: PySparkEtlJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
-    this.setupSparkCodeArguments(args, props);
+    this.setupSparkExtraCodeArguments(args, props);
     return args;
   }
 }

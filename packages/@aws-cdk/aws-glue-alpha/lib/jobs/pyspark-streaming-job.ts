@@ -164,7 +164,7 @@ export class PySparkStreamingJob extends Job {
   private executableArguments(props: PySparkStreamingJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
-    this.setupSparkCodeArguments(args, props);
+    this.setupSparkExtraCodeArguments(args, props);
     return args;
   }
 }
