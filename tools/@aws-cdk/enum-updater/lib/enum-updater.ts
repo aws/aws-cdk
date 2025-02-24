@@ -10,7 +10,7 @@ const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/mai
 const AWS_SDK_MODELS_URL = "https://github.com/awslabs/aws-sdk-rust/archive/refs/heads/main.zip";
 const MODULE_MAPPING = path.join(LOCAL_DIR, "./lib/module_mapping.json");
 const STATIC_MAPPING = path.join(LOCAL_DIR, "static-enum-mapping.json");
-// const SDK_ENUMS = path.join(LOCAL_DIR, "sdk_enums.json");
+const SDK_ENUMS = path.join(LOCAL_DIR, "sdk_enums.json");
 
 // Set up cleanup handlers for process termination
 tmp.setGracefulCleanup();
@@ -26,26 +26,27 @@ interface SdkEnums {
   };
 }
 
-  interface Shape {
-    type: string;
-    members?: {
-      [key: string]: {
-        traits?: {
-          'smithy.api#enumValue'?: string | number;
-          [key: string]: any;
-        };
-        [key: string]: any;
-      };
-    };
-  }
+  // interface Shape {
+  //   type: string;
+  //   members?: {
+  //     [key: string]: {
+  //       traits?: {
+  //         'smithy.api#enumValue'?: string | number;
+  //         [key: string]: any;
+  //       };
+  //       [key: string]: any;
+  //     };
+  //   };
+  // }
 
-  interface ParseResult {
-    path: string;
-    cleanup: () => Promise<void>;
-  }
+  // interface ParseResult {
+  //   path: string;
+  //   cleanup: () => Promise<void>;
+  // }
 
 interface EnumValue {
   path: string;
+  enumLike: boolean;
   values: (string | number)[];
 }
 
@@ -219,82 +220,82 @@ async function downloadGithubRawFile(url: string): Promise<DownloadResult> {
     }
   }
 
-  async function parseAwsSdkEnums(sdkModelsPath: string): Promise<ParseResult> {
-    const sdk_enums: SdkEnums = {};
+  // async function parseAwsSdkEnums(sdkModelsPath: string): Promise<ParseResult> {
+  //   const sdk_enums: SdkEnums = {};
   
-    try {
-      const files = fs.readdirSync(sdkModelsPath);
-      const jsonFiles = files.filter(file => file.endsWith('.json'));
+  //   try {
+  //     const files = fs.readdirSync(sdkModelsPath);
+  //     const jsonFiles = files.filter(file => file.endsWith('.json'));
 
-      for (const file of jsonFiles) {
-        try {
-          const fileContent = fs.readFileSync(path.join(sdkModelsPath, file), 'utf8');
-          const jsonData = JSON.parse(fileContent);
+  //     for (const file of jsonFiles) {
+  //       try {
+  //         const fileContent = fs.readFileSync(path.join(sdkModelsPath, file), 'utf8');
+  //         const jsonData = JSON.parse(fileContent);
 
-          if ("shapes" in jsonData) {
-            for (const [shapeName, shape] of Object.entries(jsonData.shapes)) {
-              if (!shape || typeof shape !== 'object') continue;
+  //         if ("shapes" in jsonData) {
+  //           for (const [shapeName, shape] of Object.entries(jsonData.shapes)) {
+  //             if (!shape || typeof shape !== 'object') continue;
 
-              const typedShape = shape as Shape;
-              if (typedShape.type !== 'enum' || !typedShape.members) continue;
+  //             const typedShape = shape as Shape;
+  //             if (typedShape.type !== 'enum' || !typedShape.members) continue;
 
-              try {
-                const serviceName = shapeName.split('.')[2].split('#')[0];
-                const enumName = shapeName.split('#')[1];
+  //             try {
+  //               const serviceName = shapeName.split('.')[2].split('#')[0];
+  //               const enumName = shapeName.split('#')[1];
 
-                if (!serviceName || !enumName) {
-                  console.warn(`Warning: Invalid shape name format: ${shapeName}`);
-                  continue;
-                }
+  //               if (!serviceName || !enumName) {
+  //                 console.warn(`Warning: Invalid shape name format: ${shapeName}`);
+  //                 continue;
+  //               }
 
-                const enumValues = Object.entries(typedShape.members)
-                  .filter(([_, memberData]) => 
-                    memberData.traits && 
-                    'smithy.api#enumValue' in memberData.traits &&
-                    memberData.traits['smithy.api#enumValue'] !== undefined)
-                  .map(([_, memberData]) => memberData.traits!['smithy.api#enumValue']!);
+  //               const enumValues = Object.entries(typedShape.members)
+  //                 .filter(([_, memberData]) => 
+  //                   memberData.traits && 
+  //                   'smithy.api#enumValue' in memberData.traits &&
+  //                   memberData.traits['smithy.api#enumValue'] !== undefined)
+  //                 .map(([_, memberData]) => memberData.traits!['smithy.api#enumValue']!);
 
-                if (enumValues.length) {
-                  if (!sdk_enums[serviceName]) {
-                    sdk_enums[serviceName] = {};
-                  }
-                  if (!sdk_enums[serviceName][enumName]) {
-                    sdk_enums[serviceName][enumName] = enumValues;
-                  }
-                }
-              } catch (error) {
-                console.warn(`Warning: Error processing shape ${shapeName}:`, error);
-                continue;
-              }
-            }
-          }
-        } catch (error) {
-          console.warn(`Warning: Error processing file ${file}:`, error);
-          continue;
-        }
-      }
+  //               if (enumValues.length) {
+  //                 if (!sdk_enums[serviceName]) {
+  //                   sdk_enums[serviceName] = {};
+  //                 }
+  //                 if (!sdk_enums[serviceName][enumName]) {
+  //                   sdk_enums[serviceName][enumName] = enumValues;
+  //                 }
+  //               }
+  //             } catch (error) {
+  //               console.warn(`Warning: Error processing shape ${shapeName}:`, error);
+  //               continue;
+  //             }
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.warn(`Warning: Error processing file ${file}:`, error);
+  //         continue;
+  //       }
+  //     }
 
-      const tmpFile = tmp.fileSync({ postfix: '.json' });
-      fs.writeFileSync(tmpFile.name, JSON.stringify(sdk_enums, null, 2));
+  //     const tmpFile = tmp.fileSync({ postfix: '.json' });
+  //     fs.writeFileSync(tmpFile.name, JSON.stringify(sdk_enums, null, 2));
 
-      // ===== BEGIN LOCAL FILE WRITING =====
-      // TODO: Remove this section after testing
-      fs.writeFileSync('sdk_enums.json', JSON.stringify(sdk_enums, null, 2));
-      console.log('Wrote SDK enums to sdk_enums.json');
-      // ===== END LOCAL FILE WRITING =====
+  //     // ===== BEGIN LOCAL FILE WRITING =====
+  //     // TODO: Remove this section after testing
+  //     fs.writeFileSync('sdk_enums.json', JSON.stringify(sdk_enums, null, 2));
+  //     console.log('Wrote SDK enums to sdk_enums.json');
+  //     // ===== END LOCAL FILE WRITING =====
 
-      return {
-        path: tmpFile.name,
-        cleanup: async () => {
-          tmpFile.removeCallback();
-        }
-      };
+  //     return {
+  //       path: tmpFile.name,
+  //       cleanup: async () => {
+  //         tmpFile.removeCallback();
+  //       }
+  //     };
 
-    } catch (error) {
-      console.error('Error parsing SDK enums:', error);
-      throw error;
-    }
-  }
+  //   } catch (error) {
+  //     console.error('Error parsing SDK enums:', error);
+  //     throw error;
+  //   }
+  // }
 
 
 function extractModuleName(path: string): string | null {
@@ -317,31 +318,17 @@ function extractModuleName(path: string): string | null {
   }
 }
 
-async function processCdkEnums(inputFilePaths: string[]): Promise<ProcessResult> {
+    
+async function processCdkEnums(enumsFilePath: string, enumsLikeFilePath: string): Promise<ProcessResult> {
   const processedData: CdkEnums = {};
   let totalEnums = 0;
 
   try {
-    for (const filePath of inputFilePaths) {
-      const rawData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // Process the first file (enums)
+    await processFile(enumsFilePath, false);
 
-      for (const [path, enums] of Object.entries(rawData)) {
-        const moduleName = extractModuleName(path);
-        if (!moduleName) continue;
-
-        if (!processedData[moduleName]) {
-          processedData[moduleName] = {};
-        }
-
-        for (const [enumName, values] of Object.entries(enums as Record<string, (string | number)[]>)) {
-          processedData[moduleName][enumName] = {
-            path,
-            values: values
-          };
-          totalEnums++;
-        }
-      }
-    }
+    // Process the second file (enum-like)
+    await processFile(enumsLikeFilePath, true);
 
     // Create temporary file
     const tmpFile = tmp.fileSync({ postfix: '.json' });
@@ -363,7 +350,30 @@ async function processCdkEnums(inputFilePaths: string[]): Promise<ProcessResult>
     console.error('Error processing CDK enums:', error);
     throw error;
   }
+
+  async function processFile(filePath: string, isEnumLike: boolean) {
+    const rawData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    for (const [path, enums] of Object.entries(rawData)) {
+      const moduleName = extractModuleName(path);
+      if (!moduleName) continue;
+
+      if (!processedData[moduleName]) {
+        processedData[moduleName] = {};
+      }
+
+      for (const [enumName, values] of Object.entries(enums as Record<string, (string | number)[]>)) {
+        processedData[moduleName][enumName] = {
+          path,
+          enumLike: isEnumLike,
+          values: values
+        };
+        totalEnums++;
+      }
+    }
+  }
 }
+
 
 function normalizeValue(value: string | number): string {
   const strValue = String(value);
@@ -734,30 +744,34 @@ export async function analyzeMissingEnumValues(
 
 export async function entryMethod(): Promise<void> {
   try {
-      const sdkDownload = await downloadAwsSdkModels(AWS_SDK_MODELS_URL);
+    const notTrue = false;
+      if (notTrue) {
+        await downloadAwsSdkModels(AWS_SDK_MODELS_URL);
+      }
+      // const sdkDownload = await downloadAwsSdkModels(AWS_SDK_MODELS_URL);
       const downloadedCdkEnumsPath = await downloadGithubRawFile(ENUMS_URL);
       const downloadedCdkEnumsLikePath = await downloadGithubRawFile(ENUM_LIKE_CLASSES_URL);
 
-      if (downloadedCdkEnumsPath.path && downloadedCdkEnumsLikePath.path && sdkDownload.path) {
-    //   if (downloadedCdkEnumsPath.path && downloadedCdkEnumsLikePath.path) {
+      // if (downloadedCdkEnumsPath.path && downloadedCdkEnumsLikePath.path && sdkDownload.path) {
+      if (downloadedCdkEnumsPath.path && downloadedCdkEnumsLikePath.path) {
           console.log("CDK enums downloaded successfully.");
 
-          const cleanedCdkEnumsFilePath = await processCdkEnums([downloadedCdkEnumsPath.path, downloadedCdkEnumsLikePath.path]);
+          const cleanedCdkEnumsFilePath = await processCdkEnums(downloadedCdkEnumsPath.path, downloadedCdkEnumsLikePath.path);
 
           console.log("SDK models downloaded successfully.");
 
-          const sdkEnumsParsedPath = await parseAwsSdkEnums(sdkDownload.path);
+          // const sdkEnumsParsedPath = await parseAwsSdkEnums(sdkDownload.path);
 
-          if (cleanedCdkEnumsFilePath.path && sdkEnumsParsedPath.path) {
-        //   if (cleanedCdkEnumsFilePath.path) {
+          // if (cleanedCdkEnumsFilePath.path && sdkEnumsParsedPath.path) {
+          if (cleanedCdkEnumsFilePath.path) {
               // Read the files
               const cdkEnums: CdkEnums = JSON.parse(
                 fs.readFileSync(cleanedCdkEnumsFilePath.path, 'utf8')
               );
               
               const sdkEnums: SdkEnums = JSON.parse(
-                fs.readFileSync(sdkEnumsParsedPath.path, 'utf8')
-                // fs.readFileSync(SDK_ENUMS, 'utf8')
+                // fs.readFileSync(sdkEnumsParsedPath.path, 'utf8')
+                fs.readFileSync(SDK_ENUMS, 'utf8')
               );
               
               const manualMappings: Record<string, string[]> = JSON.parse(
@@ -768,8 +782,8 @@ export async function entryMethod(): Promise<void> {
               await saveStaticMapping(cdkEnums, sdkEnums, manualMappings);
 
               // Analyze missing values
-              await analyzeMissingEnumValues(STATIC_MAPPING, cleanedCdkEnumsFilePath.path, sdkEnumsParsedPath.path);
-            //   await analyzeMissingEnumValues(STATIC_MAPPING, cleanedCdkEnumsFilePath.path, SDK_ENUMS);
+              // await analyzeMissingEnumValues(STATIC_MAPPING, cleanedCdkEnumsFilePath.path, sdkEnumsParsedPath.path);
+              await analyzeMissingEnumValues(STATIC_MAPPING, cleanedCdkEnumsFilePath.path, SDK_ENUMS);
 
               // TODO TODO TODO TODO TODO FUCK FUCK FUCK
               // try removing the format pattern matching cuz it sucks and there are like 0 missing values....
