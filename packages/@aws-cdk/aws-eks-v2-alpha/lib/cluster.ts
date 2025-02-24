@@ -547,27 +547,6 @@ export interface ComputeConfig {
 }
 
 /**
- * Options for configuring EKS Auto Mode elastic load balancing settings.
- * When enabled, EKS will automatically manage load balancers.
- */
-export interface ElasticLoadBalancingConfig {
-  // TODO - implement other props in a seperate PR
-}
-
-/**
- * Options for configuring EKS Auto Mode Kubernetes networking settings.
- * Controls automatic management of networking resources in the cluster.
- */
-export interface KubernetesNetworkConfig {
-  /**
-   * Elastic load balancing configuration for Auto Mode.
-   * Controls how EKS automatically manages load balancers for services.
-   * @default - Auto Mode elastic load balancing disabled
-   */
-  readonly elasticLoadBalancing?: ElasticLoadBalancingConfig;
-}
-
-/**
  * Properties for configuring a standard EKS cluster (non-Fargate)
  */
 export interface ClusterProps extends ClusterCommonOptions {
@@ -577,13 +556,6 @@ export interface ClusterProps extends ClusterCommonOptions {
    * @default - Auto Mode compute disabled
    */
   readonly compute?: ComputeConfig;
-
-  /**
-   * Configuration for Kubernetes networking settings in Auto Mode.
-   * When enabled, EKS will automatically manage networking resources.
-   * @default - Auto Mode networking disabled
-   */
-  readonly kubernetesNetwork?: KubernetesNetworkConfig;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
