@@ -118,7 +118,7 @@ describe('eks auto mode', () => {
             nodePools: ['system', 'general-purpose'],
           },
         });
-      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+      }).toThrow(/Cannot specify compute without using DefaultCapacityType.AUTOMODE/);
     });
 
     test('throws when nodeRole specified without auto mode', () => {
@@ -135,7 +135,7 @@ describe('eks auto mode', () => {
             nodeRole: customRole,
           },
         });
-      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+      }).toThrow(/Cannot specify compute without using DefaultCapacityType.AUTOMODE/);
     });
 
     test('throws when both nodePools and nodeRole specified without auto mode', () => {
@@ -153,7 +153,7 @@ describe('eks auto mode', () => {
             nodeRole: customRole,
           },
         });
-      }).toThrow(/Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE/);
+      }).toThrow(/Cannot specify compute without using DefaultCapacityType.AUTOMODE/);
     });
 
     test('validates node pool values', () => {

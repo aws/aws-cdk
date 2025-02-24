@@ -1100,19 +1100,8 @@ export class Cluster extends ClusterBase {
     // autoMode enabled when defaultCapacityType is undefined or set to AUTOMODE
     const autoModeEnabled = props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
 
-    // Throw when using nodePools or nodeRole without using AUTOMODE
-    if (!autoModeEnabled && (props.compute?.nodePools || props.compute?.nodeRole)) {
-      throw new Error('Cannot specify nodePools or nodeRole without using DefaultCapacityType.AUTOMODE');
-    }
-
-    // Node pool values are case-sensitive and must be general-purpose and/or system
-    if (props.compute?.nodePools) {
-      const validNodePools = ['general-purpose', 'system'];
-      const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
-      if (invalidPools.length > 0) {
-        throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
-      }
-    }
+    // validate all automode relevant configurations
+    this.validateAutoMode(autoModeEnabled, props);
 
     if (autoModeEnabled) {
       // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
@@ -1204,14 +1193,14 @@ export class Cluster extends ClusterBase {
       },
       storageConfig: {
         blockStorage: {
-          enabled: !autoModeEnabled ? false : true,
+          enabled: autoModeEnabled,
         },
       },
       kubernetesNetworkConfig: {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
         elasticLoadBalancing: {
-          enabled: !autoModeEnabled ? false : true,
+          enabled: autoModeEnabled,
         },
       },
       resourcesVpcConfig: {
@@ -1562,6 +1551,39 @@ export class Cluster extends ClusterBase {
     this._kubectlReadyBarrier.node.addDependency(fargateProfile);
 
     return this._fargateProfiles;
+  }
+
+  /**
+   * validate all autoMode relevant configurations to ensure they are correct and throw
+   * errors if they are not.
+   *
+   * @param autoModeEnabled boolean
+   * @param props ClusterProps
+   *
+   */
+  private validateAutoMode(autoModeEnabled: boolean, props: ClusterProps): void {
+    // if using AUTOMODE
+    if (autoModeEnabled) {
+      // When using AUTOMODE, nodePools values are case-sensitive and must be general-purpose and/or system
+      if (props.compute?.nodePools) {
+        const validNodePools = ['general-purpose', 'system'];
+        const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
+        if (invalidPools.length > 0) {
+          throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+        }
+      }
+
+      // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
+      if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
+        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+      }
+    } else {
+      // if NOT using AUTOMODE
+      if (props.compute) {
+        // When not using AUTOMODE, compute must be undefined
+        throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
+      }
+    }
   }
 
   private addNodePoolRole(id: string): iam.Role {
