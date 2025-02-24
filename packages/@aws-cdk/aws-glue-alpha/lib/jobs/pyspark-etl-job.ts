@@ -1,17 +1,16 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Job, JobProperties } from './job';
+import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import { SparkUIProps, SparkUILoggingLocation } from './spark-ui-utils';
 import { Code } from '../code';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Spark ETL job
  */
-export interface PySparkEtlJobProps extends JobProperties {
+export interface PySparkEtlJobProps extends JobProps {
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -45,6 +44,15 @@ export interface PySparkEtlJobProps extends JobProperties {
    * @default - no extra jar files
    */
   readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -96,10 +104,7 @@ export class PySparkEtlJob extends Job {
     addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
+    this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable SparkUI by default as a best practice
@@ -114,7 +119,7 @@ export class PySparkEtlJob extends Job {
     // Gather executable arguments
     const execuatbleArgs = this.executableArguments(props);
 
-    // Conbine command line arguments into a single line item
+    // Combine command line arguments into a single line item
     const defaultArguments = {
       ...execuatbleArgs,
       ...continuousLoggingArgs,
@@ -159,35 +164,7 @@ export class PySparkEtlJob extends Job {
   private executableArguments(props: PySparkEtlJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
-
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraFiles && props.extraFiles.length > 0) {
-      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraJars && props.extraJars?.length > 0) {
-      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-
+    this.setupSparkCodeArguments(args, props);
     return args;
-  }
-
-  private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-    validateSparkUiPrefix(sparkUiProps.prefix);
-    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
-    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
-    const args = {
-      '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
-    };
-
-    return {
-      location: {
-        prefix: sparkUiProps.prefix,
-        bucket,
-      },
-      args,
-    };
   }
 }

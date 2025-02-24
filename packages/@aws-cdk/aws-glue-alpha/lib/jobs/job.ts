@@ -1,3 +1,4 @@
+import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -8,6 +9,7 @@ import { Code } from '..';
 import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
+import { SparkUIProps, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -88,7 +90,7 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
  */
 export interface ContinuousLoggingProps {
   /**
-   * Enable continouous logging.
+   * Enable continuous logging.
    */
   readonly enabled: boolean;
 
@@ -126,8 +128,8 @@ export interface ContinuousLoggingProps {
 /**
  * A base class is needed to be able to import existing Jobs into a CDK app to
  * reference as part of a larger stack or construct. JobBase has the subset
- * of attribtues required to idenitfy and reference an existing Glue Job,
- * as well as some CloudWatch metric conveneince functions to configure an
+ * of attributes required to identify and reference an existing Glue Job,
+ * as well as some CloudWatch metric convenience functions to configure an
  * event-driven flow using the job.
  */
 export abstract class JobBase extends cdk.Resource implements IJob {
@@ -282,10 +284,10 @@ export abstract class JobBase extends cdk.Resource implements IJob {
 
 /**
  * A subset of Job attributes are required for importing an existing job
- * into a CDK project. This is ionly used when using fromJobAttributes
+ * into a CDK project. This is only used when using fromJobAttributes
  * to identify and reference the existing job.
  */
-export interface JobImportAttributes {
+export interface JobAttributes {
   /**
    * The name of the job.
    */
@@ -301,9 +303,9 @@ export interface JobImportAttributes {
 }
 
 /**
- * JobProperties will be used to create new Glue Jobs using this L2 Construct.
+ * JobProps will be used to create new Glue Jobs using this L2 Construct.
  */
-export interface JobProperties {
+export interface JobProps {
   /**
    * Script Code Location (required)
    * Script to run when the Glue job executes. Can be uploaded
@@ -451,6 +453,44 @@ export interface JobProperties {
 }
 
 /**
+ * @internal
+ */
+interface SparkCodeArgumentsProps {
+  /**
+   * Extra Python Files S3 URL (optional)
+   * S3 URL where additional python dependencies are located
+   *
+   * @default - no extra files
+   */
+  readonly extraPythonFiles?: Code[];
+
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
+
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
+}
+
+/**
  * A Glue Job.
  * @resource AWS::Glue::Job
  */
@@ -463,7 +503,7 @@ export abstract class Job extends JobBase {
    * @param id The construct's id.
    * @param attrs Attributes for the Glue Job we want to import
    */
-  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobImportAttributes): IJob {
+  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
       public readonly jobArn = this.buildJobArn(scope, attrs.jobName);
@@ -496,12 +536,12 @@ export abstract class Job extends JobBase {
   }
 
   /**
-   * Setup Continuous Loggiung Properties
+   * Setup Continuous Logging Properties
    * @param role The IAM role to use for continuous logging
    * @param props The properties for continuous logging configuration
    * @returns String containing the args for the continuous logging command
    */
-  public setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
+  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
     // If the developer has explicitly disabled continuous logging return no args
     if (props && !props.enabled) {
       return {};
@@ -537,6 +577,45 @@ export abstract class Job extends JobBase {
     const s3Location = code.bind(this, this.role).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
   }
+
+  protected setupSparkCodeArguments(args: { [key: string]: string }, props: SparkCodeArgumentsProps) {
+    if (props.extraJars && props.extraJars.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+    if (props.extraJarsFirst) {
+      args['--user-jars-first'] = 'true';
+    }
+    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
+      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+    if (props.extraFiles && props.extraFiles.length > 0) {
+      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+  }
+
+  /**
+   * Set the arguments for sparkUI with best practices enabled by default
+   *
+   * @returns An array of arguments for enabling sparkUI
+   */
+
+  protected setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
+    validateSparkUiPrefix(sparkUiProps.prefix);
+    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
+    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
+    const args = {
+      '--enable-spark-ui': 'true',
+      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
+    };
+
+    return {
+      location: {
+        prefix: sparkUiProps.prefix,
+        bucket,
+      },
+      args,
+    };
+  }
 }
 
 /**
@@ -552,7 +631,7 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
     namespace: 'AWS/Events',
     metricName: 'TriggeredRules',
     dimensionsMap: { RuleName: rule.ruleName },
-    statistic: cloudwatch.Statistic.SUM,
+    statistic: cloudwatch.Stats.SUM,
     ...props,
   }).attachTo(rule);
 }

@@ -1,16 +1,16 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
-import { Job, JobProperties } from './job';
+import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
-import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import { SparkUIProps, SparkUILoggingLocation } from './spark-ui-utils';
+import { Code } from '../code';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Scala Spark ETL job
  */
-export interface ScalaSparkStreamingJobProps extends JobProperties {
+export interface ScalaSparkStreamingJobProps extends JobProps {
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -29,11 +29,29 @@ export interface ScalaSparkStreamingJobProps extends JobProperties {
   readonly className: string;
 
   /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
+
+  /**
    * Extra Jars S3 URL (optional)
    * S3 URL where additional jar dependencies are located
    * @default - no extra jar files
    */
-  readonly extraJars?: string[];
+  readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -85,10 +103,7 @@ export class ScalaSparkStreamingJob extends Job {
     addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
+    this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable SparkUI by default as a best practice
@@ -108,7 +123,7 @@ export class ScalaSparkStreamingJob extends Job {
       throw new Error('className must be set for Scala ETL Jobs');
     }
 
-    // Conbine command line arguments into a single line item
+    // Combine command line arguments into a single line item
     const defaultArguments = {
       ...executableArgs,
       ...continuousLoggingArgs,
@@ -157,25 +172,7 @@ export class ScalaSparkStreamingJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
-
+    this.setupSparkCodeArguments(args, props);
     return args;
-  }
-
-  private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-    validateSparkUiPrefix(sparkUiProps.prefix);
-    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
-    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
-    const args = {
-      '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
-    };
-
-    return {
-      location: {
-        prefix: sparkUiProps.prefix,
-        bucket,
-      },
-      args,
-    };
   }
 }
