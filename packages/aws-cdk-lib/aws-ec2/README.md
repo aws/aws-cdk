@@ -26,7 +26,7 @@ instances for your project.
 ### Subnet Types
 
 A VPC consists of one or more subnets that instances can be placed into. CDK
-distinguishes three different subnet types:
+distinguishes six different subnet types:
 
 * **Public (`SubnetType.PUBLIC`)** - public subnets connect directly to the Internet using an
   Internet Gateway. If you want your instances to have a public IP address
@@ -41,6 +41,18 @@ distinguishes three different subnet types:
   as such do not require NAT gateways. They can only connect to or be
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
+* **Public (Outpost) (`SubnetType.PUBLIC_OUTPOST`)** - the subnet will be deploy on the associated AWS Outpost.
+  Public subnets connect directly to the Internet using an Internet Gateway or a Local Gateway.
+  If you want your instances to have a public IP address and be directly reachable from the Internet, you must place them in a public subnet.
+* **Private with Internet Access (Outpost) (`SubnetType.PRIVATE_WITH_EGRESS_OUTPOST`)** - subnet will be deployed on the associated AWS Outpost.
+ Instances in private subnets are not directly routable from the Internet, and you must provide a way to connect out to the Internet.
+  By default, a NAT gateway is created in every public subnet for maximum availability. Be aware that you will be charged for NAT gateways.
+  Private networks on AWS Outposts can either route traffic to a NAT gateway deployed in a public subnet within the AWS Region, or
+  via the Local Gateway attached to your AWS Outpost.
+* **Isolated (Outpost) (`SubnetType.PRIVATE_ISOLATED`)** - subnet will be deployed on the associated AWS Outpost.
+  Isolated subnets do not route from or to the Internet, and as such do not require NAT gateways or
+  to route traffic to a Local Gateway. They can only connect to or be connected to from other instances in the same VPC.
+  A default VPC configuration will not include isolated subnets,
 
 A default VPC configuration will create public and **private** subnets. However, if
 `natGateways:0` **and** `subnetConfiguration` is undefined, default VPC configuration
@@ -607,6 +619,82 @@ can reuse a VPC defined in one Stack in another by simply passing the VPC
 instance around:
 
 [sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
+
+### Deploying a VPC with Subnets on an Outpost
+If you need to extend your VPC to deploy subnets onto an Outpost there is some additional consideration required around how traffic is routed, as well as some additional properties that you will need to set in your subnet configuration. When your Outpost is provisioned by the AWS installation team they will configure a Local Gateway and ServiceLink which connects the Outpost to a specific availability zone within your selected AWS region. They will also configure the CIDR range that will be used by your ServiceLink. You will need to ensure that your VPC CIDR does not conflict with the  You cannot change these values or provision them yourself, so you will need to add this configuration to your VPC when defining the subnets.
+
+A simple subnet which routes traffic
+
+```ts
+new ec2.Vpc(this, 'OutpostVPC', {
+    cidr: '10.50.48.0/20',
+    localGatewayRouteTableIds: ['lgwrt-1234'],
+    subnetConfiguration: [
+        {
+            cidrMask: 26,
+            name: 'Public',
+            subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+            cidrMask: 26,
+            name: 'Private',
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+            cidrMask: 26,
+            name: 'OutpostPublic',
+            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
+            outpostAvailabilityZone: 'us-east-1a',
+            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
+            localGatewayId: 'lgw-1234',
+            subnetType: ec2.SubnetType.PUBLIC_OUTPOST,
+        },
+        {
+            cidrMask: 26,
+            name: 'OutpostPrivate',
+            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
+            outpostAvailabilityZone: 'us-east-1a',
+            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
+            localGatewayId: 'lgw-1234',
+            subnetType: ec2.SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+        },
+    ],
+});
+```
+
+When configuring your subnets to be deployed to an Outpost, you must specify the `outpostArn`, `outpostAvailabilityZone`, and the `localGatewayRouteTableIds`. If no `outpostDefaultRoute` is set then the subnet will be configured to route traffic via the AWS Region. `localGatewayId` is only required if you have specified `outpostDefaultRoute` to be `ON_PREMISE`.
+
+The key difference in the routing for Outpost subnets is the option to have internet traffic routed via the local gateway, removing the need for NAT gateways or internet gateways to be deployed. For a completely on premise solution, the following is a valid and complete VPC configuration:
+
+```ts
+new ec2.Vpc(this, 'OutpostVPC', {
+    cidr: '10.50.48.0/20',
+    localGatewayRouteTableIds: ['lgwrt-1234'],
+    subnetConfiguration: [
+        {
+            cidrMask: 26,
+            name: 'OutpostPublic',
+            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
+            outpostAvailabilityZone: 'us-east-1a',
+            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
+            localGatewayId: 'lgw-1234',
+            subnetType: ec2.SubnetType.PUBLIC_OUTPOST,
+        },
+        {
+            cidrMask: 26,
+            name: 'OutpostPrivate',
+            outpostArn: 'arn:aws:outposts:us-west-2:123456789012:outpost/op-1234567890',
+            outpostAvailabilityZone: 'us-east-1a',
+            outpostDefaultRoute: ec2.OutpostDefaultRoute.ON_PREMISE,
+            localGatewayId: 'lgw-1234',
+            subnetType: ec2.SubnetType.PRIVATE_OUTPOST_WITH_EGRESS,
+        },
+    ],
+});
+```
+
+Note that unlike in region deployments, deploying a subnet to an Outpost will result in only a single subnet being created per configuration,
+as each Outpost is associated with a single region.
 
 ### Importing an existing VPC
 
