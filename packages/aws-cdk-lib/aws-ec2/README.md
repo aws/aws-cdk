@@ -44,12 +44,12 @@ distinguishes six different subnet types:
 * **Public (Outpost) (`SubnetType.PUBLIC_OUTPOST`)** - the subnet will be deploy on the associated AWS Outpost.
   Public subnets connect directly to the Internet using an Internet Gateway or a Local Gateway.
   If you want your instances to have a public IP address and be directly reachable from the Internet, you must place them in a public subnet.
-* **Private with Internet Access (Outpost) (`SubnetType.PRIVATE_WITH_EGRESS_OUTPOST`)** - subnet will be deployed on the associated AWS Outpost.
+* **Private with Internet Access (Outpost) (`SubnetType.PRIVATE_OUTPOST_WITH_EGRESS`)** - subnet will be deployed on the associated AWS Outpost.
  Instances in private subnets are not directly routable from the Internet, and you must provide a way to connect out to the Internet.
   By default, a NAT gateway is created in every public subnet for maximum availability. Be aware that you will be charged for NAT gateways.
   Private networks on AWS Outposts can either route traffic to a NAT gateway deployed in a public subnet within the AWS Region, or
   via the Local Gateway attached to your AWS Outpost.
-* **Isolated (Outpost) (`SubnetType.PRIVATE_ISOLATED`)** - subnet will be deployed on the associated AWS Outpost.
+* **Isolated (Outpost) (`SubnetType.PRIVATE_OUTPOST_ISOLATED`)** - subnet will be deployed on the associated AWS Outpost.
   Isolated subnets do not route from or to the Internet, and as such do not require NAT gateways or
   to route traffic to a Local Gateway. They can only connect to or be connected to from other instances in the same VPC.
   A default VPC configuration will not include isolated subnets,
