@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-multiple-alb.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4206140067eea68731cbdc100e86cd6361e9d373c36720f4a999e7f7e6a50efe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3c4d7b2a6bc7be9d6b6b28dc1f55eac4feaa8e5950199743a94de6b43021b38.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -172,6 +172,27 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ-multiple-alb/Cluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "Cluster.handleCanContainersAccessInstanceRoleForAL2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:584:47)",
+              "Cluster.configureAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:489:26)",
+              "Cluster.addAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:455:14)",
+              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:408:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service.js:20:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/aws-ecs-integ-multiple-alb/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -226,12 +247,6 @@
             "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
           }
         ],
-        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E"
-          }
-        ],
         "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -248,6 +263,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole02E489EC0"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole13AF1063A"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole2D53500AD"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole386EBB933"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole4F316D036"
           }
         ],
         "/aws-ecs-integ-multiple-alb/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -350,6 +395,63 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceServiceURL1258C56B"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRole1C1DE6CC"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefTaskRoleDefaultPolicyD48473C0"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDef7FB8322A"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefwebLogGroupA1767F2C"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefExecutionRole618CD311"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
+          }
+        ],
+        "/aws-ecs-integ-multiple-alb/myService/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "new BaseService (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:270:43)",
+              "new Ec2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:75:9)",
+              "ApplicationMultipleTargetGroupsEc2Service.createEc2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/ecs/application-multiple-target-groups-ecs-service.js:85:16)",
+              "new ApplicationMultipleTargetGroupsEc2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/ecs/application-multiple-target-groups-ecs-service.js:71:29)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.multiple-application-load-balanced-ecs-service.js:22:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
           }
         ],
         "/aws-ecs-integ-multiple-alb/myService/Service/Service": [

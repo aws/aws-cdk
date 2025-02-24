@@ -290,7 +290,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f634c102f4aa6cdd9b6c00b836e98f2d5c03e65b02bd9efa16f83a2f348f149f.zip"
+     "S3Key": "52cf96d8e37139faa98832bfcf5d3af4afc4e7353b74595c3f179e45410e31cb.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -981,6 +981,9 @@
    },
    "ap-southeast-4": {
     "FirehoseCidrBlock": "16.50.161.128/27"
+   },
+   "ap-southeast-5": {
+    "FirehoseCidrBlock": "43.216.58.0/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"

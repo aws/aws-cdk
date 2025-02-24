@@ -3,7 +3,7 @@ import { CfnBackupVault } from './backup.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -209,7 +209,7 @@ abstract class BackupVaultBase extends Resource implements IBackupVault {
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     for (const action of actions) {
       if (action.indexOf('*') >= 0) {
-        throw new Error("AWS Backup access policies don't support a wildcard in the Action key.");
+        throw new ValidationError("AWS Backup access policies don't support a wildcard in the Action key.", this);
       }
     }
 
@@ -246,10 +246,10 @@ export class BackupVault extends BackupVaultBase {
     const parsedArn = Stack.of(scope).splitArn(backupVaultArn, ArnFormat.COLON_RESOURCE_NAME);
 
     if (parsedArn.arnFormat !== ArnFormat.COLON_RESOURCE_NAME) {
-      throw new Error(`Backup Vault Arn ${backupVaultArn} has the wrong format, expected ${ArnFormat.COLON_RESOURCE_NAME}.`);
+      throw new ValidationError(`Backup Vault Arn ${backupVaultArn} has the wrong format, expected ${ArnFormat.COLON_RESOURCE_NAME}.`, scope);
     }
     if (!parsedArn.resourceName) {
-      throw new Error(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`);
+      throw new ValidationError(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`, scope);
     }
 
     class Import extends BackupVaultBase {
@@ -274,7 +274,7 @@ export class BackupVault extends BackupVaultBase {
     addConstructMetadata(this, props);
 
     if (props.backupVaultName && !Token.isUnresolved(props.backupVaultName) && !/^[a-zA-Z0-9\-_]{2,50}$/.test(props.backupVaultName)) {
-      throw new Error('Expected vault name to match pattern `^[a-zA-Z0-9\-_]{2,50}$`');
+      throw new ValidationError('Expected vault name to match pattern `^[a-zA-Z0-9\-_]{2,50}$`', this);
     }
 
     let notifications: CfnBackupVault.NotificationObjectTypeProperty | undefined;
@@ -296,7 +296,7 @@ export class BackupVault extends BackupVaultBase {
       accessPolicy: Lazy.any({ produce: () => this.accessPolicy.toJSON() }),
       encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
       notifications,
-      lockConfiguration: renderLockConfiguration(props.lockConfiguration),
+      lockConfiguration: renderLockConfiguration(this, props.lockConfiguration),
     });
     vault.applyRemovalPolicy(props.removalPolicy);
 
@@ -336,26 +336,26 @@ export class BackupVault extends BackupVaultBase {
   }
 }
 
-function renderLockConfiguration(config?: LockConfiguration): CfnBackupVault.LockConfigurationTypeProperty | undefined {
+function renderLockConfiguration(scope: Construct, config?: LockConfiguration): CfnBackupVault.LockConfigurationTypeProperty | undefined {
   if (!config) {
     return undefined;
   }
 
   if (config.changeableFor && config.changeableFor.toHours() < 72) {
-    throw new Error(`AWS Backup enforces a 72-hour cooling-off period before Vault Lock takes effect and becomes immutable, got ${config.changeableFor.toHours()} hours`);
+    throw new ValidationError(`AWS Backup enforces a 72-hour cooling-off period before Vault Lock takes effect and becomes immutable, got ${config.changeableFor.toHours()} hours`, scope);
   }
 
   if (config.maxRetention) {
     if (config.maxRetention.toDays() > 36500) {
-      throw new Error(`The longest maximum retention period you can specify is 36500 days, got ${config.maxRetention.toDays()} days`);
+      throw new ValidationError(`The longest maximum retention period you can specify is 36500 days, got ${config.maxRetention.toDays()} days`, scope);
     }
     if (config.maxRetention.toDays() <= config.minRetention.toDays()) {
-      throw new Error(`The maximum retention period (${config.maxRetention.toDays()} days) must be greater than the minimum retention period (${config.minRetention.toDays()} days)`);
+      throw new ValidationError(`The maximum retention period (${config.maxRetention.toDays()} days) must be greater than the minimum retention period (${config.minRetention.toDays()} days)`, scope);
     }
   }
 
   if (config.minRetention.toHours() < 24) {
-    throw new Error(`The shortest minimum retention period you can specify is 1 day, got ${config.minRetention.toHours()} hours`);
+    throw new ValidationError(`The shortest minimum retention period you can specify is 1 day, got ${config.minRetention.toHours()} hours`, scope);
   }
 
   return {

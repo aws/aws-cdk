@@ -1,6 +1,19 @@
 {
   "version": "39.0.0",
   "files": {
+    "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310": {
+      "source": {
+        "path": "asset.e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
     "93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1": {
       "source": {
         "path": "asset.93d96d34e0d3cd20eb082652b91012b131bdc34fcf2bc16eb4170e04772fddb1.zip",
@@ -66,20 +79,7 @@
         }
       }
     },
-    "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310": {
-      "source": {
-        "path": "asset.e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip",
-        "packaging": "file"
-      },
-      "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e35d06c04a5f086530cad7876451b9fbd93ded1d4940950bb104fb78dd322310.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "a54913636fe5b4da7d6688df19d4289671bfa613357330c6d2763bdc348bff70": {
+    "744e05a1389c6e321b3824a1e7df17c068daa3cebf997f874f06d520d718813c": {
       "source": {
         "path": "awsstepfunctionstasksekscallintegtestawscdkawseksClusterResourceProvider412BC189.nested.template.json",
         "packaging": "file"
@@ -87,12 +87,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a54913636fe5b4da7d6688df19d4289671bfa613357330c6d2763bdc348bff70.json",
+          "objectKey": "744e05a1389c6e321b3824a1e7df17c068daa3cebf997f874f06d520d718813c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "6d51c8786511521af8e6837a57a53ed89e15e44471b6c7807fb35b537f5cd77e": {
+    "1b5d0eb1fa14ebadca21593781280b640852bb1c0a48197fbad1098dd959d29c": {
       "source": {
         "path": "awsstepfunctionstasksekscallintegtestawscdkawseksKubectlProvider65D285A0.nested.template.json",
         "packaging": "file"
@@ -100,12 +100,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6d51c8786511521af8e6837a57a53ed89e15e44471b6c7807fb35b537f5cd77e.json",
+          "objectKey": "1b5d0eb1fa14ebadca21593781280b640852bb1c0a48197fbad1098dd959d29c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "77f674d7848f6bdda488e0626ea479fadbf0cb8ebbec4a6c570e38b5f23d8658": {
+    "feb9fcce50da5b54727369cecd1a76e51607e158da8b4150e34e4fa6624f1552": {
       "source": {
         "path": "aws-stepfunctions-tasks-eks-call-integ-test.template.json",
         "packaging": "file"
@@ -113,7 +113,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "77f674d7848f6bdda488e0626ea479fadbf0cb8ebbec4a6c570e38b5f23d8658.json",
+          "objectKey": "feb9fcce50da5b54727369cecd1a76e51607e158da8b4150e34e4fa6624f1552.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
