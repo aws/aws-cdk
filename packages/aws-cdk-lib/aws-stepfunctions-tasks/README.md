@@ -541,16 +541,17 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
   jobTags: [{ key: 'key2', value: 'value2' }],
   outputData: {
     bucket: outputBucket, // required
-    prefix: 'output-data/',
+    path: 'output-data/',
   },
   trainingData: {
     bucket: trainingBucket,
-    prefix: 'training-data/data.json',
+    path: 'training-data/data.json',
   }, // required
+  // If you don't provide validation data, you have to specify `Evaluation percentage` hyperparameter.
   validationData: [
     {
       bucket: validationBucket,
-      prefix: 'validation-data/data.json',
+      path: 'validation-data/data.json',
     },
   ],
   vpcConfig: {
