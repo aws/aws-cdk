@@ -40,6 +40,7 @@ class EksClusterStack extends Stack {
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
