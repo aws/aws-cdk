@@ -1374,6 +1374,9 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": false
+                    },
                     "encryptionConfig": [
                       {
                         "provider": {
@@ -1390,7 +1393,10 @@
                       }
                     ],
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": false
+                      }
                     },
                     "logging": {
                       "clusterLogging": {
@@ -1438,6 +1444,11 @@
                         "ClusterRoleFA261979",
                         "Arn"
                       ]
+                    },
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": false
+                      }
                     },
                     "tags": [
                       {
@@ -2990,6 +3001,22 @@
                   "metadata": [
                     "*"
                   ]
+                }
+              },
+              "ConfigCommand": {
+                "id": "ConfigCommand",
+                "path": "aws-cdk-eks-cluster/Cluster/ConfigCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "GetTokenCommand": {
+                "id": "GetTokenCommand",
+                "path": "aws-cdk-eks-cluster/Cluster/GetTokenCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "fargate-profile-default": {

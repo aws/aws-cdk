@@ -625,6 +625,9 @@
     "AccessConfig": {
      "AuthenticationMode": "API"
     },
+    "ComputeConfig": {
+     "Enabled": false
+    },
     "EncryptionConfig": [
      {
       "Provider": {
@@ -641,6 +644,9 @@
      }
     ],
     "KubernetesNetworkConfig": {
+     "ElasticLoadBalancing": {
+      "Enabled": false
+     },
      "IpFamily": "ipv4"
     },
     "Logging": {
@@ -689,6 +695,11 @@
       "ClusterRoleFA261979",
       "Arn"
      ]
+    },
+    "StorageConfig": {
+     "BlockStorage": {
+      "Enabled": false
+     }
     },
     "Tags": [
      {
@@ -4354,6 +4365,46 @@
   }
  },
  "Outputs": {
+  "ClusterConfigCommand43AAE40F": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region us-east-1 --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "AdminRole38563C57",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterGetTokenCommand06AE992E": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region us-east-1 --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "AdminRole38563C57",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
   "ClusterNodesInstanceRoleARN4BC4C7FB": {
    "Value": {
     "Fn::GetAtt": [

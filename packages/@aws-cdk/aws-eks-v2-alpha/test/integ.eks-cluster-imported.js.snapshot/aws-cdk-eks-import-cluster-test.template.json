@@ -494,7 +494,13 @@
     "AccessConfig": {
      "AuthenticationMode": "API"
     },
+    "ComputeConfig": {
+     "Enabled": false
+    },
     "KubernetesNetworkConfig": {
+     "ElasticLoadBalancing": {
+      "Enabled": false
+     },
      "IpFamily": "ipv4"
     },
     "ResourcesVpcConfig": {
@@ -528,6 +534,11 @@
       "ClusterRoleFA261979",
       "Arn"
      ]
+    },
+    "StorageConfig": {
+     "BlockStorage": {
+      "Enabled": false
+     }
     },
     "Version": "1.32"
    },
@@ -1674,6 +1685,72 @@
    ]
   }
  },
+ "Outputs": {
+  "ClusterConfigCommand43AAE40F": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      },
+      " --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "EksAdminRole1C96C514",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterGetTokenCommand06AE992E": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      },
+      " --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "EksAdminRole1C96C514",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterRole": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterRoleFA261979",
+     "Arn"
+    ]
+   }
+  },
+  "EksMastersRoleOutput": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EksAdminRole1C96C514",
+     "Arn"
+    ]
+   }
+  }
+ },
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
@@ -1795,24 +1872,6 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
-   }
-  }
- },
- "Outputs": {
-  "ClusterRole": {
-   "Value": {
-    "Fn::GetAtt": [
-     "ClusterRoleFA261979",
-     "Arn"
-    ]
-   }
-  },
-  "EksMastersRoleOutput": {
-   "Value": {
-    "Fn::GetAtt": [
-     "EksAdminRole1C96C514",
-     "Arn"
-    ]
    }
   }
  },

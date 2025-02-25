@@ -17,6 +17,7 @@ class EksStandardAccessEntry extends Stack {
     });
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {

@@ -26,6 +26,7 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
