@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -22,7 +23,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-stack');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster', {

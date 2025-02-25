@@ -5,6 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY } from 'aws-cdk-lib/cx-api';
 
 class EksStandardAccessEntry extends Stack {
   constructor(scope: App, id: string) {
@@ -41,7 +42,11 @@ class EksStandardAccessEntry extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+  },
+});
 const stack = new EksStandardAccessEntry(app, 'EKSStandardAccessEntry');
 new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
   testCases: [stack],

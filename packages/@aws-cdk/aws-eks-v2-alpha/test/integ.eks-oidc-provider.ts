@@ -1,13 +1,8 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
-const app = new App({
-  postCliContext: {
-    [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-  },
-});
+const app = new App();
 const stack = new Stack(app, 'aws-eks-oidc-provider-test');
 
 new eks.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
