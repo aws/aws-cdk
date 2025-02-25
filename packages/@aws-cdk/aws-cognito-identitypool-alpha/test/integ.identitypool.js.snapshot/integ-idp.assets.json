@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "2624262acdb690670cd35f2582177855b423be087e9787f0f44f1876328b06b0": {
+    "a1046e71985bf782ff94088f68b0116dad15f432b81341e2a619fa0bb2092120": {
       "source": {
         "path": "integ-idp.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2624262acdb690670cd35f2582177855b423be087e9787f0f44f1876328b06b0.json",
+          "objectKey": "a1046e71985bf782ff94088f68b0116dad15f432b81341e2a619fa0bb2092120.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
