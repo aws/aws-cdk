@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Cluster, ClusterCommonOptions, CoreDnsComputeType } from './cluster';
+import { Cluster, ClusterCommonOptions, CoreDnsComputeType, DefaultCapacityType } from './cluster';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
@@ -33,6 +33,7 @@ export class FargateCluster extends Cluster {
     super(scope, id, {
       ...props,
       defaultCapacity: 0,
+      defaultCapacityType: DefaultCapacityType.NODEGROUP,
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });

@@ -226,10 +226,10 @@ describe('aspect', () => {
     Aspects.of(stack).add(new AddLoggingBucketAspect(), { priority: 0 });
     Tags.of(stack).add('TestKey', 'TestValue');
 
-    // THEN - check that Tags Aspect is applied to stack with default priority
+    // THEN - check that Tags Aspect is applied to stack with mutating priority
     let aspectApplications = Aspects.of(stack).applied;
     expect(aspectApplications.length).toEqual(2);
-    expect(aspectApplications[1].priority).toEqual(AspectPriority.DEFAULT);
+    expect(aspectApplications[1].priority).toEqual(AspectPriority.MUTATING);
 
     // THEN - both Aspects are successfully applied, new logging bucket is added with versioning enabled
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
