@@ -15,6 +15,7 @@ class EksClusterStack extends Stack {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
       vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
