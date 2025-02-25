@@ -19,10 +19,18 @@ jobs:
           # appropriately.
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           stale-days: 21
-          response-days: 7
+          response-days: 14
 
           # Optional
           important-checks-regex: AutoBuildv2Project1C6BFA3F
+          merge-conflict-warning: |
+            This PR cannot be merged because it has conflicts. Please resolve them. Note that PRs with merge conflicts considered stale and will be closed if not resolved.
+
+            To prevent automatic closure:
+            - Fix merge conflicts
+            - OR request an exemption by adding a comment containing 'Exemption Request' with justification e.x "Exemption Request: <justification>"
+            - OR request clarification by adding a comment containing 'Clarification Request' with a question e.x "Clarification Request: <question>"
+
           warn-message: |
             This PR has been in the STATE state for 3 weeks, and looks abandoned. Note that PRs with failing linting check or builds are not reviewed, please ensure your build is passing 
             
@@ -31,8 +39,8 @@ jobs:
             - OR request an exemption by adding a comment containing 'Exemption Request' with justification e.x "Exemption Request: <justification>"
             - OR request clarification by adding a comment containing 'Clarification Request' with a question e.x "Clarification Request: <question>"
 
-            This PR will automatically close in 7 days if no action is taken.
+            This PR will automatically close in 14 days if no action is taken.
 
           close-message: This PR has been deemed to be abandoned, and will be automatically closed. Please create a new PR for these changes if you think this decision has been made in error.
-          skip-labels: contribution/core,pr-linter/do-not-close,pr/needs-maintainer-review,pr-linter/exemption-requested
+          skip-labels: contribution/core,pr-linter/do-not-close,pr/needs-maintainer-review,pr-linter/exemption-requested,pr/reviewer-clarification-requested,pr/needs-community-review,pr/work-in-progress
           close-label: closed-for-staleness
