@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.181.0](https://github.com/aws/aws-cdk/compare/v2.180.0...v2.181.0) (2025-02-25)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#33579](https://github.com/aws/aws-cdk/issues/33579)) ([a6bfe3c](https://github.com/aws/aws-cdk/commit/a6bfe3c7dec693c7ed50dde71f29041d92eb56f8))
+* **rds:** scheduling modifications in the next scheduled maintenance window ([#33448](https://github.com/aws/aws-cdk/issues/33448)) ([be2c7d0](https://github.com/aws/aws-cdk/commit/be2c7d0b79d1b021b02ba6be8399fab01e62b775)), closes [#33447](https://github.com/aws/aws-cdk/issues/33447)
+* **stepfunctions:** add support for custom CSV delimiters in S3CsvItemReader ([#33558](https://github.com/aws/aws-cdk/issues/33558)) ([43ae4fc](https://github.com/aws/aws-cdk/commit/43ae4fca35dbb6467d0f15cf575fde886c2093f8)), closes [#33418](https://github.com/aws/aws-cdk/issues/33418)
+
+
+### Bug Fixes
+
+* **cognito:** re-adding threat protection capabilities and clarifying feature plans ([#33565](https://github.com/aws/aws-cdk/issues/33565)) ([2f9bc41](https://github.com/aws/aws-cdk/commit/2f9bc41080966cb840e12eb05c66fa6f9192a959)), closes [#33393](https://github.com/aws/aws-cdk/issues/33393) [#32367](https://github.com/aws/aws-cdk/issues/32367) [#32367](https://github.com/aws/aws-cdk/issues/32367) [#33393](https://github.com/aws/aws-cdk/issues/33393)
+* **core:** `serviceTimeout` for `CustomResource` does not work with token ([#33541](https://github.com/aws/aws-cdk/issues/33541)) ([bc91c70](https://github.com/aws/aws-cdk/commit/bc91c70129f4946f0a9b26a61c9cbf3a6fd8282d)), closes [#33513](https://github.com/aws/aws-cdk/issues/33513) [/github.com/go-to-k/aws-cdk/blob/75e52619cd09f363882ff62561a53cd5cd79ab30/packages/aws-cdk-lib/core/lib/custom-resource.ts#L169](https://github.com/aws//github.com/go-to-k/aws-cdk/blob/75e52619cd09f363882ff62561a53cd5cd79ab30/packages/aws-cdk-lib/core/lib/custom-resource.ts/issues/L169) [/github.com/go-to-k/aws-cdk/blob/75e52619cd09f363882ff62561a53cd5cd79ab30/packages/aws-cdk-lib/core/lib/duration.ts#L332](https://github.com/aws//github.com/go-to-k/aws-cdk/blob/75e52619cd09f363882ff62561a53cd5cd79ab30/packages/aws-cdk-lib/core/lib/duration.ts/issues/L332)
+* **core:** cross-stack references to NestedStack list values produces invalid outputs ([#32575](https://github.com/aws/aws-cdk/issues/32575)) ([f9252ab](https://github.com/aws/aws-cdk/commit/f9252ab927b092ac0f0862f315e7067fb928f09b)), closes [#27233](https://github.com/aws/aws-cdk/issues/27233)
+* **core:** wrong priority for tag aspects ([#33460](https://github.com/aws/aws-cdk/issues/33460)) ([0b9ffeb](https://github.com/aws/aws-cdk/commit/0b9ffeb6b2fb0f5e66634bda777b9745259b2b8d))
+* **rds:** `monitoringInterval` in `DatabaseClusterProps` does not work with token ([#33516](https://github.com/aws/aws-cdk/issues/33516)) ([f9b28b9](https://github.com/aws/aws-cdk/commit/f9b28b9392fadd53919fbca7f2e50f07a67936b1)), closes [#33504](https://github.com/aws/aws-cdk/issues/33504)
+* **stepfunctions-tasks:** `SageMakerCreateTrainingJob` add sagemaker:AddTags permission ([#32536](https://github.com/aws/aws-cdk/issues/32536)) ([3b07346](https://github.com/aws/aws-cdk/commit/3b073465a31dd2aee52671de52b483ef23d9cc6b)), closes [#32294](https://github.com/aws/aws-cdk/issues/32294)
+
 ## [2.180.0](https://github.com/aws/aws-cdk/compare/v2.179.0...v2.180.0) (2025-02-21)
 
 
