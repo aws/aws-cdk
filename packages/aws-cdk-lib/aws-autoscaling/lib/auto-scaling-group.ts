@@ -2375,7 +2375,7 @@ export class HealthChecks {
 
   private constructor(public readonly types: string[], public readonly gracePeriod?: Duration) {
     if (types.length === 0) {
-      throw new Error('At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
+      throw new UnscopedValidationError('At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
     }
   }
 }
