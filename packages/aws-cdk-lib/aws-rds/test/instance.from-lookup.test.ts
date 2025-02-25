@@ -32,6 +32,7 @@ describe('DatabaseInstanceBase from lookup', () => {
     expect(instance.dbInstanceEndpointAddress).toEqual('instance-1.testserver.us-east-1.rds.amazonaws.com');
     expect(instance.dbInstanceEndpointPort).toEqual('5432');
     expect(instance.instanceResourceId).toEqual('db-ABCDEFGHI');
+    expect(instance.connections.securityGroups.length).toEqual(0);
 
     expect(mock).toHaveBeenCalledWith(stack, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
@@ -92,6 +93,8 @@ describe('DatabaseInstanceBase from lookup with DBSG', () => {
     expect(instance.dbInstanceEndpointPort).toEqual('5432');
     expect(instance.instanceResourceId).toEqual('db-ABCDEFGHI');
     expect(instance.connections.securityGroups.length).toEqual(2);
+    expect(instance.connections.securityGroups[0].securityGroupId).toEqual('dbsg-1');
+    expect(instance.connections.securityGroups[1].securityGroupId).toEqual('dbsg-2');
 
     expect(mock).toHaveBeenCalledWith(stack, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,

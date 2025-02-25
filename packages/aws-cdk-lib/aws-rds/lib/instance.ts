@@ -171,12 +171,12 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     const dbsg: string[] = instance.DBSecurityGroups;
     if (dbsg) {
       securityGroups = dbsg.map(securityGroupId => {
-        ec2.SecurityGroup.fromSecurityGroupId(
+        return ec2.SecurityGroup.fromSecurityGroupId(
           scope,
           `LSG-${securityGroupId}`,
           securityGroupId,
         );
-      }) as unknown as ec2.ISecurityGroup[];
+      });
     }
 
     return this.fromDatabaseInstanceAttributes(scope, id, {
