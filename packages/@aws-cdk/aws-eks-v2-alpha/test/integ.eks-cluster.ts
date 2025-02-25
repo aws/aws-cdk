@@ -12,7 +12,7 @@ import * as constructs from 'constructs';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as hello from './hello-k8s';
 import * as eks from '../lib';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -350,6 +350,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
   },
 });
 

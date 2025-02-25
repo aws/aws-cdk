@@ -6,6 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
+import { LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -49,7 +50,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-windows-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {
