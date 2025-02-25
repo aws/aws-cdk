@@ -689,7 +689,10 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can configure EC2 health checks', () => {
+  test.each([
+    [cdk.Duration.seconds(100)],
+    [undefined],
+  ])('can configure EC2 health checks with grace is %s', (grace) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -700,18 +703,23 @@ describe('auto scaling group', () => {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       healthChecks: autoscaling.HealthChecks.ec2({
-        grace: cdk.Duration.seconds(100),
+        grace,
       }),
     });
+
+    const expectedGrace = grace ? grace.toSeconds() : Match.absent();
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       HealthCheckType: 'EC2',
-      HealthCheckGracePeriod: 100,
+      HealthCheckGracePeriod: expectedGrace,
     });
   });
 
-  test('can configure additional health checks', () => {
+  test.each([
+    [cdk.Duration.seconds(100)],
+    [undefined],
+  ])('can configure additional health checks with grace is %s', (grace) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -722,7 +730,7 @@ describe('auto scaling group', () => {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       healthChecks: autoscaling.HealthChecks.addition({
-        grace: cdk.Duration.seconds(100),
+        grace,
         additionalTypes: [
           autoscaling.AdditionalHealthCheckType.EBS,
           autoscaling.AdditionalHealthCheckType.ELB,
@@ -731,10 +739,12 @@ describe('auto scaling group', () => {
       }),
     });
 
+    const expectedGrace = grace ? grace.toSeconds() : Match.absent();
+
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       HealthCheckType: 'EBS,ELB,VPC_LATTICE',
-      HealthCheckGracePeriod: 100,
+      HealthCheckGracePeriod: expectedGrace,
     });
   });
 
