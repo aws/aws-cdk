@@ -1198,13 +1198,16 @@ export class UserPool extends UserPoolBase {
     });
     this.emailConfiguration = emailConfiguration;
 
-    const standardThreatProtectionMode = props.standardThreatProtectionMode ?
-      props.standardThreatProtectionMode :
-      StandardThreatProtectionMode.NO_ENFORCEMENT;
+    if (
+      props.featurePlan !== FeaturePlan.PLUS &&
+      (props.advancedSecurityMode && (props.advancedSecurityMode !== AdvancedSecurityMode.OFF))
+    ) {
+      throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
+    }
 
     if (
       (props.featurePlan !== FeaturePlan.PLUS) &&
-      (standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT ||
+      (props.standardThreatProtectionMode && (props.standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT) ||
       props.customThreatProtectionMode)
     ) {
       throw new ValidationError('you cannot enable Threat Protection when feature plan is not Plus.', this);
@@ -1217,7 +1220,14 @@ export class UserPool extends UserPoolBase {
       throw new ValidationError('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
     }
 
-    const chosenSecurityMode = props.advancedSecurityMode ? props.advancedSecurityMode : standardThreatProtectionMode;
+    const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
+      customAuthMode: props.customThreatProtectionMode,
+    });
+
+    let chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode;
+    if (advancedSecurityAdditionalFlows) {
+      chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode ?? StandardThreatProtectionMode.NO_ENFORCEMENT;
+    }
 
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
@@ -1233,9 +1243,9 @@ export class UserPool extends UserPoolBase {
       smsVerificationMessage,
       verificationMessageTemplate,
       userPoolAddOns: undefinedIfNoKeys({
-        advancedSecurityAdditionalFlows: {
+        advancedSecurityAdditionalFlows: undefinedIfNoKeys({
           customAuthMode: props.customThreatProtectionMode,
-        },
+        }),
         advancedSecurityMode: chosenSecurityMode,
       }),
       schema: this.schemaConfiguration(props),
@@ -1654,7 +1664,7 @@ export class UserPool extends UserPoolBase {
       throw new ValidationError('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.', this);
     }
 
-    if (props.featurePlan === FeaturePlan.LITE && (!props.advancedSecurityMode || props.advancedSecurityMode === AdvancedSecurityMode.OFF)) {
+    if (props.featurePlan === FeaturePlan.LITE) {
       throw new ValidationError('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
   }
