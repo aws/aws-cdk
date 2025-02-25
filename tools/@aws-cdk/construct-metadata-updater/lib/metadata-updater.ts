@@ -1,4 +1,4 @@
-import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
+import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
 // import SyntaxKind = ts.SyntaxKind;
@@ -699,6 +699,15 @@ export class MethodsUpdater extends MetadataUpdater {
  * primitive types.
  */
 export class EnumLikeUpdater extends MetadataUpdater {
+
+  private CUSTOM_PARAM_MAPPINGS: { [cdkModule: string]: {[cdkEnumLike: string]: any}} = {
+    "module": {
+      "EnumLike": (param1: string) => {
+        return `${param1}, ${param1.toUpperCase()}`
+      }
+    }
+  }
+
   constructor(dir: string) {
     super(dir);
   }
@@ -750,5 +759,155 @@ export class EnumLikeUpdater extends MetadataUpdater {
     // Write the generated file
     this.writeFileContent(outputPath, enumlikeBlueprint);
     console.log(`Metadata file written to: ${outputPath}`);
+  }
+
+  /**
+   * Retrieve the generated list of enum-like classes and the missing values,
+   * and update the source files with any missing values.
+   */
+  public updateEnumLikeValues(): void {
+    // Get list of enum-likes and missing enum-likes
+    const parsedEnumLikes = this.getParsedEnumLikeValues();
+    const missingEnumLikes = this.getMissingEnumLikeValues();
+
+    // Update the parsed_cdk_enums.json file
+    Object.keys(missingEnumLikes).forEach((cdkModule) => {
+      Object.keys(missingEnumLikes[cdkModule]).forEach((enumKey) => {
+        if (parsedEnumLikes[cdkModule]?.[enumKey]) {
+          this.updateEnumLike(cdkModule, enumKey, missingEnumLikes[cdkModule][enumKey])
+        }
+      });
+    });
+  }
+
+  /**
+   * Retrieve the parsed enum-like values from the generated list
+   * @returns A dictionary containing the parsed_cdk_enums.json file with only enum-likes
+   */
+  private getParsedEnumLikeValues(): any {
+    // Get file contents
+    const fileContent = fs.readFileSync(path.resolve(__dirname, "../../enum-updater/parsed_cdk_enums.json"), 'utf8');
+    var jsonData = JSON.parse(fileContent);
+
+    // Remove anything that isn't enum-like
+    Object.keys(jsonData).forEach((cdkModule) => {
+      Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
+        if (!jsonData[cdkModule][enumKey].enumLike) {
+          delete jsonData[cdkModule][enumKey];
+        }
+      });
+    });
+
+    // Clean up empty modules
+    Object.keys(jsonData).forEach((cdkModule) => {
+      if (Object.keys(jsonData[cdkModule]).length === 0) {
+        delete jsonData[cdkModule];
+      }
+    });
+
+    return jsonData;
+  }
+
+  /**
+   * Retrieve the list of missing values for enum-like values
+   * @returns A dictionary containing the missing-values.json file with only enum-likes with missing values
+   */
+  private getMissingEnumLikeValues(): any {
+    // Get file contents
+    const fileContent = fs.readFileSync(path.resolve(__dirname, "../../enum-updater/missing-values.json"), 'utf8');
+    var jsonData = JSON.parse(fileContent);
+
+    const parsedEnumLikes = this.getParsedEnumLikeValues();
+
+    // Remove anything that isn't in the parsed enum-likes (regular enums)
+    Object.keys(jsonData).forEach((cdkModule) => {
+      Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
+        if (!parsedEnumLikes[cdkModule]?.[enumKey]) {
+          delete jsonData[cdkModule][enumKey];
+        }
+      });
+    });
+
+    // Clean up empty modules
+    Object.keys(jsonData).forEach((cdkModule) => {
+      if (Object.keys(jsonData[cdkModule]).length === 0) {
+        delete jsonData[cdkModule];
+      }
+    });
+
+    return jsonData
+  }
+
+  /**
+   * Update a single enum-like value
+   * @param moduleName The module name that the enum-like class is in
+   * @param enumLikeName The enum-like class name
+   * @param missingValue The dictionary from the `missing-values.json` file
+   * containing the cdk_path and missing_values for the enum-like class
+   */
+  private updateEnumLike(moduleName: string, enumLikeName: string, missingValue: any): void {
+    // Get the right source file to modify
+    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', missingValue['cdk_path']));
+    if (!sourceFile) {
+      throw new Error(`Source file not found: ${missingValue['cdk_path']}`);
+    }
+
+    // Get the class declaration
+    const classDeclaration = sourceFile.getClass(enumLikeName);
+    if (!classDeclaration) {
+      throw new Error(`Class declaration not found: ${enumLikeName}`);
+    }
+
+    // Determine the type of enum-like
+    let initializerStatement = "";
+    classDeclaration.forEachChild((classField) => {
+      if (classField instanceof PropertyDeclaration) {
+        const initializerKind = classField.getInitializer()?.getKind();
+        if (initializerKind && classField.getText().startsWith("public static readonly") &&
+          classField.getName() === classField.getName().toUpperCase()
+        ) {
+          if (initializerKind === SyntaxKind.NewExpression) {          // X = new Class(...)
+            initializerStatement = `new ${enumLikeName}(`;
+          } else if (initializerKind === SyntaxKind.CallExpression) {  // X = Class.method(...)
+            initializerStatement = `${enumLikeName}.${classField.getInitializerIfKind(SyntaxKind.CallExpression)?.getExpressionIfKind(SyntaxKind.PropertyAccessExpression)?.getName()}(`;
+          } else {
+            console.log(`Skipping ${enumLikeName} as it does not fit currently-defined declaration patterns...`)
+            return;
+          }
+          // If we have custom logic, use that
+          if (this.CUSTOM_PARAM_MAPPINGS[moduleName] && this.CUSTOM_PARAM_MAPPINGS[moduleName][enumLikeName]) {
+            initializerStatement += `${this.CUSTOM_PARAM_MAPPINGS[moduleName][enumLikeName](classField.getName())})`;
+          } else {
+            // Otherwise, assume it's a single string
+            const args = initializerKind === SyntaxKind.NewExpression ? classField.getInitializerIfKind(SyntaxKind.NewExpression)?.getArguments() : classField.getInitializerIfKind(SyntaxKind.CallExpression)?.getArguments();
+            if (!args || args.length !== 1) {
+              console.log(`Skipping ${enumLikeName} as it does not fit currently-defined parameter patterns...`);
+              return;
+            }
+            initializerStatement += "'${VAL}')"
+          }
+        }
+      }
+    });
+
+    // Add the missing enum-like values
+    for (const enumLikeVal of missingValue['missing_values']) {
+      classDeclaration.addProperty({
+        name: enumLikeVal.toUpperCase().replace('-', '_').replace('.', '_'),
+        scope: Scope.Public,
+        isStatic: true,
+        isReadonly: true,
+        initializer: initializerStatement.replace("${VAL}", enumLikeVal),
+      });
+      console.log(`=====\nAdded missing enum-like value ${enumLikeVal} to ${enumLikeName}\n=====`);
+    }
+
+    // Write the updated file back to disk
+    // sourceFile.saveSync();
+    console.log(sourceFile.getClass(enumLikeName)?.getFullText());
+  }
+
+  public TEST() {
+    this.updateEnumLikeValues();
   }
 }
