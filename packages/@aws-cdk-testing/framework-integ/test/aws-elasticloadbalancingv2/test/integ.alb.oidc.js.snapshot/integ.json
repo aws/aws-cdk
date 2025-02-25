@@ -1,12 +1,13 @@
 {
   "version": "39.0.0",
   "testCases": {
-    "IntegTest/DefaultTest": {
+    "IntegTestAlbOidc/DefaultTest": {
       "stacks": [
-        "integ-alb-oidc"
+        "IntegAlbOidc"
       ],
-      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+      "diffAssets": true,
+      "assertionStack": "IntegTestAlbOidc/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestAlbOidcDefaultTestDeployAssert2476ECB6"
     }
   }
 }

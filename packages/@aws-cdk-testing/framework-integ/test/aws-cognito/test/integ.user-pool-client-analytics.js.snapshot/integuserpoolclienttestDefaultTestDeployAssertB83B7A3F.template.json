@@ -43,7 +43,7 @@
     "outputPaths": [
      "UserPoolClient.AnalyticsConfiguration.ApplicationArn"
     ],
-    "salt": "1740255954098"
+    "salt": "1740442221958"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -171,7 +171,7 @@
      "UserPoolClient.AnalyticsConfiguration.RoleArn",
      "UserPoolClient.AnalyticsConfiguration.ExternalId"
     ],
-    "salt": "1740255954098"
+    "salt": "1740442221959"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

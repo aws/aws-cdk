@@ -255,7 +255,6 @@
                       "email"
                     ],
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "OFF"
                     },
                     "verificationMessageTemplate": {

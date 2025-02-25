@@ -22,7 +22,6 @@
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
     "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
      "AdvancedSecurityMode": "OFF"
     },
     "UserPoolTier": "LITE",
@@ -58,7 +57,6 @@
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
     "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
      "AdvancedSecurityMode": "OFF"
     },
     "UserPoolTier": "ESSENTIALS",
@@ -94,7 +92,6 @@
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
     "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
      "AdvancedSecurityMode": "OFF"
     },
     "UserPoolTier": "PLUS",

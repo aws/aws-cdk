@@ -37,7 +37,6 @@
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "ENFORCED"
                     },
                     "userPoolTier": "PLUS",

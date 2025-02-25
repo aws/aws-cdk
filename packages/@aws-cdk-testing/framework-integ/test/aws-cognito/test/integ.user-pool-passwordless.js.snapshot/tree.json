@@ -47,7 +47,6 @@
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "OFF"
                     },
                     "verificationMessageTemplate": {
@@ -123,7 +122,6 @@
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "OFF"
                     },
                     "userPoolTier": "LITE",

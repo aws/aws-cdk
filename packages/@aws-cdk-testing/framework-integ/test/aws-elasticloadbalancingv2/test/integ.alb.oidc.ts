@@ -154,22 +154,20 @@ class AlbOidcStack extends Stack {
  * to request certificates for.
  *
  */
-const hostedZoneId = 'Z04111251C8LF7UAO9K0E'; // process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
+const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
-const hostedZoneName = 'nefcc.flux.amazon.dev'; // process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
+const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
 if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
-const domainName = 'test.nefcc.flux.amazon.dev'; // process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
+const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 const app = new App();
-const stack = new Stack(app, 'integ-alb-oidc');
-
-const testCase = new AlbOidcStack(stack, 'IntegAlbOidc', {
+const testCase = new AlbOidcStack(app, 'IntegAlbOidc', {
   hostedZoneId,
   hostedZoneName,
   domainName,
 });
-const test = new integ.IntegTest(stack, 'IntegTestAlbOidc', {
+const test = new integ.IntegTest(app, 'IntegTestAlbOidc', {
   testCases: [testCase],
   diffAssets: true,
 });
@@ -178,9 +176,9 @@ const cognitoUserProps = {
   username: 'test-user@example.com',
   password: 'TestUser@123',
 };
-const testUser = new CognitoUser(stack, 'User', cognitoUserProps);
+const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
 // this function signs in to the website and returns text content of the authenticated page body
-const signinFunction = new lambda.Function(stack, 'Signin', {
+const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-oidc-signin-handler',
   code: lambda.Code.fromAsset('alb-oidc-signin-handler', { exclude: ['*.ts'] }),
   handler: 'index.handler',
@@ -221,5 +219,4 @@ cognitoUser.expect(integ.ExpectedResult.objectLike({
     },
   ],
 }));
-
-new integ.IntegTest(app, 'IntegTest', { testCases: [stack] });
+app.synth();
