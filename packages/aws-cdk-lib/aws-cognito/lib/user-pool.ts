@@ -1205,24 +1205,24 @@ export class UserPool extends UserPoolBase {
       throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
     }
 
+    const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
+      customAuthMode: props.customThreatProtectionMode,
+    });
+
     if (
       (props.featurePlan !== FeaturePlan.PLUS) &&
       (props.standardThreatProtectionMode && (props.standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT) ||
-      props.customThreatProtectionMode)
+      advancedSecurityAdditionalFlows)
     ) {
       throw new ValidationError('you cannot enable Threat Protection when feature plan is not Plus.', this);
     }
 
     if (
       props.advancedSecurityMode &&
-      (props.standardThreatProtectionMode || props.customThreatProtectionMode)
+      (props.standardThreatProtectionMode || advancedSecurityAdditionalFlows)
     ) {
       throw new ValidationError('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
     }
-
-    const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
-      customAuthMode: props.customThreatProtectionMode,
-    });
 
     let chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode;
     if (advancedSecurityAdditionalFlows) {
@@ -1243,9 +1243,7 @@ export class UserPool extends UserPoolBase {
       smsVerificationMessage,
       verificationMessageTemplate,
       userPoolAddOns: undefinedIfNoKeys({
-        advancedSecurityAdditionalFlows: undefinedIfNoKeys({
-          customAuthMode: props.customThreatProtectionMode,
-        }),
+        advancedSecurityAdditionalFlows: advancedSecurityAdditionalFlows,
         advancedSecurityMode: chosenSecurityMode,
       }),
       schema: this.schemaConfiguration(props),
