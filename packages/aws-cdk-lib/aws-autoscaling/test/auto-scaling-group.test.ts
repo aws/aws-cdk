@@ -690,8 +690,8 @@ describe('auto scaling group', () => {
   });
 
   test.each([
-    [cdk.Duration.seconds(100)],
-    [undefined],
+    cdk.Duration.seconds(100),
+    undefined,
   ])('can configure EC2 health checks with grace is %s', (grace) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
@@ -717,8 +717,8 @@ describe('auto scaling group', () => {
   });
 
   test.each([
-    [cdk.Duration.seconds(100)],
-    [undefined],
+    cdk.Duration.seconds(100),
+    undefined,
   ])('can configure additional health checks with grace is %s', (grace) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
