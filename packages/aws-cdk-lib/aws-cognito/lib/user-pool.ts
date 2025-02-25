@@ -1239,12 +1239,12 @@ export class UserPool extends UserPoolBase {
       emailVerificationSubject,
       smsVerificationMessage,
       verificationMessageTemplate,
-      userPoolAddOns: {
-        advancedSecurityAdditionalFlows: undefinedIfNoKeys({
+      userPoolAddOns: undefinedIfNoKeys({
+        advancedSecurityAdditionalFlows: {
           customAuthMode: props.customThreatProtectionMode,
-        }),
+        },
         advancedSecurityMode: chosenSecurityMode,
-      },
+      }),
       schema: this.schemaConfiguration(props),
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),

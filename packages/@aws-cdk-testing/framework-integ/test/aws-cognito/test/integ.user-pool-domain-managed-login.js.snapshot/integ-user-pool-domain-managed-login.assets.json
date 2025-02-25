@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "b6d3571ee9597cec3b30fefcb5b42618ba0ccfff73578ff263927559bbe9e611": {
+    "5e5293a38415ab2013904caef76b108a2927c90b336787a3392d18511ec244ee": {
       "source": {
         "path": "integ-user-pool-domain-managed-login.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b6d3571ee9597cec3b30fefcb5b42618ba0ccfff73578ff263927559bbe9e611.json",
+          "objectKey": "5e5293a38415ab2013904caef76b108a2927c90b336787a3392d18511ec244ee.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

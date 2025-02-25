@@ -36,6 +36,7 @@
                     "deletionProtection": "INACTIVE",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "userPoolAddOns": {
+                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "OFF"
                     },
                     "userPoolName": "MyUserPool",

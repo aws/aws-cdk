@@ -2399,6 +2399,7 @@ test('advanced security defaults when no option provided', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
     UserPoolAddOns: {
+      AdvancedSecurityAdditionalFlows: {},
       AdvancedSecurityMode: 'OFF',
     },
   });

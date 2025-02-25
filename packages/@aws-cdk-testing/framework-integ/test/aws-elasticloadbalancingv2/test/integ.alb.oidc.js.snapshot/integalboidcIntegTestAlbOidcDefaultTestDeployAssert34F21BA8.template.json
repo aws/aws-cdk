@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
+         "Fn::ImportValue": "integ-alb-oidc:ExportsOutputRefSignin352C80E64BA58F71"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1740444290380"
+    "salt": "1740343297846"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -37,7 +37,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
+     "Fn::ImportValue": "integ-alb-oidc:ExportsOutputRefSignin352C80E64BA58F71"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +106,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
+              "Fn::ImportValue": "integ-alb-oidc:ExportsOutputRefSignin352C80E64BA58F71"
              }
             ]
            ]
@@ -175,7 +175,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "IntegAlbOidc:ExportsOutputRefUserPool6BA7E5F296FD7236"
+         "Fn::ImportValue": "integalboidcIntegAlbOidc690E4965:ExportsOutputRefUserPool6BA7E5F296FD7236"
         },
         "\""
        ]
@@ -184,7 +184,7 @@
      "Username": "\"test-user@example.com\""
     },
     "flattenResponse": "false",
-    "salt": "1740444290380"
+    "salt": "1740343297847"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

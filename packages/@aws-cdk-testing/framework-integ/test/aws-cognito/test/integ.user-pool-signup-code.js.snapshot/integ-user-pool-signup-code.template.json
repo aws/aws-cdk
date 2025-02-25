@@ -81,6 +81,7 @@
     },
     "SmsVerificationMessage": "integ-test: Account verification code is {####}",
     "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {},
      "AdvancedSecurityMode": "OFF"
     },
     "UserPoolName": "MyUserPool",

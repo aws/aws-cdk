@@ -1689,6 +1689,7 @@
                       ]
                     },
                     "userPoolAddOns": {
+                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "ENFORCED"
                     },
                     "userPoolName": "MyUserPool",
