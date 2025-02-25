@@ -10,7 +10,7 @@ import {
   AdminConfirmSignUpCommand,
   AdminDeleteUserCommand,
   AdminInitiateAuthCommand,
-} from "@aws-sdk/client-cognito-identity-provider";
+} from '@aws-sdk/client-cognito-identity-provider';
 
 // The default headers to to sign the request
 const DEFAULT_HEADERS = {
@@ -240,7 +240,7 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
 
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: 'connection_init' }))
-      console.log("Initialize connection");
+      console.log('Initialize connection');
       resolve(socket)
     }
 
@@ -256,18 +256,18 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
         console.log('Data received');
         response.pubStatusCode = 200;
         response.pubMsg = JSON.parse(payload.event).message;
-      } else if (payload.type === "subscribe_error") {
+      } else if (payload.type === 'subscribe_error') {
         console.log(payload);
-        if (payload.errors.some((error) => error.errorType === "UnauthorizedException")) {
-          console.log("Error received");
+        if (payload.errors.some((error) => error.errorType === 'UnauthorizedException')) {
+          console.log('Error received');
           response.statusCode = 401;
-          response.msg = "UnauthorizedException";
+          response.msg = 'UnauthorizedException';
         } else if (payload.errors.some(error => error.errorType === 'AccessDeniedException')) {
           console.log('Error received');
           response.statusCode = 403;
           response.msg = 'Forbidden';
         } else {
-          console.log("Error received");
+          console.log('Error received');
           response.statusCode = 400;
           response.msg = payload.errors[0].errorType;
         }
@@ -302,8 +302,8 @@ async function subscribe(channel, authMode, authToken, triggerPub=false) {
  */
 async function publish(channel, authMode, authToken) {
   const event = {
-    "channel": `/${channel}/test`,
-    "events": [
+    'channel': `/${channel}/test`,
+    'events': [
       JSON.stringify({message:'Hello World!'})
     ]
   }

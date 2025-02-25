@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\",\\\"customEndpoint\\\":true}\""
     },
     "flattenResponse": "false",
-    "salt": "1740245921527"
+    "salt": "1740449048232"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -296,7 +296,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"ChannelNamespace\\\",\\\"authMode\\\":\\\"API_KEY\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740245921528"
+    "salt": "1740449048233"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -344,7 +344,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"IAM\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740245921529"
+    "salt": "1740449048233"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -392,7 +392,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"ChannelNamespace\\\",\\\"authMode\\\":\\\"API_KEY\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740245921529"
+    "salt": "1740449048234"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

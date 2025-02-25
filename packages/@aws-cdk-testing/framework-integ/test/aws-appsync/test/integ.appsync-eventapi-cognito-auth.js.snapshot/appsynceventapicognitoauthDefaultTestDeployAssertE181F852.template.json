@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740240505101"
+    "salt": "1740448373389"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -216,7 +216,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"USER_POOL\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1740240505102"
+    "salt": "1740448373390"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
