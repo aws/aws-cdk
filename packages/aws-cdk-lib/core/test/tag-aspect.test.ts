@@ -1,6 +1,19 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
-import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType, Aspects, Tags, ITaggable, ITaggableV2 } from '../lib';
+import {
+  CfnResource,
+  CfnResourceProps,
+  RemoveTag,
+  Stack,
+  Tag,
+  TagManager,
+  TagType,
+  Aspects,
+  Tags,
+  ITaggable,
+  ITaggableV2,
+  AspectPriority,
+} from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
 class TaggableResource extends CfnResource implements ITaggable {
@@ -129,6 +142,23 @@ describe('tag aspect', () => {
     expect(map.tags.renderTags()).toEqual({ first: 'there is only 1' });
     expect(asg.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1', propagateAtLaunch: true }]);
     expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
+  });
+
+  test('Tags applied without priority get mutating priority value', () => {
+    const root = new Stack();
+    const res = new TaggableResource(root, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+
+    Tags.of(root).add('root', 'was here');
+    Tags.of(res).add('first', 'there is only 1');
+    Tags.of(res).remove('root');
+
+    const rootAspectApplications = Aspects.of(root).applied;
+    expect(rootAspectApplications[0].priority).toEqual(AspectPriority.MUTATING);
+    const resAspectApplications = Aspects.of(res).applied;
+    expect(resAspectApplications[0].priority).toEqual(AspectPriority.MUTATING);
+    expect(resAspectApplications[1].priority).toEqual(AspectPriority.MUTATING);
   });
 
   test('add will add a tag and remove will remove a tag if it exists', () => {

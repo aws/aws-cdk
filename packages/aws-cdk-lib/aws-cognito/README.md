@@ -30,6 +30,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
       - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
       - [Account Recovery Settings](#account-recovery-settings)
       - [Advanced Security Mode](#advanced-security-mode)
+      - [Threat Protection](#threat-protection)
     - [Emails](#emails)
     - [Device Tracking](#device-tracking)
     - [Lambda Triggers](#lambda-triggers)
@@ -466,7 +467,7 @@ A user will not be allowed to reset their password via phone if they are also us
 
 #### Advanced Security Mode
 
-⚠️ Advanced Security Mode is deprecated in favor of [user pool feature plans](#user-pool-feature-plans).
+⚠️ Advanced Security Mode is deprecated in favor of [Threat Protection](#threat-protection).
 
 User pools can be configured to use Advanced security. You can turn the user pool advanced security features on, and customize the actions that are taken in response to different risks. Or you can use audit mode to gather metrics on detected risks without taking action. In audit mode, the advanced security features publish metrics to Amazon CloudWatch. See the [documentation on Advanced security](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-advanced-security.html) to learn more.
 
@@ -476,6 +477,16 @@ new cognito.UserPool(this, 'myuserpool', {
   advancedSecurityMode: cognito.AdvancedSecurityMode.ENFORCED,
 });
 ```
+
+### Threat Protection
+
+This feature is only available if your Feature Plan is set to PLUS. 
+
+Threat Protection can be set to configure enforcement levels and automatic responses for users in password-based and custom-challenge authentication flows.
+For configuration, there are 2 options for standard authentication and custom authentication.
+These are represented with properties `standardThreatProtectionMode` and `customThreatProtectionMode`.
+See the [documentation on Threat Protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+
 
 ### Emails
 

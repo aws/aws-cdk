@@ -22,6 +22,7 @@ class EksClusterInferenceStack extends Stack {
       albController: {
         version: eks.AlbControllerVersion.V2_8_2,
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
 
     cluster.addNodegroupCapacity('InferenceInstances', {

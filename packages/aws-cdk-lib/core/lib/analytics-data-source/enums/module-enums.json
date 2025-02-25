@@ -1,5 +1,5 @@
 {
-  "packages/@aws-cdk/aws-amplify-alpha/lib/app.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts": {
     "RedirectStatus": [
       "200",
       "301",
@@ -16,12 +16,12 @@
       "AMPLIFY_MANAGED_NO_COOKIES"
     ]
   },
-  "packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts": {
     "TraceConfigurationVendor": [
       "AWSXRAY"
     ]
   },
-  "packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts": {
     "ImageRepositoryType": [
       "ECR_PUBLIC",
       "ECR"
@@ -39,7 +39,7 @@
       "DUAL_STACK"
     ]
   },
-  "packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts": {
     "ConnectionType": [
       "CONNECT_SSH",
       "CONNECT_SSM"
@@ -51,13 +51,13 @@
       "ubuntu-22.04-x86_64"
     ]
   },
-  "packages/@aws-cdk/aws-codestar-alpha/lib/github-repository.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-codestar-alpha/lib/github-repository.ts": {
     "RepositoryVisibility": [
       0,
       1
     ]
   },
-  "packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts": {
     "IdentityPoolProviderType": [
       "Facebook",
       "Google",
@@ -76,7 +76,7 @@
       "NotEqual"
     ]
   },
-  "packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts": {
     "AddressFamily": [
       "ipv4",
       "ipv6"
@@ -93,19 +93,19 @@
       "custom"
     ]
   },
-  "packages/@aws-cdk/aws-ec2-alpha/lib/route.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.ts": {
     "NatConnectivityType": [
       "public",
       "private"
     ]
   },
-  "packages/@aws-cdk/aws-ec2-alpha/lib/util.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/util.ts": {
     "TransitGatewayFeatureStatus": [
       "enable",
       "disable"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessScopeType": [
       "namespace",
       "cluster"
@@ -117,13 +117,13 @@
       "EC2_WINDOWS"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
     "AlbScheme": [
       "internal",
       "internet-facing"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts": {
     "ClusterLoggingTypes": [
       "api",
       "audit",
@@ -151,21 +151,22 @@
     ],
     "DefaultCapacityType": [
       0,
-      1
+      1,
+      2
     ],
     "MachineImageType": [
       0,
       1
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/k8s-patch.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/k8s-patch.ts": {
     "PatchType": [
       "json",
       "merge",
       "strategic"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts": {
     "NodegroupAmiType": [
       "AL2_x86_64",
       "AL2_x86_64_GPU",
@@ -193,19 +194,19 @@
       "NO_EXECUTE"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/service-account.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/service-account.ts": {
     "IdentityType": [
       "IRSA",
       "POD_IDENTITY"
     ]
   },
-  "packages/@aws-cdk/aws-eks-v2-alpha/lib/user-data.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/user-data.ts": {
     "LifecycleLabel": [
       "OnDemand",
       "Ec2Spot"
     ]
   },
-  "packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts": {
     "OperatingSystem": [
       "AMAZON_LINUX",
       "AMAZON_LINUX_2",
@@ -214,7 +215,7 @@
       "WINDOWS_2016"
     ]
   },
-  "packages/@aws-cdk/aws-gamelift-alpha/lib/game-server-group.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-server-group.ts": {
     "DeleteOption": [
       "SAFE_DELETE",
       "FORCE_DELETE",
@@ -226,7 +227,7 @@
       "ON_DEMAND_ONLY"
     ]
   },
-  "packages/@aws-cdk/aws-gamelift-alpha/lib/game-session-queue.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-session-queue.ts": {
     "PriorityType": [
       "LATENCY",
       "COST",
@@ -234,13 +235,13 @@
       "LOCATION"
     ]
   },
-  "packages/@aws-cdk/aws-gamelift-alpha/lib/ingress-rule.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/ingress-rule.ts": {
     "Protocol": [
       "TCP",
       "UDP"
     ]
   },
-  "packages/@aws-cdk/aws-glue-alpha/lib/constants.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts": {
     "WorkerType": [
       "Standard",
       "G.1X",
@@ -313,7 +314,7 @@
       "ERROR"
     ]
   },
-  "packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
     "TableEncryption": [
       "SSE-S3",
       "SSE-KMS",
@@ -321,7 +322,7 @@
       "CSE-KMS"
     ]
   },
-  "packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts": {
     "S3EncryptionMode": [
       "SSE-S3",
       "SSE-KMS"
@@ -333,7 +334,7 @@
       "CSE-KMS"
     ]
   },
-  "packages/@aws-cdk/aws-glue-alpha/lib/storage-parameter.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/storage-parameter.ts": {
     "CompressionType": [
       "none",
       "bzip2",
@@ -399,7 +400,7 @@
       "write.kms.key.id"
     ]
   },
-  "packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
     "FirehoseRecordSeparator": [
       "\n",
       "\t",
@@ -407,19 +408,19 @@
       ","
     ]
   },
-  "packages/@aws-cdk/aws-iot-actions-alpha/lib/iot-republish-action.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/iot-republish-action.ts": {
     "MqttQualityOfService": [
       0,
       1
     ]
   },
-  "packages/@aws-cdk/aws-iot-actions-alpha/lib/sns-topic-action.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/sns-topic-action.ts": {
     "SnsActionMessageFormat": [
       "RAW",
       "JSON"
     ]
   },
-  "packages/@aws-cdk/aws-iot-alpha/lib/logging.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/logging.ts": {
     "LogLevel": [
       "ERROR",
       "WARN",
@@ -428,7 +429,7 @@
       "DISABLED"
     ]
   },
-  "packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
     "AuditCheck": [
       "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
       "CA_CERTIFICATE_EXPIRING_CHECK",
@@ -461,13 +462,13 @@
       "MONTHLY"
     ]
   },
-  "packages/@aws-cdk/aws-iotevents-alpha/lib/detector-model.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-iotevents-alpha/lib/detector-model.ts": {
     "EventEvaluation": [
       "BATCH",
       "SERIAL"
     ]
   },
-  "packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts": {
     "ContainerFormat": [
       "TS",
       "FRAGMENTED_MP4"
@@ -496,14 +497,14 @@
       "REQUIRE"
     ]
   },
-  "packages/@aws-cdk/aws-ivs-alpha/lib/rendition-configuration.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/rendition-configuration.ts": {
     "RenditionSelection": [
       "ALL",
       "NONE",
       "CUSTOM"
     ]
   },
-  "packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts": {
     "RecordingMode": [
       "INTERVAL",
       "DISABLED"
@@ -513,7 +514,7 @@
       "LATEST"
     ]
   },
-  "packages/@aws-cdk/aws-ivs-alpha/lib/util.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/util.ts": {
     "Resolution": [
       "FULL_HD",
       "HD",
@@ -521,7 +522,7 @@
       "LOWEST_RESOLUTION"
     ]
   },
-  "packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/types.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/types.ts": {
     "LogLevel": [
       "DEBUG",
       "INFO",
@@ -535,20 +536,20 @@
       "PARALLELISM"
     ]
   },
-  "packages/@aws-cdk/aws-kinesisfirehose-alpha/lib/delivery-stream.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-alpha/lib/delivery-stream.ts": {
     "StreamEncryptionType": [
       0,
       1,
       2
     ]
   },
-  "packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts": {
     "BackupMode": [
       0,
       1
     ]
   },
-  "packages/@aws-cdk/aws-lambda-python-alpha/lib/packaging.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/packaging.ts": {
     "DependenciesFile": [
       "requirements.txt",
       "poetry.lock",
@@ -556,7 +557,7 @@
       ""
     ]
   },
-  "packages/@aws-cdk/aws-location-alpha/lib/map.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/map.ts": {
     "CustomLayer": [
       "POI"
     ],
@@ -583,27 +584,27 @@
       "IND"
     ]
   },
-  "packages/@aws-cdk/aws-location-alpha/lib/place-index.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/place-index.ts": {
     "IntendedUse": [
       "SingleUse",
       "Storage"
     ]
   },
-  "packages/@aws-cdk/aws-location-alpha/lib/tracker.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.ts": {
     "PositionFiltering": [
       "TimeBased",
       "DistanceBased",
       "AccuracyBased"
     ]
   },
-  "packages/@aws-cdk/aws-location-alpha/lib/util.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/util.ts": {
     "DataSource": [
       "Esri",
       "Grab",
       "Here"
     ]
   },
-  "packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts": {
     "StorageMode": [
       "LOCAL",
       "TIERED"
@@ -620,13 +621,13 @@
       "PLAINTEXT"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-alpha/lib/inputTransformation.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-alpha/lib/inputTransformation.ts": {
     "TemplateType": [
       "Text",
       "Object"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-alpha/lib/logs.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-alpha/lib/logs.ts": {
     "IncludeExecutionData": [
       "ALL"
     ],
@@ -642,13 +643,13 @@
       "w3c"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-alpha/lib/pipe.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-alpha/lib/pipe.ts": {
     "DesiredState": [
       "RUNNING",
       "STOPPED"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-alpha/lib/pipeVariable.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-alpha/lib/pipeVariable.ts": {
     "PipeVariable": [
       "<aws.pipes.pipe-arn>",
       "<aws.pipes.pipe-name>",
@@ -660,7 +661,7 @@
       "<aws.pipes.event.json>"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-sources-alpha/lib/enums.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-sources-alpha/lib/enums.ts": {
     "OnPartialBatchItemFailure": [
       "AUTOMATIC_BISECT"
     ],
@@ -674,19 +675,19 @@
       "LATEST"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-targets-alpha/lib/lambda.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-targets-alpha/lib/lambda.ts": {
     "LambdaFunctionInvocationType": [
       "FIRE_AND_FORGET",
       "REQUEST_RESPONSE"
     ]
   },
-  "packages/@aws-cdk/aws-pipes-targets-alpha/lib/stepfunctions.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-pipes-targets-alpha/lib/stepfunctions.ts": {
     "StateMachineInvocationType": [
       "FIRE_AND_FORGET",
       "REQUEST_RESPONSE"
     ]
   },
-  "packages/@aws-cdk/aws-redshift-alpha/lib/cluster.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.ts": {
     "NodeType": [
       "ds2.xlarge",
       "ds2.8xlarge",
@@ -707,23 +708,27 @@
       "pause-cluster",
       "resume-cluster",
       "failover-primary-compute"
+    ],
+    "MaintenanceTrackName": [
+      "current",
+      "trailing"
     ]
   },
-  "packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query-provider/handler-name.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query-provider/handler-name.ts": {
     "HandlerName": [
       "user",
       "table",
       "user-table-privileges"
     ]
   },
-  "packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query-provider/types.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query-provider/types.ts": {
     "TableSortStyle": [
       "AUTO",
       "COMPOUND",
       "INTERLEAVED"
     ]
   },
-  "packages/@aws-cdk/aws-redshift-alpha/lib/table.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.ts": {
     "TableAction": [
       0,
       1,
@@ -761,26 +766,26 @@
       "ZSTD"
     ]
   },
-  "packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
     "InvocationHttpResponseCode": [
       "Invocation4XXErrors",
       "Invocation5XXErrors"
     ]
   },
-  "packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/common.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/common.ts": {
     "SharePermission": [
       0,
       1
     ]
   },
-  "packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts": {
+  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/common.ts": {
     "RequireApproval": [
       "never",
       "any-change",
       "broadening"
     ]
   },
-  "packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts": {
+  "aws-cdk/packages/@aws-cdk/cdk-cli-wrapper/lib/commands/deploy.ts": {
     "HotswapMode": [
       "fall-back",
       "hotswap-only",
@@ -791,13 +796,13 @@
       "events"
     ]
   },
-  "packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts": {
+  "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/core/cfn-utils-provider/index.ts": {
     "CfnUtilsResourceType": [
       "Custom::AWSCDKCfnJson",
       "Custom::AWSCDKCfnJsonStringify"
     ]
   },
-  "packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
+  "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
     "Runtime": [
       "nodejs18.x",
       "python3.9",
@@ -811,36 +816,7 @@
       "NoOp"
     ]
   },
-  "packages/@aws-cdk/cx-api/lib/context/load-balancer.ts": {
-    "LoadBalancerIpAddressType": [
-      "ipv4",
-      "dualstack",
-      "dualstack-without-public-ipv4"
-    ]
-  },
-  "packages/@aws-cdk/cx-api/lib/context/vpc.ts": {
-    "VpcSubnetGroupType": [
-      "Public",
-      "Private",
-      "Isolated"
-    ]
-  },
-  "packages/@aws-cdk/cx-api/lib/metadata.ts": {
-    "SynthesisMessageLevel": [
-      "info",
-      "warning",
-      "error"
-    ]
-  },
-  "packages/@aws-cdk/cx-api/lib/private/flag-modeling.ts": {
-    "FlagType": [
-      0,
-      1,
-      2,
-      3
-    ]
-  },
-  "packages/@aws-cdk/integ-runner/lib/workers/common.ts": {
+  "aws-cdk/packages/@aws-cdk/integ-runner/lib/workers/common.ts": {
     "DiagnosticReason": [
       "NO_SNAPSHOT",
       "TEST_FAILED",
@@ -852,7 +828,7 @@
       "ASSERTION_FAILED"
     ]
   },
-  "packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/lambda-handler/types.ts": {
+  "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/lambda-handler/types.ts": {
     "AssertionType": [
       "equals",
       "objectLike",
@@ -863,7 +839,7 @@
       "fail"
     ]
   },
-  "packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts": {
+  "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts": {
     "LogType": [
       "None",
       "Tail"
@@ -874,22 +850,7 @@
       "DryRun"
     ]
   },
-  "packages/@aws-cdk/region-info/build-tools/fact-tables.ts": {
-    "Partition": [
-      "aws",
-      "aws-cn",
-      "aws-us-gov",
-      "aws-iso",
-      "aws-iso-b",
-      "aws-iso-f",
-      "aws-iso-e"
-    ],
-    "Runtime": [
-      "nodejs18.x",
-      "nodejs20.x"
-    ]
-  },
-  "packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
+  "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
     "FollowMode": [
       "never",
       "always",
@@ -897,13 +858,13 @@
       "internal-only"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts": {
     "SecurityPolicy": [
       "TLS_1_0",
       "TLS_1_2"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
     "ContentHandling": [
       "CONVERT_TO_BINARY",
       "CONVERT_TO_TEXT"
@@ -925,7 +886,7 @@
       "VPC_LINK"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/json-schema.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/json-schema.ts": {
     "JsonSchemaVersion": [
       "http://json-schema.org/draft-04/schema#",
       "http://json-schema.org/draft-07/schema#"
@@ -940,7 +901,7 @@
       "string"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/method.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.ts": {
     "AuthorizationType": [
       "NONE",
       "AWS_IAM",
@@ -948,7 +909,7 @@
       "COGNITO_USER_POOLS"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts": {
     "ApiKeySourceType": [
       "HEADER",
       "AUTHORIZER"
@@ -959,14 +920,14 @@
       "PRIVATE"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/stage.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.ts": {
     "MethodLoggingLevel": [
       "OFF",
       "ERROR",
       "INFO"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigateway/lib/usage-plan.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/usage-plan.ts": {
     "Period": [
       "DAY",
       "WEEK",
@@ -976,13 +937,13 @@
       "API_KEY"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2-authorizers/lib/http/lambda.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-authorizers/lib/http/lambda.ts": {
     "HttpLambdaResponseType": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts": {
     "SecurityPolicy": [
       "TLS_1_0",
       "TLS_1_2"
@@ -992,7 +953,7 @@
       "REGIONAL"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.ts": {
     "CorsHttpMethod": [
       "*",
       "DELETE",
@@ -1004,7 +965,7 @@
       "PUT"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/http/authorizer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/authorizer.ts": {
     "HttpAuthorizerType": [
       "AWS_IAM",
       "JWT",
@@ -1015,7 +976,7 @@
       "2.0"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts": {
     "HttpIntegrationType": [
       "HTTP_PROXY",
       "AWS_PROXY"
@@ -1037,7 +998,7 @@
       "INTERNET"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.ts": {
     "HttpMethod": [
       "ANY",
       "DELETE",
@@ -1055,13 +1016,13 @@
       "NONE"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/authorizer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/authorizer.ts": {
     "WebSocketAuthorizerType": [
       "REQUEST",
       "AWS_IAM"
     ]
   },
-  "packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts": {
     "WebSocketIntegrationType": [
       "AWS_PROXY",
       "MOCK",
@@ -1077,13 +1038,13 @@
       "WHEN_NO_TEMPLATES"
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.ts": {
     "Platform": [
       "x86-64",
       "ARM64"
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/configuration.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.ts": {
     "ConfigurationType": [
       "AWS.Freeform",
       "AWS.AppConfig.FeatureFlags"
@@ -1100,19 +1061,19 @@
       "CODE_PIPELINE"
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.ts": {
     "GrowthType": [
       "LINEAR",
       "EXPONENTIAL"
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/environment.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.ts": {
     "MonitorType": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/extension.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/extension.ts": {
     "ActionPoint": [
       "PRE_CREATE_HOSTED_CONFIGURATION_VERSION",
       "PRE_START_DEPLOYMENT",
@@ -1130,14 +1091,14 @@
       "events"
     ]
   },
-  "packages/aws-cdk-lib/aws-appconfig/lib/util.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/util.ts": {
     "DeletionProtectionCheck": [
       "ACCOUNT_DEFAULT",
       "APPLY",
       "BYPASS"
     ]
   },
-  "packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.ts": {
     "ServiceNamespace": [
       "ecs",
       "elasticmapreduce",
@@ -1154,7 +1115,7 @@
       "neptune"
     ]
   },
-  "packages/aws-cdk-lib/aws-applicationautoscaling/lib/step-scaling-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/step-scaling-action.ts": {
     "AdjustmentType": [
       "ChangeInCapacity",
       "PercentChangeInCapacity",
@@ -1166,7 +1127,7 @@
       "Maximum"
     ]
   },
-  "packages/aws-cdk-lib/aws-applicationautoscaling/lib/target-tracking-scaling-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/target-tracking-scaling-policy.ts": {
     "PredefinedMetric": [
       "AppStreamAverageCapacityUtilization",
       "CassandraReadCapacityUtilization",
@@ -1198,7 +1159,7 @@
       "WorkSpacesAverageUserSessionsCapacityUtilization"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/http-route-method.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/http-route-method.ts": {
     "HttpRouteMethod": [
       "GET",
       "HEAD",
@@ -1211,20 +1172,20 @@
       "PATCH"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/listener-tls-options.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/listener-tls-options.ts": {
     "TlsMode": [
       "STRICT",
       "PERMISSIVE",
       "DISABLED"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/mesh.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/mesh.ts": {
     "MeshFilterType": [
       "ALLOW_ALL",
       "DROP_ALL"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/route-spec.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/route-spec.ts": {
     "HttpRouteProtocol": [
       "http",
       "https"
@@ -1246,7 +1207,7 @@
       "unavailable"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/service-discovery.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/service-discovery.ts": {
     "IpPreference": [
       "IPv4_ONLY",
       "IPv4_PREFERRED",
@@ -1258,7 +1219,7 @@
       "ENDPOINTS"
     ]
   },
-  "packages/aws-cdk-lib/aws-appmesh/lib/shared-interfaces.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appmesh/lib/shared-interfaces.ts": {
     "Protocol": [
       "http",
       "tcp",
@@ -1266,7 +1227,7 @@
       "grpc"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/appsync-common.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/appsync-common.ts": {
     "AppSyncFieldLogLevel": [
       "NONE",
       "ERROR",
@@ -1275,7 +1236,7 @@
       "ALL"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/auth-config.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/auth-config.ts": {
     "AppSyncAuthorizationType": [
       "API_KEY",
       "AWS_IAM",
@@ -1284,7 +1245,7 @@
       "AWS_LAMBDA"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
     "Visibility": [
       "GLOBAL",
       "PRIVATE"
@@ -1297,7 +1258,7 @@
       "AWS_LAMBDA"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/graphqlapi.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi.ts": {
     "UserPoolDefaultAction": [
       "ALLOW",
       "DENY"
@@ -1314,18 +1275,18 @@
       "DISABLED"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/runtime.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/runtime.ts": {
     "FunctionRuntimeFamily": [
       "APPSYNC_JS"
     ]
   },
-  "packages/aws-cdk-lib/aws-appsync/lib/source-api-association.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/source-api-association.ts": {
     "MergeType": [
       "MANUAL_MERGE",
       "AUTO_MERGE"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts": {
     "Monitoring": [
       0,
       1
@@ -1372,7 +1333,7 @@
       "ELB"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts": {
     "DefaultResult": [
       "CONTINUE",
       "ABANDON"
@@ -1382,7 +1343,7 @@
       "autoscaling:EC2_INSTANCE_TERMINATING"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-action.ts": {
     "AdjustmentType": [
       "ChangeInCapacity",
       "PercentChangeInCapacity",
@@ -1394,7 +1355,7 @@
       "Maximum"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/target-tracking-scaling-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/target-tracking-scaling-policy.ts": {
     "PredefinedMetric": [
       "ASGAverageCPUUtilization",
       "ASGAverageNetworkIn",
@@ -1402,7 +1363,7 @@
       "ALBRequestCountPerTarget"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/termination-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/termination-policy.ts": {
     "TerminationPolicy": [
       "AllocationStrategy",
       "ClosestToNextInstanceHour",
@@ -1414,7 +1375,7 @@
       "CustomLambdaFunction"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/volume.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/volume.ts": {
     "EbsDeviceVolumeType": [
       "standard",
       "io1",
@@ -1424,20 +1385,20 @@
       "sc1"
     ]
   },
-  "packages/aws-cdk-lib/aws-autoscaling/lib/warm-pool.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/warm-pool.ts": {
     "PoolState": [
       "Hibernated",
       "Running",
       "Stopped"
     ]
   },
-  "packages/aws-cdk-lib/aws-backup/lib/resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-backup/lib/resource.ts": {
     "TagOperation": [
       "STRINGEQUALS",
       "dummy"
     ]
   },
-  "packages/aws-cdk-lib/aws-backup/lib/vault.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-backup/lib/vault.ts": {
     "BackupVaultEvents": [
       "BACKUP_JOB_STARTED",
       "BACKUP_JOB_COMPLETED",
@@ -1458,7 +1419,7 @@
       "S3_RESTORE_OBJECT_FAILED"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/ecs-container-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/ecs-container-definition.ts": {
     "UlimitName": [
       "core",
       "cpu",
@@ -1477,13 +1438,13 @@
       "stack"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/ecs-job-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/ecs-job-definition.ts": {
     "Compatibility": [
       "EC2",
       "FARGATE"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/eks-container-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/eks-container-definition.ts": {
     "ImagePullPolicy": [
       "Always",
       "IfNotPresent",
@@ -1494,20 +1455,20 @@
       "Memory"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/eks-job-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/eks-job-definition.ts": {
     "DnsPolicy": [
       "Default",
       "ClusterFirst",
       "ClusterFirstWithHostNet"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/job-definition-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-definition-base.ts": {
     "Action": [
       "EXIT",
       "RETRY"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/job-queue.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts": {
     "JobStateTimeLimitActionsAction": [
       "CANCEL"
     ],
@@ -1520,7 +1481,7 @@
       "RUNNABLE"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/linux-parameters.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/linux-parameters.ts": {
     "DevicePermission": [
       "read",
       "write",
@@ -1568,7 +1529,7 @@
       "mpol"
     ]
   },
-  "packages/aws-cdk-lib/aws-batch/lib/managed-compute-environment.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/managed-compute-environment.ts": {
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
@@ -1585,20 +1546,20 @@
       "SPOT_PRICE_CAPACITY_OPTIMIZED"
     ]
   },
-  "packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
     "ValidationMethod": [
       "EMAIL",
       "DNS"
     ]
   },
-  "packages/aws-cdk-lib/aws-chatbot/lib/slack-channel-configuration.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-chatbot/lib/slack-channel-configuration.ts": {
     "LoggingLevel": [
       "ERROR",
       "INFO",
       "NONE"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudformation/lib/cloud-formation-capabilities.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/cloud-formation-capabilities.ts": {
     "CloudFormationCapabilities": [
       "",
       "CAPABILITY_IAM",
@@ -1606,7 +1567,7 @@
       "CAPABILITY_AUTO_EXPAND"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/distribution.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.ts": {
     "HttpVersion": [
       "http1.1",
       "http2",
@@ -1648,15 +1609,16 @@
       "viewer-response"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/function.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/function.ts": {
     "FunctionEventType": [
       "viewer-request",
       "viewer-response"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts": {
     "AccessLevel": [
       "READ",
+      "READ_VERSIONED",
       "LIST",
       "WRITE",
       "DELETE"
@@ -1676,13 +1638,13 @@
       "sigv4"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts": {
     "OriginSelectionCriteria": [
       "default",
       "media-quality-based"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {
     "HeadersFrameOption": [
       "DENY",
       "SAMEORIGIN"
@@ -1698,7 +1660,7 @@
       "unsafe-url"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts": {
     "FailoverStatusCode": [
       403,
       404,
@@ -1723,7 +1685,7 @@
       "GHO"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.ts": {
     "ReadWriteType": [
       "ReadOnly",
       "WriteOnly",
@@ -1739,7 +1701,7 @@
       "AWS::S3::Object"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch-actions/lib/ec2.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch-actions/lib/ec2.ts": {
     "Ec2InstanceAction": [
       "stop",
       "terminate",
@@ -1747,7 +1709,7 @@
       "reboot"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch-actions/lib/ssm.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch-actions/lib/ssm.ts": {
     "OpsItemSeverity": [
       "1",
       "2",
@@ -1762,7 +1724,7 @@
       "Security"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/alarm-rule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm-rule.ts": {
     "AlarmState": [
       "ALARM",
       "OK",
@@ -1774,14 +1736,14 @@
       "NOT"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/alarm-status-widget.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm-status-widget.ts": {
     "AlarmStatusWidgetSortBy": [
       "default",
       "stateUpdatedTimestamp",
       "timestamp"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.ts": {
     "ComparisonOperator": [
       "GreaterThanOrEqualToThreshold",
       "GreaterThanThreshold",
@@ -1798,13 +1760,13 @@
       "missing"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/dashboard.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/dashboard.ts": {
     "PeriodOverride": [
       "auto",
       "inherit"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/graph.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/graph.ts": {
     "GraphWidgetView": [
       "timeSeries",
       "bar",
@@ -1836,7 +1798,7 @@
       "hidden"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts": {
     "LogQueryVisualizationType": [
       "table",
       "line",
@@ -1845,7 +1807,7 @@
       "pie"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts": {
     "Statistic": [
       "SampleCount",
       "Average",
@@ -1883,13 +1845,13 @@
       "None"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/text.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/text.ts": {
     "TextWidgetBackground": [
       "solid",
       "transparent"
     ]
   },
-  "packages/aws-cdk-lib/aws-cloudwatch/lib/variable.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/variable.ts": {
     "VariableInputType": [
       "input",
       "radio",
@@ -1900,14 +1862,14 @@
       "pattern"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/cache.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/cache.ts": {
     "LocalCacheMode": [
       "LOCAL_SOURCE_CACHE",
       "LOCAL_DOCKER_LAYER_CACHE",
       "LOCAL_CUSTOM_CACHE"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts": {
     "ComputeType": [
       "BUILD_GENERAL1_SMALL",
       "BUILD_GENERAL1_MEDIUM",
@@ -1922,7 +1884,7 @@
       "ATTRIBUTE_BASED_COMPUTE"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
     "EnvironmentType": [
       "ARM_CONTAINER",
       "LINUX_CONTAINER",
@@ -1935,7 +1897,7 @@
       "WINDOWS_EC2"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts": {
     "MachineType": [
       "GENERAL",
       "NVME"
@@ -1949,7 +1911,7 @@
       "ATTRIBUTE_BASED_COMPUTE"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
       "SERVICE_ROLE"
@@ -1977,13 +1939,13 @@
       "codebuild-project-build-phase-success"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/report-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/report-group.ts": {
     "ReportGroupType": [
       "TEST",
       "CODE_COVERAGE"
     ]
   },
-  "packages/aws-cdk-lib/aws-codebuild/lib/source.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/source.ts": {
     "EventAction": [
       "PUSH",
       "PULL_REQUEST_CREATED",
@@ -2004,7 +1966,7 @@
       "REPOSITORY_NAME"
     ]
   },
-  "packages/aws-cdk-lib/aws-codecommit/lib/repository.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codecommit/lib/repository.ts": {
     "RepositoryEventTrigger": [
       "all",
       "updateReference",
@@ -2025,79 +1987,79 @@
       "codecommit-repository-branches-and-tags-updated"
     ]
   },
-  "packages/aws-cdk-lib/aws-codedeploy/lib/base-deployment-config.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/base-deployment-config.ts": {
     "ComputePlatform": [
       "Server",
       "Lambda",
       "ECS"
     ]
   },
-  "packages/aws-cdk-lib/aws-codedeploy/lib/lambda/custom-deployment-config.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/lambda/custom-deployment-config.ts": {
     "CustomLambdaDeploymentConfigType": [
       "Canary",
       "Linear"
     ]
   },
-  "packages/aws-cdk-lib/aws-codedeploy/lib/private/utils.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/private/utils.ts": {
     "AutoRollbackEvent": [
       "DEPLOYMENT_FAILURE",
       "DEPLOYMENT_STOP_ON_ALARM",
       "DEPLOYMENT_STOP_ON_REQUEST"
     ]
   },
-  "packages/aws-cdk-lib/aws-codedeploy/lib/server/load-balancer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/server/load-balancer.ts": {
     "LoadBalancerGeneration": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-codeguruprofiler/lib/profiling-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codeguruprofiler/lib/profiling-group.ts": {
     "ComputePlatform": [
       "AWSLambda",
       "Default"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/cloudformation/stackset-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/cloudformation/stackset-types.ts": {
     "StackSetOrganizationsAutoDeployment": [
       "Enabled",
       "Disabled",
       "EnabledWithStackRetention"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/codebuild/build-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codebuild/build-action.ts": {
     "CodeBuildActionType": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codecommit/source-action.ts": {
     "CodeCommitTrigger": [
       "None",
       "Poll",
       "Events"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.ts": {
     "GitHubTrigger": [
       "None",
       "Poll",
       "WebHook"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/jenkins/jenkins-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/jenkins/jenkins-action.ts": {
     "JenkinsActionType": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline-actions/lib/s3/source-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/s3/source-action.ts": {
     "S3Trigger": [
       "None",
       "Poll",
       "Events"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline/lib/action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.ts": {
     "ActionCategory": [
       "Source",
       "Build",
@@ -2128,7 +2090,7 @@
       "codepipeline-pipeline-manual-approval-succeeded"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts": {
     "PipelineType": [
       "V1",
       "V2"
@@ -2139,7 +2101,7 @@
       "PARALLEL"
     ]
   },
-  "packages/aws-cdk-lib/aws-codepipeline/lib/trigger.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/trigger.ts": {
     "GitPullRequestEvent": [
       "OPEN",
       "UPDATED",
@@ -2149,25 +2111,25 @@
       "CodeStarSourceConnection"
     ]
   },
-  "packages/aws-cdk-lib/aws-codestarnotifications/lib/notification-rule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codestarnotifications/lib/notification-rule.ts": {
     "DetailType": [
       "BASIC",
       "FULL"
     ]
   },
-  "packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.ts": {
     "ManagedLoginVersion": [
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/oidc.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/oidc.ts": {
     "OidcAttributeRequestMethod": [
       "GET",
       "POST"
     ]
   },
-  "packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/saml.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-idps/saml.ts": {
     "SigningAlgorithm": [
       "rsa-sha256"
     ],
@@ -2176,7 +2138,7 @@
       "file"
     ]
   },
-  "packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts": {
     "VerificationEmailStyle": [
       "CONFIRM_WITH_CODE",
       "CONFIRM_WITH_LINK"
@@ -2211,9 +2173,18 @@
       "LITE",
       "ESSENTIALS",
       "PLUS"
+    ],
+    "StandardThreatProtectionMode": [
+      "ENFORCED",
+      "AUDIT",
+      "OFF"
+    ],
+    "CustomThreatProtectionMode": [
+      "ENFORCED",
+      "AUDIT"
     ]
   },
-  "packages/aws-cdk-lib/aws-config/lib/rule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-config/lib/rule.ts": {
     "MaximumExecutionFrequency": [
       "One_Hour",
       "Three_Hours",
@@ -2231,19 +2202,19 @@
       "ConfigurationSnapshotDeliveryCompleted"
     ]
   },
-  "packages/aws-cdk-lib/aws-docdb/lib/cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-docdb/lib/cluster.ts": {
     "StorageType": [
       "standard",
       "iopt1"
     ]
   },
-  "packages/aws-cdk-lib/aws-dynamodb/lib/capacity.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/capacity.ts": {
     "CapacityMode": [
       "FIXED",
       "AUTOSCALED"
     ]
   },
-  "packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts": {
     "Operation": [
       "GetItem",
       "BatchGetItem",
@@ -2290,7 +2261,7 @@
       "KEYS_ONLY"
     ]
   },
-  "packages/aws-cdk-lib/aws-dynamodb/lib/table.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.ts": {
     "InputCompressionType": [
       "GZIP",
       "ZSTD",
@@ -2301,14 +2272,14 @@
       "MICROSECOND"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/cfn-init-elements.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/cfn-init-elements.ts": {
     "ServiceManager": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint-types.ts": {
     "TransportProtocol": [
       "tcp",
       "udp"
@@ -2318,7 +2289,7 @@
       1194
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint.ts": {
     "ClientVpnSessionTimeout": [
       8,
       10,
@@ -2326,7 +2297,7 @@
       24
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts": {
     "InstanceClass": [
       "standard3",
       "m3",
@@ -2647,7 +2618,7 @@
       "metal-48xl"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/key-pair.ts": {
     "KeyPairFormat": [
       "ppk",
       "pem"
@@ -2657,7 +2628,7 @@
       "ed25519"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/launch-template.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/launch-template.ts": {
     "CpuCredits": [
       "standard",
       "unlimited"
@@ -2680,7 +2651,7 @@
       "required"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/machine-image/common.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/machine-image/common.ts": {
     "AmazonLinuxGeneration": [
       "amzn",
       "amzn2",
@@ -2710,20 +2681,20 @@
       "gp2"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/machine-image/machine-image.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/machine-image/machine-image.ts": {
     "AmazonLinuxKernel": [
       "kernel-5.10",
       "kernel-6.1"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/nat.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts": {
     "NatTrafficDirection": [
       "OUTBOUND_ONLY",
       "INBOUND_AND_OUTBOUND",
       "NONE"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/network-acl.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/network-acl.ts": {
     "Action": [
       "allow",
       "deny"
@@ -2733,7 +2704,7 @@
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/placement-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/placement-group.ts": {
     "PlacementGroupSpreadLevel": [
       "host",
       "rack"
@@ -2744,7 +2715,7 @@
       "spread"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/port.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/port.ts": {
     "Protocol": [
       "-1",
       "0",
@@ -2895,13 +2866,13 @@
       "255"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/prefix-list.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/prefix-list.ts": {
     "AddressFamily": [
       "IPv4",
       "IPv6"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/private/cfn-init-internal.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/private/cfn-init-internal.ts": {
     "InitElementType": [
       "PACKAGE",
       "GROUP",
@@ -2916,7 +2887,7 @@
       "LINUX"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/volume.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/volume.ts": {
     "EbsDeviceVolumeType": [
       "standard",
       "io1",
@@ -2934,13 +2905,13 @@
       "standard"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-endpoint.ts": {
     "VpcEndpointType": [
       "Interface",
       "Gateway"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts": {
     "FlowLogTrafficType": [
       "ACCEPT",
       "ALL",
@@ -2960,7 +2931,7 @@
       600
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/vpc.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts": {
     "IpProtocol": [
       "Ipv4_Only",
       "Dual_Stack"
@@ -2990,13 +2961,13 @@
       "VpcEndpoint"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
     "VpnConnectionType": [
       "ipsec.1",
       "dummy"
     ]
   },
-  "packages/aws-cdk-lib/aws-ec2/lib/windows-versions.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/windows-versions.ts": {
     "WindowsVersion": [
       "Windows_Server-2019-English-Core-EKS_Optimized-1.22",
       "Windows_Server-2019-English-Full-EKS_Optimized-1.22",
@@ -3389,14 +3360,14 @@
       "Windows_Server-2025-Korean-Full-Base"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecr/lib/lifecycle.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/lifecycle.ts": {
     "TagStatus": [
       "any",
       "tagged",
       "untagged"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecr/lib/repository.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.ts": {
     "CountType": [
       "imageCountMoreThan",
       "sinceImagePushed"
@@ -3406,21 +3377,21 @@
       "IMMUTABLE"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts": {
     "ApplicationLoadBalancedServiceRecordType": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs-patterns/lib/base/network-load-balanced-service-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/network-load-balanced-service-base.ts": {
     "NetworkLoadBalancedServiceRecordType": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/amis.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/amis.ts": {
     "AmiHardwareType": [
       "Standard",
       "GPU",
@@ -3439,13 +3410,13 @@
       "aws-ecs-2-nvidia"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/availability-zone-rebalancing.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/availability-zone-rebalancing.ts": {
     "AvailabilityZoneRebalancing": [
       "ENABLED",
       "DISABLED"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts": {
     "AlarmBehavior": [
       "ROLLBACK_ON_ALARM",
       "FAIL_ON_ALARM"
@@ -3466,7 +3437,7 @@
       "NONE"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/base/service-managed-volume.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/service-managed-volume.ts": {
     "FileSystemType": [
       "ext3",
       "ext4",
@@ -3477,7 +3448,7 @@
       "TASK_DEFINITION"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.ts": {
     "NetworkMode": [
       "none",
       "bridge",
@@ -3505,7 +3476,7 @@
       3
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts": {
     "MachineImageType": [
       0,
       1
@@ -3521,7 +3492,7 @@
       "OVERRIDE"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
     "UlimitName": [
       "core",
       "cpu",
@@ -3554,12 +3525,12 @@
       "disabled"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts": {
     "EnvironmentFileType": [
       "s3"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.ts": {
     "FargatePlatformVersion": [
       "LATEST",
       "1.4.0",
@@ -3569,7 +3540,7 @@
       "1.0.0"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts": {
     "FirelensLogRouterType": [
       "fluentbit",
       "fluentd"
@@ -3579,7 +3550,7 @@
       "file"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts": {
     "Capability": [
       "ALL",
       "AUDIT_CONTROL",
@@ -3667,33 +3638,33 @@
       "mpol"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/log-drivers/aws-log-driver.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/log-drivers/aws-log-driver.ts": {
     "AwsLogDriverMode": [
       "blocking",
       "non-blocking"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/log-drivers/gelf-log-driver.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/log-drivers/gelf-log-driver.ts": {
     "GelfCompressionType": [
       "gzip",
       "zlib",
       "none"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/log-drivers/splunk-log-driver.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/log-drivers/splunk-log-driver.ts": {
     "SplunkLogFormat": [
       "inline",
       "json",
       "raw"
     ]
   },
-  "packages/aws-cdk-lib/aws-ecs/lib/placement.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/placement.ts": {
     "BinPackResource": [
       "CPU",
       "MEMORY"
     ]
   },
-  "packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts": {
     "LifecyclePolicy": [
       "AFTER_1_DAY",
       "AFTER_7_DAYS",
@@ -3727,7 +3698,7 @@
       "elasticfilesystem:ClientRootAccess"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessScopeType": [
       "namespace",
       "cluster"
@@ -3739,13 +3710,13 @@
       "EC2_WINDOWS"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/alb-controller.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.ts": {
     "AlbScheme": [
       "internal",
       "internet-facing"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts": {
     "ClusterLoggingTypes": [
       "api",
       "audit",
@@ -3785,14 +3756,14 @@
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/k8s-patch.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-patch.ts": {
     "PatchType": [
       "json",
       "merge",
       "strategic"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts": {
     "NodegroupAmiType": [
       "AL2_x86_64",
       "AL2_x86_64_GPU",
@@ -3820,19 +3791,19 @@
       "NO_EXECUTE"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/service-account.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.ts": {
     "IdentityType": [
       "IRSA",
       "POD_IDENTITY"
     ]
   },
-  "packages/aws-cdk-lib/aws-eks/lib/user-data.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/user-data.ts": {
     "LifecycleLabel": [
       "OnDemand",
       "Ec2Spot"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancing/lib/load-balancer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancing/lib/load-balancer.ts": {
     "LoadBalancingProtocol": [
       "tcp",
       "ssl",
@@ -3840,14 +3811,14 @@
       "https"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-action.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-action.ts": {
     "UnauthenticatedAction": [
       "deny",
       "allow",
       "authenticate"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-rule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-rule.ts": {
     "ContentType": [
       "text/plain",
       "text/css",
@@ -3856,14 +3827,14 @@
       "application/json"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener.ts": {
     "MutualAuthenticationMode": [
       "off",
       "passthrough",
       "verify"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.ts": {
     "XffHeaderProcessingMode": [
       "append",
       "preserve",
@@ -3885,25 +3856,25 @@
       "HTTPCode_Target_5XX_Count"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/trust-store-revocation.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/trust-store-revocation.ts": {
     "RevocationType": [
       "CRL"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/nlb/network-load-balancer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/nlb/network-load-balancer.ts": {
     "ClientRoutingPolicy": [
       "availability_zone_affinity",
       "partial_availability_zone_affinity",
       "any_availability_zone"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.ts": {
     "TargetGroupIpAddressType": [
       "ipv4",
       "ipv6"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts": {
     "IpAddressType": [
       "ipv4",
       "dualstack",
@@ -3977,13 +3948,13 @@
       "strictest"
     ]
   },
-  "packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
     "TLSSecurityPolicy": [
       "Policy-Min-TLS-1-0-2019-07",
       "Policy-Min-TLS-1-2-2019-07"
     ]
   },
-  "packages/aws-cdk-lib/aws-events/lib/connection.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-events/lib/connection.ts": {
     "HttpMethod": [
       "POST",
       "GET",
@@ -3999,20 +3970,20 @@
       "OAUTH_CLIENT_CREDENTIALS"
     ]
   },
-  "packages/aws-cdk-lib/aws-events/lib/input.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-events/lib/input.ts": {
     "InputType": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-fsx/lib/file-system.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/file-system.ts": {
     "StorageType": [
       "SSD",
       "HDD"
     ]
   },
-  "packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts": {
     "FileSystemTypeVersion": [
       "2.10",
       "2.12",
@@ -4039,7 +4010,7 @@
       "LZ4"
     ]
   },
-  "packages/aws-cdk-lib/aws-fsx/lib/maintenance-time.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/maintenance-time.ts": {
     "Weekday": [
       "1",
       "2",
@@ -4050,20 +4021,20 @@
       "7"
     ]
   },
-  "packages/aws-cdk-lib/aws-globalaccelerator/lib/accelerator.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-globalaccelerator/lib/accelerator.ts": {
     "IpAddressType": [
       "IPV4",
       "DUAL_STACK"
     ]
   },
-  "packages/aws-cdk-lib/aws-globalaccelerator/lib/endpoint-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-globalaccelerator/lib/endpoint-group.ts": {
     "HealthCheckProtocol": [
       "TCP",
       "HTTP",
       "HTTPS"
     ]
   },
-  "packages/aws-cdk-lib/aws-globalaccelerator/lib/listener.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-globalaccelerator/lib/listener.ts": {
     "ConnectionProtocol": [
       "TCP",
       "UDP"
@@ -4073,19 +4044,19 @@
       "SOURCE_IP"
     ]
   },
-  "packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
       "Inactive"
     ]
   },
-  "packages/aws-cdk-lib/aws-iam/lib/policy-statement.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy-statement.ts": {
     "Effect": [
       "Allow",
       "Deny"
     ]
   },
-  "packages/aws-cdk-lib/aws-kinesis/lib/stream.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts": {
     "StreamEncryption": [
       "NONE",
       "KMS",
@@ -4096,20 +4067,20 @@
       "ON_DEMAND"
     ]
   },
-  "packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts": {
     "BackupMode": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-kinesisfirehose/lib/delivery-stream.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/delivery-stream.ts": {
     "StreamEncryptionType": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-kms/lib/key.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts": {
     "KeySpec": [
       "SYMMETRIC_DEFAULT",
       "RSA_2048",
@@ -4132,7 +4103,7 @@
       "KEY_AGREEMENT"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda-event-sources/lib/kafka.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/kafka.ts": {
     "AuthenticationMethod": [
       "SASL_SCRAM_512_AUTH",
       "SASL_SCRAM_256_AUTH",
@@ -4140,7 +4111,7 @@
       "CLIENT_CERTIFICATE_TLS_AUTH"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda-nodejs/lib/package-manager.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/package-manager.ts": {
     "LockFile": [
       "package-lock.json",
       "yarn.lock",
@@ -4148,7 +4119,7 @@
       "pnpm-lock.yaml"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda-nodejs/lib/types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/types.ts": {
     "OutputFormat": [
       "cjs",
       "esm"
@@ -4172,7 +4143,7 @@
       "utf8"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts": {
     "AdotLambdaLayerType": [
       "JAVA_SDK",
       "JAVA_AUTO_INSTRUMENTATION",
@@ -4188,19 +4159,19 @@
       "/opt/otel-sqs-handler"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/code-signing-config.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code-signing-config.ts": {
     "UntrustedArtifactOnDeployment": [
       "Enforce",
       "Warn"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/destination.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/destination.ts": {
     "DestinationType": [
       "Failure",
       "Success"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
     "MetricType": [
       "EventCount"
     ],
@@ -4210,7 +4181,7 @@
       "AT_TIMESTAMP"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/function-url.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-url.ts": {
     "FunctionUrlAuthType": [
       "AWS_IAM",
       "NONE"
@@ -4230,7 +4201,7 @@
       "*"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/function.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts": {
     "Tracing": [
       "Active",
       "PassThrough",
@@ -4262,7 +4233,7 @@
       "Terminate"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/params-and-secrets-layers.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/params-and-secrets-layers.ts": {
     "ParamsAndSecretsVersions": [
       "1.0.103"
     ],
@@ -4274,7 +4245,7 @@
       "none"
     ]
   },
-  "packages/aws-cdk-lib/aws-lambda/lib/runtime.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime.ts": {
     "RuntimeFamily": [
       0,
       1,
@@ -4285,7 +4256,7 @@
       6
     ]
   },
-  "packages/aws-cdk-lib/aws-logs/lib/log-group.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts": {
     "RetentionDays": [
       1,
       3,
@@ -4320,7 +4291,7 @@
       "Random"
     ]
   },
-  "packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts": {
     "TLSSecurityPolicy": [
       "Policy-Min-TLS-1-0-2019-07",
       "Policy-Min-TLS-1-2-2019-07",
@@ -4331,13 +4302,13 @@
       "dualstack"
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts": {
     "InstanceType": [
       "PROVISIONED",
       "SERVERLESS_V2"
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts": {
     "DBClusterStorageType": [
       "aurora",
       "aurora-iopt1"
@@ -4359,7 +4330,7 @@
       "advanced"
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/instance.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.ts": {
     "LicenseModel": [
       "license-included",
       "bring-your-own-license",
@@ -4377,7 +4348,7 @@
       "DUAL"
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/props.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts": {
     "PerformanceInsightRetention": [
       7,
       31,
@@ -4406,7 +4377,7 @@
       731
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
@@ -4414,7 +4385,7 @@
       "SQL_SERVER_AUTHENTICATION"
     ]
   },
-  "packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
     "AuroraCapacityUnit": [
       1,
       2,
@@ -4433,7 +4404,7 @@
       "RollbackCapacityChange"
     ]
   },
-  "packages/aws-cdk-lib/aws-route53/lib/geo-location.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/geo-location.ts": {
     "Continent": [
       "AF",
       "AN",
@@ -4444,7 +4415,7 @@
       "SA"
     ]
   },
-  "packages/aws-cdk-lib/aws-route53/lib/health-check.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.ts": {
     "HealthCheckType": [
       "HTTP",
       "HTTPS",
@@ -4461,13 +4432,13 @@
       "LastKnownStatus"
     ]
   },
-  "packages/aws-cdk-lib/aws-route53/lib/key-signing-key.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/key-signing-key.ts": {
     "KeySigningKeyStatus": [
       "ACTIVE",
       "INACTIVE"
     ]
   },
-  "packages/aws-cdk-lib/aws-route53/lib/record-set.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts": {
     "RecordType": [
       "A",
       "AAAA",
@@ -4493,7 +4464,7 @@
       "iodef"
     ]
   },
-  "packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts": {
     "ServerSideEncryption": [
       "AES256",
       "aws:kms"
@@ -4508,7 +4479,7 @@
       "DEEP_ARCHIVE"
     ]
   },
-  "packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
     "HttpMethods": [
       "GET",
       "PUT",
@@ -4596,14 +4567,14 @@
       "COMPLIANCE"
     ]
   },
-  "packages/aws-cdk-lib/aws-s3/lib/destination.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/destination.ts": {
     "BucketNotificationDestinationType": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/aws-secretsmanager/lib/secret.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.ts": {
     "AttachmentTargetType": [
       "AWS::RDS::DBInstance",
       "deprecated_AWS::RDS::DBInstance",
@@ -4615,21 +4586,21 @@
       "AWS::DocDB::DBCluster"
     ]
   },
-  "packages/aws-cdk-lib/aws-servicecatalog/lib/common.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-servicecatalog/lib/common.ts": {
     "MessageLanguage": [
       "en",
       "jp",
       "zh"
     ]
   },
-  "packages/aws-cdk-lib/aws-servicediscovery/lib/namespace.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/namespace.ts": {
     "NamespaceType": [
       "HTTP",
       "DNS_PRIVATE",
       "DNS_PUBLIC"
     ]
   },
-  "packages/aws-cdk-lib/aws-servicediscovery/lib/service.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/service.ts": {
     "DiscoveryType": [
       "API",
       "DNS_AND_API"
@@ -4651,19 +4622,19 @@
       "TCP"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses-actions/lib/lambda.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/lambda.ts": {
     "LambdaInvocationType": [
       "Event",
       "RequestResponse"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts": {
     "EmailEncoding": [
       "Base64",
       "UTF-8"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts": {
     "EmailSendingEvent": [
       "send",
       "reject",
@@ -4682,7 +4653,7 @@
       "messageTag"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.ts": {
     "ConfigurationSetTlsPolicy": [
       "REQUIRE",
       "OPTIONAL"
@@ -4693,13 +4664,13 @@
       "COMPLAINTS_ONLY"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/dedicated-ip-pool.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/dedicated-ip-pool.ts": {
     "ScalingMode": [
       "STANDARD",
       "MANAGED"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/email-identity.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/email-identity.ts": {
     "MailFromBehaviorOnMxFailure": [
       "USE_DEFAULT_VALUE",
       "REJECT_MESSAGE"
@@ -4709,19 +4680,19 @@
       "RSA_2048_BIT"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/receipt-filter.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-filter.ts": {
     "ReceiptFilterPolicy": [
       "Allow",
       "Block"
     ]
   },
-  "packages/aws-cdk-lib/aws-ses/lib/receipt-rule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.ts": {
     "TlsPolicy": [
       "Optional",
       "Require"
     ]
   },
-  "packages/aws-cdk-lib/aws-sns/lib/delivery-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-sns/lib/delivery-policy.ts": {
     "BackoffFunction": [
       "ARITHMETIC",
       "EXPONENTIAL",
@@ -4729,7 +4700,7 @@
       "LINEAR"
     ]
   },
-  "packages/aws-cdk-lib/aws-sns/lib/subscription.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.ts": {
     "SubscriptionProtocol": [
       "http",
       "https",
@@ -4746,7 +4717,7 @@
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-sns/lib/topic.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.ts": {
     "FifoThroughputScope": [
       "Topic",
       "MessageGroup"
@@ -4763,7 +4734,7 @@
       "Active"
     ]
   },
-  "packages/aws-cdk-lib/aws-sqs/lib/queue-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.ts": {
     "QueueEncryption": [
       "NONE",
       "KMS_MANAGED",
@@ -4771,7 +4742,7 @@
       "SQS_MANAGED"
     ]
   },
-  "packages/aws-cdk-lib/aws-sqs/lib/queue.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.ts": {
     "DeduplicationScope": [
       "messageGroup",
       "queue"
@@ -4786,7 +4757,7 @@
       "byQueue"
     ]
   },
-  "packages/aws-cdk-lib/aws-ssm/lib/parameter.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.ts": {
     "ParameterValueType": [
       "String",
       "AWS::EC2::AvailabilityZone::Name",
@@ -4816,7 +4787,7 @@
       "Standard"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/apigateway/base-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/apigateway/base-types.ts": {
     "HttpMethod": [
       "GET",
       "POST",
@@ -4832,14 +4803,14 @@
       "RESOURCE_POLICY"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/athena/start-query-execution.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/athena/start-query-execution.ts": {
     "EncryptionOption": [
       "SSE_S3",
       "SSE_KMS",
       "CSE_KMS"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts": {
     "DynamoMethod": [
       "Get",
       "Put",
@@ -4847,7 +4818,7 @@
       "Update"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/shared-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/shared-types.ts": {
     "DynamoConsumedCapacity": [
       "INDEXES",
       "TOTAL",
@@ -4865,7 +4836,7 @@
       "UPDATED_NEW"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/eks/call.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/eks/call.ts": {
     "HttpMethods": [
       "GET",
       "POST",
@@ -4875,25 +4846,25 @@
       "HEAD"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/emr-add-step.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/emr-add-step.ts": {
     "ActionOnFailure": [
       "TERMINATE_CLUSTER",
       "CANCEL_AND_WAIT",
       "CONTINUE"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emrcontainers/create-virtual-cluster.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emrcontainers/create-virtual-cluster.ts": {
     "ContainerProviderTypes": [
       "EKS"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/eventbridge-scheduler/create-schedule.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/eventbridge-scheduler/create-schedule.ts": {
     "ActionAfterCompletion": [
       "NONE",
       "DELETE"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/glue/start-job-run.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/glue/start-job-run.ts": {
     "WorkerType": [
       "Standard",
       "G.025X",
@@ -4908,7 +4879,7 @@
       "STANDARD"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/http/invoke.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/http/invoke.ts": {
     "URLEncodingFormat": [
       "BRACKETS",
       "COMMAS",
@@ -4918,21 +4889,21 @@
       "REPEAT"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/invoke.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/invoke.ts": {
     "LambdaInvocationType": [
       "RequestResponse",
       "Event",
       "DryRun"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/run-lambda-task.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/run-lambda-task.ts": {
     "InvocationType": [
       "RequestResponse",
       "Event",
       "DryRun"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/sagemaker/base-types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/sagemaker/base-types.ts": {
     "S3DataType": [
       "ManifestFile",
       "S3Prefix",
@@ -4974,7 +4945,7 @@
       "Line"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/sns/publish.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/sns/publish.ts": {
     "MessageAttributeDataType": [
       "String",
       "String.Array",
@@ -4982,7 +4953,7 @@
       "Binary"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/condition.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/condition.ts": {
     "ComparisonOperator": [
       0,
       1,
@@ -5029,13 +5000,13 @@
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/input.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/input.ts": {
     "InputType": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.ts": {
     "StateMachineType": [
       "EXPRESS",
       "STANDARD"
@@ -5047,13 +5018,20 @@
       "FATAL"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/item-reader.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map/item-reader.ts": {
     "CsvHeaderLocation": [
       "FIRST_ROW",
       "GIVEN"
+    ],
+    "CsvDelimiter": [
+      "COMMA",
+      "PIPE",
+      "SEMICOLON",
+      "SPACE",
+      "TAB"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/private/state-type.ts": {
     "StateType": [
       "Pass",
       "Task",
@@ -5065,21 +5043,21 @@
       "Map"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/states/task-base.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/task-base.ts": {
     "IntegrationPattern": [
       "REQUEST_RESPONSE",
       "RUN_JOB",
       "WAIT_FOR_TASK_TOKEN"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/step-functions-task.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/step-functions-task.ts": {
     "ServiceIntegrationPattern": [
       "FIRE_AND_FORGET",
       "SYNC",
       "WAIT_FOR_TASK_TOKEN"
     ]
   },
-  "packages/aws-cdk-lib/aws-stepfunctions/lib/types.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/types.ts": {
     "JitterType": [
       "FULL",
       "NONE"
@@ -5097,7 +5075,7 @@
       "JSONata"
     ]
   },
-  "packages/aws-cdk-lib/aws-synthetics/lib/canary.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts": {
     "Cleanup": [
       "nothing",
       "lambda"
@@ -5107,14 +5085,14 @@
       "SSE_KMS"
     ]
   },
-  "packages/aws-cdk-lib/aws-synthetics/lib/runtime.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/runtime.ts": {
     "RuntimeFamily": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/core/lib/arn.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/arn.ts": {
     "ArnFormat": [
       "arn:aws:service:region:account:resource",
       "arn:aws:service:region:account:resource:resourceName",
@@ -5122,7 +5100,7 @@
       "arn:aws:service:region:account:/resource/resourceName"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/assets.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/assets.ts": {
     "AssetHashType": [
       "source",
       "bundle",
@@ -5134,7 +5112,7 @@
       "file"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/bundling.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/bundling.ts": {
     "BundlingOutput": [
       "archived",
       "not-archived",
@@ -5151,7 +5129,7 @@
       "cached"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/cfn-capabilities.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-capabilities.ts": {
     "CfnCapabilities": [
       "",
       "CAPABILITY_IAM",
@@ -5159,21 +5137,21 @@
       "CAPABILITY_AUTO_EXPAND"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/cfn-codedeploy-blue-green-hook.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-codedeploy-blue-green-hook.ts": {
     "CfnTrafficRoutingType": [
       "AllAtOnce",
       "TimeBasedCanary",
       "TimeBasedLinear"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/cfn-dynamic-reference.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-dynamic-reference.ts": {
     "CfnDynamicReferenceService": [
       "ssm",
       "ssm-secure",
       "secretsmanager"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/cfn-resource-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-resource-policy.ts": {
     "CfnDeletionPolicy": [
       "Delete",
       "Retain",
@@ -5181,7 +5159,7 @@
       "Snapshot"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/cfn-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-resource.ts": {
     "TagType": [
       "StandardTag",
       "AutoScalingGroupTag",
@@ -5190,7 +5168,7 @@
       "NotTaggable"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.ts": {
     "CustomResourceProviderRuntime": [
       "nodejs12.x",
       "deprecated_nodejs12.x",
@@ -5200,13 +5178,13 @@
       "nodejs20.x"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/deps.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
     "DependencyOperation": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/core/lib/fs/options.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/fs/options.ts": {
     "SymlinkFollowMode": [
       "never",
       "always",
@@ -5219,32 +5197,32 @@
       "docker"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/helpers-internal/cfn-parse.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/helpers-internal/cfn-parse.ts": {
     "CfnParsingContext": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
     "MetadataType": [
       "aws:cdk:analytics:construct",
       "aws:cdk:analytics:method",
       "aws:cdk:analytics:featureflag"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {
     "ReferenceRendering": [
       0,
       1
     ]
   },
-  "packages/aws-cdk-lib/core/lib/private/cfn-utils-provider/consts.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider/consts.ts": {
     "CfnUtilsResourceType": [
       "Custom::AWSCDKCfnJson",
       "Custom::AWSCDKCfnJsonStringify"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/removal-policy.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/removal-policy.ts": {
     "RemovalPolicy": [
       "destroy",
       "retain",
@@ -5252,48 +5230,48 @@
       "retain-on-update-or-delete"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/size.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/size.ts": {
     "SizeRoundingBehavior": [
       0,
       1,
       2
     ]
   },
-  "packages/aws-cdk-lib/core/lib/type-hints.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/type-hints.ts": {
     "ResolutionTypeHint": [
       "string",
       "number",
       "string-list"
     ]
   },
-  "packages/aws-cdk-lib/core/lib/validation/report.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/validation/report.ts": {
     "PolicyValidationReportStatusBeta1": [
       "success",
       "failure"
     ]
   },
-  "packages/aws-cdk-lib/cx-api/lib/context/load-balancer.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/load-balancer.ts": {
     "LoadBalancerIpAddressType": [
       "ipv4",
       "dualstack",
       "dualstack-without-public-ipv4"
     ]
   },
-  "packages/aws-cdk-lib/cx-api/lib/context/vpc.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/vpc.ts": {
     "VpcSubnetGroupType": [
       "Public",
       "Private",
       "Isolated"
     ]
   },
-  "packages/aws-cdk-lib/cx-api/lib/metadata.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/metadata.ts": {
     "SynthesisMessageLevel": [
       "info",
       "warning",
       "error"
     ]
   },
-  "packages/aws-cdk-lib/cx-api/lib/private/flag-modeling.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/private/flag-modeling.ts": {
     "FlagType": [
       0,
       1,
@@ -5301,13 +5279,13 @@
       3
     ]
   },
-  "packages/aws-cdk-lib/pipelines/lib/blueprint/asset-type.ts": {
+  "aws-cdk/packages/aws-cdk-lib/pipelines/lib/blueprint/asset-type.ts": {
     "AssetType": [
       "file",
       "docker-image"
     ]
   },
-  "packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts": {
+  "aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts": {
     "CodeBuildProjectType": [
       "SYNTH",
       "ASSETS",
@@ -5315,14 +5293,14 @@
       "STEP"
     ]
   },
-  "packages/aws-cdk-lib/pipelines/lib/docker-credentials.ts": {
+  "aws-cdk/packages/aws-cdk-lib/pipelines/lib/docker-credentials.ts": {
     "DockerCredentialUsage": [
       "SYNTH",
       "SELF_UPDATE",
       "ASSET_PUBLISHING"
     ]
   },
-  "packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts": {
+  "aws-cdk/packages/aws-cdk-lib/region-info/build-tools/fact-tables.ts": {
     "Partition": [
       "aws",
       "aws-cn",
@@ -5337,7 +5315,7 @@
       "nodejs20.x"
     ]
   },
-  "packages/aws-cdk-lib/triggers/lib/trigger.ts": {
+  "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {
     "InvocationType": [
       "Event",
       "RequestResponse",

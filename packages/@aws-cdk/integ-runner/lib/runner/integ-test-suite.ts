@@ -135,9 +135,11 @@ export class LegacyIntegTestSuite extends IntegTestSuite {
     if (pragma.length > 0) {
       tests.stacks.push(...pragma);
     } else {
-      const stacks = (config.cdk.list({
+      const options: ListOptions = {
         ...config.listOptions,
-      })).split('\n');
+        notices: false,
+      };
+      const stacks = (config.cdk.list(options)).split('\n');
       if (stacks.length !== 1) {
         throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
           '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +

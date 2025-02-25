@@ -187,6 +187,23 @@ export interface RotationMultiUserOptions {
 }
 
 /**
+ * The maintenance track for the cluster.
+ *
+ * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+ */
+export enum MaintenanceTrackName {
+  /**
+   * Updated to the most recently certified maintenance release.
+   */
+  CURRENT = 'current',
+
+  /**
+   * Update to the previously certified maintenance release.
+   */
+  TRAILING = 'trailing',
+}
+
+/**
  * Create a Redshift Cluster with a given number of nodes.
  * Implemented by `Cluster` via `ClusterBase`.
  */
@@ -443,6 +460,15 @@ export interface ClusterProps {
    * @default - false
    */
   readonly availabilityZoneRelocation?: boolean;
+
+  /**
+   * The maintenance track name for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+   *
+   * @default undefined - Redshift default is current
+   */
+  readonly maintenanceTrackName?: MaintenanceTrackName;
 }
 
 /**
@@ -640,6 +666,7 @@ export class Cluster extends ClusterBase {
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
+      maintenanceTrackName: props.maintenanceTrackName,
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,

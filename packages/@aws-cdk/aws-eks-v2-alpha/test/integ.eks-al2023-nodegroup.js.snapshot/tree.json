@@ -990,8 +990,14 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": false
+                    },
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": false
+                      }
                     },
                     "resourcesVpcConfig": {
                       "securityGroupIds": [
@@ -1024,6 +1030,11 @@
                         "ClusterRoleFA261979",
                         "Arn"
                       ]
+                    },
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": false
+                      }
                     },
                     "version": "1.32"
                   }
@@ -2000,6 +2011,22 @@
                   "metadata": [
                     "*"
                   ]
+                }
+              },
+              "ConfigCommand": {
+                "id": "ConfigCommand",
+                "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ConfigCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "GetTokenCommand": {
+                "id": "GetTokenCommand",
+                "path": "aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/GetTokenCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "NodegroupMNG_AL2023_X86_64_STANDARD": {

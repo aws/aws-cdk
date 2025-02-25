@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-s3-all-properties.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ede2ab5578e03d3191a201f4a9d089b9f1c85da2b12ee02295f6e2889ee5adff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b4ebb6a5696e6f96003f80647cec87701b5b4b1c034141297d2c495fb1804cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,39 @@
         "aws-cdk-firehose-delivery-stream-s3-all-properties.assets"
       ],
       "metadata": {
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirehoseDeliveryStreamS3AllPropertiesBucketD6F6CA75"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirehoseDeliveryStreamS3AllPropertiesBucketPolicy54E94186"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -76,10 +99,27 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucket9AE03327"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/Policy/Resource": [
@@ -88,10 +128,24 @@
             "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucketPolicyD385A017"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/FirehoseDeliveryStreamS3AllPropertiesBackupBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirehoseDeliveryStreamS3AllPropertiesBackupBucketAutoDeleteObjectsCustomResource3EC1F4CD"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/Resource": [
@@ -100,10 +154,59 @@
             "data": "LogGroupF5B46931"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*"
+            }
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/LogGroup/S3Destination/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupS3Destination70CE1003"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "timeout": "*",
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DataProcessorFunction/ServiceRole/Resource": [
@@ -118,10 +221,26 @@
             "data": "DataProcessorFunctionAD472B9A"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Key961B73FD"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/BackupKey/Resource": [
@@ -130,10 +249,185 @@
             "data": "BackupKey60B97760"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeliveryStreamS3DestinationRoleD96B8345"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
@@ -142,10 +436,24 @@
             "data": "DeliveryStreamS3DestinationRoleDefaultPolicyF652AD65"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeliveryStreamLogGroupA92E8EA0"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/S3Backup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*"
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/LogGroup/S3Backup/Resource": [
@@ -166,10 +474,105 @@
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
@@ -178,10 +581,24 @@
             "data": "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E"
           }
         ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*"
+            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/S3Destination/Resource": [
@@ -240,7 +657,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2de7501c22ded9bd36ed279c086eee92d277b843396f1af55c0373ee63bb52a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/10c4b6decf092326ddf54b252a762e12b02a3781b6298994887c593334edcb07.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -257,6 +674,12 @@
         "integtestsDefaultTestDeployAssert44C8D370.assets"
       ],
       "metadata": {
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-tests/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord44585e4a4193ab6938b5675835d76f5f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -279,6 +702,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-tests/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ce1c85ff85b0db4aaa6f0d3dd453a7ea/Default/Default": [

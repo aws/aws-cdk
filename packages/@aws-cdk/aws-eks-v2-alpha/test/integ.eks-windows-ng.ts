@@ -31,6 +31,7 @@ class EksClusterStack extends Stack {
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
 
     this.cluster.addNodegroupCapacity('LinuxNodegroup', {

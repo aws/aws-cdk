@@ -1000,8 +1000,14 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": false
+                    },
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": false
+                      }
                     },
                     "resourcesVpcConfig": {
                       "securityGroupIds": [
@@ -1034,6 +1040,11 @@
                         "FargateTestClusterRoleCB15D0DE",
                         "Arn"
                       ]
+                    },
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": false
+                      }
                     },
                     "version": "1.32"
                   }

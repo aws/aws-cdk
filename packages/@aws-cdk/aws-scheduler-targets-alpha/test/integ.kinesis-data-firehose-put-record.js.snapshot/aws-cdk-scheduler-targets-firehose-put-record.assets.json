@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "f569395a4a44f508c8621208274341ea9bb959b3d5c2e827800776ba34832173": {
+    "8cf41c04243af1019c380f30b5587054b852dbcea9029a6a98d0703fcbaab16e": {
       "source": {
         "path": "aws-cdk-scheduler-targets-firehose-put-record.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f569395a4a44f508c8621208274341ea9bb959b3d5c2e827800776ba34832173.json",
+          "objectKey": "8cf41c04243af1019c380f30b5587054b852dbcea9029a6a98d0703fcbaab16e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,1 @@
-{
-  "exclude": [
-    "props-physical-name:@aws-cdk/aws-cognito-identitypool-alpha.IdentityPoolRoleAttachmentProps"
-  ]
-}
+{}

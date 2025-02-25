@@ -602,8 +602,8 @@ export interface DeviceTracking {
 
 /**
  * The different ways in which a user pool's Advanced Security Mode can be configured.
- * @deprecated Advanced Security Mode is deprecated in favor of user pool feature plans.
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html#cfn-cognito-userpool-userpooladdons-advancedsecuritymode
+ * @deprecated Advanced Security Mode is deprecated due to user pool feature plans. Use StandardThreatProtectionMode and CustomThreatProtectionMode to set Thread Protection level.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html
  */
 export enum AdvancedSecurityMode {
   /** Enable advanced security mode */
@@ -625,6 +625,40 @@ export enum FeaturePlan {
   ESSENTIALS = 'ESSENTIALS',
   /** Plus feature plan */
   PLUS = 'PLUS',
+}
+
+/**
+ * The Type of Threat Protection Enabled for Standard Authentication
+ *
+ * This feature only functions if your FeaturePlan is set to FeaturePlan.PLUS
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+ *
+ * Acceptable values are strings with values 'ENFORCED', 'AUDIT', or 'OFF'
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html
+ */
+export enum StandardThreatProtectionMode {
+  /** Cognito automatically takes preventative actions in response to different levels of risk that you configure for your user pool */
+  FULL_FUNCTION = 'ENFORCED',
+  /** Cognito gathers metrics on detected risks, but doesn't take automatic action */
+  AUDIT_ONLY = 'AUDIT',
+  /** Cognito doesn't gather metrics on detected risks or automatically take preventative actions */
+  NO_ENFORCEMENT = 'OFF',
+}
+
+/**
+ * The Type of Threat Protection Enabled for Custom Authentication
+ *
+ * This feature only functions if your FeaturePlan is set to FeaturePlan.PLUS
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+ *
+ * Acceptable values are strings with values 'ENFORCED', or 'AUDIT'. For 'OFF' behavior, don't define this value
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html
+ */
+export enum CustomThreatProtectionMode {
+  /** Cognito automatically takes preventative actions in response to different levels of risk that you configure for your user pool */
+  FULL_FUNCTION = 'ENFORCED',
+  /** Cognito gathers metrics on detected risks, but doesn't take automatic action */
+  AUDIT_ONLY = 'AUDIT',
 }
 
 /**
@@ -861,7 +895,7 @@ export interface UserPoolProps {
 
   /**
    * The user pool's Advanced Security Mode
-   * @deprecated Advanced Security Mode is deprecated in favor of user pool feature plans.
+   * @deprecated Advanced Security Mode is deprecated due to user pool feature plans. Use StandardThreatProtectionMode and CustomThreatProtectionMode to set Thread Protection level.
    * @default - no value
    */
   readonly advancedSecurityMode?: AdvancedSecurityMode;
@@ -873,6 +907,32 @@ export interface UserPoolProps {
    * @default - FeaturePlan.ESSENTIALS for a newly created user pool; FeaturePlan.LITE otherwise
    */
   readonly featurePlan?: FeaturePlan;
+
+  /**
+   * The Type of Threat Protection Enabled for Standard Authentication
+   *
+   * This feature only functions if your FeaturePlan is set to FeaturePlan.PLUS
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+   *
+   * Acceptable values are strings with values 'ENFORCED', 'AUDIT', or 'OFF'
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html
+   *
+   * @default - StandardThreatProtectionMode.NO_ENFORCEMENT
+   */
+  readonly standardThreatProtectionMode?: StandardThreatProtectionMode;
+
+  /**
+   * The Type of Threat Protection Enabled for Custom Authentication
+   *
+   * This feature only functions if your FeaturePlan is set to FeaturePlan.PLUS
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+   *
+   * Acceptable values are strings with values 'ENFORCED', or 'AUDIT'. For 'OFF' behavior, don't define this value
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-userpooladdons.html
+   *
+   * @default - no value
+   */
+  readonly customThreatProtectionMode?: CustomThreatProtectionMode;
 }
 
 /**
@@ -1139,10 +1199,34 @@ export class UserPool extends UserPoolBase {
     this.emailConfiguration = emailConfiguration;
 
     if (
-      props.featurePlan && props.featurePlan !== FeaturePlan.LITE &&
-      props.advancedSecurityMode && props.advancedSecurityMode !== AdvancedSecurityMode.OFF
+      props.featurePlan !== FeaturePlan.PLUS &&
+      (props.advancedSecurityMode && (props.advancedSecurityMode !== AdvancedSecurityMode.OFF))
     ) {
-      throw new ValidationError('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.', this);
+      throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
+    }
+
+    const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
+      customAuthMode: props.customThreatProtectionMode,
+    });
+
+    if (
+      (props.featurePlan !== FeaturePlan.PLUS) &&
+      (props.standardThreatProtectionMode && (props.standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT) ||
+      advancedSecurityAdditionalFlows)
+    ) {
+      throw new ValidationError('you cannot enable Threat Protection when feature plan is not Plus.', this);
+    }
+
+    if (
+      props.advancedSecurityMode &&
+      (props.standardThreatProtectionMode || advancedSecurityAdditionalFlows)
+    ) {
+      throw new ValidationError('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
+    }
+
+    let chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode;
+    if (advancedSecurityAdditionalFlows) {
+      chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode ?? StandardThreatProtectionMode.NO_ENFORCEMENT;
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
@@ -1159,7 +1243,8 @@ export class UserPool extends UserPoolBase {
       smsVerificationMessage,
       verificationMessageTemplate,
       userPoolAddOns: undefinedIfNoKeys({
-        advancedSecurityMode: props.advancedSecurityMode,
+        advancedSecurityAdditionalFlows: advancedSecurityAdditionalFlows,
+        advancedSecurityMode: chosenSecurityMode,
       }),
       schema: this.schemaConfiguration(props),
       mfaConfiguration: props.mfa,
@@ -1577,7 +1662,7 @@ export class UserPool extends UserPoolBase {
       throw new ValidationError('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.', this);
     }
 
-    if (props.featurePlan === FeaturePlan.LITE && (!props.advancedSecurityMode || props.advancedSecurityMode === AdvancedSecurityMode.OFF)) {
+    if (props.featurePlan === FeaturePlan.LITE) {
       throw new ValidationError('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
   }

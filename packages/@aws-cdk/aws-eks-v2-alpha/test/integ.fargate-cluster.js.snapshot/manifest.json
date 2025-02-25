@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a7dd63219dc266006d9fdfe0c1c5f7a77b1341c6400fecde7274e5dec4873537.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a6bcbf9eeec018eed54563f9ef3fbfa3e3b143620fc5ffd4a32ee78d50755f5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -394,7 +394,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterCAF9262D"
+            "data": "FargateTestClusterCAF9262D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlReadyBarrier": [
@@ -791,7 +794,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888"
+            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/CoreDnsComputeTypePatch/Resource": [
@@ -837,7 +843,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterfargateprofiledefault120EDDF6"
+            "data": "FargateTestClusterfargateprofiledefault120EDDF6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/LatestNodeRuntimeMap": [

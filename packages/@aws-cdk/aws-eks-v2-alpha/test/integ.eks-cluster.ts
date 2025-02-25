@@ -42,6 +42,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       vpcSubnets,
       mastersRole,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_32,
       secretsEncryptionKey,

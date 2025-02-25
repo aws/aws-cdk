@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "3a1e4855b24a64f87efe5c8a94c0bf4d85ec296fb790463d4a1902c5a7311a39": {
+    "d0fd24d6ee953ada93e438dac0f3dd1452490f3f897ca5652adeb3c4f949f510": {
       "source": {
         "path": "ses-configuration-set-firehose.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3a1e4855b24a64f87efe5c8a94c0bf4d85ec296fb790463d4a1902c5a7311a39.json",
+          "objectKey": "d0fd24d6ee953ada93e438dac0f3dd1452490f3f897ca5652adeb3c4f949f510.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
