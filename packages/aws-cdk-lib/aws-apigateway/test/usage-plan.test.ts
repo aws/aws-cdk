@@ -200,7 +200,6 @@ describe('usage plan', () => {
   });
 
   describe('UsagePlanKey', () => {
-
     test('default', () => {
       // GIVEN
       const stack = new cdk.Stack();

@@ -13,6 +13,7 @@ import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Possible Node Types to use in the cluster
@@ -183,6 +184,23 @@ export interface RotationMultiUserOptions {
    * @default Duration.days(30)
    */
   readonly automaticallyAfter?: Duration;
+}
+
+/**
+ * The maintenance track for the cluster.
+ *
+ * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+ */
+export enum MaintenanceTrackName {
+  /**
+   * Updated to the most recently certified maintenance release.
+   */
+  CURRENT = 'current',
+
+  /**
+   * Update to the previously certified maintenance release.
+   */
+  TRAILING = 'trailing',
 }
 
 /**
@@ -442,6 +460,15 @@ export interface ClusterProps {
    * @default - false
    */
   readonly availabilityZoneRelocation?: boolean;
+
+  /**
+   * The maintenance track name for the cluster.
+   *
+   * @see https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-considerations.html#rs-mgmt-maintenance-tracks
+   *
+   * @default undefined - Redshift default is current
+   */
+  readonly maintenanceTrackName?: MaintenanceTrackName;
 }
 
 /**
@@ -548,6 +575,8 @@ export class Cluster extends ClusterBase {
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets ?? {
@@ -629,7 +658,7 @@ export class Cluster extends ClusterBase {
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
       throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
-    };
+    }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
       throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
     }
@@ -637,6 +666,7 @@ export class Cluster extends ClusterBase {
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
+      maintenanceTrackName: props.maintenanceTrackName,
       automatedSnapshotRetentionPeriod: 1,
       clusterType,
       clusterIdentifier: props.clusterName,
@@ -702,6 +732,7 @@ export class Cluster extends ClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
+  @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
@@ -726,6 +757,7 @@ export class Cluster extends ClusterBase {
   /**
    * Adds the multi user rotation to this cluster.
    */
+  @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
@@ -766,6 +798,7 @@ export class Cluster extends ClusterBase {
    * @param name the parameter name
    * @param value the parameter name
    */
+  @MethodMetadata()
   public addToParameterGroup(name: string, value: string): void {
     if (!this.parameterGroup) {
       const param: { [name: string]: string } = {};
@@ -785,6 +818,7 @@ export class Cluster extends ClusterBase {
   /**
    * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
    */
+  @MethodMetadata()
   public enableRebootForParameterChanges(): void {
     if (this.node.tryFindChild('RedshiftClusterRebooterCustomResource')) {
       return;
@@ -852,6 +886,7 @@ export class Cluster extends ClusterBase {
    *
    * @param defaultIamRole the IAM role to be set as the default role
    */
+  @MethodMetadata()
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
     const clusterRoleList = this.roles ?? [];
@@ -906,6 +941,7 @@ export class Cluster extends ClusterBase {
    *
    * @param role the role to add
    */
+  @MethodMetadata()
   public addIamRole(role: iam.IRole): void {
     const clusterRoleList = this.roles;
 

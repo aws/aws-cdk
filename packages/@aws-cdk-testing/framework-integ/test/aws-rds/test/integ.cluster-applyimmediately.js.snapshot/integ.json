@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "test-cluster-applyimmediately-integ/DefaultTest": {
+      "stacks": [
+        "cluster-applyimmediately-integ"
+      ],
+      "assertionStack": "test-cluster-applyimmediately-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "testclusterapplyimmediatelyintegDefaultTestDeployAssertC097DD2F"
+    }
+  }
+}

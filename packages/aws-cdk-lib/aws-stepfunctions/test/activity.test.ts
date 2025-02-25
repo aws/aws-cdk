@@ -69,7 +69,6 @@ describe('Activity', () => {
         })]),
       },
     });
-
   });
 
   test('Instantiate Activity with EncryptionConfiguration using Customer Managed Key', () => {

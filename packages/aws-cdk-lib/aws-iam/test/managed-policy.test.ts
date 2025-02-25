@@ -698,7 +698,7 @@ describe('managed policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         return { statementAdded: false };
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
     Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
 
@@ -725,7 +725,7 @@ describe('managed policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         return { statementAdded: false };
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
     // WHEN
     Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
@@ -754,7 +754,7 @@ describe('managed policy', () => {
       addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
         return { statementAdded: false };
       }
-    };
+    }
     const resource = new DummyResource(stack, 'Dummy');
     // WHEN
     Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });

@@ -873,10 +873,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -927,10 +927,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"
@@ -981,6 +981,9 @@
    },
    "ap-southeast-4": {
     "FirehoseCidrBlock": "16.50.161.128/27"
+   },
+   "ap-southeast-5": {
+    "FirehoseCidrBlock": "43.216.58.0/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"

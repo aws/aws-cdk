@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
+import { Annotations } from './annotations';
 import { CfnResource } from './cfn-resource';
 import { Duration } from './duration';
+import { addConstructMetadata, MethodMetadata } from './metadata-resource';
 import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
@@ -53,6 +55,8 @@ export interface CustomResourceProps {
    *   serviceToken: myTopic.topicArn,
    * });
    * ```
+   *
+   * Maps to [ServiceToken](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetoken) property for the `AWS::CloudFormation::CustomResource` resource
    */
   readonly serviceToken: string;
 
@@ -61,12 +65,31 @@ export interface CustomResourceProps {
    *
    * The value must be between 1 second and 3600 seconds.
    *
+   * Maps to [ServiceTimeout](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#cfn-cloudformation-customresource-servicetimeout) property for the `AWS::CloudFormation::CustomResource` resource
+   *
+   * A token can be specified for this property, but it must be specified with `Duration.seconds()`.
+   *
+   * @example
+   * const stack = new Stack();
+   * const durToken = new CfnParameter(stack, 'MyParameter', {
+   *   type: 'Number',
+   *   default: 60,
+   * });
+   * new CustomResource(stack, 'MyCustomResource', {
+   *   serviceToken: 'MyServiceToken',
+   *   serviceTimeout: Duration.seconds(durToken.valueAsNumber),
+   * });
+   *
    * @default Duration.seconds(3600)
    */
   readonly serviceTimeout?: Duration;
 
   /**
    * Properties to pass to the Lambda
+   *
+   * Values in this `properties` dictionary can possibly overwrite other values in `CustomResourceProps`
+   * E.g. `ServiceToken` and `ServiceTimeout`
+   * It is recommended to avoid using same keys that exist in `CustomResourceProps`
    *
    * @default - No properties.
    */
@@ -137,13 +160,14 @@ export class CustomResource extends Resource {
 
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const type = renderResourceType(props.resourceType);
     const pascalCaseProperties = props.pascalCaseProperties ?? false;
     const properties = pascalCaseProperties ? uppercaseProperties(props.properties || {}) : (props.properties || {});
 
-    if (props.serviceTimeout !== undefined && !Token.isUnresolved(props.serviceTimeout)
-    ) {
+    if (props.serviceTimeout !== undefined && !props.serviceTimeout.isUnresolved()) {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
@@ -151,11 +175,21 @@ export class CustomResource extends Resource {
       }
     }
 
+    const constructPropertiesPassed = {
+      ServiceToken: props.serviceToken,
+      ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+    };
+
+    const hasCommonKeys = Object.keys(properties).some(key => key in constructPropertiesPassed);
+
+    if (hasCommonKeys) {
+      Annotations.of(this).addWarningV2('@aws-cdk/core:customResourcePropConflict', `The following keys will be overwritten as they exist in the 'properties' prop. Keys found: ${Object.keys(properties).filter(key => key in constructPropertiesPassed)}`);
+    }
+
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.serviceToken,
-        ServiceTimeout: props.serviceTimeout?.toSeconds().toString(),
+        ...constructPropertiesPassed,
         ...properties,
       },
     });
@@ -181,6 +215,7 @@ export class CustomResource extends Resource {
    * @returns a token for `Fn::GetAtt`. Use `Token.asXxx` to encode the returned `Reference` as a specific type or
    * use the convenience `getAttString` for string attributes.
    */
+  @MethodMetadata()
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
@@ -193,6 +228,7 @@ export class CustomResource extends Resource {
    * @param attributeName the name of the attribute
    * @returns a token for `Fn::GetAtt` encoded as a string.
    */
+  @MethodMetadata()
   public getAttString(attributeName: string): string {
     return Token.asString(this.getAtt(attributeName));
   }

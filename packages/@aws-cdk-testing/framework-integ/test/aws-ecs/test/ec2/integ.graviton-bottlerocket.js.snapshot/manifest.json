@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97a9d0120f4d0bcb2ae91e291dd39328d03094fdf919b9e7c397167ee480167c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4e78c266f92092f60b7ac8859b5ab9d6ef161e6c236a546d65426866b7172e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,12 +220,6 @@
             "data": "EcsClustergravitonclusterDrainECSHookFunctionServiceRole26D97764"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctionServiceRoleDefaultPolicy1563DC6B"
-          }
-        ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -241,6 +236,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole00BEEF075"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole1E7E6BDCA"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole2F61512F4"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole395D5864D"
+          }
+        ],
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctioninlinePolicyAddedToExecutionRole4A01E14CA"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Topic/Resource": [
@@ -285,10 +310,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0": [
+        "EcsClustergravitonclusterDrainECSHookFunctionServiceRoleDefaultPolicy1563DC6B": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionServiceRoleDefaultPolicy1563DC6B",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
