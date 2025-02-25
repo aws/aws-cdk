@@ -236,7 +236,9 @@ export interface CommonAutoScalingGroupProps {
   readonly healthCheck?: HealthCheck;
 
   /**
-   * Configuration for one or more health checks
+   * Configuration for EC2 or additional health checks
+   *
+   * Even when using `HealthChecks.addition()`, the EC2 type is implicitly included.
    *
    * @default - EC2 type with no grace period
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html
