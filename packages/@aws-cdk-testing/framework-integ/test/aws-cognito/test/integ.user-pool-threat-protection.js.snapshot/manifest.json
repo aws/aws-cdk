@@ -1,28 +1,28 @@
 {
   "version": "39.0.0",
   "artifacts": {
-    "integ-user-email-mfa.assets": {
+    "integ-user-pool-threat-protection.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-user-email-mfa.assets.json",
+        "file": "integ-user-pool-threat-protection.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-user-email-mfa": {
+    "integ-user-pool-threat-protection": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-user-email-mfa.template.json",
+        "templateFile": "integ-user-pool-threat-protection.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dede4b21c364166e64241d20b5916270a190b70ec1a4c8a5d848e5ac04ce77d1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04266265e7d8e908782d2d5c8252db65dd44513836a96f3c79f224f2ce316fb5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-user-email-mfa.assets"
+          "integ-user-pool-threat-protection.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,91 +31,67 @@
         }
       },
       "dependencies": [
-        "integ-user-email-mfa.assets"
+        "integ-user-pool-threat-protection.assets"
       ],
       "metadata": {
-        "/integ-user-email-mfa/myuserpool": [
+        "/integ-user-pool-threat-protection/userpool-standard-threat-protection": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy",
-              "userPoolName": "*",
-              "email": "*",
-              "mfa": "ON",
-              "mfaSecondFactor": {
-                "sms": true,
-                "otp": false,
-                "email": true
-              },
-              "advancedSecurityMode": "ENFORCED",
-              "featurePlan": "PLUS"
+              "featurePlan": "PLUS",
+              "removalPolicy": "destroy"
             }
           }
         ],
-        "/integ-user-email-mfa/myuserpool/smsRole": [
+        "/integ-user-pool-threat-protection/userpool-standard-threat-protection/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolstandardthreatprotection0937AC57"
+          }
+        ],
+        "/integ-user-pool-threat-protection/userpool-custom-threat-protection": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*"
+              "featurePlan": "PLUS",
+              "removalPolicy": "destroy"
             }
           }
         ],
-        "/integ-user-email-mfa/myuserpool/smsRole/ImportsmsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-user-email-mfa/myuserpool/smsRole/Resource": [
+        "/integ-user-pool-threat-protection/userpool-custom-threat-protection/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myuserpoolsmsRole0E16FDD9"
+            "data": "userpoolcustomthreatprotection2B795E28"
           }
         ],
-        "/integ-user-email-mfa/myuserpool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myuserpool01998219"
-          }
-        ],
-        "/integ-user-email-mfa/user-pool-id": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpoolid"
-          }
-        ],
-        "/integ-user-email-mfa/BootstrapVersion": [
+        "/integ-user-pool-threat-protection/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-user-email-mfa/CheckBootstrapVersion": [
+        "/integ-user-pool-threat-protection/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-user-email-mfa"
+      "displayName": "integ-user-pool-threat-protection"
     },
-    "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets": {
+    "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets.json",
+        "file": "IntegTestDefaultTestDeployAssertE3E7D2A4.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integuseremailmfatestDefaultTestDeployAssertD4C43B3C": {
+    "IntegTestDefaultTestDeployAssertE3E7D2A4": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.template.json",
+        "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -124,7 +100,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets"
+          "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -133,23 +109,23 @@
         }
       },
       "dependencies": [
-        "integuseremailmfatestDefaultTestDeployAssertD4C43B3C.assets"
+        "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
       ],
       "metadata": {
-        "/integ-user-email-mfa-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-user-email-mfa-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-user-email-mfa-test/DefaultTest/DeployAssert"
+      "displayName": "IntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
