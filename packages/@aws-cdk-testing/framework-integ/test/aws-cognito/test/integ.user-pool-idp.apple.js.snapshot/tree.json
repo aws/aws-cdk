@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-user-pool-idp-apple": {
         "id": "integ-user-pool-idp-apple",
         "path": "integ-user-pool-idp-apple",
@@ -53,7 +45,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               },
@@ -67,9 +59,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
                       "aws:cdk:cloudformation:props": {
-                        "userPoolId": {
-                          "Ref": "pool056F3F7E"
-                        },
                         "allowedOAuthFlows": [
                           "implicit",
                           "code"
@@ -90,17 +79,20 @@
                             "Ref": "apple9B5408AC"
                           },
                           "COGNITO"
-                        ]
+                        ],
+                        "userPoolId": {
+                          "Ref": "pool056F3F7E"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
                   "version": "0.0.0"
                 }
               },
@@ -121,19 +113,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0"
             }
           },
@@ -147,14 +139,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
                   "aws:cdk:cloudformation:props": {
-                    "providerName": "SignInWithApple",
-                    "providerType": "SignInWithApple",
-                    "userPoolId": {
-                      "Ref": "pool056F3F7E"
-                    },
                     "attributeMapping": {
                       "family_name": "lastName",
-                      "given_name": "firstName"
+                      "given_name": "firstName",
+                      "email_verified": "email_verified"
                     },
                     "providerDetails": {
                       "client_id": "com.amzn.cdk",
@@ -162,17 +150,22 @@
                       "key_id": "CDKKEYCDK1",
                       "private_key": "PRIV_KEY_CDK",
                       "authorize_scopes": "email name"
+                    },
+                    "providerName": "SignInWithApple",
+                    "providerType": "SignInWithApple",
+                    "userPoolId": {
+                      "Ref": "pool056F3F7E"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolIdentityProvider",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderApple",
+              "fqn": "aws-cdk-lib.aws_cognito.UserPoolIdentityProviderApple",
               "version": "0.0.0"
             }
           },
@@ -180,20 +173,44 @@
             "id": "SignInLink",
             "path": "integ-user-pool-idp-apple/SignInLink",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-user-pool-idp-apple/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-user-pool-idp-apple/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

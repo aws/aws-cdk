@@ -1,7 +1,7 @@
+import { Match, Matcher } from '..';
 import { AbsentMatch } from './matchers/absent';
 import { formatAllMismatches, matchSection, formatSectionMatchFailure } from './section';
 import { Resource, Template } from './template';
-import { Match, Matcher } from '..';
 
 export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
   const section = template.Resources ?? {};
@@ -46,7 +46,6 @@ export function allResourcesProperties(template: Template, type: string, props: 
   return allResources(amended, type, Match.objectLike({
     Properties: props,
   }));
-
 }
 
 export function hasResource(template: Template, type: string, props: any): string | void {

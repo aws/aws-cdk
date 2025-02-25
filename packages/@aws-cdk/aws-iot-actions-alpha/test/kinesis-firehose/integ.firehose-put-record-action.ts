@@ -21,7 +21,7 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const stream = new firehose.DeliveryStream(this, 'MyStream', {
-      destinations: [new destinations.S3Bucket(bucket)],
+      destination: new destinations.S3Bucket(bucket),
     });
     topicRule.addAction(
       new actions.FirehosePutRecordAction(stream, {

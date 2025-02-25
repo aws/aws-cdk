@@ -23,7 +23,6 @@ describe('resource dependencies', () => {
     });
   });
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in nested stack depends on a resource in the parent stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const parent = new Stack(undefined, 'root');
@@ -41,7 +40,6 @@ describe('resource dependencies', () => {
     Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in nested stack depends on a resource in a grandparent stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const grantparent = new Stack(undefined, 'Grandparent');
@@ -59,7 +57,6 @@ describe('resource dependencies', () => {
     Template.fromStack(nested).templateMatches({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in parent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const parent = new Stack(undefined, 'root');
@@ -76,7 +73,6 @@ describe('resource dependencies', () => {
     });
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in grantparent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const grandparent = new Stack(undefined, 'Grandparent');
@@ -94,7 +90,6 @@ describe('resource dependencies', () => {
     });
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in sibling stack depends on a resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -116,7 +111,6 @@ describe('resource dependencies', () => {
     assertNoDependsOn(assembly, nested1);
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in nested stack depends on a resource in sibling stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -138,7 +132,6 @@ describe('resource dependencies', () => {
     assertNoDependsOn(assembly, nested1);
   }));
 
-  // eslint-disable-next-line jest/valid-describe
   describeDeprecated('resource in nested stack depends on a resource in nested sibling stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App();

@@ -21,7 +21,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-alpha/default"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -32,26 +38,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-alpha/default/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "defaultC974F9E3",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-alpha/default/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "defaultC974F9E3",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -80,7 +96,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -95,7 +111,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -153,7 +169,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -196,7 +212,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-egressonlyigw-alpha/eigw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -207,26 +229,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-egressonlyigw-alpha/eigw/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "eigwC0F094EF",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-egressonlyigw-alpha/eigw/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "eigwC0F094EF",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -252,10 +284,46 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "eigwRoute": {
+                "id": "eigwRoute",
+                "path": "aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/eigwRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-egressonlyigw-alpha/TestRoottable/eigwRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationIpv6CidrBlock": "::/0",
+                        "egressOnlyInternetGatewayId": {
+                          "Fn::GetAtt": [
+                            "testEOIGWEIGW54CCAD37",
+                            "Id"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -270,7 +338,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "vpcId": {
                       "Fn::GetAtt": [
@@ -317,7 +385,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -346,44 +414,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.EgressOnlyInternetGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testEIGWRoute": {
-            "id": "testEIGWRoute",
-            "path": "aws-cdk-routev2-egressonlyigw-alpha/testEIGWRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-egressonlyigw-alpha/testEIGWRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "egressOnlyInternetGatewayId": {
-                      "Fn::GetAtt": [
-                        "testEOIGWEIGW54CCAD37",
-                        "Id"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.EgressOnlyInternetGateway",
               "version": "0.0.0"
             }
           },
@@ -426,7 +457,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-igw-alpha/igw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -437,26 +474,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-igw-alpha/igw/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "igw127F1970",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-igw-alpha/igw/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "igw127F1970",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -482,10 +529,46 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "igwRoute": {
+                "id": "igwRoute",
+                "path": "aws-cdk-routev2-igw-alpha/TestRoottable/igwRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-igw-alpha/TestRoottable/igwRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Fn::GetAtt": [
+                            "testIGW8D947AF2",
+                            "InternetGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -500,7 +583,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -558,7 +641,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -577,47 +660,10 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.InternetGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testIGWRoute": {
-            "id": "testIGWRoute",
-            "path": "aws-cdk-routev2-igw-alpha/testIGWRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-igw-alpha/testIGWRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "gatewayId": {
-                      "Fn::GetAtt": [
-                        "testIGW8D947AF2",
-                        "InternetGatewayId"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
               },
               "GWAttachment": {
                 "id": "GWAttachment",
-                "path": "aws-cdk-routev2-igw-alpha/testIGWRoute/GWAttachment",
+                "path": "aws-cdk-routev2-igw-alpha/testIGW/GWAttachment",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -642,7 +688,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.InternetGateway",
               "version": "0.0.0"
             }
           },
@@ -685,7 +731,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-virtualprivategw-alpha/vpgw"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -696,26 +748,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-virtualprivategw-alpha/vpgw/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "vpgw2AB64B6B",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-virtualprivategw-alpha/vpgw/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "vpgw2AB64B6B",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -741,10 +803,46 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "vpgwRoute": {
+                "id": "vpgwRoute",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/TestRoottable/vpgwRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-virtualprivategw-alpha/TestRoottable/vpgwRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Fn::GetAtt": [
+                            "testVPGWIGW816C7C4F",
+                            "VPNGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -759,7 +857,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -817,7 +915,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -838,47 +936,10 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGateway",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VPNGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testVPGWRoute": {
-            "id": "testVPGWRoute",
-            "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "gatewayId": {
-                      "Fn::GetAtt": [
-                        "testVPGWIGW816C7C4F",
-                        "VPNGatewayId"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
               },
-              "GWAttachment": {
-                "id": "GWAttachment",
-                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGWRoute/GWAttachment",
+              "VPCVPNGW": {
+                "id": "VPCVPNGW",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGW/VPCVPNGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -900,10 +961,30 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
+              },
+              "RoutePropagation": {
+                "id": "RoutePropagation",
+                "path": "aws-cdk-routev2-virtualprivategw-alpha/testVPGW/RoutePropagation",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPNGatewayRoutePropagation",
+                  "aws:cdk:cloudformation:props": {
+                    "routeTableIds": [],
+                    "vpnGatewayId": {
+                      "Fn::GetAtt": [
+                        "testVPGWIGW816C7C4F",
+                        "VPNGatewayId"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPNGatewayRoutePropagation",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VPNGatewayV2",
               "version": "0.0.0"
             }
           },
@@ -946,7 +1027,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -957,26 +1044,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "natgwpub2FB85986",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-publicnatgw-alpha/natgw_pub/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "natgwpub2FB85986",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -1002,10 +1099,82 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "natGwRoute": {
+                "id": "natGwRoute",
+                "path": "aws-cdk-routev2-publicnatgw-alpha/TestRoottable/natGwRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-publicnatgw-alpha/TestRoottable/natGwRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Fn::GetAtt": [
+                            "testNATgwIGW6AC97E9A",
+                            "InternetGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
+              },
+              "natGwPubRoute": {
+                "id": "natGwPubRoute",
+                "path": "aws-cdk-routev2-publicnatgw-alpha/TestRoottable/natGwPubRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-publicnatgw-alpha/TestRoottable/natGwPubRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Fn::GetAtt": [
+                            "testNATgwNATGateway1533420D",
+                            "NatGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -1020,7 +1189,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1078,7 +1247,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -1097,47 +1266,10 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.InternetGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testnatgwigwRoute": {
-            "id": "testnatgwigwRoute",
-            "path": "aws-cdk-routev2-publicnatgw-alpha/testnatgwigwRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-publicnatgw-alpha/testnatgwigwRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "242.0.0.0/32",
-                    "destinationIpv6CidrBlock": "242.0.0.0/32",
-                    "gatewayId": {
-                      "Fn::GetAtt": [
-                        "testNATgwIGW6AC97E9A",
-                        "InternetGatewayId"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
               },
               "GWAttachment": {
                 "id": "GWAttachment",
-                "path": "aws-cdk-routev2-publicnatgw-alpha/testnatgwigwRoute/GWAttachment",
+                "path": "aws-cdk-routev2-publicnatgw-alpha/testNATgwIGW/GWAttachment",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -1162,7 +1294,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.InternetGateway",
               "version": "0.0.0"
             }
           },
@@ -1213,44 +1345,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.NatGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testNATGWRoute": {
-            "id": "testNATGWRoute",
-            "path": "aws-cdk-routev2-publicnatgw-alpha/testNATGWRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-publicnatgw-alpha/testNATGWRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "natGatewayId": {
-                      "Fn::GetAtt": [
-                        "testNATgwNATGateway1533420D",
-                        "NatGatewayId"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.NatGateway",
               "version": "0.0.0"
             }
           },
@@ -1293,7 +1388,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1304,26 +1405,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "natgwpriv081A7D93",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "natgwpriv081A7D93",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -1349,10 +1460,46 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "natGwPrivRoute": {
+                "id": "natGwPrivRoute",
+                "path": "aws-cdk-routev2-privatenatgw-alpha/TestRoottable/natGwPrivRoute",
+                "children": {
+                  "Route": {
+                    "id": "Route",
+                    "path": "aws-cdk-routev2-privatenatgw-alpha/TestRoottable/natGwPrivRoute/Route",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Fn::GetAtt": [
+                            "testNATgwNATGateway1533420D",
+                            "NatGatewayId"
+                          ]
+                        },
+                        "routeTableId": {
+                          "Fn::GetAtt": [
+                            "TestRoottableRouteTableFA28AA38",
+                            "RouteTableId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -1367,7 +1514,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1425,7 +1572,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -1458,44 +1605,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.NatGateway",
-              "version": "0.0.0"
-            }
-          },
-          "testNATGWRoute": {
-            "id": "testNATGWRoute",
-            "path": "aws-cdk-routev2-privatenatgw-alpha/testNATGWRoute",
-            "children": {
-              "Route": {
-                "id": "Route",
-                "path": "aws-cdk-routev2-privatenatgw-alpha/testNATGWRoute/Route",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                  "aws:cdk:cloudformation:props": {
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "0.0.0.0/0",
-                    "natGatewayId": {
-                      "Fn::GetAtt": [
-                        "testNATgwNATGateway1533420D",
-                        "NatGatewayId"
-                      ]
-                    },
-                    "routeTableId": {
-                      "Fn::GetAtt": [
-                        "TestRoottableRouteTableFA28AA38",
-                        "RouteTableId"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
+              "fqn": "@aws-cdk/aws-ec2-alpha.NatGateway",
               "version": "0.0.0"
             }
           },
@@ -1538,7 +1648,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-networkif-alpha/nif"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1549,26 +1665,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-networkif-alpha/nif/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "nif44200315",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-networkif-alpha/nif/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "nif44200315",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -1597,7 +1723,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -1612,7 +1738,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1670,7 +1796,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -1713,7 +1839,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1724,26 +1856,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "vpcpc6CAE1A04",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-vpcpeerconnection-alpha/vpcpc/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "vpcpc6CAE1A04",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -1772,7 +1914,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -1787,7 +1929,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -1845,7 +1987,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -1888,7 +2030,13 @@
                     "cidrBlock": "10.0.0.0/16",
                     "enableDnsHostnames": true,
                     "enableDnsSupport": true,
-                    "instanceTenancy": "default"
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
@@ -1899,26 +2047,36 @@
               "AmazonIpv6": {
                 "id": "AmazonIpv6",
                 "path": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb/AmazonIpv6",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
-                  "aws:cdk:cloudformation:props": {
-                    "amazonProvidedIpv6CidrBlock": true,
-                    "vpcId": {
-                      "Fn::GetAtt": [
-                        "dynamodbC0A56799",
-                        "VpcId"
-                      ]
+                "children": {
+                  "AmazonIpv6": {
+                    "id": "AmazonIpv6",
+                    "path": "aws-cdk-routev2-dynamodbendpoint-alpha/dynamodb/AmazonIpv6/AmazonIpv6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+                      "aws:cdk:cloudformation:props": {
+                        "amazonProvidedIpv6CidrBlock": true,
+                        "vpcId": {
+                          "Fn::GetAtt": [
+                            "dynamodbC0A56799",
+                            "VpcId"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.VpcV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.VpcV2",
               "version": "0.0.0"
             }
           },
@@ -1944,10 +2102,18 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                   "version": "0.0.0"
                 }
+              },
+              "dynamoRoute": {
+                "id": "dynamoRoute",
+                "path": "aws-cdk-routev2-dynamodbendpoint-alpha/TestRoottable/dynamoRoute",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ec2-alpha.Route",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.RouteTable",
+              "fqn": "@aws-cdk/aws-ec2-alpha.RouteTable",
               "version": "0.0.0"
             }
           },
@@ -1962,7 +2128,7 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                   "aws:cdk:cloudformation:props": {
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-1a",
+                    "availabilityZone": "us-east-1a",
                     "cidrBlock": "10.0.0.0/24",
                     "ipv6CidrBlock": {
                       "Fn::Select": [
@@ -2020,7 +2186,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.SubnetV2",
+              "fqn": "@aws-cdk/aws-ec2-alpha.SubnetV2",
               "version": "0.0.0"
             }
           },
@@ -2074,14 +2240,6 @@
               "version": "0.0.0"
             }
           },
-          "testDynamoRoute": {
-            "id": "testDynamoRoute",
-            "path": "aws-cdk-routev2-dynamodbendpoint-alpha/testDynamoRoute",
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-vpcv2-alpha.Route",
-              "version": "0.0.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-routev2-dynamodbendpoint-alpha/BootstrapVersion",
@@ -2117,7 +2275,7 @@
                 "path": "integtest-model-0/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2171,7 +2329,7 @@
                 "path": "integtest-model-1/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2225,7 +2383,7 @@
                 "path": "integtest-model-2/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2279,7 +2437,7 @@
                 "path": "integtest-model-3/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2333,7 +2491,7 @@
                 "path": "integtest-model-4/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2387,7 +2545,7 @@
                 "path": "integtest-model-5/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2441,7 +2599,7 @@
                 "path": "integtest-model-6/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2495,7 +2653,7 @@
                 "path": "integtest-model-7/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2549,7 +2707,7 @@
                 "path": "integtest-model-8/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -2595,7 +2753,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

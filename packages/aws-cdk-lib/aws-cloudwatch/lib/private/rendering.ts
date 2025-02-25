@@ -2,6 +2,7 @@ import { DropEmptyObjectAtTheEndOfAnArray } from './drop-empty-object-at-the-end
 import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-tokens';
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
+import { UnscopedValidationError } from '../../../core';
 import { IMetric } from '../metric-types';
 
 /**
@@ -47,8 +48,16 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       }
 
       // Metric attributes that are rendered to graph options
-      if (stat.account) { options.accountId = accountIfDifferentFromStack(stat.account); }
-      if (stat.region) { options.region = regionIfDifferentFromStack(stat.region); }
+      if (stat.accountOverride) {
+        options.accountId = stat.accountOverride;
+      } else if (stat.account) {
+        options.accountId = accountIfDifferentFromStack(stat.account);
+      }
+      if (stat.regionOverride) {
+        options.region = stat.regionOverride;
+      } else if (stat.region) {
+        options.region = regionIfDifferentFromStack(stat.region);
+      }
       if (stat.period && stat.period.toSeconds() !== 300) { options.period = stat.period.toSeconds(); }
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
@@ -151,7 +160,7 @@ export class MetricSet<A> {
     if (id) {
       existingEntry = this.metricById.get(id);
       if (existingEntry && metricKey(existingEntry.metric) !== key) {
-        throw new Error(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
+        throw new UnscopedValidationError(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
       }
     }
 

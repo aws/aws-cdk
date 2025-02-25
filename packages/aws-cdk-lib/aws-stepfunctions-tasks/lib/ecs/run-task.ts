@@ -5,12 +5,10 @@ import * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**
- * Properties for ECS Tasks
- */
-export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
+interface EcsRunTaskOptions {
   /**
    * The ECS cluster to run the task on
    */
@@ -257,9 +255,41 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
 }
 
 /**
+ * Properties for ECS Tasks using JSONPath
+ */
+export interface EcsRunTaskJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EcsRunTaskOptions {}
+
+/**
+ * Properties for ECS Tasks using JSONata
+ */
+export interface EcsRunTaskJsonataProps extends sfn.TaskStateJsonataBaseProps, EcsRunTaskOptions {}
+
+/**
+ * Properties for ECS Tasks
+ */
+export interface EcsRunTaskProps extends sfn.TaskStateBaseProps, EcsRunTaskOptions {}
+
+/**
  * Run a Task on ECS or Fargate
  */
 export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
+  /**
+   * Run a Task that using JSONPath on ECS or Fargate
+   */
+  public static jsonPath(scope: Construct, id: string, props: EcsRunTaskJsonPathProps) {
+    return new EcsRunTask(scope, id, props);
+  }
+
+  /**
+   * Run a Task that using JSONata on ECS or Fargate
+   */
+  public static jsonata(scope: Construct, id: string, props: EcsRunTaskJsonataProps) {
+    return new EcsRunTask(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+  }
+
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.RUN_JOB,
@@ -317,10 +347,11 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
   /**
    * @internal
    */
-  protected _renderTask(): any {
+  protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
+    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
     return {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
-      Parameters: sfn.FieldUtils.renderObject({
+      ...this._renderParametersOrArguments({
         Cluster: this.props.cluster.clusterArn,
         TaskDefinition: this.props.revisionNumber === undefined ? this.props.taskDefinition.family : `${this.props.taskDefinition.family}:${this.props.revisionNumber.toString()}`,
         NetworkConfiguration: this.networkConfiguration,
@@ -333,7 +364,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
-      }),
+      }, queryLanguage),
     };
   }
 
@@ -368,7 +399,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [`${this.getTaskDefinitionFamilyArn()}:*`],
+        resources: [cdk.FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY) ? this.getTaskDefinitionArn() : this.getTaskDefinitionFamilyArn() + ':*'],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -396,6 +427,10 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  private getTaskDefinitionArn(): string {
+    return this.props.taskDefinition.taskDefinitionArn;
   }
 
   /**

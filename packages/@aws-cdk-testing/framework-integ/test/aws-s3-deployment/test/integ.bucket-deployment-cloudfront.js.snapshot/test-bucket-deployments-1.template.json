@@ -209,9 +209,33 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
     },
     "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployWithInvalidationCustomResourceHandlerinlinePolicyAddedToExecutionRole053D7D0A3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DeployWithInvalidationCustomResourceHandlerinlinePolicyAddedToExecutionRole053D7D0A3",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+     }
+    ]
    }
   },
   "DeployWithInvalidationCustomResourceE3FF7455": {
@@ -241,7 +265,8 @@
     },
     "DistributionPaths": [
      "/images/*.png"
-    ]
+    ],
+    "OutputObjectKeys": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -359,14 +384,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "cloudfront:CreateInvalidation",
-        "cloudfront:GetInvalidation"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -386,7 +403,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+     "S3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
     },
     "Environment": {
      "Variables": {
@@ -405,7 +422,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9",
+    "Runtime": "python3.11",
     "Timeout": 900
    },
    "DependsOn": [
@@ -462,10 +479,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -516,10 +533,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

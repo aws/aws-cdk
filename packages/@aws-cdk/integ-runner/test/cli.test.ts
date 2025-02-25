@@ -103,7 +103,7 @@ describe('Test discovery', () => {
       '--language=javascript',
       '--language=typescript',
       '--test-regex="^xxxxx\.integ-test[12]\.js$"',
-    ])).rejects.toThrowError('Only a single "--language" can be used with "--test-regex". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
+    ])).rejects.toThrow('Only a single "--language" can be used with "--test-regex". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
   });
 
   test('cannot use --app by itself with more than one language preset', async () => {
@@ -113,7 +113,7 @@ describe('Test discovery', () => {
       '--language=javascript',
       '--language=typescript',
       '--app="node --prof {filePath}"',
-    ])).rejects.toThrowError('Only a single "--language" can be used with "--app". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
+    ])).rejects.toThrow('Only a single "--language" can be used with "--app". Alternatively provide both "--app" and "--test-regex" to fully customize the configuration.');
   });
 });
 

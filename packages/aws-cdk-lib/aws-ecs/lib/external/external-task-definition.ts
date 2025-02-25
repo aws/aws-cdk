@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
@@ -79,11 +80,14 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
       compatibility: Compatibility.EXTERNAL,
       networkMode: props.networkMode ?? NetworkMode.BRIDGE,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 
   /**
-   * Overriden method to throw error as interface accelerators are not supported for external tasks
+   * Overridden method to throw error as interface accelerators are not supported for external tasks
    */
+  @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
     throw new Error('Cannot use inference accelerators on tasks that run on External service');
   }

@@ -322,6 +322,19 @@ export interface ContainerDefinitionOptions {
   readonly user?: string;
 
   /**
+   * Specifies whether Amazon ECS will resolve the container image tag provided
+   * in the container definition to an image digest.
+   *
+   * If you set the value for a container as disabled, Amazon ECS will
+   * not resolve the provided container image tag to a digest and will use the
+   * original image URI specified in the container definition for deployment.
+   *
+   * @default VersionConsistency.DISABLED if `image` is a CDK asset, VersionConsistency.ENABLED otherwise
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-versionconsistency
+   */
+  readonly versionConsistency?: VersionConsistency;
+
+  /**
    * The working directory in which to run commands inside the container.
    *
    * @default /
@@ -384,6 +397,42 @@ export interface ContainerDefinitionOptions {
    * An array of ulimits to set in the container.
    */
   readonly ulimits?: Ulimit[];
+
+  /**
+   * Enable a restart policy for a container.
+   *
+   * When you set up a restart policy, Amazon ECS can restart the container without needing to replace the task.
+   *
+   * @default - false unless `restartIgnoredExitCodes` or `restartAttemptPeriod` is set.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
+   */
+  readonly enableRestartPolicy?: boolean;
+
+  /**
+   * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
+   *
+   * This property can't be used if `enableRestartPolicy` is set to false.
+   *
+   * You can specify a maximum of 50 container exit codes.
+   *
+   * @default - No exit codes are ignored.
+   */
+  readonly restartIgnoredExitCodes?: number[];
+
+  /**
+   * A period of time that the container must run for before a restart can be attempted.
+   *
+   * A container can be restarted only once every `restartAttemptPeriod` seconds.
+   * If a container isn't able to run for this time period and exits early, it will not be restarted.
+   *
+   * This property can't be used if `enableRestartPolicy` is set to false.
+   *
+   * You can set a minimum `restartAttemptPeriod` of 60 seconds and a maximum `restartAttemptPeriod`
+   * of 1800 seconds.
+   *
+   * @default - Duration.seconds(300) if `enableRestartPolicy` is true, otherwise no period.
+   */
+  readonly restartAttemptPeriod?: cdk.Duration;
 }
 
 /**
@@ -512,6 +561,8 @@ export class ContainerDefinition extends Construct {
 
   private _namedPorts: Map<string, PortMapping>;
 
+  private versionConsistency?: VersionConsistency;
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -532,6 +583,8 @@ export class ContainerDefinition extends Construct {
     this.imageName = this.imageConfig.imageName;
 
     this._namedPorts = new Map<string, PortMapping>();
+
+    this.versionConsistency = props.versionConsistency;
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
@@ -590,6 +643,8 @@ export class ContainerDefinition extends Construct {
     if (props.ulimits) {
       this.addUlimits(...props.ulimits);
     }
+
+    this.validateRestartPolicy(props.enableRestartPolicy, props.restartIgnoredExitCodes, props.restartAttemptPeriod);
   }
 
   /**
@@ -771,6 +826,18 @@ export class ContainerDefinition extends Construct {
     };
   }
 
+  private validateRestartPolicy(enableRestartPolicy?: boolean, restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration) {
+    if (enableRestartPolicy === false && (restartIgnoredExitCodes !== undefined || restartAttemptPeriod !== undefined)) {
+      throw new Error('The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false');
+    }
+    if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
+      throw new Error(`Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`);
+    }
+    if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
+      throw new Error(`The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`);
+    }
+  }
+
   /**
    * Whether this container definition references a specific JSON field of a secret
    * stored in Secrets Manager.
@@ -827,6 +894,23 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
+   * Allows disabling version consistency if the user did not specify a value.
+   *
+   * Intended for CDK asset images, as asset images are tagged based upon a hash
+   * of image inputs, meaning the image won't change if the tag didn't change,
+   * making version consistency for such containers a waste of time. Literally,
+   * as version consistency can only be achieved by slowing down deployments.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html#deployment-container-image-stability
+   * @internal
+   */
+  public _defaultDisableVersionConsistency() {
+    if (!this.versionConsistency) {
+      this.versionConsistency = VersionConsistency.DISABLED;
+    }
+  }
+
+  /**
    * Render this container definition to a CloudFormation object
    *
    * @param _taskDefinition [disable-awslint:ref-via-interface] (unused but kept to avoid breaking change)
@@ -860,6 +944,7 @@ export class ContainerDefinition extends Construct {
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
       ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
       user: this.props.user,
+      versionConsistency: this.versionConsistency,
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
@@ -873,6 +958,7 @@ export class ContainerDefinition extends Construct {
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
+      restartPolicy: renderRestartPolicy(this.props.enableRestartPolicy, this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod),
     };
   }
 }
@@ -1213,7 +1299,6 @@ export interface PortMapping {
  * PortMap ValueObjectClass having by ContainerDefinition
  */
 export class PortMap {
-
   /**
    * The networking mode to use for the containers in the task.
    */
@@ -1278,7 +1363,6 @@ export class PortMap {
     }
     return true;
   }
-
 }
 
 /**
@@ -1450,6 +1534,22 @@ function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty 
 }
 
 /**
+ * State of the container version consistency feature.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-versionconsistency
+ */
+export enum VersionConsistency {
+  /**
+   * The version consistency feature is enabled for this container.
+   */
+  ENABLED = 'enabled',
+  /**
+   * The version consistency feature is disabled for this container.
+   */
+  DISABLED = 'disabled',
+}
+
+/**
  * The details on a data volume from another container in the same task definition.
  */
 export interface VolumeFrom {
@@ -1494,4 +1594,24 @@ function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinitio
     namespace: sc.namespace,
     value: sc.value,
   }));
+}
+
+function renderRestartPolicy(
+  enableRestartPolicy?: boolean,
+  restartIgnoredExitCodes?: number[],
+  restartAttemptPeriod?: cdk.Duration,
+): CfnTaskDefinition.RestartPolicyProperty | undefined {
+  if (enableRestartPolicy === undefined && restartIgnoredExitCodes === undefined && restartAttemptPeriod === undefined) {
+    return;
+  }
+
+  return {
+    // If `enableRestartPolicy` is undefined, we know that `restartIgnoredExitCodes` or restartAttemptPeriod is specified
+    // according to the above branch, so we treat `enableRestartPolicy` as true.
+    // The `validateRestartPolicy` function also ensures that `enableRestartPolicy` is not false if `restartIgnoredExitCodes`
+    // or `restartAttemptPeriod` is specified, so there is no conflict.
+    enabled: enableRestartPolicy ?? true,
+    ignoredExitCodes: restartIgnoredExitCodes, // always undefined if `enabled` is false
+    restartAttemptPeriod: restartAttemptPeriod?.toSeconds(), // always undefined if `enabled` is false
+  };
 }

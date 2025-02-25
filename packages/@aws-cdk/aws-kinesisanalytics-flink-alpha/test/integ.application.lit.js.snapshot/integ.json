@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "36.0.5",
   "testCases": {
-    "integ.application.lit": {
+    "ApplicationTest/DefaultTest": {
       "stacks": [
         "FlinkAppTest"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ApplicationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationTestDefaultTestDeployAssertF9C5F731"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

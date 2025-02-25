@@ -430,7 +430,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "admin",
     "VpcSecurityGroupIds": [
@@ -448,7 +448,7 @@
   "DatabaseInstance1844F58FD": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "CACertificateIdentifier": "rds-ca-2019",
+    "CACertificateIdentifier": "rds-ca-rsa4096-g1",
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
@@ -471,7 +471,7 @@
   "DatabaseInstance2AA380DEE": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
-    "CACertificateIdentifier": "rds-ca-2019",
+    "CACertificateIdentifier": "rds-ca-rsa4096-g1",
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },

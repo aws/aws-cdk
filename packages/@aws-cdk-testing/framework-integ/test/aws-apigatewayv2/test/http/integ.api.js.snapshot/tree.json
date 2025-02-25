@@ -19,7 +19,8 @@
                   "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
                   "aws:cdk:cloudformation:props": {
                     "name": "HttpApi",
-                    "protocolType": "HTTP"
+                    "protocolType": "HTTP",
+                    "routeSelectionExpression": "${request.method} ${request.path}"
                   }
                 },
                 "constructInfo": {

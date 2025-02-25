@@ -208,6 +208,29 @@ new cloudwatch.Alarm(this, 'alarm from metric filter', {
 });
 ```
 
+### Metrics for IncomingLogs and IncomingBytes
+Metric methods have been defined for IncomingLogs and IncomingBytes within LogGroups. These metrics allow for the creation of alarms on log ingestion, ensuring that the log ingestion process is functioning correctly.
+
+To define an alarm based on these metrics, you can use the following template:
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingEventsMetric = logGroup.metricIncomingLogEvents();
+new cloudwatch.Alarm(this, 'HighLogVolumeAlarm', {
+  metric: incomingEventsMetric,
+  threshold: 1000,
+  evaluationPeriods: 1,
+});
+```
+```ts
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+const incomingBytesMetric = logGroup.metricIncomingBytes();
+new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
+  metric: incomingBytesMetric,
+  threshold: 5000000,  // 5 MB
+  evaluationPeriods: 1,
+});
+```
+
 ## Patterns
 
 Patterns describe which log events match a subscription or metric filter. There
@@ -272,6 +295,8 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 
 * `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
+* `FilterPattern.regexValue(field, comparison, string)`: matches if the given
+  field compares as indicated with the given regex pattern.
 * `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
 * `FilterPattern.isNull(field)`: matches if the given field exists and has the
@@ -301,6 +326,7 @@ const pattern = logs.FilterPattern.all(
     logs.FilterPattern.booleanValue('$.error', true),
     logs.FilterPattern.numberValue('$.latency', '>', 1000),
   ),
+  logs.FilterPattern.regexValue('$.message', '=', 'bind address already in use'),
 );
 ```
 
@@ -394,7 +420,7 @@ const bucket = new s3.Bucket(this, 'audit-bucket');
 const s3Destination = new destinations.S3Bucket(bucket);
 
 const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
+  destination: s3Destination,
 });
 
 const dataProtectionPolicy = new logs.DataProtectionPolicy({

@@ -10,6 +10,7 @@ import { findParameters, hasParameter } from './private/parameters';
 import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 import { Stack, Stage } from '../../core';
+import { AssertionError } from './private/error';
 
 /**
  * Suite of assertions that can be run on a CDK stack.
@@ -17,7 +18,6 @@ import { Stack, Stage } from '../../core';
  * CloudFormation template has expected resources and properties.
  */
 export class Template {
-
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
@@ -54,7 +54,7 @@ export class Template {
 
   private constructor(template: { [key: string]: any }, templateParsingOptions: TemplateParsingOptions = {}) {
     this.template = template as TemplateType;
-    if (!templateParsingOptions?.skipCyclicalDependenciesCheck ?? true) {
+    if (!templateParsingOptions.skipCyclicalDependenciesCheck) {
       checkTemplateForCyclicDependencies(this.template);
     }
   }
@@ -75,7 +75,7 @@ export class Template {
   public resourceCountIs(type: string, count: number): void {
     const counted = countResources(this.template, type);
     if (counted !== count) {
-      throw new Error(`Expected ${count} resources of type ${type} but found ${counted}`);
+      throw new AssertionError(`Expected ${count} resources of type ${type} but found ${counted}`);
     }
   }
 
@@ -89,7 +89,7 @@ export class Template {
   public resourcePropertiesCountIs(type: string, props: any, count: number): void {
     const counted = countResourcesProperties(this.template, type, props);
     if (counted !== count) {
-      throw new Error(`Expected ${count} resources of type ${type} but found ${counted}`);
+      throw new AssertionError(`Expected ${count} resources of type ${type} but found ${counted}`);
     }
   }
 
@@ -104,7 +104,7 @@ export class Template {
   public hasResourceProperties(type: string, props: any): void {
     const matchError = hasResourceProperties(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -119,7 +119,7 @@ export class Template {
   public hasResource(type: string, props: any): void {
     const matchError = hasResource(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -145,7 +145,7 @@ export class Template {
   public allResources(type: string, props: any): void {
     const matchError = allResources(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -160,7 +160,7 @@ export class Template {
   public allResourcesProperties(type: string, props: any): void {
     const matchError = allResourcesProperties(this.template, type, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -174,7 +174,7 @@ export class Template {
   public hasParameter(logicalId: string, props: any): void {
     const matchError = hasParameter(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -199,7 +199,7 @@ export class Template {
   public hasOutput(logicalId: string, props: any): void {
     const matchError = hasOutput(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -224,7 +224,7 @@ export class Template {
   public hasMapping(logicalId: string, props: any): void {
     const matchError = hasMapping(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -249,7 +249,7 @@ export class Template {
   public hasCondition(logicalId: string, props: any): void {
     const matchError = hasCondition(this.template, logicalId, props);
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -273,7 +273,7 @@ export class Template {
     const result = matcher.test(this.template);
 
     if (result.hasFailed()) {
-      throw new Error([
+      throw new AssertionError([
         'Template did not match as expected. The following mismatches were found:',
         ...result.toHumanStrings().map(s => `\t${s}`),
       ].join('\n'));
@@ -298,7 +298,7 @@ export interface TemplateParsingOptions {
 function toTemplate(stack: Stack): any {
   const stage = Stage.of(stack);
   if (!Stage.isStage(stage)) {
-    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
   }
 
   const assembly = stage.synth();

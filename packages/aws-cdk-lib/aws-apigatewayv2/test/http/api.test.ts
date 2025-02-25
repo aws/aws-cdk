@@ -139,7 +139,7 @@ describe('HttpApi', () => {
           allowCredentials: true,
           allowOrigins: ['*'],
         },
-      })).toThrowError(/allowCredentials is not supported/);
+      })).toThrow(/allowCredentials is not supported/);
     });
 
     test('get metric', () => {
@@ -231,6 +231,32 @@ describe('HttpApi', () => {
       Name: 'api',
       ProtocolType: 'HTTP',
       DisableExecuteApiEndpoint: true,
+    });
+  });
+
+  test('routeSelectionExpression is enabled', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      routeSelectionExpression: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      RouteSelectionExpression: '${request.method} ${request.path}',
+    });
+  });
+
+  test.each([false, undefined])('routeSelectionExpression is not enabled', (routeSelectionExpression) => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      routeSelectionExpression,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      RouteSelectionExpression: Match.absent(),
     });
   });
 

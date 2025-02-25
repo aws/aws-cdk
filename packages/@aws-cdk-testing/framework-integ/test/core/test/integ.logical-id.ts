@@ -20,5 +20,3 @@ new sqs.Queue(stack, 'test01234', {
 new integ.IntegTest(app, 'LogicalIdTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -590,7 +590,7 @@
      "Ref": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -765,7 +765,7 @@
      "Ref": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -980,7 +980,7 @@
      "Ref": "integauroraserverlessv22IntegClusterSubnets241DB50C"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.03.0",
+    "EngineVersion": "8.0.mysql_aurora.3.07.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1169,10 +1169,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -1223,10 +1223,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

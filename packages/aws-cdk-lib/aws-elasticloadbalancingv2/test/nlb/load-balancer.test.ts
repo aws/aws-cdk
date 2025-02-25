@@ -6,6 +6,43 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  test('specify minimum capacity unit', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      minimumCapacityUnit: 5500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      MinimumLoadBalancerCapacity: {
+        CapacityUnits: 5500,
+      },
+    });
+  });
+
+  test.each([-1, 2750, 5499, 10000.1, 90001])('throw error for invalid range minimum capacity unit', (minimumCapacityUnit) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    // two AZs
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const capacityUnitPerAz = minimumCapacityUnit / vpc.availabilityZones.length;
+
+    // THEN
+    expect(() => {
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        minimumCapacityUnit,
+      });
+    }).toThrow(`'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`);
+  });
+
   test('Trivial construction: internet facing', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -81,6 +118,7 @@ describe('tests', () => {
       vpc,
       crossZoneEnabled: true,
       clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+      zonalShift: true,
     });
 
     // THEN
@@ -93,6 +131,10 @@ describe('tests', () => {
         {
           Key: 'dns_record.client_routing_policy',
           Value: 'partial_availability_zone_affinity',
+        },
+        {
+          Key: 'zonal_shift.config.enabled',
+          Value: 'true',
         },
       ]),
     });
@@ -1130,40 +1172,66 @@ describe('tests', () => {
         IpAddressType: 'dualstack',
       });
     });
+  });
 
-    test('Cannot add UDP or TCP_UDP listeners to a dualstack network load balancer', () => {
+  describe('enable prefix for ipv6 source nat', () => {
+    test.each([
+      { config: true, value: 'on' },
+      { config: false, value: 'off' },
+    ])('specify EnablePrefixForIpv6SourceNat', ({ config, value }) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Stack');
 
       // WHEN
-      const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      new elbv2.NetworkLoadBalancer(stack, 'Lb', {
         vpc,
-        internetFacing: true,
+        enablePrefixForIpv6SourceNat: config,
         ipAddressType: elbv2.IpAddressType.DUAL_STACK,
       });
 
-      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
-        vpc: loadBalancer.vpc,
-        port: 3000,
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+        EnablePrefixForIpv6SourceNat: value,
+      });
+    });
+
+    test.each([false, undefined])('throw error for disabling `enablePrefixForIpv6SourceNat` and add UDP listener', (enablePrefixForIpv6SourceNat) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'Lb', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        enablePrefixForIpv6SourceNat,
       });
 
       // THEN
       expect(() => {
-        loadBalancer.addListener('listener', {
+        lb.addListener('Listener', {
+          port: 80,
           protocol: elbv2.Protocol.UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+          defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
         });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+      }).toThrow('To add a listener with UDP protocol to a dual stack NLB, \'enablePrefixForIpv6SourceNat\' must be set to true.');
+    });
+  });
+
+  describe('dualstack without public ipv4', () => {
+    test('Throws when creating a dualstack without public ipv4 and a NetworkLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
 
       expect(() => {
-        loadBalancer.addListener('listener', {
-          protocol: elbv2.Protocol.TCP_UDP,
-          port: 3000,
-          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: true,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
         });
-      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+      }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network');
     });
   });
 });

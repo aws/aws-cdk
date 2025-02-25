@@ -9,7 +9,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
@@ -171,7 +171,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3ObjectsItemReader({
@@ -186,7 +186,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -242,7 +242,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3JsonItemReader({
@@ -256,7 +256,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -312,7 +312,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3CsvItemReader({
@@ -327,7 +327,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -384,7 +384,7 @@ describe('Distributed Map State', () => {
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3CsvItemReader({
@@ -399,7 +399,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -452,12 +452,89 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test.each([stepfunctions.CsvDelimiter.COMMA,
+    stepfunctions.CsvDelimiter.PIPE,
+    stepfunctions.CsvDelimiter.SEMICOLON,
+    stepfunctions.CsvDelimiter.SPACE,
+    stepfunctions.CsvDelimiter.TAB])('State Machine With Distributed Map State and Given S3CsvItemReader with csv delimiter %s', (csvDelimiter) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const readerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemReader: new stepfunctions.S3CsvItemReader({
+        bucket: readerBucket,
+        key: 'test.csv',
+        csvDelimiter,
+      }),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
+            ReaderConfig: {
+              InputType: 'CSV',
+              CSVDelimiter: csvDelimiter,
+              CSVHeaderLocation: 'FIRST_ROW',
+            },
+            Parameters: {
+              Bucket: {
+                Ref: stack.getLogicalId(readerBucket.node.defaultChild as s3.CfnBucket),
+              },
+              Key: 'test.csv',
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and S3ManifestItemReader', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const readerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemReader: new stepfunctions.S3ManifestItemReader({
@@ -471,7 +548,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -522,12 +599,216 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State, ItemReader and BucketNamePath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      itemReader: new stepfunctions.S3ManifestItemReader({
+        bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        key: stepfunctions.JsonPath.stringAt('$.key'),
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
+            ReaderConfig: {
+              InputType: 'MANIFEST',
+            },
+            Parameters: {
+              'Bucket.$': '$.bucketName',
+              'Key.$': '$.key',
+            },
+          },
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State and Object Reader in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      itemReader: new stepfunctions.S3ObjectsItemReader({
+        bucket: writerBucket,
+        prefix: 'my-prefix',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Arguments: {
+              Bucket: {
+                Ref: 'TestBucket560B80BC',
+              },
+              Prefix: 'my-prefix',
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:::s3:listObjectsV2',
+                ],
+              ],
+            },
+          },
+        },
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State and ResultWriter in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemReader: new stepfunctions.S3CsvItemReader({
+        bucket: writerBucket,
+        key: 'CSV_KEY',
+        csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+      }),
+      resultWriter: new stepfunctions.ResultWriter({
+        bucket: writerBucket,
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemReader: {
+            Arguments: {
+              Bucket: {
+                Ref: 'TestBucket560B80BC',
+              },
+              Key: 'CSV_KEY',
+            },
+            ReaderConfig: {
+              CSVHeaderLocation: 'FIRST_ROW',
+              InputType: 'CSV',
+            },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:::s3:getObject',
+                ],
+              ],
+            },
+          },
+          ResultWriter: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:putObject',
+                ],
+              ],
+            },
+            Arguments: {
+              Bucket: {
+                Ref: stack.getLogicalId(writerBucket.node.defaultChild as s3.CfnBucket),
+              },
+              Prefix: 'test',
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State and ResultWriter', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       maxConcurrency: 1,
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
@@ -542,7 +823,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -595,7 +876,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
@@ -608,7 +889,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -644,7 +925,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
@@ -661,7 +942,7 @@ describe('Distributed Map State', () => {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -697,6 +978,53 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State with JSONata', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      maxConcurrency: 1,
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+      itemSelector: {
+        foo: 'foo',
+        bar: '{% $bar %}',
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          QueryLanguage: 'JSONata',
+          End: true,
+          Items: '{% $inputForMap %}',
+          ItemSelector: {
+            foo: 'foo',
+            bar: '{% $bar %}',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('synth is successful', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
@@ -724,6 +1052,57 @@ describe('Distributed Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/Provide either `itemsPath` or `itemReader`, but not both/);
+  }),
+
+  test('fails in synthesis if itemReader contains both bucket and bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemReader: new stepfunctions.S3JsonItemReader({
+          bucket: new s3.Bucket(stack, 'TestBucket'),
+          bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+          key: 'test.json',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`, but not both/);
+  }),
+
+  test('fails in synthesis if itemReader contains neither bucket nor bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        itemReader: new stepfunctions.S3JsonItemReader({
+          key: 'test.json',
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`/);
+  }),
+
+  test('does not throw while accessing bucket of itemReader which was initialised with bucket', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const bucket = new s3.Bucket(stack, 'TestBucket');
+    const itemReader = new stepfunctions.S3JsonItemReader({
+      bucket,
+      key: 'test.json',
+    });
+
+    expect(itemReader.bucket).toStrictEqual(bucket);
+  }),
+
+  test('throws while accessing bucket of itemReader which was initialised with bucketNamePath', () => {
+    const itemReader = new stepfunctions.S3JsonItemReader({
+      bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+      key: 'test.json',
+    });
+
+    expect(() => itemReader.bucket).toThrow(/`bucket` is undefined/);
   }),
 
   test('fails in synthesis if ItemProcessor is in INLINE mode', () => {
@@ -784,7 +1163,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'), {
@@ -792,7 +1171,7 @@ describe('Distributed Map State', () => {
       executionType: stepfunctions.ProcessorType.EXPRESS,
     });
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -823,7 +1202,7 @@ describe('Distributed Map State', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    //WHEN
+    // WHEN
     const map = new stepfunctions.DistributedMap(stack, 'Map State', {
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
     });
@@ -832,7 +1211,7 @@ describe('Distributed Map State', () => {
       executionType: stepfunctions.ProcessorType.STANDARD,
     });
 
-    //THEN
+    // THEN
     expect(render(map)).toStrictEqual({
       StartAt: 'Map State',
       States: {
@@ -857,12 +1236,11 @@ describe('Distributed Map State', () => {
     });
 
     Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
-
   });
 });
 
-function render(sm: stepfunctions.IChainable) {
-  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+function render(sm: stepfunctions.IChainable, queryLanguage?: stepfunctions.QueryLanguage) {
+  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson(queryLanguage));
 }
 
 function createAppWithMap(mapFactory: (stack: cdk.Stack) => stepfunctions.DistributedMap) {

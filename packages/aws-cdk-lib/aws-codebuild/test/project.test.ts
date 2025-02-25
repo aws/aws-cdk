@@ -180,6 +180,78 @@ describe('GitHub source', () => {
     });
   });
 
+  test('can create organizational webhook', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION',
+      },
+      Triggers: {
+        ScopeConfiguration: {
+          Name: 'testowner',
+        },
+        FilterGroups: [
+          [
+            {
+              Type: 'EVENT',
+              Pattern: 'WORKFLOW_JOB_QUEUED',
+            },
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can create organizational webhook with filters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const filter = codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andRepositoryNameIs('testrepo');
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        webhookFilters: [filter],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION',
+      },
+      Triggers: {
+        ScopeConfiguration: {
+          Name: 'testowner',
+        },
+        FilterGroups: [
+          [
+            {
+              Type: 'EVENT',
+              Pattern: 'WORKFLOW_JOB_QUEUED',
+            },
+            {
+              Type: 'REPOSITORY_NAME',
+              Pattern: 'testrepo',
+            },
+          ],
+        ],
+      },
+    });
+  });
+
   test('can be added to a CodePipeline', () => {
     const stack = new cdk.Stack();
     const project = new codebuild.Project(stack, 'Project', {
@@ -1321,7 +1393,6 @@ describe('EnvironmentVariables', () => {
     });
 
     test('does not grant read permissions when variables are not from parameter store', () => {
-
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -2273,4 +2344,39 @@ describe('can be imported', () => {
     expect(project.env.account).toEqual('123456789012');
     expect(project.env.region).toEqual('us-west-2');
   });
+});
+
+test('can set autoRetryLimit', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.s3({
+      bucket: new s3.Bucket(stack, 'Bucket'),
+      path: 'path',
+    }),
+    buildSpec: codebuild.BuildSpec.fromSourceFilename('hello.yml'),
+    autoRetryLimit: 2,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+    AutoRetryLimit: 2,
+  });
+});
+
+test.each([-1, 15])('throws when autoRetryLimit is invalid', (autoRetryLimit) => {
+  const stack = new cdk.Stack();
+
+  expect(() => {
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      buildSpec: codebuild.BuildSpec.fromSourceFilename('hello.yml'),
+      autoRetryLimit,
+    });
+  }).toThrow(`autoRetryLimit must be a value between 0 and 10, got ${autoRetryLimit}.`);
 });

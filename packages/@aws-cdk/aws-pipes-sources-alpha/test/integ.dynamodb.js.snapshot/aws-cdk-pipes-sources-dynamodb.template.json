@@ -1,0 +1,209 @@
+{
+ "Resources": {
+  "MyTable794EDED1": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "StreamSpecification": {
+     "StreamViewType": "KEYS_ONLY"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DlqQueueFDA42DA7": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TargetQueue08AD2B3C": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipeRole7D4AFC73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipeRoleDefaultPolicy56E6A74D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:ListStreams"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyTable794EDED1",
+         "StreamArn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DlqQueueFDA42DA7",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TargetQueue08AD2B3C",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipeRoleDefaultPolicy56E6A74D",
+    "Roles": [
+     {
+      "Ref": "PipeRole7D4AFC73"
+     }
+    ]
+   }
+  },
+  "Pipe7793F8A1": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipeRole7D4AFC73",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "MyTable794EDED1",
+      "StreamArn"
+     ]
+    },
+    "SourceParameters": {
+     "DynamoDBStreamParameters": {
+      "BatchSize": 1,
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "DlqQueueFDA42DA7",
+         "Arn"
+        ]
+       }
+      },
+      "MaximumBatchingWindowInSeconds": 20,
+      "MaximumRecordAgeInSeconds": 60,
+      "MaximumRetryAttempts": 3,
+      "OnPartialBatchItemFailure": "AUTOMATIC_BISECT",
+      "ParallelizationFactor": 1,
+      "StartingPosition": "LATEST"
+     }
+    },
+    "Target": {
+     "Fn::GetAtt": [
+      "TargetQueue08AD2B3C",
+      "Arn"
+     ]
+    },
+    "TargetParameters": {}
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyTable794EDED1558A264E": {
+   "Value": {
+    "Ref": "MyTable794EDED1"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-sources-dynamodb:ExportsOutputRefMyTable794EDED1558A264E"
+   }
+  },
+  "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
+   "Value": {
+    "Ref": "TargetQueue08AD2B3C"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-sources-dynamodb:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

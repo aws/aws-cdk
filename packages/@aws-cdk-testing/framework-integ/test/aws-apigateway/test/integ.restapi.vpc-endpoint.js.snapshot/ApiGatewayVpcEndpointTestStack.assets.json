@@ -1,0 +1,19 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "cdc57b91bb54d07de446e623a3d6391ee50d6e23f941f55ef8da561807e20282": {
+      "source": {
+        "path": "ApiGatewayVpcEndpointTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cdc57b91bb54d07de446e623a3d6391ee50d6e23f941f55ef8da561807e20282.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
