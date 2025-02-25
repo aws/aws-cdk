@@ -983,8 +983,14 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": false
+                    },
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": false
+                      }
                     },
                     "resourcesVpcConfig": {
                       "securityGroupIds": [
@@ -1011,6 +1017,11 @@
                         "ClusterRoleFA261979",
                         "Arn"
                       ]
+                    },
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": false
+                      }
                     },
                     "version": "1.32"
                   }
