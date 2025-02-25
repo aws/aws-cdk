@@ -1,12 +1,9 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
-import { SparkUIProps, SparkUILoggingLocation } from './spark-ui-utils';
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { SparkJob, SparkJobProps } from './spark-job';
 
 /**
  * Flex Jobs class
@@ -21,17 +18,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
  * —enable-continuous-cloudwatch-log
  *
  */
-export interface ScalaSparkFlexEtlJobProps extends JobProps {
-  /**
-   * Enables the Spark UI debugging and monitoring with the specified props.
-   *
-   * @default - Spark UI debugging and monitoring is disabled.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly sparkUI?: SparkUIProps;
-
+export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
   /**
    * Specifies configuration properties of a notification (optional).
    * After a job run starts, the number of minutes to wait before sending a job run delay notification.
@@ -84,58 +71,20 @@ export interface ScalaSparkFlexEtlJobProps extends JobProps {
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
-export class ScalaSparkFlexEtlJob extends Job {
+export class ScalaSparkFlexEtlJob extends SparkJob {
   public readonly jobArn: string;
   public readonly jobName: string;
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
-
-  /**
-   * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   /**
    * ScalaSparkFlexEtlJob constructor
    */
   constructor(scope: Construct, id: string, props: ScalaSparkFlexEtlJobProps) {
-    super(scope, id, {
-      physicalName: props.jobName,
-    });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
-
-    // Set up role and permissions for principal
-    this.role = props.role;
-    this.grantPrincipal = this.role;
-
-    // Enable SparkUI by default as a best practice
-    const sparkUIArgs = props.sparkUI?.bucket ? this.setupSparkUI(this.role, props.sparkUI) : undefined;
-    this.sparkUILoggingLocation = sparkUIArgs?.location;
-
-    // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
-    const profilingMetricsArgs = { '--enable-metrics': '' };
-    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
-
-    // Gather executable arguments
-    const executableArgs = this.executableArguments(props);
-
-    if (props.className === undefined) {
-      throw new Error('className must be set for Scala ETL Jobs');
-    }
+    super(scope, id, props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {
-      ...executableArgs,
-      ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-      ...sparkUIArgs?.args,
-      ...this.checkNoReservedArgs(props.defaultArguments),
+      ...this.executableArguments(props),
+      ...this.nonExecutableCommonArguments(props),
     };
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -174,8 +123,8 @@ export class ScalaSparkFlexEtlJob extends Job {
   private executableArguments(props: ScalaSparkFlexEtlJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
-    args['--class'] = props.className!;
-    this.setupSparkExtraCodeArguments(args, props);
+    args['--class'] = props.className;
+    this.setupExtraCodeArguments(args, props);
     return args;
   }
 }

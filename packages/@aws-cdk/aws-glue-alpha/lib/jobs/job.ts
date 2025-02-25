@@ -1,4 +1,3 @@
-import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -9,12 +8,6 @@ import { Code } from '../code';
 import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
-import {
-  SparkUIConfiguration,
-  SparkUIProps,
-  validateSparkUiPrefix,
-  cleanSparkUiPrefixForGrant,
-} from './spark-ui-utils';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -458,44 +451,6 @@ export interface JobProps {
 }
 
 /**
- * Code props for different {@link Code} assets used by different types of Spark jobs.
- */
-export interface SparkExtraCodeProps {
-  /**
-   * Extra Python Files S3 URL (optional)
-   * S3 URL where additional python dependencies are located
-   *
-   * @default - no extra files
-   */
-  readonly extraPythonFiles?: Code[];
-
-  /**
-   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   *
-   * @default - no extra files specified.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: Code[];
-
-  /**
-   * Extra Jars S3 URL (optional)
-   * S3 URL where additional jar dependencies are located
-   * @default - no extra jar files
-   */
-  readonly extraJars?: Code[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default false - priority is not given to user-provided jars
-   *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
-}
-
-/**
  * A Glue Job.
  * @resource AWS::Glue::Job
  */
@@ -581,45 +536,6 @@ export abstract class Job extends JobBase {
   protected codeS3ObjectUrl(code: Code) {
     const s3Location = code.bind(this, this.role).s3Location;
     return `s3://${s3Location.bucketName}/${s3Location.objectKey}`;
-  }
-
-  /**
-   * Set the arguments for extra {@link Code}-related properties
-   */
-  protected setupSparkExtraCodeArguments(args: { [key: string]: string }, props: SparkExtraCodeProps) {
-    if (props.extraJars && props.extraJars.length > 0) {
-      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraJarsFirst) {
-      args['--user-jars-first'] = 'true';
-    }
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraFiles && props.extraFiles.length > 0) {
-      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-  }
-
-  /**
-   * Set the arguments for sparkUI with best practices enabled by default
-   */
-  protected setupSparkUI(role: iam.IRole, props: SparkUIProps): SparkUIConfiguration {
-    validateSparkUiPrefix(props.prefix);
-    const bucket = props.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
-    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(props.prefix));
-    const args = {
-      '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix).replace(/\/?$/, '/'), // path will always end with a slash
-    };
-
-    return {
-      location: {
-        prefix: props.prefix,
-        bucket,
-      },
-      args,
-    };
   }
 }
 
