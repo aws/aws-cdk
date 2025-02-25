@@ -121,8 +121,9 @@ describe('cluster engine', () => {
   });
 
   test('auroraMysqlEngineVersion of', () => {
-    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')).toEqual(AuroraMysqlEngineVersion.VER_2_12_3);
-    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')).toEqual(AuroraMysqlEngineVersion.VER_3_07_1);
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._combineImportAndExportRoles).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._combineImportAndExportRoles).toEqual(false);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
   });
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL 14 (and other) and given version', () => {
