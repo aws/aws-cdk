@@ -43254,7 +43254,7 @@
     ],
     "AppInstanceType": [
       "system",
-      "ml.t3.micro",
+      "at3.micro",
       "ml.t3.small",
       "ml.t3.medium",
       "ml.t3.large",
