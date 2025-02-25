@@ -1,43 +1,6 @@
 {
  "Resources": {
-  "myuserpoolsmsRole0E16FDD9": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "sts:ExternalId": "integuseremailmfamyuserpool8F31F20B"
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cognito-idp.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": "sns:Publish",
-         "Effect": "Allow",
-         "Resource": "*"
-        }
-       ],
-       "Version": "2012-10-17"
-      },
-      "PolicyName": "sns-publish"
-     }
-    ]
-   }
-  },
-  "myuserpool01998219": {
+  "userpoolstandardthreatprotection0937AC57": {
    "Type": "AWS::Cognito::UserPool",
    "Properties": {
     "AccountRecoverySetting": {
@@ -55,48 +18,12 @@
     "AdminCreateUserConfig": {
      "AllowAdminCreateUserOnly": true
     },
-    "EmailConfiguration": {
-     "EmailSendingAccount": "DEVELOPER",
-     "From": "\"myname@mycompany.com\" <noreply@*.example.com>",
-     "ReplyToEmailAddress": "support@*.example.com",
-     "SourceArn": {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":ses:us-east-1:",
-        {
-         "Ref": "AWS::AccountId"
-        },
-        ":identity/*.example.com"
-       ]
-      ]
-     }
-    },
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
-    "EnabledMfas": [
-     "SMS_MFA",
-     "EMAIL_OTP"
-    ],
-    "MfaConfiguration": "ON",
-    "SmsConfiguration": {
-     "ExternalId": "integuseremailmfamyuserpool8F31F20B",
-     "SnsCallerArn": {
-      "Fn::GetAtt": [
-       "myuserpoolsmsRole0E16FDD9",
-       "Arn"
-      ]
-     }
-    },
     "SmsVerificationMessage": "The verification code to your new account is {####}",
     "UserPoolAddOns": {
      "AdvancedSecurityMode": "ENFORCED"
     },
-    "UserPoolName": "MyUserPool",
     "UserPoolTier": "PLUS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
@@ -107,13 +34,44 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "userpoolid": {
-   "Value": {
-    "Ref": "myuserpool01998219"
-   }
+  },
+  "userpoolcustomthreatprotection2B795E28": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolAddOns": {
+     "AdvancedSecurityAdditionalFlows": {
+      "CustomAuthMode": "ENFORCED"
+     },
+     "AdvancedSecurityMode": "OFF"
+    },
+    "UserPoolTier": "PLUS",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
