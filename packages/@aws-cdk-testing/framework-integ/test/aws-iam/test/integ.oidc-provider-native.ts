@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 const app = new App();
 const stack = new Stack(app, 'oidc-provider-native-integ-stack');
 
-const provider = new iam.OidcProvider(stack, 'Provider', {
+const provider = new iam.OidcProviderNative(stack, 'Provider', {
   oidcProviderName: 'MyProvider',
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test1',
   clientIds: ['foo', 'bar'],
@@ -15,7 +15,7 @@ const provider = new iam.OidcProvider(stack, 'Provider', {
   ],
 });
 
-const minimal = new iam.OidcProvider(stack, 'Minimal', {
+const minimal = new iam.OidcProviderNative(stack, 'Minimal', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
   thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
 });

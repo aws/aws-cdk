@@ -101,7 +101,6 @@ export interface OpenIdConnectProviderProps {
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
  * @resource AWS::CloudFormation::CustomResource
- * @deprecated Use { @link OidcProvider } instead.
  */
 export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
   /**

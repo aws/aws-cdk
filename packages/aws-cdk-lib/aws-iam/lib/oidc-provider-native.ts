@@ -23,11 +23,11 @@ export interface IOidcProvider extends IResource {
 }
 
 /**
- * Initialization properties for `OIDCProvider`.
+ * Initialization properties for `OIDCProviderNative`.
  */
-export interface OidcProviderProps {
+export interface OidcProviderNativeProps {
   /**
-   * The name of the OIDC Provider.
+   * The name of the Native OIDC Provider.
    *
    * @default - A name is automatically generated.
    */
@@ -101,7 +101,7 @@ export interface OidcProviderProps {
  *
  * @resource AWS::IAM::OIDCProvider
  */
-export class OidcProvider extends Resource implements IOidcProvider {
+export class OidcProviderNative extends Resource implements IOidcProvider {
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
@@ -127,14 +127,14 @@ export class OidcProvider extends Resource implements IOidcProvider {
   }
 
   /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   * The Amazon Resource Name (ARN) of the Native IAM OpenID Connect provider.
    *
    * @attribute
    */
   public readonly oidcProviderArn: string;
 
   /**
-   * The issuer for OIDC Provider
+   * The issuer for the Native OIDC Provider
    *
    * @attribute
    */
@@ -148,7 +148,7 @@ export class OidcProvider extends Resource implements IOidcProvider {
   public readonly oidcProviderThumbprints: string;
 
   /**
-   * Defines an OpenID Connect provider.
+   * Defines a Native OpenID Connect provider.
    * @param scope The definition scope
    * @param id Construct ID
    * @param props Initialization properties
@@ -156,7 +156,7 @@ export class OidcProvider extends Resource implements IOidcProvider {
   public constructor(
     scope: Construct,
     id: string,
-    props: OidcProviderProps,
+    props: OidcProviderNativeProps,
   ) {
     super(scope, id, {
       physicalName: props.oidcProviderName,
