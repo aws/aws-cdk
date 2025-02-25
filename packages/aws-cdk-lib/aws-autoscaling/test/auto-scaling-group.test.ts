@@ -748,30 +748,26 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('the old health check is ignored if a new health check is specified.', () => {
+  test('throws if both healthCheck and healthChecks are specified.', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
 
     // WHEN
-    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(),
-      vpc,
-      healthCheck: autoscaling.HealthCheck.ec2(),
-      healthChecks: autoscaling.HealthChecks.addition({
-        grace: cdk.Duration.seconds(100),
-        additionalTypes: [
-          autoscaling.AdditionalHealthCheckType.EBS,
-        ],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
-      HealthCheckType: 'EBS',
-      HealthCheckGracePeriod: 100,
-    });
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        healthCheck: autoscaling.HealthCheck.ec2(),
+        healthChecks: autoscaling.HealthChecks.addition({
+          grace: cdk.Duration.seconds(100),
+          additionalTypes: [
+            autoscaling.AdditionalHealthCheckType.EBS,
+          ],
+        }),
+      });
+    }).toThrow(/Cannot specify both 'healthCheck' and 'healthChecks'. Please use 'healthChecks' only./);
   });
 
   test('throws when additionalTypes array for additional health checks is empty', () => {

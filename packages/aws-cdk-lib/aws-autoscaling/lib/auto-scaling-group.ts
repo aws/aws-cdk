@@ -2047,6 +2047,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   private renderHealthChecks(healthChecks?: HealthChecks, healthCheck?: HealthCheck): { healthCheckType?: string; healthCheckGracePeriod?: number } {
+    if (healthCheck && healthChecks) {
+      throw new ValidationError('Cannot specify both \'healthCheck\' and \'healthChecks\'. Please use \'healthChecks\' only.', this);
+    }
+
     let healthCheckType: string | undefined;
     let healthCheckGracePeriod: number | undefined;
 
