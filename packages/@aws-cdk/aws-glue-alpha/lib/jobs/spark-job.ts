@@ -122,16 +122,13 @@ export abstract class SparkJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
-
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Set up role and permissions for principal
     this.role = props.role;
     this.grantPrincipal = this.role;
 
-    // Enable SparkUI by default as a best practice
-    this.sparkUILoggingLocation = props.sparkUI?.bucket ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
+    this.sparkUILoggingLocation = props.sparkUI ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
   }
 
   protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
@@ -140,12 +137,12 @@ export abstract class SparkJob extends Job {
     const profilingMetricsArgs = { '--enable-metrics': '' };
     const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
 
+    // Set spark ui args, if spark ui logging had been setup
     const sparkUIArgs = this.sparkUILoggingLocation ? ({
       '--enable-spark-ui': 'true',
       '--spark-event-logs-path': this.sparkUILoggingLocation.bucket.s3UrlForObject(this.sparkUILoggingLocation.prefix).replace(/\/?$/, '/'), // path will always end with a slash
     }): {};
 
-    // Combine command line arguments into a single line item
     return {
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
