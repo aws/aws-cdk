@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "ResourceActionInteg/DefaultTest": {
+      "stacks": [
+        "ResourceActionStack"
+      ],
+      "assertionStack": "ResourceActionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ResourceActionIntegDefaultTestDeployAssert086BABC4"
+    }
+  }
+}

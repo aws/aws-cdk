@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "aws-cdk-log-group-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9d3adbcf070c1262907aa9c9d22f9d2427fdc881127e5f141072f7608acd1a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f73440b0e32a261b64b3f44b72f9e681bc775595740055ca82b47830bc9b3535.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,36 @@
         "aws-cdk-log-group-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-log-group-integ/LogGroupLambdaAudit": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-log-group-integ/LogGroupLambdaAudit/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LogGroupLambdaAuditF8F47F46"
           }
         ],
+        "/aws-cdk-log-group-integ/audit-bucket-id": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-log-group-integ/audit-bucket-id/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "auditbucketidE6660EBD"
+          }
+        ],
+        "/aws-cdk-log-group-integ/LogGroupLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "dataProtectionPolicy": "*"
+            }
           }
         ],
         "/aws-cdk-log-group-integ/LogGroupLambda/Resource": [

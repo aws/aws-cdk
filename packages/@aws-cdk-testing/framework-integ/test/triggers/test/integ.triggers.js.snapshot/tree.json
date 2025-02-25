@@ -827,7 +827,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -865,7 +865,7 @@
                 "path": "TriggerTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -885,7 +885,7 @@
                             "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -925,7 +925,7 @@
                                 "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -951,7 +951,7 @@
                                 "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.3.0"
+                                  "version": "10.4.2"
                                 }
                               },
                               "Invoke": {
@@ -1035,7 +1035,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -1077,7 +1077,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1111,7 +1111,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "BootstrapVersion": {
@@ -1153,7 +1153,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -20,6 +20,7 @@ const client = userpool.addClient('myuserpoolclient', {
     custom: true,
     userPassword: true,
     userSrp: true,
+    user: true,
   },
   generateSecret: true,
   oAuth: {

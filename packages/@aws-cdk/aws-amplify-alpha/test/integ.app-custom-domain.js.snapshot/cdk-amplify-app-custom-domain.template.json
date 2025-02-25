@@ -99,7 +99,7 @@
     "EnablePullRequestPreview": true
    }
   },
-  "Appexamplecom6AF1A3AD": {
+  "Appexamplecom93D8EC68": {
    "Type": "AWS::Amplify::Domain",
    "Properties": {
     "AppId": {
@@ -124,7 +124,7 @@
       "Ref": "Certificate4E7ABB08"
      }
     },
-    "DomainName": "*.example.com",
+    "DomainName": "example.com",
     "EnableAutoSubDomain": false,
     "SubDomainSettings": [
      {
@@ -156,10 +156,10 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.*.example.com",
+    "DomainName": "*.example.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.*.example.com",
+      "DomainName": "*.example.com",
       "HostedZoneId": "Z23ABC4XYZL05B"
      }
     ],

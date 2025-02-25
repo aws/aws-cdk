@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
-import { Lazy, PhysicalName, Size } from '../../core';
+import { Lazy, PhysicalName, Size, ValidationError } from '../../core';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -695,7 +695,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               };
             }
 
-            throw new Error('unsupported Volume encountered');
+            throw new ValidationError('unsupported Volume encountered', this);
           });
         },
       }),
@@ -926,7 +926,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
       privileged: this.privileged,
       resourceRequirements: this._renderResourceRequirements(),
     };
-  };
+  }
 
   /**
    * Add a ulimit to this container
@@ -1059,15 +1059,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new Error('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+      throw new ValidationError('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`);
+        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new Error(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`);
+        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }
@@ -1099,7 +1099,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     }
 
     return containerDef;
-  };
+  }
 }
 
 function createExecutionRole(scope: Construct, id: string, logging: boolean): iam.IRole {

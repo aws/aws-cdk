@@ -5,12 +5,13 @@ import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
-import { IChainable } from './types';
+import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -63,8 +64,10 @@ export enum LogLevel {
 export interface LogOptions {
   /**
    * The log group where the execution history events will be logged.
+   *
+   * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination: logs.ILogGroup;
+  readonly destination?: logs.ILogGroup;
 
   /**
    * Determines whether execution data is included in your log.
@@ -128,6 +131,15 @@ export interface StateMachineProps {
    * @default - No comment
    */
   readonly comment?: string;
+
+  /**
+   * The name of the query language used by the state machine.
+   * If the state does not contain a `queryLanguage` field,
+   * then it will use the query language specified in this `queryLanguage` field.
+   *
+   * @default - JSON_PATH
+   */
+  readonly queryLanguage?: QueryLanguage;
 
   /**
    * Type of the state machine
@@ -433,6 +445,8 @@ export class StateMachine extends StateMachineBase {
     super(scope, id, {
       physicalName: props.stateMachineName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
       throw new Error('Cannot specify definition and definitionBody at the same time');
@@ -443,6 +457,9 @@ export class StateMachine extends StateMachineBase {
 
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
+    }
+    if (props.logs) {
+      this.validateLogOptions(props.logs);
     }
 
     this.role = props.role || new iam.Role(this, 'Role', {
@@ -544,6 +561,7 @@ export class StateMachine extends StateMachineBase {
   /**
    * Add the given statement to the role's policy
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -560,27 +578,38 @@ export class StateMachine extends StateMachineBase {
     }
   }
 
+  private validateLogOptions(logOptions: LogOptions) {
+    if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
+      throw new Error('Logs destination is required when level is not OFF.');
+    }
+  }
+
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
-    // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
-    this.addToRolePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'logs:CreateLogDelivery',
-        'logs:GetLogDelivery',
-        'logs:UpdateLogDelivery',
-        'logs:DeleteLogDelivery',
-        'logs:ListLogDeliveries',
-        'logs:PutResourcePolicy',
-        'logs:DescribeResourcePolicies',
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+    let destinations;
+
+    if (logOptions.destination) {
+      // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
+      this.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'logs:CreateLogDelivery',
+          'logs:GetLogDelivery',
+          'logs:UpdateLogDelivery',
+          'logs:DeleteLogDelivery',
+          'logs:ListLogDeliveries',
+          'logs:PutResourcePolicy',
+          'logs:DescribeResourcePolicies',
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
+      destinations = [{
+        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
+      }];
+    }
 
     return {
-      destinations: [{
-        cloudWatchLogsLogGroup: { logGroupArn: logOptions.destination.logGroupArn },
-      }],
+      destinations,
       includeExecutionData: logOptions.includeExecutionData,
       level: logOptions.level || 'ERROR',
     };
@@ -786,9 +815,13 @@ export class ChainDefinitionBody extends DefinitionBody {
   }
 
   public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
-    const graphJson = graph!.toGraphJson();
+    const graphJson = graph!.toGraphJson(sfnProps.queryLanguage);
     return {
-      definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
+      definitionString: Stack.of(scope).toJsonString({
+        ...graphJson,
+        Comment: sfnProps.comment,
+        QueryLanguage: sfnProps.queryLanguage,
+      }),
     };
   }
 }

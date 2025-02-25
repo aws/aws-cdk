@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnOriginAccessControl } from './cloudfront.generated';
 import { IResource, Resource, Names } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents a CloudFront Origin Access Control
@@ -48,6 +49,14 @@ export enum AccessLevel {
    */
   READ = 'READ',
   /**
+   * Grants versioned read permissions to CloudFront Distribution
+   */
+  READ_VERSIONED = 'READ_VERSIONED',
+  /**
+   * Grants list permissions to CloudFront Distribution
+   */
+  LIST = 'LIST',
+  /**
    * Grants write permission to CloudFront Distribution
    */
   WRITE = 'WRITE',
@@ -61,6 +70,11 @@ export enum AccessLevel {
  * Properties for creating a S3 Origin Access Control resource.
  */
 export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps { }
+
+/**
+ * Properties for creating a Lambda Function URL Origin Access Control resource.
+ */
+export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
  * Origin types supported by Origin Access Control.
@@ -190,6 +204,8 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
 
   constructor(scope: Construct, id: string, props: S3OriginAccessControlProps = {}) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnOriginAccessControl(this, 'Resource', {
       originAccessControlConfig: {
@@ -200,6 +216,48 @@ export class S3OriginAccessControl extends OriginAccessControlBase {
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.S3,
+      },
+    });
+
+    this.originAccessControlId = resource.attrId;
+  }
+}
+
+/**
+ * An Origin Access Control for Lambda Function URLs.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-originaccesscontrol.html
+ */
+export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
+  /**
+   * Imports a Lambda Function URL origin access control from its id.
+   */
+  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+    class Import extends Resource implements IOriginAccessControl {
+      public readonly originAccessControlId = originAccessControlId;
+      public readonly originAccessControlOriginType = OriginAccessControlOriginType.LAMBDA;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The unique identifier of this Origin Access Control.
+   * @attribute
+   */
+  public readonly originAccessControlId: string;
+
+  constructor(scope: Construct, id: string, props: FunctionUrlOriginAccessControlProps = {}) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const resource = new CfnOriginAccessControl(this, 'Resource', {
+      originAccessControlConfig: {
+        description: props.description,
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
+        signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
+        originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA, // Lambda specific OAC
       },
     });
 

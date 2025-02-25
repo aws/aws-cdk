@@ -1,6 +1,7 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
+import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags, Duration } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -47,6 +48,39 @@ describe('MetadataResource', () => {
 
     expect(stackTemplate.Resources?.CDKMetadata).toBeDefined();
     expect(stackTemplate.Resources?.CDKMetadata?.Condition).toBeDefined();
+  });
+
+  test('when no metadata is added by default, CDKMetadata should be the same', () => {
+    const myApps = [
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: true,
+        },
+      }),
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: false,
+        },
+      }),
+      new App({
+        analyticsReporting: true,
+        postCliContext: {
+          [ENABLE_ADDITIONAL_METADATA_COLLECTION]: undefined,
+        },
+      }),
+    ];
+
+    for (const myApp of myApps) {
+      new Stack(myApp, 'MyStack');
+    }
+
+    const stackTemplate1 = myApps[0].synth().getStackByName('MyStack').template;
+    const stackTemplate2 = myApps[1].synth().getStackByName('MyStack').template;
+    const stackTemplate3 = myApps[2].synth().getStackByName('MyStack').template;
+    expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate2.Resources?.CDKMetadata);
+    expect(stackTemplate1.Resources?.CDKMetadata).toEqual(stackTemplate3.Resources?.CDKMetadata);
   });
 
   test('includes the formatted Analytics property', () => {
@@ -110,7 +144,7 @@ describe('MetadataResource', () => {
       const a = App.of(stage)!;
       stackArtifact = a.synth().getNestedAssembly(stage.artifactId).getStackByName(stackName);
     }
-    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;;
+    let encodedAnalytics = stackArtifact.template.Resources?.CDKMetadata?.Properties?.Analytics as string;
     return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
@@ -162,6 +196,18 @@ describe('formatAnalytics', () => {
     expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
   });
 
+  it.each([
+    [true, '1.2.3!aws-cdk-lib.Construct[{\"custom\":{\"foo\":\"bar\"}}]'],
+    [false, '1.2.3!aws-cdk-lib.Construct'],
+    [undefined, '1.2.3!aws-cdk-lib.Construct'],
+  ])('format analytics with metadata and enabled additional telemetry', (enableAdditionalTelemtry, output) => {
+    const constructInfo = [
+      { fqn: 'aws-cdk-lib.Construct', version: '1.2.3', metadata: [{ custom: { foo: 'bar' } }] },
+    ];
+
+    expect(plaintextConstructsFromAnalytics(formatAnalytics(constructInfo, enableAdditionalTelemtry))).toMatch(output);
+  });
+
   test('ensure gzip is encoded with "unknown" operating system to maintain consistent output across systems', () => {
     const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
     const analytics = formatAnalytics(constructInfo);
@@ -174,7 +220,6 @@ describe('formatAnalytics', () => {
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
     expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
   }
-
 });
 
 function plaintextConstructsFromAnalytics(analytics: string) {
@@ -185,12 +230,12 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 class TestConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' };
 }
 
 class TestThirdPartyConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' };
 }
 
 class ValidationPlugin implements IPolicyValidationPluginBeta1 {

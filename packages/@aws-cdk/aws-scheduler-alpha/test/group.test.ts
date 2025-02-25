@@ -279,20 +279,33 @@ describe('Schedule Group', () => {
       },
     });
   });
+});
 
-  test('Target Error Metrics', () => {
+describe('Schedule Group Metrics', () => {
+  test.each([
+    ['metricTargetErrors', 'TargetErrorCount'],
+    ['metricThrottled', 'InvocationThrottleCount'],
+    ['metricAttempts', 'InvocationAttemptCount'],
+    ['metricTargetThrottled', 'TargetErrorThrottledCount'],
+    ['metricDropped', 'InvocationDroppedCount'],
+    ['metricSentToDLQ', 'InvocationsSentToDeadLetterCount'],
+    ['metricSentToDLQTruncated', 'InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded'],
+  ])('calling %s creates alarm for %s metric', (metricMethodName, metricName) => {
     // GIVEN
+    const app = new App();
     const props: GroupProps = {
       groupName: 'MyGroup',
     };
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     const group = new Group(stack, 'TestGroup', props);
 
     // WHEN
-    const metricTargetErrors = group.metricTargetErrors({
+    const metricMethod = (group as any)[metricMethodName].bind(group); // Get the method dynamically
+    const metricTargetErrors = metricMethod({
       period: Duration.minutes(1),
     });
 
-    new cw.Alarm(stack, 'GroupTargetErrorAlarm', {
+    new cw.Alarm(stack, `Group${metricName}Alarm`, {
       metric: metricTargetErrors,
       evaluationPeriods: 1,
       threshold: 1,
@@ -306,7 +319,41 @@ describe('Schedule Group', () => {
           Value: 'MyGroup',
         }),
       ]),
-      MetricName: 'TargetErrorCount',
+      MetricName: metricName,
+      Namespace: 'AWS/Scheduler',
+    });
+  });
+
+  test('Invocations Failed to Deliver to DLQ Metrics', () => {
+    // GIVEN
+    const app = new App();
+    const props: GroupProps = {
+      groupName: 'MyGroup',
+    };
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const group = new Group(stack, 'TestGroup', props);
+    const errorCode = '403';
+
+    // WHEN
+    const metricFailedToBeSentToDLQ = group.metricFailedToBeSentToDLQ(errorCode, {
+      period: Duration.minutes(1),
+    });
+
+    new cw.Alarm(stack, 'GroupFailedInvocationsToDLQAlarm', {
+      metric: metricFailedToBeSentToDLQ,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Dimensions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'ScheduleGroup',
+          Value: 'MyGroup',
+        }),
+      ]),
+      MetricName: `InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`,
       Namespace: 'AWS/Scheduler',
     });
   });

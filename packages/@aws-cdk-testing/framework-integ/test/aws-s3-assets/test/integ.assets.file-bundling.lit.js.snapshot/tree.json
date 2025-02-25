@@ -66,7 +66,6 @@
                               "Action": [
                                 "s3:GetBucket*",
                                 "s3:GetObject*",
-                                "s3:HeadObject",
                                 "s3:List*"
                               ],
                               "Effect": "Allow",
@@ -132,6 +131,32 @@
               "version": "0.0.0"
             }
           },
+          "BundledAssetWithoutExtension": {
+            "id": "BundledAssetWithoutExtension",
+            "path": "cdk-integ-assets-bundling/BundledAssetWithoutExtension",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "cdk-integ-assets-bundling/BundledAssetWithoutExtension/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "cdk-integ-assets-bundling/BundledAssetWithoutExtension/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-assets-bundling/BootstrapVersion",
@@ -167,7 +192,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -213,7 +238,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.4.2"
         }
       }
     },
