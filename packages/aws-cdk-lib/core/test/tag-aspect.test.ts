@@ -144,7 +144,7 @@ describe('tag aspect', () => {
     expect(res2.tags.renderTags()).toEqual([{ key: 'first', value: 'there is only 1' }]);
   });
 
-  test('Tags applied without priority gets mutating priority value', () => {
+  test('Tags applied without priority get mutating priority value', () => {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
