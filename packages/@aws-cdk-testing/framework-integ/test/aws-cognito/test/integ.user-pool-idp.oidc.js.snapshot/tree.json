@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -97,12 +93,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "domain": {
@@ -129,39 +120,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "cognitoDomain": {
-                        "domainPrefix": "*"
-                      }
-                    },
-                    {
-                      "signInUrl": [
-                        "*",
-                        {
-                          "redirectUri": "*"
-                        }
-                      ]
-                    },
-                    {
-                      "baseUrl": [
-                        {}
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "cdk": {
@@ -204,10 +169,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPoolIdentityProviderOidc",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "version": "0.0.0"
             }
           },
           "SignInLink": {
@@ -245,7 +207,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

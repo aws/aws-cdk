@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-client-default-redirect-uri.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29badb17d1f99ce4af0966fcd6fffbac577c2ea2934d9f2276e4b05ce0b6fef1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7dbdbe9f15846d8e11fb25d3425ce2563a3c3959793b5097b28cadf936bad6b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,30 +34,10 @@
         "integ-user-pool-client-default-redirect-uri.assets"
       ],
       "metadata": {
-        "/integ-user-pool-client-default-redirect-uri/myuserpool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/integ-user-pool-client-default-redirect-uri/myuserpool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpool01998219"
-          }
-        ],
-        "/integ-user-pool-client-default-redirect-uri/myuserpool/myuserpoolclient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "oAuth": {
-                "defaultRedirectUri": "*",
-                "callbackUrls": "*"
-              }
-            }
           }
         ],
         "/integ-user-pool-client-default-redirect-uri/myuserpool/myuserpoolclient/Resource": [

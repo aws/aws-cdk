@@ -21,10 +21,7 @@
                     "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -69,30 +66,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    },
-                    {
-                      "attachInlinePolicy": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachInlinePolicy": [
-                        "*"
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -160,40 +134,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "statements": "*"
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "code": "*",
-                  "handler": "*",
-                  "runtime": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "myUserPoolTest": {
@@ -259,10 +206,6 @@
                       }
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -279,12 +222,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "lambdaTriggers": {}
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {

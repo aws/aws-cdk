@@ -80,10 +80,6 @@
      }
     },
     "SmsVerificationMessage": "integ-test: Account verification code is {####}",
-    "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
-     "AdvancedSecurityMode": "OFF"
-    },
     "UserPoolName": "MyUserPool",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",

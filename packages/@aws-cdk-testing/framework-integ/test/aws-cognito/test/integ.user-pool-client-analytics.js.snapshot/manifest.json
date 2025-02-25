@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a02f2fb49f58e6395a45a64dc0a0559dce94abcf9c6ca7deb7f9997a5679bb1f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e6e644d5c39ccca3ac392746275f9f716952214e3f8970d4421f8d64abe5307.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,30 +40,10 @@
             "data": "PinpointApp"
           }
         ],
-        "/IntegUserPoolClientAnalytics/Pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/IntegUserPoolClientAnalytics/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PoolD3F588B8"
-          }
-        ],
-        "/IntegUserPoolClientAnalytics/Pool/Client": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "generateSecret": true,
-              "analytics": {
-                "application": "*"
-              }
-            }
           }
         ],
         "/IntegUserPoolClientAnalytics/Pool/Client/Resource": [
@@ -116,7 +96,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a97836ba6c777689fd1c0640805ff5f4eede4e8abfe3f0b5fcb721f05721a9d4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94daf9d929c0440b15cac98160ed22e1146416901827edaa8f7ffc1b16373977.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -138,89 +118,10 @@
             "data": "PinpointApp"
           }
         ],
-        "/IntegUserPoolClientAnalytics2/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/IntegUserPoolClientAnalytics2/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/IntegUserPoolClientAnalytics2/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Role1ABCC5F0"
-          }
-        ],
-        "/IntegUserPoolClientAnalytics2/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/IntegUserPoolClientAnalytics2/Role/DefaultPolicy/Resource": [
@@ -229,32 +130,10 @@
             "data": "RoleDefaultPolicy5FFB7DAB"
           }
         ],
-        "/IntegUserPoolClientAnalytics2/Pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/IntegUserPoolClientAnalytics2/Pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PoolD3F588B8"
-          }
-        ],
-        "/IntegUserPoolClientAnalytics2/Pool/client": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "generateSecret": true,
-              "analytics": {
-                "applicationId": "*",
-                "externalId": "*",
-                "role": "*"
-              }
-            }
           }
         ],
         "/IntegUserPoolClientAnalytics2/Pool/client/Resource": [
@@ -307,7 +186,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/794c05b5a5c827cac7854cf10fe952e5ffa7f89c07876bcb5f497e6bb4731bc5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a492bf8de9759d1d6c88f9a9e64fb8872549ce266287cd83e38f6607ef2cca7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -325,20 +204,6 @@
         "integuserpoolclienttestDefaultTestDeployAssertB83B7A3F.assets"
       ],
       "metadata": {
-        "/integ-user-pool-client-test/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientfc29e928ca1e7e898931dc1b3fd9d423/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
         "/integ-user-pool-client-test/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientfc29e928ca1e7e898931dc1b3fd9d423/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -367,20 +232,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/integ-user-pool-client-test/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClient0abbd31a6359273f1ec61d9eae5dea7e/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/integ-user-pool-client-test/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClient0abbd31a6359273f1ec61d9eae5dea7e/Default/Default": [

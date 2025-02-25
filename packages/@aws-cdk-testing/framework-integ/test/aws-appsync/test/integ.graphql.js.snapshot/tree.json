@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "userPoolName": "myPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -50,19 +46,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "userPoolName": "*"
-                }
-              ]
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
             }
           },
           "Api": {
@@ -75,13 +66,13 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
+                    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+                    "name": "demoapi",
                     "additionalAuthenticationProviders": [
                       {
                         "authenticationType": "API_KEY"
                       }
                     ],
-                    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-                    "name": "demoapi",
                     "userPoolConfig": {
                       "userPoolId": {
                         "Ref": "PoolD3F588B8"
@@ -94,7 +85,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLApi",
                   "version": "0.0.0"
                 }
               },
@@ -114,7 +105,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "fqn": "@aws-cdk/aws-appsync.CfnGraphQLSchema",
                   "version": "0.0.0"
                 }
               },
@@ -133,7 +124,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.CfnApiKey",
+                  "fqn": "@aws-cdk/aws-appsync.CfnApiKey",
                   "version": "0.0.0"
                 }
               },
@@ -141,9 +132,8 @@
                 "id": "LogGroup",
                 "path": "aws-appsync-integ/Api/LogGroup",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               },
               "none": {
@@ -167,13 +157,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.NoneDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -193,22 +183,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "None",
                         "fieldName": "getServiceVersion",
+                        "typeName": "Query",
+                        "dataSourceName": "None",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\":\"2017-02-28\"}",
-                        "responseMappingTemplate": "{\"version\":\"v1\"}",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "{\"version\":\"v1\"}"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -224,11 +214,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-appsync-integ/Api/customerDs/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -252,7 +239,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -308,61 +295,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            }
-                          ]
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          }
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        }
-                      ]
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -377,6 +323,8 @@
                             "ApiId"
                           ]
                         },
+                        "name": "Customer",
+                        "type": "AMAZON_DYNAMODB",
                         "dynamoDbConfig": {
                           "tableName": {
                             "Ref": "CustomerTable260DCC08"
@@ -385,24 +333,22 @@
                             "Ref": "AWS::Region"
                           }
                         },
-                        "name": "Customer",
                         "serviceRoleArn": {
                           "Fn::GetAtt": [
                             "ApicustomerDsServiceRole76CAD539",
                             "Arn"
                           ]
-                        },
-                        "type": "AMAZON_DYNAMODB"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.DynamoDbDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -418,11 +364,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-appsync-integ/Api/orderDs/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -446,7 +389,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -513,61 +456,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            }
-                          ]
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          }
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        }
-                      ]
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -582,6 +484,8 @@
                             "ApiId"
                           ]
                         },
+                        "name": "Order",
+                        "type": "AMAZON_DYNAMODB",
                         "dynamoDbConfig": {
                           "tableName": {
                             "Ref": "OrderTable416EB896"
@@ -590,24 +494,22 @@
                             "Ref": "AWS::Region"
                           }
                         },
-                        "name": "Order",
                         "serviceRoleArn": {
                           "Fn::GetAtt": [
                             "ApiorderDsServiceRoleCC2040C0",
                             "Arn"
                           ]
-                        },
-                        "type": "AMAZON_DYNAMODB"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.DynamoDbDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -623,11 +525,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-appsync-integ/Api/paymentDs/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -651,7 +550,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -721,61 +620,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "attachToRole": [
-                                "*"
-                              ]
-                            },
-                            {
-                              "addStatements": [
-                                {}
-                              ]
-                            }
-                          ]
+                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          }
-                        },
-                        {
-                          "addToPrincipalPolicy": [
-                            {}
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachInlinePolicy": [
-                            "*"
-                          ]
-                        }
-                      ]
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -790,30 +648,30 @@
                             "ApiId"
                           ]
                         },
+                        "name": "Payment",
+                        "type": "AMAZON_DYNAMODB",
                         "dynamoDbConfig": {
                           "tableName": "PaymentTable",
                           "awsRegion": {
                             "Ref": "AWS::Region"
                           }
                         },
-                        "name": "Payment",
                         "serviceRoleArn": {
                           "Fn::GetAtt": [
                             "ApipaymentDsServiceRole0DAC58D6",
                             "Arn"
                           ]
-                        },
-                        "type": "AMAZON_DYNAMODB"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.DynamoDbDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.DynamoDbDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -833,22 +691,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomers",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -868,22 +726,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomer",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -903,22 +761,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomersNotConsistent",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -938,22 +796,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomerNotConsistent",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -973,22 +831,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomersConsistent",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": true}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1008,22 +866,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "getCustomerConsistent",
+                        "typeName": "Query",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1043,22 +901,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "addCustomer",
+                        "typeName": "Mutation",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1078,22 +936,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "saveCustomer",
+                        "typeName": "Mutation",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "\n      #set($input = $ctx.args.customer)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($ctx.args.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1113,22 +971,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "saveCustomerWithFirstOrder",
+                        "typeName": "Mutation",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "\n      #set($input = $ctx.args.order)\n      $util.qr($input.put(\"referral\", referral))\n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"order\" : $util.dynamodb.toDynamoDBJson($util.autoId()),\"customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer.id)\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1148,22 +1006,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Customer",
                         "fieldName": "removeCustomer",
+                        "typeName": "Mutation",
+                        "dataSourceName": "Customer",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"DeleteItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1183,22 +1041,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1218,22 +1076,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1253,22 +1111,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1288,22 +1146,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1323,22 +1181,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1358,22 +1216,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1393,22 +1251,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1428,22 +1286,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1463,22 +1321,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1498,22 +1356,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1533,22 +1391,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersNotConsistentEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1568,22 +1426,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersNotConsistentEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1603,22 +1461,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersNotConsistentLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1638,22 +1496,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersNotConsistentLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1673,22 +1531,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersNotConsistentLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1708,22 +1566,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersNotConsistentLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1743,22 +1601,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersNotConsistentGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1778,22 +1636,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersNotConsistentGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1813,22 +1671,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersNotConsistentGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1848,22 +1706,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersNotConsistentGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1883,22 +1741,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersConsistentEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer = :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1918,22 +1776,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersConsistentEq",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1953,22 +1811,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersConsistentLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer < :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -1988,22 +1846,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersConsistentLt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order < :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2023,22 +1881,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersConsistentLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer <= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2058,22 +1916,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersConsistentLe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order <= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2093,22 +1951,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersConsistentGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer > :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2128,22 +1986,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersConsistentGt",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order > :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2163,22 +2021,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersConsistentGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"query\" : {\n              \"expression\" : \"#customer >= :customer\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2198,22 +2056,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersConsistentGe",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": true, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order >= :order\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2233,22 +2091,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersFilter",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND begins_with(#order, :order)\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2268,22 +2126,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getCustomerOrdersBetween",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#customer = :customer AND #order BETWEEN :order1 AND :order2\",\n              \"expressionNames\" : {\n                \"#customer\" : \"customer\", \"#order\" : \"order\"\n              },\n              \"expressionValues\" : {\n                \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer), \":order1\" : $util.dynamodb.toDynamoDBJson($ctx.args.order1), \":order2\" : $util.dynamodb.toDynamoDBJson($ctx.args.order2)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2303,22 +2161,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersFilter",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"query\" : {\n              \"expression\" : \"#order = :order AND begins_with(#customer, :customer)\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2338,22 +2196,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Order",
                         "fieldName": "getOrderCustomersBetween",
+                        "typeName": "Query",
+                        "dataSourceName": "Order",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Query\",  \"consistentRead\": false, \"index\" : \"orderIndex\", \"query\" : {\n              \"expression\" : \"#order = :order AND #customer BETWEEN :customer1 AND :customer2\",\n              \"expressionNames\" : {\n                \"#order\" : \"order\", \"#customer\" : \"customer\"\n              },\n              \"expressionValues\" : {\n                \":order\" : $util.dynamodb.toDynamoDBJson($ctx.args.order), \":customer1\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer1), \":customer2\" : $util.dynamodb.toDynamoDBJson($ctx.args.customer2)\n              }\n            }}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result.items)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result.items)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2373,22 +2231,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Payment",
                         "fieldName": "getPayment",
+                        "typeName": "Query",
+                        "dataSourceName": "Payment",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2408,22 +2266,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Payment",
                         "fieldName": "getPaymentConsistent",
+                        "typeName": "Query",
+                        "dataSourceName": "Payment",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": true, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Query"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2443,22 +2301,22 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "Payment",
                         "fieldName": "savePayment",
+                        "typeName": "Mutation",
+                        "dataSourceName": "Payment",
                         "kind": "UNIT",
                         "requestMappingTemplate": "\n      #set($input = $ctx.args.payment)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-                        "responseMappingTemplate": "$util.toJson($ctx.result)",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "$util.toJson($ctx.result)"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               },
@@ -2474,11 +2332,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-appsync-integ/Api/ds/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
+                          "fqn": "@aws-cdk/core.Resource",
+                          "version": "0.0.0"
                         }
                       },
                       "Resource": {
@@ -2502,22 +2357,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "fqn": "@aws-cdk/aws-iam.CfnRole",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          }
-                        }
-                      ]
+                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -2532,27 +2379,27 @@
                             "ApiId"
                           ]
                         },
+                        "name": "http",
+                        "type": "HTTP",
                         "httpConfig": {
                           "endpoint": "https://aws.amazon.com/"
                         },
-                        "name": "http",
                         "serviceRoleArn": {
                           "Fn::GetAtt": [
                             "ApidsServiceRoleADC7D124",
                             "Arn"
                           ]
-                        },
-                        "type": "HTTP"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "fqn": "@aws-cdk/aws-appsync.CfnDataSource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.HttpDataSource",
+                  "fqn": "@aws-cdk/aws-appsync.HttpDataSource",
                   "version": "0.0.0"
                 }
               },
@@ -2572,288 +2419,29 @@
                             "ApiId"
                           ]
                         },
-                        "dataSourceName": "http",
                         "fieldName": "doPostOnAws",
+                        "typeName": "Mutation",
+                        "dataSourceName": "http",
                         "kind": "UNIT",
                         "requestMappingTemplate": "{\n    \"version\": \"2018-05-29\",\n    \"method\": \"POST\",\n    # if full path is https://api.xxxxxxxxx.com/posts then resourcePath would be /posts\n    \"resourcePath\": \"/path/123\",\n    \"params\":{\n        \"body\": $util.toJson($ctx.args),\n        \"headers\":{\n            \"Content-Type\": \"application/json\",\n            \"Authorization\": \"$ctx.request.headers.Authorization\"\n        }\n    }\n  }",
-                        "responseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  ",
-                        "typeName": "Mutation"
+                        "responseMappingTemplate": "\n    ## Raise a GraphQL field error in case of a datasource invocation error\n    #if($ctx.error)\n      $util.error($ctx.error.message, $ctx.error.type)\n    #end\n    ## if the response status code is not 200, then return an error. Else return the body **\n    #if($ctx.result.statusCode == 200)\n        ## If response is 200, return the body.\n        $ctx.result.body\n    #else\n        ## If response is not 200, append the response to error block.\n        $utils.appendError($ctx.result.body, \"$ctx.result.statusCode\")\n    #end\n  "
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "fqn": "@aws-cdk/aws-appsync.CfnResolver",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "fqn": "@aws-cdk/aws-appsync.Resolver",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "name": "*",
-                  "schema": "*",
-                  "authorizationConfig": {
-                    "defaultAuthorization": {
-                      "authorizationType": "*",
-                      "userPoolConfig": {
-                        "userPool": "*"
-                      }
-                    }
-                  }
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                },
-                {
-                  "addSchemaDependency": [
-                    "*"
-                  ]
-                }
-              ]
+              "fqn": "@aws-cdk/aws-appsync.GraphqlApi",
+              "version": "0.0.0"
             }
           },
           "CustomerTable": {
@@ -2866,23 +2454,23 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "id",
                         "attributeType": "S"
                       }
                     ],
-                    "billingMode": "PAY_PER_REQUEST",
-                    "keySchema": [
-                      {
-                        "attributeName": "id",
-                        "keyType": "HASH"
-                      }
-                    ]
+                    "billingMode": "PAY_PER_REQUEST"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -2890,27 +2478,14 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/CustomerTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "billingMode": "PAY_PER_REQUEST",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
             }
           },
           "OrderTable": {
@@ -2923,6 +2498,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "customer",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "order",
+                        "keyType": "RANGE"
+                      }
+                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "customer",
@@ -2951,21 +2536,11 @@
                           "projectionType": "ALL"
                         }
                       }
-                    ],
-                    "keySchema": [
-                      {
-                        "attributeName": "customer",
-                        "keyType": "HASH"
-                      },
-                      {
-                        "attributeName": "order",
-                        "keyType": "RANGE"
-                      }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -2973,42 +2548,14 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/OrderTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "billingMode": "PAY_PER_REQUEST",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
-                  "sortKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
-                  "removalPolicy": "destroy"
-                },
-                {
-                  "addGlobalSecondaryIndex": [
-                    {
-                      "indexName": "*",
-                      "partitionKey": {
-                        "name": "*",
-                        "type": "S"
-                      }
-                    }
-                  ]
-                }
-              ]
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
             }
           },
           "PaymentTable": {
@@ -3021,23 +2568,23 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "id",
                         "attributeType": "S"
                       }
                     ],
-                    "billingMode": "PAY_PER_REQUEST",
-                    "keySchema": [
-                      {
-                        "attributeName": "id",
-                        "keyType": "HASH"
-                      }
-                    ]
+                    "billingMode": "PAY_PER_REQUEST"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
                   "version": "0.0.0"
                 }
               },
@@ -3045,43 +2592,29 @@
                 "id": "ScalingRole",
                 "path": "aws-appsync-integ/PaymentTable/ScalingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "billingMode": "PAY_PER_REQUEST",
-                  "partitionKey": {
-                    "name": "*",
-                    "type": "S"
-                  },
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
             }
           },
           "ImportedPaymentTable": {
             "id": "ImportedPaymentTable",
             "path": "aws-appsync-integ/ImportedPaymentTable",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableBase",
-              "version": "0.0.0",
-              "metadata": []
+              "fqn": "@aws-cdk/core.Resource",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-appsync-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
+              "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -3089,13 +2622,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-appsync-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
         }
       },
@@ -3104,12 +2637,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.1.182"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
+      "fqn": "@aws-cdk/core.App",
       "version": "0.0.0"
     }
   }

@@ -4,6 +4,14 @@
     "id": "App",
     "path": "",
     "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
       "cdk-integ-opensearch-cognitodashboardsauth": {
         "id": "cdk-integ-opensearch-cognitodashboardsauth",
         "path": "cdk-integ-opensearch-cognitodashboardsauth",
@@ -18,7 +26,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.CfnIdentityPool",
+              "fqn": "@aws-cdk/aws-cognito.CfnIdentityPool",
               "version": "0.0.0"
             }
           },
@@ -50,10 +58,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -63,7 +67,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               },
@@ -84,50 +88,26 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolDomain",
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolDomain",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "cognitoDomain": {
-                        "domainPrefix": "*"
-                      }
-                    }
-                  ]
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolDomain",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
             }
           },
           "Role": {
             "id": "Role",
             "path": "cdk-integ-opensearch-cognitodashboardsauth/Role",
             "children": {
-              "ImportRole": {
-                "id": "ImportRole",
-                "path": "cdk-integ-opensearch-cognitodashboardsauth/Role/ImportRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "cdk-integ-opensearch-cognitodashboardsauth/Role/Resource",
@@ -163,27 +143,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "fqn": "@aws-cdk/aws-iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "assumedBy": {
-                    "principalAccount": "*",
-                    "assumeRoleAction": "*"
-                  },
-                  "managedPolicies": [
-                    {
-                      "managedPolicyArn": "*"
-                    }
-                  ]
-                }
-              ]
+              "fqn": "@aws-cdk/aws-iam.Role",
+              "version": "0.0.0"
             }
           },
           "Domain": {
@@ -200,7 +167,6 @@
                       "dedicatedMasterEnabled": false,
                       "instanceCount": 1,
                       "instanceType": "r5.large.search",
-                      "multiAzWithStandbyEnabled": false,
                       "zoneAwarenessEnabled": false
                     },
                     "cognitoOptions": {
@@ -238,50 +204,20 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_opensearchservice.CfnDomain",
+                  "fqn": "@aws-cdk/aws-opensearchservice.CfnDomain",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_opensearchservice.Domain",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy",
-                  "version": "*",
-                  "cognitoDashboardsAuth": {
-                    "role": "*",
-                    "identityPoolId": "*",
-                    "userPoolId": "*"
-                  },
-                  "capacity": {
-                    "multiAzWithStandbyEnabled": false
-                  }
-                }
-              ]
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "cdk-integ-opensearch-cognitodashboardsauth/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "cdk-integ-opensearch-cognitodashboardsauth/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/aws-opensearchservice.Domain",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
         }
       },
       "CognitoAuthForOpenSearchDashboards": {
@@ -297,59 +233,33 @@
                 "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.1.85"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert",
-                "children": {
-                  "BootstrapVersion": {
-                    "id": "BootstrapVersion",
-                    "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert/BootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CheckBootstrapVersion": {
-                    "id": "CheckBootstrapVersion",
-                    "path": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
-        }
-      },
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
     }
   }
 }

@@ -1,12 +1,11 @@
 {
-  "version": "39.0.0",
+  "version": "20.0.0",
   "testCases": {
     "CognitoAuthForOpenSearchDashboards/DefaultTest": {
       "stacks": [
         "cdk-integ-opensearch-cognitodashboardsauth"
       ],
-      "assertionStack": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert",
-      "assertionStackName": "CognitoAuthForOpenSearchDashboardsDefaultTestDeployAssert4CCFA971"
+      "assertionStack": "CognitoAuthForOpenSearchDashboards/DefaultTest/DeployAssert"
     }
   }
 }

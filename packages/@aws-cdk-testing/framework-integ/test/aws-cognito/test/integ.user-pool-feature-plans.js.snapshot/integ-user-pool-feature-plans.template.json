@@ -21,10 +21,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
-     "AdvancedSecurityMode": "OFF"
-    },
     "UserPoolTier": "LITE",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
@@ -57,10 +53,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
-     "AdvancedSecurityMode": "OFF"
-    },
     "UserPoolTier": "ESSENTIALS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
@@ -93,10 +85,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolAddOns": {
-     "AdvancedSecurityAdditionalFlows": {},
-     "AdvancedSecurityMode": "OFF"
-    },
     "UserPoolTier": "PLUS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",

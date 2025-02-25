@@ -21,10 +21,7 @@
                     "path": "integ-user-pool-custom-sender/emailLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -69,20 +66,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -112,14 +96,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "runtime": "*",
-                  "handler": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "key": {
@@ -170,10 +147,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "version": "0.0.0"
             }
           },
           "pool": {
@@ -254,10 +228,6 @@
                     "usernameAttributes": [
                       "email"
                     ],
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -316,35 +286,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "authFlows": {
-                        "userSrp": true
-                      }
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "autoVerify": {
-                    "email": true
-                  },
-                  "selfSignUpEnabled": true,
-                  "signInAliases": {
-                    "email": true
-                  },
-                  "customSenderKmsKey": "*",
-                  "lambdaTriggers": {},
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "UserPoolId": {
@@ -390,7 +338,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -97,12 +93,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "domain": {
@@ -129,39 +120,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "cognitoDomain": {
-                        "domainPrefix": "*"
-                      }
-                    },
-                    {
-                      "signInUrl": [
-                        "*",
-                        {
-                          "redirectUri": "*"
-                        }
-                      ]
-                    },
-                    {
-                      "baseUrl": [
-                        {}
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "GoogleClientSecretValue": {
@@ -189,16 +154,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "secretName": "*",
-                  "generateSecretString": {
-                    "excludePunctuation": true,
-                    "passwordLength": "*"
-                  }
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "GoogleClientSecretValue2": {
@@ -206,8 +162,7 @@
             "path": "integ-user-pool-idp-google/GoogleClientSecretValue2",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0",
-              "metadata": []
+              "version": "0.0.0"
             }
           },
           "google": {
@@ -259,10 +214,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPoolIdentityProviderGoogle",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "version": "0.0.0"
             }
           },
           "SignInLink": {
@@ -300,7 +252,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

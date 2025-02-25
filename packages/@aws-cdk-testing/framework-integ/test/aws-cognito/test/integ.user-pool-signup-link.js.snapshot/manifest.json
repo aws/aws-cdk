@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-signup-link.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4f02816b4aa62bb3d1025b348fe2b1db83c2ca36462a4bcb9f634f5a3e563f6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b00550ef2612730c00112a31974efd7bc61a7499972bbef21f6a3d9d06e1ceb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,50 +34,6 @@
         "integ-user-pool-signup-link.assets"
       ],
       "metadata": {
-        "/integ-user-pool-signup-link/myuserpool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "userPoolName": "*",
-              "autoVerify": {
-                "email": true,
-                "phone": true
-              },
-              "selfSignUpEnabled": true,
-              "userVerification": {
-                "emailStyle": "CONFIRM_WITH_LINK",
-                "emailSubject": "*",
-                "emailBody": "*",
-                "smsMessage": "*"
-              },
-              "passwordPolicy": {
-                "requireUppercase": false,
-                "requireLowercase": false,
-                "requireDigits": false,
-                "requireSymbols": false
-              }
-            }
-          }
-        ],
-        "/integ-user-pool-signup-link/myuserpool/smsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*"
-            }
-          }
-        ],
-        "/integ-user-pool-signup-link/myuserpool/smsRole/ImportsmsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/integ-user-pool-signup-link/myuserpool/smsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -90,31 +46,10 @@
             "data": "myuserpool01998219"
           }
         ],
-        "/integ-user-pool-signup-link/myuserpool/myuserpooldomain": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "cognitoDomain": {
-                "domainPrefix": "*"
-              }
-            }
-          }
-        ],
         "/integ-user-pool-signup-link/myuserpool/myuserpooldomain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyuserpooldomainEE1E11AF"
-          }
-        ],
-        "/integ-user-pool-signup-link/myuserpoolclient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "userPoolClientName": "*",
-              "generateSecret": false
-            }
           }
         ],
         "/integ-user-pool-signup-link/myuserpoolclient/Resource": [

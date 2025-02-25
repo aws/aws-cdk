@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -522,7 +522,6 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-      featurePlan: FeaturePlan.PLUS,
     });
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration);
 
@@ -558,7 +557,6 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-      featurePlan: FeaturePlan.PLUS,
     });
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, LambdaVersion.V2_0);
 
@@ -592,7 +590,6 @@ describe('User Pool', () => {
     // WHEN
     const pool = new UserPool(stack, 'Pool', {
       advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
-      featurePlan: FeaturePlan.PLUS,
     });
     expect(() => {
       pool.addTrigger(
@@ -2367,18 +2364,16 @@ test('feature plan is not present if option is not provided', () => {
 
 test.each(
   [
-    [AdvancedSecurityMode.ENFORCED, 'ENFORCED', FeaturePlan.PLUS],
-    [AdvancedSecurityMode.AUDIT, 'AUDIT', FeaturePlan.PLUS],
-    [AdvancedSecurityMode.OFF, 'OFF', FeaturePlan.LITE],
-    [AdvancedSecurityMode.OFF, 'OFF', FeaturePlan.ESSENTIALS],
-  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString, featurePlan) => {
+    [AdvancedSecurityMode.ENFORCED, 'ENFORCED'],
+    [AdvancedSecurityMode.AUDIT, 'AUDIT'],
+    [AdvancedSecurityMode.OFF, 'OFF'],
+  ])('advanced security is configured correctly when set to (%s)', (advancedSecurityMode, compareString) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
   new UserPool(stack, 'Pool', {
     advancedSecurityMode: advancedSecurityMode,
-    featurePlan: featurePlan,
   });
 
   // THEN
@@ -2389,7 +2384,7 @@ test.each(
   });
 });
 
-test('advanced security defaults when no option provided', () => {
+test('advanced security is not present if option is not provided', () => {
   // GIVEN
   const stack = new Stack();
 
@@ -2398,18 +2393,15 @@ test('advanced security defaults when no option provided', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-    UserPoolAddOns: {
-      AdvancedSecurityAdditionalFlows: {},
-      AdvancedSecurityMode: 'OFF',
-    },
+    UserPoolAddOns: Match.absent(),
   });
 });
 
 test.each([
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.AUDIT],
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.ENFORCED],
-  [FeaturePlan.LITE, AdvancedSecurityMode.AUDIT],
-  [FeaturePlan.LITE, AdvancedSecurityMode.ENFORCED],
+  [FeaturePlan.PLUS, AdvancedSecurityMode.AUDIT],
+  [FeaturePlan.PLUS, AdvancedSecurityMode.ENFORCED],
 ])('throws when feature plan is %s and advanced security mode is %s', (featurePlan, advancedSecurityMode) => {
   // GIVEN
   const stack = new Stack();
@@ -2417,65 +2409,7 @@ test.each([
   // WHEN
   expect(() => {
     new UserPool(stack, 'Pool', { featurePlan, advancedSecurityMode });
-  }).toThrow('you cannot enable Advanced Security when feature plan is not Plus.');
-});
-
-test.each([
-  [FeaturePlan.ESSENTIALS, StandardThreatProtectionMode.AUDIT_ONLY],
-  [FeaturePlan.ESSENTIALS, StandardThreatProtectionMode.FULL_FUNCTION],
-  [FeaturePlan.LITE, StandardThreatProtectionMode.AUDIT_ONLY],
-  [FeaturePlan.LITE, StandardThreatProtectionMode.FULL_FUNCTION],
-])('throws when feature plan is %s and standard threat protection mode is %s', (featurePlan, standardThreatProtectionMode) => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', { featurePlan, standardThreatProtectionMode });
-  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
-});
-
-test.each([
-  [FeaturePlan.ESSENTIALS, CustomThreatProtectionMode.AUDIT_ONLY],
-  [FeaturePlan.ESSENTIALS, CustomThreatProtectionMode.FULL_FUNCTION],
-  [FeaturePlan.LITE, CustomThreatProtectionMode.AUDIT_ONLY],
-  [FeaturePlan.LITE, CustomThreatProtectionMode.FULL_FUNCTION],
-])('throws when feature plan is %s and custom threat protection mode is %s', (featurePlan, customThreatProtectionMode) => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', { featurePlan, customThreatProtectionMode });
-  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
-});
-
-test('throws when deprecated property AdvancedSecurityMode and StandardThreatProtectionMode are specified at the same time.', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', {
-      featurePlan: FeaturePlan.PLUS,
-      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
-      standardThreatProtectionMode: StandardThreatProtectionMode.AUDIT_ONLY,
-    });
-  }).toThrow('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.');
-});
-
-test('throws when deprecated property AdvancedSecurityMode and CustomThreatProtectionMode are specified at the same time.', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', {
-      featurePlan: FeaturePlan.PLUS,
-      advancedSecurityMode: AdvancedSecurityMode.AUDIT,
-      customThreatProtectionMode: CustomThreatProtectionMode.AUDIT_ONLY,
-    });
-  }).toThrow('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.');
+  }).toThrow('you cannot enable Advanced Security Mode when feature plan is Essentials or higher.');
 });
 
 describe('email MFA test', () => {
@@ -2539,7 +2473,7 @@ describe('email MFA test', () => {
   test.each([
     AdvancedSecurityMode.AUDIT,
     AdvancedSecurityMode.ENFORCED,
-  ])('email MFA with PLUS feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
+  ])('email MFA with Lite feature plan and %s Advanced Security Mode', (advancedSecurityMode) => {
     const stack = new Stack();
 
     expect(() => new UserPool(stack, 'Pool1', {
@@ -2556,7 +2490,7 @@ describe('email MFA test', () => {
         otp: false,
         email: true,
       },
-      featurePlan: FeaturePlan.PLUS,
+      featurePlan: FeaturePlan.LITE,
       advancedSecurityMode,
     })).not.toThrow();
   });

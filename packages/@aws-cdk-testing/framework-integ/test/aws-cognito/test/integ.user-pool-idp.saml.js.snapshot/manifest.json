@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-identity-provider-saml-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc281246fef9dd5dd178a76fe7c187c077071483d478f9983ee3bd2a87845a75.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9797b1e65ff3b42f6779bb26ff6fa3e199e2d6e0f149c99ab0a95f8d51a6cf8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,26 +34,10 @@
         "integ-user-pool-identity-provider-saml-stack.assets"
       ],
       "metadata": {
-        "/integ-user-pool-identity-provider-saml-stack/pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/integ-user-pool-identity-provider-saml-stack/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pool056F3F7E"
-          }
-        ],
-        "/integ-user-pool-identity-provider-saml-stack/pool/client": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
           }
         ],
         "/integ-user-pool-identity-provider-saml-stack/pool/client/Resource": [
@@ -62,46 +46,10 @@
             "data": "poolclient2623294C"
           }
         ],
-        "/integ-user-pool-identity-provider-saml-stack/pool/domain": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "cognitoDomain": {
-                "domainPrefix": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "signInUrl": [
-                "*",
-                {
-                  "redirectUri": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "baseUrl": [
-                {}
-              ]
-            }
-          }
-        ],
         "/integ-user-pool-identity-provider-saml-stack/pool/domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pooldomain430FA744"
-          }
-        ],
-        "/integ-user-pool-identity-provider-saml-stack/samlProvider": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/integ-user-pool-identity-provider-saml-stack/samlProvider/Resource": [
@@ -110,39 +58,16 @@
             "data": "samlProvider6C4CC492"
           }
         ],
-        "/integ-user-pool-identity-provider-saml-stack/poolForIdpInitiatedSaml": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/integ-user-pool-identity-provider-saml-stack/poolForIdpInitiatedSaml/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "poolForIdpInitiatedSaml8B7CB492"
           }
         ],
-        "/integ-user-pool-identity-provider-saml-stack/poolForIdpInitiatedSaml/idpInitiatedClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "supportedIdentityProviders": "*"
-            }
-          }
-        ],
         "/integ-user-pool-identity-provider-saml-stack/poolForIdpInitiatedSaml/idpInitiatedClient/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "poolForIdpInitiatedSamlidpInitiatedClientACB7B7B4"
-          }
-        ],
-        "/integ-user-pool-identity-provider-saml-stack/samlProviderIdpInitiated": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/integ-user-pool-identity-provider-saml-stack/samlProviderIdpInitiated/Resource": [

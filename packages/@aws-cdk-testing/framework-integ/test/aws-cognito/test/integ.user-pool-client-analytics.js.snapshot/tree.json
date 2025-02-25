@@ -50,10 +50,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -118,26 +114,14 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "generateSecret": true,
-                      "analytics": {
-                        "application": "*"
-                      }
-                    }
-                  ]
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "metadata": []
             }
           },
           "Exports": {
@@ -216,9 +200,7 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "metadata": []
                 }
               },
               "Resource": {
@@ -283,58 +265,14 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0",
-                  "metadata": [
-                    "*",
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachToRole": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    }
-                  ]
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "assumedBy": {
-                    "principalAccount": "*",
-                    "assumeRoleAction": "*"
-                  }
-                },
-                {
-                  "addToPolicy": [
-                    {}
-                  ]
-                },
-                {
-                  "addToPrincipalPolicy": [
-                    {}
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                }
-              ]
+              "metadata": []
             }
           },
           "Pool": {
@@ -365,10 +303,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -442,28 +376,14 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
                   "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "generateSecret": true,
-                      "analytics": {
-                        "applicationId": "*",
-                        "externalId": "*",
-                        "role": "*"
-                      }
-                    }
-                  ]
+                  "metadata": []
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "metadata": []
             }
           },
           "Exports": {
@@ -572,11 +492,7 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            "*",
-                            "*"
-                          ]
+                          "metadata": []
                         }
                       },
                       "AssertionResults": {
@@ -673,11 +589,7 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
-                          "metadata": [
-                            "*",
-                            "*",
-                            "*"
-                          ]
+                          "metadata": []
                         }
                       },
                       "AssertionResults": {

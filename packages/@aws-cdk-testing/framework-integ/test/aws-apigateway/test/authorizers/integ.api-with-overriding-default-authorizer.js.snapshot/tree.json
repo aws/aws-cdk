@@ -42,10 +42,6 @@
                     "usernameAttributes": [
                       "email"
                     ],
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -62,15 +58,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "selfSignUpEnabled": true,
-                  "signInAliases": {
-                    "email": true
-                  }
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "Authorizer": {
@@ -107,10 +95,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "version": "0.0.0"
             }
           },
           "Actions-ApiGateway": {
@@ -155,34 +140,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "description": "*",
-                      "api": "*",
-                      "retainDeployments": "*"
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "DeploymentStage.prod": {
@@ -212,12 +170,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.Stage",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "deployment": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Endpoint": {
@@ -292,36 +245,7 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "resource": "*",
-                          "httpMethod": "*",
-                          "integration": "*",
-                          "options": {
-                            "authorizer": {
-                              "authorizerId": "*",
-                              "authorizationType": "*"
-                            },
-                            "apiKeyRequired": false,
-                            "authorizationType": "*",
-                            "methodResponses": [
-                              {
-                                "statusCode": "*",
-                                "responseParameters": "*"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "addMethodResponse": [
-                            {
-                              "statusCode": "*",
-                              "responseParameters": "*"
-                            }
-                          ]
-                        }
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "ANY": {
@@ -372,29 +296,7 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "resource": "*",
-                          "httpMethod": "*",
-                          "integration": "*",
-                          "options": {
-                            "methodResponses": [
-                              {
-                                "statusCode": "*"
-                              }
-                            ],
-                            "authorizationType": "*"
-                          }
-                        },
-                        {
-                          "addMethodResponse": [
-                            {
-                              "statusCode": "*"
-                            }
-                          ]
-                        }
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "GET": {
@@ -451,56 +353,19 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "resource": "*",
-                          "httpMethod": "*",
-                          "integration": "*",
-                          "options": {
-                            "methodResponses": [
-                              {
-                                "statusCode": "*"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "addMethodResponse": [
-                            {
-                              "statusCode": "*"
-                            }
-                          ]
-                        }
-                      ]
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "defaultCorsPreflightOptions": {
-                    "allowOrigins": "*",
-                    "maxAge": "*"
-                  },
-                  "defaultMethodOptions": {
-                    "authorizer": "*",
-                    "authorizationType": "*",
-                    "authorizationScopes": "*"
-                  }
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -538,7 +403,7 @@
                 "path": "apigateway-with-overriding-default-authorizer/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -584,7 +449,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

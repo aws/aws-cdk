@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "userPoolName": "myPool",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -57,13 +53,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "userPoolName": "*",
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "EventApiCognitoAuth": {
@@ -119,29 +109,13 @@
                 "path": "EventApiCognitoAuthStack/EventApiCognitoAuth/LogGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": []
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appsync.EventApi",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "apiName": "*",
-                  "authorizationConfig": {
-                    "authProviders": [
-                      {
-                        "authorizationType": "AMAZON_COGNITO_USER_POOLS",
-                        "cognitoConfig": {
-                          "userPool": "*"
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "AWS AppSync Events HTTP endpoint": {

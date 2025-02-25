@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-client-enable-propagate-additional-data.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f1de2bdf6d61550203e1315b3e44efcb3ed03ffea614141643a831c6e991f26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/701ca21c0ac68d75e9bc8ea4be4e6b110eab7f1d6fe2959269245e2c6a2f11b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,28 +34,10 @@
         "integ-user-pool-client-enable-propagate-additional-data.assets"
       ],
       "metadata": {
-        "/integ-user-pool-client-enable-propagate-additional-data/pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
         "/integ-user-pool-client-enable-propagate-additional-data/pool/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "pool056F3F7E"
-          }
-        ],
-        "/integ-user-pool-client-enable-propagate-additional-data/pool/client": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "generateSecret": true,
-              "enablePropagateAdditionalUserContextData": true
-            }
           }
         ],
         "/integ-user-pool-client-enable-propagate-additional-data/pool/client/Resource": [

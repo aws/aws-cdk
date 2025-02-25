@@ -21,10 +21,7 @@
                     "path": "integ-user-pool/createAuthChallenge/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -69,20 +66,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -113,15 +97,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "customMessage": {
@@ -137,10 +113,7 @@
                     "path": "integ-user-pool/customMessage/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -185,20 +158,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -229,15 +189,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "defineAuthChallenge": {
@@ -253,10 +205,7 @@
                     "path": "integ-user-pool/defineAuthChallenge/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -301,20 +250,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -345,15 +281,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "postAuthentication": {
@@ -369,10 +297,7 @@
                     "path": "integ-user-pool/postAuthentication/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -417,20 +342,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -461,15 +373,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "postConfirmation": {
@@ -485,10 +389,7 @@
                     "path": "integ-user-pool/postConfirmation/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -533,20 +434,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -577,15 +465,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "preAuthentication": {
@@ -601,10 +481,7 @@
                     "path": "integ-user-pool/preAuthentication/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -649,20 +526,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -693,15 +557,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "preSignUp": {
@@ -717,10 +573,7 @@
                     "path": "integ-user-pool/preSignUp/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -765,20 +618,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -809,15 +649,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "preTokenGeneration": {
@@ -833,10 +665,7 @@
                     "path": "integ-user-pool/preTokenGeneration/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -881,20 +710,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -925,15 +741,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "userMigration": {
@@ -949,10 +757,7 @@
                     "path": "integ-user-pool/userMigration/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -997,20 +802,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1041,15 +833,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "verifyAuthChallengeResponse": {
@@ -1065,10 +849,7 @@
                     "path": "integ-user-pool/verifyAuthChallengeResponse/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1113,20 +894,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1157,15 +925,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "functionName": "*",
-                  "handler": "*",
-                  "runtime": "*",
-                  "code": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "myuserpool": {
@@ -1451,10 +1211,7 @@
                     "path": "integ-user-pool/myuserpool/smsRole/ImportsmsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1505,16 +1262,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "inlinePolicies": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1689,11 +1437,9 @@
                       ]
                     },
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "ENFORCED"
                     },
                     "userPoolName": "MyUserPool",
-                    "userPoolTier": "PLUS",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "verification email body from the integ test. Code is {####}.",
@@ -1731,71 +1477,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolDomain",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*",
-                      "cognitoDomain": {
-                        "domainPrefix": "*"
-                      }
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy",
-                  "userPoolName": "*",
-                  "userInvitation": {
-                    "emailSubject": "*",
-                    "emailBody": "*",
-                    "smsMessage": "*"
-                  },
-                  "selfSignUpEnabled": true,
-                  "userVerification": {
-                    "emailBody": "*",
-                    "emailSubject": "*",
-                    "smsMessage": "*"
-                  },
-                  "signInAliases": {
-                    "username": true,
-                    "email": true
-                  },
-                  "autoVerify": {
-                    "email": true,
-                    "phone": true
-                  },
-                  "keepOriginal": {
-                    "email": true,
-                    "phone": true
-                  },
-                  "standardAttributes": {},
-                  "customAttributes": "*",
-                  "mfa": "OFF",
-                  "mfaSecondFactor": {
-                    "sms": true,
-                    "otp": true
-                  },
-                  "passwordPolicy": {
-                    "tempPasswordValidity": "*",
-                    "minLength": "*",
-                    "requireDigits": true,
-                    "requireLowercase": true,
-                    "requireUppercase": true,
-                    "requireSymbols": true
-                  },
-                  "lambdaTriggers": {
-                    "createAuthChallenge": "*"
-                  },
-                  "advancedSecurityMode": "ENFORCED",
-                  "featurePlan": "PLUS",
-                  "snsRegion": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "userpoolId": {
@@ -1841,7 +1529,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

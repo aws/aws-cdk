@@ -46,10 +46,6 @@
                       }
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -69,21 +65,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "signInPolicy": {
-                    "allowedFirstAuthFactors": {
-                      "password": true,
-                      "emailOtp": true,
-                      "passkey": true
-                    }
-                  },
-                  "passkeyRelyingPartyId": "*",
-                  "passkeyUserVerification": "required",
-                  "removalPolicy": "destroy",
-                  "deletionProtection": false
-                }
-              ]
+              "metadata": []
             }
           },
           "myuserpool-disabled-passwordless": {
@@ -122,10 +104,6 @@
                       }
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "userPoolTier": "LITE",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
@@ -144,18 +122,7 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
               "version": "0.0.0",
-              "metadata": [
-                {
-                  "signInPolicy": {
-                    "allowedFirstAuthFactors": {
-                      "password": true
-                    }
-                  },
-                  "featurePlan": "LITE",
-                  "removalPolicy": "destroy",
-                  "deletionProtection": false
-                }
-              ]
+              "metadata": []
             }
           },
           "user-pool-passwordless": {

@@ -1203,13 +1203,6 @@ export class UserPool extends UserPoolBase {
       StandardThreatProtectionMode.NO_ENFORCEMENT;
 
     if (
-      props.featurePlan !== FeaturePlan.PLUS &&
-      (props.advancedSecurityMode && (props.advancedSecurityMode !== AdvancedSecurityMode.OFF))
-    ) {
-      throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
-    }
-
-    if (
       (props.featurePlan !== FeaturePlan.PLUS) &&
       (standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT ||
       props.customThreatProtectionMode)
@@ -1661,7 +1654,7 @@ export class UserPool extends UserPoolBase {
       throw new ValidationError('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.', this);
     }
 
-    if (props.featurePlan === FeaturePlan.LITE) {
+    if (props.featurePlan === FeaturePlan.LITE && (!props.advancedSecurityMode || props.advancedSecurityMode === AdvancedSecurityMode.OFF)) {
       throw new ValidationError('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
   }

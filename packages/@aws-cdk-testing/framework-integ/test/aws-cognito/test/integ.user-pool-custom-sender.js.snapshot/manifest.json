@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-custom-sender.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be8617d57a43b38514e51899bd9223ca471a3267287ccb3e38edbfdfed039622.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14f77f03d01521912aa709fe94872ce88fbe1f765b1a8b0bf23c0d4a8a8d44a1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,38 +34,6 @@
         "integ-user-pool-custom-sender.assets"
       ],
       "metadata": {
-        "/integ-user-pool-custom-sender/emailLambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/integ-user-pool-custom-sender/emailLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-user-pool-custom-sender/emailLambda/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/integ-user-pool-custom-sender/emailLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -78,33 +46,10 @@
             "data": "emailLambda61F82360"
           }
         ],
-        "/integ-user-pool-custom-sender/key": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/integ-user-pool-custom-sender/key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "keyFEDD6EC0"
-          }
-        ],
-        "/integ-user-pool-custom-sender/pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "autoVerify": {
-                "email": true
-              },
-              "selfSignUpEnabled": true,
-              "signInAliases": {
-                "email": true
-              },
-              "customSenderKmsKey": "*",
-              "lambdaTriggers": {},
-              "removalPolicy": "destroy"
-            }
           }
         ],
         "/integ-user-pool-custom-sender/pool/CustomEmailSenderCognito": [
@@ -117,17 +62,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "pool056F3F7E"
-          }
-        ],
-        "/integ-user-pool-custom-sender/pool/client": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*",
-              "authFlows": {
-                "userSrp": true
-              }
-            }
           }
         ],
         "/integ-user-pool-custom-sender/pool/client/Resource": [

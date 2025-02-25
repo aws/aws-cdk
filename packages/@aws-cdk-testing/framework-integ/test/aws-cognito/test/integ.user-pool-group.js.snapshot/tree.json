@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -76,23 +72,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_cognito.UserPoolGroup",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "userPool": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "Role": {
@@ -104,10 +90,7 @@
                 "path": "user-pool-group-stack/Role/ImportRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -138,15 +121,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "assumedBy": {
-                    "principalAccount": "*",
-                    "assumeRoleAction": "*"
-                  }
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "UserPoolGroup": {
@@ -181,16 +156,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPoolGroup",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "userPool": "*",
-                  "groupName": "*",
-                  "description": "*",
-                  "precedence": "*",
-                  "role": "*"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {

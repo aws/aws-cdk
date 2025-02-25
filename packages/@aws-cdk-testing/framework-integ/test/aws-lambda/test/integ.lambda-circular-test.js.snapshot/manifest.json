@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9459bc40b142106d97b4f55ab902304f47253134a7a3b8ed25444315ec2f9aa9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01aa4b400611081a4b66fea14086871711d5e9ea61b8882d34c339dd75887241.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,54 +34,6 @@
         "aws-cdk-lambda-1.assets"
       ],
       "metadata": {
-        "/aws-cdk-lambda-1/MyLambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -94,50 +46,10 @@
             "data": "MyLambdaCCE802FB"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
         "/aws-cdk-lambda-1/MyLambda/inlinePolicyAddedToExecutionRole-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdainlinePolicyAddedToExecutionRole0E0144580"
-          }
-        ],
-        "/aws-cdk-lambda-1/myUserPoolTest": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "lambdaTriggers": {}
-            }
           }
         ],
         "/aws-cdk-lambda-1/myUserPoolTest/FnCognito": [
@@ -162,6 +74,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyLambdaPolicyEEA76B97": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaPolicyEEA76B97",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

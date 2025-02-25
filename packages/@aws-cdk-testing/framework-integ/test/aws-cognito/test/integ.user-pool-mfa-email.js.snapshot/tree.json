@@ -21,10 +21,7 @@
                     "path": "integ-user-email-mfa/myuserpool/smsRole/ImportsmsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -75,16 +72,7 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "inlinePolicies": "*"
-                    }
-                  ]
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -147,11 +135,9 @@
                     },
                     "smsVerificationMessage": "The verification code to your new account is {####}",
                     "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
                       "advancedSecurityMode": "ENFORCED"
                     },
                     "userPoolName": "MyUserPool",
-                    "userPoolTier": "PLUS",
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -168,22 +154,7 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "removalPolicy": "destroy",
-                  "userPoolName": "*",
-                  "email": "*",
-                  "mfa": "ON",
-                  "mfaSecondFactor": {
-                    "sms": true,
-                    "otp": false,
-                    "email": true
-                  },
-                  "advancedSecurityMode": "ENFORCED",
-                  "featurePlan": "PLUS"
-                }
-              ]
+              "version": "0.0.0"
             }
           },
           "user-pool-id": {
@@ -229,7 +200,7 @@
                 "path": "integ-user-email-mfa-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -275,7 +246,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.3.0"
         }
       }
     },

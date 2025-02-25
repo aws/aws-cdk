@@ -36,10 +36,6 @@
                     "emailVerificationMessage": "The verification code to your new account is {####}",
                     "emailVerificationSubject": "Verify your new account",
                     "smsVerificationMessage": "The verification code to your new account is {####}",
-                    "userPoolAddOns": {
-                      "advancedSecurityAdditionalFlows": {},
-                      "advancedSecurityMode": "OFF"
-                    },
                     "verificationMessageTemplate": {
                       "defaultEmailOption": "CONFIRM_WITH_CODE",
                       "emailMessage": "The verification code to your new account is {####}",
@@ -49,17 +45,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
             }
           },
           "myauthorizer": {
@@ -72,8 +65,12 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
-                    "identitySource": "method.request.header.Authorization",
                     "name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
+                    "restApiId": {
+                      "Ref": "myrestapi551C8392"
+                    },
+                    "type": "COGNITO_USER_POOLS",
+                    "identitySource": "method.request.header.Authorization",
                     "providerArns": [
                       {
                         "Fn::GetAtt": [
@@ -81,25 +78,18 @@
                           "Arn"
                         ]
                       }
-                    ],
-                    "restApiId": {
-                      "Ref": "myrestapi551C8392"
-                    },
-                    "type": "COGNITO_USER_POOLS"
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAuthorizer",
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAuthorizer",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_apigateway.CognitoUserPoolsAuthorizer",
-              "version": "0.0.0",
-              "metadata": [
-                "*"
-              ]
+              "fqn": "@aws-cdk/aws-apigateway.CognitoUserPoolsAuthorizer",
+              "version": "0.0.0"
             }
           },
           "myrestapi": {
@@ -116,7 +106,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
                   "version": "0.0.0"
                 }
               },
@@ -128,11 +118,8 @@
                     "id": "ImportCloudWatchRole",
                     "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/CloudWatchRole/ImportCloudWatchRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": [
-                        "*"
-                      ]
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -170,32 +157,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      },
-                      "managedPolicies": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
-                    },
-                    {
-                      "applyRemovalPolicy": [
-                        "retain"
-                      ]
-                    }
-                  ]
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Account": {
@@ -213,7 +182,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAccount",
+                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
                   "version": "0.0.0"
                 }
               },
@@ -227,38 +196,21 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
-                        "description": "Automatically created by the RestApi construct",
                         "restApiId": {
                           "Ref": "myrestapi551C8392"
-                        }
+                        },
+                        "description": "Automatically created by the RestApi construct"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "description": "*",
-                      "api": "*",
-                      "retainDeployments": "*"
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    },
-                    {
-                      "addToLogicalId": [
-                        {}
-                      ]
-                    }
-                  ]
+                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "version": "0.0.0"
                 }
               },
               "DeploymentStage.prod": {
@@ -271,36 +223,31 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
-                        "deploymentId": {
-                          "Ref": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
-                        },
                         "restApiId": {
                           "Ref": "myrestapi551C8392"
+                        },
+                        "deploymentId": {
+                          "Ref": "myrestapiDeployment419B1464d5146a3a0aa3a9f79024a52930571dc6"
                         },
                         "stageName": "prod"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {
-                      "deployment": "*"
-                    }
-                  ]
+                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "version": "0.0.0"
                 }
               },
               "Endpoint": {
                 "id": "Endpoint",
                 "path": "CognitoUserPoolsAuthorizerInteg/myrestapi/Endpoint",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -318,11 +265,20 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
+                            "httpMethod": "ANY",
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "myrestapi551C8392",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "myrestapi551C8392"
+                            },
                             "authorizationType": "COGNITO_USER_POOLS",
                             "authorizerId": {
                               "Ref": "myauthorizer23CB99DD"
                             },
-                            "httpMethod": "ANY",
                             "integration": {
                               "type": "MOCK",
                               "requestTemplates": {
@@ -339,77 +295,37 @@
                               {
                                 "statusCode": "200"
                               }
-                            ],
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "myrestapi551C8392",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "myrestapi551C8392"
-                            }
+                            ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "resource": "*",
-                          "httpMethod": "*",
-                          "integration": "*",
-                          "options": {
-                            "methodResponses": [
-                              {
-                                "statusCode": "*"
-                              }
-                            ],
-                            "authorizer": "*",
-                            "authorizationType": "*"
-                          }
-                        },
-                        {
-                          "addMethodResponse": [
-                            {
-                              "statusCode": "*"
-                            }
-                          ]
-                        }
-                      ]
+                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
+                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
-              "version": "0.0.0",
-              "metadata": [
-                {
-                  "cloudWatchRole": true
-                }
-              ]
+              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "CognitoUserPoolsAuthorizerInteg/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
+              "fqn": "@aws-cdk/core.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -417,13 +333,13 @@
             "id": "CheckBootstrapVersion",
             "path": "CognitoUserPoolsAuthorizerInteg/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
+              "fqn": "@aws-cdk/core.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
         }
       },
@@ -440,7 +356,7 @@
                 "path": "cognito-authorizer/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.1.168"
                 }
               },
               "DeployAssert": {
@@ -451,7 +367,7 @@
                     "id": "BootstrapVersion",
                     "path": "cognito-authorizer/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "fqn": "@aws-cdk/core.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -459,25 +375,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "cognito-authorizer/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
+                      "fqn": "@aws-cdk/core.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
+                  "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -486,12 +402,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.1.168"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
+      "fqn": "@aws-cdk/core.App",
       "version": "0.0.0"
     }
   }

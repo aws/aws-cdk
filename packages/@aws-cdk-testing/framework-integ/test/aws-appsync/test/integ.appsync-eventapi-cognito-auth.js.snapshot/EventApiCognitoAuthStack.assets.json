@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "93744f008fcf3b9e6c467c4abb949ab1457ed06220d6c3244c531e5bb4e878db": {
+    "eebea849f4344a11d34ac850355164c44b2778d3a1f213a5a7cd7392315ac1c2": {
       "source": {
         "path": "EventApiCognitoAuthStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "93744f008fcf3b9e6c467c4abb949ab1457ed06220d6c3244c531e5bb4e878db.json",
+          "objectKey": "eebea849f4344a11d34ac850355164c44b2778d3a1f213a5a7cd7392315ac1c2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
