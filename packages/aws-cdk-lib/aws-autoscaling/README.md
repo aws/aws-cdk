@@ -335,7 +335,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-If you also want to configure the additional health checks other than EC2, use the `HealthChecks.addition` method:
+If you also want to configure the additional health checks other than EC2, use the `HealthChecks.withAdditionalChecks` method:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -344,7 +344,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
-  healthChecks: autoscaling.HealthChecks.addition({
+  healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
     gracePeriod: Duration.seconds(100),
     additionalTypes: [
       autoscaling.AdditionalHealthCheckType.EBS,
