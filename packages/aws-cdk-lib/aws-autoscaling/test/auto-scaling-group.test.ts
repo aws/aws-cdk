@@ -729,7 +729,7 @@ describe('auto scaling group', () => {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      healthChecks: autoscaling.HealthChecks.addition({
+      healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
         gracePeriod,
         additionalTypes: [
           autoscaling.AdditionalHealthCheckType.EBS,
@@ -760,7 +760,7 @@ describe('auto scaling group', () => {
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
         healthCheck: autoscaling.HealthCheck.ec2(),
-        healthChecks: autoscaling.HealthChecks.addition({
+        healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
           gracePeriod: cdk.Duration.seconds(100),
           additionalTypes: [
             autoscaling.AdditionalHealthCheckType.EBS,
@@ -781,7 +781,7 @@ describe('auto scaling group', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
-        healthChecks: autoscaling.HealthChecks.addition({
+        healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
           gracePeriod: cdk.Duration.seconds(100),
           additionalTypes: [],
         }),

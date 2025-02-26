@@ -238,7 +238,7 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Configuration for EC2 or additional health checks
    *
-   * Even when using `HealthChecks.addition()`, the EC2 type is implicitly included.
+   * Even when using `HealthChecks.withAdditionalChecks()`, the EC2 type is implicitly included.
    *
    * @default - EC2 type with no grace period
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html
@@ -2375,7 +2375,7 @@ export class HealthChecks {
    *
    * @param options Additional health checks options
    */
-  public static addition(options: AdditionalHealthChecksOptions): HealthChecks {
+  public static withAdditionalChecks(options: AdditionalHealthChecksOptions): HealthChecks {
     return new HealthChecks(options.additionalTypes, options.gracePeriod);
   }
 
