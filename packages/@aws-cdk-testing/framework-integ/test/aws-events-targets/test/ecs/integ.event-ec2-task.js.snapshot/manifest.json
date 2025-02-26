@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "aws-ecs-integ-ecs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d3a7b59d3e307c6d0d563cccec7f894f7ef5132ecf6541dd5c72be3003d34eba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f6fedd99e21807e94daaf45b5ca1f76789a92726a171a4a465ed05daf3228bcd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -112,6 +112,27 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/aws-ecs-integ-ecs/EcsCluster": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]",
+            "trace": [
+              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
+              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
+              "Cluster.handleCanContainersAccessInstanceRoleForAL2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:581:47)",
+              "Cluster.configureAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:486:26)",
+              "Cluster.addAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:452:14)",
+              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:405:14)",
+              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/ecs/integ.event-ec2-task.js:20:9)",
+              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
+              "Module.load (node:internal/modules/cjs/loader:1119:32)",
+              "Module._load (node:internal/modules/cjs/loader:960:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/aws-ecs-integ-ecs/EcsCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -160,12 +181,6 @@
             "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
           }
         ],
-        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
-          }
-        ],
         "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -182,6 +197,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394"
+          }
+        ],
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole075025F00"
+          }
+        ],
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole19CB19D22"
+          }
+        ],
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole25F218D50"
+          }
+        ],
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole30F54BDDC"
+          }
+        ],
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctioninlinePolicyAddedToExecutionRole4C9B545F3"
           }
         ],
         "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [

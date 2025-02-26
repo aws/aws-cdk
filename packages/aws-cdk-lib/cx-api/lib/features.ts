@@ -123,6 +123,7 @@ export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlockin
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
+export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1384,6 +1385,19 @@ export const FLAGS: Record<string, FlagInfo> = {
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
+    detailsMd: `
+      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+      This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+    `,
+    introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
   },
 };

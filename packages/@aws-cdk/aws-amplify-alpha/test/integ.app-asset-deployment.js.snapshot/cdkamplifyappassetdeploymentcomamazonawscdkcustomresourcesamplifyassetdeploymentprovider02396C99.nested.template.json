@@ -155,32 +155,6 @@
     ]
    }
   },
-  "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "amplify:ListJobs",
-        "amplify:StartDeployment",
-        "s3:GetObject",
-        "s3:GetSignedUrl"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
-    "Roles": [
-     {
-      "Ref": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
-     }
-    ]
-   }
-  },
   "amplifyassetdeploymentonevent974704DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -208,9 +182,34 @@
     }
    },
    "DependsOn": [
-    "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
     "amplifyassetdeploymentoneventServiceRoleB6658CD9"
    ]
+  },
+  "amplifyassetdeploymentoneventinlinePolicyAddedToExecutionRole0C600B4AD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "amplify:ListJobs",
+        "amplify:StartDeployment",
+        "s3:GetObject",
+        "s3:GetSignedUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymentoneventinlinePolicyAddedToExecutionRole0C600B4AD",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymentiscompleteServiceRole007B2AB6": {
    "Type": "AWS::IAM::Role",
@@ -243,27 +242,6 @@
     ]
    }
   },
-  "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "amplify:GetJob*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
-    "Roles": [
-     {
-      "Ref": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
-     }
-    ]
-   }
-  },
   "amplifyassetdeploymentiscomplete236D9453": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -291,9 +269,29 @@
     }
    },
    "DependsOn": [
-    "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
     "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
    ]
+  },
+  "amplifyassetdeploymentiscompleteinlinePolicyAddedToExecutionRole032FCEDB8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "amplify:GetJob*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymentiscompleteinlinePolicyAddedToExecutionRole032FCEDB8",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F": {
    "Type": "AWS::IAM::Role",
@@ -378,24 +376,6 @@
        ]
       },
       {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentiscomplete236D9453",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentonevent974704DA",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -464,6 +444,58 @@
     "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRoleDefaultPolicy1E166D14",
     "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F"
    ]
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole02E6AC2A2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentonevent974704DA",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole02E6AC2A2",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F"
+     }
+    ]
+   }
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole1ADBFD04E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentiscomplete236D9453",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkonEventinlinePolicyAddedToExecutionRole1ADBFD04E",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E": {
    "Type": "AWS::IAM::Role",
@@ -546,24 +578,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentiscomplete236D9453",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentonevent974704DA",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -624,6 +638,58 @@
     "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDefaultPolicy59E7E0EB",
     "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E"
    ]
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DD8A5B26": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentonevent974704DA",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DD8A5B26",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E"
+     }
+    ]
+   }
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole16EE4B599": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentiscomplete236D9453",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkisCompleteinlinePolicyAddedToExecutionRole16EE4B599",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81": {
    "Type": "AWS::IAM::Role",
@@ -706,24 +772,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentiscomplete236D9453",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymentonevent974704DA",
-          "Arn"
-         ]
-        }
-       ]
       }
      ],
      "Version": "2012-10-17"
@@ -784,6 +832,58 @@
     "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleDefaultPolicy9257A1F3",
     "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81"
    ]
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0536E72EC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentonevent974704DA",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0536E72EC",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81"
+     }
+    ]
+   }
+  },
+  "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole15B2CDE6B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "amplifyassetdeploymentiscomplete236D9453",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutinlinePolicyAddedToExecutionRole15B2CDE6B",
+    "Roles": [
+     {
+      "Ref": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81"
+     }
+    ]
+   }
   },
   "amplifyassetdeploymenthandlerproviderwaiterstatemachineRole014FC0BB": {
    "Type": "AWS::IAM::Role",
