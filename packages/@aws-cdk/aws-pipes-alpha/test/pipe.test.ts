@@ -104,7 +104,7 @@ describe('Pipe', () => {
                     ],
                   },
                 },
-                'ForAnyValues:StringEquals': {
+                'ForAnyValue:StringEquals': {
                   'kms:EncryptionContextKeys': [
                     'aws:pipe:arn',
                   ],
