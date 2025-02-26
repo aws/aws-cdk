@@ -1065,7 +1065,6 @@ describe('cluster resource provider', () => {
             bootstrapSelfManagedAddons: true,
           }));
           const resp = await handler.onEvent();
-  
           expect(mocks.actualRequest.createClusterRequest!).toEqual({
             bootstrapSelfManagedAddons: false,
             name: 'MyResourceId-fakerequestid',
