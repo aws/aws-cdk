@@ -38,6 +38,112 @@
      ]
     }
    }
+  },
+  "EventApiApiKeyAuthdefaultE033B6AA": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiApiKeyAuth4E07D412",
+      "ApiId"
+     ]
+    },
+    "Name": "default"
+   }
+  },
+  "ApiKeyConfigTestFunctionServiceRole752D4D67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ApiKeyConfigTestFunctionDD5876FC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EVENT_API_REALTIME_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiKeyAuth4E07D412",
+           "Dns.Realtime"
+          ]
+         },
+         "/event/realtime"
+        ]
+       ]
+      },
+      "EVENT_API_HTTP_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiApiKeyAuth4E07D412",
+           "Dns.Http"
+          ]
+         },
+         "/event"
+        ]
+       ]
+      },
+      "API_KEY": {
+       "Fn::GetAtt": [
+        "EventApiApiKeyAuthDefaultApiKey0F800F10",
+        "ApiKey"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ApiKeyConfigTestFunctionServiceRole752D4D67",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "ApiKeyConfigTestFunctionServiceRole752D4D67"
+   ]
   }
  },
  "Outputs": {
@@ -55,6 +161,14 @@
      "EventApiApiKeyAuth4E07D412",
      "Dns.Realtime"
     ]
+   }
+  },
+  "ExportsOutputRefApiKeyConfigTestFunctionDD5876FC25B0F694": {
+   "Value": {
+    "Ref": "ApiKeyConfigTestFunctionDD5876FC"
+   },
+   "Export": {
+    "Name": "EventApiApiKeyAuthStack:ExportsOutputRefApiKeyConfigTestFunctionDD5876FC25B0F694"
    }
   }
  },
