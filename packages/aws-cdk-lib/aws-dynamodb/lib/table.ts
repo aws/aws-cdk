@@ -1207,6 +1207,8 @@ export class Table extends TableBase {
     }
     this.validateProvisioning(props);
 
+    this.resourcePolicy = props.resourcePolicy;
+
     const kinesisStreamSpecification = props.kinesisStream
       ? {
         streamArn: props.kinesisStream.streamArn,
@@ -1241,9 +1243,7 @@ export class Table extends TableBase {
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
+      resourcePolicy: Lazy.any( { produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
       warmThroughput: props.warmThroughput?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
@@ -1669,8 +1669,20 @@ export class Table extends TableBase {
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
     // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        this.tableArn + '/index/*',
+      ],
+    }));
+    isCompleteHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        this.tableArn + '/index/*',
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
