@@ -1471,6 +1471,8 @@ Follow these steps to implement a single source of truth for environment variabl
 Create an `env.ts` file, for example, in the Lambda function source directory:
 
 ```ts
+export {};
+
 export const ENV_VARS = {
   DATABASE_URL: process.env.DATABASE_URL ?? "",
   API_KEY: process.env.API_KEY ?? "",
@@ -1480,7 +1482,7 @@ export const ENV_VARS = {
 Reference the `ENV_VARS` module in your Lambda handler:
 
 ```ts
-import { ENV_VARS } from "./env";
+import { ENV_VARS } from "../lib/env";
 
 export const handler = async () => {
   console.log(`Using API Key: ${ENV_VARS.API_KEY}`);
