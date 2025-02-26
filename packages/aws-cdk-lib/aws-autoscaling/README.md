@@ -335,7 +335,8 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-If you also want to configure the additional health checks other than EC2, use the `HealthChecks.withAdditionalChecks` method:
+If you also want to configure the additional health checks other than EC2, use the `HealthChecks.withAdditionalChecks` method.
+EC2 is implicitly included, so you can specify types other than EC2.
 
 ```ts
 declare const vpc: ec2.Vpc;
