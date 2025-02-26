@@ -314,6 +314,50 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 });
 ```
 
+### Health checks for instances
+
+You can configure the health checks for the instances in the Auto Scaling group.
+
+Possible health check types are EC2, EBS, ELB, and VPC_LATTICE. EC2 is the default health check and cannot be disabled.
+
+If you want to configure the EC2 health check, use the `HealthChecks.ec2` method:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  healthChecks: autoscaling.HealthChecks.ec2({
+    gracePeriod: Duration.seconds(100),
+  }),
+});
+```
+
+If you also want to configure the additional health checks other than EC2, use the `HealthChecks.withAdditionalChecks` method.
+EC2 is implicitly included, so you can specify types other than EC2.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
+    gracePeriod: Duration.seconds(100),
+    additionalTypes: [
+      autoscaling.AdditionalHealthCheckType.EBS,
+      autoscaling.AdditionalHealthCheckType.ELB,
+      autoscaling.AdditionalHealthCheckType.VPC_LATTICE,
+    ],
+  }),
+});
+```
+
+> Visit [Health checks for instances in an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html) for more details.
+
 ### Instance Maintenance Policy
 
 You can configure an instance maintenance policy for your Auto Scaling group to

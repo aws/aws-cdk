@@ -650,7 +650,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can configure EC2 health check', () => {
+  testDeprecated('can configure EC2 health check', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -669,7 +669,7 @@ describe('auto scaling group', () => {
     });
   });
 
-  test('can configure EBS health check', () => {
+  testDeprecated('can configure ELB health check', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -687,6 +687,106 @@ describe('auto scaling group', () => {
       HealthCheckType: 'ELB',
       HealthCheckGracePeriod: 900,
     });
+  });
+
+  test.each([
+    cdk.Duration.seconds(100),
+    undefined,
+  ])('can configure EC2 health checks with gracePeriod is %s', (gracePeriod) => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthChecks: autoscaling.HealthChecks.ec2({
+        gracePeriod,
+      }),
+    });
+
+    const expectedGrace = gracePeriod ? gracePeriod.toSeconds() : Match.absent();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      HealthCheckType: 'EC2',
+      HealthCheckGracePeriod: expectedGrace,
+    });
+  });
+
+  test.each([
+    cdk.Duration.seconds(100),
+    undefined,
+  ])('can configure additional health checks with gracePeriod is %s', (gracePeriod) => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
+        gracePeriod,
+        additionalTypes: [
+          autoscaling.AdditionalHealthCheckType.EBS,
+          autoscaling.AdditionalHealthCheckType.ELB,
+          autoscaling.AdditionalHealthCheckType.VPC_LATTICE,
+        ],
+      }),
+    });
+
+    const expectedGrace = gracePeriod ? gracePeriod.toSeconds() : Match.absent();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      HealthCheckType: 'EBS,ELB,VPC_LATTICE',
+      HealthCheckGracePeriod: expectedGrace,
+    });
+  });
+
+  test('throws if both healthCheck and healthChecks are specified.', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        healthCheck: autoscaling.HealthCheck.ec2(),
+        healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
+          gracePeriod: cdk.Duration.seconds(100),
+          additionalTypes: [
+            autoscaling.AdditionalHealthCheckType.EBS,
+          ],
+        }),
+      });
+    }).toThrow(/Cannot specify both 'healthCheck' and 'healthChecks'. Please use 'healthChecks' only./);
+  });
+
+  test('throws when additionalTypes array for additional health checks is empty', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
+    const vpc = mockVpc(stack);
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
+          gracePeriod: cdk.Duration.seconds(100),
+          additionalTypes: [],
+        }),
+      });
+    }).toThrow(/At least one health check type must be specified in 'additionalTypes' for 'healthChecks'/);
   });
 
   test('can add Security Group to Fleet', () => {

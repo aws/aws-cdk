@@ -231,8 +231,19 @@ export interface CommonAutoScalingGroupProps {
    * Configuration for health checks
    *
    * @default - HealthCheck.ec2 with no grace period
+   * @deprecated Use `healthChecks` instead
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Configuration for EC2 or additional health checks
+   *
+   * Even when using `HealthChecks.withAdditionalChecks()`, the EC2 type is implicitly included.
+   *
+   * @default - EC2 type with no grace period
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html
+   */
+  readonly healthChecks?: HealthChecks;
 
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
@@ -1546,6 +1557,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
     }
 
+    const { healthCheckType, healthCheckGracePeriod } = this.renderHealthChecks(props.healthChecks, props.healthCheck);
+
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
       availabilityZoneDistribution: props.azCapacityDistributionStrategy
@@ -1560,8 +1573,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       notificationConfigurations: this.renderNotificationConfiguration(),
       metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
-      healthCheckType: props.healthCheck && props.healthCheck.type,
-      healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
+      healthCheckType,
+      healthCheckGracePeriod,
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
       terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
@@ -2032,6 +2045,25 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       maxHealthyPercentage,
     };
   }
+
+  private renderHealthChecks(healthChecks?: HealthChecks, healthCheck?: HealthCheck): { healthCheckType?: string; healthCheckGracePeriod?: number } {
+    if (healthCheck && healthChecks) {
+      throw new ValidationError('Cannot specify both \'healthCheck\' and \'healthChecks\'. Please use \'healthChecks\' only.', this);
+    }
+
+    let healthCheckType: string | undefined;
+    let healthCheckGracePeriod: number | undefined;
+
+    if (healthChecks) {
+      healthCheckType = healthChecks.types.join(',');
+      healthCheckGracePeriod = healthChecks.gracePeriod?.toSeconds();
+    } else if (healthCheck) {
+      healthCheckType = healthCheck.type;
+      healthCheckGracePeriod = healthCheck.gracePeriod?.toSeconds();
+    }
+
+    return { healthCheckType, healthCheckGracePeriod };
+  }
 }
 
 /**
@@ -2238,6 +2270,8 @@ const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.R
 
 /**
  * EC2 Heath check options
+ *
+ * @deprecated Use Ec2HealthChecksOptions instead
  */
 export interface Ec2HealthCheckOptions {
   /**
@@ -2250,6 +2284,8 @@ export interface Ec2HealthCheckOptions {
 
 /**
  * ELB Heath check options
+ *
+ * @deprecated Use AdditionalHealthChecksOptions instead
  */
 export interface ElbHealthCheckOptions {
   /**
@@ -2262,6 +2298,8 @@ export interface ElbHealthCheckOptions {
 
 /**
  * Health check settings
+ *
+ * @deprecated Use HealthChecks instead
  */
 export class HealthCheck {
   /**
@@ -2286,9 +2324,92 @@ export class HealthCheck {
   private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
 }
 
+/**
+ * Heath checks base options
+ */
+interface HealthChecksBaseOptions {
+  /**
+   * Specified the time Auto Scaling waits before checking the health status of an EC2 instance that has come into service
+   * and marking it unhealthy due to a failed health check.
+   *
+   * @default Duration.seconds(0)
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html
+   */
+  readonly gracePeriod?: Duration;
+}
+
+/**
+ * EC2 Heath checks options
+ */
+export interface Ec2HealthChecksOptions extends HealthChecksBaseOptions {
+}
+
+/**
+ * Additional Heath checks options
+ */
+export interface AdditionalHealthChecksOptions extends HealthChecksBaseOptions {
+  /**
+   * One or more health check types other than EC2.
+   */
+  readonly additionalTypes: AdditionalHealthCheckType[];
+}
+
+/**
+ * Health check settings for multiple types
+ */
+export class HealthChecks {
+  /**
+   * Use EC2 only for health checks.
+   *
+   * @param options EC2 health checks options
+   */
+  public static ec2(options: Ec2HealthChecksOptions = {}): HealthChecks {
+    return new HealthChecks(['EC2'], options.gracePeriod);
+  }
+
+  /**
+   * Use additional health checks other than EC2.
+   *
+   * Specify types other than EC2, as EC2 is always enabled.
+   * It considers the instance unhealthy if it fails either the EC2 status checks or the additional health checks.
+   *
+   * @param options Additional health checks options
+   */
+  public static withAdditionalChecks(options: AdditionalHealthChecksOptions): HealthChecks {
+    return new HealthChecks(options.additionalTypes, options.gracePeriod);
+  }
+
+  private constructor(public readonly types: string[], public readonly gracePeriod?: Duration) {
+    if (types.length === 0) {
+      throw new UnscopedValidationError('At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
+    }
+  }
+}
+
+/**
+ * @deprecated Use AdditionalHealthCheckType instead
+ */
 enum HealthCheckType {
   EC2 = 'EC2',
   ELB = 'ELB',
+}
+
+/**
+ * Additional Health Check Type
+ */
+export enum AdditionalHealthCheckType {
+  /**
+   * ELB Health Check
+   */
+  ELB = 'ELB',
+  /**
+   * EBS Health Check
+   */
+  EBS = 'EBS',
+  /**
+   * VPC LATTICE Health Check
+   */
+  VPC_LATTICE = 'VPC_LATTICE',
 }
 
 /**
