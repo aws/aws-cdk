@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
 import { SqsSource } from '@aws-cdk/aws-pipes-sources-alpha';
