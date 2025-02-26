@@ -1,6 +1,7 @@
 import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
+// import { exec } from "child_process";
 // import SyntaxKind = ts.SyntaxKind;
 
 const DIRECTORIES_TO_SKIP = [
@@ -778,6 +779,21 @@ export class EnumLikeUpdater extends MetadataUpdater {
         }
       });
     });
+
+    // Lint and clean up the repo
+    // console.log("Running yarn lint...");
+    // exec('yarn lint --fix', { cwd: path.resolve(__dirname, '../../../../packages/aws-cdk-lib') }, (err, stdout, stderr) => {
+    //   if (err) {
+    //     console.log(`An error occurred in lib: ${stderr}`);
+    //     console.log(`lib stdout: ${stdout}`);
+    //     console.log(`lib stderr: ${stderr}`);
+    //     return;
+    //   }
+
+    //   console.log(`lib stdout: ${stdout}`);
+    //   console.log(`lib stderr: ${stderr}`);
+    // });
+    // console.log("Ran yarn lint");
   }
 
   /**
@@ -860,12 +876,14 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     // Determine the type of enum-like
     let initializerStatement = "";
+    let lastEnumLikeOrderPos = 0;
     classDeclaration.forEachChild((classField) => {
       if (classField instanceof PropertyDeclaration) {
         const initializerKind = classField.getInitializer()?.getKind();
         if (initializerKind && classField.getText().startsWith("public static readonly") &&
           classField.getName() === classField.getName().toUpperCase()
         ) {
+          lastEnumLikeOrderPos++;
           if (initializerKind === SyntaxKind.NewExpression) {          // X = new Class(...)
             initializerStatement = `new ${enumLikeName}(`;
           } else if (initializerKind === SyntaxKind.CallExpression) {  // X = Class.method(...)
@@ -892,19 +910,20 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     // Add the missing enum-like values
     for (const enumLikeVal of missingValue['missing_values']) {
-      classDeclaration.addProperty({
+      const newProperty = classDeclaration.addProperty({
         name: enumLikeVal.toUpperCase().replaceAll('-', '_').replaceAll('.', '_'),
         scope: Scope.Public,
         isStatic: true,
         isReadonly: true,
         initializer: initializerStatement.replace("${VAL}", enumLikeVal),
-      });
+      })
+      newProperty.setOrder(lastEnumLikeOrderPos);  // Place at the end of the enum-likes
+      newProperty.addJsDoc("\n[PLACEHOLDER COMMENT: TO BE FILLED OUT]");  // Add temp docstring comment
       console.log(`=====\nAdded missing enum-like value ${enumLikeVal} to ${enumLikeName}\n=====`);
     }
 
     // Write the updated file back to disk
-    // sourceFile.saveSync();
-    console.log(sourceFile.getClass(enumLikeName)?.getFullText());
+    sourceFile.saveSync();
   }
 
   public TEST() {
