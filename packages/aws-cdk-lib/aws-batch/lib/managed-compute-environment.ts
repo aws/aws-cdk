@@ -194,7 +194,12 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * If you specify a specific AMI, this property will be ignored.
    *
-   * @default true
+   * Note: the CDK will never set this value by default, `false` will set by CFN.
+   * This is to avoid a deployment failure that occurs when this value is set.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/27054
+   *
+   * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
 }
