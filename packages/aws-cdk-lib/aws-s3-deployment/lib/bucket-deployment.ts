@@ -282,6 +282,17 @@ export interface BucketDeploymentProps {
    * @default true
    */
   readonly outputObjectKeys?: boolean;
+
+  /**
+   * The list of security groups to associate with the lambda handlers network interfaces.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default undefined - If the function is placed within a VPC and a security group is
+   * not specified, either by this or securityGroup prop, a dedicated security
+   * group will be created for this function.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -351,7 +362,7 @@ export class BucketDeployment extends Construct {
 
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
@@ -366,6 +377,7 @@ export class BucketDeployment extends Construct {
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
+      securityGroups: props.securityGroups ? props.securityGroups : [],
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
         accessPoint,
         mountPath,
@@ -559,7 +571,7 @@ export class BucketDeployment extends Construct {
     }
   }
 
-  private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
+  private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]) {
     let uuid = '';
 
     // if the user specifes a custom memory limit, we define another singleton handler
@@ -592,13 +604,24 @@ export class BucketDeployment extends Construct {
       uuid += `-${vpc.node.addr}`;
     }
 
+    // if the user specifies security groups, we define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (securityGroups && securityGroups.length > 0) {
+      const sortedSecurityGroupIds = securityGroups
+        .map(sg => sg.securityGroupId)
+        .sort() // Ensure a consistent order
+        .join('-'); // Join into a single string
+      uuid += `-${sortedSecurityGroupIds}`;
+    }
+
     return uuid;
   }
 
-  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
+  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
-    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc);
+    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc, securityGroups);
 
     return uuid;
   }
