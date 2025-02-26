@@ -527,7 +527,13 @@
     "AccessConfig": {
      "AuthenticationMode": "API"
     },
+    "ComputeConfig": {
+     "Enabled": false
+    },
     "KubernetesNetworkConfig": {
+     "ElasticLoadBalancing": {
+      "Enabled": false
+     },
      "IpFamily": "ipv4"
     },
     "ResourcesVpcConfig": {
@@ -561,6 +567,11 @@
       "FargateTestClusterRoleCB15D0DE",
       "Arn"
      ]
+    },
+    "StorageConfig": {
+     "BlockStorage": {
+      "Enabled": false
+     }
     },
     "Version": "1.32"
    },
