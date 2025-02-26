@@ -21,6 +21,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'AccessLevel': [
     'READ',
+    'READ_VERSIONED',
     'LIST',
     'WRITE',
     'DELETE'
@@ -806,6 +807,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FAILED',
     'ERROR'
   ],
+  'CsvDelimiter': [
+    'COMMA',
+    'PIPE',
+    'SEMICOLON',
+    'SPACE',
+    'TAB'
+  ],
   'CsvHeaderLocation': [
     'FIRST_ROW',
     'GIVEN'
@@ -824,6 +832,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs16.x',
     'nodejs18.x',
     'nodejs20.x'
+  ],
+  'CustomThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT'
   ],
   'DBClusterStorageType': [
     'aurora',
@@ -2165,6 +2177,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'USE_DEFAULT_VALUE',
     'REJECT_MESSAGE'
   ],
+  'MaintenanceTrackName': [
+    'current',
+    'trailing'
+  ],
   'ManagedLoginVersion': [
     1,
     2
@@ -3061,6 +3077,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Enabled',
     'Disabled',
     'EnabledWithStackRetention'
+  ],
+  'StandardThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT',
+    'OFF'
   ],
   'StartingPosition': [
     'TRIM_HORIZON',
