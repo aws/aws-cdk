@@ -1461,3 +1461,45 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
+## Single Source of Truth for Environment Variables 
+
+When developing AWS Lambda functions with AWS CDK, environment variables (env vars) are often defined both in the Lambda function code and in the CDK infrastructure code. This duplication can lead to inconsistencies if an env var is modified in one place but not the other. To ensure consistency and maintainability, you can use a single source of truth for environment variables using TypeScript. This way, you can catch errors at compile time and benefit from improved IDE support.
+
+Follow these steps to implement a single source of truth for environment variables:
+
+Create an `env.ts` file, for example, in the Lambda function source directory:
+
+```ts
+export const ENV_VARS = {
+  DATABASE_URL: process.env.DATABASE_URL ?? "",
+  API_KEY: process.env.API_KEY ?? "",
+} as const;
+```
+
+Reference the `ENV_VARS` module in your Lambda handler:
+
+```ts
+import { ENV_VARS } from "./env";
+
+export const handler = async () => {
+  console.log(`Using API Key: ${ENV_VARS.API_KEY}`);
+};
+```
+
+In your CDK stack, define environment variables explicitly:
+
+```ts
+import * as cdk from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+
+const myLambda = new lambda.Function(this, "MyLambda", {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: "index.handler",
+  code: lambda.Code.fromAsset("lambda"),
+  environment: {
+    DATABASE_URL: process.env.DATABASE_URL || "",
+    API_KEY: process.env.API_KEY || "",
+  },
+});
+```
