@@ -4,6 +4,7 @@ import { ResourcePolicy } from './resource-policy';
 import { IStream, Stream } from './stream';
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
@@ -211,6 +212,8 @@ export class StreamConsumer extends StreamConsumerBase {
     super(scope, id, {
       physicalName: props.streamConsumerName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const streamConsumer = new CfnStreamConsumer(this, 'Resource', {
       consumerName: props.streamConsumerName,
