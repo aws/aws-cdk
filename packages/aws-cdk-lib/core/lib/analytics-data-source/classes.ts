@@ -3558,6 +3558,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'multiAz': 'boolean',
       'resourceAction': 'ResourceAction',
       'availabilityZoneRelocation': 'boolean',
+      'maintenanceTrackName': 'MaintenanceTrackName',
       'addRotationSingleUser': [
         '*'
       ],
@@ -4370,10 +4371,31 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'preserveOnDelete': 'boolean'
     },
     'Cluster': {
+      'compute': {
+        'nodePools': '*',
+        'nodeRole': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
       'defaultCapacity': '*',
       'defaultCapacityInstance': '*',
       'defaultCapacityType': 'DefaultCapacityType',
       'bootstrapClusterCreatorAdminPermissions': 'boolean',
+      'outputConfigCommand': 'boolean',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -10184,7 +10206,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'trustedKeyGroups': {
           'keyGroupId': '*'
-        }
+        },
+        'enableGrpc': 'boolean'
       },
       'additionalBehaviors': '*',
       'certificate': {
@@ -10533,7 +10556,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'trustedKeyGroups': {
             'keyGroupId': '*'
-          }
+          },
+          'enableGrpc': 'boolean'
         }
       ],
       'grant': [
@@ -10670,6 +10694,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'removeHeaders': '*',
       'serverTimingSamplingRate': '*'
+    },
+    'VpcOrigin': {
+      'endpoint': '*',
+      'httpPort': '*',
+      'httpsPort': '*',
+      'vpcOriginName': '*',
+      'protocolPolicy': 'OriginProtocolPolicy',
+      'originSslProtocols': 'OriginSslPolicy'
     },
     'CloudFrontWebDistribution': {
       'aliasConfiguration': {
@@ -11515,7 +11547,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'inputs': '*',
             'variablesNamespace': '*',
             'commands': '*',
-            'outputVariables': '*'
+            'outputVariables': '*',
+            'timeout': '*'
           }
         },
         'transitionToEnabled': 'boolean',
@@ -11566,7 +11599,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
               'inputs': '*',
               'variablesNamespace': '*',
               'commands': '*',
-              'outputVariables': '*'
+              'outputVariables': '*',
+              'timeout': '*'
             }
           },
           'pushFilter': {
@@ -11629,7 +11663,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                   'inputs': '*',
                   'variablesNamespace': '*',
                   'commands': '*',
-                  'outputVariables': '*'
+                  'outputVariables': '*',
+                  'timeout': '*'
                 }
               }
             }
@@ -11686,7 +11721,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                 'inputs': '*',
                 'variablesNamespace': '*',
                 'commands': '*',
-                'outputVariables': '*'
+                'outputVariables': '*',
+                'timeout': '*'
               }
             },
             'pushFilter': {
@@ -11745,7 +11781,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'inputs': '*',
             'variablesNamespace': '*',
             'commands': '*',
-            'outputVariables': '*'
+            'outputVariables': '*',
+            'timeout': '*'
           }
         },
         '*'
@@ -12078,6 +12115,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'advancedSecurityMode': 'AdvancedSecurityMode',
       'featurePlan': 'FeaturePlan',
+      'standardThreatProtectionMode': 'StandardThreatProtectionMode',
+      'customThreatProtectionMode': 'CustomThreatProtectionMode',
       'addTrigger': [
         '*',
         {
@@ -16962,7 +17001,42 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
+      'streamConsumer': {
+        'streamConsumerArn': '*',
+        'streamConsumerName': '*',
+        'stream': {
+          'streamArn': '*',
+          'streamName': '*',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          }
+        }
+      },
       'policyDocument': '*'
+    },
+    'StreamConsumer': {
+      'streamConsumerName': '*',
+      'stream': {
+        'streamArn': '*',
+        'streamName': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      }
     },
     'Stream': {
       'streamName': '*',
@@ -19036,6 +19110,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'isFromLegacyInstanceProps': 'boolean',
       'caCertificate': '*',
+      'applyImmediately': 'boolean',
       'monitoringInterval': '*',
       'monitoringRole': {
         'roleArn': '*',
@@ -20133,7 +20208,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
-      'caCertificate': '*'
+      'caCertificate': '*',
+      'applyImmediately': 'boolean'
     },
     'DatabaseInstanceFromSnapshot': {
       'snapshotIdentifier': '*',
@@ -20432,7 +20508,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
-      'caCertificate': '*'
+      'caCertificate': '*',
+      'applyImmediately': 'boolean'
     },
     'DatabaseInstanceReadReplica': {
       'instanceType': '*',
@@ -20750,7 +20827,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'publiclyAccessible': 'boolean',
       'networkType': 'NetworkType',
-      'caCertificate': '*'
+      'caCertificate': '*',
+      'applyImmediately': 'boolean'
     },
     'OptionGroup': {
       'engine': {
@@ -23844,6 +23922,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'extraPythonFiles': '*',
       'extraFiles': '*',
+      'extraJars': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
@@ -23940,6 +24019,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notifyDelayAfter': '*',
       'extraPythonFiles': '*',
       'extraFiles': '*',
+      'extraJars': '*',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24034,6 +24114,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'extraPythonFiles': '*',
       'extraFiles': '*',
+      'extraJars': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
