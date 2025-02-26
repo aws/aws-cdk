@@ -412,6 +412,12 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     parsed.logging.clusterLogging[0].enabled = parsed.logging.clusterLogging[0].enabled === 'true';
   }
 
+  if (parsed.bootstrapSelfManagedAddons) {
+    if (typeof (parsed.bootstrapSelfManagedAddons) === 'string') {
+      parsed.bootstrapSelfManagedAddons = parsed.bootstrapSelfManagedAddons === 'true';
+    }
+  }
+
   return parsed;
 }
 
