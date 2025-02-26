@@ -116,7 +116,13 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.updateBootstrapClusterCreatorAdminPermissions ) {
+    if (updates.replaceName || updates.replaceRole ||
+          updates.updateBootstrapClusterCreatorAdminPermissions || updates.updateBootstrapSelfManagedAddons) {
+      if ((this.oldProps.bootstrapSelfManagedAddons === undefined && this.newProps.bootstrapSelfManagedAddons === true) ||
+           (this.oldProps.bootstrapSelfManagedAddons === true && this.newProps.bootstrapSelfManagedAddons === undefined)) {
+        console.log('default value for bootstrapSelfManagedAddons is true, skipping update');
+        return;
+      }
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
       // already a cluster with that name". this is a common behavior for
@@ -421,6 +427,7 @@ interface UpdateMap {
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
+  updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -454,6 +461,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
     updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
+    updateBootstrapSelfManagedAddons: newProps.bootstrapSelfManagedAddons !== oldProps.bootstrapSelfManagedAddons,
   };
 }
 
