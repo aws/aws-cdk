@@ -457,5 +457,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   source: new SqsSource(sourceQueue),
   target: new SqsTarget(targetQueue),
   kmsKey,
+  // pipeName is required when using a KMS key
+  pipeName: 'MyPipe',
 });
 ```
