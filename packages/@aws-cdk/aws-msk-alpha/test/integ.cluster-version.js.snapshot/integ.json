@@ -1,6 +1,5 @@
 {
-  "enableLookups": true,
-  "version": "38.0.1",
+  "version": "39.0.0",
   "testCases": {
     "KafkaVersionIntegTest/DefaultTest": {
       "stacks": [
