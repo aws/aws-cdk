@@ -766,6 +766,128 @@ export class EnumLikeUpdater extends MetadataUpdater {
    * Retrieve the generated list of enum-like classes and the missing values,
    * and update the source files with any missing values.
    */
+    public updateEnumValues(): void {
+      // Get list of enum-likes and missing enum-likes
+      const parsedEnumLikes = this.getParsedEnumValues();
+      const missingEnumLikes = this.getMissingEnumValues();
+  
+      // Update the parsed_cdk_enums.json file
+      Object.keys(missingEnumLikes).forEach((cdkModule) => {
+        Object.keys(missingEnumLikes[cdkModule]).forEach((enumKey) => {
+          if (parsedEnumLikes[cdkModule]?.[enumKey]) {
+            this.updateEnum(enumKey, missingEnumLikes[cdkModule][enumKey])
+          }
+        });
+      });
+    }
+
+  /**
+   * Retrieve the parsed enum values from the generated list
+   * @returns A dictionary containing the parsed_cdk_enums.json file with only regular enums
+   */
+  private getParsedEnumValues(): any {
+    // Get file contents
+    const fileContent = fs.readFileSync(path.resolve(__dirname, "../../enum-updater/parsed_cdk_enums.json"), 'utf8');
+    var jsonData = JSON.parse(fileContent);
+
+    // Remove anything that is enum-like
+    Object.keys(jsonData).forEach((cdkModule) => {
+      Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
+        if (jsonData[cdkModule][enumKey].enumLike) {
+          delete jsonData[cdkModule][enumKey];
+        }
+      });
+    });
+
+    // Clean up empty modules
+    Object.keys(jsonData).forEach((cdkModule) => {
+      if (Object.keys(jsonData[cdkModule]).length === 0) {
+        delete jsonData[cdkModule];
+      }
+    });
+
+    return jsonData;
+  }
+  
+  /**
+   * Retrieve the list of missing values for regular enum values
+   * @returns A dictionary containing the missing-values.json file with only regular enums with missing values
+   */
+    private getMissingEnumValues(): any {
+      // Get file contents
+      const fileContent = fs.readFileSync(path.resolve(__dirname, "../../enum-updater/missing-values.json"), 'utf8');
+      var jsonData = JSON.parse(fileContent);
+  
+      const parsedEnums = this.getParsedEnumValues();
+  
+      // Remove anything that isn't in the parsed enum-likes (regular enums)
+      Object.keys(jsonData).forEach((cdkModule) => {
+        Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
+          if (!parsedEnums[cdkModule]?.[enumKey]) {
+            delete jsonData[cdkModule][enumKey];
+          }
+        });
+      });
+  
+      // Clean up empty modules
+      Object.keys(jsonData).forEach((cdkModule) => {
+        if (Object.keys(jsonData[cdkModule]).length === 0) {
+          delete jsonData[cdkModule];
+        }
+      });
+  
+      return jsonData
+    }
+
+  /**
+   * Update a single enum-like value
+   * @param enumName The enum name
+   * @param missingValue The dictionary from the `missing-values.json` file
+   * containing the cdk_path and missing_values for the enum
+   */
+  private updateEnum(enumName: string, missingValue: any): void {
+    // Get the right source file to modify
+    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', missingValue['cdk_path']));
+    if (!sourceFile) {
+      throw new Error(`Source file not found: ${missingValue['cdk_path']}`);
+    }
+
+    // Get the class declaration
+    const enumDeclaration = sourceFile.getEnum(enumName)
+    if (!enumDeclaration) {
+      throw new Error(`Enum declaration not found: ${enumName}`);
+    }
+    
+    console.log(`=====\nUpdating enum ${enumName} in ${missingValue['cdk_path']} \n=====`);
+
+    // Get the new enum values to add (no need to worry about sorting or checking existing values)
+    const newEnumValues = missingValue['missing_values'];
+
+    // Add each new enum value at the end of the enum
+    for (const enumVal of newEnumValues) {
+        // Format the enum constant name (uppercase and replace hyphens or periods with underscores)
+        const enumConstantName = enumVal.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
+
+        // Add the missing enum value with a placeholder doc comment
+        const newEnumMember = enumDeclaration.addMember({
+            name: enumConstantName,
+            initializer: `'${enumVal}'`, // Ensure the value is a string literal
+        });
+
+        newEnumMember.addJsDoc("\n[PLACEHOLDER FOR: TO BE FILLED OUT]");  // Add temp docstring comment
+
+        console.log(`=====\nAdded missing enum-like value ${enumVal} to ${enumName}\n=====`);
+    }
+
+    // Write the updated file back to disk
+    sourceFile.saveSync();
+    console.log(sourceFile.getEnum(enumName)?.getFullText());
+  }
+
+  /**
+   * Retrieve the generated list of enum-like classes and the missing values,
+   * and update the source files with any missing values.
+   */
   public updateEnumLikeValues(): void {
     // Get list of enum-likes and missing enum-likes
     const parsedEnumLikes = this.getParsedEnumLikeValues();
@@ -924,9 +1046,11 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     // Write the updated file back to disk
     sourceFile.saveSync();
+    console.log(sourceFile.getClass(enumLikeName)?.getFullText());
   }
 
   public TEST() {
-    console.log(this.updateEnumLikeValues())
+    console.log(this.updateEnumLikeValues());
+    console.log(this.updateEnumValues());
   }
 }
