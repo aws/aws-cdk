@@ -893,7 +893,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
     // Add the missing enum-like values
     for (const enumLikeVal of missingValue['missing_values']) {
       classDeclaration.addProperty({
-        name: enumLikeVal.toUpperCase().replace('-', '_').replace('.', '_'),
+        name: enumLikeVal.toUpperCase().replaceAll('-', '_').replaceAll('.', '_'),
         scope: Scope.Public,
         isStatic: true,
         isReadonly: true,
@@ -908,6 +908,6 @@ export class EnumLikeUpdater extends MetadataUpdater {
   }
 
   public TEST() {
-    this.updateEnumLikeValues();
+    console.log(this.updateEnumLikeValues())
   }
 }
