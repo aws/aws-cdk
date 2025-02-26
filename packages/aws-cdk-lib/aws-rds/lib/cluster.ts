@@ -1272,6 +1272,14 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
   readonly credentials?: Credentials;
+
+  /**
+   * The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.
+   * Cannot be used with credentials.
+   *
+   * @default - This DB Cluster is not a read replica
+   */
+  readonly replicationSourceIdentifier?: string;
 }
 
 /**
@@ -1308,11 +1316,14 @@ export class DatabaseCluster extends DatabaseClusterNew {
     const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
+    const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername: canHaveCredentials ? credentials.username : undefined,
+      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
     this.clusterIdentifier = cluster.ref;
