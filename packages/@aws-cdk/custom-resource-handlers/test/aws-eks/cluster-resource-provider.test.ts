@@ -1056,6 +1056,27 @@ describe('cluster resource provider', () => {
           });
           expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
         });
+        test('updates to bootstrapSelfManagedAddons requires a replacement', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            bootstrapSelfManagedAddons: false,
+          }, {
+            ...mocks.MOCK_PROPS,
+            bootstrapSelfManagedAddons: true,
+          }));
+          const resp = await handler.onEvent();
+  
+          expect(mocks.actualRequest.createClusterRequest!).toEqual({
+            bootstrapSelfManagedAddons: false,
+            name: 'MyResourceId-fakerequestid',
+            roleArn: 'arn:of:role',
+            resourcesVpcConfig:
+            {
+              subnetIds: ['subnet1', 'subnet2'],
+              securityGroupIds: ['sg1', 'sg2', 'sg3'],
+            },
+          });
+        });
       });
     });
   });
