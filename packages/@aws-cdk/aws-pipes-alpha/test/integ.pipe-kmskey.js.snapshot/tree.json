@@ -20,14 +20,14 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0",
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
               "metadata": [
                 "*"
               ]
@@ -45,14 +45,14 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0",
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
               "metadata": [
                 "*"
               ]
@@ -92,6 +92,52 @@
                             }
                           },
                           "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:Decrypt",
+                            "kms:DescribeKey",
+                            "kms:GenerateDataKey"
+                          ],
+                          "Condition": {
+                            "ArnLike": {
+                              "kms:EncryptionContext:aws:pipe:arn": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":pipes:",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    ":",
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    },
+                                    ":pipe/CmkPipe"
+                                  ]
+                                ]
+                              }
+                            },
+                            "ForAnyValue:StringEquals": {
+                              "kms:EncryptionContextKeys": [
+                                "aws:pipe:arn"
+                              ]
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::GetAtt": [
+                                "PipeRole7D4AFC73",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "Resource": "*"
                         }
                       ],
                       "Version": "2012-10-17"
@@ -99,18 +145,16 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0",
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
               "metadata": [
-                {
-                  "removalPolicy": "destroy"
-                }
+                "*"
               ]
             }
           },
@@ -126,8 +170,8 @@
                     "id": "ImportRole",
                     "path": "PipesKmsKeyTestStack/Pipe/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
                       "metadata": [
                         "*"
                       ]
@@ -154,8 +198,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "DefaultPolicy": {
@@ -212,70 +256,33 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0",
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
                       "metadata": [
                         "*",
-                        {
-                          "attachToRole": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "attachToRole": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "addStatements": [
-                            {}
-                          ]
-                        },
-                        {
-                          "addStatements": [
-                            {}
-                          ]
-                        }
+                        "*",
+                        "*",
+                        "*",
+                        "*"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
                   "metadata": [
-                    {
-                      "assumedBy": {
-                        "principalAccount": "*",
-                        "assumeRoleAction": "*"
-                      }
-                    },
-                    {
-                      "addToPrincipalPolicy": [
-                        {}
-                      ]
-                    },
-                    {
-                      "attachInlinePolicy": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "attachInlinePolicy": [
-                        "*"
-                      ]
-                    },
-                    {
-                      "addToPrincipalPolicy": [
-                        {}
-                      ]
-                    }
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*"
                   ]
                 }
               },
@@ -291,6 +298,7 @@
                         "Arn"
                       ]
                     },
+                    "name": "CmkPipe",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipeRole7D4AFC73",
@@ -316,39 +324,65 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_pipes.CfnPipe",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0",
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
               "metadata": [
                 "*"
               ]
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "PipesKmsKeyTestStack/Exports",
+            "children": {
+              "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
+                "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "path": "PipesKmsKeyTestStack/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Output{\"Ref\":\"TargetQueue08AD2B3C\"}": {
+                "id": "Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
+                "path": "PipesKmsKeyTestStack/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "PipesKmsKeyTestStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "PipesKmsKeyTestStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       },
       "PipesKmsKeyTest": {
@@ -371,26 +405,322 @@
                 "id": "DeployAssert",
                 "path": "PipesKmsKeyTest/DefaultTest/DeployAssert",
                 "children": {
+                  "AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa": {
+                    "id": "AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage18b9cdd9dcf764c33c28e9951b7c2baa/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b": {
+                    "id": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "PipesKmsKeyTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -415,8 +745,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
     }
   }
 }

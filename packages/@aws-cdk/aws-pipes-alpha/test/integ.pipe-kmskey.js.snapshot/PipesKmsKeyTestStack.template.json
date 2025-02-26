@@ -37,6 +37,52 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "ArnLike": {
+         "kms:EncryptionContext:aws:pipe:arn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":pipes:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":pipe/CmkPipe"
+           ]
+          ]
+         }
+        },
+        "ForAnyValue:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:pipe:arn"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PipeRole7D4AFC73",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -117,6 +163,7 @@
       "Arn"
      ]
     },
+    "Name": "CmkPipe",
     "RoleArn": {
      "Fn::GetAtt": [
       "PipeRole7D4AFC73",
@@ -139,6 +186,24 @@
     "TargetParameters": {
      "InputTemplate": "<$.body>"
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefSourceQueue6E809DF09604904F": {
+   "Value": {
+    "Ref": "SourceQueue6E809DF0"
+   },
+   "Export": {
+    "Name": "PipesKmsKeyTestStack:ExportsOutputRefSourceQueue6E809DF09604904F"
+   }
+  },
+  "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
+   "Value": {
+    "Ref": "TargetQueue08AD2B3C"
+   },
+   "Export": {
+    "Name": "PipesKmsKeyTestStack:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
    }
   }
  },

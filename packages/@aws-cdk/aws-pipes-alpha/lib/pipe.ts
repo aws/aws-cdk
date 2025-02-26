@@ -1,4 +1,4 @@
-import { IResource, Resource, Stack } from 'aws-cdk-lib';
+import { IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
@@ -9,6 +9,7 @@ import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
 import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -287,10 +288,38 @@ export class Pipe extends PipeBase {
       return { ...currentLogConfiguration, ...additionalLogConfiguration };
     }, initialLogConfiguration);
 
+    if (props.kmsKey) {
+      if (!props.pipeName) {
+        throw new ValidationError('`pipeName` is required when specifying a `kmsKey` prop.', this);
+      }
+      // Add permissions to the KMS key
+      // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe
+      props.kmsKey.addToResourcePolicy(
+        new iam.PolicyStatement({
+          actions: ['kms:Decrypt', 'kms:DescribeKey', 'kms:GenerateDataKey'],
+          resources: ['*'],
+          principals: [new iam.ArnPrincipal(this.pipeRole.roleArn)],
+          conditions: {
+            'ArnLike': {
+              'kms:EncryptionContext:aws:pipe:arn': Stack.of(this).formatArn({
+                service: 'pipes',
+                resource: 'pipe',
+                resourceName: props.pipeName,
+              }),
+            },
+            'ForAnyValue:StringEquals': {
+              'kms:EncryptionContextKeys': [
+                'aws:pipe:arn',
+              ],
+            },
+          },
+        }),
+      );
+    }
+
     /**
      * Pipe resource
      */
-
     const resource = new CfnPipe(this, 'Resource', {
       name: props.pipeName,
       description: props.description,

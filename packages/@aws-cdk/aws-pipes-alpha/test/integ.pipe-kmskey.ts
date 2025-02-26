@@ -1,7 +1,8 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { InputTransformation, IPipe, ISource, ITarget, Pipe, SourceConfig, TargetConfig } from '../lib';
+import { randomUUID } from 'crypto';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'PipesKmsKeyTestStack');
@@ -45,6 +46,7 @@ class TestTarget implements ITarget {
 }
 
 new Pipe(stack, 'Pipe', {
+  pipeName: 'CmkPipe',
   source: new TestSource(sourceQueue),
   target: new TestTarget(targetQueue),
   kmsKey: new Key(stack, 'KmsKey', {
@@ -52,6 +54,21 @@ new Pipe(stack, 'Pipe', {
   }),
 });
 
-new IntegTest(app, 'PipesKmsKeyTest', {
+const test = new IntegTest(app, 'PipesKmsKeyTest', {
   testCases: [stack],
+});
+
+const uniqueIdentifier = randomUUID();
+const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
+  QueueUrl: sourceQueue.queueUrl,
+  MessageBody: uniqueIdentifier,
+});
+
+putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: targetQueue.queueUrl,
+})).expect(ExpectedResult.objectLike({
+  Messages: [{ Body: uniqueIdentifier }],
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(30),
+  interval: cdk.Duration.seconds(15),
 });
