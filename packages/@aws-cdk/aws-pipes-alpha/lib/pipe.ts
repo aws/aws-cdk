@@ -1,5 +1,5 @@
 import { IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
-import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, IRole, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -9,7 +9,6 @@ import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
 import { ISource, SourceWithDeadLetterTarget } from './source';
 import { ITarget } from './target';
-import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -295,10 +294,10 @@ export class Pipe extends PipeBase {
       // Add permissions to the KMS key
       // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe
       props.kmsKey.addToResourcePolicy(
-        new iam.PolicyStatement({
+        new PolicyStatement({
           actions: ['kms:Decrypt', 'kms:DescribeKey', 'kms:GenerateDataKey'],
           resources: ['*'],
-          principals: [new iam.ArnPrincipal(this.pipeRole.roleArn)],
+          principals: [new ArnPrincipal(this.pipeRole.roleArn)],
           conditions: {
             'ArnLike': {
               'kms:EncryptionContext:aws:pipe:arn': Stack.of(this).formatArn({
