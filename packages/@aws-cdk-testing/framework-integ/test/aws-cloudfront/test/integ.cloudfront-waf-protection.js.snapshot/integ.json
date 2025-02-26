@@ -1,0 +1,15 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-cloudfront-waf-protection-test/DefaultTest": {
+      "stacks": [
+        "cloudfront-waf-protection"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "cloudfront-waf-protection",
+      "assertionStackName": "cloudfront-waf-protection"
+    }
+  }
+}

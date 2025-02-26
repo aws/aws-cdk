@@ -1,0 +1,127 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "cloudfront-waf-protection.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cloudfront-waf-protection.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cloudfront-waf-protection": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "cloudfront-waf-protection.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/e3f76e724c593597ac1c3398b3f0ce418dc738f1d07fb9ed3d649477ba7ec69d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cloudfront-waf-protection.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cloudfront-waf-protection.assets"
+      ],
+      "metadata": {
+        "/cloudfront-waf-protection/Distro": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachWebAclId": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cloudfront-waf-protection/Distro/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Distro87EBE6BA"
+          }
+        ],
+        "/cloudfront-waf-protection/Distro/WebAcl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistroWebAclD7C0F39D"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3"
+          }
+        ],
+        "/cloudfront-waf-protection/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/cloudfront-waf-protection/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/cloudfront-waf-protection/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cloudfront-waf-protection/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cloudfront-waf-protection"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
