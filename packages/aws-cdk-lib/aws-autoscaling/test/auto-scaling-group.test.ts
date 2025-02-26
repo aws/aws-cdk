@@ -692,7 +692,7 @@ describe('auto scaling group', () => {
   test.each([
     cdk.Duration.seconds(100),
     undefined,
-  ])('can configure EC2 health checks with grace is %s', (grace) => {
+  ])('can configure EC2 health checks with gracePeriod is %s', (gracePeriod) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -703,11 +703,11 @@ describe('auto scaling group', () => {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       healthChecks: autoscaling.HealthChecks.ec2({
-        grace,
+        gracePeriod,
       }),
     });
 
-    const expectedGrace = grace ? grace.toSeconds() : Match.absent();
+    const expectedGrace = gracePeriod ? gracePeriod.toSeconds() : Match.absent();
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
@@ -719,7 +719,7 @@ describe('auto scaling group', () => {
   test.each([
     cdk.Duration.seconds(100),
     undefined,
-  ])('can configure additional health checks with grace is %s', (grace) => {
+  ])('can configure additional health checks with gracePeriod is %s', (gracePeriod) => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' } });
     const vpc = mockVpc(stack);
@@ -730,7 +730,7 @@ describe('auto scaling group', () => {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       healthChecks: autoscaling.HealthChecks.addition({
-        grace,
+        gracePeriod,
         additionalTypes: [
           autoscaling.AdditionalHealthCheckType.EBS,
           autoscaling.AdditionalHealthCheckType.ELB,
@@ -739,7 +739,7 @@ describe('auto scaling group', () => {
       }),
     });
 
-    const expectedGrace = grace ? grace.toSeconds() : Match.absent();
+    const expectedGrace = gracePeriod ? gracePeriod.toSeconds() : Match.absent();
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
@@ -761,7 +761,7 @@ describe('auto scaling group', () => {
         vpc,
         healthCheck: autoscaling.HealthCheck.ec2(),
         healthChecks: autoscaling.HealthChecks.addition({
-          grace: cdk.Duration.seconds(100),
+          gracePeriod: cdk.Duration.seconds(100),
           additionalTypes: [
             autoscaling.AdditionalHealthCheckType.EBS,
           ],
@@ -782,7 +782,7 @@ describe('auto scaling group', () => {
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
         healthChecks: autoscaling.HealthChecks.addition({
-          grace: cdk.Duration.seconds(100),
+          gracePeriod: cdk.Duration.seconds(100),
           additionalTypes: [],
         }),
       });

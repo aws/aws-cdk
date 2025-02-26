@@ -15,7 +15,7 @@ export class TestStack extends cdk.Stack {
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
       healthChecks: autoscaling.HealthChecks.ec2(
         {
-          grace: cdk.Duration.seconds(100),
+          gracePeriod: cdk.Duration.seconds(100),
         },
       ),
     });
@@ -25,7 +25,7 @@ export class TestStack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
       healthChecks: autoscaling.HealthChecks.addition({
-        grace: cdk.Duration.seconds(100),
+        gracePeriod: cdk.Duration.seconds(100),
         additionalTypes: [
           autoscaling.AdditionalHealthCheckType.EBS,
           autoscaling.AdditionalHealthCheckType.ELB,

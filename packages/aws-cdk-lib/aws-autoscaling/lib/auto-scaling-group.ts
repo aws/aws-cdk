@@ -2335,7 +2335,7 @@ interface HealthChecksBaseOptions {
    * @default Duration.seconds(0)
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html
    */
-  readonly grace?: Duration;
+  readonly gracePeriod?: Duration;
 }
 
 /**
@@ -2364,7 +2364,7 @@ export class HealthChecks {
    * @param options EC2 health checks options
    */
   public static ec2(options: Ec2HealthChecksOptions = {}): HealthChecks {
-    return new HealthChecks(['EC2'], options.grace);
+    return new HealthChecks(['EC2'], options.gracePeriod);
   }
 
   /**
@@ -2376,7 +2376,7 @@ export class HealthChecks {
    * @param options Additional health checks options
    */
   public static addition(options: AdditionalHealthChecksOptions): HealthChecks {
-    return new HealthChecks(options.additionalTypes, options.grace);
+    return new HealthChecks(options.additionalTypes, options.gracePeriod);
   }
 
   private constructor(public readonly types: string[], public readonly gracePeriod?: Duration) {
