@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, NodeType, ResourceAction } from '../lib';
+import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 
 let stack: cdk.Stack;
@@ -56,6 +56,25 @@ test('check that instantiation works', () => {
     },
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('specify maintenance track name', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+      masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
+    },
+    vpc,
+    maintenanceTrackName: MaintenanceTrackName.TRAILING,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+    Properties: {
+      MaintenanceTrackName: 'trailing',
+    },
   });
 });
 

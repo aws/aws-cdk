@@ -21,6 +21,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'AccessLevel': [
     'READ',
+    'READ_VERSIONED',
     'LIST',
     'WRITE',
     'DELETE'
@@ -51,7 +52,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Test',
     'Approval',
     'Deploy',
-    'Invoke'
+    'Invoke',
+    'Compute'
   ],
   'ActionOnFailure': [
     'TERMINATE_CLUSTER',
@@ -222,10 +224,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'equals',
     'objectLike',
     'arrayWith'
-  ],
-  'AssetBuildTime': [
-    'all-before-deploy',
-    'just-in-time'
   ],
   'AssetHashType': [
     'source',
@@ -633,31 +631,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'TEXT32K',
     'ZSTD'
   ],
-  'Command': [
-    'ls',
-    'list',
-    'diff',
-    'bootstrap',
-    'deploy',
-    'destroy',
-    'synthesize',
-    'synth',
-    'metadata',
-    'init',
-    'version',
-    'watch',
-    'gc',
-    'rollback',
-    'import',
-    'acknowledge',
-    'ack',
-    'notices',
-    'migrate',
-    'context',
-    'docs',
-    'doc',
-    'doctor'
-  ],
   'ComparisonOperator': [
     0,
     1,
@@ -733,7 +706,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BUILD_LAMBDA_2GB',
     'BUILD_LAMBDA_4GB',
     'BUILD_LAMBDA_8GB',
-    'BUILD_LAMBDA_10GB'
+    'BUILD_LAMBDA_10GB',
+    'ATTRIBUTE_BASED_COMPUTE'
   ],
   'ConditionLogicalOperator': [
     'EQUALS'
@@ -766,6 +740,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'COMPLETE',
     'SUCCESS',
     'HEALTHY'
+  ],
+  'ContainerFormat': [
+    'TS',
+    'FRAGMENTED_MP4'
   ],
   'ContainerInsights': [
     'enabled',
@@ -829,6 +807,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FAILED',
     'ERROR'
   ],
+  'CsvDelimiter': [
+    'COMMA',
+    'PIPE',
+    'SEMICOLON',
+    'SPACE',
+    'TAB'
+  ],
   'CsvHeaderLocation': [
     'FIRST_ROW',
     'GIVEN'
@@ -848,6 +833,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs18.x',
     'nodejs20.x'
   ],
+  'CustomThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT'
+  ],
   'DBClusterStorageType': [
     'aurora',
     'aurora-iopt1'
@@ -860,6 +849,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Esri',
     'Grab',
     'Here'
+  ],
+  'DatabaseInsightsMode': [
+    'standard',
+    'advanced'
   ],
   'DayOfWeek': [
     'SUN',
@@ -886,12 +879,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'CONTINUE',
     'ABANDON'
   ],
-  'DefaultSelection': [
-    'none',
-    'single',
-    'main',
-    'all'
-  ],
   'DeleteOption': [
     'SAFE_DELETE',
     'FORCE_DELETE',
@@ -916,14 +903,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ECS',
     'CODE_DEPLOY',
     'EXTERNAL'
-  ],
-  'DeploymentState': [
-    'pending',
-    'queued',
-    'deploying',
-    'completed',
-    'failed',
-    'skipped'
   ],
   'DesiredState': [
     'RUNNING',
@@ -1057,7 +1036,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ECS_AL2_NVIDIA'
   ],
   'Effect': [
-    'Unknown',
     'Allow',
     'Deny'
   ],
@@ -1167,11 +1145,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'SUPERSEDED',
     'PARALLEL'
   ],
-  'ExtendedStackSelection': [
-    'none',
-    'upstream',
-    'downstream'
-  ],
   'FailoverStatusCode': [
     403,
     404,
@@ -1226,12 +1199,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
-  'FilterType': [
-    'resource-identifier',
-    'resource-type-prefix',
-    'tag-key',
-    'tag-value'
-  ],
   'FirehoseRecordSeparator': [
     '\n',
     '\t',
@@ -1257,7 +1224,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BUILD_GENERAL1_MEDIUM',
     'BUILD_GENERAL1_LARGE',
     'BUILD_GENERAL1_XLARGE',
-    'BUILD_GENERAL1_2XLARGE'
+    'BUILD_GENERAL1_2XLARGE',
+    'ATTRIBUTE_BASED_COMPUTE'
   ],
   'FlowLogDestinationType': [
     'cloud-watch-logs',
@@ -1288,11 +1256,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'WEEKLY',
     'BIWEEKLY',
     'MONTHLY'
-  ],
-  'FromScan': [
-    0,
-    1,
-    2
   ],
   'FunctionEventType': [
     'viewer-request',
@@ -2206,9 +2169,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  'MachineType': [
+    'GENERAL',
+    'NVME'
+  ],
   'MailFromBehaviorOnMxFailure': [
     'USE_DEFAULT_VALUE',
     'REJECT_MESSAGE'
+  ],
+  'MaintenanceTrackName': [
+    'current',
+    'trailing'
   ],
   'ManagedLoginVersion': [
     1,
@@ -2228,6 +2199,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Six_Hours',
     'Twelve_Hours',
     'TwentyFour_Hours'
+  ],
+  'MaximumResolution': [
+    'FULL_HD',
+    'HD',
+    'SD'
   ],
   'MergeType': [
     'MANUAL_MERGE',
@@ -2512,6 +2488,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'EventTime',
     'DeliveryTime'
   ],
+  'PasskeyUserVerification': [
+    'preferred',
+    'required'
+  ],
   'PassthroughBehavior': [
     'WHEN_NO_MATCH',
     'NEVER',
@@ -2612,6 +2592,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'Platform': [
     'x86-64',
     'ARM64'
+  ],
+  'Policy': [
+    'ALLOW',
+    'REQUIRE'
   ],
   'PolicyValidationReportStatusBeta1': [
     'success',
@@ -2835,16 +2819,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'resume-cluster',
     'failover-primary-compute'
   ],
-  'ResourceImpact': [
-    'WILL_UPDATE',
-    'WILL_CREATE',
-    'WILL_REPLACE',
-    'MAY_REPLACE',
-    'WILL_DESTROY',
-    'WILL_ORPHAN',
-    'WILL_IMPORT',
-    'NO_CHANGE'
-  ],
   'RetentionDays': [
     1,
     3,
@@ -2878,12 +2852,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Contains',
     'StartsWith',
     'NotEqual'
-  ],
-  'RollbackChoice': [
-    0,
-    1,
-    2,
-    3
   ],
   'RouterType': [
     'CarrierGateway',
@@ -2960,11 +2928,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ScheduledActions',
     'AddToLoadBalancer',
     'InstanceRefresh'
-  ],
-  'ScanStatus': [
-    'IN_PROGRESS',
-    'COMPLETE',
-    'FAILED'
   ],
   'Scope': [
     'task',
@@ -3110,18 +3073,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'bar',
     'events'
   ],
-  'StackSelectionStrategy': [
-    'ALL_STACKS',
-    'MAIN_ASSEMBLY',
-    'ONLY_SINGLE',
-    'PATTERN_MATCH',
-    'PATTERN_MUST_MATCH',
-    'PATTERN_MUST_MATCH_SINGLE'
-  ],
   'StackSetOrganizationsAutoDeployment': [
     'Enabled',
     'Disabled',
     'EnabledWithStackRetention'
+  ],
+  'StandardThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT',
+    'OFF'
   ],
   'StartingPosition': [
     'TRIM_HORIZON',
@@ -3377,11 +3337,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'TcpRetryEvent': [
     'connection-error'
-  ],
-  'TemplateSourceOptions': [
-    'path',
-    'stack',
-    'scan'
   ],
   'TemplateType': [
     'Text',
@@ -4047,7 +4002,17 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Windows_Server-2022-English-Full-SQL_2022_Express',
     'Windows_Server-2022-English-Full-SQL_2022_Standard',
     'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise'
+    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-Chinese_Simplified-Full-Base',
+    'Windows_Server-2025-Chinese_Traditional-Full-Base',
+    'Windows_Server-2025-English-Core-Base',
+    'Windows_Server-2025-English-Full-Base',
+    'Windows_Server-2025-English-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-English-Full-SQL_2022_Express',
+    'Windows_Server-2025-English-Full-SQL_2022_Standard',
+    'Windows_Server-2025-English-Full-SQL_2022_Web',
+    'Windows_Server-2025-Japanese-Full-Base',
+    'Windows_Server-2025-Korean-Full-Base'
   ],
   'WorkerType': [
     'Standard',

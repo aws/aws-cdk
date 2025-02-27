@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c194469e10fb67e2daff35b3f2ce52a4eb3dc12e35f00fb3e8acb9d3fd00c331.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a6bcbf9eeec018eed54563f9ef3fbfa3e3b143620fc5ffd4a32ee78d50755f5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,10 +43,7 @@
         "/eks-fargate-cluster-test-stack/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "kubectlLayer44321E08"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster": [
@@ -397,7 +394,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterCAF9262D"
+            "data": "FargateTestClusterCAF9262D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlReadyBarrier": [
@@ -679,8 +679,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -725,14 +733,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -747,6 +747,44 @@
             "data": "FargateTestClusterKubectlProviderframeworkonEvent76159DCE"
           }
         ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0885AE23E"
+          }
+        ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -756,7 +794,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888"
+            "data": "FargateTestClusterClusterAdminRoleAccess9EFE9888",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/CoreDnsComputeTypePatch/Resource": [
@@ -802,7 +843,10 @@
         "/eks-fargate-cluster-test-stack/FargateTestCluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateTestClusterfargateprofiledefault120EDDF6"
+            "data": "FargateTestClusterfargateprofiledefault120EDDF6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-fargate-cluster-test-stack/LatestNodeRuntimeMap": [
