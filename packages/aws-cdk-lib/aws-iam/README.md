@@ -125,6 +125,29 @@ const role = iam.Role.fromRoleArn(this, 'Role', 'arn:aws:iam::123456789012:role/
 });
 ```
 
+If you want to lookup roles that actually exist in your account, you can use `Role.fromLookup()`.
+
+```ts
+const role = iam.Role.fromLookup(this, 'Role', {
+  roleName: 'MyExistingRole',
+});
+```
+
+If the role does not exist, an error will occur. But you can return a dummy role without the error
+by specifying true for `returnDummyRoleOnMissing`. To check if the returned role is a dummy role,
+use `Role.isLookupDummy()`.
+
+```ts
+const role = iam.Role.fromLookup(this, 'Role', {
+  roleName: 'MyExistingRole',
+  returnDummyRoleOnMissing: true,
+});
+
+if (iam.Role.isLookupDummy(role)) {
+  // do something
+}
+```
+
 ### Customizing role creation
 
 It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
