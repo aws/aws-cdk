@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.181.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.0-alpha.0...v2.181.1-alpha.0) (2025-02-27)
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** prevent stacks from not deploying correctly ([#33609](https://github.com/aws/aws-cdk/issues/33609)) ([a1e2afe](https://github.com/aws/aws-cdk/commit/a1e2afe67cc907fa278503ebc886aa3b5bf97887)), closes [#33510](https://github.com/aws/aws-cdk/issues/33510)
+
 ## [2.181.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.180.0-alpha.0...v2.181.0-alpha.0) (2025-02-25)
 
 
