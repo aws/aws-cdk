@@ -235,9 +235,14 @@ export interface FromRoleNameOptions extends FromRoleArnOptions { }
  */
 export interface RoleLookupOptions extends FromRoleArnOptions {
   /**
-   * The ARN of the role to lookup.
+   * The name of the role to lookup.
+   *
+   * If the role you want to lookup is a service role, you need to specify
+   * the role name without the service prefix. For example, if the role arn is
+   * 'arn:aws:iam::123456789012:role/service-role/SomeServiceExecutionRole',
+   * you need to specify the role name as 'SomeServiceExecutionRole'.
    */
-  readonly roleArn: string;
+  readonly roleName: string;
 
   /**
    * Whether to return a dummy role if the role was not found.
@@ -269,30 +274,30 @@ export class Role extends Resource implements IRole {
   public static readonly DEFAULT_DUMMY_ROLE_ARN = 'DUMMY_ARN';
 
   /**
-   * Lookup an existing Role using roleArn.
+   * Lookup an existing Role.
    */
   public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
         typeName: 'AWS::IAM::Role',
-        exactIdentifier: options.roleArn,
+        exactIdentifier: options.roleName,
         propertiesToReturn: [
-          'RoleArn',
+          'Arn',
         ],
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          RoleArn: Role.DEFAULT_DUMMY_ROLE_ARN,
+          Arn: Role.DEFAULT_DUMMY_ROLE_ARN,
         },
       ],
       ignoreErrorOnMissingContext: options.returnDummyRoleOnMissing,
     }).value;
 
-    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    // getValue returns a list of result objects. We are expecting 1 result or Error.
     const role = response[0];
 
-    return this.fromRoleArn(scope, id, role.RoleArn, options);
+    return this.fromRoleArn(scope, id, role.Arn, options);
   }
 
   /**
