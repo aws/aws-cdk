@@ -243,19 +243,6 @@ export interface RoleLookupOptions extends FromRoleArnOptions {
    * you need to specify the role name as 'SomeServiceExecutionRole'.
    */
   readonly roleName: string;
-
-  /**
-   * Whether to return a dummy role if the role was not found.
-   *
-   * If it is set to `true` and the role was not found, a dummy
-   * role with a role arn will be returned. The value of the dummy
-   * role arn can also be referenced using the `Role.DEFAULT_DUMMY_ROLE_ARN`
-   * variable, and you can check if the role is a dummy role by using the
-   * `Role.isLookupDummy()` method.
-   *
-   * @default false
-   */
-  readonly returnDummyRoleOnMissing?: boolean;
 }
 
 /**
@@ -265,14 +252,6 @@ export interface RoleLookupOptions extends FromRoleArnOptions {
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
 export class Role extends Resource implements IRole {
-  /**
-   * The default role arn of the dummy role.
-   *
-   * This value is used as a dummy role arn if the role was not found
-   * by the `Role.fromLookup()` method.
-   */
-  public static readonly DEFAULT_DUMMY_ROLE_ARN = 'DUMMY_ARN';
-
   /**
    * Lookup an existing Role.
    */
@@ -288,27 +267,15 @@ export class Role extends Resource implements IRole {
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          Arn: Role.DEFAULT_DUMMY_ROLE_ARN,
+          Arn: 'DUMMY_ARN',
         },
       ],
-      ignoreErrorOnMissingContext: options.returnDummyRoleOnMissing,
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
     const role = response[0];
 
     return this.fromRoleArn(scope, id, role.Arn, options);
-  }
-
-  /**
-   * Checks if the role returned by the `Role.fromLookup()` method is a dummy role,
-   * i.e., a role that was not found.
-   *
-   * This method can only be used if the `returnDummyRoleOnMissing` option
-   * is set to `true` in the `options` for the `Role.fromLookup()` method.
-   */
-  public static isLookupDummy(role: IRole): boolean {
-    return role.roleArn === Role.DEFAULT_DUMMY_ROLE_ARN;
   }
 
   /**

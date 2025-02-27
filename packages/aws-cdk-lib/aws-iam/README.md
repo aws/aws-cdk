@@ -133,21 +133,6 @@ const role = iam.Role.fromLookup(this, 'Role', {
 });
 ```
 
-If the role does not exist, an error will occur. But you can return a dummy role without the error
-by specifying true for `returnDummyRoleOnMissing`. To check if the returned role is a dummy role,
-use `Role.isLookupDummy()`.
-
-```ts
-const role = iam.Role.fromLookup(this, 'Role', {
-  roleName: 'MyExistingRole',
-  returnDummyRoleOnMissing: true,
-});
-
-if (iam.Role.isLookupDummy(role)) {
-  // do something
-}
-```
-
 ### Customizing role creation
 
 It is best practice to allow CDK to manage IAM roles and permissions. You can prevent CDK from
