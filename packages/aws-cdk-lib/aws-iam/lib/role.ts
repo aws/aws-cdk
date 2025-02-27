@@ -14,7 +14,7 @@ import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider, Aws } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
@@ -256,6 +256,10 @@ export class Role extends Resource implements IRole {
    * Lookup an existing Role.
    */
   public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
+    if (Token.isUnresolved(options.roleName)) {
+      throw new Error('All arguments to look up a role must be concrete (no Tokens)');
+    }
+
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
@@ -267,7 +271,8 @@ export class Role extends Resource implements IRole {
       } as cxschema.CcApiContextQuery,
       dummyValue: [
         {
-          Arn: 'DUMMY_ARN',
+          // eslint-disable-next-line @cdklabs/no-literal-partition
+          Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
         },
       ],
     }).value;
