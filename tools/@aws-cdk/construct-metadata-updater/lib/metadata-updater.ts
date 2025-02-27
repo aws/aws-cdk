@@ -862,8 +862,17 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     const newEnumValues = missingValue['missing_values'];
 
-    // Get the full text of the enum
+    // First get the full text
     let enumText = enumDeclaration.getFullText();
+
+    // If the text starts with empty lines before the docstring (which starts with /**),
+    // remove only those empty lines
+    if (enumText.startsWith('\n') && enumText.includes('/**')) {
+        const docstringStart = enumText.indexOf('/**');
+        const leadingText = enumText.substring(0, docstringStart);
+        const restOfText = enumText.substring(docstringStart);
+        enumText = leadingText.replace(/^\n+/, '') + restOfText;
+    }
     
     // Get just the enum body (everything between the curly braces)
     const enumBodyStart = enumText.indexOf('{') + 1;
