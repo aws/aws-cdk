@@ -2078,6 +2078,25 @@ describe('cluster', () => {
     });
   });
 
+  test('enable managed storage encryption on cluster', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'key', { policy: new iam.PolicyDocument() });
+    new ecs.Cluster(stack, 'EcsCluster', { managedStorageConfiguration: { kmsKey: key } });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      Configuration: {
+        ManagedStorageConfiguration: {
+          KmsKeyId: {
+            Ref: 'keyFEDD6EC0',
+          },
+        },
+      },
+    });
+  });
+
   test('BottleRocketImage() returns correct AMI', () => {
     // GIVEN
     const app = new cdk.App();

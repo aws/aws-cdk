@@ -25,6 +25,8 @@ const versions: KafkaVersion[] = [
   KafkaVersion.V3_6_0,
   KafkaVersion.V3_7_X,
   KafkaVersion.V3_7_X_KRAFT,
+  KafkaVersion.V3_8_X,
+  KafkaVersion.V3_8_X_KRAFT,
 ];
 
 class KafkaVersionTest extends Stack {
@@ -46,9 +48,7 @@ class KafkaVersionTest extends Stack {
 
 const app = new App();
 new IntegTest(app, 'KafkaVersionIntegTest', {
-  enableLookups: true,
   testCases: [
     new KafkaVersionTest(app, 'KafkaVersionTestStack'),
   ],
 });
-app.synth();
