@@ -1076,28 +1076,25 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BLOCK_ALL = new BlockPublicAccess({
+  public static readonly BLOCK_ALL: BlockPublicAccessOptions = {
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true,
-  });
+  };
 
-  public static readonly BLOCK_ACLS = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS: BlockPublicAccessOptions = {
     blockPublicAcls: true,
     ignorePublicAcls: true,
-  });
+  };
 
-  public blockPublicAcls: boolean | undefined;
-  public blockPublicPolicy: boolean | undefined;
-  public ignorePublicAcls: boolean | undefined;
-  public restrictPublicBuckets: boolean | undefined;
-
+  /**
+   * only keeping this to preserse the "nestability" of the original class
+   * e.g. new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
+   * but this class should be called with s3.BlockPublicAccess.BLOCK_ALL only.
+   */
   constructor(options: BlockPublicAccessOptions) {
-    this.blockPublicAcls = options.blockPublicAcls;
-    this.blockPublicPolicy = options.blockPublicPolicy;
-    this.ignorePublicAcls = options.ignorePublicAcls;
-    this.restrictPublicBuckets = options.restrictPublicBuckets;
+    return options;
   }
 }
 
@@ -1823,7 +1820,7 @@ export interface BucketProps {
    *
    * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
    */
-  readonly blockPublicAccess?: BlockPublicAccess;
+  readonly blockPublicAccess?: BlockPublicAccessOptions;
 
   /**
    * The metrics configuration of this bucket.
@@ -2196,6 +2193,11 @@ export class Bucket extends BucketBase {
 
     Bucket.validateBucketName(this.physicalName);
 
+    let blockPublicAccess: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
+    if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE)) {
+      blockPublicAccess = this.setBlockPublicAccessDefaults(props.blockPublicAccess);
+    }
+
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
@@ -2210,7 +2212,7 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
-      publicAccessBlockConfiguration: props.blockPublicAccess,
+      publicAccessBlockConfiguration: blockPublicAccess,
       metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.string({ produce: () => this.accessControl }),
@@ -3025,6 +3027,20 @@ export class Bucket extends BucketBase {
     // we can set `autoDeleteObjects: false` without the removal of the CR emptying
     // the bucket as a side effect.
     Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+  }
+
+  /**
+   * Function to set the blockPublicAccessOptions to a true default if not defined.
+   * If no blockPublicAccessOptions are specified at all, this is already the case as an s3 default in aws
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
+   */
+  private setBlockPublicAccessDefaults(blockPublicAccessOptions: BlockPublicAccessOptions) {
+    return {
+      blockPublicAcls: blockPublicAccessOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: blockPublicAccessOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: blockPublicAccessOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: blockPublicAccessOptions.restrictPublicBuckets ?? true,
+    };
   }
 }
 
