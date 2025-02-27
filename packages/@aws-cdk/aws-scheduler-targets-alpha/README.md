@@ -316,6 +316,26 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
+## Schedule an ECS task run
+
+Use the `EcsRunTask` target to schedule an ECS task run for a cluster.
+
+The code snippet below creates an event rule with a task definition and cluster as the target which is called every hour by EventBridge Scheduler.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new scheduler.Schedule(stack, 'Schedule', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(60)),
+  target: new EcsRunTask(cluster, {
+    taskDefinition,
+  });,
+});
+```
+
 ## Invoke a wider set of AWS API
 
 Use the `Universal` target to invoke AWS API. See <https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html>
