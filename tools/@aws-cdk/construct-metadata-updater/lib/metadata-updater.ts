@@ -840,7 +840,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
     }
 
   /**
-   * Update a single enum-like value
+   * Update a single enum value
    * @param enumName The enum name
    * @param missingValue The dictionary from the `missing-values.json` file
    * containing the cdk_path and missing_values for the enum
@@ -860,24 +860,48 @@ export class EnumLikeUpdater extends MetadataUpdater {
     
     console.log(`=====\nUpdating enum ${enumName} in ${missingValue['cdk_path']} \n=====`);
 
-    // Get the new enum values to add (no need to worry about sorting or checking existing values)
     const newEnumValues = missingValue['missing_values'];
 
-    // Add each new enum value at the end of the enum
-    for (const enumVal of newEnumValues) {
-        // Format the enum constant name (uppercase and replace hyphens or periods with underscores)
+    // Get the full text of the enum
+    let enumText = enumDeclaration.getFullText();
+    
+    // Get just the enum body (everything between the curly braces)
+    const enumBodyStart = enumText.indexOf('{') + 1;
+    const enumBodyEnd = enumText.lastIndexOf('}');
+    const enumBody = enumText.substring(enumBodyStart, enumBodyEnd);
+
+    // Check for double line breaks only in the enum body
+    const hasDoubleLineBreaks = enumBody.includes('\n\n');
+
+    // Find the position to insert new members (just before the closing brace)
+    const insertPosition = enumText.lastIndexOf('}');
+
+    // Prepare the text to insert - only add initial newline if enum uses double line breaks
+    let textToInsert = hasDoubleLineBreaks ? '\n' : '';
+
+    newEnumValues.forEach((enumVal: string, index: number) => {
         const enumConstantName = enumVal.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
+        
+        textToInsert += `  /**\n   * [PLACEHOLDER FOR: TO BE FILLED OUT]\n   */\n`;
+        textToInsert += `  ${enumConstantName} = '${enumVal}'`;
+        
+        // Add a comma and appropriate newlines after each member
+        textToInsert += ',';
+        
+        // Add newlines after each member except the last one
+        if (index < newEnumValues.length - 1) {
+            textToInsert += hasDoubleLineBreaks ? '\n\n' : '\n';
+        }
+    });
 
-        // Add the missing enum value with a placeholder doc comment
-        const newEnumMember = enumDeclaration.addMember({
-            name: enumConstantName,
-            initializer: `'${enumVal}'`, // Ensure the value is a string literal
-        });
+    // Add final newline before the closing brace
+    textToInsert += '\n';
 
-        newEnumMember.addJsDoc("\n[PLACEHOLDER FOR: TO BE FILLED OUT]");  // Add temp docstring comment
+    // Insert the new text
+    enumText = enumText.slice(0, insertPosition) + textToInsert + enumText.slice(insertPosition);
 
-        console.log(`=====\nAdded missing enum-like value ${enumVal} to ${enumName}\n=====`);
-    }
+    // Set the full text of the enum
+    enumDeclaration.replaceWithText(enumText);
 
     // Write the updated file back to disk
     sourceFile.saveSync();
