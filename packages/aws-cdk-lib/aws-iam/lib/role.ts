@@ -13,7 +13,8 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
@@ -146,6 +147,36 @@ export interface RoleProps {
 }
 
 /**
+ * Properties for looking up an existing Role.
+ */
+export interface RoleLookupOptions {
+  /**
+   * The ARN of the role to lookup.
+   */
+  readonly roleArn: string;
+
+  /**
+   * Options allowing customizing the behavior of `Role.fromRoleArn`.
+   *
+   * @default - no customizations
+   */
+  readonly fromRoleArnOptions?: FromRoleArnOptions;
+
+  /**
+   * Whether to return a dummy role if the role was not found.
+   *
+   * If it is set to `true` and the role was not found, a dummy
+   * role with a role arn will be returned. The value of the dummy
+   * role arn can also be referenced using the `Role.DEFAULT_DUMMY_ROLE_ARN`
+   * variable, and you can check if the role is a dummy role by using the
+   * `Role.isLookupDummy()` method.
+   *
+   * @default false
+   */
+  readonly returnDummyRoleOnMissing?: boolean;
+}
+
+/**
  * Options allowing customizing the behavior of `Role.fromRoleArn`.
  */
 export interface FromRoleArnOptions {
@@ -236,6 +267,49 @@ export interface FromRoleNameOptions extends FromRoleArnOptions { }
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
 export class Role extends Resource implements IRole {
+  /**
+   * The default role arn of the dummy role.
+   *
+   * This value is used as a dummy role arn if the role was not found
+   * by the `Role.fromLookup()` method.
+   */
+  public static readonly DEFAULT_DUMMY_ROLE_ARN = 'TEST';
+
+  /**
+   * Lookup an existing Role using roleArn.
+   */
+  public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::IAM::Role',
+        exactIdentifier: options.roleArn,
+        propertiesToReturn: [
+          'RoleArn',
+        ],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          RoleArn: Role.DEFAULT_DUMMY_ROLE_ARN,
+        },
+      ],
+      ignoreErrorOnMissingContext: options.returnDummyRoleOnMissing,
+    }).value;
+
+    return this.fromRoleArn(scope, id, options.roleArn, options.fromRoleArnOptions);
+  }
+
+  /**
+   * Checks if the role returned by the `Role.fromLookup()` method is a dummy role,
+   * i.e., a role that was not found.
+   *
+   * This method can only be used if the `returnDummyRoleOnMissing` option
+   * is set to `true` in the `options` for the `Role.fromLookup()` method.
+   */
+  public static isLookupDummy(role: IRole): boolean {
+    return role.roleArn === Role.DEFAULT_DUMMY_ROLE_ARN;
+  }
+
   /**
    * Import an external role by ARN.
    *
