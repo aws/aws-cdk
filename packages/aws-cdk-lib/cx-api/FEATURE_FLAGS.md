@@ -90,7 +90,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
-| [@aws-cdk/aws-s3BlockPublicAccessOptionAutoTrue](#aws-cdkaws-s3blockpublicaccessoptionautotrue) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | (fix) |
+| [@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue](#aws-cdkaws-s3blockpublicaccessoptionautotrue) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -169,7 +169,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
-    "@aws-cdk/aws-s3BlockPublicAccessOptionAutoTrue": true
+    "@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue": true
   }
 }
 ```
@@ -1707,7 +1707,7 @@ This solves an issue where a circular dependency could occur if adding lambda to
 | 2.180.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-s3BlockPublicAccessOptionAutoTrue
+### @aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue
 
 *When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.* (fix)
 

@@ -124,7 +124,7 @@ export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
-export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3BlockPublicAccessOptionAutoTrue';
+export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
