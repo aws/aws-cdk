@@ -273,7 +273,7 @@ export class Role extends Resource implements IRole {
    * This value is used as a dummy role arn if the role was not found
    * by the `Role.fromLookup()` method.
    */
-  public static readonly DEFAULT_DUMMY_ROLE_ARN = 'TEST';
+  public static readonly DEFAULT_DUMMY_ROLE_ARN = 'TEST_ARN';
 
   /**
    * Lookup an existing Role using roleArn.
