@@ -147,36 +147,6 @@ export interface RoleProps {
 }
 
 /**
- * Properties for looking up an existing Role.
- */
-export interface RoleLookupOptions {
-  /**
-   * The ARN of the role to lookup.
-   */
-  readonly roleArn: string;
-
-  /**
-   * Options allowing customizing the behavior of `Role.fromRoleArn`.
-   *
-   * @default - no customizations
-   */
-  readonly fromRoleArnOptions?: FromRoleArnOptions;
-
-  /**
-   * Whether to return a dummy role if the role was not found.
-   *
-   * If it is set to `true` and the role was not found, a dummy
-   * role with a role arn will be returned. The value of the dummy
-   * role arn can also be referenced using the `Role.DEFAULT_DUMMY_ROLE_ARN`
-   * variable, and you can check if the role is a dummy role by using the
-   * `Role.isLookupDummy()` method.
-   *
-   * @default false
-   */
-  readonly returnDummyRoleOnMissing?: boolean;
-}
-
-/**
  * Options allowing customizing the behavior of `Role.fromRoleArn`.
  */
 export interface FromRoleArnOptions {
@@ -261,6 +231,29 @@ export interface CustomizeRolesOptions {
 export interface FromRoleNameOptions extends FromRoleArnOptions { }
 
 /**
+ * Properties for looking up an existing Role.
+ */
+export interface RoleLookupOptions extends FromRoleArnOptions {
+  /**
+   * The ARN of the role to lookup.
+   */
+  readonly roleArn: string;
+
+  /**
+   * Whether to return a dummy role if the role was not found.
+   *
+   * If it is set to `true` and the role was not found, a dummy
+   * role with a role arn will be returned. The value of the dummy
+   * role arn can also be referenced using the `Role.DEFAULT_DUMMY_ROLE_ARN`
+   * variable, and you can check if the role is a dummy role by using the
+   * `Role.isLookupDummy()` method.
+   *
+   * @default false
+   */
+  readonly returnDummyRoleOnMissing?: boolean;
+}
+
+/**
  * IAM Role
  *
  * Defines an IAM role. The role is created with an assume policy document associated with
@@ -299,7 +292,7 @@ export class Role extends Resource implements IRole {
     // getValue returns a list of result objects.  We are expecting 1 result or Error.
     const role = response[0];
 
-    return this.fromRoleArn(scope, id, role.RoleArn, options.fromRoleArnOptions);
+    return this.fromRoleArn(scope, id, role.RoleArn, options);
   }
 
   /**
