@@ -43,20 +43,12 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * The number or percentage of instances that can deploy in parallel.
    *
-   * Valid range:
-   * - targets: from `'1'` to number of your instances
-   * - percentage: from `'1%'` to `'99%'`
-   *
    * @default - No configuration
    */
   readonly maxBatch?: Ec2MaxInstances;
 
   /**
    * Stop the task after the task fails on the specified number or percentage of instances.
-   *
-   * Valid range:
-   * - targets: from `'1'` to number of your instances
-   * - percentage: from `'1%'` to `'99%'`
    *
    * @default - No configuration
    */
