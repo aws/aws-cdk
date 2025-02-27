@@ -238,7 +238,7 @@ export interface RoleLookupOptions extends FromRoleArnOptions {
    * The name of the role to lookup.
    *
    * If the role you want to lookup is a service role, you need to specify
-   * the role name without the service prefix. For example, if the role arn is
+   * the role name without the 'service-role' prefix. For example, if the role arn is
    * 'arn:aws:iam::123456789012:role/service-role/SomeServiceExecutionRole',
    * you need to specify the role name as 'SomeServiceExecutionRole'.
    */
