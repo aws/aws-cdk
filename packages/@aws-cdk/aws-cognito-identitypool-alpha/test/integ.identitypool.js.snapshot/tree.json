@@ -842,79 +842,85 @@
               "DefaultRoleAttachment": {
                 "id": "DefaultRoleAttachment",
                 "path": "integ-idp/identitypool/DefaultRoleAttachment",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Cognito::IdentityPoolRoleAttachment",
-                  "aws:cdk:cloudformation:props": {
-                    "identityPoolId": {
-                      "Ref": "identitypoolE2A6D099"
-                    },
-                    "roleMappings": {
-                      "theKey": {
-                        "ambiguousRoleResolution": "Deny",
-                        "type": "Token",
-                        "identityProvider": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Fn::GetAtt": [
-                                  "PoolD3F588B8",
-                                  "ProviderName"
-                                ]
-                              },
-                              ":",
-                              {
-                                "Ref": "PooltestClientFE8D4935"
-                              }
-                            ]
-                          ]
-                        }
-                      },
-                      "importedUserPool": {
-                        "ambiguousRoleResolution": "Deny",
-                        "type": "Token",
-                        "identityProvider": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "cognito-idp.",
-                              {
-                                "Fn::Select": [
-                                  3,
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-idp/identitypool/DefaultRoleAttachment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::IdentityPoolRoleAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "identityPoolId": {
+                          "Ref": "identitypoolE2A6D099"
+                        },
+                        "roleMappings": {
+                          "theKey": {
+                            "ambiguousRoleResolution": "Deny",
+                            "type": "Token",
+                            "identityProvider": {
+                              "Fn::Join": [
+                                "",
+                                [
                                   {
-                                    "Fn::Split": [
-                                      ":",
+                                    "Fn::GetAtt": [
+                                      "PoolD3F588B8",
+                                      "ProviderName"
+                                    ]
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "PooltestClientFE8D4935"
+                                  }
+                                ]
+                              ]
+                            }
+                          },
+                          "importedUserPool": {
+                            "ambiguousRoleResolution": "Deny",
+                            "type": "Token",
+                            "identityProvider": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "cognito-idp.",
+                                  {
+                                    "Fn::Select": [
+                                      3,
                                       {
-                                        "Fn::GetAtt": [
-                                          "UserPoolToImport1A7C21D3",
-                                          "Arn"
+                                        "Fn::Split": [
+                                          ":",
+                                          {
+                                            "Fn::GetAtt": [
+                                              "UserPoolToImport1A7C21D3",
+                                              "Arn"
+                                            ]
+                                          }
                                         ]
                                       }
                                     ]
-                                  }
-                                ]
-                              },
-                              ".",
-                              {
-                                "Ref": "AWS::URLSuffix"
-                              },
-                              "/",
-                              {
-                                "Fn::Select": [
-                                  1,
+                                  },
+                                  ".",
                                   {
-                                    "Fn::Split": [
-                                      "/",
+                                    "Ref": "AWS::URLSuffix"
+                                  },
+                                  "/",
+                                  {
+                                    "Fn::Select": [
+                                      1,
                                       {
-                                        "Fn::Select": [
-                                          5,
+                                        "Fn::Split": [
+                                          "/",
                                           {
-                                            "Fn::Split": [
-                                              ":",
+                                            "Fn::Select": [
+                                              5,
                                               {
-                                                "Fn::GetAtt": [
-                                                  "UserPoolToImport1A7C21D3",
-                                                  "Arn"
+                                                "Fn::Split": [
+                                                  ":",
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "UserPoolToImport1A7C21D3",
+                                                      "Arn"
+                                                    ]
+                                                  }
                                                 ]
                                               }
                                             ]
@@ -922,37 +928,44 @@
                                         ]
                                       }
                                     ]
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "UserPoolToImportclientToImport6885CDF7"
                                   }
                                 ]
-                              },
-                              ":",
-                              {
-                                "Ref": "UserPoolToImportclientToImport6885CDF7"
-                              }
+                              ]
+                            }
+                          }
+                        },
+                        "roles": {
+                          "authenticated": {
+                            "Fn::GetAtt": [
+                              "identitypoolAuthenticatedRoleB074B49D",
+                              "Arn"
                             ]
-                          ]
+                          },
+                          "unauthenticated": {
+                            "Fn::GetAtt": [
+                              "identitypoolUnauthenticatedRoleE61CAC70",
+                              "Arn"
+                            ]
+                          }
                         }
                       }
                     },
-                    "roles": {
-                      "authenticated": {
-                        "Fn::GetAtt": [
-                          "identitypoolAuthenticatedRoleB074B49D",
-                          "Arn"
-                        ]
-                      },
-                      "unauthenticated": {
-                        "Fn::GetAtt": [
-                          "identitypoolUnauthenticatedRoleE61CAC70",
-                          "Arn"
-                        ]
-                      }
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnIdentityPoolRoleAttachment",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cognito.CfnIdentityPoolRoleAttachment",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
