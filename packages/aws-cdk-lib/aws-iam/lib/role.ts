@@ -296,7 +296,10 @@ export class Role extends Resource implements IRole {
       ignoreErrorOnMissingContext: options.returnDummyRoleOnMissing,
     }).value;
 
-    return this.fromRoleArn(scope, id, options.roleArn, options.fromRoleArnOptions);
+    // getValue returns a list of result objects.  We are expecting 1 result or Error.
+    const role = response[0];
+
+    return this.fromRoleArn(scope, id, role.RoleArn, options.fromRoleArnOptions);
   }
 
   /**
