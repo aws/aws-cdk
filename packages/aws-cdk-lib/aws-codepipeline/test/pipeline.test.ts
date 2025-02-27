@@ -8,6 +8,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as codepipeline from '../lib';
+import { BeforeEntryConditions, FailureConditions, Result, RetryMode, SuccessConditions } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 
@@ -69,6 +70,101 @@ describe('', () => {
       expect(pipeline.env.region).toEqual('us-east-1');
       expect(pipeline.env.account).toEqual('123456789012');
     });
+
+   test.each([
+      [Result.FAIL, 'FAIL'],
+      [Result.RETRY, 'RETRY'],
+      [Result.ROLLBACK, 'ROLLBACK'],
+      [Result.SKIP, 'SKIP']
+    ])('can setup stage level conditions', (result, expected) => {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const sourceArtifact = new codepipeline.Artifact();
+    const ruleTypeId = {
+      category: 'debug.com',
+      owner: 'AWS',
+      provider: 'debug.com',
+      version: '1'
+    }
+    const onSuccess : SuccessConditions = {
+      conditions:[
+        {
+          result,
+          rules: [{
+            name: 'name',
+            ruleTypeId,
+          }]
+        }
+      ]
+    }
+    const onFailure : FailureConditions = {
+      conditions:[
+        {
+          result,
+          rules: [{
+            name: 'name',
+            ruleTypeId,
+          }]
+        }
+      ],
+      result,
+      retryConfiguration: {
+        retryMode: RetryMode.FAILED_ACTIONS
+      }
+    }
+
+    const beforeEntry : BeforeEntryConditions = {
+      conditions:[
+        {
+          result,
+          rules: [{
+            name: 'name',
+            ruleTypeId,
+          }]
+        }
+      ]
+    }
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new FakeSourceAction({ actionName: 'Fetch', output: sourceArtifact })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new FakeBuildAction({ actionName: 'Gcc', input: sourceArtifact })],
+          beforeEntry,
+          onFailure,
+          onSuccess,
+
+        },
+      ],
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: [
+         {
+          Name: 'Source',
+          Actions: [
+            Match.objectLike({ Name: 'Fetch' }),
+          ],
+          BeforeEntry: { Conditions: []},
+          OnSuccess: { Conditions: []},
+          OnFailure: { Conditions: [], Result: Result.FAIL},
+        }, 
+        {
+          Name: 'Build',
+          Actions: [
+            Match.objectLike({ Name: 'Gcc' }),
+          ],
+          BeforeEntry: { Conditions :[ { Result: expected }]},
+          OnSuccess: { Conditions :[ { Result: expected }]},
+          OnFailure: { Conditions :[ { Result: expected }], Result: expected},
+        },  
+      ],
+    });
+  })
 
     describe('that is cross-region', () => {
       test('validates that source actions are in the same region as the pipeline', () => {
@@ -951,6 +1047,9 @@ describe('test with shared setup', () => {
           Match.objectLike({ Name: 'Gcc' }),
           Match.objectLike({ Name: 'debug.com' }),
         ],
+        BeforeEntry: { Conditions: []},
+        OnSuccess: { Conditions: []},
+        OnFailure: { Conditions: [], Result: Result.FAIL},
       }]),
     });
   });

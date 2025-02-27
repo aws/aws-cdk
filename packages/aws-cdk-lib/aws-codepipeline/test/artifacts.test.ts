@@ -5,6 +5,7 @@ import { Match, Template } from '../../assertions';
 import { CommandsAction } from '../../aws-codepipeline-actions/lib';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
+import { Result, RetryMode } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 
@@ -313,8 +314,12 @@ describe('artifacts', () => {
                     Files: ['my-dir/**/*'],
                   },
                 ],
+               
               }),
             ],
+            BeforeEntry: { Conditions: []},
+            OnSuccess: { Conditions: []},
+            OnFailure: { Conditions: [], Result: Result.FAIL},
           },
         ]),
       });

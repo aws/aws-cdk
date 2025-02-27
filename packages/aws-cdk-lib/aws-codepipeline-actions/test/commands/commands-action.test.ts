@@ -1,5 +1,6 @@
 import { Match, Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
+import { Result, RetryMode } from '../../../aws-codepipeline/lib/private/stage';
 import { Key } from '../../../aws-kms';
 import { Bucket } from '../../../aws-s3';
 import { Stack } from '../../../core';
@@ -100,6 +101,10 @@ describe('Commands Action', () => {
               RunOrder: 1,
             },
           ],
+          BeforeEntry: { Conditions: []},
+          OnSuccess: { Conditions: []},
+          OnFailure: { Conditions: [], Result: Result.FAIL},
+                
         },
       ]),
     });
@@ -506,6 +511,10 @@ describe('Commands Action', () => {
                 ],
               }),
             ],
+            BeforeEntry: { Conditions: []},
+            OnSuccess: { Conditions: []},
+            OnFailure: { Conditions: [], Result: Result.FAIL},
+      
           },
           {
             Name: 'Deploy',
@@ -516,7 +525,11 @@ describe('Commands Action', () => {
                 },
               }),
             ],
+            BeforeEntry: { Conditions: []},
+            OnSuccess: { Conditions: []},
+            OnFailure: { Conditions: [], Result: Result.FAIL},
           },
+          
         ]),
       });
     });

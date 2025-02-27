@@ -4,6 +4,7 @@ import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
+import { Result, RetryMode } from '../lib/private/stage';
 
 /* eslint-disable quote-props */
 
@@ -48,6 +49,9 @@ describe('variables', () => {
                 'Namespace': 'MyNamespace',
               }),
             ],
+            'BeforeEntry': { Conditions: []},
+            'OnSuccess': { Conditions: []},
+            'OnFailure': { Conditions: [], Result: Result.FAIL },
           },
         ]),
       });
@@ -150,6 +154,9 @@ describe('variables', () => {
                 },
               }),
             ],
+            'BeforeEntry': { Conditions: []},
+            'OnSuccess': { Conditions: []},
+            'OnFailure': { Conditions: [], Result: Result.FAIL },
           },
         ]),
       });

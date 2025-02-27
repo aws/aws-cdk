@@ -11,7 +11,7 @@ import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
-import { Stage } from './private/stage';
+import { Stage, StageOptions, StagePlacement, StageProps } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
 import { Trigger, TriggerProps } from './trigger';
 import { Variable } from './variable';
@@ -38,63 +38,6 @@ import {
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
-
-/**
- * Allows you to control where to place a new Stage when it's added to the Pipeline.
- * Note that you can provide only one of the below properties -
- * specifying more than one will result in a validation error.
- *
- * @see #rightBefore
- * @see #justAfter
- */
-export interface StagePlacement {
-  /**
-   * Inserts the new Stage as a parent of the given Stage
-   * (changing its current parent Stage, if it had one).
-   */
-  readonly rightBefore?: IStage;
-
-  /**
-   * Inserts the new Stage as a child of the given Stage
-   * (changing its current child Stage, if it had one).
-   */
-  readonly justAfter?: IStage;
-}
-
-/**
- * Construction properties of a Pipeline Stage.
- */
-export interface StageProps {
-  /**
-   * The physical, human-readable name to assign to this Pipeline Stage.
-   */
-  readonly stageName: string;
-
-  /**
-   * The list of Actions to create this Stage with.
-   * You can always add more Actions later by calling `IStage#addAction`.
-   */
-  readonly actions?: IAction[];
-
-  /**
-   * Whether to enable transition to this stage.
-   *
-   * @default true
-   */
-  readonly transitionToEnabled?: boolean;
-
-  /**
-   * The reason for disabling transition to this stage. Only applicable
-   * if `transitionToEnabled` is set to `false`.
-   *
-   * @default 'Transition disabled'
-   */
-  readonly transitionDisabledReason?: string;
-}
-
-export interface StageOptions extends StageProps {
-  readonly placement?: StagePlacement;
-}
 
 /**
  * Pipeline types.
