@@ -767,6 +767,15 @@ peer = ec2.Peer.prefixList('pl-12345');
 appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
+A managed prefix list is also a connection peer:
+
+``` ts
+declare const appFleet: autoscaling.AutoScalingGroup;
+
+const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
+appFleet.connections.allowFrom(peer, ec2.Port.HTTPS);
+```
+
 Any object that has a security group can itself be used as a connection peer:
 
 ```ts
