@@ -28,8 +28,9 @@ export class Compression {
    * ZIP
    */
   public static readonly ZIP = new Compression('ZIP');
+  
   /**
-   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   * Uncompressed
    */
   public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
 
