@@ -1,6 +1,8 @@
 import { Construct } from 'constructs';
+import { ValidationError } from 'jsonschema';
 import { CfnPrefixList } from './ec2.generated';
-import { IResource, Lazy, Resource, Names } from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -77,13 +79,22 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
 }
 
 /**
+ * Properties for looking up an existing managed prefix list.
+ */
+export interface PrefixListLookupOptions {
+  /**
+   * The name of the prefix list to lookup.
+   */
+  readonly prefixListName: string;
+}
+
+/**
  * A managed prefix list.
  * @resource AWS::EC2::PrefixList
  */
 export class PrefixList extends PrefixListBase {
   /**
    * Look up prefix list by id.
-   *
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
     class Import extends Resource implements IPrefixList {
@@ -91,6 +102,35 @@ export class PrefixList extends PrefixListBase {
     }
     return new Import(scope, id);
   }
+
+  /**
+   * Look up prefix list by name
+   */
+  public static fromLookup(scope: Construct, id: string, options: PrefixListLookupOptions): IPrefixList {
+    if (Token.isUnresolved(options.prefixListName)) {
+      throw new ValidationError('All arguments to look up a managed prefix list must be concrete (no Tokens)', scope);
+    }
+
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::EC2::PrefixList',
+        propertyMatch: {
+          PrefixListName: options.prefixListName,
+        },
+        propertiesToReturn: ['PrefixListId'],
+      } as Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
+      dummyValue: [
+        { PrefixListId: 'pl-xxxxxxxx' },
+      ],
+    }).value;
+
+    // getValue returns a list of result objects. We are expecting 1 result or Error.
+    const prefixList = response[0];
+
+    return this.fromPrefixListId(scope, id, prefixList.PrefixListId);
+  }
+
   /**
    * The ID of the prefix list
    *
