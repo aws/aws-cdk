@@ -64,10 +64,6 @@ export enum JobBookmarksEncryptionMode {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
   CLIENT_SIDE_KMS = 'CSE-KMS',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
-  DISABLED = 'DISABLED',
 }
 
 /**
