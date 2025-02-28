@@ -135,6 +135,11 @@ export enum ReplicationOverwriteProtection {
    * Disable the filesystem's replication overwrite protection.
    */
   DISABLED = 'DISABLED',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  REPLICATING = 'REPLICATING',
 }
 
 /**
