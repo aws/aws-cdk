@@ -104,7 +104,7 @@ export enum JobState {
   ERROR = 'ERROR',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * State indicating job is waiting
    */
   WAITING = 'WAITING',
 
