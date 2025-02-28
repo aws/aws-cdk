@@ -48,6 +48,10 @@ export class SourceAccessConfigurationType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
 
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
