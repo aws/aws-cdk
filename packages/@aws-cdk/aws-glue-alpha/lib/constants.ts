@@ -109,7 +109,7 @@ export enum JobState {
   WAITING = 'WAITING',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * State indicating job has expired
    */
   EXPIRED = 'EXPIRED',
 }
