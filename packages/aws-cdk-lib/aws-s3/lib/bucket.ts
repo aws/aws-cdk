@@ -3292,6 +3292,16 @@ export enum EventType {
    * object’s ACL.
    */
   OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  S3_OBJECTRESTORE = 's3:ObjectRestore:*',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  S3_REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {
