@@ -1,0 +1,79 @@
+name: CDK Enums Auto Updater
+on:
+  workflow_dispatch:
+
+jobs:
+  update-analytics-metadata:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/enum-updater && yarn build
+
+      - name: Update Enum Static Mapping
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          ./bin/update-enums
+
+      - name: Identify Missing Values and Apply Code Changes
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          ./bin/update-enums
+
+          - name: Commit & Push changes
+          if: steps.git-check.outputs.changes == 'true'
+          run: |
+            git config --global user.name 'aws-cdk-automation'
+            git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+        
+            # Iterate through each module directory that has changes
+            for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed 's|/.*||' | sort -u); do
+              moduleName=$(basename $module)
+        
+              # Check for existing PR with the same name
+              prExists=$(gh pr list --state open --search "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" --json number,title -q '.[].number')
+        
+              # If a PR exists, close it and continue
+              if [[ -n "$prExists" ]]; then
+                echo "PR already exists for module ${moduleName#aws-}, closing the existing PR."
+                gh pr close "$prExists" --confirm  # Close the PR by its number
+              fi
+        
+              # Create a new branch for the module
+              branchName="enum-update/${moduleName#aws-}"
+              git checkout -b "$branchName"
+              
+              # Stage, commit, and push changes for the module
+              git add "packages/$module"  # Add only changes for this module
+              git commit -m "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}"
+              git push origin "$branchName"
+        
+            # Create a new pull request
+            gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
+             --body "This PR updates the enum values for ${moduleName#aws-}." \
+             --base main \
+             --head "$branchName"
+            done
+        
+    #   - name: Commit & Push changes
+    #     if: steps.git-check.outputs.changes == 'true'
+    #     run: |
+    #       git config --global user.name 'aws-cdk-automation'
+    #       git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+
+    #       git checkout -B ${{ github.event.pull_request.head.ref }}
+    #       git add .
+    #       git commit -m "chore: update analytics metadata blueprints"
+    #       git push origin ${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

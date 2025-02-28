@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "bin": {
-    "enum-updater": "bin/update-enums.ts"
+    "enum-updater": "bin/update-enums.ts",
+    "missing-enum-updater": "bin/update-missing-enums.ts"
   },
   "scripts": {
     "build": "tsc --build",
