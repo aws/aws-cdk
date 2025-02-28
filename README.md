@@ -155,7 +155,7 @@ this capability, please see the [developer guide](https://docs.aws.amazon.com/cd
 
 ## More Resources
 
-* [CDK Workshop](https://cdkworkshop.com/)
+* [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
 * [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
 * Best Practices
   * [Best practices for developing cloud applications with AWS CDK](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/)
