@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { Bucket } from '../../aws-s3';
 
 export enum DatadogLogsEndpointUrl {
   DATADOG_LOGS_US1 = 'https://aws-kinesis-http-intake.logs.datadoghq.com/v1/input',
@@ -85,7 +86,10 @@ export class Datadog implements IDestination {
       streamId: 'DatadogDestination',
     }) ?? {};
 
-    const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
+    const bucket = new Bucket(scope, 'S3 Configuration', {});
+    bucket.grantReadWrite(role);
+
+    const { dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     this.props.apiKey.grantRead(role);
 
@@ -94,7 +98,10 @@ export class Datadog implements IDestination {
         cloudWatchLoggingOptions: loggingOptions,
         processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
         roleArn: role.roleArn,
-        s3BackupConfiguration: backupConfig,
+        s3Configuration: {
+          bucketArn: bucket.bucketArn,
+          roleArn: role.roleArn,
+        },
         s3BackupMode: this.getS3BackupMode(),
         endpointConfiguration: {
           url: this.props.url,
@@ -103,7 +110,7 @@ export class Datadog implements IDestination {
           contentEncoding: 'GZIP',
         },
         retryOptions: {
-          DurationInSeconds: this.props.retryDuration?.toSeconds() ?? 60,
+          durationInSeconds: this.props.retryDuration?.toSeconds() ?? 60,
         },
         bufferingHints: {
           sizeInMBs: this.props.bufferHints?.size?.toMebibytes() ?? 4,
