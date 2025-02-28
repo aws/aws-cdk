@@ -14,6 +14,7 @@ const app = new App({
     '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': false,
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');

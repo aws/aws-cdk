@@ -10,7 +10,11 @@ import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
  * Test verifies that AWS CLI is invoked successfully inside Lambda runtime.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new cdk.Stack(app, 'lambda-layer-awscli-integ-stack');
 const layer = new AwsCliLayer(stack, 'AwsCliLayer');
 
