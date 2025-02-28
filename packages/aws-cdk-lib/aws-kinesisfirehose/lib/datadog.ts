@@ -44,6 +44,9 @@ export interface BufferHints {
   size?: Size;
 }
 
+/**
+ * Props for defining a Datadog destination of a Kinesis Data Firehose delivery stream.
+ */
 export interface DatadogProps extends CommonDestinationProps {
   /**
    * The API key required to enable data delivery from Amazon Data Firehose.
@@ -58,8 +61,16 @@ export interface DatadogProps extends CommonDestinationProps {
    * @default - 60 second interval with 4MiB size.
    */
   readonly bufferHints?: BufferHints;
+  /**
+   * The time period during which Amazon Data Firehose retries sending data to the selected HTTP endpoint.
+   * @default 60 seconds
+   */
+  readonly retryDuration?: Duration;
 }
 
+/**
+ * A Datadog destination for data from a Kinesis Data Firehose delivery stream.
+ */
 export class Datadog implements IDestination {
   constructor(private readonly props: DatadogProps) { }
 
@@ -90,6 +101,9 @@ export class Datadog implements IDestination {
         },
         requestConfiguration: {
           contentEncoding: 'GZIP',
+        },
+        retryOptions: {
+          DurationInSeconds: this.props.retryDuration?.toSeconds() ?? 60,
         },
         bufferingHints: {
           sizeInMBs: this.props.bufferHints?.size?.toMebibytes() ?? 4,
