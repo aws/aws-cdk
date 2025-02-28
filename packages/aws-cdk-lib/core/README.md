@@ -1694,7 +1694,10 @@ values must be non-negative integers, where a higher number means the Aspect wil
 
 By default, newly created nodes always inherit aspects. Priorities are mainly for ordering between mutating aspects on the construct tree.
 
-CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries:
+CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries.
+Note that Aspects that have same priority value are not guaranteed to be executed
+in a consistent order.
+
 
 ```ts
 /**
