@@ -99,7 +99,7 @@ export enum JobState {
   STOPPED = 'STOPPED',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * State indicating job has encountered an error
    */
   ERROR = 'ERROR',
 
