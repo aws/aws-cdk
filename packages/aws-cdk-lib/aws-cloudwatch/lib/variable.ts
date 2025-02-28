@@ -158,6 +158,10 @@ export class DefaultValue {
    * A special value for use with search expressions to have the default value be the first value returned from search
    */
   public static readonly FIRST = new DefaultValue('__FIRST');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly LAST = new DefaultValue('last');
 
   /**
    * Create a default value
