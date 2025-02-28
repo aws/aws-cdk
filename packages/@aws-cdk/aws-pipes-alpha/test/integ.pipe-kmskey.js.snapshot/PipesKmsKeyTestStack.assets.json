@@ -1,15 +1,15 @@
 {
   "version": "39.0.0",
   "files": {
-    "70b2a5399ace42fab2c709a754a83c5d69ab9cb57dbae0e37e2beba80a9fc87d": {
+    "e642d71a6d897690f9ce27a0bb7c37af49fe97bc79b520accf2cab5128a79e0d": {
       "source": {
-        "path": "integ-idp.template.json",
+        "path": "PipesKmsKeyTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "70b2a5399ace42fab2c709a754a83c5d69ab9cb57dbae0e37e2beba80a9fc87d.json",
+          "objectKey": "e642d71a6d897690f9ce27a0bb7c37af49fe97bc79b520accf2cab5128a79e0d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

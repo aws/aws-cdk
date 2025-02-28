@@ -1,15 +1,15 @@
 {
   "version": "39.0.0",
   "files": {
-    "70b2a5399ace42fab2c709a754a83c5d69ab9cb57dbae0e37e2beba80a9fc87d": {
+    "631988f383bb938de2eb31a4ed2f8966bfe181f6cae9dcb8aed89a14ec3dbb46": {
       "source": {
-        "path": "integ-idp.template.json",
+        "path": "aws-ecs-encrypt-storage.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "70b2a5399ace42fab2c709a754a83c5d69ab9cb57dbae0e37e2beba80a9fc87d.json",
+          "objectKey": "631988f383bb938de2eb31a4ed2f8966bfe181f6cae9dcb8aed89a14ec3dbb46.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

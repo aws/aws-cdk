@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclientcognitoidentityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-cognito-identity",
+  "AwsApiCallECSdescribeClusters6304deb4c09200c8808fafd519e0b64e": {
+   "Type": "Custom::DeployAssert@SdkCallECSdescribeClusters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,40 +9,41 @@
       "Arn"
      ]
     },
-    "service": "@aws-sdk/client-cognito-identity",
-    "api": "DescribeIdentityPoolCommand",
+    "service": "ECS",
+    "api": "describeClusters",
     "expected": {
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"IdentityPoolId\":\"",
+       "{\"$StringLike\":\"",
        {
-        "Fn::ImportValue": "integ-idp:ExportsOutputRefidentitypoolE2A6D099E51DBB61"
+        "Fn::ImportValue": "aws-ecs-encrypt-storage:ExportsOutputRefKey961B73FD1C116C2C"
        },
-       "\",\"IdentityPoolName\":\"",
-       {
-        "Fn::ImportValue": "integ-idp:ExportsOutputFnGetAttidentitypoolE2A6D099Name3FFCBBDD"
-       },
-       "\",\"AllowUnauthenticatedIdentities\":false,\"AllowClassicFlow\":true,\"SupportedLoginProviders\":{\"www.amazon.com\":\"amzn1.application.12312k3j234j13rjiwuenf\",\"accounts.google.com\":\"12345678012.apps.googleusercontent.com\"}}}"
+       "\"}"
       ]
      ]
     },
+    "actualPath": "clusters.0.configuration.managedStorageConfiguration.kmsKeyId",
     "parameters": {
-     "IdentityPoolId": {
+     "clusters": {
       "Fn::Join": [
        "",
        [
-        "\"",
+        "[\"",
         {
-         "Fn::ImportValue": "integ-idp:ExportsOutputRefidentitypoolE2A6D099E51DBB61"
+         "Fn::ImportValue": "aws-ecs-encrypt-storage:ExportsOutputRefClusterEB0386A796A0E3FE"
         },
-        "\""
+        "\"]"
        ]
       ]
-     }
+     },
+     "include": "[\"CONFIGURATIONS\"]"
     },
-    "flattenResponse": "false",
-    "salt": "1740678743955"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "clusters.0.configuration.managedStorageConfiguration.kmsKeyId"
+    ],
+    "salt": "1740093181221"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -75,16 +76,7 @@
        "Statement": [
         {
          "Action": [
-          "cognito-identity:DescribeIdentityPool"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "cognito-identity:GetIdentityPoolRoles"
+          "ecs:DescribeClusters"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -124,72 +116,13 @@
      ]
     }
    }
-  },
-  "AwsApiCallawssdkclientcognitoidentityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-cognito-identity",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "@aws-sdk/client-cognito-identity",
-    "api": "GetIdentityPoolRolesCommand",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"IdentityPoolId\":\"",
-       {
-        "Fn::ImportValue": "integ-idp:ExportsOutputRefidentitypoolE2A6D099E51DBB61"
-       },
-       "\",\"Roles\":{\"authenticated\":\"",
-       {
-        "Fn::ImportValue": "integ-idp:ExportsOutputFnGetAttidentitypoolAuthenticatedRoleB074B49DArnF2BA4F08"
-       },
-       "\",\"unauthenticated\":\"",
-       {
-        "Fn::ImportValue": "integ-idp:ExportsOutputFnGetAttidentitypoolUnauthenticatedRoleE61CAC70Arn1E3CB7FC"
-       },
-       "\"}}}"
-      ]
-     ]
-    },
-    "parameters": {
-     "IdentityPoolId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "integ-idp:ExportsOutputRefidentitypoolE2A6D099E51DBB61"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1740678743956"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclientcognitoidentityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57": {
+  "AssertionResultsAwsApiCallECSdescribeClusters6304deb4c09200c8808fafd519e0b64e": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclientcognitoidentityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallawssdkclientcognitoidentityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallawssdkclientcognitoidentityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57",
+     "AwsApiCallECSdescribeClusters6304deb4c09200c8808fafd519e0b64e",
      "assertion"
     ]
    }
