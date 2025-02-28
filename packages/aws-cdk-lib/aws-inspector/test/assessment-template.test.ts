@@ -1,5 +1,5 @@
 import { App, Stack } from '../../core';
-import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate, IAssessmentTemplate } from '..';
+import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate, IAssessmentTemplate } from '../lib';
 
 describe('AssessmentTemplate', () => {
   let app: App;
