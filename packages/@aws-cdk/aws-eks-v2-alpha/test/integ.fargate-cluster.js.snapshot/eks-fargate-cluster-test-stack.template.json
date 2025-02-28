@@ -1046,6 +1046,7 @@
     "PatchType": "strategic"
    },
    "DependsOn": [
+    "FargateTestClusterClusterAdminRoleAccess9EFE9888",
     "FargateTestClusterKubectlReadyBarrier724731D5"
    ],
    "UpdateReplacePolicy": "Delete",

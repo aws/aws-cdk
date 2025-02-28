@@ -1067,6 +1067,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _kubectlProvider?: IKubectlProvider;
 
+  private readonly _clusterAdminAccess?: AccessEntry;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1279,11 +1281,7 @@ export class Cluster extends ClusterBase {
 
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
-      this.grantAccess('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn, [
-        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
-          accessScopeType: AccessScopeType.CLUSTER,
-        }),
-      ]);
+      this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
@@ -1349,6 +1347,32 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
     this.addToAccessEntry(id, principal, accessPolicies);
+  }
+
+  /**
+   * Grants the specified IAM principal cluster admin access to the EKS cluster.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
+   * access permissions. This allows the IAM principal to perform the actions permitted
+   * by the cluster admin acces.
+   *
+   * @param id - The ID of the `AccessEntry` construct to be created.
+   * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
+   * @returns the access entry construct
+   */
+  @MethodMetadata()
+  public grantClusterAdmin(id: string, principal: string): AccessEntry {
+    const newEntry = new AccessEntry(this, id, {
+      principal,
+      cluster: this,
+      accessPolicies: [
+        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        }),
+      ],
+    });
+    this.accessEntries.set(principal, newEntry);
+    return newEntry;
   }
 
   /**
@@ -1730,13 +1754,19 @@ export class Cluster extends ClusterBase {
       },
     });
 
-    new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
+    const k8sPatch = new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
       cluster: this,
       resourceName: 'deployment/coredns',
       resourceNamespace: 'kube-system',
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
       restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
+
+    // In Patch deletion, it needs to apply the restore patch to the cluster
+    // So the cluster admin access can only be deleted after the patch
+    if (this._clusterAdminAccess) {
+      k8sPatch.node.addDependency(this._clusterAdminAccess);
+    }
   }
 }
 
