@@ -1,5 +1,3 @@
-import { access } from 'fs';
-import { url } from 'inspector';
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
@@ -10,15 +8,28 @@ import { createBackupConfig, createBufferingHints, createEncryptionConfig, creat
 
 export enum DatadogLogsEndpointUrl {
   DATADOG_LOGS_US1 = 'https://aws-kinesis-http-intake.logs.datadoghq.com/v1/input',
-  DATADOG_LOGS_US3 = '',
-  DATADOG_LOGS_US5 = '',
-  DATADOG_LOGS_AP1 = '',
-  DATADOG_LOGS_EU = '',
+  DATADOG_LOGS_US3 = 'https://aws-kinesis-http-intake.logs.us3.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose',
+  DATADOG_LOGS_US5 = 'https://aws-kinesis-http-intake.logs.us5.datadoghq.com/api/v2/logs?dd-protocol=aws-kinesis-firehose',
+  DATADOG_LOGS_AP1 = 'https://aws-kinesis-http-intake.loqs.ap1.datadoqhq.com/api/v2/loqs?dd-protocol=aws-kinesis-firehose',
+  DATADOG_LOGS_EU = 'https://aws-kinesis-http-intake.logs.datadoghq.eu/v1/input',
+  DATADOG_LOGS_GOV = 'https://aws-kinesis-http-intake.logs.ddog-gov.com/v1/input',
 }
 
-export enum DatadogMetricsEndpointUrl {}
+export enum DatadogMetricsEndpointUrl {
+  DATADOG_METRICS_US = 'https://awsmetrics-intake.datadoghq.com/v1/input',
+  DATADOG_METRICS_US5 = 'https://event-platform-intake.us5.datadoghq.com/api/v2/awsmetrics?dd-protocol=aws-kinesis-firehose',
+  DATADOG_METRICS_AP1 = 'https://event-platform-intake.ap1.datadoghq.com/api/v2/awsmetrics?dd-protocol=aws-kinesis-firehose',
+  DATADOG_METRICS_EU = 'https://awsmetrics-intake.datadoghq.eu/v1/input',
+}
 
-export enum DatadogConfigurationsEndpointUrl {}
+export enum DatadogConfigurationsEndpointUrl {
+  DATADOG_CONFIGURATION_US1 = 'https://cloudplatform-intake.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+  DATADOG_CONFIGURATION_US3 = 'https://cloudplatform-intake.us3.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+  DATADOG_CONFIGURATION_US5 = 'https://cloudplatform-intake.us5.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+  DATADOG_CONFIGURATION_AP1 = 'https://cloudplatform-intake.ap1.datadoghq.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+  DATADOG_CONFIGURATION_EU = 'https://cloudplatform-intake.datadoghq.eu/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+  DATADOG_CONFIGURATION_US_GOV = 'https://cloudplatform-intake.ddog-gov.com/api/v2/cloudchanges?dd-protocol=aws-kinesis-firehose',
+}
 
 export interface BufferHints {
   /**
@@ -50,7 +61,7 @@ export interface DatadogProps extends CommonDestinationProps {
 }
 
 export class Datadog implements IDestination {
-  constructor(private readonly props: DatadogProps) {}
+  constructor(private readonly props: DatadogProps) { }
 
   bind(scope: Construct, options: DestinationBindOptions): DestinationConfig {
     const role = this.props.role ?? new iam.Role(scope, 'Datadog Destination Role', {
