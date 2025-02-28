@@ -1,7 +1,9 @@
+import { log } from 'console';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { IPolicyValidationPluginBeta1 } from './validation/validation';
@@ -126,6 +128,12 @@ export interface AppProps {
    * @default - no validation plugins
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+
+  /**
+   * A list of IPropertyInjector attached to this App.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -169,6 +177,13 @@ export class App extends Stage {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
       policyValidationBeta1: props.policyValidationBeta1,
     });
+
+    log('In Stack ctor');
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
+      log(`supportedClasses: ${injectors.supportedClasses()}`);
+    }
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 

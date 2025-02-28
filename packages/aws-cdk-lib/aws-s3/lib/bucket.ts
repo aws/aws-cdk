@@ -30,6 +30,7 @@ import {
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
@@ -1966,6 +1967,11 @@ export interface Tag {
  *
  */
 export class Bucket extends BucketBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.Bucket';
+
   public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
     return Bucket.fromBucketAttributes(scope, id, { bucketArn });
   }
@@ -2183,6 +2189,12 @@ export class Bucket extends BucketBase {
   private readonly _resource: CfnBucket;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
+    // Blueprint Property Injection
+    props = applyInjectors(Bucket.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id, {
       physicalName: props.bucketName,
     });

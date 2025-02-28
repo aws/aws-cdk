@@ -20,6 +20,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -725,6 +726,11 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  */
 export class SpecRestApi extends RestApiBase {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.SpecRestApi';
+
+  /**
    * The ID of this API Gateway RestApi.
    */
   public readonly restApiId: string;
@@ -739,6 +745,12 @@ export class SpecRestApi extends RestApiBase {
   public readonly root: IResource;
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
+    // Blueprint Property Injection
+    props = applyInjectors(SpecRestApi.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -820,6 +832,11 @@ export interface RestApiAttributes {
  */
 export class RestApi extends RestApiBase {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RestApi';
+
+  /**
    * Return whether the given object is a `RestApi`
    */
   public static isRestApi(x: any) : x is RestApi {
@@ -884,6 +901,12 @@ export class RestApi extends RestApiBase {
   private readonly deployments = new Array<Deployment>();
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
+    // Blueprint Property Injection
+    props = applyInjectors(RestApi.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

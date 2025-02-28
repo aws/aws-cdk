@@ -7,6 +7,7 @@ import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { applyInjectors } from '../../../core/lib/prop-injectors';
 import { IRoute } from '../common';
 
 /**
@@ -174,6 +175,11 @@ enum HttpRouteAuthorizationType {
  * @resource AWS::ApiGatewayV2::Route
  */
 export class HttpRoute extends Resource implements IHttpRoute {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpRoute';
+
   public readonly routeId: string;
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
@@ -183,6 +189,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
   private readonly authBindResult?: HttpRouteAuthorizerConfig;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
+    // Blueprint Property Injection
+    props = applyInjectors(HttpRoute.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

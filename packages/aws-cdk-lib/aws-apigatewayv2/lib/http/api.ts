@@ -9,6 +9,7 @@ import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { applyInjectors } from '../../../core/lib/prop-injectors';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
@@ -354,6 +355,11 @@ export interface HttpApiAttributes {
  */
 export class HttpApi extends HttpApiBase {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpApi';
+
+  /**
    * Import an existing HTTP API into this CDK app.
    */
   public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
@@ -408,6 +414,12 @@ export class HttpApi extends HttpApiBase {
   private readonly _apiEndpoint: string;
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
+    // Blueprint Property Injection
+    props = applyInjectors(HttpApi.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

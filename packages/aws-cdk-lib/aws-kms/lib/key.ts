@@ -20,6 +20,7 @@ import {
   Token,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -597,6 +598,11 @@ export interface KeyProps {
  */
 export class Key extends KeyBase {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.Key';
+
+  /**
    * The default key id of the dummy key.
    *
    * This value is used as a dummy key id if the key was not found
@@ -766,6 +772,12 @@ export class Key extends KeyBase {
   private readonly enableKeyRotation?: boolean;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
+    // Blueprint Property Injection
+    props = applyInjectors(Key.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

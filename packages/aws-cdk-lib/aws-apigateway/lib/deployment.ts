@@ -6,6 +6,7 @@ import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 
 export interface DeploymentProps {
   /**
@@ -70,6 +71,11 @@ export interface DeploymentProps {
  * automatically for the `restApi.latestDeployment` deployment.
  */
 export class Deployment extends Resource {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.Deployment';
+
   /** @attribute */
   public readonly deploymentId: string;
   public readonly api: IRestApi;
@@ -81,6 +87,12 @@ export class Deployment extends Resource {
   private readonly resource: LatestDeploymentResource;
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
+    // Blueprint Property Injection
+    props = applyInjectors(Deployment.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

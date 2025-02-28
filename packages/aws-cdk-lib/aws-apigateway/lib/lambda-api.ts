@@ -7,6 +7,7 @@ import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -52,10 +53,21 @@ export interface LambdaRestApiProps extends RestApiProps {
  * add resources and methods to the API.
  */
 export class LambdaRestApi extends RestApi {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.LambdaRestApi';
+
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
       throw new ValidationError('Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
     }
+
+    // Blueprint Property Injection
+    props = applyInjectors(LambdaRestApi.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
 
     super(scope, id, {
       defaultIntegration: new LambdaIntegration(props.handler, props.integrationOptions),

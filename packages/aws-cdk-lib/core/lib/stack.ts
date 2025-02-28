@@ -1,3 +1,4 @@
+import { log } from 'console';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IConstruct, Construct, Node } from 'constructs';
@@ -18,6 +19,7 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
+import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
@@ -196,6 +198,12 @@ export interface StackProps {
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
    */
   readonly suppressTemplateIndentation?: boolean;
+
+  /**
+   * A list of IPropertyInjector attached to this Stack.
+   * @default - no PropertyInjectors
+   */
+  readonly propertyInjectors?: IPropertyInjector[];
 }
 
 /**
@@ -431,6 +439,13 @@ export class Stack extends Construct implements ITaggable {
     id = id ?? 'Default';
 
     super(scope, id);
+
+    log('In Stack ctor');
+    if (props.propertyInjectors) {
+      const injectors = PropertyInjectors.of(this);
+      injectors.add(...props.propertyInjectors);
+      log(`supportedClasses: ${injectors.supportedClasses()}`);
+    }
 
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };

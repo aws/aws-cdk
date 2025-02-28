@@ -9,6 +9,7 @@ import { IBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { applyInjectors } from '../../core/lib/prop-injectors';
 
 /**
  * Options for creating an api mapping
@@ -118,6 +119,11 @@ export interface IDomainName extends IResource {
 
 export class DomainName extends Resource implements IDomainName {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.DomainName';
+
+  /**
    * Imports an existing domain name.
    */
   public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
@@ -138,6 +144,12 @@ export class DomainName extends Resource implements IDomainName {
   private readonly endpointType: EndpointType;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
+    // Blueprint Property Injection
+    props = applyInjectors(DomainName.PROPERTY_INJECTION_ID, props, {
+      scope,
+      id,
+    });
+
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
