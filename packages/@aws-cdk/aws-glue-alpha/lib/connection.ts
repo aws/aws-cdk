@@ -155,7 +155,7 @@ export class ConnectionType {
    */
   public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
   /**
-   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   * Designates a connection to SFTP.
    */
   public static readonly SFTP = new ConnectionType('SFTP');
   /**
