@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { DockerImage, Stack } from 'aws-cdk-lib';
