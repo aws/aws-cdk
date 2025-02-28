@@ -469,6 +469,7 @@ describe('Pipe', () => {
       expect(pipe.pipeRole).toBe(role);
       expect(source.grantRead).toHaveBeenCalledWith(role);
       expect(target.grantPush).toHaveBeenCalledWith(role);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(role);
     });
 

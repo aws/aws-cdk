@@ -207,7 +207,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(x: any): x is Stack {
+  public static isStack(this: void, x: any): x is Stack {
     return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
   }
 
@@ -601,7 +601,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Convert an object, potentially containing tokens, to a JSON string
    */
-  public toJsonString(obj: any, space?: number): string {
+  public toJsonString(this: void, obj: any, space?: number): string {
     return CloudFormationLang.toJSON(obj, space).toString();
   }
 
