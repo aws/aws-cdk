@@ -32,6 +32,14 @@ export enum WebSocketIntegrationType {
    * AWS Integration Type
    */
   AWS = 'AWS',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  HTTP = 'HTTP',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  HTTP_PROXY = 'HTTP_PROXY',
 }
 
 /**

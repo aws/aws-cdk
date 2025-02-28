@@ -43,6 +43,21 @@ export enum HttpIntegrationType {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    */
   AWS_PROXY = 'AWS_PROXY',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  AWS = 'AWS',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  MOCK = 'MOCK',
 }
 
 /**
