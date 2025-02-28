@@ -92,14 +92,14 @@ export class ComparablePrincipal {
   /**
    * Whether or not the given principal is a comparable principal
    */
-  public static isComparablePrincipal(x: IPrincipal): x is IComparablePrincipal {
+  public static isComparablePrincipal(this: void, x: IPrincipal): x is IComparablePrincipal {
     return 'dedupeString' in x;
   }
 
   /**
    * Return the dedupeString of the given principal, if available
    */
-  public static dedupeStringFor(x: IPrincipal): string | undefined {
+  public static dedupeStringFor(this: void, x: IPrincipal): string | undefined {
     return ComparablePrincipal.isComparablePrincipal(x) ? x.dedupeString() : undefined;
   }
 }

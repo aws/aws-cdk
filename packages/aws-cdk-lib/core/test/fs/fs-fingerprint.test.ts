@@ -222,6 +222,7 @@ describe('fs fingerprint', () => {
 
   test('normalizes relative path', () => {
     // Simulate a Windows path.relative()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalPathRelative = path.relative;
     const pathRelativeSpy = jest.spyOn(path, 'relative').mockImplementation((from: string, to: string): string => {
       return originalPathRelative(from, to).replace(/\//g, '\\');
