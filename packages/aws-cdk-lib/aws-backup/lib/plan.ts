@@ -200,7 +200,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     });
   }
 
-  private planCopyActions(props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
+  private planCopyActions(this: void, props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
     return {
       destinationBackupVaultArn: props.destinationBackupVault.backupVaultArn,
       lifecycle: (props.deleteAfter || props.moveToColdStorageAfter) && {

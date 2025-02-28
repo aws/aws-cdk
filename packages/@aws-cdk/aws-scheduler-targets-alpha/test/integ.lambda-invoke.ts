@@ -21,7 +21,11 @@ const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
  * The lambda function is invoked by the scheduler every minute
  * The assertion checks that the expected tag is created by calling listTags on the lambda function
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 /**
  * 1st stack creates a lambda which will be imported to 2nd stack to test using imported lambda
  */
