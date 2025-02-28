@@ -165,6 +165,10 @@ export enum FileSystemType {
    * xfs type
    */
   XFS = 'xfs',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  NTFS = 'ntfs',
 }
 
 /**
@@ -179,6 +183,10 @@ export enum EbsPropagatedTagSource {
    * TASK_DEFINITION
    */
   TASK_DEFINITION = 'TASK_DEFINITION',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  NONE = 'NONE',
 }
 
 /**
