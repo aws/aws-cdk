@@ -90,6 +90,7 @@ export class Datadog implements IDestination {
           secretArn: this.props.apiKey.secretArn,
         },
       },
+      dependables: [...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
   }
   private getS3BackupMode(): string | undefined {
