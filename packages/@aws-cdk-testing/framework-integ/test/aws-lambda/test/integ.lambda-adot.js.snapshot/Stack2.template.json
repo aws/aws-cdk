@@ -31,7 +31,7 @@
     ]
    }
   },
-  "MyFunc1inlinePolicyAddedToExecutionRole050337A59": {
+  "MyFunc1ServiceRoleDefaultPolicy3C5E9573": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -47,7 +47,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc1inlinePolicyAddedToExecutionRole050337A59",
+    "PolicyName": "MyFunc1ServiceRoleDefaultPolicy3C5E9573",
     "Roles": [
      {
       "Ref": "MyFunc1ServiceRoleF96C5B5C"
@@ -96,6 +96,7 @@
     }
    },
    "DependsOn": [
+    "MyFunc1ServiceRoleDefaultPolicy3C5E9573",
     "MyFunc1ServiceRoleF96C5B5C"
    ]
   },
@@ -130,7 +131,7 @@
     ]
    }
   },
-  "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15": {
+  "MyFunc2ServiceRoleDefaultPolicyEF3319F6": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -146,7 +147,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc2inlinePolicyAddedToExecutionRole0947C2F15",
+    "PolicyName": "MyFunc2ServiceRoleDefaultPolicyEF3319F6",
     "Roles": [
      {
       "Ref": "MyFunc2ServiceRole68E50443"
@@ -192,6 +193,7 @@
     }
    },
    "DependsOn": [
+    "MyFunc2ServiceRoleDefaultPolicyEF3319F6",
     "MyFunc2ServiceRole68E50443"
    ]
   },
@@ -226,7 +228,7 @@
     ]
    }
   },
-  "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8": {
+  "MyFunc3ServiceRoleDefaultPolicy449C4CBA": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -242,7 +244,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc3inlinePolicyAddedToExecutionRole07587DBB8",
+    "PolicyName": "MyFunc3ServiceRoleDefaultPolicy449C4CBA",
     "Roles": [
      {
       "Ref": "MyFunc3ServiceRoleA69795ED"
@@ -288,6 +290,7 @@
     }
    },
    "DependsOn": [
+    "MyFunc3ServiceRoleDefaultPolicy449C4CBA",
     "MyFunc3ServiceRoleA69795ED"
    ]
   },
@@ -322,7 +325,7 @@
     ]
    }
   },
-  "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D": {
+  "MyFunc4ServiceRoleDefaultPolicy68C57CB2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -338,7 +341,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc4inlinePolicyAddedToExecutionRole092E86F7D",
+    "PolicyName": "MyFunc4ServiceRoleDefaultPolicy68C57CB2",
     "Roles": [
      {
       "Ref": "MyFunc4ServiceRole93C4DEFF"
@@ -384,6 +387,7 @@
     }
    },
    "DependsOn": [
+    "MyFunc4ServiceRoleDefaultPolicy68C57CB2",
     "MyFunc4ServiceRole93C4DEFF"
    ]
   },
@@ -418,7 +422,7 @@
     ]
    }
   },
-  "MyFunc5inlinePolicyAddedToExecutionRole0431C1882": {
+  "MyFunc5ServiceRoleDefaultPolicy96ABEA66": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -434,7 +438,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyFunc5inlinePolicyAddedToExecutionRole0431C1882",
+    "PolicyName": "MyFunc5ServiceRoleDefaultPolicy96ABEA66",
     "Roles": [
      {
       "Ref": "MyFunc5ServiceRoleFE4CE92B"
@@ -480,6 +484,7 @@
     }
    },
    "DependsOn": [
+    "MyFunc5ServiceRoleDefaultPolicy96ABEA66",
     "MyFunc5ServiceRoleFE4CE92B"
    ]
   }
