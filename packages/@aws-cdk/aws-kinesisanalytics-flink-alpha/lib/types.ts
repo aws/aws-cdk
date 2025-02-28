@@ -74,6 +74,22 @@ export class Runtime {
 
   /** Flink Version 1.20 */
   public static readonly FLINK_1_20 = Runtime.of('FLINK-1_20');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly ZEPPELIN_FLINK_3_0 = Runtime.of('ZEPPELIN-FLINK-3_0');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly ZEPPELIN_FLINK_2_0 = Runtime.of('ZEPPELIN-FLINK-2_0');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly ZEPPELIN_FLINK_1_0 = Runtime.of('ZEPPELIN-FLINK-1_0');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly SQL_1_0 = Runtime.of('SQL-1_0');
 
   /** Create a new Runtime with with an arbitrary Flink version string */
   public static of(value: string) {
