@@ -213,6 +213,8 @@ export enum EventAction {
   WORKFLOW_JOB_QUEUED = 'WORKFLOW_JOB_QUEUED',
 }
 
+
+
 enum WebhookFilterTypes {
   FILE_PATH = 'FILE_PATH',
   COMMIT_MESSAGE = 'COMMIT_MESSAGE',
@@ -220,6 +222,22 @@ enum WebhookFilterTypes {
   ACTOR_ACCOUNT_ID = 'ACTOR_ACCOUNT_ID',
   BASE_REF = 'BASE_REF',
   REPOSITORY_NAME = 'REPOSITORY_NAME',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  EVENT = 'EVENT',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  WORKFLOW_NAME = 'WORKFLOW_NAME',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  TAG_NAME = 'TAG_NAME',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  RELEASE_NAME = 'RELEASE_NAME',
 }
 
 /**

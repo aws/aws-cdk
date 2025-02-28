@@ -315,4 +315,29 @@ export enum FleetComputeType {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    */
   ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  BUILD_LAMBDA_1GB = 'BUILD_LAMBDA_1GB',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  BUILD_LAMBDA_2GB = 'BUILD_LAMBDA_2GB',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  BUILD_LAMBDA_4GB = 'BUILD_LAMBDA_4GB',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  BUILD_LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  BUILD_LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
