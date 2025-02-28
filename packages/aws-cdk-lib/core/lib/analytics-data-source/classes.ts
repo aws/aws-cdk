@@ -617,6 +617,81 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addUserPoolAuthentication': [
         '*'
       ]
+    },
+    'IdentityPoolRoleAttachment': {
+      'identityPool': {
+        'identityPoolId': '*',
+        'identityPoolArn': '*',
+        'identityPoolName': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'authenticatedRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'unauthenticatedRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'roleMappings': {
+        'providerUrl': '*',
+        'mappingKey': '*',
+        'useToken': 'boolean',
+        'resolveAmbiguousRoles': 'boolean',
+        'rules': {
+          'claim': '*',
+          'mappedRole': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            },
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'claimValue': '*',
+          'matchType': 'RoleMappingMatchType'
+        }
+      }
     }
   },
   '@aws-cdk.aws-ec2-alpha': {
