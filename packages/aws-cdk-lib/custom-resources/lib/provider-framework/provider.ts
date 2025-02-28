@@ -232,7 +232,17 @@ export class Provider extends Construct implements ICustomResourceProvider {
       });
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
-      waiterStateMachine.grantStartExecution(onEventFunction);
+      // if role is provided, we can't use grantStartExecution due to circular dependency:
+      // waitertatemachine --> isComplete/onTimeout lambda -> role default policy --> waiterstatemachine
+      if (props.role) {
+        iam.Grant.addToPrincipal({
+          grantee: onEventFunction,
+          actions: ['states:StartExecution'],
+          resourceArns: ['*'],
+        });
+      } else {
+        waiterStateMachine.grantStartExecution(onEventFunction);
+      }
     }
 
     this.entrypoint = onEventFunction;
