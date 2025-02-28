@@ -75,6 +75,21 @@ export enum VpcEndpointType {
    * your route table, used for traffic destined to a supported AWS service.
    */
   GATEWAY = 'Gateway',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  RESOURCE = 'Resource',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  SERVICENETWORK = 'ServiceNetwork',
 }
 
 /**
