@@ -11,7 +11,7 @@ Usage:
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
 
 declare const fn: lambda.Function;
-fn.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
+fn.addLayers(AwsCliLayer.getOrCreate(this));
 ```
 
 The CLI will be installed under `/opt/awscli/aws`.
