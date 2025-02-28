@@ -301,9 +301,7 @@ export enum PredicateLogical {
 export enum ConditionLogicalOperator {
   /** The condition is true if the values are equal. */
   EQUALS = 'EQUALS',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
+  /** The condition is true if the first value is greater than the second. */
   GREATER_THAN = 'GREATER_THAN',
   /**
    * [PLACEHOLDER FOR: TO BE FILLED OUT]
