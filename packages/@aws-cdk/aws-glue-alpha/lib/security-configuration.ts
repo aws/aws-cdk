@@ -34,6 +34,11 @@ export enum S3EncryptionMode {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
    */
   KMS = 'SSE-KMS',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -47,6 +52,10 @@ export enum CloudWatchEncryptionMode {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
    */
   KMS = 'SSE-KMS',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -60,6 +69,10 @@ export enum JobBookmarksEncryptionMode {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
   CLIENT_SIDE_KMS = 'CSE-KMS',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**

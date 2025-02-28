@@ -97,6 +97,21 @@ export enum JobState {
    * State indicating job stopped
    */
   STOPPED = 'STOPPED',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  ERROR = 'ERROR',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  WAITING = 'WAITING',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  EXPIRED = 'EXPIRED',
 }
 
 /**
@@ -286,6 +301,22 @@ export enum PredicateLogical {
 export enum ConditionLogicalOperator {
   /** The condition is true if the values are equal. */
   EQUALS = 'EQUALS',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  GREATER_THAN = 'GREATER_THAN',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  LESS_THAN = 'LESS_THAN',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  GREATER_THAN_EQUALS = 'GREATER_THAN_EQUALS',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  LESS_THAN_EQUALS = 'LESS_THAN_EQUALS',
 }
 
 /**
