@@ -305,9 +305,7 @@ export enum ConditionLogicalOperator {
   GREATER_THAN = 'GREATER_THAN',
   /** The condition is true if the first value is less than the second. */
   LESS_THAN = 'LESS_THAN',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
+  /** The condition is true if the first value is greater than or equal to the second. */
   GREATER_THAN_EQUALS = 'GREATER_THAN_EQUALS',
   /**
    * [PLACEHOLDER FOR: TO BE FILLED OUT]
