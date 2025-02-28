@@ -10,8 +10,9 @@ import { ITableBucket } from './table-bucket';
 export interface TableBucketPolicyProps {
   /**
    * Name of the table bucket policy
+   * @default -- Physical name will be generated if not provided
    */
-  readonly tableBucketPolicyName: string;
+  readonly tableBucketPolicyName?: string;
   /**
    * The associated table bucket
    */
@@ -41,16 +42,15 @@ export class TableBucketPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TableBucketPolicyProps) {
     super(scope, id, {
-      physicalName: PhysicalName.GENERATE_IF_NEEDED,
+      physicalName: props.tableBucketPolicyName || PhysicalName.GENERATE_IF_NEEDED,
     });
 
     // Use default policy if not provided with props
-    const resourcePolicy = props.resourcePolicy || new iam.PolicyDocument({});
-    this.document = resourcePolicy;
+    this.document = props.resourcePolicy || new iam.PolicyDocument({});
 
     this._resource = new CfnTableBucketPolicy(this, id, {
       tableBucketArn: props.tableBucket.tableBucketArn,
-      resourcePolicy: resourcePolicy.toJSON(),
+      resourcePolicy: this.document,
     });
   }
 
@@ -64,6 +64,6 @@ export class TableBucketPolicy extends Resource {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement) {
     this.document.addStatements(statement);
-    this._resource.resourcePolicy = this.document.toJSON();
+    this._resource.resourcePolicy = this.document;
   }
 }

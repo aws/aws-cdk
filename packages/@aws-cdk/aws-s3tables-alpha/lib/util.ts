@@ -1,7 +1,6 @@
 import { IConstruct } from 'constructs';
 import { TableBucketAttributes } from './table-bucket';
 import * as cdk from 'aws-cdk-lib/core';
-import * as errors from 'aws-cdk-lib/core/lib/errors';
 
 export const S3_TABLES_SERVICE = 's3tables';
 
@@ -11,7 +10,7 @@ export function parseTableBucketArn(construct: IConstruct, props: TableBucketAtt
     return props.tableBucketArn;
   }
 
-  if (props.tableBucketName && props.region && props.account) {
+  if (props.tableBucketName) {
     return cdk.Stack.of(construct).formatArn({
       region: props.region,
       account: props.account,
@@ -22,7 +21,7 @@ export function parseTableBucketArn(construct: IConstruct, props: TableBucketAtt
     });
   }
 
-  throw new errors.ValidationError('Cannot determine bucket ARN. At least `tableBucketArn`, `bucketName`, and `account` is needed', construct);
+  throw new cdk.ValidationError('Cannot determine bucket ARN. At least `tableBucketArn` is needed', construct);
 }
 
 export function parseTableBucketName(construct: IConstruct, props: TableBucketAttributes): string {
@@ -39,10 +38,10 @@ export function parseTableBucketName(construct: IConstruct, props: TableBucketAt
     }
   }
 
-  throw new errors.ValidationError('tableBucketName is required and could not be inferred from context', construct);
+  throw new cdk.ValidationError('tableBucketName is required and could not be inferred from context', construct);
 }
 
-export function parseTableBucketRegion(construct: IConstruct, props: TableBucketAttributes): string {
+export function parseTableBucketRegion(construct: IConstruct, props: TableBucketAttributes): string | undefined {
   // if we have an explicit bucket region, use it.
   if (props.region) {
     return props.region;
@@ -56,10 +55,11 @@ export function parseTableBucketRegion(construct: IConstruct, props: TableBucket
     }
   }
 
-  throw new errors.ValidationError('Region is required and could not be inferred from context', construct);
+  // Region is optional, can be inferred later
+  return undefined;
 }
 
-export function parseTableBucketAccount(construct: IConstruct, props: TableBucketAttributes): string {
+export function parseTableBucketAccount(construct: IConstruct, props: TableBucketAttributes): string | undefined {
   // if we have an explicit bucket account, use it.
   if (props.account) {
     return props.account;
@@ -73,7 +73,8 @@ export function parseTableBucketAccount(construct: IConstruct, props: TableBucke
     }
   }
 
-  throw new errors.ValidationError('Account is required and could not be inferred from context', construct);
+  // Account is optional, can be inferred later
+  return undefined;
 }
 
 /**

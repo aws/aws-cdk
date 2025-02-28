@@ -4,7 +4,7 @@ import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import { TableBucketPolicy } from './table-bucket-policy';
 import { validateTableBucketAttributes, S3_TABLES_SERVICE } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource, Token, UnscopedValidationError, ArnFormat, PhysicalName } from 'aws-cdk-lib/core';
+import { Resource, IResource, UnscopedValidationError, ArnFormat } from 'aws-cdk-lib/core';
 import UnreferencedFileRemovalProperty = s3tables.CfnTableBucket.UnreferencedFileRemovalProperty;
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
@@ -25,9 +25,21 @@ export interface ITableBucket extends IResource {
   readonly tableBucketName: string;
 
   /**
+   * The accountId containing the table bucket.
+   * @attribute
+   */
+  readonly account?: string;
+
+  /**
+   * The region containing the table bucket.
+   * @attribute
+   */
+  readonly region?: string;
+
+  /**
    * The resource policy for this tableBucket.
    */
-  readonly policy?: TableBucketPolicy;
+  readonly resourcePolicy?: TableBucketPolicy;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -55,7 +67,14 @@ export interface ITableBucket extends IResource {
 abstract class TableBucketBase extends Resource implements ITableBucket {
   public abstract readonly tableBucketArn: string;
   public abstract readonly tableBucketName: string;
-  public abstract policy?: TableBucketPolicy;
+
+  /**
+   * The resource policy associated with this table bucket.
+   *
+   * If `autoCreatePolicy` is true, a `TableBucketPolicy` will be created upon the
+   * first call to addToResourcePolicy(s).
+   */
+  public abstract resourcePolicy?: TableBucketPolicy;
 
   /**
    * Indicates if a bucket resource policy should automatically created upon
@@ -86,16 +105,15 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   public addToResourcePolicy(
     statement: iam.PolicyStatement,
   ): iam.AddToResourcePolicyResult {
-    if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TableBucketPolicy(this, 'Policy', {
+    if (!this.resourcePolicy && this.autoCreatePolicy) {
+      this.resourcePolicy = new TableBucketPolicy(this, 'DefaultPolicy', {
         tableBucket: this,
-        tableBucketPolicyName: `${this.tableBucketName}-policy`,
       });
     }
 
-    if (this.policy) {
-      this.policy.document.addStatements(statement);
-      return { statementAdded: true, policyDependable: this.policy };
+    if (this.resourcePolicy) {
+      this.resourcePolicy.addToResourcePolicy(statement);
+      return { statementAdded: true, policyDependable: this.resourcePolicy };
     }
 
     return { statementAdded: false };
@@ -111,6 +129,7 @@ export interface TableBucketProps {
    * @link https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-buckets-naming.html#table-buckets-naming-rules
    */
   readonly tableBucketName: string;
+
   /**
    * Unreferenced file removal settings for the S3 TableBucket.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-tablebucket-unreferencedfileremoval.html
@@ -118,14 +137,20 @@ export interface TableBucketProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html
    */
   readonly unreferencedFileRemoval?: UnreferencedFileRemovalProperty;
+
   /**
    * AWS region that the table bucket exists in.
+   *
+   * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
-  readonly region: string;
+  readonly region?: string;
+
   /**
    * AWS Account ID of the table bucket owner.
+   *
+   * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
    */
-  readonly account: string;
+  readonly account?: string;
 }
 
 /**
@@ -174,7 +199,18 @@ export interface TableBucketAttributes {
  */
 export class TableBucket extends TableBucketBase {
   /**
-   * Creates a TableBucket construct that represents an external table bucket.
+   * Defines a TableBucket construct from an external table bucket ARN.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param tableBucketArn Amazon Resource Name (arn) of the table bucket
+   */
+  public static fromTableBucketArn(scope: Construct, id: string, tableBucketArn: string): ITableBucket {
+    return TableBucket.fromTableBucketAttributes(scope, id, { tableBucketArn });
+  }
+
+  /**
+   * Defines a TableBucket construct that represents an external table bucket.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
@@ -186,11 +222,13 @@ export class TableBucket extends TableBucketBase {
     attrs: TableBucketAttributes,
   ): ITableBucket {
     const { tableBucketName, region, account, tableBucketArn } = validateTableBucketAttributes(scope, attrs);
-    TableBucket.validateBucketName(tableBucketName);
+    TableBucket.validateTableBucketName(tableBucketName);
     class Import extends TableBucketBase {
       public readonly tableBucketName = tableBucketName!;
       public readonly tableBucketArn = tableBucketArn;
-      public readonly policy?: TableBucketPolicy;
+      public readonly resourcePolicy?: TableBucketPolicy;
+      public readonly region = region;
+      public readonly account = account;
       protected autoCreatePolicy: boolean = false;
 
       /**
@@ -202,8 +240,8 @@ export class TableBucket extends TableBucketBase {
     }
 
     return new Import(scope, id, {
-      account: account,
-      region: region,
+      account,
+      region,
       physicalName: tableBucketName,
     });
   }
@@ -211,13 +249,12 @@ export class TableBucket extends TableBucketBase {
   /**
    * Throws an exception if the given table bucket name is not valid.
    *
-   * @param physicalName name of the bucket.
+   * @param bucketName name of the bucket.
    */
-  public static validateBucketName(
-    physicalName: string,
-  ): void {
-    const bucketName = physicalName;
-    if (!bucketName || Token.isUnresolved(bucketName)) {
+  public static validateTableBucketName(
+    bucketName: string | undefined,
+  ) {
+    if (bucketName == undefined) {
       // the name is a late-bound value, not a defined string, so skip validation
       return;
     }
@@ -261,7 +298,7 @@ export class TableBucket extends TableBucketBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        `Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
+        `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
       );
     }
   }
@@ -318,7 +355,7 @@ export class TableBucket extends TableBucketBase {
   /**
    * The resource policy for this tableBucket.
    */
-  public readonly policy?: TableBucketPolicy;
+  public readonly resourcePolicy?: TableBucketPolicy;
 
   /**
    * The unique Amazon Resource Name (arn) of this table bucket
@@ -334,24 +371,23 @@ export class TableBucket extends TableBucketBase {
 
   constructor(scope: Construct, id: string, props: TableBucketProps) {
     super(scope, id, {
-      physicalName: PhysicalName.GENERATE_IF_NEEDED,
+      physicalName: props.tableBucketName,
     });
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    TableBucket.validateBucketName(props.tableBucketName);
+    TableBucket.validateTableBucketName(props.tableBucketName);
     TableBucket.validateUnreferencedFileRemoval(props.unreferencedFileRemoval);
 
-    const resource = new s3tables.CfnTableBucket(this, id, {
+    this._resource = new s3tables.CfnTableBucket(this, id, {
       tableBucketName: props.tableBucketName,
       unreferencedFileRemoval: props.unreferencedFileRemoval,
     });
-    this._resource = resource;
 
-    this.tableBucketName = this.getResourceNameAttribute(resource.ref);
+    this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
     this.tableBucketArn = this.getResourceArnAttribute(
-      resource.attrTableBucketArn,
+      this._resource.attrTableBucketArn,
       {
         region: props.region,
         account: props.account,
