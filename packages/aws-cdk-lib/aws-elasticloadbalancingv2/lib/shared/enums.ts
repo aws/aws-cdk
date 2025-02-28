@@ -51,6 +51,11 @@ export enum Protocol {
    * Listen to both TCP and UDP on the same port (NLB)
    */
   TCP_UDP = 'TCP_UDP',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  GENEVE = 'GENEVE',
 }
 
 /**
@@ -66,6 +71,31 @@ export enum ApplicationProtocol {
    * HTTPS
    */
   HTTPS = 'HTTPS',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  TCP = 'TCP',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  TLS = 'TLS',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  UDP = 'UDP',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  TCP_UDP = 'TCP_UDP',
+
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  GENEVE = 'GENEVE',
 }
 
 /**
