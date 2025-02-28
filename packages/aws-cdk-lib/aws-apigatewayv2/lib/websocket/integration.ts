@@ -32,6 +32,10 @@ export enum WebSocketIntegrationType {
    * AWS Integration Type
    */
   AWS = 'AWS',
+  /**
+   * TEST
+   */
+  TEST = 'TEST',
 }
 
 /**
