@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
+import { Connections } from './connections';
 import { CfnPrefixList } from './ec2.generated';
+import { IPeer } from './peer';
 import { IResource, Lazy, Resource, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource {
+export interface IPrefixList extends IResource, IPeer {
   /**
    * The ID of the prefix list
    *
@@ -74,6 +76,21 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    * @attribute
    */
   public abstract readonly prefixListId: string;
+
+  public readonly canInlineRule = false;
+  public readonly connections: Connections = new Connections({ peer: this });
+
+  get uniqueId() {
+    return this.prefixListId;
+  }
+
+  public toIngressRuleConfig(): any {
+    return { sourcePrefixListId: this.prefixListId };
+  }
+
+  public toEgressRuleConfig(): any {
+    return { destinationPrefixListId: this.prefixListId };
+  }
 }
 
 /**
@@ -86,11 +103,12 @@ export class PrefixList extends PrefixListBase {
    *
    */
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
-    class Import extends Resource implements IPrefixList {
+    class Import extends PrefixListBase implements IPrefixList {
       public readonly prefixListId = prefixListId;
     }
     return new Import(scope, id);
   }
+
   /**
    * The ID of the prefix list
    *
