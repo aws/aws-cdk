@@ -87,6 +87,22 @@ export enum AuthenticationMethod {
    * CLIENT_CERTIFICATE_TLS_AUTH (mTLS) authentication method for your Kafka cluster
    */
   CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
+  /**
+   * VPC_SUBNET authentication method for your Kafka cluster.
+   */
+  VPC_SUBNET = 'VPC_SUBNET',
+  /**
+   * VPC_SECURITY_GROUP authentication method for your Kafka cluster. 
+   */
+  VPC_SECURITY_GROUP = 'VPC_SECURITY_GROUP',
+  /**
+   * VIRTUAL_HOST authentication method for your Kafka cluster. 
+   */
+  VIRTUAL_HOST = 'VIRTUAL_HOST',
+  /**
+   * SERVER_ROOT_CA_CERTIFICATE authentication method for your Kafka cluster. 
+   */
+  SERVER_ROOT_CA_CERTIFICATE = 'SERVER_ROOT_CA_CERTIFICATE',
 }
 
 /**
