@@ -868,22 +868,22 @@ export enum StorageClass {
   DEEP_ARCHIVE = 'DEEP_ARCHIVE',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * 'OUTPOSTS'
    */
   OUTPOSTS = 'OUTPOSTS',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * 'GLACIER_IR'
    */
   GLACIER_IR = 'GLACIER_IR',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * 'SNOW'
    */
   SNOW = 'SNOW',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * 'EXPRESS_ONEZONE'
    */
   EXPRESS_ONEZONE = 'EXPRESS_ONEZONE',
 }
