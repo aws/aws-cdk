@@ -73,27 +73,27 @@ export enum ApplicationProtocol {
   HTTPS = 'HTTPS',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * TCP
    */
   TCP = 'TCP',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * TLS
    */
   TLS = 'TLS',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * UDP
    */
   UDP = 'UDP',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * TCP_UDP
    */
   TCP_UDP = 'TCP_UDP',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * GENEVE
    */
   GENEVE = 'GENEVE',
 }
