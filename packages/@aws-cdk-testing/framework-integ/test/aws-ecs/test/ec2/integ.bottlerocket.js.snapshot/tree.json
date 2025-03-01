@@ -84,7 +84,8 @@
                     "path": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -199,7 +200,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -251,7 +276,8 @@
                     "path": "aws-ecs-integ-bottlerocket/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -318,7 +344,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -370,7 +415,8 @@
                     "path": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -437,7 +483,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -489,7 +554,8 @@
                     "path": "aws-ecs-integ-bottlerocket/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -556,7 +622,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -600,7 +685,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "maxAzs": "*",
+                  "natGateways": "*",
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "EcsCluster": {
@@ -660,7 +752,13 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "vpc": "*",
+                          "allowAllOutbound": true
+                        }
+                      ]
                     }
                   },
                   "InstanceRole": {
@@ -672,7 +770,10 @@
                         "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/InstanceRole/ImportInstanceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -805,13 +906,89 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "roleName": "*",
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          }
+                        },
+                        {
+                          "addManagedPolicy": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "addManagedPolicy": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "InstanceProfile": {
@@ -837,7 +1014,8 @@
                     "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/ImportedInstanceProfile",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "LaunchTemplate": {
@@ -930,7 +1108,21 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "machineImage": "*",
+                          "instanceType": "*",
+                          "detailedMonitoring": false,
+                          "securityGroup": "*",
+                          "userData": "*",
+                          "associatePublicIpAddress": "*",
+                          "spotOptions": "*",
+                          "blockDevices": "*",
+                          "instanceProfile": "*",
+                          "keyPair": "*"
+                        }
+                      ]
                     }
                   },
                   "ASG": {
@@ -991,7 +1183,10 @@
                                 "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
+                                  "version": "0.0.0",
+                                  "metadata": [
+                                    "*"
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -1038,11 +1233,202 @@
                                   "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                   "version": "0.0.0"
                                 }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "ec2:DescribeHosts",
+                                                "ec2:DescribeInstanceAttribute",
+                                                "ec2:DescribeInstanceStatus",
+                                                "ec2:DescribeInstances"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": "*"
+                                            },
+                                            {
+                                              "Action": "autoscaling:CompleteLifecycleAction",
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::Join": [
+                                                  "",
+                                                  [
+                                                    "arn:",
+                                                    {
+                                                      "Ref": "AWS::Partition"
+                                                    },
+                                                    ":autoscaling:",
+                                                    {
+                                                      "Ref": "AWS::Region"
+                                                    },
+                                                    ":",
+                                                    {
+                                                      "Ref": "AWS::AccountId"
+                                                    },
+                                                    ":autoScalingGroup:*:autoScalingGroupName/",
+                                                    {
+                                                      "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
+                                                    }
+                                                  ]
+                                                ]
+                                              }
+                                            },
+                                            {
+                                              "Action": [
+                                                "ecs:DescribeContainerInstances",
+                                                "ecs:DescribeTasks",
+                                                "ecs:ListTasks",
+                                                "ecs:UpdateContainerInstancesState"
+                                              ],
+                                              "Condition": {
+                                                "ArnEquals": {
+                                                  "ecs:cluster": {
+                                                    "Fn::GetAtt": [
+                                                      "EcsCluster97242B84",
+                                                      "Arn"
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              "Effect": "Allow",
+                                              "Resource": "*"
+                                            },
+                                            {
+                                              "Action": [
+                                                "ecs:ListContainerInstances",
+                                                "ecs:SubmitContainerStateChange",
+                                                "ecs:SubmitTaskStateChange"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "EcsCluster97242B84",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
+                                        "roles": [
+                                          {
+                                            "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "0.0.0"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "0.0.0",
+                                  "metadata": [
+                                    "*",
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
+                                }
                               }
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "assumedBy": {
+                                    "principalAccount": "*",
+                                    "assumeRoleAction": "*"
+                                  },
+                                  "managedPolicies": [
+                                    {
+                                      "managedPolicyArn": "*"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           },
                           "Resource": {
@@ -1137,270 +1523,39 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_sns.Subscription",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "inlinePolicyAddedToExecutionRole-0": {
-                            "id": "inlinePolicyAddedToExecutionRole-0",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ec2:DescribeHosts",
-                                            "ec2:DescribeInstanceAttribute",
-                                            "ec2:DescribeInstanceStatus",
-                                            "ec2:DescribeInstances"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole07C0DC0DA",
-                                    "roles": [
-                                      {
-                                        "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "topic": "*",
+                                  "endpoint": "*",
+                                  "protocol": "lambda",
+                                  "filterPolicy": "*",
+                                  "filterPolicyWithMessageBody": "*",
+                                  "region": "*",
+                                  "deadLetterQueue": "*"
                                 }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "inlinePolicyAddedToExecutionRole-1": {
-                            "id": "inlinePolicyAddedToExecutionRole-1",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "autoscaling:CompleteLifecycleAction",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":autoscaling:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":autoScalingGroup:*:autoScalingGroupName/",
-                                                {
-                                                  "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
-                                                }
-                                              ]
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole10E3DC628",
-                                    "roles": [
-                                      {
-                                        "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "inlinePolicyAddedToExecutionRole-2": {
-                            "id": "inlinePolicyAddedToExecutionRole-2",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ecs:DescribeContainerInstances",
-                                            "ecs:DescribeTasks"
-                                          ],
-                                          "Condition": {
-                                            "ArnEquals": {
-                                              "ecs:cluster": {
-                                                "Fn::GetAtt": [
-                                                  "EcsCluster97242B84",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            }
-                                          },
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole2C85CCD01",
-                                    "roles": [
-                                      {
-                                        "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "inlinePolicyAddedToExecutionRole-3": {
-                            "id": "inlinePolicyAddedToExecutionRole-3",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ecs:ListContainerInstances",
-                                            "ecs:SubmitContainerStateChange",
-                                            "ecs:SubmitTaskStateChange"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "EcsCluster97242B84",
-                                              "Arn"
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole367C81881",
-                                    "roles": [
-                                      {
-                                        "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "inlinePolicyAddedToExecutionRole-4": {
-                            "id": "inlinePolicyAddedToExecutionRole-4",
-                            "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ecs:ListTasks",
-                                            "ecs:UpdateContainerInstancesState"
-                                          ],
-                                          "Condition": {
-                                            "ArnEquals": {
-                                              "ecs:cluster": {
-                                                "Fn::GetAtt": [
-                                                  "EcsCluster97242B84",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            }
-                                          },
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole43085D216",
-                                    "roles": [
-                                      {
-                                        "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "code": "*",
+                              "handler": "*",
+                              "runtime": "*",
+                              "timeout": "*",
+                              "environment": "*"
+                            },
+                            {
+                              "addEnvironment": [
+                                "*",
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
@@ -1439,7 +1594,12 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_sns.Topic",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "masterKey": "*"
+                            }
+                          ]
                         }
                       },
                       "Role": {
@@ -1451,7 +1611,10 @@
                             "path": "aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -1523,13 +1686,54 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            }
+                          ]
                         }
                       },
                       "Resource": {
@@ -1563,19 +1767,81 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "autoScalingGroup": "*",
+                          "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+                          "defaultResult": "CONTINUE",
+                          "notificationTarget": "*",
+                          "heartbeatTimeout": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "vpc": "*",
+                      "machineImage": "*",
+                      "updateType": "Replace",
+                      "minCapacity": "*",
+                      "instanceType": "*"
+                    },
+                    {
+                      "addUserData": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToRolePolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs.Cluster",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*"
+                },
+                {
+                  "addCapacity": [
+                    "*",
+                    {
+                      "minCapacity": "*",
+                      "instanceType": "*",
+                      "machineImageType": 1
+                    }
+                  ]
+                },
+                {
+                  "addAutoScalingGroup": [
+                    "*",
+                    {
+                      "machineImageType": 1
+                    }
+                  ]
+                }
+              ]
             }
           },
           "SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
@@ -1591,7 +1857,8 @@
             "path": "aws-ecs-integ-bottlerocket/SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": []
             }
           },
           "BootstrapVersion": {

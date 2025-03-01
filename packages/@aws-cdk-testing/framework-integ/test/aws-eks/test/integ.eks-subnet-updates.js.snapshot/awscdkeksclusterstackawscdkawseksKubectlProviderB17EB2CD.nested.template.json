@@ -105,6 +105,16 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Handler886CB40B",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -159,32 +169,6 @@
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
    ]
-  },
-  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Handler886CB40B",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-     }
-    ]
-   }
   }
  },
  "Mappings": {

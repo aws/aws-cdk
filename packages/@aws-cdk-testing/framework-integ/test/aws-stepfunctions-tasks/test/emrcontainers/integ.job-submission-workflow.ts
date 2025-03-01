@@ -22,7 +22,11 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
  * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-test');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 

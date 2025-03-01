@@ -214,30 +214,6 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeployWithInvalidationCustomResourceHandlerinlinePolicyAddedToExecutionRole053D7D0A3": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "cloudfront:CreateInvalidation",
-        "cloudfront:GetInvalidation"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "DeployWithInvalidationCustomResourceHandlerinlinePolicyAddedToExecutionRole053D7D0A3",
-    "Roles": [
-     {
-      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
-     }
-    ]
-   }
-  },
   "DeployWithInvalidationCustomResourceE3FF7455": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -384,6 +360,14 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"

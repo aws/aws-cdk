@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c1f3d5009f680751e580dbe78d97562e671f0b5f4bce98565a54dacd5a7da72.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c466578dc4764fa32900c708fffeac7f88b5d6f75c80f09106029d6dec76994.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,54 @@
         "tls-network-load-balanced-ecs-service.assets"
       ],
       "metadata": {
+        "/tls-network-load-balanced-ecs-service/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*"
+            }
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/Vpc/PublicSubnet1/Subnet": [
@@ -76,6 +120,42 @@
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -112,6 +192,34 @@
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +242,34 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
         "/tls-network-load-balanced-ecs-service/Vpc/PrivateSubnet2/Subnet": [
@@ -172,6 +308,12 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -204,23 +346,37 @@
         ],
         "/tls-network-load-balanced-ecs-service/Cluster": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addCapacity": [
+                "*",
+                {
+                  "instanceType": "*",
+                  "desiredCapacity": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAutoScalingGroup": [
+                "*",
+                {
+                  "machineImageType": 0
+                }
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "Cluster.handleCanContainersAccessInstanceRoleForAL2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:584:47)",
-              "Cluster.configureAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:489:26)",
-              "Cluster.addAutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:455:14)",
-              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:408:14)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:24:9)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "Blocking container access to instance role will be deprecated. Use the @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature feature flagto keep this feature temporarily. See https://github.com/aws/aws-cdk/discussions/32609 [ack: @aws-cdk/aws-ecs:deprecatedImdsBlocking]"
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/Resource": [
@@ -231,21 +387,83 @@
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "machineImage": "*",
+              "updateType": "Replace",
+              "instanceType": "*",
+              "desiredCapacity": "*"
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "new AutoScalingGroup (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.js:649:43)",
-              "Cluster.addCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:402:34)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:24:9)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceSecurityGroup/Resource": [
@@ -254,10 +472,114 @@
             "data": "ClusterDefaultAutoScalingGroupCapacityInstanceSecurityGroup1280FF15"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupCapacityInstanceRoleDDFBFB36"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/InstanceRole/DefaultPolicy/Resource": [
@@ -272,6 +594,23 @@
             "data": "ClusterDefaultAutoScalingGroupCapacityInstanceProfile3A782F9C"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -284,10 +623,177 @@
             "data": "ClusterDefaultAutoScalingGroupCapacityASGA16CBFC4"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctionServiceRoleF852A559"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctionServiceRoleDefaultPolicy7671EAB6"
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/Resource": [
@@ -302,40 +808,44 @@
             "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctionAllowInvoketlsnetworkloadbalancedecsserviceClusterDefaultAutoScalingGroupCapacityLifecycleHookDrainHookTopic6592E5608F9A40F3"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "lambda",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctionTopicC6667F16"
           }
         ],
-        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-0/Resource": [
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole03D211CEC"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoScalingGroup": "*",
+              "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+              "defaultResult": "CONTINUE",
+              "notificationTarget": "*",
+              "heartbeatTimeout": "*"
+            }
           }
         ],
-        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-1/Resource": [
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Topic": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole1D3180343"
-          }
-        ],
-        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2565B50C2"
-          }
-        ],
-        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole34274DBB4"
-          }
-        ],
-        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/DrainECSHook/Function/inlinePolicyAddedToExecutionRole-4/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4598A4B92"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "masterKey": "*"
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Topic/Resource": [
@@ -344,10 +854,81 @@
             "data": "ClusterDefaultAutoScalingGroupCapacityLifecycleHookDrainHookTopic3C09C53E"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterDefaultAutoScalingGroupCapacityLifecycleHookDrainHookRole3F8332FE"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/Cluster/DefaultAutoScalingGroupCapacity/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
@@ -368,10 +949,38 @@
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/LB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceWithTlsLB43A9E2DA"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/LB/PublicListener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/LB/PublicListener/Resource": [
@@ -392,6 +1001,45 @@
             "data": "myServiceWithTlsLoadBalancerDNS6D0A4AF0"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -404,16 +1052,96 @@
             "data": "myServiceWithTlsTaskDef3132768A"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/web/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": "*"
+            }
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/web/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceWithTlsTaskDefwebLogGroup4E6CDA77"
           }
         ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceWithTlsTaskDefExecutionRoleE8E9CE52"
+          }
+        ],
+        "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
@@ -425,21 +1153,15 @@
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/Service": [
           {
             "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "new BaseService (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:270:43)",
-              "new Ec2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:75:9)",
-              "new NetworkLoadBalancedEc2Service (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/ecs/network-load-balanced-ecs-service.js:64:24)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:30:1)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/tls-network-load-balanced-ecs-service/myServiceWithTls/Service/Service": [
@@ -458,6 +1180,51 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole03D211CEC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole03D211CEC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole1D3180343": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole1D3180343",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2565B50C2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole2565B50C2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole34274DBB4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole34274DBB4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4598A4B92": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterDefaultAutoScalingGroupCapacityDrainECSHookFunctioninlinePolicyAddedToExecutionRole4598A4B92",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

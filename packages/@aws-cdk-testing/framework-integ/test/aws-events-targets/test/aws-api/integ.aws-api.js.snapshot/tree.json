@@ -52,50 +52,46 @@
               "ScheduleRuleTarget0Handler": {
                 "id": "ScheduleRuleTarget0Handler",
                 "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget0Handler",
-                "children": {
-                  "inlinePolicyAddedToExecutionRole-0": {
-                    "id": "inlinePolicyAddedToExecutionRole-0",
-                    "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "ecs:UpdateService",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ScheduleRuleScheduleRuleTarget0HandlerinlinePolicyAddedToExecutionRole060ECCF6C",
-                            "roles": [
-                              {
-                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "timeout": "*",
+                      "memorySize": "*",
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addPermission": [
+                        "*",
+                        {
+                          "scope": "*",
+                          "action": "*",
+                          "principal": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "sourceArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898": {
@@ -128,50 +124,46 @@
               "ScheduleRuleTarget1Handler": {
                 "id": "ScheduleRuleTarget1Handler",
                 "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget1Handler",
-                "children": {
-                  "inlinePolicyAddedToExecutionRole-0": {
-                    "id": "inlinePolicyAddedToExecutionRole-0",
-                    "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget1Handler/inlinePolicyAddedToExecutionRole-0",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-aws-api-target-integ/ScheduleRule/ScheduleRuleTarget1Handler/inlinePolicyAddedToExecutionRole-0/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "rds:StopDBInstance",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ScheduleRuleScheduleRuleTarget1HandlerinlinePolicyAddedToExecutionRole026BB6AFF",
-                            "roles": [
-                              {
-                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "timeout": "*",
+                      "memorySize": "*",
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addPermission": [
+                        "*",
+                        {
+                          "scope": "*",
+                          "action": "*",
+                          "principal": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "sourceArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "AllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C": {
@@ -204,7 +196,27 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "schedule": "*"
+                },
+                {
+                  "addEventPattern": [
+                    "*"
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -228,7 +240,10 @@
                     "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -269,11 +284,131 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecs:UpdateService",
+                                    "kms:Encrypt",
+                                    "rds:StopDBInstance",
+                                    "ssm:PutParameter"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
+                            "roles": [
+                              {
+                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -293,7 +428,8 @@
                     "path": "aws-cdk-aws-api-target-integ/AWSb4cf1abd4e4f4bc699441af7ccd9ec37/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -312,7 +448,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "2cac8fc73da9ed6d5a3bf770a8dcae5fcf36d1816d0a6de8e240db920411ae4d.zip"
+                      "s3Key": "2f3794bf7e997526696f86b4e11ce079ba182e161bb246ba08c71cf7295ac014.zip"
                     },
                     "handler": "index.handler",
                     "memorySize": 256,
@@ -342,7 +478,16 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "timeout": "*",
+                  "memorySize": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                }
+              ]
             }
           },
           "TestParameter": {
@@ -368,7 +513,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "parameterName": "*",
+                  "stringValue": "*"
+                }
+              ]
             }
           },
           "UpdateSSMRule": {
@@ -425,50 +576,46 @@
               "UpdateSSMRuleTarget0Handler": {
                 "id": "UpdateSSMRuleTarget0Handler",
                 "path": "aws-cdk-aws-api-target-integ/UpdateSSMRule/UpdateSSMRuleTarget0Handler",
-                "children": {
-                  "inlinePolicyAddedToExecutionRole-0": {
-                    "id": "inlinePolicyAddedToExecutionRole-0",
-                    "path": "aws-cdk-aws-api-target-integ/UpdateSSMRule/UpdateSSMRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-aws-api-target-integ/UpdateSSMRule/UpdateSSMRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "ssm:PutParameter",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "UpdateSSMRuleUpdateSSMRuleTarget0HandlerinlinePolicyAddedToExecutionRole06C9883FF",
-                            "roles": [
-                              {
-                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "timeout": "*",
+                      "memorySize": "*",
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addPermission": [
+                        "*",
+                        {
+                          "scope": "*",
+                          "action": "*",
+                          "principal": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "sourceArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "AllowEventRuleawscdkawsapitargetintegUpdateSSMRuleUpdateSSMRuleTarget0Handler573B788B": {
@@ -501,7 +648,30 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "source": "*",
+                    "detailType": "*",
+                    "detail": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "source": "*",
+                      "detailType": "*",
+                      "detail": "*"
+                    }
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "EncryptionKey": {
@@ -552,7 +722,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "EncryptDataRule": {
@@ -609,50 +782,46 @@
               "EncryptDataRuleTarget0Handler": {
                 "id": "EncryptDataRuleTarget0Handler",
                 "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/EncryptDataRuleTarget0Handler",
-                "children": {
-                  "inlinePolicyAddedToExecutionRole-0": {
-                    "id": "inlinePolicyAddedToExecutionRole-0",
-                    "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/EncryptDataRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/EncryptDataRuleTarget0Handler/inlinePolicyAddedToExecutionRole-0/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "kms:Encrypt",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "EncryptDataRuleEncryptDataRuleTarget0HandlerinlinePolicyAddedToExecutionRole05E262763",
-                            "roles": [
-                              {
-                                "Ref": "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "timeout": "*",
+                      "memorySize": "*",
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addPermission": [
+                        "*",
+                        {
+                          "scope": "*",
+                          "action": "*",
+                          "principal": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "sourceArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8": {
@@ -685,7 +854,30 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_events.Rule",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "eventPattern": {
+                    "source": "*",
+                    "detailType": "*",
+                    "detail": "*"
+                  }
+                },
+                {
+                  "addEventPattern": [
+                    {
+                      "source": "*",
+                      "detailType": "*",
+                      "detail": "*"
+                    }
+                  ]
+                },
+                {
+                  "addTarget": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "Exports": {
@@ -793,7 +985,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       }
                     },
@@ -881,7 +1076,12 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {

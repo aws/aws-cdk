@@ -42,7 +42,11 @@ class EksStandardAccessEntry extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new EksStandardAccessEntry(app, 'EKSStandardAccessEntry');
 new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
   testCases: [stack],

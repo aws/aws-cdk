@@ -16,7 +16,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-run-task');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 stack.node.setContext(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, false);

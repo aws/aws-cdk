@@ -23,7 +23,11 @@ class EksClusterTagsStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new EksClusterTagsStack(app, 'EKSTagStack');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-tags-integ', {
   testCases: [stack],
