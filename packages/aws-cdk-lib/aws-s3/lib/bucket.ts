@@ -1075,6 +1075,10 @@ export interface BlockPublicAccessOptions {
   readonly restrictPublicBuckets?: boolean;
 }
 
+/**
+ *
+ * @depreacted Use `BlockPublicAccessV2` instead.
+ */
 export class BlockPublicAccess {
   public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
@@ -1099,6 +1103,33 @@ export class BlockPublicAccess {
     this.ignorePublicAcls = options.ignorePublicAcls;
     this.restrictPublicBuckets = options.restrictPublicBuckets;
   }
+}
+
+/**
+ *
+ * This class is used to create shortcut options for blockPublicAccessV2
+ */
+export class BlockPublicAccessV2 {
+  /**
+   * Use this option if you want to ensure every public access method is blocked.
+   * However keep in mind that this is the default state of an S3 bucket, and leaving blockPublicAccessV2 undefined would also work.
+   */
+  public static readonly BLOCK_ALL: BlockPublicAccessOptions = {
+    blockPublicAcls: true,
+    blockPublicPolicy: true,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: true,
+  };
+
+  /**
+   * Use this option if you want to only block the ACLs, using this will set blockPublicPolicy and restrictPublicBuckets to false.
+   */
+  public static readonly BLOCK_ACLS_ONLY: BlockPublicAccessOptions = {
+    blockPublicAcls: true,
+    blockPublicPolicy: false,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: false,
+  };
 }
 
 /**
@@ -1820,10 +1851,22 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    *
+   * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
+   *
+   * @deprecated Use `blockPublicAccessV2` instead.
+   *
+   */
+  readonly blockPublicAccess?: BlockPublicAccess;
+
+  /**
+   * The block public access configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   *
    *
    * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
    */
-  readonly blockPublicAccess?: BlockPublicAccess;
+  readonly blockPublicAccessV2?: BlockPublicAccessOptions;
 
   /**
    * The metrics configuration of this bucket.
@@ -1956,7 +1999,7 @@ export interface Tag {
  * import { RemovalPolicy } from 'aws-cdk-lib';
  *
  * new s3.Bucket(scope, 'Bucket', {
- *   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+ *   blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
  *   encryption: s3.BucketEncryption.S3_MANAGED,
  *   enforceSSL: true,
  *   versioned: true,
@@ -2196,6 +2239,17 @@ export class Bucket extends BucketBase {
 
     Bucket.validateBucketName(this.physicalName);
 
+    if (props.blockPublicAccess && props.blockPublicAccessV2) {
+      throw new ValidationError('you cannot use properties blockPublicAccess and blockPublicAccessV2 together. blockPublicAccess is deprecated, consider leaving this property undefined.', this);
+    }
+
+    let blockPublicAccess: BlockPublicAccessOptions | undefined = props.blockPublicAccessV2;
+    if (props.blockPublicAccessV2) {
+      blockPublicAccess = this.setBlockPublicAccessDefaults(props.blockPublicAccessV2);
+    }
+
+    const blockPublicAccessMethod = blockPublicAccess ?? props.blockPublicAccess;
+
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
 
@@ -2210,7 +2264,7 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
-      publicAccessBlockConfiguration: props.blockPublicAccess,
+      publicAccessBlockConfiguration: blockPublicAccessMethod,
       metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
       corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
       accessControl: Lazy.string({ produce: () => this.accessControl }),
@@ -3025,6 +3079,20 @@ export class Bucket extends BucketBase {
     // we can set `autoDeleteObjects: false` without the removal of the CR emptying
     // the bucket as a side effect.
     Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+  }
+
+  /**
+   * Function to set the blockPublicAccessOptions to a true default if not defined.
+   * If no blockPublicAccessOptions are specified at all, this is already the case as an s3 default in aws
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html
+   */
+  private setBlockPublicAccessDefaults(blockPublicAccessOptions: BlockPublicAccessOptions) {
+    return {
+      blockPublicAcls: blockPublicAccessOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: blockPublicAccessOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: blockPublicAccessOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: blockPublicAccessOptions.restrictPublicBuckets ?? true,
+    };
   }
 }
 

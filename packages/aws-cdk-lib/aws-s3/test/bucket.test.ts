@@ -948,7 +948,7 @@ describe('bucket', () => {
     });
   });
 
-  test('bucket with custom block public access setting', () => {
+  test('bucket with custom block public access setting - blockPublicAccess deprecated', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
@@ -961,6 +961,31 @@ describe('bucket', () => {
           'Properties': {
             'PublicAccessBlockConfiguration': {
               'RestrictPublicBuckets': true,
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with custom block public access setting - blockPublicAccessV2', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccessV2: { restrictPublicBuckets: false },
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'PublicAccessBlockConfiguration': {
+              'BlockPublicAcls': true,
+              'BlockPublicPolicy': true,
+              'IgnorePublicAcls': true,
+              'RestrictPublicBuckets': false,
             },
           },
           'DeletionPolicy': 'Retain',
