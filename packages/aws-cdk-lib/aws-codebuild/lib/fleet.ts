@@ -317,27 +317,27 @@ export enum FleetComputeType {
   ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Lambda build environment with 1GB of available memory.
    */
   BUILD_LAMBDA_1GB = 'BUILD_LAMBDA_1GB',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Lambda build environment with 2GB of available memory.
    */
   BUILD_LAMBDA_2GB = 'BUILD_LAMBDA_2GB',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Lambda build environment with 4GB of available memory.
    */
   BUILD_LAMBDA_4GB = 'BUILD_LAMBDA_4GB',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Lambda build environment with 8GB of available memory.
    */
   BUILD_LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Lambda build environment with 10GB of available memory.
    */
   BUILD_LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
