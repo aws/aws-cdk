@@ -28,6 +28,10 @@ export class Compression {
    * ZIP
    */
   public static readonly ZIP = new Compression('ZIP');
+  /**
+   * Uncompressed
+   */
+  public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
 
   /**
    * Creates a new Compression instance with a custom value.
