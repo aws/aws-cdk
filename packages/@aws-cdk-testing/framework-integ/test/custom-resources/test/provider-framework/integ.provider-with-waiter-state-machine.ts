@@ -49,7 +49,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new TestStack(app, 'integ-provider-with-waiter-state-machine');
 
 new integ.IntegTest(app, 'IntegProviderWithWaiterStateMachine', {
