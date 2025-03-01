@@ -1,4 +1,4 @@
-import { Attribute, HTTPBackupMode, HTTPEndpoint } from './http-endpoint';
+import { HTTPAttribute, HTTPBackupMode, HTTPEndpoint } from './http-endpoint';
 import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
 
@@ -100,9 +100,10 @@ export interface DatadogProps {
    * Datadog tags to apply for filtering.
    * @default - No tags.
    */
-  readonly tags?: Attribute[];
+  readonly tags?: HTTPAttribute[];
   /**
-   * @default - failed only
+   * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to Datadog.
+   * @default - Failed only
    */
   readonly backupMode?: HTTPBackupMode;
 }
@@ -113,7 +114,7 @@ export interface DatadogProps {
 export class Datadog extends HTTPEndpoint {
   constructor(props: DatadogProps) {
     super({
-      endpoint: {
+      endpointConfig: {
         url: props.url,
         secret: props.apiKey,
       },
@@ -124,6 +125,7 @@ export class Datadog extends HTTPEndpoint {
       retryOptions: {
         duration: Duration.seconds(60),
       },
+      backupMode: props.backupMode ?? HTTPBackupMode.FAILED,
       attributes: props.tags ?? [],
     });
   }

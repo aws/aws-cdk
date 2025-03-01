@@ -85,6 +85,17 @@ Amazon Data Firehose supports multiple AWS and third-party services as destinati
 Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
 for the implementations of these destinations.
 
+### HTTP
+
+Defining a delivery stream with an HTTP destination:
+
+```ts
+declare const endpointConfig: firehouse.HTTPEndpointConifg;
+const httpDestination = new firehouse.HTTPEndpoint({
+  endpointConfig,
+});
+```
+
 ### Datadog
 
 Defining a delivery stream with a Datadog destination:

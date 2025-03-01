@@ -7,29 +7,29 @@ import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
 
 /**
- *
+ * Kinesis Data Firehose uses the content encoding to compress the body of a request before sending the request to the destination.
  */
 export enum HTTPCompression {
   /**
-   *
+   * GZIP
    */
   GZIP = 'GZIP',
   /**
-   *
+   * NONE
    */
   NONE = 'NONE',
 }
 
 /**
- *
+ * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the HTTP endpoint destination.
  */
 export enum HTTPBackupMode {
   /**
-   *
+   * Back up only the documents that Kinesis Data Firehose could not deliver.
    */
   FAILED = 'FailedDataOnly',
   /**
-   *
+   * Back up all documents.
    */
   ALL = 'AllData',
 }
@@ -37,7 +37,7 @@ export enum HTTPBackupMode {
 /**
  * The buffering options that can be used before data is delivered to the specified destination.
  */
-export interface BufferingHints {
+export interface HTTPBufferingHints {
   /**
    * The higher interval allows more time to collect data and the size of data may be bigger. The lower interval sends the data more frequently and may be more advantageous when looking at shorter cycles of data activity.
    * @default 60 seconds
@@ -51,84 +51,91 @@ export interface BufferingHints {
 }
 
 /**
- *
+ * Describes the retry behavior in case Kinesis Data Firehose is unable to deliver data to the specified HTTP endpoint destination, or if it doesn't receive a valid acknowledgment of receipt from the specified HTTP endpoint destination.
  */
-export interface RetryOptions {
+export interface HTTPRetryOptions {
   /**
-   *
+   * The total amount of time that Kinesis Data Firehose spends on retries.
    */
   readonly duration: Duration;
 }
 
 /**
- *
+ * Describes the configuration of the HTTP endpoint to which Kinesis Firehose delivers data.
  */
-export interface Endpoint {
+export interface HTTPEndpointConfig {
   /**
-   *
+   * The URL of the HTTP endpoint selected as the destination.
    */
   readonly url: string;
   /**
-   * @default - Not used
+   * The access key required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
+   * @default - None
    */
   readonly accessKey?: string;
   /**
-   *
-   * @default - Not used
+   * The secret required for Kinesis Firehose to authenticate with the HTTP endpoint selected as the destination.
+   * @default - None
    */
   readonly secret?: ISecret;
   /**
-   * @default - Not used
+   * The name of the HTTP endpoint selected as the destination.
+   * @default - None
    */
   readonly name?: string;
 }
 
 /**
- *
+ * Describes the metadata sent to the HTTP endpoint destination.
  */
-export interface Attribute {
+export interface HTTPAttribute {
   /**
-   *
+   * The name of the HTTP endpoint common attribute.
    */
   readonly name: string;
   /**
-   *
+   * The value of the HTTP endpoint common attribute.
    */
   readonly value: string;
 }
 
 /**
- *
+ * Props for defining an HTTP destination of a Kinesis Data Firehose delivery stream.
  */
 export interface HTTPEndpointProps extends CommonDestinationProps {
   /**
-   *
+   * Describes the configuration of the HTTP endpoint to which Kinesis Firehose delivers data.
    */
-  readonly endpoint: Endpoint;
+  readonly endpointConfig: HTTPEndpointConfig;
   /**
-   * @default - FailedDataOnly
+   * Describes the S3 bucket backup options for the data that Kinesis Data Firehose delivers to the HTTP endpoint destination.
+   * @default - Failed data only
    */
   readonly backupMode?: HTTPBackupMode;
   /**
-   * @default - GZIP
+   * Compress the body of a request before sending the request to the destination.
+   * @default - None
    */
   readonly requestCompression?: HTTPCompression;
   /**
-   * @default -
-   */
-  readonly bufferingHints?: BufferingHints;
-  /**
-   * @default -
-   */
-  readonly retryOptions?: RetryOptions;
-  /**
+   * The buffering options that can be used before data is delivered to the specified destination.
    * @default - None
    */
-  readonly attributes?: Attribute[];
+  readonly bufferingHints?: HTTPBufferingHints;
+  /**
+   * The total amount of time that Kinesis Data Firehose spends on retries
+   * @default - None
+   */
+  readonly retryOptions?: HTTPRetryOptions;
+  /**
+   * Describes the metadata sent to the HTTP endpoint destination.
+   * @default - None
+   */
+  readonly attributes?: HTTPAttribute[];
 }
 
 /**
- *
+ *  An HTTP destination for data from a Kinesis Data Firehose delivery stream.
  */
 export class HTTPEndpoint implements IDestination {
   constructor(private readonly props: HTTPEndpointProps) {}
@@ -147,16 +154,16 @@ export class HTTPEndpoint implements IDestination {
       mode: S3BackupMode.FAILED,
     })!; // Probably not a good idea?
 
-    if (this.props.endpoint.secret) {
-      this.props.endpoint.secret.grantRead(role);
+    if (this.props.endpointConfig.secret) {
+      this.props.endpointConfig.secret.grantRead(role);
     }
 
     return {
       httpEndpointDestinationConfiguration: {
         endpointConfiguration: {
-          url: this.props.endpoint.url,
-          ...this.props.endpoint.accessKey && { accessKey: this.props.endpoint.accessKey },
-          ...this.props.endpoint.name && { name: this.props.endpoint.name },
+          url: this.props.endpointConfig.url,
+          ...this.props.endpointConfig.accessKey && { accessKey: this.props.endpointConfig.accessKey },
+          ...this.props.endpointConfig.name && { name: this.props.endpointConfig.name },
         },
         ...this.props.retryOptions && {
           retryOptions: {
@@ -170,7 +177,7 @@ export class HTTPEndpoint implements IDestination {
           },
         },
         requestConfiguration: {
-          contentEncoding: this.props.requestCompression ?? HTTPCompression.GZIP,
+          contentEncoding: this.props.requestCompression ?? HTTPCompression.NONE,
           ...this.props.attributes && {
             commonAttributes: [...this.props.attributes.map(attr => ({ attributeName: attr.name, attributeValue: attr.value }))],
           },
@@ -180,9 +187,9 @@ export class HTTPEndpoint implements IDestination {
         roleArn: role.roleArn,
         s3BackupMode: this.props.backupMode ?? HTTPBackupMode.FAILED,
         s3Configuration: backupConfig,
-        ...this.props.endpoint.secret && {
+        ...this.props.endpointConfig.secret && {
           secretsManagerConfiguration: {
-            secretArn: this.props.endpoint.secret.secretArn,
+            secretArn: this.props.endpointConfig.secret.secretArn,
             enabled: true,
             roleArn: role.roleArn,
           },
