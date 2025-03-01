@@ -37,6 +37,7 @@ describe('Datadog destination', () => {
         },
         RequestConfiguration: {
           ContentEncoding: 'GZIP',
+          CommonAttributes: [],
         },
         RetryOptions: {
           DurationInSeconds: 60,
@@ -76,6 +77,29 @@ describe('Datadog destination', () => {
             Action: 'sts:AssumeRole',
           },
         ],
+      },
+    });
+  });
+
+  it('adds attributes when tags are provided', () => {
+    new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destination: new firehose.Datadog({
+        apiKey: secret,
+        url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
+        tags: [{ key: 'source', value: 'cloudfront' }],
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      HttpEndpointDestinationConfiguration: {
+        RequestConfiguration: {
+          CommonAttributes: [
+            {
+              AttributeName: 'source',
+              AttributeValue: 'cloudfront',
+            },
+          ],
+        },
       },
     });
   });
