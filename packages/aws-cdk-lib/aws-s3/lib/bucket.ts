@@ -1077,7 +1077,7 @@ export interface BlockPublicAccessOptions {
 
 /**
  *
- * @depreacted Use `BlockPublicAccessV2` instead.
+ * @deprecated Use `BlockPublicAccessV2` instead.
  */
 export class BlockPublicAccess {
   public static readonly BLOCK_ALL = new BlockPublicAccess({
@@ -2297,7 +2297,12 @@ export class Bucket extends BucketBase {
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    if (props.blockPublicAccess) {
+      this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    }
+    if (props.blockPublicAccessV2) {
+      this.disallowPublicAccess = props.blockPublicAccessV2 && props.blockPublicAccessV2.blockPublicPolicy;
+    }
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
@@ -2338,8 +2343,8 @@ export class Bucket extends BucketBase {
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
     if (props.publicReadAccess) {
-      if (props.blockPublicAccess === undefined) {
-        throw new ValidationError('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.', this);
+      if (props.blockPublicAccess === undefined && props.blockPublicAccessV2 === undefined) {
+        throw new ValidationError('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccessV2\' property.', this);
       }
 
       this.grantPublicAccess();

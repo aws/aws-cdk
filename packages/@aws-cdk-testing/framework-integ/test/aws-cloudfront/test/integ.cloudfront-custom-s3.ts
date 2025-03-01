@@ -10,7 +10,7 @@ class TestStack extends Stack {
 
     const bucket = new s3.Bucket(this, 'Bucket', {
       publicReadAccess: true,
-      blockPublicAccess: {
+      blockPublicAccessV2: {
         blockPublicPolicy: false,
         blockPublicAcls: false,
         ignorePublicAcls: false,

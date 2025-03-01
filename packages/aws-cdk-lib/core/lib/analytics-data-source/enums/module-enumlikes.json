@@ -3064,6 +3064,10 @@
       "BLOCK_ALL",
       "BLOCK_ACLS"
     ],
+    "BlockPublicAccessV2": [
+      "BLOCK_ALL",
+      "BLOCK_ACLS_ONLY"
+    ],
     "ReplicationTimeValue": [
       "FIFTEEN_MINUTES"
     ]

@@ -31,7 +31,7 @@ class RegionalS3Stack extends Stack {
 
     this.bucket = new s3.Bucket(this, 'RegionalBucket', {
       bucketName: bucketName,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       versioned: true,

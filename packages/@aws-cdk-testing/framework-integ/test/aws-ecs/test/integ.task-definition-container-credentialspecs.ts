@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-task-definition-container-credentialsp
 
 const bucket = new s3.Bucket(stack, 'bucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   enforceSSL: true,
 });

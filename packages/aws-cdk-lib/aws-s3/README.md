@@ -363,6 +363,8 @@ const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
 
 ## Block Public Access
 
+This property is depreacted in favor of [Block Public Access V2](#block-public-access-v2)
+
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 
 Enable all block public access settings:
@@ -386,6 +388,43 @@ Alternatively, specify the settings manually:
 ```ts
 const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
   blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+});
+```
+
+When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
+
+[block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+
+## Block Public Access V2
+
+Use `blockPublicAccessV2` to specify [block public access settings] on the bucket.
+
+Enable all block public access settings (this is the default if left undefined):
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
+});
+```
+
+Block and ignore only the public ACLs. This will disable `BlockPublicPolicy` and `RestrictPublicBuckets`:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ACLS_ONLY,
+});
+```
+
+Alternatively, specify the settings manually:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccessV2: { 
+    blockPublicAcls: false,
+    blockPublicPolicy: false,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: true,
+  },
 });
 ```
 

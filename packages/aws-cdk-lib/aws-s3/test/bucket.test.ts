@@ -900,98 +900,154 @@ describe('bucket', () => {
     })).toThrow('Object Lock retention duration must be less than 100 years');
   });
 
-  test('bucket with block public access set to BlockAll', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  describe('bucket with block public access set to BlockAll', () => {
+    test('deprecated blockPublicAccess', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'BlockPublicPolicy': true,
-              'IgnorePublicAcls': true,
-              'RestrictPublicBuckets': true,
+    test('blockPublicAccessV2', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': true,
+              },
             },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
         },
-      },
+      });
     });
   });
 
-  test('bucket with block public access set to BlockAcls', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+  describe('bucket with block public access set to BlockAcls', () => {
+    test('deprecated blockPublicAccess', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'IgnorePublicAcls': true,
+              },
+            },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
+          },
+        },
+      });
     });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'IgnorePublicAcls': true,
+    test('blockPublicAccessV2', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ACLS_ONLY,
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': false,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
             },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
         },
-      },
+      });
     });
   });
 
-  test('bucket with custom block public access setting - blockPublicAccess deprecated', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
-    });
+  describe('bucket with custom block public access setting', () => {
+    test('deprecated blockPublicAccess', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
+      });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'RestrictPublicBuckets': true,
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'RestrictPublicBuckets': true,
+              },
             },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
         },
-      },
-    });
-  });
-
-  test('bucket with custom block public access setting - blockPublicAccessV2', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccessV2: { restrictPublicBuckets: false },
+      });
     });
 
-    Template.fromStack(stack).templateMatches({
-      'Resources': {
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'PublicAccessBlockConfiguration': {
-              'BlockPublicAcls': true,
-              'BlockPublicPolicy': true,
-              'IgnorePublicAcls': true,
-              'RestrictPublicBuckets': false,
+    test('blockPublicAccessV2', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccessV2: { restrictPublicBuckets: false },
+      });
+
+      Template.fromStack(stack).templateMatches({
+        'Resources': {
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'PublicAccessBlockConfiguration': {
+                'BlockPublicAcls': true,
+                'BlockPublicPolicy': true,
+                'IgnorePublicAcls': true,
+                'RestrictPublicBuckets': false,
+              },
             },
+            'DeletionPolicy': 'Retain',
+            'UpdateReplacePolicy': 'Retain',
           },
-          'DeletionPolicy': 'Retain',
-          'UpdateReplacePolicy': 'Retain',
         },
-      },
+      });
     });
   });
 
@@ -1000,21 +1056,37 @@ describe('bucket', () => {
 
     expect(() => new s3.Bucket(stack, 'Bucket', {
       publicReadAccess: true,
-    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.');
+    })).toThrow('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccessV2\' property.');
   });
 
-  test('bucket with enabled block public access setting to throw error msg', () => {
-    const stack = new cdk.Stack();
+  describe('bucket with enabled block public access setting to throw error msg', () => {
+    test('deprecated blockPublicAccess', () => {
+      const stack = new cdk.Stack();
 
-    expect(() => new s3.Bucket(stack, 'Bucket', {
-      publicReadAccess: true,
-      blockPublicAccess: {
-        blockPublicPolicy: true,
-        blockPublicAcls: false,
-        ignorePublicAcls: false,
-        restrictPublicBuckets: false,
-      },
-    })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
+      expect(() => new s3.Bucket(stack, 'Bucket', {
+        publicReadAccess: true,
+        blockPublicAccess: {
+          blockPublicPolicy: true,
+          blockPublicAcls: false,
+          ignorePublicAcls: false,
+          restrictPublicBuckets: false,
+        },
+      })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
+    });
+
+    test('blockPublicAccessV2', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new s3.Bucket(stack, 'Bucket', {
+        publicReadAccess: true,
+        blockPublicAccessV2: {
+          blockPublicPolicy: true,
+          blockPublicAcls: false,
+          ignorePublicAcls: false,
+          restrictPublicBuckets: false,
+        },
+      })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
+    });
   });
 
   test('bucket with custom canned access control', () => {
@@ -2632,15 +2704,28 @@ describe('bucket', () => {
       });
     });
 
-    test('throws when blockPublicPolicy is set to true', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', {
-        blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+    describe('throws when blockPublicPolicy is set to true', () => {
+      test('deprecated blockPublicAccess', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket', {
+          blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+        });
+
+        // THEN
+        expect(() => bucket.grantPublicAccess()).toThrow(/blockPublicPolicy/);
       });
 
-      // THEN
-      expect(() => bucket.grantPublicAccess()).toThrow(/blockPublicPolicy/);
+      test('blockPublicAccessV2', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket', {
+          blockPublicAccessV2: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
+        });
+
+        // THEN
+        expect(() => bucket.grantPublicAccess()).toThrow(/blockPublicPolicy/);
+      });
     });
   });
 

@@ -13,7 +13,7 @@ const sourceBucketStack = new cdk.Stack(app, 'aws-cdk-s3-access-logs-delivery');
 const targetBucket = new s3.Bucket(targetBucketStack, 'TargetBucket', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
   enforceSSL: true,
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   encryption: s3.BucketEncryption.S3_MANAGED,
@@ -22,7 +22,7 @@ const targetBucket = new s3.Bucket(targetBucketStack, 'TargetBucket', {
 new s3.Bucket(sourceBucketStack, 'SourceBucket', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
   enforceSSL: true,
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   encryption: s3.BucketEncryption.S3_MANAGED,
