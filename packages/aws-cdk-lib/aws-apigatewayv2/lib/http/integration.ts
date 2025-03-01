@@ -45,7 +45,11 @@ export enum HttpIntegrationType {
   AWS_PROXY = 'AWS_PROXY',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Integration type is AWS.
+   *
+   * For integrating the route or method request with an AWS services using
+   * first-class integration.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html
    */
   AWS = 'AWS',
 
