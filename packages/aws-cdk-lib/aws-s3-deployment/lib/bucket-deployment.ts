@@ -821,7 +821,7 @@ export enum ServerSideEncryption {
   AWS_KMS = 'aws:kms',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * 'aws:kms:dsse'
    */
   AWS_KMS_DSSE = 'aws:kms:dsse',
 }
