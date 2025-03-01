@@ -24,6 +24,8 @@ related to a missing environment variable. To work around this, you can invoke
 your function against a version or alias by default, rather than the `$LATEST`
 version.
 
+To further mitigate these issues, you can ensure consistency between your function code and infrastructure configuration by defining environment variables as a single source of truth in your CDK stack. You can define them in a separate `env.ts` file and reference them in both your handler and CDK configuration. This approach allows you to catch errors at compile time, benefit from improved IDE support, minimize the risk of mismatched configurations, and enhance maintainability.
+
 ## Handler Code
 
 The `lambda.Code` class includes static convenience methods for various types of
