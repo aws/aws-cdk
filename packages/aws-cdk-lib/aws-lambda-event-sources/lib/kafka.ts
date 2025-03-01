@@ -88,19 +88,19 @@ export enum AuthenticationMethod {
    */
   CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * VPC_SUBNET authentication method for your Kafka cluster.
    */
   VPC_SUBNET = 'VPC_SUBNET',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * VPC_SECURITY_GROUP authentication method for your Kafka cluster. 
    */
   VPC_SECURITY_GROUP = 'VPC_SECURITY_GROUP',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * VIRTUAL_HOST authentication method for your Kafka cluster. 
    */
   VIRTUAL_HOST = 'VIRTUAL_HOST',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * SERVER_ROOT_CA_CERTIFICATE authentication method for your Kafka cluster. 
    */
   SERVER_ROOT_CA_CERTIFICATE = 'SERVER_ROOT_CA_CERTIFICATE',
 }
