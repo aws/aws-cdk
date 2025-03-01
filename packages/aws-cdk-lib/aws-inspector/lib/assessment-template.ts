@@ -14,8 +14,16 @@ export interface IAssessmentTemplate extends IResource {
 }
 
 /**
+ * Properties for creating an Inspector Assessment Template
+ * TODO: Add properties and remove "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps" from `awslint.json`
+ * when implementing the L2 construct
+ */
+export interface AssessmentTemplateProps { }
+
+/**
  * An Amazon Inspector assessment template.
- * TODO: This class should implement IAssessmentTemplate when writing the L2 construct
+ * TODO: This class should implement IAssessmentTemplate and "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate" should be
+ * removed from `awslint.json` when implementing the L2 construct
  */
 export class AssessmentTemplate extends Resource {
   /**
