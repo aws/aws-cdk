@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
 import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
@@ -106,6 +107,20 @@ export interface BufferHints {
 }
 
 /**
+ * Datadog tag
+ */
+export interface DatadogTag {
+  /**
+   * Tag key
+   */
+  key: string;
+  /**
+   * Tag value
+   */
+  value: string;
+}
+
+/**
  * Props for defining a Datadog destination of a Kinesis Data Firehose delivery stream.
  */
 export interface DatadogProps extends CommonDestinationProps {
@@ -127,6 +142,10 @@ export interface DatadogProps extends CommonDestinationProps {
    * @default 60 seconds
    */
   readonly retryDuration?: Duration;
+  /**
+   * Datadog tags to apply for filtering.
+   */
+  readonly tags?: DatadogTag[];
 }
 
 /**
@@ -168,6 +187,7 @@ export class Datadog implements IDestination {
         },
         requestConfiguration: {
           contentEncoding: 'GZIP',
+          commonAttributes: this.createAttributesFromTags(),
         },
         retryOptions: {
           durationInSeconds: this.props.retryDuration?.toSeconds() ?? 60,
@@ -189,5 +209,15 @@ export class Datadog implements IDestination {
     return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
       ? 'Enabled'
       : undefined;
+  }
+  private createAttributesFromTags(): CfnDeliveryStream.HttpEndpointCommonAttributeProperty[] {
+    let attributes: any = [];
+    this.props.tags?.forEach((tag) => {
+      attributes.push({
+        attributeName: tag.key,
+        attributeValue: tag.value,
+      });
+    });
+    return attributes;
   }
 }
