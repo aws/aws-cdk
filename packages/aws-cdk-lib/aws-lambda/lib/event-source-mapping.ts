@@ -49,7 +49,7 @@ export class SourceAccessConfigurationType {
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
   /**
-   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
    */
   public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
 
