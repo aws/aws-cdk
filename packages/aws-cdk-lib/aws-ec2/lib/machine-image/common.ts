@@ -165,17 +165,17 @@ export enum AmazonLinuxCpuType {
   X86_64 = 'x86_64',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * i386 CPU type
    */
   I386 = 'i386',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * x86-64 CPU type for Mac
    */
   X86_64_MAC = 'x86_64_mac',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * arm64 CPU type for Mac
    */
   ARM64_MAC = 'arm64_mac',
 }
