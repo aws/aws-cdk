@@ -54,7 +54,12 @@ export enum HttpIntegrationType {
   AWS = 'AWS',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Integration type is HTTP.
+   *
+   * For integrating the route or method request with an HTTP endpoint, with the
+   * client request passed through as-is.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html
    */
   HTTP = 'HTTP',
 
