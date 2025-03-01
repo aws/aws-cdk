@@ -521,7 +521,7 @@ export class Pipeline extends PipelineBase {
         encryptionKey,
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
         enforceSSL: true,
-        blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
+        blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
         removalPolicy: RemovalPolicy.RETAIN,
       });
     }
