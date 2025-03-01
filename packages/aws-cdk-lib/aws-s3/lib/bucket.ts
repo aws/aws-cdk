@@ -3304,9 +3304,9 @@ export enum EventType {
   OBJECT_RESTORE = 's3:ObjectRestore:*',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * You receive this notification event for any object replication event.
    */
-  S3_REPLICATION = 's3:Replication:*',
+  REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {
