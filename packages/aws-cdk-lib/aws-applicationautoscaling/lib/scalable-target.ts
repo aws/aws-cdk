@@ -318,7 +318,7 @@ export enum ServiceNamespace {
   CASSANDRA = 'cassandra',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Workspaces
    */
   WORKSPACES = 'workspaces',
 }
