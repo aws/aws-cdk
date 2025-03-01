@@ -157,7 +157,7 @@ export enum MetricAggregationType {
   SAMPLECOUNT = 'SampleCount',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Sum
    */
   SUM = 'Sum',
 }
