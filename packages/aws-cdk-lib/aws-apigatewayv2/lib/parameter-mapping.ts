@@ -16,6 +16,18 @@ export class MappingValue implements IMappingValue {
    * Creates an empty mapping value.
    */
   public static readonly NONE = new MappingValue('');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly JWT = new MappingValue('JWT');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly CUSTOM = new MappingValue('CUSTOM');
+  /**
+   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   */
+  public static readonly AWS_IAM = new MappingValue('AWS_IAM');
 
   /**
    * Creates a header mapping value.

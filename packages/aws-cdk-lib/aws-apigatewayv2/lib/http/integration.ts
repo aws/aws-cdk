@@ -43,6 +43,34 @@ export enum HttpIntegrationType {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    */
   AWS_PROXY = 'AWS_PROXY',
+
+  /**
+   * Integration type is AWS.
+   *
+   * For integrating the route or method request with an AWS services using
+   * first-class integration.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html
+   */
+  AWS = 'AWS',
+
+  /**
+   * Integration type is HTTP.
+   *
+   * For integrating the route or method request with an HTTP endpoint, with the
+   * client request passed through as-is.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-http.html
+   */
+  HTTP = 'HTTP',
+
+  /**
+   * Integration type is a Mock.
+   *
+   * For generating responses from the API directly without the need for
+   * an integration backend.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-mock-integration.html
+   */
+  MOCK = 'MOCK',
 }
 
 /**
