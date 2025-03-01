@@ -2,6 +2,8 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
+// TODO: manual creating?
+
 const app = new App();
 const roleName = 'MyLookupTestRole';
 
@@ -33,5 +35,7 @@ policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] 
 policy.attachToRole(lookupRole);
 
 new IntegTest(app, 'integ-iam-role-from-lookup', {
-  testCases: [lookupStack],
+  enableLookups: true,
+  stackUpdateWorkflow: false,
+  testCases: [stack],
 });

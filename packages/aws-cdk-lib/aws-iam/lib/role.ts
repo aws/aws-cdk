@@ -14,7 +14,7 @@ import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider, Aws } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, AspectPriority, ContextProvider } from '../../core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
@@ -272,7 +272,14 @@ export class Role extends Resource implements IRole {
       dummyValue: [
         {
           // eslint-disable-next-line @cdklabs/no-literal-partition
-          Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
+          // Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
+          Arn: Stack.of(scope).formatArn({
+            region: '',
+            account: '123456789012',
+            service: 'iam',
+            resource: 'role',
+            resourceName: 'DUMMY_ARN',
+          }),
         },
       ],
     }).value;
