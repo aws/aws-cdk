@@ -1,6 +1,6 @@
-import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 
 /**
