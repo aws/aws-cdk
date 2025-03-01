@@ -633,6 +633,10 @@ export class Repository extends RepositoryBase {
       throw new Error('Cannot look up a repository with a tokenized name or ARN.');
     }
 
+    if (!options.repositoryArn && !options.repositoryName) {
+      throw new Error('At least one of `repositoryName` or `repositoryArn` must be provided.');
+    }
+
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
