@@ -77,17 +77,17 @@ export enum VpcEndpointType {
   GATEWAY = 'Gateway',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Gateway Load Balancer
    */
   GATEWAYLOADBALANCER = 'GatewayLoadBalancer',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Resource
    */
   RESOURCE = 'Resource',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Service Network
    */
   SERVICENETWORK = 'ServiceNetwork',
 }
