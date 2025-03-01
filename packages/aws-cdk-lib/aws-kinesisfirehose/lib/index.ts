@@ -8,6 +8,7 @@ export * from './common';
 export * from './s3-bucket';
 export * from './logging-config';
 export * from './datadog';
+export * from './http-endpoint';
 
 // AWS::KinesisFirehose CloudFormation Resources:
 export * from './kinesisfirehose.generated';

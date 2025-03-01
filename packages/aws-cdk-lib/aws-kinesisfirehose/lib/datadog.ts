@@ -1,12 +1,6 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import * as iam from '../../aws-iam';
+import { Attribute, HTTPBackupMode, HTTPEndpoint } from './http-endpoint';
 import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
-import { createBackupConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { Bucket } from '../../aws-s3';
 
 /**
  * Datadog logs HTTP endpoint URLs
@@ -91,39 +85,9 @@ export enum DatadogConfigurationsEndpointUrl {
 }
 
 /**
- * The buffering options that can be used before data is delivered to the specified destination.
- */
-export interface BufferHints {
-  /**
-   * The higher interval allows more time to collect data and the size of data may be bigger. The lower interval sends the data more frequently and may be more advantageous when looking at shorter cycles of data activity.
-   * @default 60 seconds
-   */
-  readonly interval?: Duration;
-  /**
-   * The higher buffer size may be lower in cost with higher latency. The lower buffer size will be faster in delivery with higher cost and less latency.
-   * @default 4 MiB
-   */
-  readonly size?: Size;
-}
-
-/**
- * Datadog tag
- */
-export interface DatadogTag {
-  /**
-   * Tag key
-   */
-  readonly key: string;
-  /**
-   * Tag value
-   */
-  readonly value: string;
-}
-
-/**
  * Props for defining a Datadog destination of a Kinesis Data Firehose delivery stream.
  */
-export interface DatadogProps extends CommonDestinationProps {
+export interface DatadogProps {
   /**
    * The API key required to enable data delivery from Amazon Data Firehose.
    */
@@ -133,92 +97,34 @@ export interface DatadogProps extends CommonDestinationProps {
    */
   readonly url: DatadogLogsEndpointUrl | DatadogMetricsEndpointUrl | DatadogConfigurationsEndpointUrl;
   /**
-   * Amazon Data Firehose buffers incoming records before delivering them to your Datadog domain.
-   * @default - 60 second interval with 4MiB size.
-   */
-  readonly bufferHints?: BufferHints;
-  /**
-   * The time period during which Amazon Data Firehose retries sending data to the selected HTTP endpoint.
-   * @default 60 seconds
-   */
-  readonly retryDuration?: Duration;
-  /**
    * Datadog tags to apply for filtering.
    * @default - No tags.
    */
-  readonly tags?: DatadogTag[];
+  readonly tags?: Attribute[];
+  /**
+   * @default - failed only
+   */
+  readonly backupMode?: HTTPBackupMode;
 }
 
 /**
  * A Datadog destination for data from a Kinesis Data Firehose delivery stream.
  */
-export class Datadog implements IDestination {
-  constructor(private readonly props: DatadogProps) { }
-
-  bind(scope: Construct, _options: DestinationBindOptions): DestinationConfig {
-    const role = this.props.role ?? new iam.Role(scope, 'Datadog Destination Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
-
-    const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
-      loggingConfig: this.props.loggingConfig,
-      role,
-      streamId: 'DatadogDestination',
-    }) ?? {};
-
-    const bucket = new Bucket(scope, 'S3 Configuration', {});
-    bucket.grantReadWrite(role);
-
-    const { dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
-
-    this.props.apiKey.grantRead(role);
-
-    return {
-      httpEndpointDestinationConfiguration: {
-        cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
-        roleArn: role.roleArn,
-        s3Configuration: {
-          bucketArn: bucket.bucketArn,
-          roleArn: role.roleArn,
-        },
-        s3BackupMode: this.getS3BackupMode(),
-        endpointConfiguration: {
-          url: this.props.url,
-        },
-        requestConfiguration: {
-          contentEncoding: 'GZIP',
-          commonAttributes: this.createAttributesFromTags(),
-        },
-        retryOptions: {
-          durationInSeconds: this.props.retryDuration?.toSeconds() ?? 60,
-        },
-        bufferingHints: {
-          sizeInMBs: this.props.bufferHints?.size?.toMebibytes() ?? 4,
-          intervalInSeconds: this.props.bufferHints?.interval?.toSeconds() ?? 60,
-        },
-        secretsManagerConfiguration: {
-          enabled: true,
-          roleArn: role.roleArn,
-          secretArn: this.props.apiKey.secretArn,
-        },
+export class Datadog extends HTTPEndpoint {
+  constructor(props: DatadogProps) {
+    super({
+      endpoint: {
+        url: props.url,
+        secret: props.apiKey,
       },
-      dependables: [...(loggingDependables ?? []), ...(backupDependables ?? [])],
-    };
-  }
-  private getS3BackupMode(): string | undefined {
-    return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
-      ? 'Enabled'
-      : undefined;
-  }
-  private createAttributesFromTags(): CfnDeliveryStream.HttpEndpointCommonAttributeProperty[] {
-    let attributes: any = [];
-    this.props.tags?.forEach((tag) => {
-      attributes.push({
-        attributeName: tag.key,
-        attributeValue: tag.value,
-      });
+      bufferingHints: {
+        interval: Duration.seconds(60),
+        size: Size.mebibytes(4),
+      },
+      retryOptions: {
+        duration: Duration.seconds(60),
+      },
+      attributes: props.tags ?? [],
     });
-    return attributes;
   }
 }
