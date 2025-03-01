@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { ScheduleExpression } from './schedule-expression';
 import { IScheduleTarget } from './target';
+import { IScheduleGroup } from './schedule-group';
 
 /**
  * Interface representing a created or an imported `Schedule`.
@@ -19,8 +20,14 @@ export interface ISchedule extends IResource {
 
   /**
    * The schedule group associated with this schedule.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
   readonly group?: IGroup;
+
+  /**
+   * The schedule group associated with this schedule.
+   */
+  readonly scheduleGroup?: IScheduleGroup;
 
   /**
    * The arn of the schedule.
@@ -104,8 +111,16 @@ export interface ScheduleProps {
    * The schedule's group.
    *
    * @default - By default a schedule will be associated with the `default` group.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
   readonly group?: IGroup;
+
+  /**
+   * The schedule's group.
+   *
+   * @default - By default a schedule will be associated with the `default` group.
+   */
+  readonly scheduleGroup?: IScheduleGroup;
 
   /**
    * Indicates whether the schedule is enabled.
@@ -246,8 +261,14 @@ export class Schedule extends Resource implements ISchedule {
 
   /**
    * The schedule group associated with this schedule.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
   public readonly group?: IGroup;
+
+  /**
+   * The schedule group associated with this schedule.
+   */
+  public readonly scheduleGroup?: IScheduleGroup;
 
   /**
    * The arn of the schedule.
@@ -277,6 +298,7 @@ export class Schedule extends Resource implements ISchedule {
     addConstructMetadata(this, props);
 
     this.group = props.group;
+    this.scheduleGroup = props.scheduleGroup;
 
     const targetConfig = props.target.bind(this);
 

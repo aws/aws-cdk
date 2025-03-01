@@ -315,7 +315,7 @@ export class ScheduleGroup extends ScheduleGroupBase {
    * @param scope construct scope
    * @param id construct id
    */
-  public static fromDefaultGroup(scope: Construct, id: string): IScheduleGroup {
+  public static fromDefaultScheduleGroup(scope: Construct, id: string): IScheduleGroup {
     return ScheduleGroup.fromScheduleGroupName(scope, id, 'default');
   }
 
