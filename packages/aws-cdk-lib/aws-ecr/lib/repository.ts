@@ -1030,7 +1030,7 @@ export class RepositoryEncryption {
    */
   public static readonly KMS = new RepositoryEncryption('KMS');
   /**
-   * [PLACEHOLDER COMMENT: TO BE FILLED OUT]
+   * 'KMS_DSSE'
    */
   public static readonly KMS_DSSE = new RepositoryEncryption('KMS_DSSE');
 
