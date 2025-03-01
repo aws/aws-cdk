@@ -166,7 +166,7 @@ export enum FileSystemType {
    */
   XFS = 'xfs',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * ntfs type
    */
   NTFS = 'ntfs',
 }
