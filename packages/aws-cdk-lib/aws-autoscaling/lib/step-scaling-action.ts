@@ -150,6 +150,16 @@ export enum MetricAggregationType {
    * Maximum
    */
   MAXIMUM = 'Maximum',
+
+  /**
+   * Sample count
+   */
+  SAMPLECOUNT = 'SampleCount',
+
+  /**
+   * Sum
+   */
+  SUM = 'Sum',
 }
 
 /**
