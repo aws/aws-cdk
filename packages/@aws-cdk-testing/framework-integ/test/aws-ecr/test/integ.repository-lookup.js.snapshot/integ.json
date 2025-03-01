@@ -1,0 +1,15 @@
+{
+  "enableLookups": true,
+  "version": "40.0.0",
+  "testCases": {
+    "EcrRepoLookupTest/DefaultTest": {
+      "stacks": [
+        "EcrRepoStack",
+        "EcrRepoLookupStack"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "EcrRepoLookupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3"
+    }
+  }
+}

@@ -25,19 +25,22 @@ const lookupStack = new Stack(app, 'EcrRepoLookupStack', {
     region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
   },
 });
-new ecr.Repository(lookupStack, 'TestRepo', {
+const lookupRepo = ecr.Repository.fromLookup(lookupStack, 'LookupRepo', {
+  repositoryName,
+});
+new ecr.Repository(lookupStack, 'Repo', {
   repositoryName: 'test-repo',
   removalPolicy: RemovalPolicy.DESTROY,
   autoDeleteImages: true,
-});
-const lookupRepo = ecr.Repository.fromLookup(lookupStack, 'LookupRepo', {
-  repositoryName,
 });
 
 new CfnOutput(lookupStack, 'RepositoryUri', {
   value: lookupRepo.repositoryUri,
 });
+// lookupStack.addDependency(setupStack);
 
-new IntegTest(app, 'cdk-integ-auto-delete-images', {
-  testCases: [lookupStack],
+new IntegTest(app, 'EcrRepoLookupTest', {
+  enableLookups: true,
+  stackUpdateWorkflow: false,
+  testCases: [setupStack, lookupStack],
 });

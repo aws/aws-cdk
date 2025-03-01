@@ -1,0 +1,34 @@
+{
+  "version": "40.0.0",
+  "files": {
+    "3bbaa4a6ad9dab22284496cb250a9e77fb2f26bc181f35610877275058a4f160": {
+      "source": {
+        "path": "asset.3bbaa4a6ad9dab22284496cb250a9e77fb2f26bc181f35610877275058a4f160",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "3bbaa4a6ad9dab22284496cb250a9e77fb2f26bc181f35610877275058a4f160.zip",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    },
+    "93b6be9cf97c17c486acf50de7631d19c095f37f5fbb99f332bd36f187858a98": {
+      "source": {
+        "path": "EcrRepoStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "93b6be9cf97c17c486acf50de7631d19c095f37f5fbb99f332bd36f187858a98.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

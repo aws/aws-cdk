@@ -1,0 +1,320 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "EcrRepoStack": {
+        "id": "EcrRepoStack",
+        "path": "EcrRepoStack",
+        "children": {
+          "Repo": {
+            "id": "Repo",
+            "path": "EcrRepoStack/Repo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EcrRepoStack/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "my-repo",
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-images",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "AutoDeleteImagesCustomResource": {
+                "id": "AutoDeleteImagesCustomResource",
+                "path": "EcrRepoStack/Repo/AutoDeleteImagesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "EcrRepoStack/Repo/AutoDeleteImagesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
+            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EcrRepoStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EcrRepoStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "EcrRepoLookupStack": {
+        "id": "EcrRepoLookupStack",
+        "path": "EcrRepoLookupStack",
+        "children": {
+          "LookupRepo": {
+            "id": "LookupRepo",
+            "path": "EcrRepoLookupStack/LookupRepo",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": []
+            }
+          },
+          "Repo": {
+            "id": "Repo",
+            "path": "EcrRepoLookupStack/Repo",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "EcrRepoLookupStack/Repo/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
+                  "aws:cdk:cloudformation:props": {
+                    "repositoryName": "test-repo",
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-images",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "AutoDeleteImagesCustomResource": {
+                "id": "AutoDeleteImagesCustomResource",
+                "path": "EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
+            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "RepositoryUri": {
+            "id": "RepositoryUri",
+            "path": "EcrRepoLookupStack/RepositoryUri",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "EcrRepoLookupStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "EcrRepoLookupStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "EcrRepoLookupTest": {
+        "id": "EcrRepoLookupTest",
+        "path": "EcrRepoLookupTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EcrRepoLookupTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EcrRepoLookupTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EcrRepoLookupTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EcrRepoLookupTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EcrRepoLookupTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}
