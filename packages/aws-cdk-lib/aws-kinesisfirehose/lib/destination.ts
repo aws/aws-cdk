@@ -14,7 +14,7 @@ export interface DestinationConfig {
   /**
    * Datadog destination configuration properties.
    *
-   * @default - Datadog destination is not used.
+   * @default - HTTP destination is not used.
    */
   readonly httpEndpointDestinationConfiguration?: CfnDeliveryStream.HttpEndpointDestinationConfigurationProperty;
 
