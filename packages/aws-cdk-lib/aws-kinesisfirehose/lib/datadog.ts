@@ -113,11 +113,11 @@ export interface DatadogTag {
   /**
    * Tag key
    */
-  key: string;
+  readonly key: string;
   /**
    * Tag value
    */
-  value: string;
+  readonly value: string;
 }
 
 /**
@@ -144,6 +144,7 @@ export interface DatadogProps extends CommonDestinationProps {
   readonly retryDuration?: Duration;
   /**
    * Datadog tags to apply for filtering.
+   * @default - No tags.
    */
   readonly tags?: DatadogTag[];
 }
