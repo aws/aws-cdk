@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-proper
 const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
   destination: new firehose.Datadog({
     apiKey: Secret.fromSecretNameV2(stack, 'DatadogApiKey', 'DatadogApiKey'),
-    url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
+    url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_EU,
   }),
 });
 
