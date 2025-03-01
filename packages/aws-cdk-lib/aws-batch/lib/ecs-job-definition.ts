@@ -31,13 +31,7 @@ interface IEcsJobDefinition extends IJobDefinition {
 export enum Compatibility {
   EC2 = 'EC2',
   FARGATE = 'FARGATE',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
   SPOT = 'SPOT',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
   FARGATE_SPOT = 'FARGATE_SPOT',
 }
 
