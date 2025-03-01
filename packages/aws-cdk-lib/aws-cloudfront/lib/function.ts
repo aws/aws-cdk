@@ -249,7 +249,7 @@ export enum FunctionEventType {
   VIEWER_RESPONSE = 'viewer-response',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * The origin-request specifies the incoming request
    */
   ORIGIN_REQUEST = 'origin-request',
 
