@@ -48,7 +48,7 @@ export class SourceAccessConfigurationType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
-  
+
   /**
    * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
    */
