@@ -67,6 +67,11 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
+
+  /**
+   * The instance will hibernate when it initiates a shutdown.
+   */
+  HIBERNATE = 'hibernate',
 }
 
 /**
