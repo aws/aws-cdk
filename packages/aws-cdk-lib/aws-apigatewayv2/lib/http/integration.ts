@@ -64,7 +64,11 @@ export enum HttpIntegrationType {
   HTTP = 'HTTP',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Integration type is a Mock.
+   *
+   * For generating responses from the API directly without the need for
+   * an integration backend.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-mock-integration.html
    */
   MOCK = 'MOCK',
 }
