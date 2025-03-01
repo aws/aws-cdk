@@ -137,7 +137,7 @@ export enum ReplicationOverwriteProtection {
   DISABLED = 'DISABLED',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * The filesystem's replication overwrite protection is currently being used.
    */
   REPLICATING = 'REPLICATING',
 }
