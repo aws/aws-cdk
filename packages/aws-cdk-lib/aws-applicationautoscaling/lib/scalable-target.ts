@@ -313,7 +313,7 @@ export enum ServiceNamespace {
   NEPTUNE = 'neptune',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * Cassandra
    */
   CASSANDRA = 'cassandra',
 
