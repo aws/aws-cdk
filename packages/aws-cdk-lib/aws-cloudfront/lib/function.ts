@@ -247,6 +247,16 @@ export enum FunctionEventType {
    * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
+
+  /**
+   * The origin-request specifies the incoming request
+   */
+  ORIGIN_REQUEST = 'origin-request',
+
+  /**
+   * The origin-response specifies the outgoing response
+   */
+  ORIGIN_RESPONSE = 'origin-response',
 }
 
 /**
