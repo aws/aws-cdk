@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "40.0.0",
+  "testCases": {
+    "cdk-integ-auto-delete-images/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "cdk-integ-auto-delete-images/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegautodeleteimagesDefaultTestDeployAssert6B08011C"
+    }
+  }
+}

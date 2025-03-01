@@ -5,6 +5,7 @@ import { LifecycleRule, TagStatus } from './lifecycle';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations,
   ArnFormat,
@@ -18,6 +19,8 @@ import {
   TokenComparison,
   CustomResource,
   Aws,
+  ContextProvider,
+  Arn,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
@@ -599,6 +602,20 @@ export interface RepositoryProps {
   readonly emptyOnDelete?: boolean;
 }
 
+/**
+ * Properties for looking up an existing Repository.
+ */
+export interface RepositoryLookupOptions {
+  /**
+   * The name of the repository.
+   */
+  readonly repositoryName?: string;
+  /**
+   * The ARN of the repository.
+   */
+  readonly repositoryArn?: string;
+}
+
 export interface RepositoryAttributes {
   readonly repositoryName: string;
   readonly repositoryArn: string;
@@ -608,6 +625,44 @@ export interface RepositoryAttributes {
  * Define an ECR repository
  */
 export class Repository extends RepositoryBase {
+  /**
+   * Lookup an existing repository
+   */
+  public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
+    if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
+      throw new Error('Cannot look up a repository with a tokenized name or ARN.');
+    }
+
+    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::ECR::Repository',
+        exactIdentifier: options.repositoryName,
+        propertiesToReturn: ['Arn'],
+      } as cxschema.CcApiContextQuery,
+      dummyValue: [
+        {
+          Arn: Stack.of(scope).formatArn({
+            service: 'ecr',
+            region: 'us-east-1',
+            account: '123456789012',
+            resource: 'repository',
+            resourceName: 'DUMMY_ARN',
+          }),
+        },
+      ],
+    }).value;
+
+    const repository = response[0];
+    const lookupRepoName = Arn.split(repository.Arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+
+    if (!lookupRepoName) {
+      throw new Error(`Unable to look up repository with name: ${options.repositoryArn} in account ${Aws.ACCOUNT_ID}`);
+    }
+
+    return this.fromRepositoryName(scope, id, lookupRepoName);
+  }
+
   /**
    * Import a repository
    */
