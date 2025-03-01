@@ -254,7 +254,7 @@ export enum FunctionEventType {
   ORIGIN_REQUEST = 'origin-request',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * The origin-response specifies the outgoing response
    */
   ORIGIN_RESPONSE = 'origin-response',
 }
