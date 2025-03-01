@@ -1080,17 +1080,17 @@ export interface BlockPublicAccessOptions {
  * @deprecated Use `BlockPublicAccessV2` instead.
  */
 export class BlockPublicAccess {
-  public static readonly BLOCK_ALL: BlockPublicAccessOptions ={
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true,
-  };
+  });
 
-  public static readonly BLOCK_ACLS: BlockPublicAccessOptions = {
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true,
-  };
+  });
 
   public blockPublicAcls: boolean | undefined;
   public blockPublicPolicy: boolean | undefined;
