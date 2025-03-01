@@ -53,7 +53,7 @@ export enum Protocol {
   TCP_UDP = 'TCP_UDP',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * GENEVE (GWLB)
    */
   GENEVE = 'GENEVE',
 }
