@@ -1,11 +1,17 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Policy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Policy, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 
-// TODO: manual creating?
+/*
+ * To run this integ test, create an IAM Role with the name `MyLookupTestRole` in your AWS account beforehand.
+ *
+ * ```bash
+ * aws iam create-role --role-name MyLookupTestRole --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"sqs.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+ * ```
+ */
+const roleName = 'MyLookupTestRole';
 
 const app = new App();
-const roleName = 'MyLookupTestRole';
 
 const stack = new Stack(app, 'Stack', {
   env: {
@@ -14,28 +20,18 @@ const stack = new Stack(app, 'Stack', {
   },
 });
 
-new Role(stack, 'Role', {
-  roleName,
-  assumedBy: new ServicePrincipal('sqs.amazonaws.com'),
-});
-
-const lookupStack = new Stack(app, 'LookupStack', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
-  },
-});
-
-const lookupRole = Role.fromLookup(lookupStack, 'LookupRole', {
+const lookupRole = Role.fromLookup(stack, 'LookupRole', {
   roleName,
 });
 
-const policy = new Policy(lookupStack, 'HelloPolicy', { policyName: 'Default' });
+const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
 policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(lookupRole);
 
+new CfnOutput(stack, 'LookupRoleArn', { value: lookupRole.roleArn });
+new CfnOutput(stack, 'LookupRoleName', { value: lookupRole.roleName });
+
 new IntegTest(app, 'integ-iam-role-from-lookup', {
   enableLookups: true,
-  stackUpdateWorkflow: false,
   testCases: [stack],
 });
