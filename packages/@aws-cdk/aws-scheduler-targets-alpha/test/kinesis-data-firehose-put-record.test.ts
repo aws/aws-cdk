@@ -1,8 +1,8 @@
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
 import { App, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { KinesisDataFirehosePutRecord } from '../lib';

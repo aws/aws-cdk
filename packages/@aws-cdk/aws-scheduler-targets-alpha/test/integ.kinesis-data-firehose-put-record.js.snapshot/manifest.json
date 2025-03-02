@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-scheduler-targets-firehose-put-record.assets": {
       "type": "cdk:asset-manifest",
@@ -217,7 +217,9 @@
         "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "destination": "*"
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup": [
@@ -392,7 +394,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/435b2ad97890e5e6d4bfe3b883e6e41642fe6c80ec58e13d6a182eb03d3e03ab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21a2bc3a70958f5e9b96c7cfae9ae56d1d253e4ec9e4f360cea91585f290c65d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
