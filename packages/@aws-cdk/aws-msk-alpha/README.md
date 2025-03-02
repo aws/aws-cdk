@@ -56,10 +56,16 @@ You can use the following attributes to get a list of the Kafka broker or ZooKee
 
 ```ts
 declare const cluster: msk.Cluster;
-new CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokers });
-new CfnOutput(this, 'BootstrapBrokersTls', { value: cluster.bootstrapBrokersTls });
-new CfnOutput(this, 'BootstrapBrokersSaslScram', { value: cluster.bootstrapBrokersSaslScram });
-new CfnOutput(this, 'BootstrapBrokerStringSaslIam', { value: cluster.bootstrapBrokersSaslIam });
+new CfnOutput(this, 'BootstrapBrokers', { value: cluster.brokerEndpoints.bootstrapBrokers });
+new CfnOutput(this, 'BootstrapBrokersTls', { value: cluster.brokerEndpoints.bootstrapBrokersTls });
+new CfnOutput(this, 'BootstrapBrokersSaslScram', { value: cluster.brokerEndpoints.bootstrapBrokersSaslScram });
+new CfnOutput(this, 'BootstrapBrokersSaslIam', { value: cluster.brokerEndpoints.bootstrapBrokersSaslIam });
+new CfnOutput(this, 'BootstrapBrokersPublicTls', { value: cluster.brokerEndpoints.bootstrapBrokersPublicTls });
+new CfnOutput(this, 'BootstrapBrokersPublicSaslScram', { value: cluster.brokerEndpoints.bootstrapBrokersPublicSaslScram });
+new CfnOutput(this, 'BootstrapBrokersPublicSaslIam', { value: cluster.brokerEndpoints.bootstrapBrokersPublicSaslIam });
+new CfnOutput(this, 'BootstrapBrokersVpcConnectivityTls', { value: cluster.brokerEndpoints.bootstrapBrokersVpcConnectivityTls });
+new CfnOutput(this, 'BootstrapBrokersVpcConnectivitySaslScram', { value: cluster.brokerEndpoints.bootstrapBrokersVpcConnectivitySaslScram });
+new CfnOutput(this, 'BootstrapBrokersVpcConnectivitySaslIam', { value: cluster.brokerEndpoints.bootstrapBrokersVpcConnectivitySaslIam });
 new CfnOutput(this, 'ZookeeperConnection', { value: cluster.zookeeperConnectionString });
 new CfnOutput(this, 'ZookeeperConnectionTls', { value: cluster.zookeeperConnectionStringTls });
 ```
