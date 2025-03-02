@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "nlb-target-group-attributes-test/DefaultTest": {
+      "stacks": [
+        "nlb-target-group-attributes"
+      ],
+      "assertionStack": "nlb-target-group-attributes-test/DefaultTest/DeployAssert",
+      "assertionStackName": "nlbtargetgroupattributestestDefaultTestDeployAssertDA332C52"
+    }
+  }
+}
