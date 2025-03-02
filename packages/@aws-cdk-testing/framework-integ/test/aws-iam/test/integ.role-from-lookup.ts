@@ -28,7 +28,6 @@ const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
 policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(lookupRole);
 
-new CfnOutput(stack, 'LookupRoleArn', { value: lookupRole.roleArn });
 new CfnOutput(stack, 'LookupRoleName', { value: lookupRole.roleName });
 
 new IntegTest(app, 'integ-iam-role-from-lookup', {
