@@ -13,7 +13,7 @@ const roleName = 'MyLookupTestRole';
 
 const app = new App();
 
-const stack = new Stack(app, 'Stack', {
+const stack = new Stack(app, 'LookupRoleStack', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
