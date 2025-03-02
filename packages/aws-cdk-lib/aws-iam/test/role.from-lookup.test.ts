@@ -1,5 +1,5 @@
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Stack, Token } from '../../core';
+import { CfnParameter, ContextProvider, Stack, Token } from '../../core';
 import * as iam from '../lib';
 
 /* eslint-disable */
@@ -46,10 +46,14 @@ describe('Role from lookup', () => {
 
   test('throw error if role name is a token', () => {
     // GIVEN
-    const tokenName = Token.asString('MyExistingRole');
     const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+    const param = new CfnParameter(stack, 'MyParam', {
+      type: 'String',
+      default: 'MyExistingRole',
+    });
+
     expect(() => iam.Role.fromLookup(stack, 'MyRole', {
-      roleName: tokenName,
+      roleName: param.valueAsString,
     })).toThrow(/All arguments to look up a role must be concrete \(no Tokens\)/);
   });
 });

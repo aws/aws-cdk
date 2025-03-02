@@ -272,14 +272,7 @@ export class Role extends Resource implements IRole {
       dummyValue: [
         {
           // eslint-disable-next-line @cdklabs/no-literal-partition
-          // Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
-          Arn: Stack.of(scope).formatArn({
-            region: '',
-            account: '123456789012',
-            service: 'iam',
-            resource: 'role',
-            resourceName: 'DUMMY_ARN',
-          }),
+          Arn: 'arn:aws:iam::123456789012:role/DUMMY_ARN',
         },
       ],
     }).value;
