@@ -4,120 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "EcrRepoStack": {
-        "id": "EcrRepoStack",
-        "path": "EcrRepoStack",
-        "children": {
-          "Repo": {
-            "id": "Repo",
-            "path": "EcrRepoStack/Repo",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "EcrRepoStack/Repo/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "repositoryName": "my-repo",
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-images",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "AutoDeleteImagesCustomResource": {
-                "id": "AutoDeleteImagesCustomResource",
-                "path": "EcrRepoStack/Repo/AutoDeleteImagesCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "EcrRepoStack/Repo/AutoDeleteImagesCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.4.2"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2",
-                  "metadata": [
-                    "*"
-                  ]
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2",
-              "metadata": [
-                "*"
-              ]
-            }
-          },
-          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
-            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Staging",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "EcrRepoStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "EcrRepoStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.4.2"
-        }
-      },
       "EcrRepoLookupStack": {
         "id": "EcrRepoLookupStack",
         "path": "EcrRepoLookupStack",
@@ -131,40 +17,121 @@
               "metadata": []
             }
           },
-          "Repo": {
-            "id": "Repo",
-            "path": "EcrRepoLookupStack/Repo",
+          "Lambda": {
+            "id": "Lambda",
+            "path": "EcrRepoLookupStack/Lambda",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "EcrRepoLookupStack/Repo/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
-                  "aws:cdk:cloudformation:props": {
-                    "repositoryName": "test-repo",
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-images",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "AutoDeleteImagesCustomResource": {
-                "id": "AutoDeleteImagesCustomResource",
-                "path": "EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource",
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "EcrRepoLookupStack/Lambda/ServiceRole",
                 "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource/Default",
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "EcrRepoLookupStack/Lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "EcrRepoLookupStack/Lambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:DescribeImages",
+                                    "ecr:DescribeRepositories"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:test-region:12345678:repository/DUMMY_ARN"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LambdaServiceRoleDefaultPolicyDAE46E21",
+                            "roles": [
+                              {
+                                "Ref": "LambdaServiceRoleA8ED4D3B"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   }
                 },
@@ -172,8 +139,35 @@
                   "fqn": "constructs.Construct",
                   "version": "10.4.2",
                   "metadata": [
+                    "*",
+                    "*",
+                    "*",
                     "*"
                   ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "EcrRepoLookupStack/Lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function(event, context) { return \"Hello, World!\"; }"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "LambdaServiceRoleA8ED4D3B",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
                 }
               }
             },
@@ -183,40 +177,6 @@
               "metadata": [
                 "*"
               ]
-            }
-          },
-          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
-            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Staging",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.4.2"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.4.2"
             }
           },
           "RepositoryUri": {

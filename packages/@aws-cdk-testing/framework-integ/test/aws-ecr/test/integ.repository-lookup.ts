@@ -1,23 +1,11 @@
 
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const app = new App();
 const repositoryName = 'my-repo';
-
-const setupStack = new Stack(app, 'EcrRepoStack', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
-  },
-});
-
-new ecr.Repository(setupStack, 'Repo', {
-  repositoryName,
-  removalPolicy: RemovalPolicy.DESTROY,
-  autoDeleteImages: true,
-});
 
 const lookupStack = new Stack(app, 'EcrRepoLookupStack', {
   env: {
@@ -28,19 +16,24 @@ const lookupStack = new Stack(app, 'EcrRepoLookupStack', {
 const lookupRepo = ecr.Repository.fromLookup(lookupStack, 'LookupRepo', {
   repositoryName,
 });
-new ecr.Repository(lookupStack, 'Repo', {
-  repositoryName: 'test-repo',
-  removalPolicy: RemovalPolicy.DESTROY,
-  autoDeleteImages: true,
+const testFunction = new lambda.Function(lookupStack, 'Lambda', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = async function(event, context) { return "Hello, World!"; }'),
 });
+lookupRepo.grantRead(testFunction);
 
 new CfnOutput(lookupStack, 'RepositoryUri', {
   value: lookupRepo.repositoryUri,
 });
-// lookupStack.addDependency(setupStack);
 
 new IntegTest(app, 'EcrRepoLookupTest', {
   enableLookups: true,
   stackUpdateWorkflow: false,
-  testCases: [setupStack, lookupStack],
+  testCases: [lookupStack],
+  // create a repository before the test and delete it after
+  hooks: {
+    preDeploy: [`aws ecr create-repository --repository-name ${repositoryName}`],
+    postDeploy: [`aws ecr delete-repository --repository-name ${repositoryName} --force`],
+  },
 });

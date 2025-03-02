@@ -1,96 +1,6 @@
 {
   "version": "40.0.0",
   "artifacts": {
-    "EcrRepoStack.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "EcrRepoStack.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "EcrRepoStack": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/test-region",
-      "properties": {
-        "templateFile": "EcrRepoStack.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/93b6be9cf97c17c486acf50de7631d19c095f37f5fbb99f332bd36f187858a98.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "EcrRepoStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "EcrRepoStack.assets"
-      ],
-      "metadata": {
-        "/EcrRepoStack/Repo": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EcrRepoStack/Repo/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Repo02AC86CF"
-          }
-        ],
-        "/EcrRepoStack/Repo/AutoDeleteImagesCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EcrRepoStack/Repo/AutoDeleteImagesCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RepoAutoDeleteImagesCustomResource65201E29"
-          }
-        ],
-        "/EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
-          }
-        ],
-        "/EcrRepoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030"
-          }
-        ],
-        "/EcrRepoStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/EcrRepoStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "EcrRepoStack"
-    },
     "EcrRepoLookupStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -108,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/cd1f89eebd54c908a25074d88f331c245b1f023c0b66b3f1533b244e7bf7d5d5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/4a11e4e3b3e92167c4c041810158f5c28c8e3b16c12750fcb9e25dc0d8c8113b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -124,46 +34,70 @@
         "EcrRepoLookupStack.assets"
       ],
       "metadata": {
-        "/EcrRepoLookupStack/Repo": [
+        "/EcrRepoLookupStack/Lambda": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/EcrRepoLookupStack/Repo/Resource": [
+        "/EcrRepoLookupStack/Lambda/ServiceRole": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "Repo02AC86CF"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource": [
+        "/EcrRepoLookupStack/Lambda/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/EcrRepoLookupStack/Repo/AutoDeleteImagesCustomResource/Default": [
+        "/EcrRepoLookupStack/Lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RepoAutoDeleteImagesCustomResource65201E29"
+            "data": "LambdaServiceRoleA8ED4D3B"
           }
         ],
-        "/EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider": [
+        "/EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy": [
           {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
+        "/EcrRepoLookupStack/Lambda/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+            "data": "LambdaServiceRoleDefaultPolicyDAE46E21"
           }
         ],
-        "/EcrRepoLookupStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler": [
+        "/EcrRepoLookupStack/Lambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030"
+            "data": "LambdaD247545B"
           }
         ],
         "/EcrRepoLookupStack/RepositoryUri": [
@@ -249,7 +183,7 @@
       "props": {
         "dummyValue": [
           {
-            "Arn": "arn:${Token[AWS.Partition.3]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
+            "Arn": "arn:${Token[AWS.Partition.6]}:ecr:us-east-1:123456789012:repository/DUMMY_ARN"
           }
         ],
         "account": "12345678",
