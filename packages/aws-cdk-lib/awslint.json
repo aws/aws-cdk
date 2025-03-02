@@ -998,6 +998,8 @@
     "events-generic:aws-cdk-lib.aws_appconfig.Application",
     "events-generic:aws-cdk-lib.aws_appconfig.Environment",
     "events-generic:aws-cdk-lib.aws_appconfig.HostedConfiguration",
-    "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration"
+    "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration",
+    "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
+    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps"
   ]
 }
