@@ -191,6 +191,14 @@ export interface RestApiBaseProps {
   readonly endpointTypes?: EndpointType[];
 
   /**
+   * The EndpointConfiguration property type specifies the endpoint types of a REST API
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
+   *
+   * @default EndpointType.EDGE
+   */
+  readonly endpointConfiguration?: EndpointConfiguration;
+
+  /**
    * Specifies whether clients can invoke the API using the default execute-api
    * endpoint. To require that clients use a custom domain name to invoke the
    * API, disable the default endpoint.
@@ -267,14 +275,6 @@ export interface RestApiProps extends RestApiOptions {
    * @default - Metering is disabled.
    */
   readonly apiKeySourceType?: ApiKeySourceType;
-
-  /**
-   * The EndpointConfiguration property type specifies the endpoint types of a REST API
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
-   *
-   * @default EndpointType.EDGE
-   */
-  readonly endpointConfiguration?: EndpointConfiguration;
 }
 
 /**
