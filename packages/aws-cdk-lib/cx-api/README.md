@@ -615,7 +615,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
 
@@ -625,6 +625,24 @@ _cdk.json_
 {
   "context": {
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+  }
+}
+```
+
+* `@aws-cdk/aws-efs:defaultAllowClientMount`
+
+When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
+accessing the filesystem via mount target by default. Without this flag, only write and root access permissions are granted.
+
+This resolves an issue where clients could have permission to write to the filesystem but were unable to properly mount it, leading to access problems.
+By automatically including the read-only permission alongside the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-efs:defaultAllowClientMount": true
   }
 }
 ```

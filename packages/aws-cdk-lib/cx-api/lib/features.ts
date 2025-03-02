@@ -1407,13 +1407,13 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, EFS will allow clients to mount and access the filesystem by default',
     detailsMd: `
-      When this feature flag is enabled, EFS will add MOUNT, WRITE, and ROOT_ACCESS permissions to clients
+      When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
       accessing the filesystem via mount target by default. Without this flag, only WRITE and ROOT_ACCESS
       permissions are granted.
 
       This resolves an issue where clients could have permission to write to the filesystem but were unable to
-      properly mount it, leading to access problems. By automatically including the MOUNT permission alongside
-      the existing WRITE and ROOT_ACCESS permissions, clients can fully interact with the EFS resources as expected.
+      properly mount it, leading to access problems. By automatically including the read-only permission alongside
+      the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
