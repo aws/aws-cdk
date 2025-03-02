@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-integ/DefaultTest": {
+      "stacks": [
+        "eks-auto-mode-stack"
+      ],
+      "assertionStack": "aws-cdk-eks-cluster-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterintegDefaultTestDeployAssertB6AAB3A3"
+    }
+  }
+}

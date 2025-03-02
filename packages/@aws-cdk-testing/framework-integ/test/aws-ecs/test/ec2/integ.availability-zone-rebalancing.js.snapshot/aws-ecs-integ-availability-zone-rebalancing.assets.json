@@ -1,7 +1,7 @@
 {
   "version": "39.0.0",
   "files": {
-    "b96c53bace70574d32b22dd7119ec56593558a28c86cafa7309b83afac4e6ca0": {
+    "80389954ddc853fe88b467b9c719bf3ad69591e71d704a541535576f86e378c0": {
       "source": {
         "path": "aws-ecs-integ-availability-zone-rebalancing.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b96c53bace70574d32b22dd7119ec56593558a28c86cafa7309b83afac4e6ca0.json",
+          "objectKey": "80389954ddc853fe88b467b9c719bf3ad69591e71d704a541535576f86e378c0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -22,6 +22,7 @@ class EksClusterInferenceStack extends Stack {
       albController: {
         version: eks.AlbControllerVersion.V2_8_2,
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
 
     cluster.addNodegroupCapacity('InferenceInstances', {
@@ -37,6 +38,7 @@ class EksClusterInferenceStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-nodegroup');
