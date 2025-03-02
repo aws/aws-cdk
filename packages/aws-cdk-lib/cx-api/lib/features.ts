@@ -124,6 +124,7 @@ export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
+export const LAMBDA_AWS_CLI_LAYER_SHARE = '@aws-cdk/lambda-layer-awscli:shareLayer';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1398,6 +1399,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
     `,
     introducedIn: { v2: '2.180.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_AWS_CLI_LAYER_SHARE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack',
+    detailsMd: `
+      Several L2 constructs create an AwsCliLayer resource internally.
+      When this feature flag is enabled, a single AwsCliLayer will be created at the
+      root of the containing stack, and shared by all constructs that require it.
+      This solves an issue where many identical lambda layers could be created unnecessarily.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };
