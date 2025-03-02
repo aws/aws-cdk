@@ -608,10 +608,14 @@ export interface RepositoryProps {
 export interface RepositoryLookupOptions {
   /**
    * The name of the repository.
+   *
+   * @default - Do not filter on repository name
    */
   readonly repositoryName?: string;
   /**
    * The ARN of the repository.
+   *
+   * @default - Do not filter on repository ARN
    */
   readonly repositoryArn?: string;
 }
