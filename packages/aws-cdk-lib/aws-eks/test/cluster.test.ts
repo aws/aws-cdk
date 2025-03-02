@@ -1350,7 +1350,7 @@ describe('cluster', () => {
   });
 
   describe('outputs', () => {
-    test('no outputs are synthesized by default', () => {
+    test('ConfigCommand and GetTokenCommand are output by default', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
@@ -1360,7 +1360,10 @@ describe('cluster', () => {
       // THEN
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
-      expect(template.Outputs).toBeUndefined(); // no outputs
+      expect(template.Outputs).toEqual({
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+      });
     });
 
     test('if masters role is defined, it should be included in the config command', () => {
@@ -1385,7 +1388,7 @@ describe('cluster', () => {
       });
     });
 
-    test('if `outputConfigCommand=false` will disabled the output', () => {
+    test('outputConfigCommand=false` will disabled the output of ConfigCommand and GetTokenCommand', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
 
