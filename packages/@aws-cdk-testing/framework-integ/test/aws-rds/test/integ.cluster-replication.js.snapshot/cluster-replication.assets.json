@@ -1,15 +1,15 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "files": {
-    "ffb21ce5e7f0f81a0b06b19ee648d044de3560e034a405d54f7892768fb497f4": {
+    "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628": {
       "source": {
-        "path": "ReplicationStack.template.json",
+        "path": "cluster-replication.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ffb21ce5e7f0f81a0b06b19ee648d044de3560e034a405d54f7892768fb497f4.json",
+          "objectKey": "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
