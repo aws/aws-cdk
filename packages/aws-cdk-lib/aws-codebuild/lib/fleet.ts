@@ -315,4 +315,29 @@ export enum FleetComputeType {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.types
    */
   ATTRIBUTE_BASED = ComputeType.ATTRIBUTE_BASED,
+
+  /**
+   * Lambda build environment with 1GB of available memory.
+   */
+  BUILD_LAMBDA_1GB = 'BUILD_LAMBDA_1GB',
+
+  /**
+   * Lambda build environment with 2GB of available memory.
+   */
+  BUILD_LAMBDA_2GB = 'BUILD_LAMBDA_2GB',
+
+  /**
+   * Lambda build environment with 4GB of available memory.
+   */
+  BUILD_LAMBDA_4GB = 'BUILD_LAMBDA_4GB',
+
+  /**
+   * Lambda build environment with 8GB of available memory.
+   */
+  BUILD_LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
+
+  /**
+   * Lambda build environment with 10GB of available memory.
+   */
+  BUILD_LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
 }
