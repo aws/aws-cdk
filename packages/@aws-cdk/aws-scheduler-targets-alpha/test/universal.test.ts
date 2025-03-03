@@ -312,7 +312,7 @@ describe('Universal schedule target', () => {
                 'aws:SourceAccount': '123456789012',
                 'aws:SourceArn': {
                   'Fn::GetAtt': [
-                    'GroupC77FDACD',
+                    'ScheduleGroup4D377372',
                     'Arn',
                   ],
                 },
