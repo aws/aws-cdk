@@ -107,6 +107,12 @@ describe('repository', () => {
         repositoryArn: tokenName.valueAsString,
       })).toThrow('Cannot look up a repository with a tokenized name or ARN.');
     });
+
+    test('throw error if neither repository name nor arn is provided', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {})).toThrow('At least one of `repositoryName` or `repositoryArn` must be provided.');
+    });
   });
 
   test('construct repository', () => {
