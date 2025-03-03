@@ -7,7 +7,7 @@ import { checkTemplateForCyclicDependencies } from './private/cyclic';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
-import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, hasResource, hasResourceProperties } from './private/resources';
+import { allResources, allResourcesProperties, countResources, countResourcesProperties, findResources, getResourceId, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 import { Stack, Stage } from '../../core';
 import { AssertionError } from './private/error';
@@ -132,6 +132,28 @@ export class Template {
    */
   public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findResources(this.template, type, props);
+  }
+
+  /**
+   * Get the Resource ID of a matching resource, expects only to find one match.
+   * Throws AssertionError if none or multiple resources were found.
+   * @param type the resource type; ex: `AWS::S3::Bucket`
+   * @param props by default, matches all resources with the given type.
+   * @returns The resource id of the matched resource.
+   * Performs a partial match via `Match.objectLike()`.
+   */
+  public getResourceId(type: string, props: any = {}): string {
+    const { resourceId, matchError } = getResourceId(this.template, type, props);
+
+    if (matchError) {
+      throw new AssertionError(matchError);
+    }
+
+    if (!resourceId) {
+      throw new AssertionError('unexpected: resourceId was undefined');
+    }
+
+    return resourceId;
   }
 
   /**
