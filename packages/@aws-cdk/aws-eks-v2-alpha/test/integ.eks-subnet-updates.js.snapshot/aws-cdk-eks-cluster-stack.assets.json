@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "source": {
@@ -66,7 +66,7 @@
         }
       }
     },
-    "17c24959dd3daa34b71244ee99b9f9ff9b49c1ff2f8e3d67f3d9d23994abb699": {
+    "40fd01340251c29344c8a004572f9c871b8c308c01371fdce5e35f328f9cd416": {
       "source": {
         "path": "aws-cdk-eks-cluster-stack.template.json",
         "packaging": "file"
@@ -74,7 +74,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17c24959dd3daa34b71244ee99b9f9ff9b49c1ff2f8e3d67f3d9d23994abb699.json",
+          "objectKey": "40fd01340251c29344c8a004572f9c871b8c308c01371fdce5e35f328f9cd416.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

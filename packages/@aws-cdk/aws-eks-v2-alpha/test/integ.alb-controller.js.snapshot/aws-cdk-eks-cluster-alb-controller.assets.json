@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "25c16d2ab30e35800b3ea63c44c93deb85584076eb09a2db9f971803252b22dc": {
       "source": {
@@ -92,7 +92,7 @@
         }
       }
     },
-    "433130dc9dc24341429fefad41296dca9cdbf9757002fe0544d75c79b2265434": {
+    "8eb81dece8cf50b789576c20851d43097ae9ace2de0d8784f2f781a7e6bb5f07": {
       "source": {
         "path": "aws-cdk-eks-cluster-alb-controller.template.json",
         "packaging": "file"
@@ -100,7 +100,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "433130dc9dc24341429fefad41296dca9cdbf9757002fe0544d75c79b2265434.json",
+          "objectKey": "8eb81dece8cf50b789576c20851d43097ae9ace2de0d8784f2f781a7e6bb5f07.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
