@@ -80,6 +80,15 @@ describe('Metric Math', () => {
     expect(m.warningsV2).toBeUndefined();
   });
 
+  test('metrics METRICS expression with parameter does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: 'SUM(METRICS("parameter"))',
+      usingMetrics: {},
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   test('metrics search expression does not produce warning for unknown identifier', () => {
     const m = new MathExpression({
       expression: "SEARCH('{dimension_one, dimension_two} my_metric', 'Average', 300)",
