@@ -1080,6 +1080,7 @@ const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
     'some_email@example.com',
   ], // optional
   additionalInformation: 'additional info', // optional
+  timeout: Duration.minutes(10), // optional
 });
 approveStage.addAction(manualApprovalAction);
 // `manualApprovalAction.notificationTopic` can be used to access the Topic
@@ -1257,3 +1258,104 @@ pipeline.addStage({
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
 for information on Action structure reference.
+
+## Compute
+
+### Commands
+
+The Commands action allows you to run shell commands in a virtual compute instance. When you run the action, commands
+specified in the action configuration are run in a separate container. All artifacts that are specified as input
+artifacts to a CodeBuild action are available inside of the container running the commands. This action allows you
+to specify commands without first creating a CodeBuild project.
+
+```ts
+// Source action
+const bucket = new s3.Bucket(this, 'SourceBucket', {
+  versioned: true,
+});
+const sourceArtifact = new codepipeline.Artifact('SourceArtifact');
+const sourceAction = new codepipeline_actions.S3SourceAction({
+  actionName: 'Source',
+  output: sourceArtifact,
+  bucket,
+  bucketKey: 'my.zip',
+});
+
+// Commands action
+const outputArtifact = new codepipeline.Artifact('OutputArtifact');
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'echo "some commands"',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Commands',
+      actions: [commandsAction],
+    },
+  ],
+});
+```
+
+If you want to filter the files to be included in the output artifact, you can specify their paths as the second
+argument to `Artifact`.
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+
+// filter files to be included in the output artifact
+const outputArtifact = new codepipeline.Artifact('OutputArtifact', ['my-dir/**/*']);
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'mkdir -p my-dir',
+    'echo "HelloWorld" > my-dir/file.txt',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+});
+```
+
+You can also specify the `outputVariables` property in the `CommandsAction` to emit environment variables that can be used
+in subsequent actions. The variables are those defined in your shell commands or exported as defaults by the CodeBuild service.
+For a reference of CodeBuild environment variables, see
+[Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html)
+in the CodeBuild User Guide.
+
+To use the output variables in a subsequent action, you can use the `variable` method on the action:
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const outputArtifact: codepipeline.Artifact;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'export MY_OUTPUT=my-key',
+  ],
+  input: sourceArtifact,
+  output: outputArtifact,
+  outputVariables: ['MY_OUTPUT', 'CODEBUILD_BUILD_ID'], // CODEBUILD_BUILD_ID is a variable defined by CodeBuild
+});
+
+// Deploy action
+const deployAction = new codepipeline_actions.S3DeployAction({
+  actionName: 'DeployAction',
+  extract: true,
+  input: outputArtifact,
+  bucket: new s3.Bucket(this, 'DeployBucket'),
+  objectKey: commandsAction.variable('MY_OUTPUT'), // the variable emitted by the Commands action
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html)
+for more details about using Commands action in CodePipeline.

@@ -11,6 +11,7 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 
@@ -43,6 +44,8 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  cpu: '512',
+  memory: '512',
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5026fc368259087bfe3c42d626d08c9ae992d207d436d28e4e475716fd2aded4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/474a9ee85c3b3f43f856d0e61a48cf226608269c31c6a1257266942b224bd0d6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -390,7 +390,10 @@
         "/aws-cdk-eks-import-cluster-test/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7"
+            "data": "ClusterEB0386A7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/KubectlReadyBarrier": [
@@ -688,8 +691,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -734,14 +745,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -756,6 +759,44 @@
             "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
           }
         ],
+        "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
+          }
+        ],
         "/aws-cdk-eks-import-cluster-test/Cluster/ClusterAdminRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -765,7 +806,10 @@
         "/aws-cdk-eks-import-cluster-test/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759"
+            "data": "ClusterClusterAdminRoleAccessF2BFF759",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/mastersRoleAccess": [
@@ -777,7 +821,10 @@
         "/aws-cdk-eks-import-cluster-test/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51"
+            "data": "ClustermastersRoleAccess698EBA51",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/NodegroupDefaultCapacity": [
@@ -842,7 +889,22 @@
         "/aws-cdk-eks-import-cluster-test/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Cluster/ConfigCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterConfigCommand43AAE40F"
+          }
+        ],
+        "/aws-cdk-eks-import-cluster-test/Cluster/GetTokenCommand": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/aws-cdk-eks-import-cluster-test/Cluster/OpenIdConnectProvider": [

@@ -68,6 +68,15 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### VPC origins
+
+You can use CloudFront to deliver content from applications that are hosted in your virtual private cloud (VPC) private subnets.
+You can use Application Load Balancers (ALBs), Network Load Balancers (NLBs), and EC2 instances in private subnets as VPC origins.
+
+Learn more about [Restrict access with VPC origins](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-vpc-origins.html).
+
+See the README of the `aws-cdk-lib/aws-cloudfront-origins` module for more information on setting up VPC origins.
+
 ### Domain Names and Certificates
 
 When you create a distribution, CloudFront assigns a domain name for the distribution, for example: `d111111abcdef8.cloudfront.net`; this value can
@@ -788,6 +797,29 @@ new cloudfront.Distribution(this, 'myCdn', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('www.example.com'),
     realtimeLogConfig: realTimeConfig,
+  },
+});
+```
+
+### gRPC
+
+CloudFront supports gRPC, an open-source remote procedure call (RPC) framework built on HTTP/2. gRPC offers bi-directional streaming and
+binary protocol that buffers payloads, making it suitable for applications that require low latency communications.
+
+To enable your distribution to handle gRPC requests, you must include HTTP/2 as one of the supported HTTP versions and allow HTTP methods,
+including POST.
+
+See [Using gRPC with CloudFront distributions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html)
+in the CloudFront User Guide.
+
+Example:
+
+```ts
+new cloudfront.Distribution(this, 'myCdn', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com'),
+    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL, // `AllowedMethods.ALLOW_ALL` is required if `enableGrpc` is true
+    enableGrpc: true,
   },
 });
 ```

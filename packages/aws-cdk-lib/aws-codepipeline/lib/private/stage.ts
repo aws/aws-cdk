@@ -173,17 +173,20 @@ export class Stage implements IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
+      commands: action.commands,
+      outputVariables: action.outputVariables,
       runOrder: action.runOrder,
+      timeoutInMinutes: action.timeout?.toMinutes(),
       roleArn: action.role ? action.role.roleArn : undefined,
       region: action.region,
       namespace: action.namespace,
     };
   }
 
-  private renderArtifacts(artifacts: Artifact[]): CfnPipeline.InputArtifactProperty[] {
+  private renderArtifacts(artifacts: Artifact[]): CfnPipeline.OutputArtifactProperty[] {
     return artifacts
       .filter(a => a.artifactName)
-      .map(a => ({ name: a.artifactName! }));
+      .map(a => ({ name: a.artifactName!, files: a.artifactFiles }));
   }
 }
 

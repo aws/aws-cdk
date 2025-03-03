@@ -85,6 +85,7 @@
     "UserPoolAddOns": {
      "AdvancedSecurityMode": "ENFORCED"
     },
+    "UserPoolTier": "PLUS",
     "VerificationMessageTemplate": {
      "DefaultEmailOption": "CONFIRM_WITH_CODE",
      "EmailMessage": "The verification code to your new account is {####}",

@@ -437,14 +437,17 @@ interface DatabaseClusterBaseProps {
   /**
    * Whether to enable Performance Insights for the DB cluster.
    *
-   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set.
+   * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set,
+   * or `databaseInsightsMode` is set to `DatabaseInsightsMode.ADVANCED`.
    */
   readonly enablePerformanceInsights?: boolean;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
-   * @default 7
+   * If you set `databaseInsightsMode` to `DatabaseInsightsMode.ADVANCED`, you must set this property to `PerformanceInsightRetention.MONTHS_15`.
+   *
+   * @default - 7
    */
   readonly performanceInsightRetention?: PerformanceInsightRetention;
 
@@ -454,6 +457,13 @@ interface DatabaseClusterBaseProps {
    * @default - default master key
    */
   readonly performanceInsightEncryptionKey?: kms.IKey;
+
+  /**
+   * The database insights mode.
+   *
+   * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
+   */
+  readonly databaseInsightsMode?: DatabaseInsightsMode;
 
   /**
    * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
@@ -551,6 +561,21 @@ export enum ClusterScailabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+}
+
+/**
+ * The database insights mode of the Aurora DB cluster.
+ */
+export enum DatabaseInsightsMode {
+  /**
+   * Standard mode.
+   */
+  STANDARD = 'standard',
+
+  /**
+   * Advanced mode.
+   */
+  ADVANCED = 'advanced',
 }
 
 /**
@@ -734,6 +759,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
+   * The database insights mode.
+   */
+  public readonly databaseInsightsMode?: DatabaseInsightsMode;
+
+  /**
    * The IAM role for the enhanced monitoring.
    */
   public readonly monitoringRole?: iam.IRole;
@@ -849,12 +879,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     validateDatabaseClusterProps(this, props);
 
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
+      || props.performanceInsightRetention !== undefined
+      || props.performanceInsightEncryptionKey !== undefined
+      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
     this.performanceInsightsEnabled = enablePerformanceInsights;
     this.performanceInsightRetention = enablePerformanceInsights
       ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
       : undefined;
     this.performanceInsightEncryptionKey = props.performanceInsightEncryptionKey;
+    this.databaseInsightsMode = props.databaseInsightsMode;
 
     // configure enhanced monitoring role for the cluster or instance
     this.monitoringRole = props.monitoringRole;
@@ -870,7 +903,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
       throw new ValidationError('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.', this);
     }
-    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
+    if (
+      props.monitoringInterval && !props.monitoringInterval.isUnresolved() &&
+      [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1
+    ) {
       throw new ValidationError(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`, this);
     }
 
@@ -924,6 +960,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       performanceInsightsEnabled: this.performanceInsightsEnabled || props.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: this.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: this.performanceInsightRetention,
+      databaseInsightsMode: this.databaseInsightsMode,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       monitoringInterval: props.enableClusterLevelEnhancedMonitoring ? props.monitoringInterval?.toSeconds() : undefined,
       monitoringRoleArn: props.enableClusterLevelEnhancedMonitoring ? this.monitoringRole?.roleArn : undefined,
