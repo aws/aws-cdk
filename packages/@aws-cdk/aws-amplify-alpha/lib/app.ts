@@ -571,7 +571,7 @@ export enum Platform {
   WEB_COMPUTE = 'WEB_COMPUTE',
 
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * WEB_DYNAMIC - Used to indicate the app is hosted using a fully dynamic architecture, where requests are processed at runtime by backend compute services.
    */
   WEB_DYNAMIC = 'WEB_DYNAMIC',
 }
