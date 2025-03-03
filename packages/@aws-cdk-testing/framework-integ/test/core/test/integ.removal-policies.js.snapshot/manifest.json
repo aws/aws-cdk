@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "TestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7a2fa35a975947e383aaa28fd06ff4989df7a4c55f145afa785f8075dcedc7e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3738a8e1895f1c778b390af43a062f64cb576f54f0d5d4971c41fae883f802bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,6 +91,67 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DestroyBucket924C7F03"
+          }
+        ],
+        "/TestStack/MissingPoliciesTest/PreConfigured": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/TestStack/MissingPoliciesTest/PreConfigured/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MissingPoliciesTestPreConfigured993B6B53"
+          }
+        ],
+        "/TestStack/MissingPoliciesTest/NotConfigured": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TestStack/MissingPoliciesTest/NotConfigured/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MissingPoliciesTestNotConfiguredECEB0D31"
+          }
+        ],
+        "/TestStack/FilteredMissingPoliciesTest/BucketToRetain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/TestStack/FilteredMissingPoliciesTest/BucketToRetain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMissingPoliciesTestBucketToRetainB723E6AC"
+          }
+        ],
+        "/TestStack/FilteredMissingPoliciesTest/TableToSkip": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              }
+            }
+          }
+        ],
+        "/TestStack/FilteredMissingPoliciesTest/TableToSkip/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FilteredMissingPoliciesTestTableToSkip835B5C39"
+          }
+        ],
+        "/TestStack/FilteredMissingPoliciesTest/TableToSkip/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/TestStack/BootstrapVersion": [

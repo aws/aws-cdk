@@ -23,21 +23,14 @@ export interface RemovalPolicyProps {
   readonly excludeResourceTypes?: string[];
 
   /**
-   * If true, overwrite any user-specified removal policy that has been previously set.
-   * This means even if the user has already called `applyRemovalPolicy()` on the resource,
-   * it will be overwritten with the new policy.
-   * @default false - do not respect previous removal policies set by the user, overwrite.
-   */
-  readonly respectPreviousPolicy?: boolean;
-
-  /**
    * The priority to use when applying this policy.
    *
-   * The higher priority (lower numeric value) is applied first, and the lower priority
-   * (higher numeric value) is applied later.
-   * If multiple removal policies are applied with conflicting settings, the one with
-   * the higher priority will be applied. However, if `overwrite` is true, the other policy
-   * will overwrite it.
+   * The priority affects only the order in which aspects are applied during synthesis.
+   * For RemovalPolicies, the last applied policy will override previous ones.
+   *
+   * NOTE: Priority does NOT determine which policy "wins" when there are conflicts.
+   * The order of application determines the final policy, with later policies
+   * overriding earlier ones.
    *
    * @default - AspectPriority.MUTATING
    */
@@ -45,23 +38,28 @@ export interface RemovalPolicyProps {
 }
 
 /**
- * The RemovalPolicyAspect handles applying a removal policy to resources
+ * Base class for removal policy aspects
  */
-class RemovalPolicyAspect implements IAspect {
+abstract class BaseRemovalPolicyAspect implements IAspect {
   constructor(
-    private readonly policy: RemovalPolicy,
-    private readonly props: RemovalPolicyProps = {},
+    protected readonly policy: RemovalPolicy,
+    protected readonly props: RemovalPolicyProps = {},
   ) {}
 
   /**
    * Checks if the given resource type matches any of the patterns
    */
-  private resourceTypeMatchesPatterns(resourceType: string, patterns?: string[]): boolean {
+  protected resourceTypeMatchesPatterns(resourceType: string, patterns?: string[]): boolean {
     if (!patterns || patterns.length === 0) {
       return false;
     }
     return patterns.includes(resourceType);
   }
+
+  /**
+   * Determines if the removal policy should be applied to the given resource
+   */
+  protected abstract shouldApplyPolicy(cfnResource: CfnResource): boolean;
 
   public visit(node: IConstruct): void {
     if (!CfnResource.isCfnResource(node)) {
@@ -70,14 +68,6 @@ class RemovalPolicyAspect implements IAspect {
 
     const cfnResource = node as CfnResource;
     const resourceType = cfnResource.cfnResourceType;
-
-    const userAlreadySetPolicy =
-      cfnResource.cfnOptions.deletionPolicy !== undefined ||
-      cfnResource.cfnOptions.updateReplacePolicy !== undefined;
-
-    if ((this.props.respectPreviousPolicy === undefined || this.props.respectPreviousPolicy === true) && userAlreadySetPolicy) {
-      return;
-    }
 
     if (this.resourceTypeMatchesPatterns(resourceType, this.props.excludeResourceTypes)) {
       return;
@@ -90,13 +80,42 @@ class RemovalPolicyAspect implements IAspect {
       return;
     }
 
-    // Apply the removal policy
-    cfnResource.applyRemovalPolicy(this.policy);
+    if (this.shouldApplyPolicy(cfnResource)) {
+      // Apply the removal policy
+      cfnResource.applyRemovalPolicy(this.policy);
+    }
   }
 }
 
 /**
- * Manages removal policies for all resources within a construct scope
+ * The RemovalPolicyAspect handles applying a removal policy to resources,
+ * overriding any existing policies
+ */
+class RemovalPolicyAspect extends BaseRemovalPolicyAspect {
+  protected shouldApplyPolicy(_cfnResource: CfnResource): boolean {
+    // For RemovalPolicies, we always apply the policy
+    return true;
+  }
+}
+
+/**
+ * The MissingRemovalPolicyAspect handles applying a removal policy only to resources
+ * that don't already have a policy set
+ */
+class MissingRemovalPolicyAspect extends BaseRemovalPolicyAspect {
+  protected shouldApplyPolicy(cfnResource: CfnResource): boolean {
+    // For MissingRemovalPolicies, we only apply the policy if one doesn't already exist
+    const userAlreadySetPolicy =
+      cfnResource.cfnOptions.deletionPolicy !== undefined ||
+      cfnResource.cfnOptions.updateReplacePolicy !== undefined;
+
+    return !userAlreadySetPolicy;
+  }
+}
+
+/**
+ * Manages removal policies for all resources within a construct scope,
+ * overriding any existing policies by default
  */
 export class RemovalPolicies {
   /**
@@ -110,7 +129,8 @@ export class RemovalPolicies {
   private constructor(private readonly scope: IConstruct) {}
 
   /**
-   * Apply a removal policy to all resources within this scope
+   * Apply a removal policy to all resources within this scope,
+   * overriding any existing policies
    *
    * @param policy The removal policy to apply
    * @param props Configuration options
@@ -119,13 +139,6 @@ export class RemovalPolicies {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
       priority: props.priority ?? AspectPriority.MUTATING,
     });
-
-    if (props.priority !== undefined && props.respectPreviousPolicy === false) {
-      Annotations.of(this.scope).addWarningV2(
-        `Warning Removal Policies with both priority and respectPreviousPolicy in ${this.scope.node.path}`,
-        'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details.',
-      );
-    }
   }
 
   /**
@@ -157,6 +170,76 @@ export class RemovalPolicies {
 
   /**
    * Apply RETAIN_ON_UPDATE_OR_DELETE removal policy to all resources within this scope
+   *
+   * @param props Configuration options
+   */
+  public retainOnUpdateOrDelete(props: RemovalPolicyProps = {}) {
+    this.apply(RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, props);
+  }
+}
+
+/**
+ * Manages removal policies for resources without existing policies within a construct scope
+ */
+export class MissingRemovalPolicies {
+  /**
+   * Returns the missing removal policies API for the given scope
+   * @param scope The scope
+   */
+  public static of(scope: IConstruct): MissingRemovalPolicies {
+    return new MissingRemovalPolicies(scope);
+  }
+
+  private constructor(private readonly scope: IConstruct) {}
+
+  /**
+   * Apply a removal policy only to resources without existing policies within this scope
+   *
+   * @param policy The removal policy to apply
+   * @param props Configuration options
+   */
+  public apply(policy: RemovalPolicy, props: RemovalPolicyProps = {}) {
+    Aspects.of(this.scope).add(new MissingRemovalPolicyAspect(policy, props), {
+      priority: props.priority ?? AspectPriority.MUTATING,
+    });
+
+    if (props.priority !== undefined) {
+      Annotations.of(this.scope).addWarningV2(
+        `Warning MissingRemovalPolicies with priority in ${this.scope.node.path}`,
+        'Applying a MissingRemovalPolicy with `priority` can lead to unexpected behavior since it only applies to resources without existing policies. Please refer to the documentation for more details.',
+      );
+    }
+  }
+
+  /**
+   * Apply DESTROY removal policy only to resources without existing policies within this scope
+   *
+   * @param props Configuration options
+   */
+  public destroy(props: RemovalPolicyProps = {}) {
+    this.apply(RemovalPolicy.DESTROY, props);
+  }
+
+  /**
+   * Apply RETAIN removal policy only to resources without existing policies within this scope
+   *
+   * @param props Configuration options
+   */
+  public retain(props: RemovalPolicyProps = {}) {
+    this.apply(RemovalPolicy.RETAIN, props);
+  }
+
+  /**
+   * Apply SNAPSHOT removal policy only to resources without existing policies within this scope
+   *
+   * @param props Configuration options
+   */
+  public snapshot(props: RemovalPolicyProps = {}) {
+    this.apply(RemovalPolicy.SNAPSHOT, props);
+  }
+
+  /**
+   * Apply RETAIN_ON_UPDATE_OR_DELETE removal policy only to resources without existing policies within this scope
    *
    * @param props Configuration options
    */

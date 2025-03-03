@@ -1806,25 +1806,20 @@ The `RemovalPolicies` class provides a convenient way to manage removal policies
 
 ### Usage
 
-Creates a new instance of RemovalPolicies for the given scope.
-
 ```typescript
-import { RemovalPolicies } from 'aws-cdk-lib';
+import { RemovalPolicies, MissingRemovalPolicies } from 'aws-cdk-lib';
 
 // Apply DESTROY policy to all resources in a scope
 RemovalPolicies.of(scope).destroy();
 
-// Apply DESTROY policy (overwritten)
-RemovalPolicies.of(scope).snapshot();
-RemovalPolicies.of(scope).destroy();
+// Apply RETAIN policy to all resources in a scope
+RemovalPolicies.of(scope).retain();
 
-// Apply SNAPSHOT policy (not overwritten)
+// Apply SNAPSHOT policy to all resources in a scope
 RemovalPolicies.of(scope).snapshot();
-RemovalPolicies.of(scope).destroy({ respectPreviousPolicy: true }));
 
-// Apply DESTROY policy (priority)
-RemovalPolicies.of(stack).retainOnUpdateOrDelete({ priority: 250 });
-RemovalPolicies.of(stack).destroy({ priority: 10 });
+// Apply RETAIN_ON_UPDATE_OR_DELETE policy to all resources in a scope
+RemovalPolicies.of(scope).retainOnUpdateOrDelete();
 
 // Apply RETAIN policy only to specific resource types
 RemovalPolicies.of(parent).retain({
@@ -1841,24 +1836,36 @@ RemovalPolicies.of(scope).snapshot({
 });
 ```
 
-#### Behavior Summary
+### RemovalPolicies vs MissingRemovalPolicies
 
-- When `respectPreviousPolicy` is `true` :
-  - Existing `removalPolicy` set by the user is preserved. Applying the policy to such resources will be skipped.
+CDK provides two different classes for managing removal policies:
 
-- When `respectPreviousPolicy` is `false`(default):
-  - The existing `removalPolicy` is ignored, and the specified policy is applied unconditionally.
+- RemovalPolicies: Always applies the specified removal policy, overriding any existing policies.
+- MissingRemovalPolicies: Applies the removal policy only to resources that don't already have a policy set.
 
-#### RemovalPolicies and Aspect Interactions
+```typescript
+// Override any existing policies
+RemovalPolicies.of(scope).retain();
 
-The interaction between `priority` and `respectPreviousPolicy` can be confusing, especially when both are used together. The `respectPreviousPolicy` property is intended to control whether to respect previous policies, while the `priority` property is intended to control the order in which aspects are applied. However, a lower-priority aspect with `respectPreviousPolicy: false` can unexpectedly override a higher-priority aspect, even if the higher-priority aspect also has `respectPreviousPolicy: false`.
+// Only apply to resources without existing policies
+MissingRemovalPolicies.of(scope).retain();
+```
 
-To mitigate this confusion, we recommend the following:
+### Aspect Priority
 
-*   Use `priority` to control the order in which aspects are applied.
-*   Use `respectPreviousPolicy: false` only to not respect resource-level removal policies that were not specified via aspects.
-*   Avoid using `respectPreviousPolicy` to manage interactions between aspects.
+Both RemovalPolicies and MissingRemovalPolicies are implemented as Aspects. You can control the order in which they're applied using the priority parameter:
 
-A warning message is displayed when both `priority` and `respectPreviousPolicy` are specified. This can lead to unexpected behavior and is generally not recommended. Use `priority` to control the order of aspects, and `respectPreviousPolicy` to control respecting removal policies set directly on resources. Refer to the documentation for more details.
+```typescript
+// Apply in a specific order based on priority
+RemovalPolicies.of(stack).retain({ priority: 100 });
+RemovalPolicies.of(stack).destroy({ priority: 200 }); // This will override the RETAIN policy
+```
+
+For RemovalPolicies, the policies are applied in order of aspect execution, with the last applied policy overriding previous ones. The priority only affects the order in which aspects are applied during synthesis.
+
+#### Note
+
+When using MissingRemovalPolicies with priority, a warning will be issued as this can lead to unexpected behavior. This is because MissingRemovalPolicies only applies to resources without existing policies, making priority less relevant.
+
 
 <!--END CORE DOCUMENTATION-->

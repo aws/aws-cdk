@@ -1,4 +1,4 @@
-import { App, RemovalPolicies, Stack } from 'aws-cdk-lib';
+import { App, MissingRemovalPolicies, RemovalPolicies, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -24,6 +24,28 @@ RemovalPolicies.of(stack).retain({
 });
 RemovalPolicies.of(destroyBucket).destroy({
   priority: 100,
+});
+
+// Missing Policies
+const missingPoliciesTest = new Construct(stack, 'MissingPoliciesTest');
+new s3.Bucket(missingPoliciesTest, 'PreConfigured', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+new s3.Bucket(missingPoliciesTest, 'NotConfigured');
+
+MissingRemovalPolicies.of(missingPoliciesTest).retain();
+
+const filteredTest = new Construct(stack, 'FilteredMissingPoliciesTest');
+new s3.Bucket(filteredTest, 'BucketToRetain');
+new dynamodb.Table(filteredTest, 'TableToSkip', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+});
+
+MissingRemovalPolicies.of(filteredTest).snapshot({
+  applyToResourceTypes: [
+    's3.CfnBucket',
+  ],
 });
 
 new integ.IntegTest(app, 'RemovalPoliciesTest', {
