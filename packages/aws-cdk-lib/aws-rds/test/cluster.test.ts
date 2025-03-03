@@ -11,6 +11,7 @@ import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core
 import {
   RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
+  RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT,
 } from '../../cx-api';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
@@ -613,6 +614,109 @@ describe('cluster new api', () => {
       template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
         PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
       }));
+    });
+
+    test('encryption at rest is enabled by default', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        StorageEncrypted: true,
+      });
+    });
+
+    test('encryption at rest can be disabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        storageEncrypted: false,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        StorageEncrypted: false,
+      });
+    });
+
+    test('legacy encryption settings can be set even when the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is true', () => {
+      // GIVEN
+      const featureFlags = { [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: true };
+      const app = new cdk.App({
+        context: featureFlags,
+      });
+      const stack = testStack(app);
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        storageEncrypted: false,
+        storageEncryptedLegacyDefaultValue: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const cluster = Object.values(template.findResources('AWS::RDS::DBCluster'))[0];
+      expect(cluster.Properties.StorageEncrypted).toBeUndefined();
+    });
+
+    test('encryption at rest is not set by default when `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is false', () => {
+      // GIVEN
+      const featureFlags = { [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: false };
+      const app = new cdk.App({
+        context: featureFlags,
+      });
+      const stack = testStack(app);
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const cluster = Object.values(template.findResources('AWS::RDS::DBCluster'))[0];
+      expect(cluster.Properties.StorageEncrypted).toBeUndefined();
+    });
+
+    test('an error is thrown when `storageEncrypted` is set to `true` and `storageEncryptedLegacyDefaultValue` is set to `true`', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+
+          // Incompatible settings
+          storageEncrypted: true,
+          storageEncryptedLegacyDefaultValue: true,
+        });
+      }).toThrow('Cannot set `storageEncrypted` to `true` when `storageEncryptedLegacyDefaultValue` is `true`.');
     });
   });
 
@@ -5583,7 +5687,11 @@ test.each([
 });
 
 function testStack(app?: cdk.App, stackId?: string) {
-  const stack = new cdk.Stack(app, stackId, { env: { account: '12345', region: 'us-test-1' } });
+  const stack = new cdk.Stack(app ?? new cdk.App({
+    context: {
+      [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: true,
+    },
+  }), stackId, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

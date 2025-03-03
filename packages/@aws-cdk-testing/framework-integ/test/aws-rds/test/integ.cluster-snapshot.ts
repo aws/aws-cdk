@@ -31,6 +31,8 @@ class TestStack extends Stack {
         }),
       ],
       vpc,
+      storageEncrypted: false,
+      storageEncryptedLegacyDefaultValue: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -53,6 +55,8 @@ class TestStack extends Stack {
       ],
       vpc,
       removalPolicy: RemovalPolicy.DESTROY,
+      storageEncrypted: false,
+      storageEncryptedLegacyDefaultValue: true,
     });
     fromSnapshot.addRotationSingleUser();
   }

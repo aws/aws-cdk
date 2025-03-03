@@ -5,7 +5,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, getStorageEncryptedProperty } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -1164,9 +1164,23 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
    * Indicates whether the DB instance is encrypted.
    *
-   * @default - true if storageEncryptionKey has been provided, false otherwise
+   * @default - If the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag is set, true by default or if storageEncryptionKey is provided. If the flag is not set, undefined by default unless storageEncryptionKey is provided.
    */
   readonly storageEncrypted?: boolean;
+
+  /**
+   * Set to `true` if the DatabaseCluster was created with unencrypted storage but you're setting the
+   * `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag to `true`.
+   *
+   * The legacy behavior left the `StorageEncrypted` CloudFormation property unset by default. This resulted in
+   * cluster storage being unencrypted. The new behavior always sets the `StorageEncrypted` property to `true` or
+   * `false` for clarity. However, CloudFormation will replace the Cluster if you change `StorageEncrypted` from
+   * `undefined` to `false`. This flag retains the legacy behavior of leaving the `StorageEncrypted` property unset,
+   * even if you're using the new behavior of the `@aws-cdk/aws-rds:enableEncryptionAtRestByDefault` feature flag.
+   *
+   * @default - false
+   */
+  readonly storageEncryptedLegacyDefaultValue?: boolean;
 
   /**
    * The KMS key that's used to encrypt the DB instance.
@@ -1203,7 +1217,12 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
-      storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
+      storageEncrypted: getStorageEncryptedProperty(
+        this,
+        props.storageEncrypted,
+        props.storageEncryptedLegacyDefaultValue,
+        props.storageEncryptionKey,
+      ),
     });
 
     this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);

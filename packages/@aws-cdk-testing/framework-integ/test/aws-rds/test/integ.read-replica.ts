@@ -31,6 +31,8 @@ class TestStack extends Stack {
       instanceType,
       vpc,
       vpcSubnets,
+      storageEncrypted: false,
+      storageEncryptedLegacyDefaultValue: true,
     });
 
     new rds.DatabaseInstanceReadReplica(this, 'PostgresReplica', {
@@ -46,6 +48,8 @@ class TestStack extends Stack {
       instanceType,
       vpc,
       vpcSubnets,
+      storageEncrypted: false,
+      storageEncryptedLegacyDefaultValue: true,
     });
 
     const parameterGroup = new rds.ParameterGroup(this, 'ReplicaParameterGroup', {

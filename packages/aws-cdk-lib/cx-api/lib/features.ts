@@ -118,6 +118,7 @@ export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfun
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
+export const RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT = '@aws-cdk/aws-rds:enableEncryptionAtRestByDefault';
 export const Enable_IMDS_Blocking_Deprecated_Feature = '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature';
 export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlocking';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
@@ -1152,8 +1153,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
@@ -1171,9 +1172,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
     accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
     IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    
+
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
     introducedIn: { v2: '2.175.0' },
@@ -1366,7 +1367,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
       default to reject unauthorized connections when downloading CA Certificates.
-      
+
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
       thumbprints from unsecure connections.`,
     introducedIn: { v2: '2.177.0' },
@@ -1381,7 +1382,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
       * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
@@ -1393,12 +1394,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
     detailsMd: `
-      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
     `,
     introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
+  },
+  //////////////////////////////////////////////////////////////////////
+  [RDS_ENABLE_ENCRYPTION_AT_REST_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, enable encryption at rest by default for RDS instances.',
+    detailsMd: `
+    When this feature flag is enabled, encryption at rest will be enabled by default for RDS instances.
+
+    If the flag is set to false then encryption at rest will not be enabled by default for RDS instances.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set the `storageEncrypted` property to `false` and `storageEncryptedLegacyDefaultValue` to `true` on DatabaseCluster and DatabaseInstance constructs to restore the previous behavior.',
   },
 };
 

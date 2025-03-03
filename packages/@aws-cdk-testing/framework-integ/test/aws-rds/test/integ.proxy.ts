@@ -21,6 +21,8 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
     excludeCharacters: '"@/\\',
   }),
   vpc,
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
@@ -38,6 +40,8 @@ const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
     version: rds.AuroraPostgresEngineVersion.VER_14_5,
   }),
   instanceProps: { vpc },
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 // The `DatabaseProxy` internally adds a dependency so that the `TargetGroup` is created after the `DatabaseCluster` is created.
@@ -60,6 +64,8 @@ const clusterWithWriterAndReaders = new rds.DatabaseCluster(stack, 'dbClusterWit
   vpc,
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [rds.ClusterInstance.provisioned('reader')],
+  storageEncrypted: false,
+  storageEncryptedLegacyDefaultValue: true,
 });
 
 new rds.DatabaseProxy(stack, 'Proxy3', {
