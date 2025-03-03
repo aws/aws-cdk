@@ -3,7 +3,7 @@ import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidati
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
-import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
+import { BlockPublicAccessV2, Bucket, RedirectProtocol } from '../../aws-s3';
 import { ArnFormat, RemovalPolicy, Stack, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
@@ -73,7 +73,7 @@ export class HttpsRedirect extends Construct {
         protocol: RedirectProtocol.HTTPS,
       },
       removalPolicy: RemovalPolicy.DESTROY,
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      blockPublicAccessV2: BlockPublicAccessV2.BLOCK_ALL,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
       defaultRootObject: '',

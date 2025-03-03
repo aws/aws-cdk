@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "blockAccessTest/DefaultTest": {
+      "stacks": [
+        "aws-s3-block-access"
+      ],
+      "assertionStack": "blockAccessTest/DefaultTest/DeployAssert",
+      "assertionStackName": "blockAccessTestDefaultTestDeployAssert2EF4D892"
+    }
+  }
+}

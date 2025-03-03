@@ -12,7 +12,7 @@ class ExtendedLB extends elbv2.ApplicationLoadBalancer {
     super(scope, id, props);
 
     const accessLogsBucket = new s3.Bucket(this, 'ALBAccessLogsBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       versioned: true,
       serverAccessLogsPrefix: 'selflog/',
@@ -21,7 +21,7 @@ class ExtendedLB extends elbv2.ApplicationLoadBalancer {
     this.logAccessLogs(accessLogsBucket);
 
     const connectionLogsBucket = new s3.Bucket(this, 'ALBConnectionLogsBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       versioned: true,
       serverAccessLogsPrefix: 'selflog/',
