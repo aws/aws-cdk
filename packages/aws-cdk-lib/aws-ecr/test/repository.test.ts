@@ -3,11 +3,114 @@ import { Annotations, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import * as cxschema from '../../cloud-assembly-schema';
 import * as ecr from '../lib';
+import { ContextProvider } from '../../core';
 
 /* eslint-disable quote-props */
 
 describe('repository', () => {
+  describe('lookup', () => {
+    test('return correct repository info by name', () => {
+      // GIVEN
+      const resultObjs = [
+        {
+          'Arn': 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo',
+        },
+      ];
+      const value = {
+        value: resultObjs,
+      };
+      const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue(value);
+
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      // THEN
+      expect(repo.repositoryName).toEqual('my-repo');
+      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('my-repo', stack));
+      expect(mock).toHaveBeenCalledWith(stack, {
+        provider: cxschema.ContextProvider.CC_API_PROVIDER,
+        props: {
+          typeName: 'AWS::ECR::Repository',
+          exactIdentifier: 'my-repo',
+          propertiesToReturn: [
+            'Arn',
+          ],
+        } as cxschema.CcApiContextQuery,
+        dummyValue: [
+          {
+            'Arn': ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack),
+          },
+        ],
+      });
+
+      mock.mockRestore();
+    });
+
+    test('return correct repository info by arn', () => {
+      const repoArn = 'arn:aws:ecr::123456789012:repository/my-repo';
+      // GIVEN
+      const resultObjs = [
+        {
+          'Arn': repoArn,
+        },
+      ];
+      const value = {
+        value: resultObjs,
+      };
+      const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue(value);
+
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', {
+        repositoryArn: repoArn,
+      });
+
+      // THEN
+      expect(repo.repositoryName).toEqual('my-repo');
+      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('my-repo', stack));
+      expect(mock).toHaveBeenCalledWith(stack, {
+        provider: cxschema.ContextProvider.CC_API_PROVIDER,
+        props: {
+          typeName: 'AWS::ECR::Repository',
+          exactIdentifier: 'my-repo',
+          propertiesToReturn: [
+            'Arn',
+          ],
+        } as cxschema.CcApiContextQuery,
+        dummyValue: [
+          {
+            'Arn': ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack),
+          },
+        ],
+      });
+
+      mock.mockRestore();
+    });
+
+    test('throw error if repository name is a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const tokenName = new cdk.CfnParameter(stack, 'RepoName');
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {
+        repositoryName: tokenName.valueAsString,
+      })).toThrow('Cannot look up a repository with a tokenized name or ARN.');
+    });
+
+    test('throw error if repository arn is a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const tokenName = new cdk.CfnParameter(stack, 'RepoArn');
+      expect(() => ecr.Repository.fromLookup(stack, 'MyRepository', {
+        repositoryArn: tokenName.valueAsString,
+      })).toThrow('Cannot look up a repository with a tokenized name or ARN.');
+    });
+  });
+
   test('construct repository', () => {
     // GIVEN
     const stack = new cdk.Stack();

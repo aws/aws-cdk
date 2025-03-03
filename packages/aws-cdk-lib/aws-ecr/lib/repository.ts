@@ -641,11 +641,18 @@ export class Repository extends RepositoryBase {
       throw new Error('At least one of `repositoryName` or `repositoryArn` must be provided.');
     }
 
+    const identifier = options.repositoryName ??
+      (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
+
+    if (!identifier) {
+      throw new Error('Could not determine repository identifier from provided options.');
+    }
+
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
         typeName: 'AWS::ECR::Repository',
-        exactIdentifier: options.repositoryName,
+        exactIdentifier: identifier,
         propertiesToReturn: ['Arn'],
       } as cxschema.CcApiContextQuery,
       dummyValue: [
