@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "25c16d2ab30e35800b3ea63c44c93deb85584076eb09a2db9f971803252b22dc": {
       "source": {
@@ -66,7 +66,7 @@
         }
       }
     },
-    "8b7b53b9cd096ccff13a9caf40262c9390394ee8566dea00713f23eeccdf7304": {
+    "785c2086523f719a4d44fb36eaaf18a231bce27f2d1de20b0ae818233fd90282": {
       "source": {
         "path": "eks-fargate-cluster-test-stack.template.json",
         "packaging": "file"
@@ -74,7 +74,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b7b53b9cd096ccff13a9caf40262c9390394ee8566dea00713f23eeccdf7304.json",
+          "objectKey": "785c2086523f719a4d44fb36eaaf18a231bce27f2d1de20b0ae818233fd90282.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

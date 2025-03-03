@@ -1890,6 +1890,22 @@
                     "*"
                   ]
                 }
+              },
+              "ConfigCommand": {
+                "id": "ConfigCommand",
+                "path": "EKSStandardAccessEntry/Cluster/ConfigCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "GetTokenCommand": {
+                "id": "GetTokenCommand",
+                "path": "EKSStandardAccessEntry/Cluster/GetTokenCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
