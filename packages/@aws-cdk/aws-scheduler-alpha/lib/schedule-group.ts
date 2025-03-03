@@ -5,6 +5,9 @@ import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack }
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 
+/**
+ * Properties for a Schedule Group.
+ */
 export interface ScheduleGroupProps {
   /**
    * The name of the schedule group.
@@ -23,6 +26,9 @@ export interface ScheduleGroupProps {
   readonly removalPolicy?: RemovalPolicy;
 }
 
+/**
+ * Interface representing a created or an imported `ScheduleGroup`.
+ */
 export interface IScheduleGroup extends IResource {
   /**
    * The name of the schedule group
@@ -288,7 +294,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
     });
   }
 }
+
 /**
+ * A Schedule Group.
  * @resource AWS::Scheduler::ScheduleGroup
  */
 export class ScheduleGroup extends ScheduleGroupBase {
@@ -338,12 +346,12 @@ export class ScheduleGroup extends ScheduleGroupBase {
   public readonly scheduleGroupName: string;
   public readonly scheduleGroupArn: string;
 
-  public constructor(scope: Construct, id: string, props: ScheduleGroupProps) {
+  public constructor(scope: Construct, id: string, props?: ScheduleGroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.scheduleGroupName = props.scheduleGroupName ?? Names.uniqueResourceName(this, {
+    this.scheduleGroupName = props?.scheduleGroupName ?? Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -352,7 +360,7 @@ export class ScheduleGroup extends ScheduleGroupBase {
       name: this.scheduleGroupName,
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy);
+    resource.applyRemovalPolicy(props?.removalPolicy);
 
     this.scheduleGroupArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'scheduler',

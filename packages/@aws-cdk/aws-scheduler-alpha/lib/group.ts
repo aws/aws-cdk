@@ -342,12 +342,12 @@ export class Group extends GroupBase {
   public readonly groupName: string;
   public readonly groupArn: string;
 
-  public constructor(scope: Construct, id: string, props: GroupProps) {
+  public constructor(scope: Construct, id: string, props?: GroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.groupName = props.groupName ?? Names.uniqueResourceName(this, {
+    this.groupName = props?.groupName ?? Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -356,7 +356,7 @@ export class Group extends GroupBase {
       name: this.groupName,
     });
 
-    group.applyRemovalPolicy(props.removalPolicy);
+    group.applyRemovalPolicy(props?.removalPolicy);
 
     this.groupArn = this.getResourceArnAttribute(group.attrArn, {
       service: 'scheduler',

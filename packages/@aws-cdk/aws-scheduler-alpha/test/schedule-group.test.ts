@@ -5,8 +5,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
-import { ScheduleGroup, ScheduleGroupProps } from '../lib/schedule-group';
 import { Schedule } from '../lib/schedule';
+import { ScheduleGroup, ScheduleGroupProps } from '../lib/schedule-group';
 
 class SomeLambdaTarget implements IScheduleTarget {
   public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
@@ -125,8 +125,8 @@ describe('Schedule Group', () => {
       target: new SomeLambdaTarget(func, role),
     });
 
-    expect(schedule1.group).toEqual(group);
-    expect(schedule2.group).toEqual(group);
+    expect(schedule1.scheduleGroup).toBe(group);
+    expect(schedule2.scheduleGroup).toBe(group);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
@@ -150,8 +150,8 @@ describe('Schedule Group', () => {
       target: new SomeLambdaTarget(func, role),
     });
 
-    expect(schedule1.group).toEqual(group);
-    expect(schedule2.group).toEqual(group);
+    expect(schedule1.scheduleGroup).toBe(group);
+    expect(schedule2.scheduleGroup).toBe(group);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
