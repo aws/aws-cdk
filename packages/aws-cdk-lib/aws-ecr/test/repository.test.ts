@@ -2,11 +2,9 @@ import { EOL } from 'os';
 import { Annotations, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as cdk from '../../core';
 import * as cxschema from '../../cloud-assembly-schema';
+import * as cdk from '../../core';
 import * as ecr from '../lib';
-import { ContextProvider } from '../../core';
-
 /* eslint-disable quote-props */
 
 describe('repository', () => {
@@ -21,7 +19,7 @@ describe('repository', () => {
       const value = {
         value: resultObjs,
       };
-      const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue(value);
+      const mock = jest.spyOn(cdk.ContextProvider, 'getValue').mockReturnValue(value);
 
       // WHEN
       const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
@@ -62,7 +60,7 @@ describe('repository', () => {
       const value = {
         value: resultObjs,
       };
-      const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue(value);
+      const mock = jest.spyOn(cdk.ContextProvider, 'getValue').mockReturnValue(value);
 
       // WHEN
       const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
