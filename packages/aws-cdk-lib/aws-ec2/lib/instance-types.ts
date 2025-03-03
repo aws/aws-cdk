@@ -1481,6 +1481,21 @@ export enum InstanceArchitecture {
    * x86-64 architecture
    */
   X86_64 = 'x86_64',
+
+  /**
+   * i386 architecture
+   */
+  I386 = 'i386',
+
+  /**
+   * x86-64 architecture for Mac
+   */
+  X86_64_MAC = 'x86_64_mac',
+
+  /**
+   * arm64 architecture for Mac
+   */
+  ARM64_MAC = 'arm64_mac',
 }
 
 /**
