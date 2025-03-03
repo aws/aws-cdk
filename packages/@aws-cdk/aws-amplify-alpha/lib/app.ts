@@ -569,11 +569,6 @@ export enum Platform {
    * server side rendered and static assets.
    */
   WEB_COMPUTE = 'WEB_COMPUTE',
-
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
-  WEB_DYNAMIC = 'WEB_DYNAMIC',
 }
 
 /**
