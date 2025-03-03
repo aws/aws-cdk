@@ -450,6 +450,24 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
+### Creating a read replica cluster
+Use `replicationSourceIdentifier` to create a read replica cluster:
+```ts
+declare const vpc: ec2.Vpc;
+declare const primaryCluster: rds.DatabaseCluster;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.serverlessV2('Writer'),
+  vpc,
+  replicationSourceIdentifier: primaryCluster.clusterArn,
+});
+```
+
+**Note**: Cannot create a read replica cluster with `credentials` as the value is inherited from the source DB cluster.
+
 ## Starting an instance database
 
 To set up an instance database, define a `DatabaseInstance`. You must
