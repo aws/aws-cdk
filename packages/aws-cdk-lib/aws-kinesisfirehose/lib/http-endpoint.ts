@@ -151,7 +151,7 @@ export class HTTPEndpoint implements IDestination {
     }) ?? {};
 
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, {
-      mode: S3BackupMode.FAILED,
+      mode: this.props.backupMode === HTTPBackupMode.ALL ? S3BackupMode.ALL : S3BackupMode.FAILED,
     })!; // Probably not a good idea?
 
     if (this.props.endpointConfig.secret) {

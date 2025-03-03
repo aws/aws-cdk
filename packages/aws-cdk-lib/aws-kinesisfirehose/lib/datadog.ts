@@ -1,4 +1,4 @@
-import { HTTPAttribute, HTTPBackupMode, HTTPEndpoint } from './http-endpoint';
+import { HTTPAttribute, HTTPBackupMode, HTTPCompression, HTTPEndpoint } from './http-endpoint';
 import { ISecret } from '../../aws-secretsmanager';
 import { Duration, Size } from '../../core';
 
@@ -118,6 +118,7 @@ export class Datadog extends HTTPEndpoint {
         url: props.url,
         secret: props.apiKey,
       },
+      requestCompression: HTTPCompression.GZIP,
       bufferingHints: {
         interval: Duration.seconds(60),
         size: Size.mebibytes(4),
