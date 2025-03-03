@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'TestStack');
 
 const handler = new lambda.NodejsFunction(stack, 'Function', {
   entry: path.join(__dirname, 'integ-handlers/bun/dependencies-bun.ts'),
-  runtime: Runtime.NODEJS_20_X,
+  runtime: Runtime.NODEJS_22_X,
   bundling: {
     minify: true,
     // Will be installed, not bundled
@@ -19,6 +19,12 @@ const handler = new lambda.NodejsFunction(stack, 'Function', {
     nodeModules: ['axios'],
     forceDockerBundling: true,
   },
+
+  // To (re-)generate this lockfile:
+  // 1. Ensure your local version of bun matches the version in packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile
+  // 2. `cd` to `packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/bun`
+  // 3. Rename the `_package.json` file to `package.json`
+  // 4. Run `bun install`
   depsLockFilePath: path.join(__dirname, 'integ-handlers/bun/bun.lockb'),
 });
 

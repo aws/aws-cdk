@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "06377804ec21f3cc33473a6b5853b2a873177c1ebe09b176c3ab1eef45287c97.zip"
+     "S3Key": "34a0cfe827762d92939af809d39b2595744d7d29328d6ec419935ca5a9fe9116.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
