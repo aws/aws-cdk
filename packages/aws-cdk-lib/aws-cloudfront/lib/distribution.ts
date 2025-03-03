@@ -7,7 +7,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
-import { formatDistributionArn } from './private/utils';
+import { formatDistributionArn, getCoreProtectionWAFWebAclProps } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
@@ -15,6 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
+import * as wafv2 from '../../aws-wafv2';
 import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -91,6 +92,20 @@ export interface DistributionAttributes {
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
   readonly originGroupId?: string;
+}
+
+/**
+ * WAF security protection config for CloudFront
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
+ * @default - disabled
+ */
+export interface WafProtectionConfig {
+  /**
+   * Specifies whether to enable core protection
+   * @default - false
+   */
+  readonly enableCoreProtection?: boolean;
 }
 
 /**
@@ -644,6 +659,36 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
+  }
+
+  /**
+   * Enable WAF security protections.
+   * This method will add an AWS::WAFv2::WebACL resource to the stack.
+   *
+   * Can only be used in US East (N. Virginia) Region (us-east-1).
+   * Cannot be used with webAclId.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-awswaf.html
+   */
+  public enableWafProtection(config: WafProtectionConfig) {
+    if (this.webAclId) {
+      throw new ValidationError('This distribution already had WAF WebAcl attached', this);
+    }
+
+    if (!config.enableCoreProtection) {
+      return;
+    }
+
+    const regionIsUsEast1 = !Token.isUnresolved(this.env.region) && this.env.region === 'us-east-1';
+    if (!regionIsUsEast1) {
+      throw new ValidationError(`To enable WAF core protection, the stack must be in the us-east-1 region but you are in ${this.env.region}.`, this);
+    }
+
+    const webAclName = Names.uniqueId(this);
+
+    const webAcl = new wafv2.CfnWebACL(this, 'WebAcl', getCoreProtectionWAFWebAclProps(webAclName));
+
+    this.attachWebAclId(webAcl.attrArn);
   }
 
   /**
