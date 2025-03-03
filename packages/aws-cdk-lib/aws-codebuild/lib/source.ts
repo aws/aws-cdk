@@ -213,8 +213,6 @@ export enum EventAction {
   WORKFLOW_JOB_QUEUED = 'WORKFLOW_JOB_QUEUED',
 }
 
-
-
 enum WebhookFilterTypes {
   FILE_PATH = 'FILE_PATH',
   COMMIT_MESSAGE = 'COMMIT_MESSAGE',
