@@ -351,7 +351,9 @@
                             {
                               "Action": "states:StartExecution",
                               "Effect": "Allow",
-                              "Resource": "*"
+                              "Resource": {
+                                "Ref": "MyProviderWithCustomRolewaiterstatemachineA313C5FC"
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -460,23 +462,189 @@
                   ]
                 },
                 {
-                  "attachInlinePolicy": [
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          "MyRole2": {
+            "id": "MyRole2",
+            "path": "integ-provider-with-waiter-state-machine-custom-role/MyRole2",
+            "children": {
+              "ImportMyRole2": {
+                "id": "ImportMyRole2",
+                "path": "integ-provider-with-waiter-state-machine-custom-role/MyRole2/ImportMyRole2",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
                     "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-provider-with-waiter-state-machine-custom-role/MyRole2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "integ-provider-with-waiter-state-machine-custom-role/MyRole2/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-provider-with-waiter-state-machine-custom-role/MyRole2/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "IsComplete544AE5AD",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "OnEvent74718524",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "IsComplete544AE5AD",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "OnEvent74718524",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyRole2DefaultPolicy05107F99",
+                        "roles": [
+                          {
+                            "Ref": "MyRole23935D052"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  },
+                  "managedPolicies": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
                   ]
                 },
                 {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
-                  ]
-                },
-                {
-                  "attachInlinePolicy": [
-                    "*"
+                  "addToPrincipalPolicy": [
+                    {}
                   ]
                 },
                 {
@@ -502,6 +670,36 @@
                 {
                   "addToPrincipalPolicy": [
                     {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
                   ]
                 }
               ]
@@ -829,7 +1027,7 @@
                         "handler": "framework.isComplete",
                         "role": {
                           "Fn::GetAtt": [
-                            "MyRoleF48FFE04",
+                            "MyRole23935D052",
                             "Arn"
                           ]
                         },
@@ -878,7 +1076,7 @@
                             "policyName": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole0EB28FB28",
                             "roles": [
                               {
-                                "Ref": "MyRoleF48FFE04"
+                                "Ref": "MyRole23935D052"
                               }
                             ]
                           }
@@ -942,7 +1140,7 @@
                             "policyName": "MyProviderWithCustomRoleframeworkisCompleteinlinePolicyAddedToExecutionRole10FC78DA4",
                             "roles": [
                               {
-                                "Ref": "MyRoleF48FFE04"
+                                "Ref": "MyRole23935D052"
                               }
                             ]
                           }
@@ -1075,7 +1273,7 @@
                         "handler": "framework.onTimeout",
                         "role": {
                           "Fn::GetAtt": [
-                            "MyRoleF48FFE04",
+                            "MyRole23935D052",
                             "Arn"
                           ]
                         },
@@ -1124,7 +1322,7 @@
                             "policyName": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole0F64E0BFD",
                             "roles": [
                               {
-                                "Ref": "MyRoleF48FFE04"
+                                "Ref": "MyRole23935D052"
                               }
                             ]
                           }
@@ -1188,7 +1386,7 @@
                             "policyName": "MyProviderWithCustomRoleframeworkonTimeoutinlinePolicyAddedToExecutionRole158451186",
                             "roles": [
                               {
-                                "Ref": "MyRoleF48FFE04"
+                                "Ref": "MyRole23935D052"
                               }
                             ]
                           }

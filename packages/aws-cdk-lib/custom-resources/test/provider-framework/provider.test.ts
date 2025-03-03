@@ -771,12 +771,12 @@ describe('role', () => {
     });
   });
 
-  it('omits state machine resource constraint if isCompleteHandler is specified', () => {
+  it('cannot specify both role and framework onEvent roles', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    new cr.Provider(stack, 'MyProvider', {
+    expect(() => new cr.Provider(stack, 'MyProvider', {
       onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
@@ -788,77 +788,29 @@ describe('role', () => {
         runtime: lambda.Runtime.NODEJS_LATEST,
       }),
       role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
-    });
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeFunction',
-          Effect: 'Allow',
-          Resource: [
-            {
-              'Fn::GetAtt': [
-                'MyProviderframeworkisComplete364190E2',
-                'Arn',
-              ],
-            }, {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'MyProviderframeworkisComplete364190E2',
-                      'Arn',
-                    ],
-                  },
-                  ':*',
-                ],
-              ],
-            },
-          ],
-        }, {
-          Action: 'lambda:InvokeFunction',
-          Effect: 'Allow',
-          Resource: [
-            {
-              'Fn::GetAtt': [
-                'MyProviderframeworkonTimeoutD9D96588',
-                'Arn',
-              ],
-            }, {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'MyProviderframeworkonTimeoutD9D96588',
-                      'Arn',
-                    ],
-                  },
-                  ':*',
-                ],
-              ],
-            },
-          ],
-        }, {
-          Action: [
-            'logs:CreateLogDelivery',
-            'logs:CreateLogStream',
-            'logs:GetLogDelivery',
-            'logs:UpdateLogDelivery',
-            'logs:DeleteLogDelivery',
-            'logs:ListLogDeliveries',
-            'logs:PutLogEvents',
-            'logs:PutResourcePolicy',
-            'logs:DescribeResourcePolicies',
-            'logs:DescribeLogGroups',
-          ],
-          Effect: 'Allow',
-          Resource: '*',
-        }],
-      },
-    });
+  it('cannot specify both role and framework complete/timeout roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
   });
 });
 

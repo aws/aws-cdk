@@ -29,7 +29,13 @@ class TestStack extends Stack {
     });
 
     new Provider(this, 'MyProviderWithCustomRole', {
-      role: new Role(this, 'MyRole', {
+      frameworkOnEventRole: new Role(this, 'MyRole', {
+        assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+        ],
+      }),
+      frameworkCompleteAndTimeoutRole: new Role(this, 'MyRole2', {
         assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         managedPolicies: [
           ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),

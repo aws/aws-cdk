@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "1f972f1ad355a768c7c92c701dc91984f868de269148467bafd0a6f7d67eece4": {
+    "13001037aa3f64ce93c285aa771a46079687f5cca0ff30e6ceeed576e2239a1c": {
       "source": {
         "path": "integ-provider-with-waiter-state-machine-custom-role.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1f972f1ad355a768c7c92c701dc91984f868de269148467bafd0a6f7d67eece4.json",
+          "objectKey": "13001037aa3f64ce93c285aa771a46079687f5cca0ff30e6ceeed576e2239a1c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
