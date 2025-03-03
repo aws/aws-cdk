@@ -343,7 +343,7 @@ DB instance to a status of `incompatible-parameters`. While the DB instance has
 the incompatible-parameters status, some operations are blocked. For example,
 you can't upgrade the engine version.
 
-#### CA certificate
+### CA certificate
 
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for a cluster instances:
@@ -363,6 +363,34 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   vpc,
 });
 ```
+
+### Scheduling modifications
+
+To schedule modifications to database instances in the next scheduled maintenance window, specify `applyImmediately` to `false` in the instance props:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.provisioned('writer', {
+    applyImmediately: false,
+  }),
+  readers: [
+    rds.ClusterInstance.serverlessV2('reader', {
+      applyImmediately: false,
+    }),
+  ],
+  vpc,
+});
+```
+
+Until RDS applies the changes, the DB instance remains in a drift state.
+As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+
+Currently, CloudFormation does not support to schedule modifications of the cluster configurations.
+To apply changes of the cluster, such as engine version, in the next scheduled maintenance window, you should use `modify-db-cluster` CLI command or management console.
+
+For details, see [Modifying an Amazon Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html).
 
 ### Migrating from instanceProps
 
@@ -583,6 +611,24 @@ new rds.DatabaseInstance(this, 'Instance', {
   caCertificate: rds.CaCertificate.of('future-rds-ca'),
 });
 ```
+
+### Scheduling modifications
+
+To schedule modifications in the next scheduled maintenance window, specify `applyImmediately` to `false`:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  vpc,
+  applyImmediately: false,
+});
+```
+
+Until RDS applies the changes, the DB instance remains in a drift state.
+As a result, the configuration doesn't fully reflect the requested modifications and temporarily diverges from the intended state.
+
+For details, see [Using the schedule modifications setting](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ModifyInstance.ApplyImmediately.html).
 
 ## Setting Public Accessibility
 
@@ -1376,6 +1422,33 @@ To see Amazon RDS DB engines that support Performance Insights, see [Amazon RDS 
 To see Amazon Aurora DB engines that support Performance Insights, see [Amazon Aurora DB engine, Region, and instance class support for Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_PerfInsights.Overview.Engines.html).
 
 For more information about Performance Insights, see [Monitoring DB load with Performance Insights on Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html).
+
+## Database Insights
+
+The standard mode of Database Insights is enabled by default for Aurora databases.
+
+You can enhance the monitoring of your Aurora databases by enabling the advanced mode of Database Insights.
+
+To control Database Insights mode, use the `databaseInsightsMode` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  // If you enable the advanced mode of Database Insights,
+  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).
+  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  }),
+});
+```
+
+Note: Database Insights are only supported for Amazon Aurora MySQL and Amazon Aurora PostgreSQL clusters.
+
+> Visit [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more details.
 
 ## Enhanced Monitoring
 

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { testFixture, testFixtureNoVpc } from './util';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
@@ -19,7 +19,12 @@ import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_32;
+const commonProps = {
+  version: CLUSTER_VERSION,
+  defaultCapacity: 0,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+};
 
 describe('cluster', () => {
   test('can configure and access ALB controller', () => {
@@ -31,7 +36,7 @@ describe('cluster', () => {
         version: eks.AlbControllerVersion.V2_4_1,
       },
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -66,8 +71,7 @@ describe('cluster', () => {
       expect(() => new eks.Cluster(stack, 'Cluster', {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
-        defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_31,
+        ...commonProps,
       })).toThrow(/cannot select multiple subnet groups/);
     });
 
@@ -76,8 +80,7 @@ describe('cluster', () => {
       new eks.Cluster(stack, 'Cluster', {
         vpc: vpc,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
-        defaultCapacity: 0,
-        version: eks.KubernetesVersion.V1_31,
+        ...commonProps,
       });
 
       // THEN
@@ -124,8 +127,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -147,7 +149,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
 
     // WHEN
@@ -166,8 +168,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -198,8 +199,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -224,7 +224,7 @@ describe('cluster', () => {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -238,10 +238,10 @@ describe('cluster', () => {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -282,7 +282,7 @@ describe('cluster', () => {
     const { stack } = testFixture();
 
     const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -299,7 +299,7 @@ describe('cluster', () => {
       constructor(scope: Construct, id: string, props: { sg: ec2.ISecurityGroup; vpc: ec2.IVpc }) {
         super(scope, id);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: CLUSTER_VERSION,
+          ...commonProps,
           prune: false,
           securityGroup: props.sg,
           vpc: props.vpc,
@@ -333,10 +333,10 @@ describe('cluster', () => {
       constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         this.eksCluster = new eks.Cluster(this, 'Cluster', {
-          version: CLUSTER_VERSION,
+          ...commonProps,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -388,7 +388,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -431,7 +431,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -464,7 +464,7 @@ describe('cluster', () => {
           version: CLUSTER_VERSION,
           prune: false,
           kubectlProviderOptions: {
-            kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+            kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
           },
         });
       }
@@ -491,7 +491,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+    new eks.Cluster(stack, 'Cluster', { vpc, ...commonProps, prune: false });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Cluster', {
@@ -520,8 +520,8 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', Match.anyValue());
   });
 
-  describe('default capacity', () => {
-    test('x2 m5.large by default', () => {
+  describe('no default capacity as auto mode is implicitly enabled', () => {
+    test('no default capacity by default', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
 
@@ -529,17 +529,8 @@ describe('cluster', () => {
       const cluster = new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
       // THEN
-      expect(cluster.defaultNodegroup).toBeDefined();
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
-        InstanceTypes: [
-          'm5.large',
-        ],
-        ScalingConfig: {
-          DesiredSize: 2,
-          MaxSize: 2,
-          MinSize: 2,
-        },
-      });
+      expect(cluster.defaultNodegroup).toBeUndefined();
+      Template.fromStack(stack).resourceCountIs('AWS::EKS::Nodegroup', 0);
     });
 
     test('quantity and type can be customized', () => {
@@ -548,6 +539,7 @@ describe('cluster', () => {
 
       // WHEN
       const cluster = new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
         defaultCapacity: 10,
         defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
         version: CLUSTER_VERSION,
@@ -571,7 +563,10 @@ describe('cluster', () => {
       const { stack } = testFixtureNoVpc();
 
       // WHEN
-      const cluster = new eks.Cluster(stack, 'cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+      const cluster = new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      });
 
       // THEN
       expect(cluster.defaultCapacity).toBeUndefined();
@@ -585,7 +580,11 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+      prune: false,
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
@@ -603,7 +602,11 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
 
     // WHEN
-    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+    new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      ...commonProps,
+      prune: false,
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
@@ -622,8 +625,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -642,8 +644,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -675,6 +676,7 @@ describe('cluster', () => {
 
     // WHEN
     const cluster = new eks.Cluster(stack, 'cluster', {
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 10,
       defaultCapacityInstance: new ec2.InstanceType('m2.xlarge'),
       version: CLUSTER_VERSION,
@@ -706,8 +708,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -739,8 +740,7 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -877,8 +877,7 @@ describe('cluster', () => {
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
     });
 
@@ -929,11 +928,10 @@ describe('cluster', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -958,7 +956,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     }); // cluster is under stack2
 
@@ -1009,7 +1007,10 @@ describe('cluster', () => {
       test('rendered by default for ASGs', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+        const cluster = new eks.Cluster(stack, 'Cluster', {
+          ...commonProps,
+          prune: false,
+        });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', { instanceType: new ec2.InstanceType('m3.xlargs') });
@@ -1023,7 +1024,10 @@ describe('cluster', () => {
       test('not rendered if bootstrap is disabled', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+        const cluster = new eks.Cluster(stack, 'Cluster', {
+          ...commonProps,
+          prune: false,
+        });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1041,7 +1045,10 @@ describe('cluster', () => {
       test('bootstrap options', () => {
         // GIVEN
         const { app, stack } = testFixtureNoVpc();
-        const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+        const cluster = new eks.Cluster(stack, 'Cluster', {
+          ...commonProps,
+          prune: false,
+        });
 
         // WHEN
         cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1062,11 +1069,10 @@ describe('cluster', () => {
           // GIVEN
           const { app, stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', {
-            defaultCapacity: 0,
-            version: CLUSTER_VERSION,
+            ...commonProps,
             prune: false,
             kubectlProviderOptions: {
-              kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+              kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
             },
           });
 
@@ -1087,7 +1093,10 @@ describe('cluster', () => {
     test('if bootstrap is disabled cannot specify options', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
 
       // THEN
       expect(() => cluster.addAutoScalingGroupCapacity('MyCapcity', {
@@ -1134,7 +1143,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.25/'),
+          (v as any).Default.includes('/1.32/'),
       )).toEqual(true);
     });
 
@@ -1144,6 +1153,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
         defaultCapacity: 1,
         version: CLUSTER_VERSION,
         prune: false,
@@ -1162,8 +1172,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       }).addNodegroupCapacity('ng', {
@@ -1182,8 +1191,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
       }).addNodegroupCapacity('ng', {
@@ -1202,8 +1210,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
       }).addAutoScalingGroupCapacity('ng', {
         instanceType: new ec2.InstanceType('t4g.medium'),
@@ -1224,8 +1231,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('c7g.large'),
       }).addNodegroupCapacity('ng', {
@@ -1244,8 +1250,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
       }).addAutoScalingGroupCapacity('ng', {
         instanceType: new ec2.InstanceType('c7g.large'),
@@ -1266,8 +1271,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
       }).addAutoScalingGroupCapacity('GPUCapacity', {
         instanceType: new ec2.InstanceType('g4dn.xlarge'),
@@ -1287,8 +1291,7 @@ describe('cluster', () => {
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
       }).addAutoScalingGroupCapacity('ARMCapacity', {
         instanceType: new ec2.InstanceType('m6g.medium'),
@@ -1318,7 +1321,7 @@ describe('cluster', () => {
       )).toEqual(true);
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.25/'),
+          (v as any).Default.includes('/aws-k8s-1.32/'),
       )).toEqual(true);
     });
 
@@ -1332,7 +1335,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1351,7 +1354,10 @@ describe('cluster', () => {
     test('if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
-      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        prune: false,
+      });
 
       // WHEN
       const provider = cluster.openIdConnectProvider;
@@ -1380,11 +1386,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1405,11 +1410,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1430,11 +1434,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1455,11 +1458,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1481,11 +1483,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1505,11 +1506,10 @@ describe('cluster', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const cluster = new eks.Cluster(stack, 'Cluster', {
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
+        ...commonProps,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1533,7 +1533,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1583,7 +1583,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1677,7 +1677,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1699,7 +1699,7 @@ describe('cluster', () => {
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         environment: {
           Foo: 'Bar',
         },
@@ -1740,7 +1740,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
           role: kubectlRole,
         },
       });
@@ -1810,7 +1810,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1828,7 +1828,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         endpointAccess: eks.EndpointAccess.PUBLIC,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1860,7 +1860,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1878,7 +1878,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1897,7 +1897,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1928,7 +1928,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -1988,7 +1988,7 @@ describe('cluster', () => {
         prune: false,
         endpointAccess: eks.EndpointAccess.PRIVATE,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2055,7 +2055,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2082,7 +2082,7 @@ describe('cluster', () => {
           ],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2110,7 +2110,7 @@ describe('cluster', () => {
           })],
         }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2154,7 +2154,7 @@ describe('cluster', () => {
         endpointAccess: eks.EndpointAccess.PRIVATE,
         vpc,
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2219,7 +2219,7 @@ describe('cluster', () => {
         vpc: vpc2,
         vpcSubnets: [{ subnetGroupName: 'Private1' }, { subnetGroupName: 'Private2' }],
         kubectlProviderOptions: {
-          kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+          kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
         },
       });
 
@@ -2300,7 +2300,7 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     });
 
@@ -2373,7 +2373,7 @@ describe('cluster', () => {
       prune: false,
       kubectlProviderOptions: {
         awscliLayer: layer,
-        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(stack, 'kubectlLayer'),
       },
     });
 

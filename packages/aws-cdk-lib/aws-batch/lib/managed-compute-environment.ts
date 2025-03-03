@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token } from '../../core';
+import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -194,7 +194,12 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    *
    * If you specify a specific AMI, this property will be ignored.
    *
-   * @default true
+   * Note: the CDK will never set this value by default, `false` will set by CFN.
+   * This is to avoid a deployment failure that occurs when this value is set.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/27054
+   *
+   * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
 }
@@ -619,10 +624,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
-        throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
+        throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
       public addInstanceType(_instanceType: ec2.InstanceType): void {
-        throw new Error(`cannot add instance type to imported ComputeEnvironment '${id}'`);
+        throw new ValidationError(`cannot add instance type to imported ComputeEnvironment '${id}'`, this);
       }
     }
 
@@ -650,7 +655,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     this.images = props.images;
-    this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
+    this.allocationStrategy = determineAllocationStrategy(this, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
 
     this.spotFleetRole = props.spotFleetRole ?? (
@@ -665,7 +670,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
        this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
     ) {
-      throw new Error('Amazon Linux 2023 does not support A1 instances.');
+      throw new ValidationError('Amazon Linux 2023 does not support A1 instances.', this);
     }
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
@@ -676,8 +681,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
 
-    validateVCpus(id, this.minvCpus, this.maxvCpus);
-    validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
+    validateVCpus(this, this.minvCpus, this.maxvCpus);
+    validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1010,9 +1015,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.eksCluster = props.eksCluster;
 
     this.images = props.images;
-    this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
+    this.allocationStrategy = determineAllocationStrategy(this, props.allocationStrategy, this.spot);
     if (this.allocationStrategy === AllocationStrategy.BEST_FIT) {
-      throw new Error(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`);
+      throw new ValidationError(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`, this);
     }
     this.spotBidPercentage = props.spotBidPercentage;
     this.instanceTypes = props.instanceTypes ?? [];
@@ -1026,8 +1031,8 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
     this.placementGroup = props.placementGroup;
 
-    validateVCpus(id, this.minvCpus, this.maxvCpus);
-    validateSpotConfig(id, this.spot, this.spotBidPercentage);
+    validateVCpus(this, this.minvCpus, this.maxvCpus);
+    validateSpotConfig(this, this.spot, this.spotBidPercentage);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1179,14 +1184,14 @@ function createSpotFleetRole(scope: Construct): IRole {
   });
 }
 
-function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean): AllocationStrategy | undefined {
+function determineAllocationStrategy(scope: Construct, allocationStrategy?: AllocationStrategy, spot?: boolean): AllocationStrategy | undefined {
   let result = allocationStrategy;
   if (!allocationStrategy) {
     result = spot ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
   } else if (allocationStrategy === AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED && !spot) {
-    throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`);
+    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`, scope);
   } else if (allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !spot) {
-    throw new Error(`Managed ComputeEnvironment '${id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`);
+    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`, scope);
   }
 
   return result;
@@ -1200,34 +1205,34 @@ function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceCla
   return [];
 }
 
-function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole): void {
+function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole): void {
   if (spotBidPercentage) {
     if (!spot) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
+      throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' without specifying 'spot'`, scope);
     }
 
     if (!Token.isUnresolved(spotBidPercentage)) {
       if (spotBidPercentage > 100) {
-        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' > 100`);
+        throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' > 100`, scope);
       } else if (spotBidPercentage < 0) {
-        throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' < 0`);
+        throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' < 0`, scope);
       }
     }
   }
 
   if (spotFleetRole) {
     if (!spot) {
-      throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotFleetRole' without specifying 'spot'`);
+      throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotFleetRole' without specifying 'spot'`, scope);
     }
   }
 }
 
-function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
+function validateVCpus(scope: Construct, minvCpus: number, maxvCpus: number): void {
   if (!Token.isUnresolved(minvCpus) && minvCpus < 0) {
-    throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`);
+    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`, scope);
   }
   if (!Token.isUnresolved(minvCpus) && !Token.isUnresolved(maxvCpus) && minvCpus > maxvCpus) {
-    throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
+    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`, scope);
   }
 }
 

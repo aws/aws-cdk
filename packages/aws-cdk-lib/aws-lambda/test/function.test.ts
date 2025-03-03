@@ -191,7 +191,7 @@ describe('function', () => {
     test('can supply principalOrgID via permission property', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
-      const org = new iam.OrganizationPrincipal('o-xxxxxxxxxx');
+      const org = new iam.OrganizationPrincipal('o-12345abcde');
       const account = new iam.AccountPrincipal('123456789012');
 
       fn.addPermission('S3Permission', {
@@ -223,7 +223,7 @@ describe('function', () => {
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
-      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+      fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('o-12345abcde') });
     });
 
     test('does not show warning if skipPermissions is set', () => {
@@ -402,9 +402,61 @@ describe('function', () => {
       })).toThrow(/PrincipalWithConditions had unsupported condition combinations for Lambda permission statement/);
     });
 
-    test('BYORole', () => {
+    test('BYORole @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
       // GIVEN
-      const stack = new cdk.Stack();
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app);
+      const role = new iam.Role(stack, 'SomeRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'], resources: ['*'] }));
+
+      // WHEN
+      const fn = new lambda.Function(stack, 'Function', {
+        code: new lambda.InlineCode('test'),
+        runtime: lambda.Runtime.PYTHON_3_9,
+        handler: 'index.test',
+        role,
+        initialPolicy: [
+          new iam.PolicyStatement({ actions: ['inline:inline'], resources: ['*'] }),
+        ],
+      });
+
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'], resources: ['*'] }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            { Action: 'confirm:itsthesame', Effect: 'Allow', Resource: '*' },
+            { Action: 'inline:inline', Effect: 'Allow', Resource: '*' },
+          ],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            { Action: 'explicit:explicit', Effect: 'Allow', Resource: '*' },
+          ],
+        },
+      });
+    });
+
+    test('BYORole @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app);
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
@@ -787,8 +839,109 @@ describe('function', () => {
     });
   });
 
-  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client', () => {
-    const stack = new cdk.Stack();
+  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      functionName: 'OneFunctionToRuleThemAll',
+      deadLetterQueueEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+            ],
+          ],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyLambdaDeadLetterQueue399EEA2D',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        DeadLetterConfig: {
+          TargetArn: {
+            'Fn::GetAtt': [
+              'MyLambdaDeadLetterQueue399EEA2D',
+              'Arn',
+            ],
+          },
+        },
+        FunctionName: 'OneFunctionToRuleThemAll',
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with SQS DLQ when client sets deadLetterQueueEnabled to true and functionName defined by client @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1116,8 +1269,73 @@ describe('function', () => {
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
   });
 
-  test('default function with Active tracing', () => {
-    const stack = new cdk.Stack();
+  test('default function with Active tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.ACTIVE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        TracingConfig: {
+          Mode: 'Active',
+        },
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with Active tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1172,8 +1390,73 @@ describe('function', () => {
     });
   });
 
-  test('default function with PassThrough tracing', () => {
-    const stack = new cdk.Stack();
+  test('default function with PassThrough tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+      },
+    });
+    const stack = new cdk.Stack(app);
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tracing: lambda.Tracing.PASS_THROUGH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyLambdainlinePolicyAddedToExecutionRole0E0144580',
+      Roles: [
+        {
+          Ref: 'MyLambdaServiceRole4539ECB6',
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Code: {
+          ZipFile: 'foo',
+        },
+        Handler: 'index.handler',
+        Role: {
+          'Fn::GetAtt': [
+            'MyLambdaServiceRole4539ECB6',
+            'Arn',
+          ],
+        },
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        TracingConfig: {
+          Mode: 'PassThrough',
+        },
+      },
+      DependsOn: [
+        'MyLambdaServiceRole4539ECB6',
+      ],
+    });
+  });
+
+  test('default function with PassThrough tracing @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+    const app = new cdk.App({
+      context: {
+        [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+      },
+    });
+    const stack = new cdk.Stack(app);
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
@@ -1462,7 +1745,7 @@ describe('function', () => {
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
-      const org = new iam.OrganizationPrincipal('my-org-id');
+      const org = new iam.OrganizationPrincipal('o-12345abcde');
 
       // WHEN
       fn.grantInvoke(org);
@@ -1477,7 +1760,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
 
@@ -1691,7 +1974,7 @@ describe('function', () => {
         new iam.AccountPrincipal('1234'),
         new iam.ServicePrincipal('apigateway.amazonaws.com'),
         new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
-        new iam.OrganizationPrincipal('my-org-id'),
+        new iam.OrganizationPrincipal('o-12345abcde'),
       );
 
       const fn = new lambda.Function(stack, 'Function', {
@@ -1743,7 +2026,7 @@ describe('function', () => {
           ],
         },
         Principal: '*',
-        PrincipalOrgID: 'my-org-id',
+        PrincipalOrgID: 'o-12345abcde',
       });
     });
   });
