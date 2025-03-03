@@ -81,7 +81,7 @@ export class Runtime {
   /** Zeppelin Flink Version 2.0 */
   public static readonly ZEPPELIN_FLINK_2_0 = Runtime.of('ZEPPELIN-FLINK-2_0');
 
-   /** Zeppelin Flink Version 1.0 */
+  /** Zeppelin Flink Version 1.0 */
   public static readonly ZEPPELIN_FLINK_1_0 = Runtime.of('ZEPPELIN-FLINK-1_0');
 
   /** SQL Version 1.0 */
