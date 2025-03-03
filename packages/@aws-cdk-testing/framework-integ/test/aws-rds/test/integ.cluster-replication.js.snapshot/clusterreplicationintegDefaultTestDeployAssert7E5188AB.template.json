@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+  "AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBClusters",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,43 +9,55 @@
       "Arn"
      ]
     },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"null\"}}",
+    "service": "RDS",
+    "api": "describeDBClusters",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$StringLike\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":rds:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":cluster:",
+       {
+        "Fn::ImportValue": "cluster-replication:ExportsOutputRefPrimaryDatabase4D634A5D33CD85BB"
+       },
+       "\"}"
+      ]
+     ]
+    },
+    "actualPath": "DBClusters.0.ReplicationSourceIdentifier",
     "parameters": {
-     "FunctionName": {
+     "DBClusterIdentifier": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "TestStack:ExportsOutputRefFunction76856677C48862D5"
+         "Fn::ImportValue": "cluster-replication:ExportsOutputRefReplicaDatabaseD9DBA76369E771EF"
         },
         "\""
        ]
       ]
      }
     },
-    "flattenResponse": "false",
-    "salt": "1738519309316"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "DBClusters.0.ReplicationSourceIdentifier"
+    ],
+    "salt": "1739724751512"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "TestStack:ExportsOutputRefFunction76856677C48862D5"
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -75,42 +87,11 @@
        "Statement": [
         {
          "Action": [
-          "lambda:Invoke"
+          "rds:DescribeDBClusters"
          ],
          "Effect": "Allow",
          "Resource": [
           "*"
-         ]
-        },
-        {
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":lambda:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":function:",
-             {
-              "Fn::ImportValue": "TestStack:ExportsOutputRefFunction76856677C48862D5"
-             }
-            ]
-           ]
-          }
          ]
         }
        ]
@@ -135,7 +116,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0620cd173f15e6874350d35d31917579f8488aac349f5c15062107ebca21d5b6.zip"
+     "S3Key": "e7f43ee3831feaa8c622c2bca7576a224a644e24b0ac4c601b7bbc1a81a1a959.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -149,10 +130,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke55933c6da447c7ea94ebd3a50e8557a8": {
+  "AssertionResultsAwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8",
+     "AwsApiCallRDSdescribeDBClustersb11cbf3440b8279dc2a08d2690818149",
      "assertion"
     ]
    }
