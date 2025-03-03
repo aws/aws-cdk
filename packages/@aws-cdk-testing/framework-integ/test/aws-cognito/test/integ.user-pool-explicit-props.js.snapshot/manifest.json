@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "integ-user-pool.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/67c61d070926490e79cb63a78f9370d931353c0becc5dfc5426cc038f205bf8a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e776d47f784e5411f051d7d60887df6aae08b994ab6bdd86134b0bfc3977df83.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,39 @@
         "integ-user-pool.assets"
       ],
       "metadata": {
+        "/integ-user-pool/createAuthChallenge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/createAuthChallenge/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/createAuthChallenge/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/createAuthChallenge/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -44,6 +77,39 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "createAuthChallengeB185B225"
+          }
+        ],
+        "/integ-user-pool/customMessage": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/customMessage/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/customMessage/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool/customMessage/ServiceRole/Resource": [
@@ -58,6 +124,39 @@
             "data": "customMessage52BA91E2"
           }
         ],
+        "/integ-user-pool/defineAuthChallenge": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/defineAuthChallenge/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/defineAuthChallenge/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/defineAuthChallenge/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -68,6 +167,39 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "defineAuthChallengeAE7BCDA1"
+          }
+        ],
+        "/integ-user-pool/postAuthentication": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/postAuthentication/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/postAuthentication/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool/postAuthentication/ServiceRole/Resource": [
@@ -82,6 +214,39 @@
             "data": "postAuthentication741BD8E3"
           }
         ],
+        "/integ-user-pool/postConfirmation": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/postConfirmation/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/postConfirmation/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/postConfirmation/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -92,6 +257,39 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "postConfirmationD5E3F1DD"
+          }
+        ],
+        "/integ-user-pool/preAuthentication": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/preAuthentication/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/preAuthentication/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool/preAuthentication/ServiceRole/Resource": [
@@ -106,6 +304,39 @@
             "data": "preAuthentication56F78C81"
           }
         ],
+        "/integ-user-pool/preSignUp": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/preSignUp/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/preSignUp/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/preSignUp/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -116,6 +347,39 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "preSignUp1934B27C"
+          }
+        ],
+        "/integ-user-pool/preTokenGeneration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/preTokenGeneration/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/preTokenGeneration/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/integ-user-pool/preTokenGeneration/ServiceRole/Resource": [
@@ -130,6 +394,39 @@
             "data": "preTokenGeneration1E968302"
           }
         ],
+        "/integ-user-pool/userMigration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/userMigration/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/userMigration/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/userMigration/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -142,6 +439,39 @@
             "data": "userMigrationAAA960EC"
           }
         ],
+        "/integ-user-pool/verifyAuthChallengeResponse": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/verifyAuthChallengeResponse/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/integ-user-pool/verifyAuthChallengeResponse/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/verifyAuthChallengeResponse/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -152,6 +482,59 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "verifyAuthChallengeResponse211FE4A6"
+          }
+        ],
+        "/integ-user-pool/myuserpool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "userPoolName": "*",
+              "userInvitation": {
+                "emailSubject": "*",
+                "emailBody": "*",
+                "smsMessage": "*"
+              },
+              "selfSignUpEnabled": true,
+              "userVerification": {
+                "emailBody": "*",
+                "emailSubject": "*",
+                "smsMessage": "*"
+              },
+              "signInAliases": {
+                "username": true,
+                "email": true
+              },
+              "autoVerify": {
+                "email": true,
+                "phone": true
+              },
+              "keepOriginal": {
+                "email": true,
+                "phone": true
+              },
+              "standardAttributes": {},
+              "customAttributes": "*",
+              "mfa": "OFF",
+              "mfaSecondFactor": {
+                "sms": true,
+                "otp": true
+              },
+              "passwordPolicy": {
+                "tempPasswordValidity": "*",
+                "minLength": "*",
+                "requireDigits": true,
+                "requireLowercase": true,
+                "requireUppercase": true,
+                "requireSymbols": true
+              },
+              "lambdaTriggers": {
+                "createAuthChallenge": "*"
+              },
+              "advancedSecurityMode": "ENFORCED",
+              "featurePlan": "PLUS",
+              "snsRegion": "*"
+            }
           }
         ],
         "/integ-user-pool/myuserpool/CreateAuthChallengeCognito": [
@@ -214,6 +597,24 @@
             "data": "myuserpoolVerifyAuthChallengeResponseCognitoAEAB40FD"
           }
         ],
+        "/integ-user-pool/myuserpool/smsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "inlinePolicies": "*"
+            }
+          }
+        ],
+        "/integ-user-pool/myuserpool/smsRole/ImportsmsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/integ-user-pool/myuserpool/smsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -224,6 +625,17 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool/myuserpool/myuserpooldomain": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "cognitoDomain": {
+                "domainPrefix": "*"
+              }
+            }
           }
         ],
         "/integ-user-pool/myuserpool/myuserpooldomain/Resource": [
