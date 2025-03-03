@@ -25,6 +25,7 @@ import {
   Token,
   Tokenization,
   Annotations,
+  PhysicalName,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -2787,9 +2788,7 @@ export class Bucket extends BucketBase {
 
     const replicationRole = new iam.Role(this, 'ReplicationRole', {
       assumedBy: new iam.ServicePrincipal('s3.amazonaws.com'),
-      // To avoid the error where the replication role cannot be used during cross-account replication,
-      // it is necessary to set the `roleName`.
-      roleName: 'CDKReplicationRole',
+      roleName: FeatureFlags.of(this).isEnabled(cxapi.SET_UNIQUE_REPLICATION_ROLE_NAME) ? PhysicalName.GENERATE_IF_NEEDED : 'CDKReplicationRole',
     });
 
     // add permissions to the role

@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { AwsApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
 
 /**
  * Notes on how to run this integ test
@@ -28,7 +29,11 @@ import { Construct } from 'constructs';
  *     - `yarn integ aws-s3/test/integ.bucket-cross-account-replication.js --profiles cross-account`
  * */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    [SET_UNIQUE_REPLICATION_ROLE_NAME]: false,
+  },
+});
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
