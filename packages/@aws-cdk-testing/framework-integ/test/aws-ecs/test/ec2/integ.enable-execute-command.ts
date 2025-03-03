@@ -11,6 +11,7 @@ const app = new cdk.App({
     '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new cdk.Stack(app, 'aws-ecs-integ-enable-execute-command');
