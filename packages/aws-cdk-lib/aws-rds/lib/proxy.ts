@@ -32,6 +32,10 @@ export enum ClientPasswordAuthType {
    * SQL Server Authentication client authentication type.
    */
   SQL_SERVER_AUTHENTICATION = 'SQL_SERVER_AUTHENTICATION',
+  /**
+   * MySQL caching SHA2 Password client authentication type.
+   */
+  MYSQL_CACHING_SHA2_PASSWORD = 'MYSQL_CACHING_SHA2_PASSWORD',
 }
 
 /**
