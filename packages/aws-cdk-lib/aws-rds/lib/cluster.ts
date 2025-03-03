@@ -889,7 +889,10 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (props.enableClusterLevelEnhancedMonitoring && !props.monitoringInterval) {
       throw new ValidationError('`monitoringInterval` must be set when `enableClusterLevelEnhancedMonitoring` is true.', this);
     }
-    if (props.monitoringInterval && [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1) {
+    if (
+      props.monitoringInterval && !props.monitoringInterval.isUnresolved() &&
+      [0, 1, 5, 10, 15, 30, 60].indexOf(props.monitoringInterval.toSeconds()) === -1
+    ) {
       throw new ValidationError(`'monitoringInterval' must be one of 0, 1, 5, 10, 15, 30, or 60 seconds, got: ${props.monitoringInterval.toSeconds()} seconds.`, this);
     }
 

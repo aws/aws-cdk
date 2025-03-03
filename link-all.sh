@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # creates symlinks under node_modules for all packages in this repo
 # can be used to work against this code base.
 set -euo pipefail

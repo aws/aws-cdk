@@ -96,6 +96,12 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "Bucket83908E77"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -156,18 +162,13 @@
           "Arn"
          ]
         },
-        "RunOrder": 1
+        "RunOrder": 1,
+        "TimeoutInMinutes": 10
        }
       ],
       "Name": "Approve"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "Bucket83908E77"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",
@@ -347,11 +348,11 @@
   "PipelineApproveManualApprovalTopicResourceadamruka85gmailcom202874CD": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
+    "Endpoint": "adamruka85@gmail.com",
     "Protocol": "email",
     "TopicArn": {
      "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
-    },
-    "Endpoint": "adamruka85@gmail.com"
+    }
    }
   }
  },
