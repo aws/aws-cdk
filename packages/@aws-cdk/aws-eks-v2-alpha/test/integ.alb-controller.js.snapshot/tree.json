@@ -824,7 +824,10 @@
                         "assumeRolePolicyDocument": {
                           "Statement": [
                             {
-                              "Action": "sts:AssumeRole",
+                              "Action": [
+                                "sts:AssumeRole",
+                                "sts:TagSession"
+                              ],
                               "Effect": "Allow",
                               "Principal": {
                                 "Service": "eks.amazonaws.com"
@@ -843,6 +846,54 @@
                                   "Ref": "AWS::Partition"
                                 },
                                 ":iam::aws:policy/AmazonEKSClusterPolicy"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSComputePolicy"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSBlockStoragePolicy"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSLoadBalancingPolicy"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSNetworkingPolicy"
                               ]
                             ]
                           }
@@ -865,6 +916,41 @@
                         "assumeRoleAction": "*"
                       },
                       "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addManagedPolicy": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addManagedPolicy": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addManagedPolicy": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addManagedPolicy": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addManagedPolicy": [
                         {
                           "managedPolicyArn": "*"
                         }
@@ -913,6 +999,94 @@
                   ]
                 }
               },
+              "ClusternodePoolRole": {
+                "id": "ClusternodePoolRole",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole",
+                "children": {
+                  "ImportClusternodePoolRole": {
+                    "id": "ImportClusternodePoolRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole/ImportClusternodePoolRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ClusternodePoolRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        },
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource",
@@ -922,8 +1096,24 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": true,
+                      "nodePools": [
+                        "system",
+                        "general-purpose"
+                      ],
+                      "nodeRoleArn": {
+                        "Fn::GetAtt": [
+                          "ClusterClusternodePoolRole69276141",
+                          "Arn"
+                        ]
+                      }
+                    },
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": true
+                      }
                     },
                     "resourcesVpcConfig": {
                       "securityGroupIds": [
@@ -956,6 +1146,11 @@
                         "ClusterRoleFA261979",
                         "Arn"
                       ]
+                    },
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": true
+                      }
                     },
                     "version": "1.32"
                   }
@@ -1916,172 +2111,6 @@
                   ]
                 }
               },
-              "NodegroupDefaultCapacity": {
-                "id": "NodegroupDefaultCapacity",
-                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity",
-                "children": {
-                  "NodeGroupRole": {
-                    "id": "NodeGroupRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
-                    "children": {
-                      "ImportNodeGroupRole": {
-                        "id": "ImportNodeGroupRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0",
-                          "metadata": [
-                            "*"
-                          ]
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "ec2.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEKS_CNI_Policy"
-                                  ]
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0",
-                      "metadata": [
-                        {
-                          "assumedBy": {
-                            "principalAccount": "*",
-                            "assumeRoleAction": "*"
-                          }
-                        },
-                        {
-                          "addManagedPolicy": [
-                            {
-                              "managedPolicyArn": "*"
-                            }
-                          ]
-                        },
-                        {
-                          "addManagedPolicy": [
-                            {
-                              "managedPolicyArn": "*"
-                            }
-                          ]
-                        },
-                        {
-                          "addManagedPolicy": [
-                            {
-                              "managedPolicyArn": "*"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
-                      "aws:cdk:cloudformation:props": {
-                        "amiType": "AL2_x86_64",
-                        "clusterName": {
-                          "Ref": "ClusterEB0386A7"
-                        },
-                        "forceUpdateEnabled": true,
-                        "instanceTypes": [
-                          "m5.large"
-                        ],
-                        "nodeRole": {
-                          "Fn::GetAtt": [
-                            "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-                            "Arn"
-                          ]
-                        },
-                        "scalingConfig": {
-                          "desiredSize": 2,
-                          "maxSize": 2,
-                          "minSize": 2
-                        },
-                        "subnets": [
-                          {
-                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                          },
-                          {
-                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_eks.CfnNodegroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-eks-v2-alpha.Nodegroup",
-                  "version": "0.0.0",
-                  "metadata": [
-                    "*"
-                  ]
-                }
-              },
               "echo-server": {
                 "id": "echo-server",
                 "path": "aws-cdk-eks-cluster-alb-controller/Cluster/echo-server",
@@ -2150,7 +2179,6 @@
               "fqn": "@aws-cdk/aws-eks-v2-alpha.Cluster",
               "version": "0.0.0",
               "metadata": [
-                "*",
                 "*",
                 "*",
                 "*"
