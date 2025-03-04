@@ -7,7 +7,7 @@ import * as extract from 'extract-zip';
 const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
 const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
 const AWS_SDK_MODELS_URL = "https://github.com/awslabs/aws-sdk-rust/archive/refs/heads/main.zip";
-const MODULE_MAPPING = path.join(__dirname, "module_mapping.json");
+const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
 const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
 export const PARSED_SDK_ENUMS_FILE_NAME = "sdk-enums.json";
@@ -409,7 +409,7 @@ function calculateValueMatchPercentage(cdkValues: Set<string>, sdkValues: Set<st
  *   - `enumName`: The name of the best-matching SDK enum.
  *   - `matchPercentage`: The percentage of matching values.
  */
-function findMatchingEnum(
+export function findMatchingEnum(
   cdkEnumName: string,
   cdkValues: (string | number)[],
   sdkServices: string[],
@@ -471,7 +471,7 @@ function isValidMatch(cdkValues: Set<string>, sdkValues: Set<string>): boolean {
  * @param {Record<string, string[]>} manualMappings - The manually defined service mappings.
  * @returns {Promise<void>}
  */
-async function generateAndSaveStaticMapping(
+export async function generateAndSaveStaticMapping(
   cdkEnums: CdkEnums,
   sdkEnums: SdkEnums,
   manualMappings: Record<string, string[]>
