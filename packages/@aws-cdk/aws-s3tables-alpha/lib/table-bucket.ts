@@ -4,7 +4,7 @@ import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import { TableBucketPolicy } from './table-bucket-policy';
 import { validateTableBucketAttributes, S3_TABLES_SERVICE } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource, UnscopedValidationError, ArnFormat } from 'aws-cdk-lib/core';
+import { Resource, IResource, UnscopedValidationError, ArnFormat, RemovalPolicy } from 'aws-cdk-lib/core';
 import UnreferencedFileRemovalProperty = s3tables.CfnTableBucket.UnreferencedFileRemovalProperty;
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
@@ -151,6 +151,13 @@ export interface TableBucketProps {
    * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
    */
   readonly account?: string;
+
+  /**
+   * Controls what happens to this table bucket it it stoped being managed by cloudformation.
+   *
+   * @default RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -186,6 +193,7 @@ export interface TableBucketAttributes {
  *
  * This bucket may not yet have all features that exposed by the underlying CfnTableBucket.
  *
+ * @stateful
  * @example
  * const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
  *   bucketName: 'example-bucket',
@@ -397,6 +405,8 @@ export class TableBucket extends TableBucketBase {
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       },
     );
+
+    this._resource.applyRemovalPolicy(props.removalPolicy);
   }
 }
 

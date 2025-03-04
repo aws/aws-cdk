@@ -56,6 +56,7 @@ describe('TableBucket', () => {
         unreferencedDays: 10,
         status: 'Enabled',
       },
+      removalPolicy: core.RemovalPolicy.RETAIN,
     };
     let tableBucket: s3tables.TableBucket;
 
@@ -64,11 +65,11 @@ describe('TableBucket', () => {
     });
 
     test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource`, () => {
+      tableBucket;
       Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
     });
 
     test('has UnreferencedFileRemoval properties', () => {
-      tableBucket.toString();
       Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
         'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
         'UnreferencedFileRemoval': {
