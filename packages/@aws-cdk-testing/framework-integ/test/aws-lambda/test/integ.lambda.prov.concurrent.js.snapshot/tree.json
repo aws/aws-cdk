@@ -21,7 +21,10 @@
                     "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -62,11 +65,96 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "*",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
+                            "roles": [
+                              {
+                                "Ref": "MyLambdaAliasPCEServiceRoleF7C9F212"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -93,45 +181,6 @@
                   "version": "0.0.0"
                 }
               },
-              "inlinePolicyAddedToExecutionRole-0": {
-                "id": "inlinePolicyAddedToExecutionRole-0",
-                "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/inlinePolicyAddedToExecutionRole-0",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/inlinePolicyAddedToExecutionRole-0/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "*",
-                              "Effect": "Allow",
-                              "Resource": "*"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "MyLambdaAliasPCEinlinePolicyAddedToExecutionRole0F563738B",
-                        "roles": [
-                          {
-                            "Ref": "MyLambdaAliasPCEServiceRoleF7C9F212"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
-                }
-              },
               "CurrentVersion": {
                 "id": "CurrentVersion",
                 "path": "aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion",
@@ -155,13 +204,25 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Version",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "lambda": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                }
+              ]
             }
           },
           "Alias": {
@@ -199,7 +260,10 @@
                 "path": "aws-cdk-lambda-pce-1/Alias/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "AliasPermission": {
@@ -223,7 +287,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Alias",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "aliasName": "*",
+                  "version": "*",
+                  "provisionedConcurrentExecutions": "*"
+                }
+              ]
             }
           },
           "MyLambdaVersionPCE": {
@@ -239,7 +310,10 @@
                     "path": "aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -280,11 +354,96 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-lambda-pce-1/MyLambdaVersionPCE/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "*",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
+                            "roles": [
+                              {
+                                "Ref": "MyLambdaVersionPCEServiceRole2ACFB73E"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -308,45 +467,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "inlinePolicyAddedToExecutionRole-0": {
-                "id": "inlinePolicyAddedToExecutionRole-0",
-                "path": "aws-cdk-lambda-pce-1/MyLambdaVersionPCE/inlinePolicyAddedToExecutionRole-0",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-lambda-pce-1/MyLambdaVersionPCE/inlinePolicyAddedToExecutionRole-0/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                      "aws:cdk:cloudformation:props": {
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "*",
-                              "Effect": "Allow",
-                              "Resource": "*"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policyName": "MyLambdaVersionPCEinlinePolicyAddedToExecutionRole0C74308E8",
-                        "roles": [
-                          {
-                            "Ref": "MyLambdaVersionPCEServiceRole2ACFB73E"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                   "version": "0.0.0"
                 }
               },
@@ -376,13 +496,29 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Version",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "lambda": "*",
+                      "provisionedConcurrentExecutions": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*",
+                  "currentVersionOptions": {
+                    "provisionedConcurrentExecutions": "*"
+                  }
+                }
+              ]
             }
           },
           "Alias2": {
@@ -417,7 +553,10 @@
                 "path": "aws-cdk-lambda-pce-1/Alias2/ScalingRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "AliasPermission2": {
@@ -441,7 +580,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Alias",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "aliasName": "*",
+                  "version": "*"
+                }
+              ]
             }
           },
           "BootstrapVersion": {

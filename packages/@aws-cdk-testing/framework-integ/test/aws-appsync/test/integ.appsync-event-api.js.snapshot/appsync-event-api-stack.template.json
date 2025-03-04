@@ -35,8 +35,11 @@
      ]
     },
     "AdminCreateUserConfig": {
-     "AllowAdminCreateUserOnly": true
+     "AllowAdminCreateUserOnly": false
     },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
@@ -50,6 +53,37 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "Poollambdaappclient42C69D5A": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "PreventUserExistenceErrors": "ENABLED",
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "PoolD3F588B8"
+    }
+   }
   },
   "AuthorizerFunctionServiceRole5B2A061B": {
    "Type": "AWS::IAM::Role",
@@ -188,6 +222,9 @@
      "ConnectionAuthModes": [
       {
        "AuthType": "API_KEY"
+      },
+      {
+       "AuthType": "AWS_IAM"
       }
      ],
      "DefaultPublishAuthModes": [
@@ -275,6 +312,18 @@
     }
    }
   },
+  "EventApidefault24CEF6C6": {
+   "Type": "AWS::AppSync::ChannelNamespace",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EventApiE141E6C0",
+      "ApiId"
+     ]
+    },
+    "Name": "default"
+   }
+  },
   "EventApiAnotherChannelNamespace5BC7F3A5": {
    "Type": "AWS::AppSync::ChannelNamespace",
    "Properties": {
@@ -284,7 +333,7 @@
       "ApiId"
      ]
     },
-    "CodeHandlers": "\n            export function onPublish(ctx) {\n              return ctx.events.filter((event) => event.payload.odds > 0)\n            }\n          ",
+    "CodeHandlers": "\n            function enrichEvent(event) {\n              return {\n                id: event.id,\n                payload: {\n                  ...event.payload,\n                  newField: 'newField'\n                }\n              }\n            }\n            export function onPublish(ctx) {\n              return ctx.events.map(enrichEvent);\n            }\n          ",
     "Name": "AnotherChannelNamespace"
    }
   },
@@ -375,6 +424,23 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ]
   },
+  "AppSyncCnameRecord408D9525": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "api.*.example.com.",
+    "ResourceRecords": [
+     {
+      "Fn::GetAtt": [
+       "EventApiDomainName1C1CA3FD",
+       "AppSyncDomainName"
+      ]
+     }
+    ],
+    "TTL": "1800",
+    "Type": "CNAME"
+   }
+  },
   "ChannelNamespace5873C25D": {
    "Type": "AWS::AppSync::ChannelNamespace",
    "Properties": {
@@ -385,20 +451,216 @@
      ]
     },
     "CodeS3Location": {
-     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f79e346159c9d109573aa79dac7f882e156f79c4ece518897a558a122e3924fd.js"
+     "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bff8ecf40beff4b39ba4b69d04fa6a5d4e9ba16cf8dcd687165b7ea0493ecae1.js"
     },
     "Name": "ChannelNamespace",
     "PublishAuthModes": [
      {
-      "AuthType": "AWS_LAMBDA"
+      "AuthType": "API_KEY"
      }
     ],
     "SubscribeAuthModes": [
      {
-      "AuthType": "AWS_LAMBDA"
+      "AuthType": "API_KEY"
      }
     ]
    }
+  },
+  "ApiKeyConfigTestFunctionServiceRole752D4D67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ApiKeyConfigTestFunctionServiceRoleDefaultPolicy411A98AC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "appsync:EventConnect",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":appsync:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":apis/",
+          {
+           "Fn::GetAtt": [
+            "EventApiE141E6C0",
+            "ApiId"
+           ]
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "appsync:EventPublish",
+        "appsync:EventSubscribe"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":appsync:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":apis/",
+          {
+           "Fn::GetAtt": [
+            "EventApiE141E6C0",
+            "ApiId"
+           ]
+          },
+          "/channelNamespace/default"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminConfirmSignUp",
+        "cognito-idp:AdminDeleteUser",
+        "cognito-idp:AdminInitiateAuth",
+        "cognito-idp:SignUp"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PoolD3F588B8",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiKeyConfigTestFunctionServiceRoleDefaultPolicy411A98AC",
+    "Roles": [
+     {
+      "Ref": "ApiKeyConfigTestFunctionServiceRole752D4D67"
+     }
+    ]
+   }
+  },
+  "ApiKeyConfigTestFunctionDD5876FC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "86c1f810188044ee5131336e9c4bd0c97bf5110181d112dfa5de98163adc8a8d.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "EVENT_API_REALTIME_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "wss://",
+         {
+          "Fn::GetAtt": [
+           "EventApiDomainName1C1CA3FD",
+           "DomainName"
+          ]
+         },
+         "/event/realtime"
+        ]
+       ]
+      },
+      "EVENT_API_HTTP_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EventApiDomainName1C1CA3FD",
+           "DomainName"
+          ]
+         },
+         "/event"
+        ]
+       ]
+      },
+      "API_KEY": {
+       "Fn::GetAtt": [
+        "EventApiDefaultApiKeyB9AB1E44",
+        "ApiKey"
+       ]
+      },
+      "USER_POOL_ID": {
+       "Ref": "PoolD3F588B8"
+      },
+      "CLIENT_ID": {
+       "Ref": "Poollambdaappclient42C69D5A"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ApiKeyConfigTestFunctionServiceRole752D4D67",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "ApiKeyConfigTestFunctionServiceRoleDefaultPolicy411A98AC",
+    "ApiKeyConfigTestFunctionServiceRole752D4D67"
+   ]
   },
   "WebAcl": {
    "Type": "AWS::WAFv2::WebACL",
@@ -589,6 +851,14 @@
       "/event/realtime"
      ]
     ]
+   }
+  },
+  "ExportsOutputRefApiKeyConfigTestFunctionDD5876FC25B0F694": {
+   "Value": {
+    "Ref": "ApiKeyConfigTestFunctionDD5876FC"
+   },
+   "Export": {
+    "Name": "appsync-event-api-stack:ExportsOutputRefApiKeyConfigTestFunctionDD5876FC25B0F694"
    }
   }
  },
