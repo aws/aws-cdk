@@ -229,6 +229,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
     if (props.role && (props.frameworkOnEventRole || props.frameworkCompleteAndTimeoutRole)) {
       throw new ValidationError('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
     }
+    if (!props.isCompleteHandler && props.frameworkCompleteAndTimeoutRole) {
+      throw new ValidationError('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
+    }
 
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
