@@ -453,20 +453,12 @@ Currently, this array supports only one field index policy object.
 Example:
 
 ```ts
-import { Bucket } from '@aws-cdk/aws-s3';
-import { LogGroup } from '@aws-cdk/logs';
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose';
 
-
-const logGroupDestination = new LogGroup(this, 'LogGroupLambdaAudit', {
-  logGroupName: 'auditDestinationForCDK',
-});
-
-const fieldIndexPolicy = new FieldIndexPolicy({
+const fieldIndexPolicy = new logs.FieldIndexPolicy({
   fields: ['Operation', 'RequestId'],
 });
 
-new LogGroup(this, 'LogGroupLambda', {
+new logs.LogGroup(this, 'LogGroup', {
   logGroupName: 'cdkIntegLogGroup',
   fieldIndexPolicies: [fieldIndexPolicy],
 });
