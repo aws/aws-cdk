@@ -17,6 +17,7 @@ class EksStandardAccessEntry extends Stack {
     });
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
@@ -41,7 +42,11 @@ class EksStandardAccessEntry extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new EksStandardAccessEntry(app, 'EKSStandardAccessEntry');
 new integ.IntegTest(app, 'aws-cdk-eks-standard-access-entry-integ', {
   testCases: [stack],
