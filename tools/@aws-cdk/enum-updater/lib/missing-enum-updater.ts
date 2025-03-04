@@ -1,15 +1,28 @@
 import { IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
+import * as tmp from 'tmp';
+import { CDK_ENUMS, CdkEnums, normalizeEnumValues, normalizeValue, SDK_ENUMS, SdkEnums, STATIC_MAPPING, StaticMapping } from "./static-enum-mapping-updater";
 
 const DIRECTORIES_TO_SKIP = [
-    "node_modules",
-    "dist",
-    "build",
-    "decdk",
-    "awslint",
-    "test",
-  ];
+  "node_modules",
+  "dist",
+  "build",
+  "decdk",
+  "awslint",
+  "test",
+];
+
+interface MissingValuesEntry {
+  cdk_path: string;
+  missing_values: (string | number)[];
+}
+  
+interface MissingValues {
+  [module: string]: {
+    [enumName: string]: MissingValuesEntry;
+  };
+}
 
 /**
  * Class to parse and update the metadata of enum-like classes.
@@ -69,21 +82,124 @@ export class MissingEnumsUpdater {
 
     return filesList;
   }
+
+  /**
+   * Identifies missing enum values by comparing CDK enums with AWS SDK enums based on a static mapping.
+   */
+  private async findMissingValues(
+    staticMapping: StaticMapping,
+    cdkEnums: CdkEnums,
+    sdkEnums: SdkEnums
+  ): Promise<MissingValues> {
+    const missingValues: MissingValues = {};
+  
+    for (const [module, enums] of Object.entries(staticMapping)) {
+      for (const [enumName, mapping] of Object.entries(enums)) {
+        const cdkValues = cdkEnums[module][enumName].values;
+        const sdkValues = sdkEnums[mapping.sdk_service][mapping.sdk_enum_name];
+        
+        // Get normalized sets of values
+        const normalizedCdkValues = normalizeEnumValues(cdkValues);
+        const normalizedSdkValues = normalizeEnumValues(sdkValues);
+        
+        // Find missing values using normalized comparison
+        const missingNormalized = [...normalizedSdkValues].filter(sdkValue => 
+          !normalizedCdkValues.has(sdkValue)
+        );
+        
+        if (missingNormalized.length > 0) {
+          if (!missingValues[module]) {
+            missingValues[module] = {};
+          }
+  
+          // Get original SDK values that correspond to missing normalized values
+          const missingOriginal = sdkValues.filter(value => 
+            missingNormalized.includes(normalizeValue(value))
+          );
+  
+          missingValues[module][enumName] = {
+            cdk_path: cdkEnums[module][enumName].path,
+            missing_values: missingOriginal
+          };
+        }
+      }
+    }
+  
+  
+    const totalEnumsWithMissing = Object.values(missingValues).reduce((sum, moduleEnums) => 
+      sum + Object.keys(moduleEnums).length, 0);
+    
+    const totalMissingValues = Object.values(missingValues).reduce((sum, moduleEnums) => 
+      sum + Object.values(moduleEnums).reduce((moduleSum, enumData) => 
+        moduleSum + enumData.missing_values.length, 0), 0);
+  
+    console.log(`Enums with missing values: ${totalEnumsWithMissing}`);
+    console.log(`Total missing values found: ${totalMissingValues}`);
+  
+    return missingValues;
+  }
+  
+  /**
+   * Saves missing enum values to a temporary JSON file.
+   */
+  private async saveMissingValues(
+    staticMapping: StaticMapping,
+    cdkEnums: CdkEnums,
+    sdkEnums: SdkEnums
+  ): Promise<string> {
+    try {
+      const missingValues = await this.findMissingValues(staticMapping, cdkEnums, sdkEnums);
+      
+      const tmpFile = tmp.fileSync({ postfix: '.json' });
+      fs.writeFileSync(tmpFile.name, JSON.stringify(missingValues, null, 2));
+  
+      return tmpFile.name;
+    } catch (error) {
+      console.error('Error saving missing values:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Analyzes missing enum values between CDK and SDK by loading mappings and processing them.
+   */
+  private async analyzeMissingEnumValues(): Promise<string> {
+    try {
+      const staticMapping: StaticMapping = JSON.parse(fs.readFileSync(STATIC_MAPPING, 'utf8'));
+      const cdkEnums: CdkEnums = JSON.parse(fs.readFileSync(CDK_ENUMS, 'utf8'));
+      const sdkEnums: SdkEnums = JSON.parse(fs.readFileSync(SDK_ENUMS, 'utf8'));
+  
+      const missingValuesPath = await this.saveMissingValues(staticMapping, cdkEnums, sdkEnums);
+      
+      const totalMappings = Object.values(staticMapping)
+        .reduce((sum, moduleEnums) => sum + Object.keys(moduleEnums).length, 0);
+      
+      console.log("\nAnalysis Statistics:");
+      console.log(`Total mappings analyzed: ${totalMappings}`);
+      console.log("Missing values analysis completed.");
+
+      return missingValuesPath;
+    } catch (error) {
+      console.error('Error analyzing missing enum values:', error);
+      throw error;
+    }
+  }
+  
   
   /**
    * Retrieve the generated list of enum-like classes and the missing values,
    * and update the source files with any missing values.
    */
-  public updateEnumValues(): void {
+  public updateEnumValues(missingValuesPath: string): void {
     // Get list of enum-likes and missing enum-likes
-    const parsedEnumLikes = this.getParsedEnumValues();
-    const missingEnumLikes = this.getMissingEnumValues();
+    const parsedEnums = this.getParsedEnumValues();
+    const missingEnums = this.getMissingEnumValues(missingValuesPath);
 
     // Update the parsed_cdk_enums.json file
-    Object.keys(missingEnumLikes).forEach((cdkModule) => {
-      Object.keys(missingEnumLikes[cdkModule]).forEach((enumKey) => {
-        if (parsedEnumLikes[cdkModule]?.[enumKey]) {
-          this.updateEnum(enumKey, missingEnumLikes[cdkModule][enumKey])
+    Object.keys(missingEnums).forEach((cdkModule) => {
+      Object.keys(missingEnums[cdkModule]).forEach((enumKey) => {
+        if (parsedEnums[cdkModule]?.[enumKey]) {
+          this.updateEnum(enumKey, missingEnums[cdkModule][enumKey])
         }
       });
     });
@@ -95,7 +211,7 @@ export class MissingEnumsUpdater {
    */
   private getParsedEnumValues(): any {
     // Get file contents
-    const fileContent = fs.readFileSync(path.resolve(__dirname, "../parsed_cdk_enums.json"), 'utf8');
+    const fileContent = fs.readFileSync(CDK_ENUMS, 'utf8');
     var jsonData = JSON.parse(fileContent);
 
     // Remove anything that is enum-like
@@ -121,31 +237,31 @@ export class MissingEnumsUpdater {
    * Retrieve the list of missing values for regular enum values
    * @returns A dictionary containing the missing-values.json file with only regular enums with missing values
    */
-    private getMissingEnumValues(): any {
-      // Get file contents
-      const fileContent = fs.readFileSync(path.resolve(__dirname, "../missing-values.json"), 'utf8');
-      var jsonData = JSON.parse(fileContent);
-  
-      const parsedEnums = this.getParsedEnumValues();
-  
-      // Remove anything that isn't in the parsed enum-likes (regular enums)
-      Object.keys(jsonData).forEach((cdkModule) => {
-        Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
-          if (!parsedEnums[cdkModule]?.[enumKey]) {
-            delete jsonData[cdkModule][enumKey];
-          }
-        });
-      });
-  
-      // Clean up empty modules
-      Object.keys(jsonData).forEach((cdkModule) => {
-        if (Object.keys(jsonData[cdkModule]).length === 0) {
-          delete jsonData[cdkModule];
+  private getMissingEnumValues(missingValuesPath: string): any {
+    // Get file contents
+    const fileContent = fs.readFileSync(missingValuesPath, 'utf8');
+    var jsonData = JSON.parse(fileContent);
+
+    const parsedEnums = this.getParsedEnumValues();
+
+    // Remove anything that isn't in the parsed enum-likes (regular enums)
+    Object.keys(jsonData).forEach((cdkModule) => {
+      Object.keys(jsonData[cdkModule]).forEach((enumKey) => {
+        if (!parsedEnums[cdkModule]?.[enumKey]) {
+          delete jsonData[cdkModule][enumKey];
         }
       });
-  
-      return jsonData
-    }
+    });
+
+    // Clean up empty modules
+    Object.keys(jsonData).forEach((cdkModule) => {
+      if (Object.keys(jsonData[cdkModule]).length === 0) {
+        delete jsonData[cdkModule];
+      }
+    });
+
+    return jsonData
+  }
 
   /**
    * Update a single enum value
@@ -155,7 +271,7 @@ export class MissingEnumsUpdater {
    */
   private updateEnum(enumName: string, missingValue: any): void {
     // Get the right source file to modify
-    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', missingValue['cdk_path']));
+    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', this.removeAwsCdkPrefix(missingValue['cdk_path'])));
     if (!sourceFile) {
       throw new Error(`Source file not found: ${missingValue['cdk_path']}`);
     }
@@ -166,8 +282,6 @@ export class MissingEnumsUpdater {
       throw new Error(`Enum declaration not found: ${enumName}`);
     }
     
-    console.log(`=====\nUpdating enum ${enumName} in ${missingValue['cdk_path']} \n=====`);
-
     const newEnumValues = missingValue['missing_values'];
 
     // First get the full text
@@ -199,7 +313,7 @@ export class MissingEnumsUpdater {
     newEnumValues.forEach((enumVal: string, index: number) => {
       const enumConstantName = enumVal.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/_+$/, '');
       
-      textToInsert += `  /**\n   * [PLACEHOLDER FOR: TO BE FILLED OUT]\n   */\n`;
+      textToInsert += `  /**\n   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT\n   */\n`;
       textToInsert += `  ${enumConstantName} = '${enumVal}'`;
       
       // Add a comma and appropriate newlines after each member
@@ -222,17 +336,16 @@ export class MissingEnumsUpdater {
 
     // Write the updated file back to disk
     sourceFile.saveSync();
-    console.log(sourceFile.getEnum(enumName)?.getFullText());
   }
   
   /**
    * Retrieve the generated list of enum-like classes and the missing values,
    * and update the source files with any missing values.
    */
-  public updateEnumLikeValues(): void {
+  public updateEnumLikeValues(missingValuesPath: string): void {
     // Get list of enum-likes and missing enum-likes
     const parsedEnumLikes = this.getParsedEnumLikeValues();
-    const missingEnumLikes = this.getMissingEnumLikeValues();
+    const missingEnumLikes = this.getMissingEnumLikeValues(missingValuesPath);
 
     // Update the parsed_cdk_enums.json file
     Object.keys(missingEnumLikes).forEach((cdkModule) => {
@@ -250,7 +363,7 @@ export class MissingEnumsUpdater {
    */
   private getParsedEnumLikeValues(): any {
     // Get file contents
-    const fileContent = fs.readFileSync(path.resolve(__dirname, "../parsed_cdk_enums.json"), 'utf8');
+    const fileContent = fs.readFileSync(CDK_ENUMS, 'utf8');
     var jsonData = JSON.parse(fileContent);
 
     // Remove anything that isn't enum-like
@@ -276,9 +389,9 @@ export class MissingEnumsUpdater {
    * Retrieve the list of missing values for enum-like values
    * @returns A dictionary containing the missing-values.json file with only enum-likes with missing values
    */
-  private getMissingEnumLikeValues(): any {
+  private getMissingEnumLikeValues(missingValuesPath: string): any {
     // Get file contents
-    const fileContent = fs.readFileSync(path.resolve(__dirname, "../missing-values.json"), 'utf8');
+    const fileContent = fs.readFileSync(missingValuesPath, 'utf8');
     var jsonData = JSON.parse(fileContent);
 
     const parsedEnumLikes = this.getParsedEnumLikeValues();
@@ -311,7 +424,7 @@ export class MissingEnumsUpdater {
    */
   private updateEnumLike(moduleName: string, enumLikeName: string, missingValue: any): void {
     // Get the right source file to modify
-    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', missingValue['cdk_path']));
+    let sourceFile = this.project.getSourceFile(path.resolve(__dirname, '../../../..', this.removeAwsCdkPrefix(missingValue['cdk_path'])));
     if (!sourceFile) {
       throw new Error(`Source file not found: ${missingValue['cdk_path']}`);
     }
@@ -366,18 +479,26 @@ export class MissingEnumsUpdater {
         initializer: initializerStatement.replace("${VAL}", enumLikeVal),
       })
       newProperty.setOrder(lastEnumLikeOrderPos);  // Place at the end of the enum-likes
-      newProperty.addJsDoc("\n[PLACEHOLDER COMMENT: TO BE FILLED OUT]");  // Add temp docstring comment
-      console.log(`=====\nAdded missing enum-like value ${enumLikeVal} to ${enumLikeName}\n=====`);
+      newProperty.addJsDoc("\nPLACEHOLDER_COMMENT_TO_BE_FILLED_OUT");  // Add temp docstring comment
     }
 
     // Write the updated file back to disk
     sourceFile.saveSync();
-    console.log(sourceFile.getClass(enumLikeName)?.getFullText());
+  }
+  
+  /**
+   * Removes the "aws-cdk/" prefix from the given string if it exists.
+   * @param input The string to process.
+   * @returns The string without the "aws-cdk/" prefix.
+   */
+  private removeAwsCdkPrefix(input: string): string {
+    return input.startsWith("aws-cdk/") ? input.slice(8) : input;
   }
 
-  public execute() {
-    console.log(this.updateEnumLikeValues());
-    console.log(this.updateEnumValues());
+  public async execute() {
+    const missingValuesPath = await this.analyzeMissingEnumValues()
+    this.updateEnumLikeValues(missingValuesPath);
+    this.updateEnumValues(missingValuesPath);
   }
 }
   

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "bin": {
-    "enum-updater": "bin/update-enums.ts",
+    "enum-updater": "bin/update-static-enum-mapping.ts",
     "missing-enum-updater": "bin/update-missing-enums.ts"
   },
   "scripts": {

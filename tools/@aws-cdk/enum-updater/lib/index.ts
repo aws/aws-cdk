@@ -1,4 +1,4 @@
-import { entryMethod } from './enum-updater';
+import { entryMethod } from './static-enum-mapping-updater';
 import { MissingEnumsUpdater } from './missing-enum-updater';
 
 export function main() {

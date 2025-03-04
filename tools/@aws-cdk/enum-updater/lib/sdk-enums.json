@@ -3909,6 +3909,12 @@
     "GuardrailWordPolicyAction": [
       "BLOCKED"
     ],
+    "ImageFormat": [
+      "png",
+      "jpeg",
+      "gif",
+      "webp"
+    ],
     "InputQueryType": [
       "TEXT"
     ],
@@ -4018,6 +4024,11 @@
     "SearchType": [
       "HYBRID",
       "SEMANTIC"
+    ],
+    "SessionStatus": [
+      "ACTIVE",
+      "EXPIRED",
+      "ENDED"
     ],
     "Source": [
       "ACTION_GROUP",
@@ -4378,13 +4389,13 @@
   "bedrockdataautomation": {
     "AudioExtractionCategoryType": [
       "AUDIO_CONTENT_MODERATION",
-      "CHAPTER_CONTENT_MODERATION",
-      "TRANSCRIPT"
+      "TRANSCRIPT",
+      "TOPIC_CONTENT_MODERATION"
     ],
     "AudioStandardGenerativeFieldType": [
       "AUDIO_SUMMARY",
-      "CHAPTER_SUMMARY",
-      "IAB"
+      "IAB",
+      "TOPIC_SUMMARY"
     ],
     "BlueprintStage": [
       "DEVELOPMENT",
@@ -4424,7 +4435,8 @@
     ],
     "ImageExtractionCategoryType": [
       "CONTENT_MODERATION",
-      "TEXT_DETECTION"
+      "TEXT_DETECTION",
+      "LOGOS"
     ],
     "ImageStandardGenerativeFieldType": [
       "IMAGE_SUMMARY",
@@ -4445,12 +4457,13 @@
     "VideoExtractionCategoryType": [
       "CONTENT_MODERATION",
       "TEXT_DETECTION",
-      "TRANSCRIPT"
+      "TRANSCRIPT",
+      "LOGOS"
     ],
     "VideoStandardGenerativeFieldType": [
       "VIDEO_SUMMARY",
-      "SCENE_SUMMARY",
-      "IAB"
+      "IAB",
+      "CHAPTER_SUMMARY"
     ]
   },
   "bedrockruntime": {
@@ -5567,18 +5580,6 @@
       "EnterpriseLWA",
       "EnterpriseOIDC"
     ],
-    "AppInstanceDataType": [
-      "Channel",
-      "ChannelMessage"
-    ],
-    "ArtifactsState": [
-      "Enabled",
-      "Disabled"
-    ],
-    "AudioMuxType": [
-      "AudioOnly",
-      "AudioWithActiveSpeakerVideo"
-    ],
     "BotType": [
       "ChatBot"
     ],
@@ -5587,33 +5588,6 @@
       "UpdateInProgress",
       "UpdateSucceeded",
       "UpdateFailed"
-    ],
-    "Capability": [
-      "Voice",
-      "SMS"
-    ],
-    "ChannelMembershipType": [
-      "DEFAULT",
-      "HIDDEN"
-    ],
-    "ChannelMessagePersistenceType": [
-      "PERSISTENT",
-      "NON_PERSISTENT"
-    ],
-    "ChannelMessageType": [
-      "STANDARD",
-      "CONTROL"
-    ],
-    "ChannelMode": [
-      "UNRESTRICTED",
-      "RESTRICTED"
-    ],
-    "ChannelPrivacy": [
-      "PUBLIC",
-      "PRIVATE"
-    ],
-    "ContentMuxType": [
-      "ContentOnly"
     ],
     "EmailStatus": [
       "NotSent",
@@ -5637,10 +5611,6 @@
       "VoiceConnectorGroupAssociationsExist",
       "PhoneNumberAssociationsExist"
     ],
-    "GeoMatchLevel": [
-      "Country",
-      "AreaCode"
-    ],
     "InviteStatus": [
       "Pending",
       "Accepted",
@@ -5652,41 +5622,15 @@
       "Pro",
       "ProTrial"
     ],
-    "MediaPipelineSinkType": [
-      "S3Bucket"
-    ],
-    "MediaPipelineSourceType": [
-      "ChimeSdkMeeting"
-    ],
-    "MediaPipelineStatus": [
-      "Initializing",
-      "InProgress",
-      "Failed",
-      "Stopping",
-      "Stopped"
-    ],
     "MemberType": [
       "User",
       "Bot",
       "Webhook"
     ],
-    "NotificationTarget": [
-      "EventBridge",
-      "SNS",
-      "SQS"
-    ],
-    "NumberSelectionBehavior": [
-      "PreferSticky",
-      "AvoidSticky"
-    ],
     "OrderedPhoneNumberStatus": [
       "Processing",
       "Acquired",
       "Failed"
-    ],
-    "OriginationRouteProtocol": [
-      "TCP",
-      "UDP"
     ],
     "PhoneNumberAssociationName": [
       "AccountId",
@@ -5720,11 +5664,6 @@
       "Local",
       "TollFree"
     ],
-    "ProxySessionStatus": [
-      "Open",
-      "InProgress",
-      "Closed"
-    ],
     "RegistrationStatus": [
       "Unregistered",
       "Registered",
@@ -5734,97 +5673,9 @@
       "Administrator",
       "Member"
     ],
-    "SipRuleTriggerType": [
-      "ToPhoneNumber",
-      "RequestUriHostname"
-    ],
-    "SortOrder": [
-      "ASCENDING",
-      "DESCENDING"
-    ],
-    "TranscribeContentIdentificationType": [
-      "PII"
-    ],
-    "TranscribeContentRedactionType": [
-      "PII"
-    ],
-    "TranscribeLanguageCode": [
-      "en-US",
-      "en-GB",
-      "es-US",
-      "fr-CA",
-      "fr-FR",
-      "en-AU",
-      "it-IT",
-      "de-DE",
-      "pt-BR",
-      "ja-JP",
-      "ko-KR",
-      "zh-CN",
-      "th-TH",
-      "hi-IN"
-    ],
-    "TranscribeMedicalContentIdentificationType": [
-      "PHI"
-    ],
-    "TranscribeMedicalLanguageCode": [
-      "en-US"
-    ],
-    "TranscribeMedicalRegion": [
-      "us-east-1",
-      "us-east-2",
-      "us-west-2",
-      "ap-southeast-2",
-      "ca-central-1",
-      "eu-west-1",
-      "auto"
-    ],
-    "TranscribeMedicalSpecialty": [
-      "PRIMARYCARE",
-      "CARDIOLOGY",
-      "NEUROLOGY",
-      "ONCOLOGY",
-      "RADIOLOGY",
-      "UROLOGY"
-    ],
-    "TranscribeMedicalType": [
-      "CONVERSATION",
-      "DICTATION"
-    ],
-    "TranscribePartialResultsStability": [
-      "low",
-      "medium",
-      "high"
-    ],
-    "TranscribeRegion": [
-      "us-east-2",
-      "us-east-1",
-      "us-west-2",
-      "ap-northeast-2",
-      "ap-southeast-2",
-      "ap-northeast-1",
-      "ca-central-1",
-      "eu-central-1",
-      "eu-west-1",
-      "eu-west-2",
-      "sa-east-1",
-      "auto"
-    ],
-    "TranscribeVocabularyFilterMethod": [
-      "remove",
-      "mask",
-      "tag"
-    ],
     "UserType": [
       "PrivateUser",
       "SharedDevice"
-    ],
-    "VideoMuxType": [
-      "VideoOnly"
-    ],
-    "VoiceConnectorAwsRegion": [
-      "us-east-1",
-      "us-west-2"
     ]
   },
   "cleanrooms": {
@@ -8971,7 +8822,8 @@
     ],
     "PreTokenGenerationLambdaVersionType": [
       "V1_0",
-      "V2_0"
+      "V2_0",
+      "V3_0"
     ],
     "PreventUserExistenceErrorTypes": [
       "LEGACY",
@@ -18429,6 +18281,25 @@
       "failing",
       "failed"
     ],
+    "VpcEncryptionControlExclusionState": [
+      "enabling",
+      "enabled",
+      "disabling",
+      "disabled"
+    ],
+    "VpcEncryptionControlMode": [
+      "monitor",
+      "enforce"
+    ],
+    "VpcEncryptionControlState": [
+      "enforce-in-progress",
+      "monitor-in-progress",
+      "enforce-failed",
+      "monitor-failed",
+      "deleting",
+      "deleted",
+      "available"
+    ],
     "VpcEndpointType": [
       "Interface",
       "Gateway",
@@ -19441,13 +19312,6 @@
     "ValidationSeverity": [
       "error",
       "warning"
-    ]
-  },
-  "elasticinference": {
-    "LocationType": [
-      "region",
-      "availability-zone",
-      "availability-zone-id"
     ]
   },
   "elasticloadbalancingv2": {
@@ -24983,6 +24847,10 @@
       "MEDIUM",
       "HIGH"
     ],
+    "ConfigName": [
+      "CERT_AGE_THRESHOLD_IN_DAYS",
+      "CERT_EXPIRATION_THRESHOLD_IN_DAYS"
+    ],
     "CustomMetricType": [
       "string-list",
       "ip-address-list",
@@ -25429,6 +25297,9 @@
     "EncryptionType": [
       "KMS_BASED_ENCRYPTION",
       "FLEETWISE_DEFAULT_ENCRYPTION"
+    ],
+    "ListResponseScope": [
+      "METADATA_ONLY"
     ],
     "LogType": [
       "OFF",
@@ -30802,9 +30673,51 @@
       "VERSION_0",
       "VERSION_1"
     ],
+    "Codec": [
+      "UNKNOWN",
+      "AAC",
+      "AC3",
+      "EAC3",
+      "FLAC",
+      "MP3",
+      "OPUS",
+      "PCM",
+      "VORBIS",
+      "AV1",
+      "AVC",
+      "HEVC",
+      "MJPEG",
+      "MP4V",
+      "MPEG2",
+      "PRORES",
+      "THEORA",
+      "VP8",
+      "VP9",
+      "C608",
+      "C708",
+      "WEBVTT"
+    ],
     "ColorMetadata": [
       "IGNORE",
       "INSERT"
+    ],
+    "ColorPrimaries": [
+      "ITU_709",
+      "UNSPECIFIED",
+      "RESERVED",
+      "ITU_470M",
+      "ITU_470BG",
+      "SMPTE_170M",
+      "SMPTE_240M",
+      "GENERIC_FILM",
+      "ITU_2020",
+      "SMPTE_428_1",
+      "SMPTE_431_2",
+      "SMPTE_EG_432_1",
+      "IPT",
+      "SMPTE_2067XYZ",
+      "EBU_3213_E",
+      "LAST"
     ],
     "ColorSpace": [
       "FOLLOW",
@@ -31174,6 +31087,12 @@
       "AUTOMATIC",
       "HANS",
       "HANT"
+    ],
+    "Format": [
+      "mp4",
+      "quicktime",
+      "matroska",
+      "webm"
     ],
     "GifFramerateControl": [
       "INITIALIZE_FROM_SOURCE",
@@ -31935,6 +31854,26 @@
       "PASSTHROUGH",
       "NONE"
     ],
+    "MatrixCoefficients": [
+      "RGB",
+      "ITU_709",
+      "UNSPECIFIED",
+      "RESERVED",
+      "FCC",
+      "ITU_470BG",
+      "SMPTE_170M",
+      "SMPTE_240M",
+      "YCgCo",
+      "ITU_2020_NCL",
+      "ITU_2020_CL",
+      "SMPTE_2085",
+      "CD_NCL",
+      "CD_CL",
+      "ITU_2100ICtCp",
+      "IPT",
+      "EBU3213",
+      "LAST"
+    ],
     "MotionImageInsertionMode": [
       "MOV",
       "PNG"
@@ -32387,6 +32326,32 @@
     "TimedMetadata": [
       "PASSTHROUGH",
       "NONE"
+    ],
+    "TrackType": [
+      "video",
+      "audio",
+      "data"
+    ],
+    "TransferCharacteristics": [
+      "ITU_709",
+      "UNSPECIFIED",
+      "RESERVED",
+      "ITU_470M",
+      "ITU_470BG",
+      "SMPTE_170M",
+      "SMPTE_240M",
+      "LINEAR",
+      "LOG10_2",
+      "LOC10_2_5",
+      "IEC_61966_2_4",
+      "ITU_1361",
+      "IEC_61966_2_1",
+      "ITU_2020_10bit",
+      "ITU_2020_12bit",
+      "SMPTE_2084",
+      "SMPTE_428_1",
+      "ARIB_B67",
+      "LAST"
     ],
     "TsPtsOffset": [
       "AUTO",
@@ -35672,7 +35637,9 @@
       "AWS::Logs::LogGroup",
       "AWS::XRay::Trace",
       "AWS::ApplicationInsights::Application",
-      "AWS::InternetMonitor::Monitor"
+      "AWS::InternetMonitor::Monitor",
+      "AWS::ApplicationSignals::Service",
+      "AWS::ApplicationSignals::ServiceLevelObjective"
     ]
   },
   "observabilityadmin": {
@@ -38569,6 +38536,14 @@
     "AttributeValueOperator": [
       "DELETE"
     ],
+    "AudioExtractionStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "AudioExtractionType": [
+      "TRANSCRIPT",
+      "SUMMARY"
+    ],
     "AutoSubscriptionStatus": [
       "ENABLED",
       "DISABLED"
@@ -38811,6 +38786,14 @@
       "CANNOT_PARSE",
       "FIELD_VALIDATION_FAILED",
       "UNKNOWN_OPERATION"
+    ],
+    "VideoExtractionStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "VideoExtractionType": [
+      "TRANSCRIPT",
+      "SUMMARY"
     ],
     "WebExperienceSamplePromptsControlMode": [
       "ENABLED",
@@ -43254,7 +43237,7 @@
     ],
     "AppInstanceType": [
       "system",
-      "at3.micro",
+      "ml.t3.micro",
       "ml.t3.small",
       "ml.t3.medium",
       "ml.t3.large",
@@ -44091,7 +44074,8 @@
     ],
     "HubContentSupportStatus": [
       "Supported",
-      "Deprecated"
+      "Deprecated",
+      "Restricted"
     ],
     "HubContentType": [
       "Model",
@@ -44187,6 +44171,10 @@
       "CREATE_FAILED",
       "DELETING",
       "DELETE_FAILED"
+    ],
+    "InferenceComponentCapacitySizeType": [
+      "COPY_COUNT",
+      "CAPACITY_PERCENT"
     ],
     "InferenceComponentSortKey": [
       "Name",
