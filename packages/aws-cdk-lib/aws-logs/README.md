@@ -462,12 +462,6 @@ const logGroupDestination = new LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
-const s3Destination = new Bucket(this, 'audit-bucket-id');
-
-const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
-  destinations: [s3Destination],
-});
-
 const fieldIndexPolicy = new FieldIndexPolicy({
   fields: ['Operation', 'RequestId'],
 });
