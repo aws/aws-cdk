@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "FirehoseInteg/DefaultTest": {
+      "stacks": [
+        "firehose-logsubscription-integ"
+      ],
+      "assertionStack": "FirehoseInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "FirehoseIntegDefaultTestDeployAssert9D77F4C4"
+    }
+  }
+}
