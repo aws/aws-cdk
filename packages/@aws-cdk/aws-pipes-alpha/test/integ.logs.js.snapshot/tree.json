@@ -27,7 +27,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "TargetQueue": {
@@ -49,7 +52,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "LogGroup": {
@@ -73,7 +79,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "FirehoseBucket": {
@@ -166,7 +177,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -184,13 +200,22 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -244,7 +269,10 @@
                 "path": "aws-cdk-pipes-logs/Role/ImportRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -340,13 +368,54 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Delivery Stream": {
@@ -384,7 +453,10 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "@aws-cdk--aws-kinesisfirehose.CidrBlocks": {
@@ -485,7 +557,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -503,13 +580,22 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "Pipe": {
@@ -525,7 +611,10 @@
                     "path": "aws-cdk-pipes-logs/Pipe/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -665,13 +754,94 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -743,8 +913,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "@aws-cdk/aws-pipes-alpha.Pipe",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "Exports": {
@@ -815,17 +988,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipes-logs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55": {
-                    "id": "AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55",
-                    "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55",
+                  "AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace": {
+                    "id": "AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace",
+                    "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55/SdkProvider",
+                        "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -839,11 +1012,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55/Default",
+                        "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagef9bbbba40c03022e234d72f5a31afd55/Default/Default",
+                            "path": "integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74042dcc7ba6a1bda9ef295ca21e9ace/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -852,7 +1025,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       }
                     },
@@ -940,7 +1116,12 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {

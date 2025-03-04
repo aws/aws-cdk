@@ -1,2 +1,0 @@
-# Skipping test due to the incompatibility in error output between sdkv2 and sdkv3
-hotswap deployment for ecs service detects failed deployment and errors

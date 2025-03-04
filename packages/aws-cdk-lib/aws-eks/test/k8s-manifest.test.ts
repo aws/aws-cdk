@@ -1,18 +1,25 @@
-import { testFixtureNoVpc, testFixtureCluster } from './util';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { testFixtureNoVpc } from './util';
 import { Template } from '../../assertions';
-import { CfnResource, Stack } from '../../core';
+import { App, CfnResource, Stack } from '../../core';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = KubernetesVersion.V1_16;
-
 describe('k8s manifest', () => {
-  test('basic usage', () => {
-    // GIVEN
-    const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
+  let app: App;
+  let stack: Stack;
 
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'Stack');
+  });
+
+  test('basic usage', () => {
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     const manifest = [
       {
         apiVersion: 'v1',
@@ -78,7 +85,6 @@ describe('k8s manifest', () => {
 
   test('can be added to an imported cluster with minimal config', () => {
     // GIVEN
-    const stack = new Stack();
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
@@ -98,7 +104,7 @@ describe('k8s manifest', () => {
     Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
       ClusterName: 'my-cluster-name',
       RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
-      Release: 'myclustercharthelm78d2c26a',
+      Release: 'stackmyclustercharthelmb653160c',
       Chart: 'hello-world',
       Namespace: 'default',
       CreateNamespace: true,
@@ -106,7 +112,6 @@ describe('k8s manifest', () => {
   });
 
   test('default child is a CfnResource', () => {
-    const stack = new Stack();
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
       kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
@@ -118,12 +123,10 @@ describe('k8s manifest', () => {
 
   describe('prune labels', () => {
     test('base case', () => {
-      // GIVEN
-      const { stack } = testFixtureNoVpc();
-
       // prune is enabled by default
       const cluster = new Cluster(stack, 'Cluster', {
         version: KubernetesVersion.V1_16,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       expect(cluster.prune).toEqual(true);
@@ -151,7 +154,11 @@ describe('k8s manifest', () => {
 
     test('multiple resources in the same manifest', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster({ prune: true });
+      const cluster = new Cluster(stack, 'Cluster', {
+        prune: true,
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       cluster.addManifest('m1',
@@ -212,7 +219,10 @@ describe('k8s manifest', () => {
 
     test('different KubernetesManifest resource use different prune labels', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster({ prune: true });
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       cluster.addManifest('m1', {
@@ -278,7 +288,10 @@ describe('k8s manifest', () => {
 
     test('ignores resources without "kind"', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster({ prune: true });
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
 
       // WHEN
       cluster.addManifest('m1', {
@@ -294,7 +307,11 @@ describe('k8s manifest', () => {
 
     test('ignores entries that are not objects (invalid type)', () => {
       // GIVEN
-      const { stack, cluster } = testFixtureCluster({ prune: true });
+      const cluster = new Cluster(stack, 'Cluster', {
+        prune: true,
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
       expect(cluster.prune).toEqual(true);
 
       // WHEN
@@ -309,10 +326,10 @@ describe('k8s manifest', () => {
 
     test('no prune labels when "prune" is disabled', () => {
       // GIVEN
-      const { stack } = testFixtureNoVpc();
       const cluster = new Cluster(stack, 'Cluster', {
-        version: KubernetesVersion.V1_16,
         prune: false,
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       // WHEN

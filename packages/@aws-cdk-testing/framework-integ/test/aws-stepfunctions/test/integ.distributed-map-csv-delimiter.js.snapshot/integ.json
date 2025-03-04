@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "DistributedMapCsvDelimiter/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-csv-delimiter-integ"
+      ],
+      "assertionStack": "DistributedMapCsvDelimiter/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapCsvDelimiterDefaultTestDeployAssert47A59939"
+    }
+  }
+}

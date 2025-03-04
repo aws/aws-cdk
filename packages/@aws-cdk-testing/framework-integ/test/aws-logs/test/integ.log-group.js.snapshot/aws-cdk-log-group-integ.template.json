@@ -17,21 +17,13 @@
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "DataProtectionPolicy": {
-     "name": "policy-name",
-     "description": "policy description",
-     "version": "2021-06-01",
-     "configuration": {
-      "customDataIdentifier": [
-       {
-        "name": "EmployeeId",
-        "regex": "EmployeeId-\\d{9}"
-       }
-      ]
-     },
-     "statement": [
+     "Name": "policy-name",
+     "Description": "policy description",
+     "Version": "2021-06-01",
+     "Statement": [
       {
-       "sid": "audit-statement-cdk",
-       "dataIdentifier": [
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
         {
          "Fn::Join": [
           "",
@@ -58,16 +50,16 @@
         },
         "EmployeeId"
        ],
-       "operation": {
-        "audit": {
-         "findingsDestination": {
-          "cloudWatchLogs": {
-           "logGroup": {
+       "Operation": {
+        "Audit": {
+         "FindingsDestination": {
+          "CloudWatchLogs": {
+           "LogGroup": {
             "Ref": "LogGroupLambdaAuditF8F47F46"
            }
           },
-          "s3": {
-           "bucket": {
+          "S3": {
+           "Bucket": {
             "Ref": "auditbucketidE6660EBD"
            }
           }
@@ -76,8 +68,8 @@
        }
       },
       {
-       "sid": "redact-statement-cdk",
-       "dataIdentifier": [
+       "Sid": "redact-statement-cdk",
+       "DataIdentifier": [
         {
          "Fn::Join": [
           "",
@@ -104,13 +96,21 @@
         },
         "EmployeeId"
        ],
-       "operation": {
-        "deidentify": {
-         "maskConfig": {}
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
         }
        }
       }
-     ]
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": [
+       {
+        "Name": "EmployeeId",
+        "Regex": "EmployeeId-\\d{9}"
+       }
+      ]
+     }
     },
     "RetentionInDays": 731
    },

@@ -7,7 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Resource, Stack } from '../../core';
+import { Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -322,7 +322,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
+      throw new ValidationError('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
     }
 
     if (props.insightTypes) {
@@ -384,11 +384,11 @@ export class Trail extends Resource {
   @MethodMetadata()
   public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
     if (dataResourceValues.length > 250) {
-      throw new Error('A maximum of 250 data elements can be in one event selector');
+      throw new ValidationError('A maximum of 250 data elements can be in one event selector', this);
     }
 
     if (this.eventSelectors.length > 5) {
-      throw new Error('A maximum of 5 event selectors are supported per trail.');
+      throw new ValidationError('A maximum of 5 event selectors are supported per trail.', this);
     }
 
     let includeAllManagementEvents;

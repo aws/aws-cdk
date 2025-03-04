@@ -1,2 +1,0 @@
-Integration tests are now injected with environment variable that specifies which framework
-version they should install and use. This patch includes the cdk-helpers.js file that is responsible for that.

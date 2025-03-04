@@ -115,7 +115,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     if (!this.originAccessControl) {
       this.originAccessControl = new cloudfront.FunctionUrlOriginAccessControl(scope, 'FunctionUrlOriginAccessControl');
     }
-    this.validateAuthType();
+    this.validateAuthType(scope);
 
     this.addInvokePermission(scope, options);
 
@@ -142,7 +142,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   /**
    * Validation method: Ensures that when the OAC signing method is SIGV4_ALWAYS, the authType is set to AWS_IAM.
    */
-  private validateAuthType() {
+  private validateAuthType(scope: Construct) {
     const cfnOriginAccessControl = this.originAccessControl?.node.children.find(
       (child) => child instanceof cloudfront.CfnOriginAccessControl,
     ) as cloudfront.CfnOriginAccessControl;
@@ -156,7 +156,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
 
     if (isAlwaysSigning && isAuthTypeIsNone) {
-      throw new Error('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+      throw new cdk.ValidationError('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
     }
   }
 }

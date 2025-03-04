@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnRealtimeLogConfig } from './cloudfront.generated';
 import { Endpoint } from '../';
-import { IResource, Lazy, Names, Resource } from '../../core';
+import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -63,7 +63,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
     addConstructMetadata(this, props);
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
-      throw new Error(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`);
+      throw new ValidationError(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`, scope);
     }
 
     const resource = new CfnRealtimeLogConfig(this, 'Resource', {

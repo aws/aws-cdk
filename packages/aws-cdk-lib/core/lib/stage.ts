@@ -106,7 +106,7 @@ export class Stage extends Construct {
    * Test whether the given construct is a stage.
    *
    */
-  public static isStage(x: any ): x is Stage {
+  public static isStage(this: void, x: any): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 

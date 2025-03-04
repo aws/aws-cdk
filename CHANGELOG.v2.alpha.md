@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.181.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.0-alpha.0...v2.181.1-alpha.0) (2025-02-27)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito-identitypool-alpha:** Any `IdentityPool` resources deployed in versions `>=2.179.0` will now fail to deploy. You will need to delete the `IdentityPoolRoleAttachment` from your stack via the console before redeploying.
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** prevent stacks from not deploying correctly ([#33609](https://github.com/aws/aws-cdk/issues/33609)) ([a1e2afe](https://github.com/aws/aws-cdk/commit/a1e2afe67cc907fa278503ebc886aa3b5bf97887)), closes [#33510](https://github.com/aws/aws-cdk/issues/33510)
+
+## [2.181.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.180.0-alpha.0...v2.181.0-alpha.0) (2025-02-25)
+
+
+### Features
+
+* **eks-v2-alpha:** eks auto mode support ([#33373](https://github.com/aws/aws-cdk/issues/33373)) ([e03d112](https://github.com/aws/aws-cdk/commit/e03d1126231cc99a69c83d1f0146aa36b4d2b8ef))
+* **msk:** support for Kafka version 3.8.x and add deprecated labels to legacy versions ([#33553](https://github.com/aws/aws-cdk/issues/33553)) ([29623d1](https://github.com/aws/aws-cdk/commit/29623d1c1f27f5733dec9b6ae0dc3efb53e28fe5))
+* **redshift-alpha:** maintenance track name ([#33552](https://github.com/aws/aws-cdk/issues/33552)) ([9ac3084](https://github.com/aws/aws-cdk/commit/9ac30842b304e2a9814caf02c21a331736c258ce))
+
+## [2.180.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.179.0-alpha.0...v2.180.0-alpha.0) (2025-02-21)
+
+
+### Features
+
+* **glue-alpha:** include extra jars parameter in pyspark jobs ([#33238](https://github.com/aws/aws-cdk/issues/33238)) ([be3bce3](https://github.com/aws/aws-cdk/commit/be3bce385c18af99b1fb3d0940a2cbec4f51e8d3)), closes [#33225](https://github.com/aws/aws-cdk/issues/33225)
+
+## [2.179.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.2-alpha.0...v2.179.0-alpha.0) (2025-02-17)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito-identitypool-alpha:** The `IdentityPoolRoleAttachment` construct and `IdentityPool.addRoleMappings()` function will no longer exist. This is to disambiguate that only one role attachment can exist per Identity Pool. If you are using the `IdentityPool` construct, this change will trigger a redeployment. If you need to add role mappings, please do so when the `IdentityPool` is created.
+
+### Features
+
+* **eks-v2-alpha:** support eks with k8s 1.32 ([#33344](https://github.com/aws/aws-cdk/issues/33344)) ([7175a04](https://github.com/aws/aws-cdk/commit/7175a042b66426864fae5199715f7076f4a95335))
+* **ivs:** support Multitrack Video ([#33370](https://github.com/aws/aws-cdk/issues/33370)) ([29d1945](https://github.com/aws/aws-cdk/commit/29d194513fb9da44c9f2c1b28484381d7fb9feb3))
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** remove `RoleAttachment` construct ([#33305](https://github.com/aws/aws-cdk/issues/33305)) ([9449f9c](https://github.com/aws/aws-cdk/commit/9449f9c805b045bab11a27b21924470672e804fe)), closes [#23449](https://github.com/aws/aws-cdk/issues/23449)
+* **integ-tests:** http flattenResponse ([#30361](https://github.com/aws/aws-cdk/issues/30361)) ([4744ee5](https://github.com/aws/aws-cdk/commit/4744ee578116add497e5314a30629939925b015c)), closes [#30327](https://github.com/aws/aws-cdk/issues/30327)
+* **msk:** allow both sasl/scram and iam auth ([#31743](https://github.com/aws/aws-cdk/issues/31743)) ([fbcb732](https://github.com/aws/aws-cdk/commit/fbcb732ed5224d2ad5a8218229762efa13db689e)), closes [/github.com/aws/aws-cdk/pull/14647#issuecomment-2129517358](https://github.com/aws//github.com/aws/aws-cdk/pull/14647/issues/issuecomment-2129517358) [#32779](https://github.com/aws/aws-cdk/issues/32779)
+
 ## [2.178.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.1-alpha.0...v2.178.2-alpha.0) (2025-02-12)
 
 ## [2.178.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.178.0-alpha.0...v2.178.1-alpha.0) (2025-02-06)

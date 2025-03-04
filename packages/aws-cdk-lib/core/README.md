@@ -594,6 +594,8 @@ new CustomResource(this, 'MyMagicalResource', {
   resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
 
   // the resource properties
+  // properties like serviceToken or serviceTimeout are ported into properties automatically
+  // try not to use key names similar to these or there will be a risk of overwriting those values
   properties: {
     Property1: 'foo',
     Property2: 'bar',
@@ -1692,7 +1694,10 @@ values must be non-negative integers, where a higher number means the Aspect wil
 
 By default, newly created nodes always inherit aspects. Priorities are mainly for ordering between mutating aspects on the construct tree.
 
-CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries:
+CDK provides standard priority values for mutating and readonly aspects to help ensure consistency across different construct libraries.
+Note that Aspects that have same priority value are not guaranteed to be executed
+in a consistent order.
+
 
 ```ts
 /**

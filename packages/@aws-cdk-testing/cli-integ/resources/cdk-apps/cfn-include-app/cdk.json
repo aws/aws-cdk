@@ -1,4 +1,0 @@
-{
-  "app": "node cfn-include-app.js",
-  "versionReporting": false
-}

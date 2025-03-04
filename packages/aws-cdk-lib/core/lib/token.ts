@@ -59,7 +59,7 @@ export class Token {
    *
    * @param obj The object to test.
    */
-  public static isUnresolved(obj: any): boolean {
+  public static isUnresolved(this: void, obj: any): boolean {
     return unresolved(obj);
   }
 

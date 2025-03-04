@@ -4,7 +4,7 @@ import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
-import { Annotations, Aws, Names, Stack } from '../../core';
+import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
 
 interface BucketPolicyAction {
   readonly action: string;
@@ -13,6 +13,7 @@ interface BucketPolicyAction {
 
 const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
   READ: [{ action: 's3:GetObject' }],
+  READ_VERSIONED: [{ action: 's3:GetObjectVersion' }],
   LIST: [{ action: 's3:ListBucket', needsBucketArn: true }],
   WRITE: [{ action: 's3:PutObject' }],
   DELETE: [{ action: 's3:DeleteObject' }],
@@ -262,7 +263,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     if (!this.originAccessIdentity) {
-      throw new Error('Origin access identity cannot be undefined');
+      throw new UnscopedValidationError('Origin access identity cannot be undefined');
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
   }

@@ -77,8 +77,6 @@ jobs:
       - name: Run "yarn upgrade"
         run: yarn upgrade
 
-      - name: Regenerate CLI attributions
-        run: cd packages/aws-cdk && yarn pkglint
       - name: Regenerate Integ Runner attributions
         run: cd packages/@aws-cdk/integ-runner && yarn pkglint
 

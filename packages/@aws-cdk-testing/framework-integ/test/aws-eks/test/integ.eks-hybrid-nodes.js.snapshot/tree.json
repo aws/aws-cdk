@@ -1493,7 +1493,17 @@
                   "vpc": "*",
                   "version": "*",
                   "kubectlLayer": "*",
-                  "defaultCapacity": "*"
+                  "defaultCapacity": "*",
+                  "remoteNodeNetworks": [
+                    {
+                      "cidrs": "*"
+                    }
+                  ],
+                  "remotePodNetworks": [
+                    {
+                      "cidrs": "*"
+                    }
+                  ]
                 }
               ]
             }

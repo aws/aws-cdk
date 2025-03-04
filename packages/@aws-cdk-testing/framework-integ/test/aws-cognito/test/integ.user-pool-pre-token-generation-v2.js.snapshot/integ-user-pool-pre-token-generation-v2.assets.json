@@ -1,7 +1,7 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "files": {
-    "99c1cd9f462b0eb4468998585bd7b2a90a4d3c254b5390023fb0414afc4e2279": {
+    "1cdb32097246d178618be8053189f6c775342d392a655a940b5884cf880491e6": {
       "source": {
         "path": "integ-user-pool-pre-token-generation-v2.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "99c1cd9f462b0eb4468998585bd7b2a90a4d3c254b5390023fb0414afc4e2279.json",
+          "objectKey": "1cdb32097246d178618be8053189f6c775342d392a655a940b5884cf880491e6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

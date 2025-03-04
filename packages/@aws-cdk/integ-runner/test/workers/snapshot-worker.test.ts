@@ -1,4 +1,3 @@
-import * as child_process from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { snapshotTestWorker } from '../../lib/workers/extract';
@@ -33,7 +32,6 @@ describe('Snapshot tests', () => {
 
   test('has snapshot', () => {
     // WHEN
-    jest.spyOn(child_process, 'spawnSync').mockResolvedValue;
     const test = {
       fileName: path.join(directory, 'xxxxx.test-with-snapshot.js'),
       discoveryRoot: directory,
@@ -46,7 +44,6 @@ describe('Snapshot tests', () => {
 
   test('failed snapshot', () => {
     // WHEN
-    jest.spyOn(child_process, 'spawnSync').mockRejectedValue;
     const test = {
       fileName: path.join(directory, 'xxxxx.test-with-snapshot-assets-diff.js'),
       discoveryRoot: directory,

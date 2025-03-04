@@ -14,7 +14,10 @@ class MetricFilterIntegStack extends Stack {
       logGroup,
       metricNamespace: 'MyApp',
       metricName: 'Latency',
-      filterPattern: FilterPattern.exists('$.latency'),
+      filterPattern: FilterPattern.all(
+        FilterPattern.exists('$.latency'),
+        FilterPattern.regexValue('$.message', '=', 'bind: address already in use'),
+      ),
       metricValue: '$.latency',
     });
     /// !hide

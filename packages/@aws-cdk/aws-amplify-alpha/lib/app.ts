@@ -569,6 +569,11 @@ export enum Platform {
    * server side rendered and static assets.
    */
   WEB_COMPUTE = 'WEB_COMPUTE',
+
+  /**
+   * WEB_DYNAMIC - Used to indicate the app is hosted using a fully dynamic architecture, where requests are processed at runtime by backend compute services.
+   */
+  WEB_DYNAMIC = 'WEB_DYNAMIC',
 }
 
 /**

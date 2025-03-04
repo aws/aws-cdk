@@ -655,42 +655,42 @@ export class InitPackage extends InitElement {
   /**
    * Install an RPM from an HTTP URL or a location on disk
    */
-  public static rpm(location: string, options: LocationPackageOptions = {}): InitPackage {
+  public static rpm(this: void, location: string, options: LocationPackageOptions = {}): InitPackage {
     return new InitPackage('rpm', [location], options.key, options.serviceRestartHandles);
   }
 
   /**
    * Install a package using Yum
    */
-  public static yum(packageName: string, options: NamedPackageOptions = {}): InitPackage {
+  public static yum(this: void, packageName: string, options: NamedPackageOptions = {}): InitPackage {
     return new InitPackage('yum', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package from RubyGems
    */
-  public static rubyGem(gemName: string, options: NamedPackageOptions = {}): InitPackage {
+  public static rubyGem(this: void, gemName: string, options: NamedPackageOptions = {}): InitPackage {
     return new InitPackage('rubygems', options.version ?? [], gemName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package from PyPI
    */
-  public static python(packageName: string, options: NamedPackageOptions = {}): InitPackage {
+  public static python(this: void, packageName: string, options: NamedPackageOptions = {}): InitPackage {
     return new InitPackage('python', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
    * Install a package using APT
    */
-  public static apt(packageName: string, options: NamedPackageOptions = {}): InitPackage {
+  public static apt(this: void, packageName: string, options: NamedPackageOptions = {}): InitPackage {
     return new InitPackage('apt', options.version ?? [], packageName, options.serviceRestartHandles);
   }
 
   /**
    * Install an MSI package from an HTTP URL or a location on disk
    */
-  public static msi(location: string, options: LocationPackageOptions = {}): InitPackage {
+  public static msi(this: void, location: string, options: LocationPackageOptions = {}): InitPackage {
     // The MSI package version must be a string, not an array.
     return new class extends InitPackage {
       protected renderPackageVersions() { return location; }

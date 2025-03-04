@@ -1,1 +1,0 @@
-This patch brings the [fix](https://github.com/aws/aws-cdk/issues/31654) into the regression suite.

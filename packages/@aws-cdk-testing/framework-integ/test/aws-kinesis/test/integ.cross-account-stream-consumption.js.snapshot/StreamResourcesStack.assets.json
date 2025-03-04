@@ -1,0 +1,20 @@
+{
+  "version": "39.0.0",
+  "files": {
+    "78e19b75b7baeac75ddcdc03d7c0be1672ec32745ce426fb9d81ade0f43e2ca9": {
+      "source": {
+        "path": "StreamResourcesStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "114897356451-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-114897356451-us-east-1",
+          "objectKey": "78e19b75b7baeac75ddcdc03d7c0be1672ec32745ce426fb9d81ade0f43e2ca9.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::114897356451:role/cdk-hnb659fds-file-publishing-role-114897356451-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

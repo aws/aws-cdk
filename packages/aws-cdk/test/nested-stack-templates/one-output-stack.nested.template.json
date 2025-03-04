@@ -1,5 +1,0 @@
-{
-  "Outputs": {
-    "NestedOutput": { "Value": "s3-key-value-from-output" }
-  }
-}

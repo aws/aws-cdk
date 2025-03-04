@@ -1,9 +1,11 @@
 import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { CfnConfigurationSetEventDestination } from './ses.generated';
+import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
-import { Aws, IResource, Resource } from '../../core';
+import { Aws, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -68,6 +70,20 @@ export abstract class EventDestination {
   }
 
   /**
+   * Use Event Bus as event destination
+   */
+  public static eventBus(eventBus: events.IEventBus): EventDestination {
+    return { bus: eventBus };
+  }
+
+  /**
+   * Use Firehose Delivery Stream as event destination
+   */
+  public static firehoseDeliveryStream(stream: FirehoseDeliveryStreamDestination): EventDestination {
+    return { stream };
+  }
+
+  /**
    * A SNS topic to use as event destination
    *
    * @default - do not send events to a SNS topic
@@ -80,6 +96,20 @@ export abstract class EventDestination {
    * @default - do not send events to CloudWatch
    */
   public abstract readonly dimensions?: CloudWatchDimension[];
+
+  /**
+   * Use Event Bus as event destination
+   *
+   * @default - do not send events to Event bus
+   */
+  public abstract readonly bus?: events.IEventBus;
+
+  /**
+   * Use Firehose Delivery Stream
+   *
+   * @default - do not send events to Firehose Delivery Stream
+   */
+  public abstract readonly stream?: FirehoseDeliveryStreamDestination;
 }
 
 /**
@@ -216,6 +246,23 @@ export enum CloudWatchDimensionSource {
 }
 
 /**
+ * An object that defines an Amazon Kinesis Data Firehose destination for email events
+ */
+export interface FirehoseDeliveryStreamDestination {
+  /**
+   * The Amazon Kinesis Data Firehose stream that the Amazon SES API v2 sends email events to.
+   */
+  readonly deliveryStream: firehose.IDeliveryStream;
+
+  /**
+   * The IAM role that the Amazon SES API v2 uses to send email events to the Amazon Kinesis Data Firehose stream.
+   *
+   * @default - Create IAM Role for Kinesis Data Firehose Delivery stream
+   */
+  readonly role?: iam.IRole;
+}
+
+/**
  * A configuration set event destination
  */
 export class ConfigurationSetEventDestination extends Resource implements IConfigurationSetEventDestination {
@@ -241,6 +288,51 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (
+      props.destination.bus &&
+      props.destination.bus.eventBusArn != Stack.of(scope).formatArn({
+        service: 'events',
+        resource: 'event-bus',
+        resourceName: 'default',
+      })
+    ) {
+      throw new Error(`Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusArn}`);
+    }
+
+    let firehoseDeliveryStreamIamRoleArn = '';
+    if (props.destination.stream?.role) {
+      firehoseDeliveryStreamIamRoleArn = props.destination.stream.role.roleArn;
+    } else if (props.destination.stream) {
+      // As per https://docs.aws.amazon.com/ses/latest/dg/event-publishing-add-event-destination-firehose.html
+      const firehoseDeliveryStreamIamRole = new iam.Role(this, 'FirehoseDeliveryStreamIamRole', {
+        assumedBy: new iam.ServicePrincipal('ses.amazonaws.com', {
+          conditions: {
+            StringEquals: {
+              'AWS:SourceAccount': this.env.account,
+              'AWS:SourceArn': Stack.of(scope).formatArn({
+                service: 'ses',
+                resource: 'configuration-set',
+                resourceName: props.configurationSet.configurationSetName,
+              }),
+            },
+          },
+        }),
+        inlinePolicies: {
+          ['AllowFirehoseDeliveryStreamPublish']: new iam.PolicyDocument({
+            statements: [
+              new iam.PolicyStatement({
+                effect: iam.Effect.ALLOW,
+                actions: ['firehose:PutRecordBatch'],
+                resources: [props.destination.stream.deliveryStream.deliveryStreamArn],
+              }),
+            ],
+          }),
+        },
+      });
+
+      firehoseDeliveryStreamIamRoleArn = firehoseDeliveryStreamIamRole.roleArn;
+    }
+
     const configurationSet = new CfnConfigurationSetEventDestination(this, 'Resource', {
       configurationSetName: props.configurationSet.configurationSetName,
       eventDestination: {
@@ -255,6 +347,13 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
               dimensionName: dimension.name,
               defaultDimensionValue: dimension.defaultValue,
             })),
+          }
+          : undefined,
+        eventBridgeDestination: props.destination.bus ? { eventBusArn: props.destination.bus.eventBusArn } : undefined,
+        kinesisFirehoseDestination: props.destination.stream
+          ? {
+            deliveryStreamArn: props.destination.stream.deliveryStream.deliveryStreamArn,
+            iamRoleArn: firehoseDeliveryStreamIamRoleArn,
           }
           : undefined,
       },

@@ -51,6 +51,12 @@ describe('pattern', () => {
       expect('{ $.field = "value" }').toEqual(pattern.logPatternString);
     });
 
+    test('regex pattern', () => {
+      const pattern = FilterPattern.regexValue('$.field', '=', 'value');
+
+      expect('{ $.field = %value% }').toEqual(pattern.logPatternString);
+    });
+
     test('number patterns', () => {
       const pattern = FilterPattern.numberValue('$.field', '<=', 300);
 

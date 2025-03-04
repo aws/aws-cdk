@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-vpc-origin"
+      ],
+      "assertionStack": "integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontvpcorigincloudfrontvpcorigintestDefaultTestDeployAssert059EF4DD"
+    }
+  }
+}

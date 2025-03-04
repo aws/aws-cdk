@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-    
+
 jobs:
   collect:
     name: collect
@@ -26,19 +26,13 @@ jobs:
       - name: Build Library
         run: npx lerna run build --scope=aws-cdk-lib
 
-      - name: Build CLI
-        run: npx lerna run build --scope=aws-cdk
-
       - name: Run Core tests
         run: cd packages/aws-cdk-lib && yarn test core
-
-      - name: Run CLI tests
-        run: cd packages/aws-cdk && yarn test
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: packages/aws-cdk/coverage/cobertura-coverage.xml,packages/aws-cdk-lib/coverage/cobertura-coverage.xml
+          files: packages/aws-cdk-lib/coverage/cobertura-coverage.xml
           fail_ci_if_error: true
           flags: suite.unit
           use_oidc: true

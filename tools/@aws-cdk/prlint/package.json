@@ -13,6 +13,7 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^5.1.1",
+    "@octokit/rest": "^18",
     "@octokit/webhooks-definitions": "^3.68.1",
     "conventional-commits-parser": "^3.2.4",
     "fs-extra": "^9.1.0",

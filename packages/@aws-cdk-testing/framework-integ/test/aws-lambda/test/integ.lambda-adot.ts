@@ -17,7 +17,11 @@ import {
 } from 'aws-cdk-lib/aws-lambda';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 interface StackUnderTestProps extends StackProps {
   architecture?: Architecture;

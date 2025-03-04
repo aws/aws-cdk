@@ -64,5 +64,6 @@
   "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
   "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
   "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
-  "@aws-cdk/core:enableAdditionalMetadataCollection": true
+  "@aws-cdk/core:enableAdditionalMetadataCollection": true,
+  "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
 }

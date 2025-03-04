@@ -11,7 +11,7 @@
   "MetricFilter1B93B6E5": {
    "Type": "AWS::Logs::MetricFilter",
    "Properties": {
-    "FilterPattern": "{ $.latency = \"*\" }",
+    "FilterPattern": "{ ($.latency = \"*\") && ($.message = %bind: address already in use%) }",
     "LogGroupName": {
      "Ref": "LogGroupF5B46931"
     },

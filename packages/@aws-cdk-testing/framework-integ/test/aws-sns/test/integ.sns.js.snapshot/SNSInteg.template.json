@@ -132,12 +132,6 @@
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "DisplayName": "fooDisplayName2",
-    "KmsMasterKeyId": {
-     "Fn::GetAtt": [
-      "CustomKey1E6D0D07",
-      "Arn"
-     ]
-    },
     "TopicName": "fooTopic2"
    }
   },
@@ -166,8 +160,26 @@
       {
        "Action": "sns:Publish",
        "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "MyTopic288CE2107"
+        },
+        {
+         "Ref": "MyTopic3134CFDFB"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
        "Resource": {
-        "Ref": "MyTopic288CE2107"
+        "Fn::GetAtt": [
+         "CustomKey1E6D0D07",
+         "Arn"
+        ]
        }
       }
      ],
@@ -179,6 +191,127 @@
       "Ref": "PublishRoleF42F66B6"
      }
     ]
+   }
+  },
+  "MyTopic3134CFDFB": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "fooDisplayName3",
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "CustomKey1E6D0D07",
+      "Arn"
+     ]
+    },
+    "TopicName": "fooTopic3"
+   }
+  },
+  "PublishEncryptedTopicServiceRole267CEDDE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PublishEncryptedTopicServiceRoleDefaultPolicy85E257A5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic3134CFDFB"
+       }
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CustomKey1E6D0D07",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PublishEncryptedTopicServiceRoleDefaultPolicy85E257A5",
+    "Roles": [
+     {
+      "Ref": "PublishEncryptedTopicServiceRole267CEDDE"
+     }
+    ]
+   }
+  },
+  "PublishEncryptedTopic5F9F9437": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "801b9d403e9ac842f362e817998346ed7c0bfe96c7b4d405a20de49a2abeef90.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "TOPIC_ARN": {
+       "Ref": "MyTopic3134CFDFB"
+      }
+     }
+    },
+    "FunctionName": "publish-encrypted-topic",
+    "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PublishEncryptedTopicServiceRole267CEDDE",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "PublishEncryptedTopicServiceRoleDefaultPolicy85E257A5",
+    "PublishEncryptedTopicServiceRole267CEDDE"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefPublishEncryptedTopic5F9F9437B383DB14": {
+   "Value": {
+    "Ref": "PublishEncryptedTopic5F9F9437"
+   },
+   "Export": {
+    "Name": "SNSInteg:ExportsOutputRefPublishEncryptedTopic5F9F9437B383DB14"
    }
   }
  },

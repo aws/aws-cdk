@@ -1,1 +1,0 @@
-We made --cloudformation-execution-policies required, old tests don't pass it yet

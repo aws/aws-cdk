@@ -14,6 +14,7 @@ import {
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
   Stage,
+  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -517,6 +518,64 @@ describe('stack', () => {
                 '||',
                 {
                   'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttexportedResourceList0EA3E0D9',
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('cross-stack references of nested stack lists returned from Fn::GetAtt work', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const nested = new NestedStack(producer, 'Nestor');
+    const exportResource = new CfnResource(nested, 'exportedResource', {
+      type: 'BLA',
+    });
+    const consumer = new Stack(app, 'Consumer');
+    // L1s represent attribute names with `attr${attributeName}`
+    (exportResource as any).attrList = ['magic-attr-value'];
+
+    // WHEN - used in another stack
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'BLA',
+      properties: {
+        Prop: exportResource.getAtt('List', ResolutionTypeHint.STRING_LIST),
+      },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN
+    expect(producerTemplate).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148: {
+          Value: {
+            'Fn::GetAtt': [
+              'NestorNestedStackNestorNestedStackResourceAE182597',
+              'Outputs.ProducerNestorexportedResource5B6DDAA1List',
+            ],
+          },
+          Export: { Name: 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148' },
+        },
+      },
+    });
+
+    expect(consumerTemplate).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'BLA',
+          Properties: {
+            Prop: {
+              'Fn::Split': [
+                '||',
+                {
+                  'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttNestorNestedStackNestorNestedStackResourceAE182597OutputsProducerNestorexportedResource5B6DDAA1ListAF9B4148',
                 },
               ],
             },

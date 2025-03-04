@@ -449,6 +449,7 @@ export class CustomRule extends RuleNew {
     }
     const hash = createHash('sha256')
       .update(JSON.stringify({
+        /* eslint-disable-next-line @typescript-eslint/unbound-method *//* REMOVEME: this is a latent bug */
         fnName: props.lambdaFunction.functionName.toString,
         accountId: Stack.of(this).resolve(this.env.account),
         region: Stack.of(this).resolve(this.env.region),

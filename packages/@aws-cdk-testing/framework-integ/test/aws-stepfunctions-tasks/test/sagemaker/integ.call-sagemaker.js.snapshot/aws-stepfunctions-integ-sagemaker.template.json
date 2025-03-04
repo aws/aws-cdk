@@ -282,6 +282,7 @@
      "Statement": [
       {
        "Action": [
+        "sagemaker:AddTags",
         "sagemaker:CreateTrainingJob",
         "sagemaker:DescribeTrainingJob",
         "sagemaker:StopTrainingJob"
@@ -447,12 +448,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -517,6 +512,12 @@
        },
        ":states:::sagemaker:updateEndpoint\",\"Parameters\":{\"EndpointConfigName.$\":\"$.Endpoint.Config\",\"EndpointName.$\":\"$.Endpoint.Name\"}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

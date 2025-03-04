@@ -1,10 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { CfnWebACL, CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import * as path from 'path';
 import { Construct } from 'constructs';
@@ -18,6 +19,8 @@ interface EventApiStackProps extends cdk.StackProps {
 
 class EventApiStack extends cdk.Stack {
   public readonly eventApi: appsync.EventApi;
+  public readonly lambdaTestFn: nodejs.NodejsFunction;
+
   constructor(scope: Construct, id: string, props: EventApiStackProps) {
     super(scope, id);
 
@@ -33,7 +36,16 @@ class EventApiStack extends cdk.Stack {
 
     const userPool = new cognito.UserPool(this, 'Pool', {
       userPoolName: 'myPool',
+      selfSignUpEnabled: true,
+      autoVerify: { email: true },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const client = userPool.addClient('lambda-app-client', {
+      preventUserExistenceErrors: true,
+      authFlows: {
+        adminUserPassword: true,
+      },
     });
 
     const authorizer = new lambda.Function(this, 'AuthorizerFunction', {
@@ -94,6 +106,7 @@ class EventApiStack extends cdk.Stack {
         ],
         connectionAuthModeTypes: [
           appsync.AppSyncAuthorizationType.API_KEY,
+          appsync.AppSyncAuthorizationType.IAM,
         ],
         defaultPublishAuthModeTypes: [
           appsync.AppSyncAuthorizationType.USER_POOL,
@@ -112,14 +125,22 @@ class EventApiStack extends cdk.Stack {
     });
     this.eventApi = api;
 
+    new route53.CnameRecord(this, 'AppSyncCnameRecord', {
+      recordName: `api.${domainName}`,
+      zone: hostedZone,
+      domainName: this.eventApi.appSyncDomainName,
+    });
+
+    const defaultChannel = this.eventApi.addChannelNamespace('default');
+
     new appsync.ChannelNamespace(this, 'ChannelNamespace', {
       api,
       authorizationConfig: {
         publishAuthModeTypes: [
-          appsync.AppSyncAuthorizationType.LAMBDA,
+          appsync.AppSyncAuthorizationType.API_KEY,
         ],
         subscribeAuthModeTypes: [
-          appsync.AppSyncAuthorizationType.LAMBDA,
+          appsync.AppSyncAuthorizationType.API_KEY,
         ],
       },
       code: appsync.Code.fromAsset(path.join(
@@ -131,11 +152,48 @@ class EventApiStack extends cdk.Stack {
 
     api.addChannelNamespace('AnotherChannelNamespace', {
       code: appsync.Code.fromInline(`
+            function enrichEvent(event) {
+              return {
+                id: event.id,
+                payload: {
+                  ...event.payload,
+                  newField: 'newField'
+                }
+              }
+            }
             export function onPublish(ctx) {
-              return ctx.events.filter((event) => event.payload.odds > 0)
+              return ctx.events.map(enrichEvent);
             }
           `),
     });
+
+    const lambdaConfig: nodejs.NodejsFunctionProps = {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      environment: {
+        EVENT_API_REALTIME_URL: this.eventApi.customRealtimeEndpoint,
+        EVENT_API_HTTP_URL: this.eventApi.customHttpEndpoint,
+        API_KEY: this.eventApi.apiKeys.Default.attrApiKey,
+        USER_POOL_ID: userPool.userPoolId,
+        CLIENT_ID: client.userPoolClientId,
+      },
+      bundling: {
+        bundleAwsSDK: true,
+      },
+      entry: path.join(__dirname, 'integ-assets/eventapi-grant-assertion/index.js'),
+      handler: 'handler',
+      timeout: cdk.Duration.minutes(2),
+    };
+
+    this.lambdaTestFn = new nodejs.NodejsFunction(this, 'ApiKeyConfigTestFunction', lambdaConfig);
+    this.eventApi.grantConnect(this.lambdaTestFn);
+    defaultChannel.grantPublishAndSubscribe(this.lambdaTestFn);
+
+    userPool.grant(this.lambdaTestFn,
+      'cognito-idp:SignUp',
+      'cognito-idp:AdminConfirmSignUp',
+      'cognito-idp:AdminDeleteUser',
+      'cognito-idp:AdminInitiateAuth',
+    );
 
     const webAcl = new CfnWebACL(this, 'WebAcl', {
       defaultAction: {
@@ -174,11 +232,72 @@ const stack = new EventApiStack(app, 'appsync-event-api-stack', {
   domainName,
 });
 
-new IntegTest(app, 'appsync-event-api', {
+const integTest = new IntegTest(app, 'appsync-event-api-test', {
   testCases: [stack],
   enableLookups: true,
   stackUpdateWorkflow: false,
 });
+
+// Validate default namespace publish, no auth overrides (user pool)
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'publish',
+    channel: 'default',
+    authMode: 'USER_POOL',
+    customEndpoint: true, // only needed for the first test to leave enough time
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'publish_success',
+  }),
+}));
+
+// Validate namespaces publish, with auth override (API Key)
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'publish',
+    channel: 'ChannelNamespace',
+    authMode: 'API_KEY',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'publish_success',
+  }),
+}));
+
+// Validate default namespace subscribe, no auth overrides (IAM)
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'subscribe',
+    channel: 'default',
+    authMode: 'IAM',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'subscribe_success',
+  }),
+}));
+
+// Validate namespaces subscribe, with auth override (API Key)
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'subscribe',
+    channel: 'ChannelNamespace',
+    authMode: 'API_KEY',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'subscribe_success',
+  }),
+}));
 
 new cdk.CfnOutput(stack, 'AWS AppSync Events HTTP endpoint', { value: stack.eventApi.customHttpEndpoint });
 new cdk.CfnOutput(stack, 'AWS AppSync Events Realtime endpoint', { value: stack.eventApi.customRealtimeEndpoint });

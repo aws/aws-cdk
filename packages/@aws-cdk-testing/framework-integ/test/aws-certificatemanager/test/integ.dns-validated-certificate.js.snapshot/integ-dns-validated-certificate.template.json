@@ -31,7 +31,7 @@
     ]
    }
   },
-  "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC": {
+  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -41,12 +41,48 @@
         "acm:AddTagsToCertificate",
         "acm:DeleteCertificate",
         "acm:DescribeCertificate",
-        "acm:RequestCertificate",
-        "route53:GetChange"
+        "acm:RequestCertificate"
        ],
        "Effect": "Allow",
        "Resource": "*"
-      },
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2",
+    "Roles": [
+     {
+      "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
+     }
+    ]
+   }
+  },
+  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "route53:GetChange",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole18173669F",
+    "Roles": [
+     {
+      "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
+     }
+    ]
+   }
+  },
+  "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
       {
        "Action": "route53:changeResourceRecordSets",
        "Condition": {
@@ -81,7 +117,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC",
+    "PolicyName": "CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole20FBD3CBF",
     "Roles": [
      {
       "Ref": "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
@@ -117,7 +153,6 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "CertificateCertificateRequestorFunctionServiceRoleDefaultPolicy3C8845BC",
     "CertificateCertificateRequestorFunctionServiceRoleC04C13DA"
    ]
   },

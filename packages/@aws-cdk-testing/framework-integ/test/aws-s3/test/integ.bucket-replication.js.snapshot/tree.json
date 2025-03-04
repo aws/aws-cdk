@@ -4,20 +4,26 @@
     "id": "App",
     "path": "",
     "children": {
-      "ReplicationStack": {
-        "id": "ReplicationStack",
-        "path": "ReplicationStack",
+      "BucketReplicationTestStack": {
+        "id": "BucketReplicationTestStack",
+        "path": "BucketReplicationTestStack",
         "children": {
           "DestinationBucket1": {
             "id": "DestinationBucket1",
-            "path": "ReplicationStack/DestinationBucket1",
+            "path": "BucketReplicationTestStack/DestinationBucket1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ReplicationStack/DestinationBucket1/Resource",
+                "path": "BucketReplicationTestStack/DestinationBucket1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ],
                     "versioningConfiguration": {
                       "status": "Enabled"
                     }
@@ -27,23 +33,174 @@
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "BucketReplicationTestStack/DestinationBucket1/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "BucketReplicationTestStack/DestinationBucket1/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "DestinationBucket1590C2E3A"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DestinationBucket1590C2E3A",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DestinationBucket1590C2E3A",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "BucketReplicationTestStack/DestinationBucket1/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "BucketReplicationTestStack/DestinationBucket1/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "versioned": true,
+                  "autoDeleteObjects": true,
+                  "removalPolicy": "destroy"
+                }
+              ]
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "BucketReplicationTestStack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "BucketReplicationTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "BucketReplicationTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "BucketReplicationTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "BucketReplicationTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
           "DestinationBucket2": {
             "id": "DestinationBucket2",
-            "path": "ReplicationStack/DestinationBucket2",
+            "path": "BucketReplicationTestStack/DestinationBucket2",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ReplicationStack/DestinationBucket2/Resource",
+                "path": "BucketReplicationTestStack/DestinationBucket2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ],
                     "versioningConfiguration": {
                       "status": "Enabled"
                     }
@@ -53,20 +210,123 @@
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "BucketReplicationTestStack/DestinationBucket2/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "BucketReplicationTestStack/DestinationBucket2/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "DestinationBucket217C2CCD2"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "DestinationBucket217C2CCD2",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "DestinationBucket217C2CCD2",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "BucketReplicationTestStack/DestinationBucket2/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "BucketReplicationTestStack/DestinationBucket2/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "versioned": true,
+                  "autoDeleteObjects": true,
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "DestinationKmsKey": {
             "id": "DestinationKmsKey",
-            "path": "ReplicationStack/DestinationKmsKey",
+            "path": "BucketReplicationTestStack/DestinationKmsKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ReplicationStack/DestinationKmsKey/Resource",
+                "path": "BucketReplicationTestStack/DestinationKmsKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -108,16 +368,21 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "SourceKmsKey": {
             "id": "SourceKmsKey",
-            "path": "ReplicationStack/SourceKmsKey",
+            "path": "BucketReplicationTestStack/SourceKmsKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "ReplicationStack/SourceKmsKey/Resource",
+                "path": "BucketReplicationTestStack/SourceKmsKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -159,28 +424,36 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "SourceBucket": {
             "id": "SourceBucket",
-            "path": "ReplicationStack/SourceBucket",
+            "path": "BucketReplicationTestStack/SourceBucket",
             "children": {
               "ReplicationRole": {
                 "id": "ReplicationRole",
-                "path": "ReplicationStack/SourceBucket/ReplicationRole",
+                "path": "BucketReplicationTestStack/SourceBucket/ReplicationRole",
                 "children": {
                   "ImportReplicationRole": {
                     "id": "ImportReplicationRole",
-                    "path": "ReplicationStack/SourceBucket/ReplicationRole/ImportReplicationRole",
+                    "path": "BucketReplicationTestStack/SourceBucket/ReplicationRole/ImportReplicationRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "ReplicationStack/SourceBucket/ReplicationRole/Resource",
+                    "path": "BucketReplicationTestStack/SourceBucket/ReplicationRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -206,11 +479,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "ReplicationStack/SourceBucket/ReplicationRole/DefaultPolicy",
+                    "path": "BucketReplicationTestStack/SourceBucket/ReplicationRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "ReplicationStack/SourceBucket/ReplicationRole/DefaultPolicy/Resource",
+                        "path": "BucketReplicationTestStack/SourceBucket/ReplicationRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -333,18 +606,110 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "roleName": "*"
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "ReplicationStack/SourceBucket/Resource",
+                "path": "BucketReplicationTestStack/SourceBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -387,6 +752,18 @@
                                   "DestinationKmsKey0D94AA3C",
                                   "Arn"
                                 ]
+                              }
+                            },
+                            "replicationTime": {
+                              "status": "Enabled",
+                              "time": {
+                                "minutes": 15
+                              }
+                            },
+                            "metrics": {
+                              "status": "Enabled",
+                              "eventThreshold": {
+                                "minutes": 15
                               }
                             }
                           },
@@ -452,6 +829,12 @@
                         }
                       ]
                     },
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ],
                     "versioningConfiguration": {
                       "status": "Enabled"
                     }
@@ -461,20 +844,145 @@
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                   "version": "0.0.0"
                 }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "BucketReplicationTestStack/SourceBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "BucketReplicationTestStack/SourceBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "SourceBucketDDD2130A"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "SourceBucketDDD2130A",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "SourceBucketDDD2130A",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "BucketReplicationTestStack/SourceBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "BucketReplicationTestStack/SourceBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true,
+                  "versioned": true,
+                  "encryptionKey": "*",
+                  "replicationRules": [
+                    {
+                      "destination": "*",
+                      "priority": "*",
+                      "sseKmsEncryptedObjects": true,
+                      "replicationTimeControl": "*"
+                    },
+                    {
+                      "destination": "*",
+                      "replicationTimeControl": "*",
+                      "storageClass": "*",
+                      "sseKmsEncryptedObjects": true,
+                      "replicaModifications": true,
+                      "priority": "*",
+                      "deleteMarkerReplication": true,
+                      "id": "*",
+                      "filter": {
+                        "prefix": "*"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           },
           "Exports": {
             "id": "Exports",
-            "path": "ReplicationStack/Exports",
+            "path": "BucketReplicationTestStack/Exports",
             "children": {
               "Output{\"Ref\":\"SourceBucketDDD2130A\"}": {
                 "id": "Output{\"Ref\":\"SourceBucketDDD2130A\"}",
-                "path": "ReplicationStack/Exports/Output{\"Ref\":\"SourceBucketDDD2130A\"}",
+                "path": "BucketReplicationTestStack/Exports/Output{\"Ref\":\"SourceBucketDDD2130A\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -482,7 +990,7 @@
               },
               "Output{\"Ref\":\"DestinationBucket1590C2E3A\"}": {
                 "id": "Output{\"Ref\":\"DestinationBucket1590C2E3A\"}",
-                "path": "ReplicationStack/Exports/Output{\"Ref\":\"DestinationBucket1590C2E3A\"}",
+                "path": "BucketReplicationTestStack/Exports/Output{\"Ref\":\"DestinationBucket1590C2E3A\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -490,7 +998,7 @@
               },
               "Output{\"Ref\":\"DestinationBucket217C2CCD2\"}": {
                 "id": "Output{\"Ref\":\"DestinationBucket217C2CCD2\"}",
-                "path": "ReplicationStack/Exports/Output{\"Ref\":\"DestinationBucket217C2CCD2\"}",
+                "path": "BucketReplicationTestStack/Exports/Output{\"Ref\":\"DestinationBucket217C2CCD2\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -504,7 +1012,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "ReplicationStack/BootstrapVersion",
+            "path": "BucketReplicationTestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -512,7 +1020,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "ReplicationStack/CheckBootstrapVersion",
+            "path": "BucketReplicationTestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -581,7 +1089,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {
@@ -815,7 +1326,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {
@@ -939,7 +1453,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {
@@ -1063,7 +1580,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {
@@ -1187,7 +1707,10 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "WaitFor": {

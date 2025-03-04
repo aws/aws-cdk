@@ -1,0 +1,8 @@
+{
+  "/": "We call this _package.json so nx doesn't get confused. If you need to regenerate the lockfile, temporarily rename this file to package.json",
+  "//": "It's important to have two dependencies here (one bundled, one not) to test that the lockfile can be updated in the docker container.",
+  "dependencies": {
+    "axios": "1.7.8",
+    "express": "4.19.2"
+  }
+}

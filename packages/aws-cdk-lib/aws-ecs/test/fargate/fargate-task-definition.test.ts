@@ -352,7 +352,7 @@ describe('fargate task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.ephemeralStorageGiB;
-      }).toBeTruthy;
+      }).toBeTruthy();
     });
 
     test('runtime testing for windows container', () => {

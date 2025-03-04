@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "ses-configuration-set-firehose-test/DefaultTest": {
+      "stacks": [
+        "ses-configuration-set-firehose"
+      ],
+      "assertionStack": "ses-configuration-set-firehose-test/DefaultTest/DeployAssert",
+      "assertionStackName": "sesconfigurationsetfirehosetestDefaultTestDeployAssert7BAF6085"
+    }
+  }
+}

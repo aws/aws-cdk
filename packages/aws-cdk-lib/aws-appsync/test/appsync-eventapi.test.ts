@@ -361,7 +361,7 @@ describe('Event API security grant tests', () => {
     const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
 
     // THEN
-    expect(() => api.grantConnect(func)).toThrow('IAM Authorization mode is not configured on this API.');
+    expect(() => api.grantConnect(func)).toThrow('Cannot use grant method because IAM Authorization mode is missing in the auth providers on this API.');
   });
 
   test('Appsync Event API - grant publish for all channel namespaces within an API', () => {

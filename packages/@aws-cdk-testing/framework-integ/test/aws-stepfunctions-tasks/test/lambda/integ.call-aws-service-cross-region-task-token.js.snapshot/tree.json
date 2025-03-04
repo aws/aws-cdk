@@ -98,7 +98,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
                       "metadata": [
-                        "*"
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
                       ]
                     }
                   }
@@ -112,6 +127,21 @@
                         "principalAccount": "*",
                         "assumeRoleAction": "*"
                       }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -154,6 +184,11 @@
               "metadata": [
                 {
                   "definitionBody": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
                 }
               ]
             }
@@ -176,6 +211,18 @@
                       "code": "*",
                       "handler": "*",
                       "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -292,7 +339,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
                       "metadata": [
-                        "*"
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
                       ]
                     }
                   }
@@ -310,6 +372,21 @@
                         {
                           "managedPolicyArn": "*"
                         }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
                       ]
                     }
                   ]
@@ -495,7 +572,22 @@
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
                       "metadata": [
-                        "*"
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
                       ]
                     }
                   }
@@ -509,6 +601,21 @@
                         "principalAccount": "*",
                         "assumeRoleAction": "*"
                       }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
                     }
                   ]
                 }
@@ -566,6 +673,11 @@
               "metadata": [
                 {
                   "definitionBody": "*"
+                },
+                {
+                  "addToRolePolicy": [
+                    {}
+                  ]
                 }
               ]
             }
@@ -669,6 +781,8 @@
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
                           "metadata": [
+                            "*",
+                            "*",
                             "*"
                           ]
                         }
@@ -760,6 +874,8 @@
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
                           "metadata": [
+                            "*",
+                            "*",
                             "*"
                           ]
                         }
