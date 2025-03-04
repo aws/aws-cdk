@@ -316,7 +316,7 @@ new cloudwatch.Alarm(this, 'MyGroupErrorAlarm', {
 });
 
 // Or use default group
-const defaultScheduleGroup = ScheduleGroup.fromDefaulScheduleGroup(this, "DefaultScheduleGroup");
+const defaultScheduleGroup = ScheduleGroup.fromDefaultScheduleGroup(this, "DefaultScheduleGroup");
 new cloudwatch.Alarm(this, 'DefaultScheduleGroupErrorAlarm', {
     metric: defaultScheduleGroup.metricTargetErrors(),
     evaluationPeriods: 1,
