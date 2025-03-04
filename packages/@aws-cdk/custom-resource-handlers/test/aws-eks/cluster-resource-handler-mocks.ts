@@ -90,7 +90,7 @@ export const client: EksClient = {
         arn: 'arn:cluster-arn',
         certificateAuthority: { data: 'certificateAuthority-data' },
         endpoint: 'http://endpoint',
-        authenticationMode: 'API',
+        accessConfig: { authenticationMode: 'CONFIG_MAP' },
         status: simulateResponse.describeClusterResponseMockStatus || 'ACTIVE',
       },
     };
