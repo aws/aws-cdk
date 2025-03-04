@@ -654,6 +654,93 @@
     ]
    }
   },
+  "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeHosts",
+        "ec2:DescribeInstanceAttribute",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInstances"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "autoscaling:CompleteLifecycleAction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":autoscaling:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":autoScalingGroup:*:autoScalingGroupName/",
+          {
+           "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecs:DescribeContainerInstances",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:UpdateContainerInstancesState"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "EcsCluster97242B84",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecs:ListContainerInstances",
+        "ecs:SubmitContainerStateChange",
+        "ecs:SubmitTaskStateChange"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EcsCluster97242B84",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
+    "Roles": [
+     {
+      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
+     }
+    ]
+   }
+  },
   "EcsClusterbottlerocketasgDrainECSHookFunction7A8CD0E4": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -684,6 +771,7 @@
     "Timeout": 310
    },
    "DependsOn": [
+    "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyD5FBB46E",
     "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
    ]
   },
@@ -716,173 +804,6 @@
     "TopicArn": {
      "Ref": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
     }
-   }
-  },
-  "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole07C0DC0DA": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "ec2:DescribeHosts",
-        "ec2:DescribeInstanceAttribute",
-        "ec2:DescribeInstanceStatus",
-        "ec2:DescribeInstances"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole07C0DC0DA",
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-     }
-    ]
-   }
-  },
-  "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole10E3DC628": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "autoscaling:CompleteLifecycleAction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":autoscaling:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":autoScalingGroup:*:autoScalingGroupName/",
-          {
-           "Ref": "EcsClusterbottlerocketasgASGCB222A6E"
-          }
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole10E3DC628",
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-     }
-    ]
-   }
-  },
-  "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole2C85CCD01": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "ecs:DescribeContainerInstances",
-        "ecs:DescribeTasks"
-       ],
-       "Condition": {
-        "ArnEquals": {
-         "ecs:cluster": {
-          "Fn::GetAtt": [
-           "EcsCluster97242B84",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole2C85CCD01",
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-     }
-    ]
-   }
-  },
-  "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole367C81881": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "ecs:ListContainerInstances",
-        "ecs:SubmitContainerStateChange",
-        "ecs:SubmitTaskStateChange"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EcsCluster97242B84",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole367C81881",
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-     }
-    ]
-   }
-  },
-  "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole43085D216": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "ecs:ListTasks",
-        "ecs:UpdateContainerInstancesState"
-       ],
-       "Condition": {
-        "ArnEquals": {
-         "ecs:cluster": {
-          "Fn::GetAtt": [
-           "EcsCluster97242B84",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EcsClusterbottlerocketasgDrainECSHookFunctioninlinePolicyAddedToExecutionRole43085D216",
-    "Roles": [
-     {
-      "Ref": "EcsClusterbottlerocketasgDrainECSHookFunctionServiceRole2F16AFAB"
-     }
-    ]
    }
   },
   "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74": {

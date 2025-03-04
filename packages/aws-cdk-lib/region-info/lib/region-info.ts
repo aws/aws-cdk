@@ -10,7 +10,7 @@ export class RegionInfo {
    *          may not be an exaustive list of all available AWS regions.
    */
   public static get regions(): RegionInfo[] {
-    return Fact.regions.map(RegionInfo.get);
+    return Fact.regions.map(x => RegionInfo.get(x));
   }
 
   /**
