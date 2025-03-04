@@ -311,4 +311,14 @@ export enum ServiceNamespace {
    * Neptune
    */
   NEPTUNE = 'neptune',
+
+  /**
+   * Cassandra
+   */
+  CASSANDRA = 'cassandra',
+
+  /**
+   * Workspaces
+   */
+  WORKSPACES = 'workspaces',
 }
