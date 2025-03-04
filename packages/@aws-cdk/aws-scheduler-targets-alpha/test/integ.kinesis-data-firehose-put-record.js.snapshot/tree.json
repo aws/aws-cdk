@@ -477,10 +477,12 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.DeliveryStream",
               "version": "0.0.0",
               "metadata": [
-                "*"
+                {
+                  "destination": "*"
+                }
               ]
             }
           },

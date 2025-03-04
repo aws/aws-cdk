@@ -50,7 +50,9 @@ export class PackageManager {
       case LockFile.BUN:
         return new PackageManager({
           lockFile: LockFile.BUN,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--frozen-lockfile', '--backend', 'copyfile'],
+          // Bun's default is to not force `--frozen-lockfile`, so it's not specified here. If they ever add a
+          // flag to explicitly disable it, we should add it here. https://github.com/oven-sh/bun/issues/16387
+          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--backend', 'copyfile'],
           runCommand: ['bun', 'run'],
         });
       default:

@@ -68,7 +68,11 @@ class SingleProviderRoleStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 const singleProviderRoleTestStack = new SingleProviderRoleStack(app, 'single-provider-role-integ');
 Aspects.of(singleProviderRoleTestStack).add({

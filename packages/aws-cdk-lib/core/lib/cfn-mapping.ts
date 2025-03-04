@@ -135,7 +135,7 @@ export class CfnMapping extends CfnRefElement {
     return mapping;
   }
 
-  private validateAlphanumeric(value: any) {
+  private validateAlphanumeric(this: void, value: any) {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
     if (value.match(/[^a-zA-Z0-9]/g)) {
       throw new Error(`Attribute name '${value}' must contain only alphanumeric characters.`);

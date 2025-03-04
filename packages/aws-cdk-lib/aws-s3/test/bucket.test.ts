@@ -1776,7 +1776,7 @@ describe('bucket', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
 
       // WHEN
-      bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
+      bucket.grantRead(new iam.OrganizationPrincipal('o-12345abcde'));
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -1785,7 +1785,7 @@ describe('bucket', () => {
           'Statement': [
             {
               Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
+              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-12345abcde' } },
               'Effect': 'Allow',
               'Principal': { AWS: '*' },
               'Resource': [
@@ -1806,7 +1806,7 @@ describe('bucket', () => {
               'Effect': 'Allow',
               'Resource': '*',
               'Principal': { AWS: '*' },
-              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
+              'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-12345abcde' } },
             },
           ]),
           'Version': '2012-10-17',

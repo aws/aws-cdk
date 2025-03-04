@@ -39,7 +39,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new TestStack(app, 'integ-provider-no-echo');
 
 const test = new integ.IntegTest(app, 'IntegProviderFrameworkNoEchoTest', {

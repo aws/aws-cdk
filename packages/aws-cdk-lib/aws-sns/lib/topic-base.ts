@@ -5,6 +5,7 @@ import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
@@ -25,6 +26,17 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * @attribute
    */
   readonly topicName: string;
+
+  /**
+   * A KMS Key, either managed by this CDK app, or imported.
+   *
+   * This property applies only to server-side encryption.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
+   *
+   * @default None
+   */
+  readonly masterKey?: IKey;
 
   /**
    * Enables content-based deduplication for FIFO topics.
@@ -72,6 +84,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
+
+  public abstract readonly masterKey?: IKey;
 
   public abstract readonly fifo: boolean;
 
@@ -191,12 +205,16 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Grant topic publishing permissions to the given identity
    */
   public grantPublish(grantee: iam.IGrantable) {
-    return iam.Grant.addToPrincipalOrResource({
+    const ret = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['sns:Publish'],
       resourceArns: [this.topicArn],
       resource: this,
     });
+    if (this.masterKey) {
+      this.masterKey.grant(grantee, 'kms:Decrypt', 'kms:GenerateDataKey*');
+    }
+    return ret;
   }
 
   /**

@@ -23,7 +23,7 @@ can be filtered, transformed and enriched.
 
 ![diagram of pipes](https://d1.awsstatic.com/product-marketing/EventBridge/Product-Page-Diagram_Amazon-EventBridge-Pipes.cd7961854be4432d63f6158ffd18271d6c9fa3ec.png)
 
-For more details see the [service documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html). 
+For more details see the [service documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html).
 
 ## Pipe
 
@@ -65,7 +65,7 @@ A source is a AWS Service that is polled. The following sources are possible:
 - [Amazon SQS queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-sqs.html)
 - [Apache Kafka stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html)
 
-Currently, DynamoDB, Kinesis, and SQS are supported. If you are interested in support for additional sources, 
+Currently, DynamoDB, Kinesis, and SQS are supported. If you are interested in support for additional sources,
 kindly let us know by opening a GitHub issue or raising a PR.
 
 ### Example source
@@ -107,7 +107,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 This example shows a filter that only forwards events with the `customerType` B2B or B2C from the source messages. Messages that are not matching the filter are not forwarded to the enrichment or target step.
 
-You can define multiple filter pattern which are combined with a logical `OR`. 
+You can define multiple filter pattern which are combined with a logical `OR`.
 
 Additional filter pattern and details can be found in the EventBridge pipes [docs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-filtering.html).
 
@@ -117,7 +117,7 @@ For enrichments and targets the input event can be transformed. The transformati
 A transformation has access to the input event as well to some context information of the pipe itself like the name of the pipe.
 See [docs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-input-transformation.html) for details.
 
-### Example - input transformation from object 
+### Example - input transformation from object
 
 The input transformation can be created from an object. The object can contain static values, dynamic values or pipe variables.
 
@@ -185,7 +185,7 @@ If the transformation is applied to a target it might be converted to a string r
 
 In cases where you want to forward only a part of the event to the target you can use the transformation event path.
 
-> This only works for targets because the enrichment needs to have a valid json as input. 
+> This only works for targets because the enrichment needs to have a valid json as input.
 
 
 ```ts
@@ -204,7 +204,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 
 This transformation extracts the body of the event.
 
-So when the following batch of input events is processed by the pipe 
+So when the following batch of input events is processed by the pipe
 
 ```json
  [
@@ -357,7 +357,7 @@ For example a lambda function that returns a concatenation of the static field, 
 export async function handler (event: any) {
   return event.staticField + "-" + event.dynamicField + "-" + event.pipeVariable;
 };
-``` 
+```
 
 will produce the following target message in the target SQS queue.
 
@@ -407,9 +407,9 @@ const pipeTarget = new SqsTarget(targetQueue);
 
 ## Log destination
 
-A pipe can produce log events that are forwarded to different log destinations. 
+A pipe can produce log events that are forwarded to different log destinations.
 You can configure multiple destinations, but all the destination share the same log level and log data.
-For details check the official [documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html). 
+For details check the official [documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html).
 
 The log level and data that is included in the log events is configured on the pipe class itself.
 The actual destination is defined independently, and there are three options:
@@ -436,6 +436,28 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-This example uses a CloudWatch Logs log group to store the log emitted during a pipe execution. 
-The log level is set to `TRACE` so all steps of the pipe are logged. 
-Additionally all execution data is logged as well. 
+This example uses a CloudWatch Logs log group to store the log emitted during a pipe execution.
+The log level is set to `TRACE` so all steps of the pipe are logged.
+Additionally all execution data is logged as well.
+
+## Encrypt pipe data with KMS
+
+You can specify that EventBridge use a customer managed key to encrypt pipe data stored at rest,
+rather than use an AWS owned key as is the default.
+Details can be found in the [documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html).
+
+To do this, you need to specify the key in the `kmsKey` property of the pipe.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+declare const kmsKey: kms.Key;
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: new SqsTarget(targetQueue),
+  kmsKey,
+  // pipeName is required when using a KMS key
+  pipeName: 'MyPipe',
+});
+```

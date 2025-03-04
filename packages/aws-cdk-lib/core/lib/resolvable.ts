@@ -181,7 +181,7 @@ export class DefaultTokenResolver implements ITokenResolver {
    * Resolve string fragments to Tokens
    */
   public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
-    return fragments.mapTokens({ mapToken: context.resolve }).join(this.concat);
+    return fragments.mapTokens({ mapToken: x => context.resolve(x) }).join(this.concat);
   }
 
   public resolveList(xs: string[], context: IResolveContext) {
@@ -197,6 +197,6 @@ export class DefaultTokenResolver implements ITokenResolver {
       throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
     }
 
-    return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
+    return fragments.mapTokens({ mapToken: (x) => context.resolve(x) }).firstValue;
   }
 }

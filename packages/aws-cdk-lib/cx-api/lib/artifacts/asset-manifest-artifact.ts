@@ -28,7 +28,7 @@ export class AssetManifestArtifact extends CloudArtifact {
    * unpredictably. It is safest to avoid using `instanceof`, and using
    * this type-testing method instead.
    */
-  public static isAssetManifestArtifact(art: any): art is AssetManifestArtifact {
+  public static isAssetManifestArtifact(this: void, art: any): art is AssetManifestArtifact {
     return art && typeof art === 'object' && art[ASSET_MANIFEST_ARTIFACT_SYM];
   }
 

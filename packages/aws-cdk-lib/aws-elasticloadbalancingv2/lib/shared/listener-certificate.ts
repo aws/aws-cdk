@@ -17,14 +17,14 @@ export class ListenerCertificate implements IListenerCertificate {
   /**
    * Use an ACM certificate as a listener certificate
    */
-  public static fromCertificateManager(acmCertificate: acm.ICertificate) {
+  public static fromCertificateManager(this: void, acmCertificate: acm.ICertificate) {
     return new ListenerCertificate(acmCertificate.certificateArn);
   }
 
   /**
    * Use any certificate, identified by its ARN, as a listener certificate
    */
-  public static fromArn(certificateArn: string) {
+  public static fromArn(this: void, certificateArn: string) {
     return new ListenerCertificate(certificateArn);
   }
 
