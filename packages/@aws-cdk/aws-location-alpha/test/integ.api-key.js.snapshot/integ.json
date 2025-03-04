@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "ApiKeyTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-location-api-key"
+      ],
+      "assertionStack": "ApiKeyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiKeyTestDefaultTestDeployAssert140AB0A3"
+    }
+  }
+}
