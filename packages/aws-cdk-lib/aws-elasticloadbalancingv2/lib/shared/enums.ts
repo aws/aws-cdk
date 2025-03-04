@@ -82,10 +82,6 @@ export enum ApplicationProtocol {
    */
   TLS = 'TLS',
 
-  /**
-   * UDP
-   */
-  UDP = 'UDP',
 
   /**
    * TCP_UDP
