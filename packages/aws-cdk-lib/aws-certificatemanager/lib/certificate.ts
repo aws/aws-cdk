@@ -137,6 +137,26 @@ export class KeyAlgorithm {
    */
   public static readonly EC_SECP384R1 = new KeyAlgorithm('EC_secp384r1');
 
+  /**
+   * EC_secp521r1 algorithm
+   */
+  public static readonly EC_SECP521R1 = new KeyAlgorithm('EC_secp521r1');
+
+  /**
+   * RSA_4096 algorithm
+   */
+  public static readonly RSA_4096 = new KeyAlgorithm('RSA_4096');
+
+  /**
+   * RSA_3072 algorithm
+   */
+  public static readonly RSA_3072 = new KeyAlgorithm('RSA_3072');
+
+  /**
+   * RSA_1024 algorithm
+   */
+  public static readonly RSA_1024 = new KeyAlgorithm('RSA_1024');
+
   constructor(
     /**
      * The name of the algorithm
