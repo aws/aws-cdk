@@ -17,6 +17,8 @@ export class InspectorStartAssessmentRun extends ScheduleTargetBase implements I
   protected addTargetActionToRole(role: IRole): void {
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: ['inspector:StartAssessmentRun'],
+      // The wildcard is intentional here as Amazon Inspector does not support specifying a resource ARN in the Resource element of an IAM policy statement.
+      // See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoninspector.html#amazoninspector-resources-for-iam-policies.
       resources: ['*'],
     }));
   }
