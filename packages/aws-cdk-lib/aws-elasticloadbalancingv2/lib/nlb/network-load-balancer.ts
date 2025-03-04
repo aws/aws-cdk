@@ -32,6 +32,14 @@ export enum ClientRoutingPolicy {
   ANY_AVAILABILITY_ZONE = 'any_availability_zone',
 }
 
+export interface SubnetMapping {
+  subnet: ec2.ISubnet;
+  allocationId?: string;
+  ipv6Address?: string;
+  privateIpv4Address?: string;
+  sourceNatIpv6Prefix?: string;
+}
+
 /**
  * Properties for a network load balancer
  */
@@ -86,6 +94,11 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default undefined - NLB default behavior is false
    */
   readonly enablePrefixForIpv6SourceNat?: boolean;
+
+  /**
+   * 
+   */
+  readonly subnetMappings?: SubnetMapping[];
 }
 
 /**
@@ -275,6 +288,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
+      subnetMappings: props.subnetMappings?.map((mapping) => ({
+        subnetId: mapping.subnet.subnetId,
+        allocationId: mapping.allocationId,
+        ipv6Address: mapping.ipv6Address,
+        privateIpv4Address: mapping.privateIpv4Address,
+        sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+      })),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
