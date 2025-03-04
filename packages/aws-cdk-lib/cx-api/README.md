@@ -615,16 +615,19 @@ _cdk.json_
 
 * `@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy`
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+[Deprecated feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
+This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. 
+We recommend to unset the feature flag if already set which will restore the original behavior. 
 
 _cdk.json_
 
 ```json
 {
   "context": {
-    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false
   }
 }
 ```
