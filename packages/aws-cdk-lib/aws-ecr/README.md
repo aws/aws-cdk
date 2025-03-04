@@ -215,17 +215,15 @@ You can import an existing repository into your CDK app using the `Repository.fr
 These methods take the ARN or the name of the repository and returns an `IRepository` object.
 
 ```ts
-declare const scope: cdk.Construct;
-
 // import using repository name
-const repositoryFromName = ecr.Repository.fromRepositoryName(scope, 'ImportedRepoByName', 'my-repo-name');
+const repositoryFromName = ecr.Repository.fromRepositoryName(this, 'ImportedRepoByName', 'my-repo-name');
 
 // import using repository ARN
-const repositoryFromArn = ecr.Repository.fromRepositoryArn(scope, 'ImportedRepoByArn', 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo-name');
+const repositoryFromArn = ecr.Repository.fromRepositoryArn(this, 'ImportedRepoByArn', 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo-name');
 
 // import using repository lookup
 // You have to provide either `repositoryArn` or `repositoryName` to lookup the repository
-const repositoryFromLookup = ecr.Repository.fromLookup(scope, 'ImportedRepoByLookup', {
+const repositoryFromLookup = ecr.Repository.fromLookup(this, 'ImportedRepoByLookup', {
   repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo-name',
   repositoryName: 'my-repo-name',
 });
