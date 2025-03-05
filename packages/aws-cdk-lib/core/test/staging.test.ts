@@ -6,6 +6,7 @@ import * as sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage, BundlingFileAccess } from '../lib';
+import { execSync } from 'child_process';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -673,6 +674,43 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
+  });
+
+  test('if bundling is interrupted, target asset directory is not produced', () => {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    // WHEN
+    try {
+      execSync(`npx ts-node ${__dirname}/app-that-is-interrupted-during-staging.ts`, {
+        env: {
+          ...process.env,
+          CDK_OUTDIR: TEST_OUTDIR,
+        },
+      });
+      throw new Error('We expected the above command to fail');
+    } catch (e) {
+      // We expect the command to self-abort
+      if (e.signal === 'SIGTERM') {
+        // pass
+      } else {
+        throw e;
+      }
+    }
+
+    // THEN
+    const generatedFiles = fs.readdirSync(TEST_OUTDIR);
+    // We expect a 'building' asset directory...
+    expect(generatedFiles).toContainEqual(
+      expect.stringMatching(/^asset\.[0-9a-f]+/),
+    );
+    // ...not a complete asset directory (the difference is the $ at the end)
+    expect(generatedFiles).not.toContainEqual(
+      expect.stringMatching(/^asset\.[0-9a-f]+$/),
+    );
   });
 
   test('bundler re-uses assets from previous synths, ignoring tokens', () => {
