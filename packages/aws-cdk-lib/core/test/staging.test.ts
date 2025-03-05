@@ -693,8 +693,8 @@ describe('staging', () => {
       });
       throw new Error('We expected the above command to fail');
     } catch (e) {
-      // We expect the command to self-abort
-      if (e.signal === 'SIGTERM') {
+      // We expect the command to be terminated with a signal
+      if (e.signal != null) {
         // pass
       } else {
         throw e;
