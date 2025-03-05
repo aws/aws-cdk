@@ -438,19 +438,23 @@ export class AssetStaging extends Construct {
   private bundle(options: BundlingOptions, bundleDir: string) {
     if (fs.existsSync(bundleDir)) { return; }
 
-    fs.ensureDirSync(bundleDir);
+    const tempDir = `${bundleDir}-building`;
+    // Remove the tempDir if it exists, then recreate it
+    fs.rmSync(tempDir, { recursive: true, force: true });
+
+    fs.ensureDirSync(tempDir);
     // Chmod the bundleDir to full access.
-    fs.chmodSync(bundleDir, 0o777);
+    fs.chmodSync(tempDir, 0o777);
 
     let localBundling: boolean | undefined;
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
-      localBundling = options.local?.tryBundle(bundleDir, options);
+      localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
         const assetStagingOptions = {
           sourcePath: this.sourcePath,
-          bundleDir,
+          bundleDir: tempDir,
           ...options,
         };
 
@@ -464,18 +468,11 @@ export class AssetStaging extends Construct {
             break;
         }
       }
-    } catch (err) {
-      // When bundling fails, keep the bundle output for diagnosability, but
-      // rename it out of the way so that the next run doesn't assume it has a
-      // valid bundleDir.
-      const bundleErrorDir = bundleDir + '-error';
-      if (fs.existsSync(bundleErrorDir)) {
-        // Remove the last bundleErrorDir.
-        fs.removeSync(bundleErrorDir);
-      }
 
-      fs.renameSync(bundleDir, bundleErrorDir);
-      throw new Error(`Failed to bundle asset ${this.node.path}, bundle output is located at ${bundleErrorDir}: ${err}`);
+      // Success, rename the tempDir into place
+      fs.renameSync(tempDir, bundleDir);
+    } catch (err) {
+      throw new Error(`Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {

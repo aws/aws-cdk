@@ -1,3 +1,4 @@
+import { execSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -610,13 +611,13 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.FAIL],
       },
-    })).toThrow(/Failed.*bundl.*asset.*-error/);
+    })).toThrow(/Failed.*bundl.*asset.*-building/);
 
     // THEN
     const assembly = app.synth();
 
     const dir = fs.readdirSync(assembly.directory);
-    expect(dir.some(entry => entry.match(/asset.*-error/))).toEqual(true);
+    expect(dir.some(entry => entry.match(/asset.*-building/))).toEqual(true);
   });
 
   test('bundler re-uses assets from previous synths', () => {
@@ -673,6 +674,44 @@ describe('staging', () => {
       'stack.template.json',
       'tree.json',
     ]);
+  });
+
+  test('if bundling is interrupted, target asset directory is not produced', () => {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    // WHEN
+    try {
+      execSync(`npx ts-node ${__dirname}/app-that-is-interrupted-during-staging.ts`, {
+        env: {
+          ...process.env,
+          CDK_OUTDIR: TEST_OUTDIR,
+        },
+      });
+      throw new Error('We expected the above command to fail');
+    } catch (e) {
+      // We expect the command to be terminated with a signal, which sometimes shows
+      // as 'signal' is set to SIGTERM, and on some Linuxes as exitCode = 128 + 15 = 143
+      if (e.signal === 'SIGTERM' || e.status === 143) {
+        // pass
+      } else {
+        throw e;
+      }
+    }
+
+    // THEN
+    const generatedFiles = fs.readdirSync(TEST_OUTDIR);
+    // We expect a 'building' asset directory...
+    expect(generatedFiles).toContainEqual(
+      expect.stringMatching(/^asset\.[0-9a-f]+-building$/),
+    );
+    // ...not a complete asset directory
+    expect(generatedFiles).not.toContainEqual(
+      expect.stringMatching(/^asset\.[0-9a-f]+$/),
+    );
   });
 
   test('bundler re-uses assets from previous synths, ignoring tokens', () => {
