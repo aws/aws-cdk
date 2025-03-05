@@ -770,6 +770,63 @@ describe('role', () => {
       },
     });
   });
+
+  it('cannot specify both role and framework onEvent roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('cannot specify both role and framework complete/timeout roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.');
+  });
 });
 
 describe('name', () => {
