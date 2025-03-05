@@ -610,13 +610,13 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.FAIL],
       },
-    })).toThrow(/Failed.*bundl.*asset.*-error/);
+    })).toThrow(/Failed.*bundl.*asset.*-building/);
 
     // THEN
     const assembly = app.synth();
 
     const dir = fs.readdirSync(assembly.directory);
-    expect(dir.some(entry => entry.match(/asset.*-error/))).toEqual(true);
+    expect(dir.some(entry => entry.match(/asset.*-building/))).toEqual(true);
   });
 
   test('bundler re-uses assets from previous synths', () => {

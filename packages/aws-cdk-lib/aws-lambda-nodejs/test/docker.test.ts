@@ -4,6 +4,7 @@ import * as path from 'path';
 const docker = process.env.CDK_DOCKER ?? 'docker';
 beforeAll(() => {
   const process = spawnSync(docker, ['build', '-t', 'esbuild', path.join(__dirname, '..', 'lib')], { stdio: 'inherit' });
+  console.log(['build', '-t', 'esbuild', path.join(__dirname, '..', 'lib')].join(' '));
   expect(process.error).toBeUndefined();
   expect(process.status).toBe(0);
 });
