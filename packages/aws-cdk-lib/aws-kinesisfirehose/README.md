@@ -90,8 +90,8 @@ for the implementations of these destinations.
 Defining a delivery stream with an HTTP destination:
 
 ```ts
-declare const endpointConfig: firehouse.HTTPEndpointConifg;
-const httpDestination = new firehouse.HTTPEndpoint({
+declare const endpointConfig: firehose.HTTPEndpointConifg;
+const httpDestination = new firehose.HTTPEndpoint({
   endpointConfig,
 });
 ```
@@ -101,10 +101,12 @@ const httpDestination = new firehouse.HTTPEndpoint({
 Defining a delivery stream with a Datadog destination:
 
 ```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
 declare const apiKey: secretsmanager.Secret;
-const datadogDestination = new firehouse.Datadog({
+const datadogDestination = new firehose.Datadog({
   apiKey,
-  url: firehouse.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
+  url: firehose.DatadogLogsEndpointUrl.DATADOG_LOGS_US1,
 });
 ```
 
