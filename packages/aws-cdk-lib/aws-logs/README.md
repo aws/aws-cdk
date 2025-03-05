@@ -441,6 +441,29 @@ new logs.LogGroup(this, 'LogGroupLambda', {
 });
 ```
 
+## Field Index Policies
+
+Creates or updates a field index policy for the specified log group. You can use field index policies to create field indexes on fields found in log events in the log group. Creating field indexes lowers the costs for CloudWatch Logs Insights queries that reference those field indexes, because these queries attempt to skip the processing of log events that are known to not match the indexed field. Good fields to index are fields that you often need to query for and fields that have high cardinality of values.
+
+For more information, see [Create field indexes to improve query performance and reduce costs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html).
+
+Only log groups in the Standard log class support field index policies.
+Currently, this array supports only one field index policy object.
+
+Example:
+
+```ts
+
+const fieldIndexPolicy = new logs.FieldIndexPolicy({
+  fields: ['Operation', 'RequestId'],
+});
+
+new logs.LogGroup(this, 'LogGroup', {
+  logGroupName: 'cdkIntegLogGroup',
+  fieldIndexPolicies: [fieldIndexPolicy],
+});
+```
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

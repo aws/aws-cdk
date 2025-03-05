@@ -166,6 +166,14 @@
                         ]
                       }
                     },
+                    "fieldIndexPolicies": [
+                      {
+                        "Fields": [
+                          "Operation",
+                          "RequestId"
+                        ]
+                      }
+                    ],
                     "retentionInDays": 731
                   }
                 },
