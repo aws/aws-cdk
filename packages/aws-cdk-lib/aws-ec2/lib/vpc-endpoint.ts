@@ -489,6 +489,12 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions');
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS_FIPS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions-fips');
   public static readonly LICENSE_MANAGER_USER_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-user-subscriptions');
+  public static readonly LOCATION_SERVICE_GEOFENCING = new InterfaceVpcEndpointAwsService('geo.geofencing');
+  public static readonly LOCATION_SERVICE_MAPS = new InterfaceVpcEndpointAwsService('geo.maps');
+  public static readonly LOCATION_SERVICE_METADATA = new InterfaceVpcEndpointAwsService('geo.metadata');
+  public static readonly LOCATION_SERVICE_PLACES = new InterfaceVpcEndpointAwsService('geo.places');
+  public static readonly LOCATION_SERVICE_ROUTE = new InterfaceVpcEndpointAwsService('geo.routes');
+  public static readonly LOCATION_SERVICE_TRACKING = new InterfaceVpcEndpointAwsService('geo.tracking');
   public static readonly LOOKOUT_EQUIPMENT = new InterfaceVpcEndpointAwsService('lookoutequipment');
   public static readonly LOOKOUT_METRICS = new InterfaceVpcEndpointAwsService('lookoutmetrics');
   public static readonly LOOKOUT_VISION = new InterfaceVpcEndpointAwsService('lookoutvision');
