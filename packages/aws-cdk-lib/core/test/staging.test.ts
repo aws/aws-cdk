@@ -705,9 +705,9 @@ describe('staging', () => {
     const generatedFiles = fs.readdirSync(TEST_OUTDIR);
     // We expect a 'building' asset directory...
     expect(generatedFiles).toContainEqual(
-      expect.stringMatching(/^asset\.[0-9a-f]+/),
+      expect.stringMatching(/^asset\.[0-9a-f]+-building$/),
     );
-    // ...not a complete asset directory (the difference is the $ at the end)
+    // ...not a complete asset directory
     expect(generatedFiles).not.toContainEqual(
       expect.stringMatching(/^asset\.[0-9a-f]+$/),
     );
