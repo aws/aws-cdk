@@ -90,7 +90,7 @@ for the implementations of these destinations.
 Defining a delivery stream with an HTTP destination:
 
 ```ts
-declare const endpointConfig: firehose.HTTPEndpointConifg;
+declare const endpointConfig: firehose.HTTPEndpointConfig;
 const httpDestination = new firehose.HTTPEndpoint({
   endpointConfig,
 });
