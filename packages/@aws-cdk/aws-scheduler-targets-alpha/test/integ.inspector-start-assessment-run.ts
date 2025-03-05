@@ -1,7 +1,7 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { CfnAssessmentTarget, CfnAssessmentTemplate } from 'aws-cdk-lib/aws-inspector';
+import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate } from 'aws-cdk-lib/aws-inspector';
 import { InspectorStartAssessmentRun } from '../lib';
 
 /*
@@ -17,12 +17,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-inspector-start-assessment-run');
 
 const assessmentTarget = new CfnAssessmentTarget(stack, 'MyAssessmentTarget');
-const assessmentTemplate = new CfnAssessmentTemplate(stack, 'MyAssessmentTemplate', {
+const cfnAssessmentTemplate = new CfnAssessmentTemplate(stack, 'MyAssessmentTemplate', {
   assessmentTargetArn: assessmentTarget.attrArn,
   durationInSeconds: 3600,
-  // https://docs.aws.amazon.com/inspector/v1/userguide/inspector_rules-arns.html#us-east-1
   rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
 });
+const assessmentTemplate = AssessmentTemplate.fromCfnAssessmentTemplate(stack, 'AssessmentTemplate', cfnAssessmentTemplate);
 
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(10)),
@@ -36,10 +36,10 @@ const integrationTest = new IntegTest(app, 'integrationtest-inspector-start-asse
 
 // Verifies that the assessment run by the scheduler
 integrationTest.assertions.awsApiCall('Inspector', 'listAssessmentRuns', {
-  AssessmentTemplateArns: [assessmentTemplate.attrArn],
+  AssessmentTemplateArns: [assessmentTemplate.assessmentTemplateArn],
 }).assertAtPath(
   'assessmentRunArns.0',
-  ExpectedResult.stringLikeRegexp(assessmentTemplate.attrArn),
+  ExpectedResult.stringLikeRegexp(assessmentTemplate.assessmentTemplateArn),
 ).waitForAssertions({
   interval: cdk.Duration.seconds(30),
   totalTimeout: cdk.Duration.minutes(10),
