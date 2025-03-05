@@ -20,7 +20,6 @@ new lambda.NodejsFunction(stack, 'ts-decorator-handler-root-user', {
   entry: path.join(__dirname, 'integ-handlers/ts-decorator-handler.ts'),
   bundling: {
     forceDockerBundling: true,
-    user: 'root',
     commandHooks: {
       beforeBundling(_inputDir: string, _outputDir: string): string[] {
         return [
