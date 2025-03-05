@@ -1,0 +1,60 @@
+# VSCode extension
+
+# Store launch config in repo but not settings
+.vscode/settings.json
+/.favorites.json
+
+# TypeScript incremental build states
+*.tsbuildinfo
+
+# Local state files & OS specifics
+.DS_Store
+node_modules/
+lerna-debug.log
+dist/
+pack/
+.BUILD_COMPLETED
+.local-npm/
+.tools/
+coverage/
+.nyc_output
+.nycrc
+.LAST_BUILD
+*.sw[a-z]
+*~
+.idea
+*.iml
+junit.xml
+
+# We don't want tsconfig at the root
+/tsconfig.json
+
+# CDK Context & Staging files
+cdk.context.json
+.cdk.staging/
+cdk.out/
+*.tabl.json
+cdk-integ.out.*/
+
+# Yarn error log
+yarn-error.log
+
+# VSCode history plugin
+.vscode/.history/
+
+# Cloud9
+.c9
+.nzm-*
+
+/.versionrc.json
+RELEASE_NOTES.md
+
+# Produced by integ tests
+read*lock
+
+# VSCode jest plugin
+.test-output
+
+# Nx cache
+.nx/
+
