@@ -149,6 +149,23 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+When you use `FirehoseDestination`, you can choose the method used to
+distribute log data to the destination by setting the `distribution` property.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const deliveryStream: firehose.IDeliveryStream;
+declare const logGroup: logs.LogGroup;
+
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.FirehoseDestination(deliveryStream),
+  filterPattern: logs.FilterPattern.allEvents(),
+});
+```
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
