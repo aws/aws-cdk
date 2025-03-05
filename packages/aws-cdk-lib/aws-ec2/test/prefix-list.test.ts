@@ -1,5 +1,6 @@
-import { Template } from '../../assertions';
-import { Stack } from '../../core';
+import { Match, Template } from '../../assertions';
+import * as cxschema from '../../cloud-assembly-schema';
+import { CfnParameter, ContextProvider, Stack } from '../../core';
 import { AddressFamily, PrefixList } from '../lib/prefix-list';
 
 describe('prefix list', () => {
@@ -100,5 +101,46 @@ describe('prefix list', () => {
         ],
       });
     }).toThrow('Invalid IPv6 address range: 10.0.0.1/32');
+  });
+
+  test('fromLookup returns a correct PrefixList', () => {
+    // GIVEN
+    const resultObjs = [
+      { Identifier: 'pl-deadbeef', PrefixListId: 'pl-deadbeef' },
+    ];
+    const mock = jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
+
+    // WHEN
+    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+    const prefixList = PrefixList.fromLookup(stack, 'PrefixList', {
+      prefixListName: 'com.amazonaws.us-east-1.testprefixlist',
+    });
+
+    // THEN
+    expect(prefixList.prefixListId).toEqual('pl-deadbeef');
+    expect(mock).toHaveBeenCalledWith(stack, {
+      provider: cxschema.ContextProvider.CC_API_PROVIDER,
+      props: {
+        typeName: 'AWS::EC2::PrefixList',
+        propertyMatch: {
+          PrefixListName: 'com.amazonaws.us-east-1.testprefixlist',
+        },
+        propertiesToReturn: ['PrefixListId'],
+      },
+      dummyValue: [
+        { PrefixListId: 'pl-xxxxxxxx' },
+      ],
+    });
+  });
+
+  test('fromLookup throws if prefix list name is a token', () => {
+    // WHEN
+    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+    const prefixListName = new CfnParameter(stack, 'PrefixListName');
+
+    // THEN
+    expect(() => {
+      PrefixList.fromLookup(stack, 'PrefixList', { prefixListName: prefixListName.valueAsString });
+    }).toThrow('All arguments to look up a managed prefix list must be concrete (no Tokens)');
   });
 });
