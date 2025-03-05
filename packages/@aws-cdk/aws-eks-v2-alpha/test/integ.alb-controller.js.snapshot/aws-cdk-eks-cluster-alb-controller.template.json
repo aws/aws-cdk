@@ -2101,6 +2101,50 @@
    ]
   }
  },
+ "Outputs": {
+  "ClusterConfigCommand43AAE40F": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterGetTokenCommand06AE992E": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      }
+     ]
+    ]
+   }
+  },
+  "IngressPingerResponse": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IngressPinger1AD9E831",
+     "Value"
+    ]
+   }
+  }
+ },
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
@@ -2222,16 +2266,6 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
-   }
-  }
- },
- "Outputs": {
-  "IngressPingerResponse": {
-   "Value": {
-    "Fn::GetAtt": [
-     "IngressPinger1AD9E831",
-     "Value"
-    ]
    }
   }
  },
