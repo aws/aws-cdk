@@ -4467,6 +4467,47 @@ describe('cluster', () => {
     expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
   });
 
+  test('create a read replica using replicationSourceIdentifier', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        vpc,
+      },
+      replicationSourceIdentifier: 'identifier',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora-mysql',
+        ReplicationSourceIdentifier: 'identifier',
+      },
+    });
+  });
+
+  test('throws when replicationSourceIdentifier and credentials both specified', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: {
+        username: 'admin',
+      },
+      instanceProps: {
+        vpc,
+      },
+      replicationSourceIdentifier: 'identifier',
+    })).toThrow('Cannot specify both `replicationSourceIdentifier` and `credentials`');
+  });
+
   test('create a cluster from a snapshot', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
