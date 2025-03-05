@@ -70,6 +70,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ON_DEPLOYMENT_ROLLED_BACK',
     'AT_DEPLOYMENT_TICK'
   ],
+  'AdditionalHealthCheckType': [
+    'ELB',
+    'EBS',
+    'VPC_LATTICE'
+  ],
   'AddressFamily': [
     'IPv4',
     'IPv6'
@@ -1129,7 +1134,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     's3:ObjectTagging:*',
     's3:ObjectTagging:Put',
     's3:ObjectTagging:Delete',
-    's3:ObjectAcl:Put'
+    's3:ObjectAcl:Put',
+    's3:ObjectRestore:*',
+    's3:Replication:*'
   ],
   'ExecuteCommandLogging': [
     'NONE',
@@ -2311,10 +2318,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'DUAL'
   ],
   'NodeType': [
-    'Standard',
-    'GPU',
-    'INFERENTIA',
-    'TRAINIUM'
+    'coordinator'
   ],
   'NodegroupAmiType': [
     'AL2_x86_64',
@@ -2973,7 +2977,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'comprehend',
     'kafka',
     'elasticache',
-    'neptune'
+    'neptune',
+    'cassandra',
+    'workspaces'
   ],
   'Shading': [
     'none',
