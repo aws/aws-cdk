@@ -18,7 +18,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 // S3 bucket to host envfile without public access
 const bucket = new s3.Bucket(stack, 'Bucket', {
-  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+  blockPublicAccessV2: s3.BlockPublicAccessV2.BLOCK_ALL,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
