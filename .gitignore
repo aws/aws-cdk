@@ -58,3 +58,4 @@ read*lock
 # Nx cache
 .nx/
 
+package-lock.json
