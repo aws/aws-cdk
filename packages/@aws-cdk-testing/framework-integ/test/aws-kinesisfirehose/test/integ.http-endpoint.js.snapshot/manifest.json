@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0ccaf1c37a119ee026e7ee29dab4ec931d64f8c30848d334f7520ee0068b9c7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d124da0c1b7ec9b3c2f8f06f684e010324327217d66f6a7bee41e247f3a5b493.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,14 +91,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream/HTTP Destination Role/ImportHTTP Destination Role": [
@@ -131,14 +123,6 @@
             "data": {
               "attachToRole": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
               ]
             }
           },
@@ -254,42 +238,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "DeliveryStreamDatadogDestinationRoleBBA16F35": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamDatadogDestinationRoleBBA16F35",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamDatadogDestinationRoleDefaultPolicy20F1492B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamDatadogDestinationRoleDefaultPolicy20F1492B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamLogGroupDatadogDestinationB6E29CB9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamLogGroupDatadogDestinationB6E29CB9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "DeliveryStreamS3Configuration3CBD6CC0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStreamS3Configuration3CBD6CC0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-firehose-delivery-stream-s3-all-properties"
@@ -311,7 +259,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ec115631931d5da9aeca93607f3b939f9817b21d61237dd17fc7713c61e2220.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be960dc85f78b59dc202b2f3f0200acf8add2c79fd4f7356bb8096533cbee86b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

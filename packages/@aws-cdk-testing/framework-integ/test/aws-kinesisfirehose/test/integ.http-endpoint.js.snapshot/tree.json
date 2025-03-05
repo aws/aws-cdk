@@ -8,15 +8,6 @@
         "id": "aws-cdk-firehose-delivery-stream-s3-all-properties",
         "path": "aws-cdk-firehose-delivery-stream-s3-all-properties",
         "children": {
-          "DatadogApiKey": {
-            "id": "DatadogApiKey",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DatadogApiKey",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0",
-              "metadata": []
-            }
-          },
           "DeliveryStream": {
             "id": "DeliveryStream",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream",
@@ -122,33 +113,6 @@
                                       ]
                                     }
                                   ]
-                                },
-                                {
-                                  "Action": [
-                                    "secretsmanager:DescribeSecret",
-                                    "secretsmanager:GetSecretValue"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":secretsmanager:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":secret:DatadogApiKey-??????"
-                                      ]
-                                    ]
-                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -196,11 +160,6 @@
                           "addStatements": [
                             {}
                           ]
-                        },
-                        {
-                          "addStatements": [
-                            {}
-                          ]
                         }
                       ]
                     }
@@ -229,11 +188,6 @@
                     {
                       "attachInlinePolicy": [
                         "*"
-                      ]
-                    },
-                    {
-                      "addToPrincipalPolicy": [
-                        {}
                       ]
                     },
                     {
@@ -372,18 +326,10 @@
                     "deliveryStreamType": "DirectPut",
                     "httpEndpointDestinationConfiguration": {
                       "endpointConfiguration": {
-                        "url": "https://aws-kinesis-http-intake.logs.datadoghq.eu/v1/input"
-                      },
-                      "retryOptions": {
-                        "durationInSeconds": 60
-                      },
-                      "bufferingHints": {
-                        "intervalInSeconds": 60,
-                        "sizeInMBs": 4
+                        "url": "https://postman-echo.com/post"
                       },
                       "requestConfiguration": {
-                        "contentEncoding": "GZIP",
-                        "commonAttributes": []
+                        "contentEncoding": "NONE"
                       },
                       "cloudWatchLoggingOptions": {
                         "enabled": true,
@@ -422,35 +368,6 @@
                           "logStreamName": {
                             "Ref": "DeliveryStreamLogGroupS3BackupD848C05F"
                           }
-                        }
-                      },
-                      "secretsManagerConfiguration": {
-                        "secretArn": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn:",
-                              {
-                                "Ref": "AWS::Partition"
-                              },
-                              ":secretsmanager:",
-                              {
-                                "Ref": "AWS::Region"
-                              },
-                              ":",
-                              {
-                                "Ref": "AWS::AccountId"
-                              },
-                              ":secret:DatadogApiKey"
-                            ]
-                          ]
-                        },
-                        "enabled": true,
-                        "roleArn": {
-                          "Fn::GetAtt": [
-                            "DeliveryStreamHTTPDestinationRoleD8ECD827",
-                            "Arn"
-                          ]
                         }
                       }
                     }

@@ -71,33 +71,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":secretsmanager:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":secret:DatadogApiKey-??????"
-         ]
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -148,10 +121,6 @@
    "Properties": {
     "DeliveryStreamType": "DirectPut",
     "HttpEndpointDestinationConfiguration": {
-     "BufferingHints": {
-      "IntervalInSeconds": 60,
-      "SizeInMBs": 4
-     },
      "CloudWatchLoggingOptions": {
       "Enabled": true,
       "LogGroupName": {
@@ -162,14 +131,10 @@
       }
      },
      "EndpointConfiguration": {
-      "Url": "https://aws-kinesis-http-intake.logs.datadoghq.eu/v1/input"
+      "Url": "https://postman-echo.com/post"
      },
      "RequestConfiguration": {
-      "CommonAttributes": [],
-      "ContentEncoding": "GZIP"
-     },
-     "RetryOptions": {
-      "DurationInSeconds": 60
+      "ContentEncoding": "NONE"
      },
      "RoleARN": {
       "Fn::GetAtt": [
@@ -198,35 +163,6 @@
        "Fn::GetAtt": [
         "DeliveryStreamHTTPDestinationRoleD8ECD827",
         "Arn"
-       ]
-      }
-     },
-     "SecretsManagerConfiguration": {
-      "Enabled": true,
-      "RoleARN": {
-       "Fn::GetAtt": [
-        "DeliveryStreamHTTPDestinationRoleD8ECD827",
-        "Arn"
-       ]
-      },
-      "SecretARN": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":secretsmanager:",
-         {
-          "Ref": "AWS::Region"
-         },
-         ":",
-         {
-          "Ref": "AWS::AccountId"
-         },
-         ":secret:DatadogApiKey"
-        ]
        ]
       }
      }
