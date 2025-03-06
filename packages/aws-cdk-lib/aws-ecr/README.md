@@ -209,6 +209,26 @@ repository.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
+## import existing repository
+
+You can import an existing repository into your CDK app using the `Repository.fromRepositoryArn`, `Repository.fromRepositoryName` or `Repository.fromLookup` method.
+These methods take the ARN or the name of the repository and returns an `IRepository` object.
+
+```ts
+// import using repository name
+const repositoryFromName = ecr.Repository.fromRepositoryName(this, 'ImportedRepoByName', 'my-repo-name');
+
+// import using repository ARN
+const repositoryFromArn = ecr.Repository.fromRepositoryArn(this, 'ImportedRepoByArn', 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo-name');
+
+// import using repository lookup
+// You have to provide either `repositoryArn` or `repositoryName` to lookup the repository
+const repositoryFromLookup = ecr.Repository.fromLookup(this, 'ImportedRepoByLookup', {
+  repositoryArn: 'arn:aws:ecr:us-east-1:123456789012:repository/my-repo-name',
+  repositoryName: 'my-repo-name',
+});
+```
+
 ## CloudWatch event rules
 
 You can publish repository events to a CloudWatch event rule with `onEvent`:
