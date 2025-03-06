@@ -222,7 +222,9 @@ called every hour by EventBridge Scheduler.
 ```ts
 import * as inspector from 'aws-cdk-lib/aws-inspector';
 
-declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
+declare const cfnAssessmentTemplate: inspector.CfnAssessmentTemplate;
+
+const assessmentTemplate = inspector.AssessmentTemplate.fromCfnAssessmentTemplate(this, 'MyAssessmentTemplate', cfnAssessmentTemplate);
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
@@ -316,7 +318,7 @@ new Schedule(this, 'Schedule', {
 
 ## Invoke a wider set of AWS API
 
-Use the `Universal` target to invoke AWS API. See https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html
+Use the `Universal` target to invoke AWS API. See <https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html>
 
 The code snippet below creates an event rule with AWS API as the target which is
 called at midnight every day by EventBridge Scheduler.
