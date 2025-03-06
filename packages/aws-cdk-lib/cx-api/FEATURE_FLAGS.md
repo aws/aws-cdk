@@ -91,6 +91,7 @@ Flags come in three types:
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
+| [@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue](#aws-cdkaws-s3blockpublicaccessoptionautotrue) | When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -169,7 +170,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
-    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue": true
   }
 }
 ```
@@ -1720,6 +1722,22 @@ When disabled, 'CDKReplicationRole' is always specified.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.182.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue
+
+*When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.* (fix)
+
+When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
