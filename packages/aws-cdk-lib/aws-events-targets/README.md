@@ -23,7 +23,9 @@ Currently supported are:
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
-  - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
+    - [Overriding Values in the Task Definition](#overriding-values-in-the-task-definition)
+  - [Schedule a Redshift query (serverless or cluster)](#schedule-a-redshift-query-serverless-or-cluster)
+  - [Put a message to a SQS Queue](#put-a-message-to-a-sqs-queue)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -612,5 +614,25 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: dlq,
   sql: ['SELECT * FROM foo','SELECT * FROM baz'],
+}));
+```
+
+## Put a message to a SQS Queue
+
+Use the `SqsQueue` target to put a message to a SQS Queue.
+
+The code snippet below creates the scheduled event rule that put a message to SQS Queue.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+const queue = new sqs.Queue(this, 'queue');
+
+rule.addTarget(new targets.SqsQueue(queue, {
+  message: RuleTargetInput.fromObject({
+    message: "content"
+  })
 }));
 ```
