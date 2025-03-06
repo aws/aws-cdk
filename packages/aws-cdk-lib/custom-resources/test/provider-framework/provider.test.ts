@@ -770,6 +770,256 @@ describe('role', () => {
       },
     });
   });
+
+  it('cannot specify both role and framework onEvent roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('cannot specify both role and framework complete/timeout roles', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      role: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole"');
+  });
+
+  it('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    })).toThrow('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.');
+  });
+
+  it('No circular dependency thrown.', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+      },
+    });
+    const stack = new Stack(app);
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'OnEventHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'IsCompleteHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.isComplete',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+      frameworkOnEventRole: new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+      frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'OnEventHandler42BEBAE0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'OnEventHandler42BEBAE0',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'OnEventHandler42BEBAE0',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'IsCompleteHandler7073F4DA',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'IsCompleteHandler7073F4DA',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'IsCompleteHandler7073F4DA',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'states:StartExecution',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'MyProviderwaiterstatemachineC1FBB9F9',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'OnEventHandler42BEBAE0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'OnEventHandler42BEBAE0',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'OnEventHandler42BEBAE0',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'IsCompleteHandler7073F4DA',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'IsCompleteHandler7073F4DA',
+                        'Arn',
+                      ],
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'IsCompleteHandler7073F4DA',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
 });
 
 describe('name', () => {
