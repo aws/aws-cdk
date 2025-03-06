@@ -1549,14 +1549,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationTarget': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'playerLatencyPolicies': {
         'maximumIndividualPlayerLatency': '*'
@@ -1605,14 +1609,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationTarget': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'requestTimeout': '*',
       'ruleSet': {
@@ -1669,14 +1677,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationTarget': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'requestTimeout': '*',
       'ruleSet': {
@@ -2394,14 +2406,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -2664,14 +2680,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -3451,7 +3471,17 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'logIncludeExecutionData': 'IncludeExecutionData',
       'description': '*',
       'desiredState': 'DesiredState',
-      'tags': '*'
+      'tags': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      }
     }
   },
   '@aws-cdk.aws-redshift-alpha': {
@@ -4639,6 +4669,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*'
         }
       ],
+      'grantClusterAdmin': [
+        '*',
+        '*'
+      ],
       'getServiceLoadBalancerAddress': [
         '*',
         {
@@ -4702,6 +4736,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'notificationsTopic': {
             'topicArn': '*',
             'topicName': '*',
+            'masterKey': {
+              'keyArn': '*',
+              'keyId': '*'
+            },
             'contentBasedDeduplication': 'boolean',
             'fifo': 'boolean'
           },
@@ -4724,6 +4762,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'associatePublicIpAddress': 'boolean',
           'spotPrice': '*',
           'healthCheck': '*',
+          'healthChecks': '*',
           'blockDevices': {
             'deviceName': '*',
             'volume': '*',
@@ -6279,12 +6318,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         },
         'apiKeySourceType': 'ApiKeySourceType',
-        'endpointConfiguration': {
-          'types': 'EndpointType',
-          'vpcEndpoints': {
-            'vpcEndpointId': '*'
-          }
-        },
         'deploy': 'boolean',
         'deployOptions': {
           'stageName': '*',
@@ -6344,6 +6377,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'cloudWatchRoleRemovalPolicy': 'RemovalPolicy',
         'endpointExportName': '*',
         'endpointTypes': 'EndpointType',
+        'endpointConfiguration': {
+          'types': 'EndpointType',
+          'vpcEndpoints': {
+            'vpcEndpointId': '*'
+          }
+        },
         'disableExecuteApiEndpoint': 'boolean',
         'description': '*'
       },
@@ -6405,18 +6444,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'apiKeySourceType': 'ApiKeySourceType',
-      'endpointConfiguration': {
-        'types': 'EndpointType',
-        'vpcEndpoints': {
-          'vpcEndpointId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
-      },
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -6483,6 +6510,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'cloudWatchRoleRemovalPolicy': 'RemovalPolicy',
       'endpointExportName': '*',
       'endpointTypes': 'EndpointType',
+      'endpointConfiguration': {
+        'types': 'EndpointType',
+        'vpcEndpoints': {
+          'vpcEndpointId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
       'defaultIntegration': '*',
@@ -7660,6 +7699,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'cloudWatchRoleRemovalPolicy': 'RemovalPolicy',
       'endpointExportName': '*',
       'endpointTypes': 'EndpointType',
+      'endpointConfiguration': {
+        'types': 'EndpointType',
+        'vpcEndpoints': {
+          'vpcEndpointId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
       'addToResourcePolicy': [
@@ -7725,18 +7776,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'apiKeySourceType': 'ApiKeySourceType',
-      'endpointConfiguration': {
-        'types': 'EndpointType',
-        'vpcEndpoints': {
-          'vpcEndpointId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
-      },
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -7803,6 +7842,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'cloudWatchRoleRemovalPolicy': 'RemovalPolicy',
       'endpointExportName': '*',
       'endpointTypes': 'EndpointType',
+      'endpointConfiguration': {
+        'types': 'EndpointType',
+        'vpcEndpoints': {
+          'vpcEndpointId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
       'defaultIntegration': '*',
@@ -8041,18 +8092,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'apiKeySourceType': 'ApiKeySourceType',
-      'endpointConfiguration': {
-        'types': 'EndpointType',
-        'vpcEndpoints': {
-          'vpcEndpointId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
-      },
       'deploy': 'boolean',
       'deployOptions': {
         'stageName': '*',
@@ -8119,6 +8158,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'cloudWatchRoleRemovalPolicy': 'RemovalPolicy',
       'endpointExportName': '*',
       'endpointTypes': 'EndpointType',
+      'endpointConfiguration': {
+        'types': 'EndpointType',
+        'vpcEndpoints': {
+          'vpcEndpointId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
       'disableExecuteApiEndpoint': 'boolean',
       'description': '*',
       'defaultIntegration': '*',
@@ -9118,27 +9169,35 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationsTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'notifications': {
-        'topic': {
-          'topicArn': '*',
-          'topicName': '*',
-          'contentBasedDeduplication': 'boolean',
-          'fifo': 'boolean',
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
           'stack': '*',
           'env': {
             'account': '*',
             'region': '*'
           },
           'node': '*'
+        },
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
+      },
+      'notifications': {
+        'topic': {
+          'topicArn': '*',
+          'topicName': '*',
+          'masterKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
+          },
+          'contentBasedDeduplication': 'boolean',
+          'fifo': 'boolean'
         },
         'scalingEvents': '*'
       },
@@ -9160,6 +9219,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'associatePublicIpAddress': 'boolean',
       'spotPrice': '*',
       'healthCheck': '*',
+      'healthChecks': '*',
       'blockDevices': {
         'deviceName': '*',
         'volume': '*',
@@ -9418,14 +9478,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'notificationEvents': 'BackupVaultEvents',
       'removalPolicy': 'RemovalPolicy',
@@ -10141,14 +10205,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'notificationTopics': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'loggingLevel': 'LoggingLevel',
       'logRetention': 'RetentionDays',
@@ -10181,14 +10249,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'topicArn': '*',
           'topicName': '*',
-          'contentBasedDeduplication': 'boolean',
-          'fifo': 'boolean',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
+          'masterKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            },
+            'node': '*'
           },
-          'node': '*'
+          'contentBasedDeduplication': 'boolean',
+          'fifo': 'boolean'
         }
       ]
     }
@@ -10975,14 +11047,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'snsTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'trailName': '*',
       's3KeyPrefix': '*',
@@ -12271,14 +12347,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'topics': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'configRuleName': '*',
       'description': '*',
@@ -14261,6 +14341,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'associatePublicIpAddress': 'boolean',
         'spotPrice': '*',
         'healthCheck': '*',
+        'healthChecks': '*',
         'blockDevices': {
           'deviceName': '*',
           'volume': '*',
@@ -14432,6 +14513,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'associatePublicIpAddress': 'boolean',
           'spotPrice': '*',
           'healthCheck': '*',
+          'healthChecks': '*',
           'blockDevices': {
             'deviceName': '*',
             'volume': '*',
@@ -15282,6 +15364,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'notificationsTopic': {
             'topicArn': '*',
             'topicName': '*',
+            'masterKey': {
+              'keyArn': '*',
+              'keyId': '*'
+            },
             'contentBasedDeduplication': 'boolean',
             'fifo': 'boolean'
           },
@@ -15304,6 +15390,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'associatePublicIpAddress': 'boolean',
           'spotPrice': '*',
           'healthCheck': '*',
+          'healthChecks': '*',
           'blockDevices': {
             'deviceName': '*',
             'volume': '*',
@@ -17060,6 +17147,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  'aws-cdk-lib.aws-inspector': {
+    'AssessmentTemplate': {}
+  },
   'aws-cdk-lib.aws-kinesis': {
     'ResourcePolicy': {
       'stream': {
@@ -17658,14 +17748,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -17977,14 +18071,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -18334,14 +18432,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -18679,14 +18781,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -18978,7 +19084,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'dataNodeInstanceType': '*',
         'warmNodes': '*',
         'warmInstanceType': '*',
-        'multiAzWithStandbyEnabled': 'boolean'
+        'multiAzWithStandbyEnabled': 'boolean',
+        'nodeOptions': {
+          'nodeType': 'NodeType',
+          'nodeConfig': {
+            'enabled': 'boolean',
+            'type': '*',
+            'count': '*'
+          }
+        }
       },
       'zoneAwareness': {
         'enabled': 'boolean',
@@ -19269,6 +19383,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DatabaseCluster': {
       'credentials': '*',
+      'replicationSourceIdentifier': '*',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportedLogTypes': '*',
@@ -23047,14 +23162,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'topics': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'policyDocument': '*',
       'enforceSSL': 'boolean'
@@ -23063,14 +23182,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'topic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'protocol': 'SubscriptionProtocol',
       'endpoint': '*',
@@ -23841,14 +23964,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
@@ -25484,14 +25611,18 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'deadLetterTopic': {
         'topicArn': '*',
         'topicName': '*',
-        'contentBasedDeduplication': 'boolean',
-        'fifo': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
         },
-        'node': '*'
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
       },
       'tracing': 'Tracing',
       'snapStart': '*',
