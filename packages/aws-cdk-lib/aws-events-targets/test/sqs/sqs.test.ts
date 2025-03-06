@@ -1,8 +1,8 @@
 import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import * as iam from '../../../aws-iam';
 import { App, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
@@ -451,7 +451,7 @@ test('role arn is added', () => {
 
   // WHEN
   rule.addTarget(new targets.SqsQueue(queue, {
-    role: role
+    role: role,
   }));
 
   // THEN
@@ -467,7 +467,12 @@ test('role arn is added', () => {
           ],
         },
         Id: 'Target0',
-        RoleArn: role.roleArn
+        RoleArn: {
+          'Fn::GetAtt': [
+            'MyRoleF48FFE04',
+            'Arn',
+          ],
+        },
       },
     ],
   });
