@@ -11,6 +11,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+import { SubnetMapping } from '../nlb/network-load-balancer';
 
 /**
  * Shared properties of both Application and Network Load Balancers
@@ -240,28 +241,58 @@ export abstract class BaseLoadBalancer extends Resource {
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}) );
-    const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
+    if (baseProps.vpcSubnets && additionalProps.subnetMappings) {
+      throw new ValidationError('`vpcSubnets` and `subnetMappings` cannot be specified at the same time.', this);
+    }
+
+    let subnetIds;
+    let subnetMappings;
+    let internetConnectivityEstablished;
+
+    // ipAddressTypeのバリデーションは共通なのでここで行う
+    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+        additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
+      throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
+    }
 
     this.vpc = baseProps.vpc;
 
-    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
-      additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
-      throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
+    if (additionalProps.subnetMappings) {
+      subnetMappings = additionalProps.subnetMappings as SubnetMapping[];
+      subnetIds = undefined;
+
+      if (internetFacing) {
+        const mappedSubnetIds = subnetMappings.map(mapping => mapping.subnet.subnetId);
+        internetConnectivityEstablished = baseProps.vpc.selectSubnets(
+          { subnetFilters: [ec2.SubnetFilter.byIds(mappedSubnetIds)] },
+        ).internetConnectivityEstablished;
+      }
+
+      const { subnetMappings: _, ...cfnProps } = additionalProps;
+      additionalProps = cfnProps;
+    } else {
+      const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+        (internetFacing ? { subnetType: ec2.SubnetType.PUBLIC } : {}));
+
+      const result = baseProps.vpc.selectSubnets(vpcSubnets);
+      subnetIds = result.subnetIds;
+      internetConnectivityEstablished = result.internetConnectivityEstablished;
+      subnetMappings = undefined;
     }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
-      subnets: subnetIds,
+      ...(subnetIds ? { subnets: subnetIds } : {}),
+      ...(subnetMappings ? { subnetMappings } : {}),
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
         capacityUnits: baseProps.minimumCapacityUnit,
       } : undefined,
       ...additionalProps,
     });
-    if (internetFacing) {
+
+    if (internetFacing && internetConnectivityEstablished) {
       resource.node.addDependency(internetConnectivityEstablished);
     }
 
