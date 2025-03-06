@@ -1,18 +1,20 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import {
   Ec2TaskDefinition,
   ContainerImage,
   Cluster,
-  LaunchType,
+  AsgCapacityProvider,
+  EcsOptimizedImage,
 } from 'aws-cdk-lib/aws-ecs';
 import { EcsRunTask } from '../lib';
 
 /*
  * Stack verification steps:
- * A task run is scheduled every minute
+ * A task run is scheduled every 30 minutes (should only have 1 task run during the integration test run)
  * The assertion checks that the cluster has tasks being run
  *
  */
@@ -21,14 +23,24 @@ const stack = new cdk.Stack(app, 'aws-cdk-ecs-run-task-ec2-schedule');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 1,
-  restrictDefaultSecurityGroup: false,
 });
 
 // Create an ECS cluster with EC2 capacity
 const cluster = new Cluster(stack, 'Ec2Cluster', { vpc });
-cluster.addCapacity('DefaultAutoScalingGroup', {
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: EcsOptimizedImage.amazonLinux2(),
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  associatePublicIpAddress: true,
 });
+
+const cp = new AsgCapacityProvider(stack, 'EC2CapacityProvider', {
+  autoScalingGroup,
+  enableManagedTerminationProtection: false,
+});
+
+cluster.addAsgCapacityProvider(cp);
 
 // Create an EC2 task definition
 const taskDefinition = new Ec2TaskDefinition(stack, 'Ec2TaskDefinition');
@@ -38,14 +50,22 @@ taskDefinition.addContainer('ScheduledContainer', {
 });
 
 // Create the ECS run task target
-const ecsRunTaskTarget = new EcsRunTask(cluster, {
+const ecsRunTaskTarget = EcsRunTask.onEc2(cluster, {
   taskDefinition,
-  launchType: LaunchType.EC2,
-  tags: [{
-    key: 'integ-test-tag-key',
-    value: 'EC2_TASK_TEST',
-  }],
+  tags: [
+    {
+      key: 'integ-test-tag-key',
+      value: 'integ-test-tag-value',
+    },
+  ],
   propagateTags: true,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: cp.capacityProviderName,
+      weight: 1,
+      base: 1,
+    },
+  ],
 });
 
 new scheduler.Schedule(stack, 'Schedule', {
@@ -53,7 +73,7 @@ new scheduler.Schedule(stack, 'Schedule', {
   target: ecsRunTaskTarget,
 });
 
-const integ = new IntegTest(app, 'integ-ecs-run-task-fargate', {
+const integ = new IntegTest(app, 'integ-ecs-run-task-ec2', {
   testCases: [stack],
   stackUpdateWorkflow: false,
 });
@@ -84,3 +104,5 @@ integ.assertions.awsApiCall('ECS', 'describeTasks', {
     Match.objectLike({ lastStatus: 'STOPPED' }),
   ]),
 }));
+
+app.synth();

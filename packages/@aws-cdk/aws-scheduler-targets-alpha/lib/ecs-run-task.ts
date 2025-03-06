@@ -1,15 +1,14 @@
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
+import { Lazy, ValidationError } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { ValidationError } from 'aws-cdk-lib';
 
 /**
  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
  */
 export interface Tag {
-
   /**
    * Key is the name of the tag
    */
@@ -21,14 +20,11 @@ export interface Tag {
 }
 
 /**
- * Parameters for scheduling ECS Run Task.
+ * Parameters for scheduling ECS Run Task (common to EC2 and Fargate launch types).
  */
-export interface EcsRunTaskProps extends ScheduleTargetBaseProps {
+export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
   /**
-   * [disable-awslint:ref-via-interface]
    * The task definition to use for scheduled tasks.
-   *
-   * Task Definition used for running tasks in the service.
    *
    * Note: this must be TaskDefinition, and not ITaskDefinition,
    * as it requires properties that are not known for imported task definitions
@@ -38,19 +34,11 @@ export interface EcsRunTaskProps extends ScheduleTargetBaseProps {
   readonly taskDefinition: ecs.TaskDefinition;
 
   /**
-   * Specifies whether the task's elastic network interface receives a public IP address.
-   * You can specify true only when LaunchType is set to FARGATE.
-   *
-   * @default - true if the subnet type is PUBLIC, otherwise false
-   */
-  readonly assignPublicIp?: boolean;
-
-  /**
    * The capacity provider strategy to use for the task.
    *
    * @default - No capacity provider strategy
    */
-  readonly capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
+  readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the task.
@@ -74,22 +62,6 @@ export interface EcsRunTaskProps extends ScheduleTargetBaseProps {
   readonly group?: string;
 
   /**
-   * Specifies the launch type on which your task is running.
-   * The launch type that you specify here must match one of the launch type (compatibilities) of the target task.
-   *
-   * @default - No launch type
-   */
-  readonly launchType?: ecs.LaunchType;
-
-  /**
-   * Specifies the platform version for the task.
-   * Specify only the numeric portion of the platform version, such as 1.1.0.
-   *
-   * @default - LATEST
-   */
-  readonly platformVersion?: string;
-
-  /**
    * Specifies whether to propagate the tags from the task definition to the task.
    * If no value is specified, the tags are not propagated.
    *
@@ -103,17 +75,6 @@ export interface EcsRunTaskProps extends ScheduleTargetBaseProps {
    * @default - No reference ID.
    */
   readonly referenceId?: string;
-
-  /**
-   * The subnets associated with the task. These subnets must all be in the same VPC.
-   */
-  readonly subnetSelection?: ec2.SubnetSelection;
-
-  /**
-   * The security gorups associated with the task. These security groups must all be in the same VPC.
-   * @default - The security group for the VPC is used.
-   */
-  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The metadata that you apply to the task to help you categorize and organize them.
@@ -133,12 +94,84 @@ export interface EcsRunTaskProps extends ScheduleTargetBaseProps {
 }
 
 /**
+ * Properties for scheduling an ECS Fargate Task.
+ */
+export interface FargateTaskProps extends EcsRunTaskBaseProps {
+  /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   * If true, the task will receive a public IP address and be accessible from the internet.
+   * Should only be set to true when using public subnets.
+   *
+   * @default - true if the subnet type is PUBLIC, otherwise false
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
+   * The subnets associated with the task. These subnets must all be in the same VPC.
+   * The task will be launched in these subnets.
+   *
+   * @default - all private subnets of the VPC are selected.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * The security groups associated with the task. These security groups must all be in the same VPC.
+   * Controls inbound and outbound network access for the task.
+   *
+   * @default - The security group for the VPC is used.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Specifies the platform version for the task.
+   * Specify only the numeric portion of the platform version, such as 1.1.0.
+   * Platform versions determine the underlying runtime environment for the task.
+   *
+   * @default - LATEST
+   */
+  readonly platformVersion?: string;
+}
+
+/**
+ * Properties for scheduling an ECS Task on EC2.
+ */
+export interface Ec2TaskProps extends EcsRunTaskBaseProps {
+  /**
+   * The rules that must be met in order to place a task on a container instance.
+   *
+   * @default - No placement constraints.
+   */
+  readonly placementConstraints?: ecs.PlacementConstraint[];
+
+  /**
+   * The algorithm for selecting container instances for task placement.
+   *
+   * @default - No placement strategies.
+   */
+  readonly placementStrategies?: ecs.PlacementStrategy[];
+}
+
+/**
  * Schedule an ECS Task using AWS EventBridge Scheduler.
  */
-export class EcsRunTask extends ScheduleTargetBase implements IScheduleTarget {
+export abstract class EcsRunTask extends ScheduleTargetBase implements IScheduleTarget {
+  /**
+   * Schedule an ECS Task on Fargate using AWS EventBridge Scheduler.
+   */
+  public static onFargate(cluster: ecs.ICluster, props: FargateTaskProps): IScheduleTarget {
+    return new FargateTask(cluster, props);
+  }
+
+  /**
+   * Schedule an ECS Task on EC2 using AWS EventBridge Scheduler.
+   */
+  public static onEc2(cluster: ecs.ICluster, props: Ec2TaskProps): IScheduleTarget {
+    return new Ec2Task(cluster, props);
+  }
+
   constructor(
-    private readonly cluster: ecs.ICluster,
-    private readonly props: EcsRunTaskProps,
+    protected readonly cluster: ecs.ICluster,
+    protected readonly props: EcsRunTaskBaseProps,
   ) {
     super(props, cluster.clusterArn);
   }
@@ -155,14 +188,6 @@ export class EcsRunTask extends ScheduleTargetBase implements IScheduleTarget {
       }));
     }
 
-    // For Fargate tasks we need permission to pass the task role.
-    if (this.props.taskDefinition.isFargateCompatible) {
-      role.addToPrincipalPolicy(new PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.props.taskDefinition.taskRole.roleArn],
-      }));
-    }
-
     if (this.props.propagateTags === true || this.props.tags) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: ['ecs:TagResource'],
@@ -172,39 +197,132 @@ export class EcsRunTask extends ScheduleTargetBase implements IScheduleTarget {
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
-    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
-
-    // Throw an error if assignPublicIp is true and the subnet type is not PUBLIC
-    if (this.props.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
-      throw new ValidationError('assignPublicIp should be set to true only for PUBLIC subnets', _schedule);
-    }
-
-    const assignPublicIp = (this.props.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
-    const launchType = this.props.launchType ?? (this.props.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE');
-
-    if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
-      throw new ValidationError('assignPublicIp is only supported for FARGATE tasks', _schedule);
-    }
-
     return {
       ...super.bindBaseTargetConfig(_schedule),
       ecsParameters: {
         taskDefinitionArn: this.props.taskDefinition.taskDefinitionArn,
+        capacityProviderStrategy: this.props.capacityProviderStrategies,
         taskCount: this.props.taskCount,
-        propagateTags: this.props.propagateTags ? 'TASK_DEFINITION' : undefined,
+        tags: this.props.tags,
+        propagateTags: this.props.propagateTags ? ecs.PropagatedTagSource.TASK_DEFINITION : undefined,
         enableEcsManagedTags: this.props.enableEcsManagedTags,
         enableExecuteCommand: this.props.enableExecuteCommand,
         group: this.props.group,
-        launchType,
-        platformVersion: this.props.platformVersion,
         referenceId: this.props.referenceId,
+      },
+    };
+  }
+}
+
+class FargateTask extends EcsRunTask {
+  private readonly subnetSelection?: ec2.SubnetSelection;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
+  private readonly assignPublicIp?: boolean;
+  private readonly platformVersion?: string;
+  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
+
+  constructor(
+    cluster: ecs.ICluster,
+    props: FargateTaskProps,
+  ) {
+    super(cluster, props);
+    this.subnetSelection = props.subnetSelection;
+    this.securityGroups = props.securityGroups;
+    this.assignPublicIp = props.assignPublicIp;
+    this.platformVersion = props.platformVersion;
+    this.capacityProviderStrategies = props.capacityProviderStrategies;
+  }
+
+  protected addTargetActionToRole(role: IRole): void {
+    super.addTargetActionToRole(role);
+    // For Fargate tasks we need permission to pass the task role.
+    if (this.props.taskDefinition.isFargateCompatible) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.props.taskDefinition.taskRole.roleArn],
+      }));
+    }
+  }
+
+  protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
+    if (!this.props.taskDefinition.isFargateCompatible) {
+      throw new ValidationError('TaskDefinition is not compatible with Fargate launch type.', _schedule);
+    }
+
+    const subnetSelection = this.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
+
+    // Throw an error if assignPublicIp is true and the subnet type is not public
+    if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
+      throw new ValidationError('assignPublicIp should be set to true only for public subnets', _schedule);
+    }
+
+    const assignPublicIp = this.assignPublicIp !== undefined
+      ? (this.assignPublicIp ? 'ENABLED' : 'DISABLED')
+      : (subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED');
+
+    // Only one of capacityProviderStrategy or launchType can be set
+    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-launchType
+    const launchType = this.capacityProviderStrategies ? undefined : ecs.LaunchType.FARGATE;
+
+    const bindBaseTargetConfigParameters = super.bindBaseTargetConfig(_schedule).ecsParameters!;
+
+    return {
+      ...super.bindBaseTargetConfig(_schedule),
+      ecsParameters: {
+        ...bindBaseTargetConfigParameters,
+        launchType,
+        platformVersion: this.platformVersion,
         networkConfiguration: {
           awsvpcConfiguration: {
-            subnets: this.cluster.vpc.selectSubnets(this.props.subnetSelection).subnetIds,
             assignPublicIp,
-            securityGroups: this.props.securityGroups && this.props.securityGroups.map(sg => sg.securityGroupId),
+            subnets: this.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
+            securityGroups: this.securityGroups?.map((sg) => sg.securityGroupId),
           },
         },
+      },
+    };
+  }
+}
+class Ec2Task extends EcsRunTask {
+  private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
+  private readonly placementConstraints?: ecs.PlacementConstraint[];
+  private readonly placementStrategies?: ecs.PlacementStrategy[];
+
+  constructor(
+    cluster: ecs.ICluster,
+    props: Ec2TaskProps,
+  ) {
+    super(cluster, props);
+    this.placementConstraints = props.placementConstraints;
+    this.placementStrategies = props.placementStrategies;
+    this.capacityProviderStrategies = props.capacityProviderStrategies;
+  }
+
+  protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
+    if (this.props.taskDefinition.compatibility === ecs.Compatibility.FARGATE) {
+      throw new ValidationError('TaskDefinition is not compatible with EC2 launch type', _schedule);
+    }
+
+    // Only one of capacityProviderStrategy or launchType can be set
+    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-launchType
+    const launchType = this.capacityProviderStrategies ? undefined : ecs.LaunchType.EC2;
+
+    const bindBaseTargetConfigParameters = super.bindBaseTargetConfig(_schedule).ecsParameters!;
+
+    return {
+      ...super.bindBaseTargetConfig(_schedule),
+      ecsParameters: {
+        ...bindBaseTargetConfigParameters,
+        launchType,
+        placementConstraints: Lazy.any({
+          produce: () => {
+            // Only map if placementConstraints is defined and has items
+            return this.placementConstraints?.length
+              ? this.placementConstraints?.map((constraint) => constraint.toJson()).flat()
+              : undefined;
+          },
+        }),
+        placementStrategy: Lazy.any({ produce: () => this.placementStrategies }),
       },
     };
   }

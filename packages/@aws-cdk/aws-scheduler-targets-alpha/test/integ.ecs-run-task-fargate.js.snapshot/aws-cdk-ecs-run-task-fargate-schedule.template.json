@@ -217,6 +217,19 @@
   "FargateCluster7CCD5F93": {
    "Type": "AWS::ECS::Cluster"
   },
+  "FargateClusterFAF97480": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     "FARGATE",
+     "FARGATE_SPOT"
+    ],
+    "Cluster": {
+     "Ref": "FargateCluster7CCD5F93"
+    },
+    "DefaultCapacityProviderStrategy": []
+   }
+  },
   "FargateTaskDefinitionTaskRoleE3C2BCAA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -259,11 +272,6 @@
     }
    }
   },
-  "DLQ581697C4": {
-   "Type": "AWS::SQS::Queue",
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
@@ -280,18 +288,9 @@
        "Arn"
       ]
      },
-     "DeadLetterConfig": {
-      "Arn": {
-       "Fn::GetAtt": [
-        "DLQ581697C4",
-        "Arn"
-       ]
-      }
-     },
      "EcsParameters": {
-      "EnableECSManagedTags": true,
+      "EnableECSManagedTags": false,
       "EnableExecuteCommand": true,
-      "Group": "group",
       "LaunchType": "FARGATE",
       "NetworkConfiguration": {
        "AwsvpcConfiguration": {
@@ -304,6 +303,12 @@
        }
       },
       "PropagateTags": "TASK_DEFINITION",
+      "Tags": [
+       {
+        "key": "integ-test-tag-key",
+        "value": "integ-test-tag-value"
+       }
+      ],
       "TaskDefinitionArn": {
        "Ref": "FargateTaskDefinition8E3B365E"
       }
@@ -393,16 +398,6 @@
        }
       },
       {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FargateTaskDefinitionTaskRoleE3C2BCAA",
-         "Arn"
-        ]
-       }
-      },
-      {
        "Action": "ecs:TagResource",
        "Effect": "Allow",
        "Resource": {
@@ -431,11 +426,11 @@
        }
       },
       {
-       "Action": "sqs:SendMessage",
+       "Action": "iam:PassRole",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "DLQ581697C4",
+         "FargateTaskDefinitionTaskRoleE3C2BCAA",
          "Arn"
         ]
        }
