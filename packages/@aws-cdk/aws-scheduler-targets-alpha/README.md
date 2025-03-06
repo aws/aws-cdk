@@ -329,11 +329,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 declare const cluster: ecs.ICluster;
 declare const taskDefinition: ecs.FargateTaskDefinition;
 
-new scheduler.Schedule(stack, 'Schedule', {
-  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(60)),
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
   target: targets.EcsRunTask.onFargate(cluster, {
     taskDefinition,
-  });,
+  }),
 });
 ```
 
@@ -345,11 +345,11 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 declare const cluster: ecs.ICluster;
 declare const taskDefinition: ecs.Ec2TaskDefinition;
 
-new scheduler.Schedule(stack, 'Schedule', {
-  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(60)),
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
   target: targets.EcsRunTask.onEc2(cluster, {
     taskDefinition,
-  });,
+  }),
 });
 ```
 
