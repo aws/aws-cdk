@@ -573,7 +573,7 @@ describe('role', () => {
         ],
       },
     });
-        template.hasResourceProperties('AWS::IAM::Policy', {
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -933,7 +933,7 @@ describe('role', () => {
             Action: 'states:StartExecution',
             Effect: 'Allow',
             Resource: {
-              'Ref': 'MyProviderwaiterstatemachineC1FBB9F9',
+              Ref: 'MyProviderwaiterstatemachineC1FBB9F9',
             },
           },
         ],
