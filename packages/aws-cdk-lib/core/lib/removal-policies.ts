@@ -92,7 +92,7 @@ abstract class BaseRemovalPolicyAspect implements IAspect {
  * overriding any existing policies
  */
 class RemovalPolicyAspect extends BaseRemovalPolicyAspect {
-  protected shouldApplyPolicy(cfnResource: CfnResource): boolean {
+  protected shouldApplyPolicy(_cfnResource: CfnResource): boolean {
     // RemovalPolicyAspect always applies the policy, regardless of existing policies
     return true;
   }
