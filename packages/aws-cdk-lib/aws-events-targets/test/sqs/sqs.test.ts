@@ -2,8 +2,8 @@ import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import * as ssm from '../../../aws-ssm';
-import { App, CustomResource, Duration, Stack } from '../../../core';
+import * as iam from '../../../aws-iam';
+import { App, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
 
@@ -433,6 +433,41 @@ test('dead letter queue is imported', () => {
         DeadLetterConfig: {
           Arn: dlqArn,
         },
+      },
+    ],
+  });
+});
+
+test('role arn is added', () => {
+  // GIVEN
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    role: role
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RoleArn: role.roleArn
       },
     ],
   });
