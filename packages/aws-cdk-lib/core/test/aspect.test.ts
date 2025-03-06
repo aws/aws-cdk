@@ -5,7 +5,7 @@ import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
 import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
-import { RemovalPolicies } from '../lib/removal-policies';
+import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
 
 class MyConstruct extends Construct {
@@ -355,14 +355,13 @@ describe('aspect', () => {
     // WHEN
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     // THEN
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/My-Stack',
-        message: 'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority and respectPreviousPolicy in My-Stack]',
+        message: 'Applying a Removal Policy with both `priority` set to false can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority]',
       },
     ]);
   });
@@ -376,12 +375,10 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -399,12 +396,10 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -413,16 +408,15 @@ describe('aspect', () => {
     });
   });
 
-  test('RemovalPolicy: default removal policy is respected when overwrite is false', () => {
+  test('MissingRemovalPolicy: default removal policy is respected', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
     new Bucket(stack, 'my-bucket', {
       removalPolicy: RemovalPolicy.RETAIN,
     });
 
-    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+    MissingRemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      respectPreviousPolicy: true,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -440,12 +434,10 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      respectPreviousPolicy: true,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 300,
-      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -457,23 +449,20 @@ describe('aspect', () => {
   test('RemovalPolicy: multiple aspects in chain', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
-    const bucket = new Bucket(stack, 'my-bucket', {
+    new Bucket(stack, 'my-bucket', {
       removalPolicy: RemovalPolicy.RETAIN,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 200,
-      respectPreviousPolicy: false,
     });
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.SNAPSHOT, {
       priority: 300,
-      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
@@ -495,7 +484,6 @@ describe('aspect', () => {
 
     RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
       priority: 100,
-      respectPreviousPolicy: false,
     });
 
     Template.fromStack(stack).hasResource('AWS::EC2::Instance', {

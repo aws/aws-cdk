@@ -35,16 +35,6 @@ export interface RemovalPolicyProps {
    * @default - AspectPriority.MUTATING
    */
   readonly priority?: number;
-
-  /**
-   * Whether to respect the removal policy that was previously applied to the resource.
-   *
-   * If set to `true`, the removal policy will only be applied if the resource
-   * doesn't already have a removal policy set.
-   *
-   * @default false
-   */
-  readonly respectPreviousPolicy?: boolean;
 }
 
 /**
@@ -103,14 +93,7 @@ abstract class BaseRemovalPolicyAspect implements IAspect {
  */
 class RemovalPolicyAspect extends BaseRemovalPolicyAspect {
   protected shouldApplyPolicy(cfnResource: CfnResource): boolean {
-    // If respectPreviousPolicy is true, only apply if no policy exists
-    if (this.props.respectPreviousPolicy === true) {
-      const userAlreadySetPolicy =
-        cfnResource.cfnOptions.deletionPolicy !== undefined ||
-        cfnResource.cfnOptions.updateReplacePolicy !== undefined;
-      return !userAlreadySetPolicy;
-    }
-    // For RemovalPolicies with respectPreviousPolicy=false, we always apply the policy
+    // RemovalPolicyAspect always applies the policy, regardless of existing policies
     return true;
   }
 }
@@ -156,11 +139,11 @@ export class RemovalPolicies {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
       priority: props.priority ?? AspectPriority.MUTATING,
     });
-    // Add warning if both priority and respectPreviousPolicy=false are set
-    if (props.priority !== undefined && props.respectPreviousPolicy === false) {
+    // Add warning if both priority is set
+    if (props.priority !== undefined) {
       Annotations.of(this.scope).addWarningV2(
-        `Warning Removal Policies with both priority and respectPreviousPolicy in ${this.scope.node.path}`,
-        'Applying a Removal Policy with both `priority` and `respectPreviousPolicy` set to false can lead to unexpected behavior. Please refer to the documentation for more details.',
+        'Warning Removal Policies with both priority',
+        'Applying a Removal Policy with both `priority` set to false can lead to unexpected behavior. Please refer to the documentation for more details.',
       );
     }
   }
