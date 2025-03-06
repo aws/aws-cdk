@@ -431,6 +431,27 @@
                   "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
                   "version": "0.0.0"
                 }
+              },
+              "FargateCluster": {
+                "id": "FargateCluster",
+                "path": "aws-cdk-ecs-run-task-fargate-schedule/FargateCluster/FargateCluster",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
+                  "aws:cdk:cloudformation:props": {
+                    "capacityProviders": [
+                      "FARGATE",
+                      "FARGATE_SPOT"
+                    ],
+                    "cluster": {
+                      "Ref": "FargateCluster7CCD5F93"
+                    },
+                    "defaultCapacityProviderStrategy": []
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnClusterCapacityProviderAssociations",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -438,7 +459,11 @@
               "version": "0.0.0",
               "metadata": [
                 {
-                  "vpc": "*"
+                  "vpc": "*",
+                  "enableFargateCapacityProviders": true
+                },
+                {
+                  "enableFargateCapacityProviders": []
                 }
               ]
             }
@@ -550,31 +575,7 @@
                 "*",
                 "*",
                 "*",
-                "*"
-              ]
-            }
-          },
-          "DLQ": {
-            "id": "DLQ",
-            "path": "aws-cdk-ecs-run-task-fargate-schedule/DLQ",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-ecs-run-task-fargate-schedule/DLQ/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
-                  "aws:cdk:cloudformation:props": {}
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sqs.Queue",
-              "version": "0.0.0",
-              "metadata": [
+                "*",
                 "*"
               ]
             }
@@ -608,14 +609,6 @@
                           "Arn"
                         ]
                       },
-                      "deadLetterConfig": {
-                        "arn": {
-                          "Fn::GetAtt": [
-                            "DLQ581697C4",
-                            "Arn"
-                          ]
-                        }
-                      },
                       "retryPolicy": {
                         "maximumEventAgeInSeconds": 86400,
                         "maximumRetryAttempts": 185
@@ -624,19 +617,24 @@
                         "taskDefinitionArn": {
                           "Ref": "FargateTaskDefinition8E3B365E"
                         },
+                        "tags": [
+                          {
+                            "key": "integ-test-tag-key",
+                            "value": "integ-test-tag-value"
+                          }
+                        ],
                         "propagateTags": "TASK_DEFINITION",
-                        "enableEcsManagedTags": true,
+                        "enableEcsManagedTags": false,
                         "enableExecuteCommand": true,
-                        "group": "group",
                         "launchType": "FARGATE",
                         "networkConfiguration": {
                           "awsvpcConfiguration": {
+                            "assignPublicIp": "DISABLED",
                             "subnets": [
                               {
                                 "Ref": "VpcPrivateSubnet1Subnet536B997A"
                               }
-                            ],
-                            "assignPublicIp": "DISABLED"
+                            ]
                           }
                         }
                       }
@@ -759,16 +757,6 @@
                               }
                             },
                             {
-                              "Action": "iam:PassRole",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "FargateTaskDefinitionTaskRoleE3C2BCAA",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            {
                               "Action": "ecs:TagResource",
                               "Effect": "Allow",
                               "Resource": {
@@ -797,11 +785,11 @@
                               }
                             },
                             {
-                              "Action": "sqs:SendMessage",
+                              "Action": "iam:PassRole",
                               "Effect": "Allow",
                               "Resource": {
                                 "Fn::GetAtt": [
-                                  "DLQ581697C4",
+                                  "FargateTaskDefinitionTaskRoleE3C2BCAA",
                                   "Arn"
                                 ]
                               }
@@ -862,6 +850,21 @@
                       "addStatements": [
                         {}
                       ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
                     }
                   ]
                 }
@@ -891,6 +894,21 @@
                 {
                   "attachInlinePolicy": [
                     "*"
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
                   ]
                 },
                 {

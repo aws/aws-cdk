@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384": {
+  "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684": {
    "Type": "Custom::DeployAssert@SdkCallECSlistTasks",
    "Properties": {
     "ServiceToken": {
@@ -14,7 +14,7 @@
     "expected": "{\"$StringLike\":\"arn:aws:ecs:.*:task/.*/.*\"}",
     "actualPath": "taskArns.0",
     "stateMachineArn": {
-     "Ref": "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForD272E103"
+     "Ref": "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitFor1D3AAC29"
     },
     "parameters": {
      "cluster": {
@@ -23,7 +23,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-ecs-run-task-fargate-schedule:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
+         "Fn::ImportValue": "aws-cdk-ecs-run-task-ec2-schedule:ExportsOutputFnGetAttEc2ClusterEE43E89DArnC2DB7F51"
         },
         "\""
        ]
@@ -35,12 +35,12 @@
      "taskArns.0",
      "taskArns.0"
     ],
-    "salt": "1741199914807"
+    "salt": "1741219117201"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForIsCompleteProviderInvoke7DE99A99": {
+  "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForIsCompleteProviderInvoke39F913BA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -52,13 +52,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF",
+      "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForRoleA23BC057",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForTimeoutProviderInvoke7C0F7F50": {
+  "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForTimeoutProviderInvokeC58B5100": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -70,13 +70,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF",
+      "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForRoleA23BC057",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF": {
+  "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForRoleA23BC057": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -121,7 +121,7 @@
     ]
    }
   },
-  "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForD272E103": {
+  "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitFor1D3AAC29": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -148,13 +148,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF",
+      "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForRoleA23BC057",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384WaitForRole40DED3CF"
+    "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684WaitForRoleA23BC057"
    ]
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
@@ -390,7 +390,7 @@
     }
    }
   },
-  "AwsApiCallECSstopTaskc169e760f032e46a1bfbd9b7d94e6b0e": {
+  "AwsApiCallECSstopTask057e432cca615475289dd5332b83dc97": {
    "Type": "Custom::DeployAssert@SdkCallECSstopTask",
    "Properties": {
     "ServiceToken": {
@@ -408,7 +408,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-ecs-run-task-fargate-schedule:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
+         "Fn::ImportValue": "aws-cdk-ecs-run-task-ec2-schedule:ExportsOutputFnGetAttEc2ClusterEE43E89DArnC2DB7F51"
         },
         "\""
        ]
@@ -421,7 +421,7 @@
         "\"",
         {
          "Fn::GetAtt": [
-          "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384",
+          "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684",
           "apiCallResponse.taskArns.0"
          ]
         },
@@ -431,12 +431,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741199914811"
+    "salt": "1741219117203"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662": {
+  "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38": {
    "Type": "Custom::DeployAssert@SdkCallECSdescribeTasks",
    "Properties": {
     "ServiceToken": {
@@ -449,7 +449,7 @@
     "api": "describeTasks",
     "expected": "{\"$ObjectLike\":{\"tasks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"lastStatus\":\"STOPPED\"}}]}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitFor98C31C04"
+     "Ref": "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitFor0C15A806"
     },
     "parameters": {
      "cluster": {
@@ -458,7 +458,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-ecs-run-task-fargate-schedule:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
+         "Fn::ImportValue": "aws-cdk-ecs-run-task-ec2-schedule:ExportsOutputFnGetAttEc2ClusterEE43E89DArnC2DB7F51"
         },
         "\""
        ]
@@ -471,7 +471,7 @@
         "[\"",
         {
          "Fn::GetAtt": [
-          "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384",
+          "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684",
           "apiCallResponse.taskArns.0"
          ]
         },
@@ -481,12 +481,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741199914811"
+    "salt": "1741219117203"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForIsCompleteProviderInvoke09E38860": {
+  "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForIsCompleteProviderInvokeAC86D803": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -498,13 +498,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE",
+      "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForRoleAF928698",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForTimeoutProviderInvoke266C2E54": {
+  "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForTimeoutProviderInvoke9A183745": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -516,13 +516,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE",
+      "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForRoleAF928698",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE": {
+  "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForRoleAF928698": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -567,7 +567,7 @@
     ]
    }
   },
-  "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitFor98C31C04": {
+  "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitFor0C15A806": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -594,29 +594,29 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE",
+      "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForRoleAF928698",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662WaitForRole31142FEE"
+    "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38WaitForRoleAF928698"
    ]
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384": {
+  "AssertionResultsAwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallECSlistTasks226ea54e70b75abc6df2794afd52f384",
+     "AwsApiCallECSlistTasks829f05f2fdc5ab21cff97554e2848684",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662": {
+  "AssertionResultsAwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallECSdescribeTasksa07846632eba58c21a56934726494662",
+     "AwsApiCallECSdescribeTasks7680c893d5ffea114a8eaf370e6fbc38",
      "assertion"
     ]
    }

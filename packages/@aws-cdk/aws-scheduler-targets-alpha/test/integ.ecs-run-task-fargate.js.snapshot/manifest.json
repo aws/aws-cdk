@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-ecs-run-task-fargate-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b068715f1a77ecf9380731650c7f9756f35074288849d7e7403494eed9132382.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9012a5b9f28b289cb55d4f71826cfdf17569bf5fad3024897ac490cbd6776d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -189,7 +189,14 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*"
+              "vpc": "*",
+              "enableFargateCapacityProviders": true
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "enableFargateCapacityProviders": []
             }
           }
         ],
@@ -199,6 +206,12 @@
             "data": "FargateCluster7CCD5F93"
           }
         ],
+        "/aws-cdk-ecs-run-task-fargate-schedule/FargateCluster/FargateCluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterFAF97480"
+          }
+        ],
         "/aws-cdk-ecs-run-task-fargate-schedule/FargateTaskDefinition": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -206,6 +219,10 @@
           },
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -244,18 +261,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTaskDefinition8E3B365E"
-          }
-        ],
-        "/aws-cdk-ecs-run-task-fargate-schedule/DLQ": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-ecs-run-task-fargate-schedule/DLQ/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DLQ581697C4"
           }
         ],
         "/aws-cdk-ecs-run-task-fargate-schedule/Schedule": [
@@ -302,6 +307,30 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -410,6 +439,30 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-ecs-run-task-fargate-schedule/SchedulerRoleForTarget-b7a5d8/DefaultPolicy/Resource": [
@@ -456,7 +509,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5697b1f1922bc19fb2cb2f917e864ba1ec83870a93649871270ceb47724b6d39.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa51ab28bf48666a25dd948656dfeedde3e71606429efbcf011958076e780fa5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

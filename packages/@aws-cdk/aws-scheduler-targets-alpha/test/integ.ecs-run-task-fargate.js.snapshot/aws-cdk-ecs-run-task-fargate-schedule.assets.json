@@ -1,7 +1,7 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
-    "b068715f1a77ecf9380731650c7f9756f35074288849d7e7403494eed9132382": {
+    "a9012a5b9f28b289cb55d4f71826cfdf17569bf5fad3024897ac490cbd6776d5": {
       "source": {
         "path": "aws-cdk-ecs-run-task-fargate-schedule.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b068715f1a77ecf9380731650c7f9756f35074288849d7e7403494eed9132382.json",
+          "objectKey": "a9012a5b9f28b289cb55d4f71826cfdf17569bf5fad3024897ac490cbd6776d5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

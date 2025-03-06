@@ -2,13 +2,12 @@ import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { FargateTaskDefinition, ContainerImage, Cluster, LaunchType } from 'aws-cdk-lib/aws-ecs';
+import { FargateTaskDefinition, ContainerImage, Cluster } from 'aws-cdk-lib/aws-ecs';
 import { EcsRunTask } from '../lib';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
 
 /*
  * Stack verification steps:
- * A task run is scheduled every minute
+ * A task run is scheduled every 30 minutes (should only have 1 task run during the integration test run)
  * The assertion checks that the cluster has tasks being run
  *
  */
@@ -16,7 +15,10 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ecs-run-task-fargate-schedule');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
-const cluster = new Cluster(stack, 'FargateCluster', { vpc });
+const cluster = new Cluster(stack, 'FargateCluster', {
+  vpc,
+  enableFargateCapacityProviders: true,
+});
 
 const taskDefinition = new FargateTaskDefinition(stack, 'FargateTaskDefinition', {
   cpu: 256,
@@ -26,18 +28,15 @@ taskDefinition.addContainer('ScheduledContainer', {
   image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
 });
 
-const ecsRunTaskTarget = new EcsRunTask(cluster, {
+const ecsRunTaskTarget = EcsRunTask.onFargate(cluster, {
   taskDefinition,
   propagateTags: true,
-  launchType: LaunchType.FARGATE,
   tags: [{
     key: 'integ-test-tag-key',
-    value: 'I_ADDED_THIS',
+    value: 'integ-test-tag-value',
   }],
-  enableEcsManagedTags: true,
+  enableEcsManagedTags: false,
   enableExecuteCommand: true,
-  group: 'group',
-  deadLetterQueue: new Queue(stack, 'DLQ'),
 });
 
 new scheduler.Schedule(stack, 'Schedule', {
@@ -76,3 +75,5 @@ integ.assertions.awsApiCall('ECS', 'describeTasks', {
     Match.objectLike({ lastStatus: 'STOPPED' }),
   ]),
 }));
+
+app.synth();
