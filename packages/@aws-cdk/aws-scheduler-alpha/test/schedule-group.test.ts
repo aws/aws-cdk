@@ -1,4 +1,3 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
@@ -6,8 +5,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
-import { Group, GroupProps } from '../lib/group';
 import { Schedule } from '../lib/schedule';
+import { ScheduleGroup, ScheduleGroupProps } from '../lib/schedule-group';
+
 class SomeLambdaTarget implements IScheduleTarget {
   public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
   }
@@ -36,137 +36,136 @@ describe('Schedule Group', () => {
     });
   });
 
-  testDeprecated('creates a group with default properties', () => {
-    const props: GroupProps = {};
-    const group = new Group(stack, 'TestGroup', props);
+  test('creates a group with default properties', () => {
+    const props: ScheduleGroupProps = {};
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
 
-    expect(group).toBeInstanceOf(Group);
-    expect(group.groupName).toBeDefined();
-    expect(group.groupArn).toBeDefined();
+    expect(group.scheduleGroupName).toBeDefined();
+    expect(group.scheduleGroupArn).toBeDefined();
 
     const resource = group.node.findChild('Resource') as CfnScheduleGroup;
     expect(resource).toBeInstanceOf(CfnScheduleGroup);
-    expect(resource.name).toEqual(group.groupName);
+    expect(resource.name).toEqual(group.scheduleGroupName);
   });
 
-  testDeprecated('creates a group with removal policy', () => {
-    const props: GroupProps = {
+  test('creates a group with removal policy', () => {
+    const props: ScheduleGroupProps = {
       removalPolicy: RemovalPolicy.RETAIN,
     };
-    new Group(stack, 'TestGroup', props);
+    new ScheduleGroup(stack, 'TestGroup', props);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::ScheduleGroup', {
       DeletionPolicy: 'Retain',
     });
   });
 
-  testDeprecated('creates a group with specified name', () => {
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+  test('creates a group with specified name', () => {
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
     const resource = group.node.findChild('Resource') as CfnScheduleGroup;
     expect(resource).toBeInstanceOf(CfnScheduleGroup);
-    expect(resource.name).toEqual(group.groupName);
+    expect(resource.name).toEqual(group.scheduleGroupName);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::ScheduleGroup', {
       Properties: {
-        Name: `${props.groupName}`,
+        Name: `${props.scheduleGroupName}`,
       },
     });
   });
 
-  testDeprecated('creates a group from ARN', () => {
+  test('creates a group from ARN', () => {
     const groupArn = 'arn:aws:scheduler:region:account-id:schedule-group/group-name';
-    const group = Group.fromGroupArn(stack, 'TestGroup', groupArn);
+    const group = ScheduleGroup.fromScheduleGroupArn(stack, 'TestGroup', groupArn);
 
-    expect(group.groupArn).toBeDefined();
-    expect(group.groupName).toEqual('group-name');
+    expect(group.scheduleGroupArn).toBeDefined();
+    expect(group.scheduleGroupName).toEqual('group-name');
 
     const groups = Template.fromStack(stack).findResources('AWS::Scheduler::ScheduleGroup');
     expect(groups).toEqual({});
   });
 
-  testDeprecated('creates a group from name', () => {
+  test('creates a group from name', () => {
     const groupName = 'MyGroup';
-    const group = Group.fromGroupName(stack, 'TestGroup', groupName);
+    const group = ScheduleGroup.fromScheduleGroupName(stack, 'TestGroup', groupName);
 
-    expect(group.groupArn).toBeDefined();
-    expect(group.groupName).toEqual(groupName);
-
-    const groups = Template.fromStack(stack).findResources('AWS::Scheduler::ScheduleGroup');
-    expect(groups).toEqual({});
-  });
-
-  testDeprecated('creates a group from default group', () => {
-    const group = Group.fromDefaultGroup(stack, 'DefaultGroup');
-
-    expect(group.groupArn).toBeDefined();
-    expect(group.groupName).toEqual('default');
+    expect(group.scheduleGroupArn).toBeDefined();
+    expect(group.scheduleGroupName).toEqual(groupName);
 
     const groups = Template.fromStack(stack).findResources('AWS::Scheduler::ScheduleGroup');
     expect(groups).toEqual({});
   });
 
-  testDeprecated('adds schedules to the group', () => {
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+  test('creates a group from default group', () => {
+    const group = ScheduleGroup.fromDefaultScheduleGroup(stack, 'DefaultGroup');
+
+    expect(group.scheduleGroupArn).toBeDefined();
+    expect(group.scheduleGroupName).toEqual('default');
+
+    const groups = Template.fromStack(stack).findResources('AWS::Scheduler::ScheduleGroup');
+    expect(groups).toEqual({});
+  });
+
+  test('adds schedules to the group', () => {
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
     const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
-      group: group,
+      scheduleGroup: group,
       target: new SomeLambdaTarget(func, role),
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
-      group: group,
+      scheduleGroup: group,
       target: new SomeLambdaTarget(func, role),
     });
 
-    expect(schedule1.group).toEqual(group);
-    expect(schedule2.group).toEqual(group);
+    expect(schedule1.scheduleGroup).toBe(group);
+    expect(schedule2.scheduleGroup).toBe(group);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
-        GroupName: `${props.groupName}`,
+        GroupName: `${props.scheduleGroupName}`,
       },
     });
   });
 
-  testDeprecated('adds schedules to the group with unspecified name', () => {
-    const group = new Group(stack, 'TestGroup', {});
+  test('adds schedules to the group with unspecified name', () => {
+    const group = new ScheduleGroup(stack, 'TestGroup', {});
     const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const schedule1 = new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
-      group: group,
+      scheduleGroup: group,
       target: new SomeLambdaTarget(func, role),
     });
     const schedule2 = new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
-      group: group,
+      scheduleGroup: group,
       target: new SomeLambdaTarget(func, role),
     });
 
-    expect(schedule1.group).toEqual(group);
-    expect(schedule2.group).toEqual(group);
+    expect(schedule1.scheduleGroup).toBe(group);
+    expect(schedule2.scheduleGroup).toBe(group);
 
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
-        GroupName: group.groupName,
+        GroupName: group.scheduleGroupName,
       },
     });
   });
 
-  testDeprecated('grantReadSchedules', () => {
+  test('grantReadSchedules', () => {
     // GIVEN
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
 
     const user = new iam.User(stack, 'User');
 
@@ -201,12 +200,12 @@ describe('Schedule Group', () => {
     });
   });
 
-  testDeprecated('grantWriteSchedules', () => {
+  test('grantWriteSchedules', () => {
     // GIVEN
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
 
     const user = new iam.User(stack, 'User');
 
@@ -242,12 +241,12 @@ describe('Schedule Group', () => {
     });
   });
 
-  testDeprecated('grantDeleteSchedules', () => {
+  test('grantDeleteSchedules', () => {
     // GIVEN
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
 
     const user = new iam.User(stack, 'User');
 
@@ -293,11 +292,11 @@ describe('Schedule Group Metrics', () => {
   ])('calling %s creates alarm for %s metric', (metricMethodName, metricName) => {
     // GIVEN
     const app = new App();
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
     const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
 
     // WHEN
     const metricMethod = (group as any)[metricMethodName].bind(group); // Get the method dynamically
@@ -324,14 +323,14 @@ describe('Schedule Group Metrics', () => {
     });
   });
 
-  testDeprecated('Invocations Failed to Deliver to DLQ Metrics', () => {
+  test('Invocations Failed to Deliver to DLQ Metrics', () => {
     // GIVEN
     const app = new App();
-    const props: GroupProps = {
-      groupName: 'MyGroup',
+    const props: ScheduleGroupProps = {
+      scheduleGroupName: 'MyGroup',
     };
     const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    const group = new Group(stack, 'TestGroup', props);
+    const group = new ScheduleGroup(stack, 'TestGroup', props);
     const errorCode = '403';
 
     // WHEN
