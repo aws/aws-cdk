@@ -220,4 +220,21 @@ describe('cluster user', () => {
       handler: 'user-table-privileges',
     });
   });
+
+  it('set excludeCharacters', () => {
+    const username = 'username';
+
+    new redshift.User(stack, 'User', {
+      ...databaseOptions,
+      username,
+      excludeCharacters: '"@/\\\ \'`',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeCharacters: '"@/\\\ \'`',
+        SecretStringTemplate: `{"username":"${username}"}`,
+      },
+    });
+  });
 });

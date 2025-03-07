@@ -25,7 +25,6 @@ describe('fs fingerprint', () => {
       // THEN
       expect(hash1).toEqual(hash2);
       expect(hash3).not.toEqual(hash1);
-
     });
 
     test('works on empty files', () => {
@@ -42,7 +41,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hash1).toEqual(hash2);
-
     });
   });
 
@@ -59,7 +57,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);
-
     });
 
     test('ignores requested files', () => {
@@ -76,7 +73,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).toEqual(hashCopy);
-
     });
 
     test('changes with file names', () => {
@@ -94,7 +90,6 @@ describe('fs fingerprint', () => {
 
       // THEN
       expect(hashSrc).not.toEqual(hashCopy);
-
     });
   });
 
@@ -151,7 +146,6 @@ describe('fs fingerprint', () => {
       // THEN
       expect(original).toEqual(afterChange);
       expect(afterRevert).toEqual(original);
-
     });
   });
 
@@ -174,7 +168,6 @@ describe('fs fingerprint', () => {
       expect(crlfHash).toEqual(lfHash); // Same hash
 
       fs.unlinkSync(crlf);
-
     });
   });
 
@@ -229,6 +222,7 @@ describe('fs fingerprint', () => {
 
   test('normalizes relative path', () => {
     // Simulate a Windows path.relative()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalPathRelative = path.relative;
     const pathRelativeSpy = jest.spyOn(path, 'relative').mockImplementation((from: string, to: string): string => {
       return originalPathRelative(from, to).replace(/\//g, '\\');

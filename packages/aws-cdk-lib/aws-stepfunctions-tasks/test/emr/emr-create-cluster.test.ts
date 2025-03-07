@@ -90,6 +90,53 @@ test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {
   });
 });
 
+test('Create Cluster with FIRE_AND_FORGET integrationPattern - using JSONata', () => {
+  // WHEN
+  const task = EmrCreateCluster.jsonata(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Arguments: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+    },
+  });
+});
+
 test('Create Cluster with SYNC integrationPattern', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
@@ -1732,4 +1779,67 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
+});
+
+test('Create Cluster with autoTerminationPolicyIdleTimeout', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    autoTerminationPolicyIdleTimeout: cdk.Duration.seconds(100),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+
+    Parameters: {
+      Name: 'Cluster',
+      AutoTerminationPolicy: {
+        IdleTimeout: 100,
+      },
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+    },
+  });
+});
+
+test.each([0, 604801])('Task throws if autoTerminationPolicyIdleTimeout is set to %d seconds', (idletimeOutSeconds) => {
+  expect(() => {
+    new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      autoTerminationPolicyIdleTimeout: cdk.Duration.seconds(idletimeOutSeconds),
+    });
+  }).toThrow(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`);
 });

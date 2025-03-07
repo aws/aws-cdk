@@ -51,15 +51,15 @@
     "docs-public-apis:@aws-cdk/aws-glue-alpha.ITable",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.ITable.tableArn",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.ITable.tableName",
-    "props-default-doc:@aws-cdk/aws-glue-alpha.PythonRayExecutableProps.runtime",
-    "props-default-doc:@aws-cdk/aws-glue-alpha.PythonShellExecutableProps.runtime",
-    "props-default-doc:@aws-cdk/aws-glue-alpha.PythonSparkJobExecutableProps.runtime",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.S3TableProps",
-    "props-default-doc:@aws-cdk/aws-glue-alpha.ScalaJobExecutableProps.runtime",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableAttributes",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableAttributes.tableArn",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableAttributes.tableName",
     "docs-public-apis:@aws-cdk/aws-glue-alpha.TableBaseProps",
-    "docs-public-apis:@aws-cdk/aws-glue-alpha.TableProps"
+    "docs-public-apis:@aws-cdk/aws-glue-alpha.TableProps",
+    "docs-public-apis:@aws-cdk/aws-glue-alpha.PredicateLogical",
+    "no-unused-type:@aws-cdk/aws-glue-alpha.ExecutionClass",
+    "no-unused-type:@aws-cdk/aws-glue-alpha.JobLanguage",
+    "no-unused-type:@aws-cdk/aws-glue-alpha.JobType"
   ]
 }

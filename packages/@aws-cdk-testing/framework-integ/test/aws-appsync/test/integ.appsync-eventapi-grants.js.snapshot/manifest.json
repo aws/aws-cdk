@@ -1,0 +1,1031 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "EventApiApiGrantStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EventApiApiGrantStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EventApiApiGrantStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EventApiApiGrantStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f47f037a1409c2021d896b74918fb24d3abe9a5493c23ef627957781b07e0604.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EventApiApiGrantStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiApiGrantStack.assets"
+      ],
+      "metadata": {
+        "/EventApiApiGrantStack/EventApiApiGrant": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "apiName": "*",
+              "authorizationConfig": {
+                "authProviders": [
+                  {
+                    "authorizationType": "AWS_IAM"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiGrantBFB2D6A9"
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantSubscribe": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantPublish": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/default/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiGrantdefault117DD93B"
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/pubsub": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantPublishAndSubscribe": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/pubsub/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiGrantpubsub2B1CA057"
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/test1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/test1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiGranttest107EAD262"
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/test2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "api": "*",
+              "channelNamespaceName": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/EventApiApiGrant/test2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventApiApiGranttest26BB30687"
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscribeFunctionServiceRole03C4D951"
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscribeFunctionServiceRoleDefaultPolicyC93B32C6"
+          }
+        ],
+        "/EventApiApiGrantStack/SubscribeFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscribeFunction7B118C27"
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishFunctionServiceRole151EB15C"
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishFunctionServiceRoleDefaultPolicyE3A9B652"
+          }
+        ],
+        "/EventApiApiGrantStack/PublishFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishFunctionB6602567"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubFunctionServiceRole1DAC7126"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubFunctionServiceRoleDefaultPolicy00431937"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubFunctionF65FA1C6"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "environment": "*",
+              "bundling": {
+                "bundleAwsSDK": true
+              },
+              "entry": "*",
+              "handler": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubAllChannelsFunctionServiceRole612C1829"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubAllChannelsFunctionServiceRoleDefaultPolicyE9B2393E"
+          }
+        ],
+        "/EventApiApiGrantStack/PubSubAllChannelsFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PubSubAllChannelsFunction9EC91B3F"
+          }
+        ],
+        "/EventApiApiGrantStack/AWS AppSync Events HTTP endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsHTTPendpoint"
+          }
+        ],
+        "/EventApiApiGrantStack/AWS AppSync Events Realtime endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSAppSyncEventsRealtimeendpoint"
+          }
+        ],
+        "/EventApiApiGrantStack/Exports/Output{\"Ref\":\"SubscribeFunction7B118C27\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSubscribeFunction7B118C27B642BB2E"
+          }
+        ],
+        "/EventApiApiGrantStack/Exports/Output{\"Ref\":\"PublishFunctionB6602567\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPublishFunctionB66025670EB2B482"
+          }
+        ],
+        "/EventApiApiGrantStack/Exports/Output{\"Ref\":\"PubSubFunctionF65FA1C6\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPubSubFunctionF65FA1C6C81501FC"
+          }
+        ],
+        "/EventApiApiGrantStack/Exports/Output{\"Ref\":\"PubSubAllChannelsFunction9EC91B3F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPubSubAllChannelsFunction9EC91B3F3E9C7C1E"
+          }
+        ],
+        "/EventApiApiGrantStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EventApiApiGrantStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EventApiApiGrantStack"
+    },
+    "appsynceventapigrantsDefaultTestDeployAssertD04585BB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsynceventapigrantsDefaultTestDeployAssertD04585BB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsynceventapigrantsDefaultTestDeployAssertD04585BB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsynceventapigrantsDefaultTestDeployAssertD04585BB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee7a620979d19bd801c7f987c21a607f51f2538def66755f112bac770d8d48d3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsynceventapigrantsDefaultTestDeployAssertD04585BB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "EventApiApiGrantStack",
+        "appsynceventapigrantsDefaultTestDeployAssertD04585BB.assets"
+      ],
+      "metadata": {
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8006c7b031e80be4861a1f247548571b"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke8006c7b031e80be4861a1f247548571bInvoke3AE64FC8"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvoke8006c7b031e80be4861a1f247548571b/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke8006c7b031e80be4861a1f247548571b"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec34f920450dfc6f8bcd12360d5e438b1Invoke36E757E9"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec34f920450dfc6f8bcd12360d5e438b1/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokec34f920450dfc6f8bcd12360d5e438b1"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokec29811996c72ae76bcc2a12cfc2fb858Invoke71E884C6"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokec29811996c72ae76bcc2a12cfc2fb858/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokec29811996c72ae76bcc2a12cfc2fb858"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2Invoke6088310E"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea7c50a5db339100aa5a0c50ad72e12e2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokea7c50a5db339100aa5a0c50ad72e12e2"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053Invoke4173F8E7"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokecb9ef40c8ac7aed4dfd60060aa942053/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokecb9ef40c8ac7aed4dfd60060aa942053"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokea2c0736db95d14edddf4cf00800f9c11"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokea2c0736db95d14edddf4cf00800f9c11InvokeC15326AD"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/LambdaInvokea2c0736db95d14edddf4cf00800f9c11/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokea2c0736db95d14edddf4cf00800f9c11"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-event-api-grants/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "appsync-event-api-grants/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

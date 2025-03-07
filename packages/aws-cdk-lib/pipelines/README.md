@@ -396,7 +396,7 @@ You can use a zip file in S3 as the source of the pipeline. The pipeline will be
 triggered every time the file in S3 is changed:
 
 ```ts
-const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-bucket');
+const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'amzn-s3-demo-bucket');
 pipelines.CodePipelineSource.s3(bucket, 'my/source.zip');
 ```
 
@@ -1299,11 +1299,11 @@ declare const sharedXRegionUsWest1KeyArn: string;
 declare const sharedXRegionUsWest2BucketArn: string;
 declare const sharedXRegionUsWest2KeyArn: string;
 
-const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsEast1Bucket', {
+const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsWest1Bucket', {
   bucketArn: sharedXRegionUsWest1BucketArn,
   encryptionKey: kms.Key.fromKeyArn(
     scope,
-    'UsEast1BucketKeyArn',
+    'UsWest1BucketKeyArn',
     sharedXRegionUsWest1BucketArn
   ),
 });

@@ -369,7 +369,7 @@ describe('deprecated ServicePrincipal behavior', () => {
   });
 
   test('Passing non-string as accountId parameter in AccountPrincipal constructor should throw error', () => {
-    expect(() => new iam.AccountPrincipal(1234)).toThrowError('accountId should be of type string');
+    expect(() => new iam.AccountPrincipal(1234)).toThrow('accountId should be of type string');
   });
 });
 
@@ -397,7 +397,6 @@ describe('standardized Service Principal behavior', () => {
     const stack = new Stack(app, 'Stack', { env: { region: 'af-south-1' } });
     expect(stack.resolve(afSouth1StatesPrincipal.policyFragment).principalJson).toEqual({ Service: ['states.amazonaws.com'] });
   });
-
 });
 
 test('Can enable session tags', () => {
@@ -470,4 +469,64 @@ test('Can enable session tags with conditions (order of calls is irrelevant)', (
       ],
     },
   }, 2);
+});
+
+test('Can use custom service principle name to create servicePrinciple', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'elasticmapreduce.amazonaws.com.cn' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('ServicePrinciple construct by default reset the principle name to the default format', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com.cn'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'elasticmapreduce.amazonaws.com' },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('throw error when Organization ID does not match regex pattern', () => {
+  // GIVEN
+  const shortOrgId = 'o-shortname';
+  const noOOrgName = 'no-o-name';
+  const longOrgName = 'o-thisnameistoooooooooooooooooolong';
+
+  // THEN
+  expect(() => new iam.OrganizationPrincipal(shortOrgId)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${shortOrgId}`);
+  expect(() => new iam.OrganizationPrincipal(noOOrgName)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${noOOrgName}`);
+  expect(() => new iam.OrganizationPrincipal(longOrgName)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${longOrgName}`);
 });

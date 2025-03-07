@@ -1,0 +1,12 @@
+{
+  "version": "36.0.5",
+  "testCases": {
+    "IotLoggingTest/DefaultTest": {
+      "stacks": [
+        "IotLoggingTestStack"
+      ],
+      "assertionStack": "IotLoggingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IotLoggingTestDefaultTestDeployAssertB1DE3CEF"
+    }
+  }
+}

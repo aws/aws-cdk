@@ -19,6 +19,7 @@ import {
   CustomResource,
   Aws,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
@@ -48,6 +49,15 @@ export interface IRepository extends IResource {
    * @attribute
    */
   readonly repositoryUri: string;
+
+  /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   * @attribute
+   */
+  readonly registryUri: string;
 
   /**
    * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
@@ -150,7 +160,6 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-
   private readonly REPO_PULL_ACTIONS: string[] = [
     'ecr:BatchCheckLayerAvailability',
     'ecr:GetDownloadUrlForLayer',
@@ -189,6 +198,17 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public get repositoryUri() {
     return this.repositoryUriForTag();
+  }
+
+  /**
+   * The URI of this repository's registry:
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com
+   *
+   */
+  public get registryUri(): string {
+    const parts = this.stack.splitArn(this.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME);
+    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}`;
   }
 
   /**
@@ -606,7 +626,6 @@ export class Repository extends RepositoryBase {
   }
 
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
-
     // if repositoryArn is a token, the repository name is also required. this is because
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
@@ -703,6 +722,8 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Repository.validateRepositoryName(this.physicalName);
 
@@ -751,6 +772,7 @@ export class Repository extends RepositoryBase {
    * Cfn for ECR does not allow us to specify a resource policy.
    * It will fail if a resource section is present at all.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.resources.length) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
@@ -768,6 +790,7 @@ export class Repository extends RepositoryBase {
    * Life cycle rules automatically expire images from the repository that match
    * certain conditions.
    */
+  @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
@@ -863,7 +886,6 @@ export class Repository extends RepositoryBase {
    * user's configuration.
    */
   private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
-
     // default based on whether encryptionKey is specified
     const encryptionType = props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
 
@@ -1007,6 +1029,10 @@ export class RepositoryEncryption {
    * 'KMS'
    */
   public static readonly KMS = new RepositoryEncryption('KMS');
+  /**
+   * 'KMS_DSSE'
+   */
+  public static readonly KMS_DSSE = new RepositoryEncryption('KMS_DSSE');
 
   /**
    * @param value the string value of the encryption

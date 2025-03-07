@@ -1,6 +1,9 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
+import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
 import { IPipe } from './pipe';
+
 /**
  * Source properties.
  *
@@ -99,4 +102,55 @@ export interface ISource {
    * Grant the pipe role read access to the source.
    */
   grantRead(grantee: IRole): void;
+}
+
+/**
+ * Sources that support a dead-letter target.
+ */
+export abstract class SourceWithDeadLetterTarget implements ISource {
+  /**
+   * Determines if the source is an instance of SourceWithDeadLetterTarget.
+   */
+  public static isSourceWithDeadLetterTarget(source: ISource): source is SourceWithDeadLetterTarget {
+    return (source as SourceWithDeadLetterTarget).deadLetterTarget !== undefined;
+  }
+  /**
+   * The ARN of the source resource.
+   */
+  readonly sourceArn: string;
+  /**
+   * The dead-letter SQS queue or SNS topic.
+   */
+  readonly deadLetterTarget?: IQueue | ITopic;
+
+  constructor(sourceArn: string, deadLetterTarget?: IQueue | ITopic) {
+    this.sourceArn = sourceArn;
+    this.deadLetterTarget = deadLetterTarget;
+  }
+
+  abstract bind(pipe: IPipe): SourceConfig;
+  abstract grantRead(grantee: IRole): void;
+
+  /**
+   * Grants the pipe role permission to publish to the dead-letter target.
+   */
+  public grantPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
+    if (deadLetterTarget instanceof Queue) {
+      deadLetterTarget.grantSendMessages(grantee);
+    } else if (deadLetterTarget instanceof Topic) {
+      deadLetterTarget.grantPublish(grantee);
+    }
+  }
+
+  /**
+   * Retrieves the ARN from the dead-letter SQS queue or SNS topic.
+   */
+  protected getDeadLetterTargetArn(deadLetterTarget?: IQueue | ITopic): string | undefined {
+    if (deadLetterTarget instanceof Queue) {
+      return deadLetterTarget.queueArn;
+    } else if (deadLetterTarget instanceof Topic) {
+      return deadLetterTarget.topicArn;
+    }
+    return undefined;
+  }
 }

@@ -1,5 +1,6 @@
 import { Construct, Dependable, DependencyGroup } from 'constructs';
 import { Resource } from '../../../core';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { Grant } from '../grant';
 import { IManagedPolicy } from '../managed-policy';
 import { Policy } from '../policy';
@@ -34,6 +35,8 @@ export class ImmutableRole extends Resource implements IRole {
       account: role.env.account,
       region: role.env.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, role);
 
     // implement IDependable privately
     Dependable.implement(this, {
@@ -42,18 +45,22 @@ export class ImmutableRole extends Resource implements IRole {
     this.node.defaultChild = role.node.defaultChild;
   }
 
+  @MethodMetadata()
   public attachInlinePolicy(_policy: Policy): void {
     // do nothing
   }
 
+  @MethodMetadata()
   public addManagedPolicy(_policy: IManagedPolicy): void {
     // do nothing
   }
 
+  @MethodMetadata()
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
+  @MethodMetadata()
   public addToPrincipalPolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
     // If we return `false`, the grants will try to add the statement to the resource
     // (if possible).
@@ -61,14 +68,17 @@ export class ImmutableRole extends Resource implements IRole {
     return { statementAdded: pretendSuccess, policyDependable: new DependencyGroup() };
   }
 
+  @MethodMetadata()
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return this.role.grant(grantee, ...actions);
   }
 
+  @MethodMetadata()
   public grantPassRole(grantee: IPrincipal): Grant {
     return this.role.grantPassRole(grantee);
   }
 
+  @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal): Grant {
     return this.role.grantAssumeRole(identity);
   }

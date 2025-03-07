@@ -6,10 +6,16 @@
     "CidrBlock": "10.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
-    "InstanceTenancy": "default"
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-routev2-privatenatgw-alpha/natgw_priv"
+     }
+    ]
    }
   },
-  "natgwprivAmazonIpv6915E8E4F": {
+  "natgwprivAmazonIpv68FE21C45": {
    "Type": "AWS::EC2::VPCCidrBlock",
    "Properties": {
     "AmazonProvidedIpv6CidrBlock": true,
@@ -32,11 +38,32 @@
     }
    }
   },
+  "TestRoottablenatGwPrivRoute9F8908DE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "testNATgwNATGateway1533420D",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "TestRoottableRouteTableFA28AA38",
+      "RouteTableId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "testNATgwNATGateway1533420D"
+   ]
+  },
   "natgwprivSubnetE547C5A0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AssignIpv6AddressOnCreation": false,
-    "AvailabilityZone": "us-west-1a",
+    "AvailabilityZone": "us-east-1a",
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
      "Fn::Select": [
@@ -57,7 +84,7 @@
     }
    },
    "DependsOn": [
-    "natgwprivAmazonIpv6915E8E4F"
+    "natgwprivAmazonIpv68FE21C45"
    ]
   },
   "natgwprivSubnetRouteTableAssociation9E115869": {
@@ -74,7 +101,7 @@
     }
    },
    "DependsOn": [
-    "natgwprivAmazonIpv6915E8E4F"
+    "natgwprivAmazonIpv68FE21C45"
    ]
   },
   "testNATgwNATGateway1533420D": {
@@ -94,25 +121,6 @@
    "DependsOn": [
     "natgwprivSubnetRouteTableAssociation9E115869"
    ]
-  },
-  "testNATGWRoute7A26EC80": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "DestinationIpv6CidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Fn::GetAtt": [
-      "testNATgwNATGateway1533420D",
-      "NatGatewayId"
-     ]
-    },
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "TestRoottableRouteTableFA28AA38",
-      "RouteTableId"
-     ]
-    }
-   }
   }
  },
  "Parameters": {

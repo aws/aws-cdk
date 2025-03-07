@@ -1,4 +1,4 @@
-import { transformAttributeValueMap, validateJsonPath } from './private/utils';
+import { transformAttributeValueMap, validateJsonata, validateJsonPath } from './private/utils';
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
@@ -119,9 +119,10 @@ export class DynamoProjectionExpression {
 export class DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
-   * Strings may be literal values or as JsonPath. Example values:
+   * Strings may be literal values or as JSONata expression or as JsonPath. Example values:
    *
    * - `DynamoAttributeValue.fromString('someValue')`
+   * - `DynamoAttributeValue.fromString('{% $bar %}')`
    * - `DynamoAttributeValue.fromString(JsonPath.stringAt('$.bar'))`
    */
   public static fromString(value: string) {
@@ -144,7 +145,7 @@ export class DynamoAttributeValue {
    * to maximize compatibility across languages and libraries.
    * However, DynamoDB treats them as number type attributes for mathematical operations.
    *
-   * Numbers may be expressed as literal strings or as JsonPath
+   * Numbers may be expressed as literal strings or as JSONata expression or as JsonPath
    */
   public static numberFromString(value: string) {
     return new DynamoAttributeValue({ N: value.toString() });
@@ -205,6 +206,16 @@ export class DynamoAttributeValue {
   /**
    * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
    *
+   * @param value JSONata expression that specifies state input to be used
+   */
+  public static mapFromJsonata(value: string) {
+    validateJsonata(value);
+    return new DynamoAttributeValue({ M: value });
+  }
+
+  /**
+   * Sets an attribute of type Map. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
+   *
    * @param value Json path that specifies state input to be used
    */
   public static mapFromJsonPath(value: string) {
@@ -217,6 +228,16 @@ export class DynamoAttributeValue {
    */
   public static fromList(value: DynamoAttributeValue[]) {
     return new DynamoAttributeValue({ L: value.map((val) => val.toObject()) });
+  }
+
+  /**
+   * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"S", "Veggies"}]
+   *
+   * @param value JSONata expression that specifies state input to be used
+   */
+  public static listFromJsonata(value: string) {
+    validateJsonata(value);
+    return new DynamoAttributeValue({ L: value });
   }
 
   /**
@@ -240,6 +261,17 @@ export class DynamoAttributeValue {
    * Sets an attribute of type Boolean. For example:  "BOOL": true
    */
   public static fromBoolean(value: boolean) {
+    return new DynamoAttributeValue({ BOOL: value });
+  }
+
+  /**
+   * Sets an attribute of type Boolean from state input through JSONata expression.
+   * For example:  "BOOL": true
+   *
+   * @param value JSONata expression that specifies state input to be used
+   */
+  public static booleanFromJsonata(value: string) {
+    validateJsonata(value);
     return new DynamoAttributeValue({ BOOL: value });
   }
 

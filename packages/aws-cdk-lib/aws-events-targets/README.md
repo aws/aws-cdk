@@ -23,13 +23,14 @@ Currently supported are:
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
+  - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
 
 ## Event retry policy and using dead-letter queues
 
-The Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup, SQSQueue, SNSTopic and ECSTask targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+The Codebuild, CodePipeline, Lambda, Kinesis Data Streams, StepFunctions, LogGroup, SQSQueue, SNSTopic and ECSTask targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
 Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
 
 ## Invoke a Lambda function
@@ -560,5 +561,56 @@ rule.addTarget(new targets.EcsTask({
     command: ['echo', events.EventField.fromPath('$.detail.event')],
   }],
   enableExecuteCommand: true,
+}));
+```
+
+### Overriding Values in the Task Definition
+
+You can override values in the task definition by setting the corresponding properties in the `EcsTaskProps`. All
+values in the [`TaskOverrides` API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_TaskOverride.html) are
+supported.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  taskCount: 1,
+
+  // Overrides the cpu and memory values in the task definition
+  cpu: '512',
+  memory: '512',
+}));
+```
+
+## Schedule a Redshift query (serverless or cluster)
+
+Use the `RedshiftQuery` target to schedule an Amazon Redshift Query.
+
+The code snippet below creates the scheduled event rule that route events to an Amazon Redshift Query
+
+```ts
+import * as redshiftserverless from 'aws-cdk-lib/aws-redshiftserverless'
+
+declare const workgroup: redshiftserverless.CfnWorkgroup;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+const dlq = new sqs.Queue(this, 'DeadLetterQueue');
+
+rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
+  database: 'dev',
+  deadLetterQueue: dlq,
+  sql: ['SELECT * FROM foo','SELECT * FROM baz'],
 }));
 ```

@@ -32,7 +32,7 @@ export interface IGrantable {
  * Notifications Service).
  *
  * A single logical Principal may also map to a set of physical principals.
- * For example, `new OrganizationPrincipal('o-1234')` represents all
+ * For example, `new OrganizationPrincipal('o-12345abcde')` represents all
  * identities that are part of the given AWS Organization.
  */
 export interface IPrincipal extends IGrantable {
@@ -92,14 +92,14 @@ export class ComparablePrincipal {
   /**
    * Whether or not the given principal is a comparable principal
    */
-  public static isComparablePrincipal(x: IPrincipal): x is IComparablePrincipal {
+  public static isComparablePrincipal(this: void, x: IPrincipal): x is IComparablePrincipal {
     return 'dedupeString' in x;
   }
 
   /**
    * Return the dedupeString of the given principal, if available
    */
-  public static dedupeStringFor(x: IPrincipal): string | undefined {
+  public static dedupeStringFor(this: void, x: IPrincipal): string | undefined {
     return ComparablePrincipal.isComparablePrincipal(x) ? x.dedupeString() : undefined;
   }
 }
@@ -556,6 +556,28 @@ export class ServicePrincipal extends PrincipalBase {
   }
 
   /**
+   * Return the service principal using the service principal name as it is passed to the function without
+   * any change regardless of the region used in the stack if it is Opted in or not.
+   *
+   * @example
+   * const principalName = iam.ServicePrincipal.fromStaticServicePrincipleName('elasticmapreduce.amazonaws.com.cn');
+   */
+  public static fromStaticServicePrincipleName(servicePrincipalName: string): ServicePrincipal {
+    class StaticServicePrincipal extends ServicePrincipal {
+      constructor(public readonly service: string) {
+        super(service);
+      }
+
+      public get policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({
+          Service: [this.service],
+        }, this.opts.conditions);
+      }
+    }
+    return new StaticServicePrincipal(servicePrincipalName);
+  }
+
+  /**
    * Reference an AWS service, optionally in a given region
    *
    * @param service AWS service (i.e. sqs.amazonaws.com)
@@ -581,6 +603,9 @@ export class ServicePrincipal extends PrincipalBase {
 
 /**
  * A principal that represents an AWS Organization
+ *
+ * Property organizationId must match regex pattern ^o-[a-z0-9]{10,32}$
+ * @see https://docs.aws.amazon.com/organizations/latest/APIReference/API_Organization.html
  */
 export class OrganizationPrincipal extends PrincipalBase {
   /**
@@ -589,6 +614,9 @@ export class OrganizationPrincipal extends PrincipalBase {
    */
   constructor(public readonly organizationId: string) {
     super();
+    if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
+      throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+    }
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -694,7 +722,6 @@ export class FederatedPrincipal extends PrincipalBase {
  * Facebook, Google, etc.
  */
 export class WebIdentityPrincipal extends FederatedPrincipal {
-
   /**
    *
    * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
@@ -719,7 +746,6 @@ export class WebIdentityPrincipal extends FederatedPrincipal {
  * A principal that represents a federated identity provider as from a OpenID Connect provider.
  */
 export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
-
   /**
    *
    * @param openIdConnectProvider OpenID Connect provider

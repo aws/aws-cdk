@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "LogGroupMetrics/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-group-metrics"
+      ],
+      "assertionStack": "LogGroupMetrics/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupMetricsDefaultTestDeployAssertF61C3BCA"
+    }
+  }
+}

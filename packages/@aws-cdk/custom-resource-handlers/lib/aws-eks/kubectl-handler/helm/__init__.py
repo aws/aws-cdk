@@ -91,7 +91,7 @@ def helm_handler(event, context):
             chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
 
-        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, atomic=atomic)
+        helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, skip_crds, atomic=atomic)
     elif request_type == "Delete":
         try:
             helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
@@ -101,7 +101,7 @@ def helm_handler(event, context):
 
 def get_oci_cmd(repository, version):
     # Generates OCI command based on pattern. Public ECR vs Private ECR are treated differently.
-    private_ecr_pattern = 'oci://(?P<registry>\d+\.dkr\.ecr\.(?P<region>[a-z0-9\-]+)\.amazonaws\.com(\.cn)?)*'
+    private_ecr_pattern = 'oci://(?P<registry>\d+\.dkr\.ecr\.(?P<region>[a-z0-9\-]+)\.(?P<domain>[a-z0-9\.-]+))*'
     public_ecr_pattern = 'oci://(?P<registry>public\.ecr\.aws)*'
 
     private_registry = re.match(private_ecr_pattern, repository).groupdict()

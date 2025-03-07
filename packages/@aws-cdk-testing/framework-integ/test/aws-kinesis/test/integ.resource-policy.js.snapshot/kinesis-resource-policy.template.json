@@ -1,0 +1,187 @@
+{
+ "Resources": {
+  "MyStream5C050E93": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyStreamPolicyC34ACF94": {
+   "Type": "AWS::Kinesis::ResourcePolicy",
+   "Properties": {
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "MyStream5C050E93",
+      "Arn"
+     ]
+    },
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetRecords"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyStream5C050E93",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StreamConsumer58240CBA": {
+   "Type": "AWS::Kinesis::StreamConsumer",
+   "Properties": {
+    "ConsumerName": "stream-consumer",
+    "StreamARN": {
+     "Fn::GetAtt": [
+      "MyStream5C050E93",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "StreamConsumerPolicy925BAE36": {
+   "Type": "AWS::Kinesis::ResourcePolicy",
+   "Properties": {
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "StreamConsumer58240CBA",
+      "ConsumerARN"
+     ]
+    },
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStreamConsumer",
+        "kinesis:SubscribeToShard"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "StreamConsumer58240CBA",
+         "ConsumerARN"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

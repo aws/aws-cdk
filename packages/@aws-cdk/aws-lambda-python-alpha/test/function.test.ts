@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Code, Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
@@ -24,16 +25,15 @@ jest.mock('../lib/bundling', () => {
           throw new Error('unexpected asset hash type');
         })();
 
-        return {
-          isInline: false,
-          bind: () => ({
+        return new class extends lambda.Code {
+          public readonly isInline: boolean = false;
+          public bind = () => ({
             s3Location: {
               bucketName: 'mock-bucket-name',
               objectKey: mockObjectKey,
             },
-          }),
-          bindToResource: () => { return; },
-        };
+          });
+        }();
       }),
       hasDependencies: jest.fn().mockReturnValue(false),
     },
