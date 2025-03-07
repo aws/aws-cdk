@@ -102,9 +102,9 @@ function collectStackMetadata(stack: Stack) {
       // Make the path absolute
       output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => {
         // If Annotations include a token, the message is resolved and output as `[object Object]` after synth
-        // because the message will be object type using 'Fn::Join'.
+        // because the message will be object type using 'Ref' or 'Fn::Join'.
         // It would be easier for users to understand if the message from Annotations were output in token form,
-        // rather than in `[object Object]` or in object type using 'Fn::Join'.
+        // rather than in `[object Object]` or the object type.
         // Therefore, we don't resolve the message if it's from Annotations.
         if ([
           cxschema.ArtifactMetadataEntryType.ERROR,
