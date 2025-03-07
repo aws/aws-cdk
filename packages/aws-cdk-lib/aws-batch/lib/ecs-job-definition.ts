@@ -5,6 +5,7 @@ import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefi
 import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -83,6 +84,8 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.container = props.container;
     this.propagateTags = props?.propagateTags;
@@ -107,6 +110,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   /**
    * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
    */
+  @MethodMetadata()
   public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
     iam.Grant.addToPrincipal({
       actions: ['batch:SubmitJob'],

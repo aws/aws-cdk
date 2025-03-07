@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -2563,54 +2563,6 @@ describe('EBS Options Configurations', () => {
         version: EngineVersion.OPENSEARCH_2_5,
         ebs: {
           volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 99,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          iops: 64001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`io1` volumes iops must be between 100 and 64000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 16001,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
-          volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          iops: 2999,
-        },
-      };
-      new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('`gp3` volumes iops must be between 3000 and 16000.');
-
-    expect(() => {
-      const domainProps: DomainProps = {
-        version: EngineVersion.OPENSEARCH_2_5,
-        ebs: {
-          volumeSize: 30,
           volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
           throughput: 1024,
         },
@@ -2724,3 +2676,94 @@ function testMetric(
   });
   expect(metric.dimensions).toHaveProperty('DomainName');
 }
+
+each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
+  const coordinatorConfig: NodeOptions = {
+    nodeType: 'coordinator',
+    nodeConfig: {
+      enabled: true,
+      type: 'm5.large.search',
+      count: 2,
+    },
+  };
+
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [coordinatorConfig],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: true,
+          Type: 'm5.large.search',
+          Count: 2,
+        },
+      }],
+    },
+  });
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node instance type does not end with .search', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            type: 'm5.large',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node instance type must end with ".search".');
+});
+
+each(testedOpenSearchVersions).test('throws when coordinator node count is less than 1', (engineVersion) => {
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        nodeOptions: [{
+          nodeType: 'coordinator' as const,
+          nodeConfig: {
+            enabled: true,
+            count: 0,
+            type: 'm5.large.search',
+          },
+        }],
+      },
+    });
+  }).toThrow('Coordinator node count must be at least 1.');
+});
+
+each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      nodeOptions: [{
+        nodeType: 'coordinator' as const,
+        nodeConfig: {
+          enabled: false,
+        },
+      }],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      NodeOptions: [{
+        NodeType: 'coordinator',
+        NodeConfig: {
+          Enabled: false,
+        },
+      }],
+    },
+  });
+});

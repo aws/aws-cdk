@@ -28,3 +28,9 @@ export function validateJsonPath(value: string) {
     throw new Error("Data JSON path values must either be exactly equal to '$' or start with '$.'");
   }
 }
+
+export function validateJsonata(value: string) {
+  if (!value.startsWith('{%') || !value.endsWith('%}')) {
+    throw new Error("Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
+  }
+}

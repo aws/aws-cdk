@@ -5,6 +5,7 @@ import { Construct } from 'constructs';
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Options to add a domain to an application
@@ -126,6 +127,8 @@ export class Domain extends Resource {
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.subDomains = props.subDomains || [];
 
@@ -168,6 +171,7 @@ export class Domain extends Resource {
    * @param branch The branch
    * @param prefix The prefix. Use '' to map to the root of the domain. Defaults to branch name.
    */
+  @MethodMetadata()
   public mapSubDomain(branch: IBranch, prefix?: string) {
     this.subDomains.push({ branch, prefix });
     return this;
@@ -176,6 +180,7 @@ export class Domain extends Resource {
   /**
    * Maps a branch to the domain root
    */
+  @MethodMetadata()
   public mapRoot(branch: IBranch) {
     return this.mapSubDomain(branch, '');
   }

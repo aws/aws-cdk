@@ -11,6 +11,7 @@ import { BlockDevice } from './volume';
 import { IVpc, SubnetSelection } from './vpc';
 import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
 import { CfnOutput, FeatureFlags, Resource, Stack } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
 /**
@@ -192,6 +193,8 @@ export class BastionHostLinux extends Resource implements IInstance {
 
   constructor(scope: Construct, id: string, props: BastionHostLinuxProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.stack = Stack.of(scope);
     const instanceType = props.instanceType ?? InstanceType.of(InstanceClass.T3, InstanceSize.NANO);
     this.instance = new Instance(this, 'Resource', {
@@ -252,6 +255,7 @@ export class BastionHostLinux extends Resource implements IInstance {
    * Necessary if you want to connect to the instance using ssh. If not
    * called, you should use SSM Session Manager to connect to the instance.
    */
+  @MethodMetadata()
   public allowSshAccessFrom(...peer: IPeer[]): void {
     peer.forEach(p => {
       this.connections.allowFrom(p, Port.tcp(22), 'SSH access');

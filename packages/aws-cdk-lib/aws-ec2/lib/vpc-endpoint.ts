@@ -9,6 +9,7 @@ import { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * A VPC endpoint.
@@ -183,6 +184,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
 
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const subnets: ISubnet[] = props.subnets
       ? flatten(props.subnets.map(s => props.vpc.selectSubnets(s).subnets))
@@ -305,6 +308,10 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
+  public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
+  public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime');
+  public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime-fips');
   public static readonly BILLING = new InterfaceVpcEndpointAwsService('billing');
   public static readonly BILLING_AND_COST_MANAGEMENT_FREETIER = new InterfaceVpcEndpointAwsService('freetier', 'aws.api');
   public static readonly BILLING_AND_COST_MANAGEMENT_TAX = new InterfaceVpcEndpointAwsService('tax');
@@ -482,6 +489,12 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions');
   public static readonly LICENSE_MANAGER_LINUX_SUBSCRIPTIONS_FIPS = new InterfaceVpcEndpointAwsService('license-manager-linux-subscriptions-fips');
   public static readonly LICENSE_MANAGER_USER_SUBSCRIPTIONS = new InterfaceVpcEndpointAwsService('license-manager-user-subscriptions');
+  public static readonly LOCATION_SERVICE_GEOFENCING = new InterfaceVpcEndpointAwsService('geo.geofencing');
+  public static readonly LOCATION_SERVICE_MAPS = new InterfaceVpcEndpointAwsService('geo.maps');
+  public static readonly LOCATION_SERVICE_METADATA = new InterfaceVpcEndpointAwsService('geo.metadata');
+  public static readonly LOCATION_SERVICE_PLACES = new InterfaceVpcEndpointAwsService('geo.places');
+  public static readonly LOCATION_SERVICE_ROUTE = new InterfaceVpcEndpointAwsService('geo.routes');
+  public static readonly LOCATION_SERVICE_TRACKING = new InterfaceVpcEndpointAwsService('geo.tracking');
   public static readonly LOOKOUT_EQUIPMENT = new InterfaceVpcEndpointAwsService('lookoutequipment');
   public static readonly LOOKOUT_METRICS = new InterfaceVpcEndpointAwsService('lookoutmetrics');
   public static readonly LOOKOUT_VISION = new InterfaceVpcEndpointAwsService('lookoutvision');
@@ -520,7 +533,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PARALLEL_COMPUTING_SERVICE = new InterfaceVpcEndpointAwsService('pcs');
   public static readonly PARALLEL_COMPUTING_SERVICE_FIPS = new InterfaceVpcEndpointAwsService('pcs-fips');
   public static readonly PAYMENT_CRYPTOGRAPHY_CONTROLPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.controlplane');
+  /** @deprecated - Use InterfaceVpcEndpointAwsService.PAYMENT_CRYPTOGRAPHY_DATAPLANE instead. */
   public static readonly PAYMENT_CRYTOGRAPHY_DATAPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.dataplane');
+  public static readonly PAYMENT_CRYPTOGRAPHY_DATAPLANE = new InterfaceVpcEndpointAwsService('payment-cryptography.dataplane');
   public static readonly PERSONALIZE = new InterfaceVpcEndpointAwsService('personalize');
   public static readonly PERSONALIZE_EVENTS = new InterfaceVpcEndpointAwsService('personalize-events');
   public static readonly PERSONALIZE_RUNTIME = new InterfaceVpcEndpointAwsService('personalize-runtime');
@@ -875,6 +890,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
   constructor(scope: Construct, id: string, props: InterfaceVpcEndpointProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const securityGroups = props.securityGroups || [new SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,

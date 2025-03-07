@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79dc61cfbccac301da61a3925a5c860b4c6c58bb3c6a40baf5509fcd62bc2642.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b7b53b9cd096ccff13a9caf40262c9390394ee8566dea00713f23eeccdf7304.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -254,6 +254,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTestClusterKubectlProviderframeworkonEvent76159DCE"
+          }
+        ],
+        "/eks-fargate-cluster-test-stack/FargateTestCluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateTestClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0885AE23E"
           }
         ],
         "/eks-fargate-cluster-test-stack/FargateTestCluster/ClusterAdminRoleAccess/Resource": [

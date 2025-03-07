@@ -7,6 +7,7 @@ import { Method, MethodOptions, AuthorizationType } from './method';
 import { IRestApi, RestApi } from './restapi';
 import { IResource as IResourceBase, Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 export interface IResource extends IResourceBase {
   /**
@@ -439,6 +440,8 @@ export class Resource extends ResourceBase {
 
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     validateResourcePathPart(props.pathPart, scope);
 
@@ -531,6 +534,8 @@ export class ProxyResource extends Resource {
       defaultIntegration: props.defaultIntegration,
       defaultMethodOptions: props.defaultMethodOptions,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
@@ -538,6 +543,7 @@ export class ProxyResource extends Resource {
     }
   }
 
+  @MethodMetadata()
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.

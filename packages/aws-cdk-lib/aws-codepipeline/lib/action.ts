@@ -4,7 +4,7 @@ import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { IResource, Lazy } from '../../core';
+import { Duration, IResource, Lazy } from '../../core';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -13,6 +13,7 @@ export enum ActionCategory {
   APPROVAL = 'Approval',
   DEPLOY = 'Deploy',
   INVOKE = 'Invoke',
+  COMPUTE = 'Compute',
 }
 
 /**
@@ -104,6 +105,33 @@ export interface ActionProperties {
    * @default - a name will be generated, based on the stage and action names
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * Shell commands for the Commands action to run.
+   *
+   * @default - no commands
+   */
+  readonly commands?: string[];
+
+  /**
+   * The names of the variables in your environment that you want to export.
+   *
+   * @default - no output variables
+   */
+  readonly outputVariables?: string[];
+
+  /**
+   * A timeout duration that can be applied against the ActionType’s default timeout value
+   * specified in Quotas for AWS CodePipeline.
+   *
+   * This attribute is available only to the `ManualApprovalAction`.
+   *
+   * It is configurable up to 86400 minutes (60 days) with a minimum value of 5 minutes.
+   *
+   * @default - default timeout value defined by each ActionType
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
+   */
+  readonly timeout?: Duration;
 }
 
 export interface ActionBindOptions {

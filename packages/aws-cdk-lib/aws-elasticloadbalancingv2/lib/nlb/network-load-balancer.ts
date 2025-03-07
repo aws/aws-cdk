@@ -3,8 +3,9 @@ import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Lazy, Resource } from '../../../core';
+import { Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -275,6 +276,17 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const minimumCapacityUnit = props.minimumCapacityUnit;
+
+    if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
+      const capacityUnitPerAz = minimumCapacityUnit / props.vpc.availabilityZones.length;
+      if (!Number.isInteger(minimumCapacityUnit) || capacityUnitPerAz < 2750 || capacityUnitPerAz > 45000) {
+        throw new ValidationError(`'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
+      }
+    }
 
     this.enablePrefixForIpv6SourceNat = props.enablePrefixForIpv6SourceNat;
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
@@ -300,6 +312,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @returns The newly created listener
    */
+  @MethodMetadata()
   public addListener(id: string, props: BaseNetworkListenerProps): NetworkListener {
     // UDP listener with dual stack NLB requires prefix IPv6 source NAT to be enabled
     if (
@@ -318,6 +331,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   /**
    * Add a security group to this load balancer
    */
+  @MethodMetadata()
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
   }
@@ -328,6 +342,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Average over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.custom`` instead
    */
+  @MethodMetadata()
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/NetworkELB',
@@ -347,6 +362,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Average over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.activeFlowCount`` instead
    */
+  @MethodMetadata()
   public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.activeFlowCount(props);
   }
@@ -357,6 +373,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.activeFlowCount`` instead
    */
+  @MethodMetadata()
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metrics.consumedLCUs(props);
   }
@@ -367,6 +384,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Average over 5 minutes
    * @deprecated use ``NetworkTargetGroup.metricHealthyHostCount`` instead
    */
+  @MethodMetadata()
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
@@ -380,6 +398,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Average over 5 minutes
    * @deprecated use ``NetworkTargetGroup.metricUnHealthyHostCount`` instead
    */
+  @MethodMetadata()
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
@@ -393,6 +412,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.newFlowCount`` instead
    */
+  @MethodMetadata()
   public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.newFlowCount(props);
   }
@@ -403,6 +423,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.processedBytes`` instead
    */
+  @MethodMetadata()
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metrics.processedBytes(props);
   }
@@ -415,6 +436,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.tcpClientResetCount`` instead
    */
+  @MethodMetadata()
   public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.tcpClientResetCount(props);
   }
@@ -425,6 +447,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.tcpElbResetCount`` instead
    */
+  @MethodMetadata()
   public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.tcpElbResetCount(props);
   }
@@ -437,6 +460,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Sum over 5 minutes
    * @deprecated Use ``NetworkLoadBalancer.metrics.tcpTargetResetCount`` instead
    */
+  @MethodMetadata()
   public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
     return this.metrics.tcpTargetResetCount(props);
   }
@@ -566,6 +590,8 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
@@ -589,6 +615,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     });
   }
 
+  @MethodMetadata()
   public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
     return new NetworkListener(this, lid, {
       loadBalancer: this,

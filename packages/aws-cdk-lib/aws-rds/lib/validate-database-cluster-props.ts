@@ -1,14 +1,29 @@
 import { Construct } from 'constructs';
-import { ClusterScailabilityType, DatabaseCluster, DatabaseClusterProps, DBClusterStorageType } from './cluster';
+import { ClusterScailabilityType, DatabaseCluster, DatabaseClusterProps, DBClusterStorageType, DatabaseInsightsMode } from './cluster';
 import { PerformanceInsightRetention } from './props';
 import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
 
 const standardDatabaseRules: ValidationRule<DatabaseClusterProps>[] = [
   {
-    condition: (props) => props.enablePerformanceInsights === false &&
-        (props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined),
-    message: () => '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set',
-
+    condition: (props) =>
+      props.enablePerformanceInsights === false &&
+      (props.performanceInsightRetention !== undefined ||
+        props.performanceInsightEncryptionKey !== undefined ||
+        props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED),
+    message: () => '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set, or `databaseInsightsMode` was set to \'${DatabaseInsightsMode.ADVANCED}\'',
+  },
+  {
+    condition: (props) => props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED &&
+      props.performanceInsightRetention !== PerformanceInsightRetention.MONTHS_15,
+    message: () => '`performanceInsightRetention` must be set to \'${PerformanceInsightRetention.MONTHS_15}\' when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
+  },
+  {
+    condition: (props) => props.databaseInsightsMode !== undefined && !props.engine.engineType.startsWith('aurora'),
+    message: () => '`performanceInsightEncryptionKey` must be set when `databaseInsightsMode` is set to \'${DatabaseInsightsMode.ADVANCED}\'',
+  },
+  {
+    condition: (props) => props.replicationSourceIdentifier !== undefined && props.credentials !== undefined,
+    message: () => 'Cannot specify both `replicationSourceIdentifier` and `credentials`. The value is inherited from the source DB cluster',
   },
 ];
 

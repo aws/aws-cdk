@@ -23,7 +23,7 @@ The following example creates an MSK Cluster.
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
 });
 ```
@@ -36,7 +36,7 @@ To control who can access the Cluster, use the `.connections` attribute. For a l
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
 });
 
@@ -88,7 +88,7 @@ import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -113,7 +113,7 @@ Enable client authentication with [SASL/SCRAM](https://docs.aws.amazon.com/msk/l
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -124,7 +124,7 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
-### SASL/IAM
+### IAM
 
 Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html):
 
@@ -132,7 +132,7 @@ Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/d
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -155,7 +155,7 @@ import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -186,7 +186,7 @@ declare const vpc: ec2.Vpc;
 declare const bucket: s3.IBucket;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V2_8_1,
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
   vpc,
   logging: {
     s3: {
@@ -229,5 +229,26 @@ const cluster = new msk.Cluster(this, 'cluster', {
   kafkaVersion: msk.KafkaVersion.V3_6_0,
   vpc,
   storageMode: msk.StorageMode.TIERED,
+});
+```
+
+## MSK Serverless
+
+You can also use MSK Serverless by using `ServerlessCluster` class.
+
+MSK Serverless is a cluster type for Amazon MSK that makes it possible for you to run Apache Kafka without having to manage and scale cluster capacity.
+
+MSK Serverless requires IAM access control for all clusters.
+
+For more infomation, see [Use MSK Serverless clusters](https://docs.aws.amazon.com/msk/latest/developerguide/serverless-getting-started.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const serverlessCluster = new msk.ServerlessCluster(this, 'ServerlessCluster', {
+  clusterName: 'MyServerlessCluster',
+  vpcConfigs: [
+    { vpc },
+  ],
 });
 ```

@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import { Code } from '../code';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -37,6 +38,13 @@ export interface PySparkEtlJobProps extends JobProperties {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
+
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -84,6 +92,8 @@ export class PySparkEtlJob extends Job {
     super(scope, id, {
       physicalName: props.jobName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Set up role and permissions for principal
     this.role = props.role, {
@@ -155,6 +165,9 @@ export class PySparkEtlJob extends Job {
     }
     if (props.extraFiles && props.extraFiles.length > 0) {
       args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+    if (props.extraJars && props.extraJars?.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
 
     return args;

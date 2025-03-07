@@ -7,6 +7,7 @@ import { QuotaSettings, ThrottleSettings, UsagePlan, UsagePlanPerApiStage } from
 import * as iam from '../../aws-iam';
 import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -170,6 +171,8 @@ export class ApiKey extends ApiKeyBase {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new CfnApiKey(this, 'Resource', {
       customerId: props.customerId,
@@ -223,6 +226,10 @@ export class ApiKey extends ApiKeyBase {
 export interface RateLimitedApiKeyProps extends ApiKeyProps {
   /**
    * API Stages to be associated with the RateLimitedApiKey.
+   * If you already prepared UsagePlan resource explicitly, you should use `stages` property.
+   * If you prefer to prepare UsagePlan resource implicitly via RateLimitedApiKey,
+   * or you should specify throttle settings at each stage individually, you should use `apiStages` property.
+   *
    * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[];
@@ -253,6 +260,8 @@ export class RateLimitedApiKey extends ApiKeyBase {
     super(scope, id, {
       physicalName: props.apiKeyName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const resource = new ApiKey(this, 'Resource', props);
 

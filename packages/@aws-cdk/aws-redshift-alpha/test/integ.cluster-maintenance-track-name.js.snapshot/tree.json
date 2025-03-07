@@ -1,0 +1,1697 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "RedshiftMaintenanceTrackNameIntegStack": {
+        "id": "RedshiftMaintenanceTrackNameIntegStack",
+        "path": "RedshiftMaintenanceTrackNameIntegStack",
+        "children": {
+          "Vpc": {
+            "id": "Vpc",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VpcPublicSubnet1EIPD7E02669",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VpcPublicSubnet2EIP3C605A87",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "RedshiftMaintenanceTrackNameIntegStack/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Cluster": {
+            "id": "Cluster",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster",
+            "children": {
+              "Subnets": {
+                "id": "Subnets",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Subnets",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Subnets/Default",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Redshift::ClusterSubnetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Subnets for Cluster Redshift cluster",
+                        "subnetIds": [
+                          {
+                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                          },
+                          {
+                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Redshift security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": "\"@/\\ '`"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Secret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Secret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "ClusterSecret6368BD0F"
+                            },
+                            "targetId": {
+                              "Ref": "ClusterEB0386A7"
+                            },
+                            "targetType": "AWS::Redshift::Cluster"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Cluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "allowVersionUpgrade": true,
+                    "automatedSnapshotRetentionPeriod": 1,
+                    "clusterSubnetGroupName": {
+                      "Ref": "ClusterSubnetsDCFA5CB7"
+                    },
+                    "clusterType": "multi-node",
+                    "dbName": "database",
+                    "encrypted": true,
+                    "maintenanceTrackName": "trailing",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "ClusterSecret6368BD0F"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "ClusterSecret6368BD0F"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "nodeType": "dc2.large",
+                    "numberOfNodes": 2,
+                    "publiclyAccessible": false,
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "ClusterSecurityGroup0921994B",
+                          "GroupId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "User": {
+            "id": "User",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/User",
+            "children": {
+              "Secret": {
+                "id": "Secret",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/User/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/User/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"redshiftmaintenancetracknameintegstackuser449a51db\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": "\"@/\\ '`"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/User/Secret/Attachment",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/User/Secret/Attachment/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
+                          "aws:cdk:cloudformation:props": {
+                            "secretId": {
+                              "Ref": "UserSecretE2C04A69"
+                            },
+                            "targetId": {
+                              "Ref": "ClusterEB0386A7"
+                            },
+                            "targetType": "AWS::Redshift::Cluster"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource",
+                "children": {
+                  "Handler": {
+                    "id": "Handler",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Handler",
+                    "children": {
+                      "inlinePolicyAddedToExecutionRole-0": {
+                        "id": "inlinePolicyAddedToExecutionRole-0",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Handler/inlinePolicyAddedToExecutionRole-0",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "redshift-data:DescribeStatement",
+                                        "redshift-data:ExecuteStatement"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "UserHandlerinlinePolicyAddedToExecutionRole0A8003C00",
+                                "roles": [
+                                  {
+                                    "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Provider": {
+                    "id": "Provider",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider",
+                    "children": {
+                      "framework-onEvent": {
+                        "id": "framework-onEvent",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent",
+                        "children": {
+                          "Code": {
+                            "id": "Code",
+                            "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2",
+                                  "metadata": []
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+                                },
+                                "description": "AWS CDK resource provider framework - onEvent (RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider)",
+                                "environment": {
+                                  "variables": {
+                                    "USER_ON_EVENT_FUNCTION_ARN": {
+                                      "Fn::GetAtt": [
+                                        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                        "Arn"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "handler": "framework.onEvent",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9",
+                                    "Arn"
+                                  ]
+                                },
+                                "runtime": {
+                                  "Fn::FindInMap": [
+                                    "LatestNodeRuntimeMap",
+                                    {
+                                      "Ref": "AWS::Region"
+                                    },
+                                    "value"
+                                  ]
+                                },
+                                "timeout": 900
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "UserProviderframeworkonEventinlinePolicyAddedToExecutionRole06E62E28D",
+                                    "roles": [
+                                      {
+                                        "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.4.2"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2",
+                              "metadata": [
+                                "*",
+                                "*",
+                                "*",
+                                "*"
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2",
+                          "metadata": [
+                            "*",
+                            "*"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/User/Resource/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "Query Redshift Database3de5bea727da479686625efb56431b5f": {
+            "id": "Query Redshift Database3de5bea727da479686625efb56431b5f",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*"
+                      ]
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Ref": "ClusterSecretAttachment769E6258"
+                                    },
+                                    {
+                                      "Ref": "UserSecretAttachment02022609"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D",
+                            "roles": [
+                              {
+                                "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.4.2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "60d6644ca7559903aa3a4516f84720a5f2cc1310aa4f456b1aad45a0c1e28046.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    },
+                    "timeout": 60
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": {
+            "id": "Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
+            "children": {
+              "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": {
+                "id": "ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/ImportQuery Redshift Database3de5bea727da479686625efb56431b5fInvokerRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "RedshiftMaintenanceTrackNameIntegStack/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRoleDefaultPolicy2BD7CC05",
+                        "roles": [
+                          {
+                            "Ref": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fInvokerRole900F47C9"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2",
+              "metadata": [
+                "*",
+                "*",
+                "*",
+                "*",
+                "*",
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "RedshiftMaintenanceTrackNameIntegStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "RedshiftMaintenanceTrackNameInteg": {
+        "id": "RedshiftMaintenanceTrackNameInteg",
+        "path": "RedshiftMaintenanceTrackNameInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "RedshiftMaintenanceTrackNameInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "RedshiftMaintenanceTrackNameInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.4.2"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.4.2"
+    }
+  }
+}

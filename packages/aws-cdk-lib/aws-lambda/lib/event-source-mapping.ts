@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
@@ -47,6 +48,11 @@ export class SourceAccessConfigurationType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your Apache Kafka brokers.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new SourceAccessConfigurationType('SERVER_ROOT_CA_CERTIFICATE');
+
+  /**
+   * The name of the virtual host in your RabbitMQ broker. Lambda uses this RabbitMQ host as the event source.
+   */
+  public static readonly VIRTUAL_HOST = new SourceAccessConfigurationType('VIRTUAL_HOST');
 
   /** A custom source access configuration property */
   public static of(name: string): SourceAccessConfigurationType {
@@ -399,6 +405,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
       throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);
