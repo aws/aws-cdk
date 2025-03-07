@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "artifacts": {
     "SNSInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f73578a6268bf972ab72b4905cc09579fd59ece18de3cd0622ff9606ebdcf661.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b35b26fa5b6ce3cedd0f0982f4e5c521629008ffba1d0e1850bb021875e59801.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,41 @@
         "SNSInteg.assets"
       ],
       "metadata": {
+        "/SNSInteg/CustomKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "pendingWindow": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/SNSInteg/CustomKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomKey1E6D0D07"
+          }
+        ],
+        "/SNSInteg/MyTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*",
+              "displayName": "*",
+              "masterKey": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLoggingConfig": [
+                {
+                  "protocol": "http/s",
+                  "failureFeedbackRole": "*",
+                  "successFeedbackSampleRate": "*"
+                }
+              ]
+            }
           }
         ],
         "/SNSInteg/MyTopic/Resource": [
@@ -46,10 +77,43 @@
             "data": "MyTopic86869434"
           }
         ],
+        "/SNSInteg/FeedbackRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/SNSInteg/FeedbackRole/ImportFeedbackRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/SNSInteg/FeedbackRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FeedbackRoleCAF84E5C"
+          }
+        ],
+        "/SNSInteg/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "document": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/SNSInteg/Policy/Resource": [
@@ -58,10 +122,30 @@
             "data": "Policy23B91518"
           }
         ],
+        "/SNSInteg/MyTopicSignatureVersion": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*",
+              "displayName": "*",
+              "signatureVersion": "*"
+            }
+          }
+        ],
         "/SNSInteg/MyTopicSignatureVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopicSignatureVersionEDDB6A3B"
+          }
+        ],
+        "/SNSInteg/MyTopicTracingConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*",
+              "displayName": "*",
+              "tracingConfig": "Active"
+            }
           }
         ],
         "/SNSInteg/MyTopicTracingConfig/Resource": [
@@ -70,10 +154,76 @@
             "data": "MyTopicTracingConfigE05AF123"
           }
         ],
+        "/SNSInteg/MyTopic2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*",
+              "displayName": "*"
+            }
+          }
+        ],
         "/SNSInteg/MyTopic2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopic288CE2107"
+          }
+        ],
+        "/SNSInteg/PublishRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/SNSInteg/PublishRole/ImportPublishRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/SNSInteg/PublishRole/Resource": [
@@ -82,10 +232,209 @@
             "data": "PublishRoleF42F66B6"
           }
         ],
+        "/SNSInteg/PublishRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
         "/SNSInteg/PublishRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PublishRoleDefaultPolicy9257B12D"
+          }
+        ],
+        "/SNSInteg/MyTopic3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topicName": "*",
+              "displayName": "*",
+              "masterKey": "*"
+            }
+          }
+        ],
+        "/SNSInteg/MyTopic3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic3134CFDFB"
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "code": "*",
+              "handler": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishEncryptedTopicServiceRole267CEDDE"
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishEncryptedTopicServiceRoleDefaultPolicy85E257A5"
+          }
+        ],
+        "/SNSInteg/PublishEncryptedTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublishEncryptedTopic5F9F9437"
+          }
+        ],
+        "/SNSInteg/Exports/Output{\"Ref\":\"PublishEncryptedTopic5F9F9437\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefPublishEncryptedTopic5F9F9437B383DB14"
           }
         ],
         "/SNSInteg/BootstrapVersion": [
@@ -102,6 +451,105 @@
         ]
       },
       "displayName": "SNSInteg"
+    },
+    "SNSTestDefaultTestDeployAssert607DA316.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSTestDefaultTestDeployAssert607DA316.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSTestDefaultTestDeployAssert607DA316": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSTestDefaultTestDeployAssert607DA316.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4f3cd5c91ffe3288fe57e7d7293f9932d135028110f4950ad863f84605c6091f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSTestDefaultTestDeployAssert607DA316.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSInteg",
+        "SNSTestDefaultTestDeployAssert607DA316.assets"
+      ],
+      "metadata": {
+        "/SNSTest/DefaultTest/DeployAssert/LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10InvokeE670FC7D"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/LambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokecaa1b8e69bc5f16c6d74368e6c52fd10"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNSTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNSTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -1,14 +1,12 @@
 {
-  "version": "36.0.0",
+  "version": "39.0.0",
   "testCases": {
-    "integ.sns": {
+    "SNSTest/DefaultTest": {
       "stacks": [
         "SNSInteg"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "SNSTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SNSTestDefaultTestDeployAssert607DA316"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

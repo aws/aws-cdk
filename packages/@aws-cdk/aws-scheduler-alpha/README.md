@@ -100,7 +100,7 @@ const oneTimeSchedule = new Schedule(this, 'Schedule', {
 Your AWS account comes with a default scheduler group. You can access the default group in CDK with:
 
 ```ts
-const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
+const defaultScheduleGroup = ScheduleGroup.fromDefaultScheduleGroup(this, "DefaultGroup");
 ```
 
 You can add a schedule to a custom scheduling group managed by you. If a custom group is not specified, the schedule is added to the default group.
@@ -108,14 +108,14 @@ You can add a schedule to a custom scheduling group managed by you. If a custom 
 ```ts
 declare const target: targets.LambdaInvoke;
 
-const group = new Group(this, "Group", {
-    groupName: "MyGroup",
+const scheduleGroup = new ScheduleGroup(this, "ScheduleGroup", {
+    scheduleGroupName: "MyScheduleGroup",
 });
 
 new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.minutes(10)),
     target,
-    group,
+    scheduleGroup,
 });
 ```
 
@@ -300,25 +300,25 @@ new cloudwatch.Alarm(this, 'SchedulesErrorAlarm', {
 });
  ```
 
-### Metrics for a Group
+### Metrics for a Schedule Group
 
-To view metrics for a specific group you can use methods on class `Group`:
+To view metrics for a specific group you can use methods on class `ScheduleGroup`:
 
 ```ts
-const group = new Group(this, "Group", {
-    groupName: "MyGroup",
+const scheduleGroup = new ScheduleGroup(this, "ScheduleGroup", {
+    scheduleGroupName: "MyScheduleGroup",
 });
 
 new cloudwatch.Alarm(this, 'MyGroupErrorAlarm', {
-    metric: group.metricTargetErrors(),
+    metric: scheduleGroup.metricTargetErrors(),
     evaluationPeriods: 1,
     threshold: 0
 });
 
 // Or use default group
-const defaultGroup = Group.fromDefaultGroup(this, "DefaultGroup");
-new cloudwatch.Alarm(this, 'DefaultGroupErrorAlarm', {
-    metric: defaultGroup.metricTargetErrors(),
+const defaultScheduleGroup = ScheduleGroup.fromDefaultScheduleGroup(this, "DefaultScheduleGroup");
+new cloudwatch.Alarm(this, 'DefaultScheduleGroupErrorAlarm', {
+    metric: defaultScheduleGroup.metricTargetErrors(),
     evaluationPeriods: 1,
     threshold: 0
 });
