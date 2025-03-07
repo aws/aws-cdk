@@ -661,7 +661,11 @@
     "KeyAlgorithm": [
       "RSA_2048",
       "EC_PRIME256V1",
-      "EC_SECP384R1"
+      "EC_SECP384R1",
+      "EC_SECP521R1",
+      "RSA_4096",
+      "RSA_3072",
+      "RSA_1024"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/cache-policy.ts": {
@@ -1433,6 +1437,10 @@
       "BEDROCK_AGENT",
       "BEDROCK_AGENT_RUNTIME",
       "BEDROCK_RUNTIME",
+      "BEDROCK_DATA_AUTOMATION",
+      "BEDROCK_DATA_AUTOMATION_FIPS",
+      "BEDROCK_DATA_AUTOMATION_RUNTIME",
+      "BEDROCK_DATA_AUTOMATION_RUNTIME_FIPS",
       "BILLING",
       "BILLING_AND_COST_MANAGEMENT_FREETIER",
       "BILLING_AND_COST_MANAGEMENT_TAX",
@@ -1817,7 +1825,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.ts": {
     "RepositoryEncryption": [
       "AES_256",
-      "KMS"
+      "KMS",
+      "KMS_DSSE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.ts": {
@@ -1944,7 +1953,8 @@
       "GZIP",
       "HADOOP_SNAPPY",
       "SNAPPY",
-      "ZIP"
+      "ZIP",
+      "UNCOMPRESSED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts": {
@@ -2075,6 +2085,7 @@
       "JAVA_21",
       "DOTNET_6",
       "DOTNET_8",
+      "DOTNET_9",
       "DOTNET_CORE_1",
       "DOTNET_CORE_2",
       "DOTNET_CORE_2_1",

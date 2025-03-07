@@ -3291,6 +3291,21 @@ export enum EventType {
    * object’s ACL.
    */
   OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
+
+  /**
+   * Using restore object event types you can receive notifications for
+   * initiation and completion when restoring objects from the S3 Glacier
+   * storage class.
+   *
+   * You use s3:ObjectRestore:* to request notification of
+   * any restoration event.
+   */
+  OBJECT_RESTORE = 's3:ObjectRestore:*',
+
+  /**
+   * You receive this notification event for any object replication event.
+   */
+  REPLICATION = 's3:Replication:*',
 }
 
 export interface NotificationKeyFilter {
