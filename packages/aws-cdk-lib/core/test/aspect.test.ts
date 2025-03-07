@@ -348,7 +348,7 @@ describe('aspect', () => {
     }).not.toThrow();
   });
 
-  test('RemovalPolicy: higher priority with overwrite wins', () => {
+  test('RemovalPolicy: higher priority wins', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
     new Bucket(stack, 'my-bucket', {
@@ -369,7 +369,7 @@ describe('aspect', () => {
     });
   });
 
-  test('RemovalPolicy: last one wins when priorities are equal and overwrite is true', () => {
+  test('RemovalPolicy: last one wins when priorities are equal', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
     new Bucket(stack, 'my-bucket', {
@@ -404,27 +404,6 @@ describe('aspect', () => {
     Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
-    });
-  });
-
-  test('RemovalPolicy: overwrite true wins over overwrite false (higher priority)', () => {
-    const app = new App();
-    const stack = new Stack(app, 'My-Stack');
-    new Bucket(stack, 'my-bucket', {
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
-      priority: 200,
-    });
-
-    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
-      priority: 300,
-    });
-
-    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
-      UpdateReplacePolicy: 'Delete',
-      DeletionPolicy: 'Delete',
     });
   });
 
