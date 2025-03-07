@@ -304,17 +304,17 @@ export class Metric implements IMetric {
   }
 
   /**
- * Make a new Alarm for this metric using anomaly detection
- *
- * @param scope The scope in which to create the alarm
- * @param id The ID of the alarm
- * @param props Alarm creation properties for anomaly detection
- * @param metric The metric to create the alarm for
- * @returns The newly created Alarm
- */
+   * Make a new Alarm for this metric using anomaly detection
+   *
+   * @param scope The scope in which to create the alarm
+   * @param id The ID of the alarm
+   * @param props Alarm creation properties for anomaly detection
+   * @param metric The metric to create the alarm for
+   * @returns The newly created Alarm
+   */
   public static createAnomalyDetectionAlarmFromMetric(scope: Construct, id: string, props: CreateAnomalyDetectionAlarmProps, metric: IMetric): Alarm {
     if (!Alarm.isAnomalyDetectionOperator(props.comparisonOperator)) {
-      throw new Error(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`);
+      throw new cdk.ValidationError(`Invalid comparison operator for anomaly detection alarm: ${props.comparisonOperator}`, scope);
     }
     const anomalyDetectionExpression = new MathExpression({
       expression: `ANOMALY_DETECTION_BAND(m0, ${props.bounds ?? 1})`,
@@ -385,11 +385,11 @@ export class Metric implements IMetric {
     if (parsedStat.type === 'generic') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
-      const label = props.label ? `, label "${props.label}"`: '';
+      const label = props.label ? `, label "${props.label}"` : '';
 
       const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
-          ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
-          ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
+        ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
+        ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
         'CloudWatch:Alarm:UnrecognizedStatistic': warning,
       };
@@ -1051,7 +1051,7 @@ function changeAllPeriods(metrics: Record<string, IMetric>, period: cdk.Duration
  * Relies on the fact that implementations of `IMetric` are also supposed to have
  * an implementation of `with` that accepts an argument called `period`. See `IModifiableMetric`.
  */
-function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean} {
+function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric; overridden: boolean } {
   if (isModifiableMetric(metric)) {
     const overridden =
       isMetricWithPeriod(metric) && // always true, as the period property is set with a default value even if it is not specified
