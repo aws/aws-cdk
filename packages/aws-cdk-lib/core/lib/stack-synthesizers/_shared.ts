@@ -101,22 +101,21 @@ function collectStackMetadata(stack: Stack) {
     if (node.node.metadata.length > 0) {
       // Make the path absolute
       output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => {
-        const resolved = stack.resolve(md) as cxschema.MetadataEntry;
-
-        const isAnnotation = [
+        // If Annotations include a token, the message is resolved and output as `[object Object]` after synth
+        // because the message will be object type using 'Ref' or 'Fn::Join'.
+        // It would be easier for users to understand if the message from Annotations were output in token form,
+        // rather than in `[object Object]` or the object type.
+        // Therefore, we don't resolve the message if it's from Annotations.
+        if ([
           cxschema.ArtifactMetadataEntryType.ERROR,
           cxschema.ArtifactMetadataEntryType.WARN,
           cxschema.ArtifactMetadataEntryType.INFO,
-        ].includes(md.type as cxschema.ArtifactMetadataEntryType);
+        ].includes(md.type as cxschema.ArtifactMetadataEntryType)) {
+          return md;
+        }
 
-        // Transform the data to a string for the case where Annotations include a token.
-        // Otherwise, the message is resolved and output as `[object Object]` after synth
-        // because the message will be object type using 'Ref' or 'Fn::Join'.
-        const mdWithStringData: cxschema.MetadataEntry = {
-          ...resolved,
-          data: (isAnnotation && typeof resolved.data === 'object') ? JSON.stringify(resolved.data) : resolved.data,
-        };
-        return mdWithStringData;
+        const resolved = stack.resolve(md);
+        return resolved as cxschema.MetadataEntry;
       });
     }
 
