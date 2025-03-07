@@ -89,6 +89,10 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  CUSTOM = 'CUSTOM',
 }
 
 /**
@@ -103,6 +107,10 @@ export enum CapacityType {
    * on-demand instances
    */
   ON_DEMAND = 'ON_DEMAND',
+  /**
+   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   */
+  CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
 
 /**
