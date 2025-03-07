@@ -139,13 +139,6 @@ export class RemovalPolicies {
     Aspects.of(this.scope).add(new RemovalPolicyAspect(policy, props), {
       priority: props.priority ?? AspectPriority.MUTATING,
     });
-    // Add warning if both priority is set
-    if (props.priority !== undefined) {
-      Annotations.of(this.scope).addWarningV2(
-        'Warning Removal Policies with both priority',
-        'Applying a Removal Policy with both `priority` set to false can lead to unexpected behavior. Please refer to the documentation for more details.',
-      );
-    }
   }
 
   /**

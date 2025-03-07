@@ -318,23 +318,7 @@ describe('missing-removal-policies', () => {
     expect(childResource.cfnOptions.deletionPolicy).toBe('Retain'); // Child policy applied
   });
 
-  test('warns when priority is set on MissingRemovalPolicies', () => {
-    // GIVEN:
-    const app = new App();
-    const stack = new Stack(app, 'My-Stack');
-    const resource = new TestResource(stack, 'Resource');
-    // WHEN:
-    MissingRemovalPolicies.of(resource).destroy({ priority: 100 });
-    // THEN
-    expect(getWarnings(app.synth())).toEqual([
-      {
-        path: '/My-Stack/Resource',
-        message: 'Applying a MissingRemovalPolicy with `priority` can lead to unexpected behavior since it only applies to resources without existing policies. Please refer to the documentation for more details. [ack: Warning MissingRemovalPolicies with priority in My-Stack/Resource]',
-      },
-    ]);
-  });
-
-  test('demonstrates the use case from the original discussion', () => {
+  test('RemovalPolicy aspect overrides where MissingRemovalPolicy does not', () => {
     // GIVEN
     const stack = new Stack();
     const bucket = new TestBucketResource(stack, 'Bucket');
