@@ -27,7 +27,11 @@ export class EksAutoModeCluster extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 const stack = new EksAutoModeCluster(app, 'eks-auto-mode-stack', { env: { region: 'us-east-1' } });
 
