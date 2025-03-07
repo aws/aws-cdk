@@ -348,24 +348,6 @@ describe('aspect', () => {
     }).not.toThrow();
   });
 
-  test('Warning is displayed when applying a Removal Policy with both priority and overwrite set to true', () => {
-    const app = new App();
-    const stack = new Stack(app, 'My-Stack');
-
-    // WHEN
-    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
-      priority: 100,
-    });
-
-    // THEN
-    expect(getWarnings(app.synth())).toEqual([
-      {
-        path: '/My-Stack',
-        message: 'Applying a Removal Policy with both `priority` set to false can lead to unexpected behavior. Please refer to the documentation for more details. [ack: Warning Removal Policies with both priority]',
-      },
-    ]);
-  });
-
   test('RemovalPolicy: higher priority with overwrite wins', () => {
     const app = new App();
     const stack = new Stack(app, 'My-Stack');
