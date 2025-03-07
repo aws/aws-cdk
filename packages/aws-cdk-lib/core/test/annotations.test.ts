@@ -143,7 +143,7 @@ describe('annotations', () => {
     expect(getWarnings(app.synth())).toEqual([
       {
         path: '/S1/C1',
-        message: expect.stringMatching(/stackId: \${Token\[AWS::StackId\.\d+\]} \[ack: MESSAGE\]/),
+        message: '{"Fn::Join":["",["stackId: ",{"Ref":"AWS::StackId"}," [ack: MESSAGE]"]]}',
       },
     ]);
   });
