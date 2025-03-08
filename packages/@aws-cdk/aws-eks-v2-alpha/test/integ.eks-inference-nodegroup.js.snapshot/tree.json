@@ -2093,6 +2093,22 @@
                   ]
                 }
               },
+              "ConfigCommand": {
+                "id": "ConfigCommand",
+                "path": "aws-cdk-eks-cluster-inference-nodegroup/Cluster/ConfigCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "GetTokenCommand": {
+                "id": "GetTokenCommand",
+                "path": "aws-cdk-eks-cluster-inference-nodegroup/Cluster/GetTokenCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
               "manifest-NeuronDevicePlugin": {
                 "id": "manifest-NeuronDevicePlugin",
                 "path": "aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePlugin",
