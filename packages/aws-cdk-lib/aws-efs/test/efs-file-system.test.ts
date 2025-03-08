@@ -113,12 +113,14 @@ test('file system LifecyclePolicies is created correctly', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
+    throughputMode: ThroughputMode.ELASTIC,
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
     outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
     transitionToArchivePolicy: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    ThroughputMode: 'elastic',
     LifecyclePolicies: [
       {
         TransitionToIA: 'AFTER_7_DAYS',
