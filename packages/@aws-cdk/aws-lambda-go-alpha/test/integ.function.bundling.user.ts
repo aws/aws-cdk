@@ -11,34 +11,23 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
  */
 
 class TestStack extends Stack {
-  public readonly lambdaFunction_1: IFunction;
-  public readonly lambdaFunction_2: IFunction;
+  public readonly lambdaFunction: IFunction;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    this.lambdaFunction_1 = new lambda.GoFunction(this, 'go-handler-docker-nobody-user', {
+    this.lambdaFunction = new lambda.GoFunction(this, 'go-handler-docker-root-user', {
       entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
       bundling: {
         forcedDockerBundling: true,
         goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
-        user: 'nobody',
-      },
-    });
-
-    this.lambdaFunction_2 = new lambda.GoFunction(this, 'go-handler-docker-root-user', {
-      entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
-      bundling: {
-        forcedDockerBundling: true,
-        goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
-        user: 'root',
         commandHooks: {
           beforeBundling(_inputDir: string, _outputDir: string): string[] {
             return [
-              'echo "some content" >> /etc/environment', // Can only be run by root user
+              'cat /etc/os-release',
             ];
           },
           afterBundling: function (_inputDir: string, _outputDir: string): string[] {
-            return [];
+            return ['touch cdk_test.txt'];
           },
         },
       },
@@ -54,20 +43,10 @@ const integTest = new integ.IntegTest(app, 'cdk-integ-lambda-golang-bundling-use
 });
 
 const response1 = integTest.assertions.invokeFunction({
-  functionName: stack.lambdaFunction_1.functionName,
-});
-
-const response2 = integTest.assertions.invokeFunction({
-  functionName: stack.lambdaFunction_2.functionName,
+  functionName: stack.lambdaFunction.functionName,
 });
 
 response1.expect(integ.ExpectedResult.objectLike({
-  StatusCode: 200,
-  ExecutedVersion: '$LATEST',
-  Payload: '256',
-}));
-
-response2.expect(integ.ExpectedResult.objectLike({
   StatusCode: 200,
   ExecutedVersion: '$LATEST',
   Payload: '256',

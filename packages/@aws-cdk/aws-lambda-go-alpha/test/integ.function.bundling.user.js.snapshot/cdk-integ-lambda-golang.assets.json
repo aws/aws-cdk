@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "3ca3899fd89ffddaa38e2f556f7357f6e178b0d94502b5dc21dce70490ed642f": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "b56f01c633ba2203a812f914677f98edc48272b32b6460150464dac3e10dafd1": {
+    "a36ac98ca3355d61d3f9a76ba2f5125bb037e67cf685a8f03319e8ed416e5957": {
       "source": {
         "path": "cdk-integ-lambda-golang.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b56f01c633ba2203a812f914677f98edc48272b32b6460150464dac3e10dafd1.json",
+          "objectKey": "a36ac98ca3355d61d3f9a76ba2f5125bb037e67cf685a8f03319e8ed416e5957.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

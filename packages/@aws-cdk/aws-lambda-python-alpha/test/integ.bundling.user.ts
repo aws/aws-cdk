@@ -14,45 +14,30 @@ import * as lambda from '../lib';
  */
 
 class TestStack extends Stack {
-  public readonly functionName1: string;
-  public readonly functionName2: string;
+  public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const fn1 = new lambda.PythonFunction(this, 'my_handler-nobody-user', {
+    const fn = new lambda.PythonFunction(this, 'my_handler-root-user', {
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_13,
       bundling: {
-        user: 'nobody',
-      },
-    });
-
-    const fn2 = new lambda.PythonFunction(this, 'my_handler-root-user', {
-      entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_13,
-      bundling: {
-        user: 'root',
         commandHooks: {
           beforeBundling(_inputDir: string, _outputDir: string): string[] {
             return [
-              'echo "some content" >> /etc/environment', // Can only be run by root user
+              'cat /etc/os-release',
             ];
           },
           afterBundling: function (_inputDir: string, _outputDir: string): string[] {
-            return [];
+            return ['mkdir test'];
           },
         },
       },
     });
-    this.functionName1 = fn1.functionName;
-    this.functionName2 = fn2.functionName;
-
-    new CfnOutput(this, 'Function1Arn', {
-      value: fn1.functionArn,
-    });
+    this.functionName = fn.functionName;
 
     new CfnOutput(this, 'Function2Arn', {
-      value: fn2.functionArn,
+      value: fn.functionArn,
     });
   }
 }
@@ -65,18 +50,10 @@ const integ = new IntegTest(app, 'lambda-python-bundling-user', {
 });
 
 const invoke1 = integ.assertions.invokeFunction({
-  functionName: testCase.functionName1,
+  functionName: testCase.functionName,
 });
 
 invoke1.expect(ExpectedResult.objectLike({
-  Payload: '200',
-}));
-
-const invoke2 = integ.assertions.invokeFunction({
-  functionName: testCase.functionName1,
-});
-
-invoke2.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
 

@@ -8,130 +8,6 @@
         "id": "cdk-integ-lambda-golang",
         "path": "cdk-integ-lambda-golang",
         "children": {
-          "go-handler-docker-nobody-user": {
-            "id": "go-handler-docker-nobody-user",
-            "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": []
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": []
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0",
-                      "metadata": []
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "cdk-integ-lambda-golang/go-handler-docker-nobody-user/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "3ca3899fd89ffddaa38e2f556f7357f6e178b0d94502b5dc21dce70490ed642f.zip"
-                    },
-                    "handler": "bootstrap",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "gohandlerdockernobodyuserServiceRoleD261E9A2",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "provided.al2"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-go-alpha.GoFunction",
-              "version": "0.0.0",
-              "metadata": []
-            }
-          },
           "go-handler-docker-root-user": {
             "id": "go-handler-docker-root-user",
             "path": "cdk-integ-lambda-golang/go-handler-docker-root-user",
@@ -146,7 +22,9 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -192,7 +70,19 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0",
-                  "metadata": []
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -253,21 +143,16 @@
             "constructInfo": {
               "fqn": "@aws-cdk/aws-lambda-go-alpha.GoFunction",
               "version": "0.0.0",
-              "metadata": []
+              "metadata": [
+                "*",
+                "*"
+              ]
             }
           },
           "Exports": {
             "id": "Exports",
             "path": "cdk-integ-lambda-golang/Exports",
             "children": {
-              "Output{\"Ref\":\"gohandlerdockernobodyuser14BE33D2\"}": {
-                "id": "Output{\"Ref\":\"gohandlerdockernobodyuser14BE33D2\"}",
-                "path": "cdk-integ-lambda-golang/Exports/Output{\"Ref\":\"gohandlerdockernobodyuser14BE33D2\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
               "Output{\"Ref\":\"gohandlerdockerrootuser5BDBA914\"}": {
                 "id": "Output{\"Ref\":\"gohandlerdockerrootuser5BDBA914\"}",
                 "path": "cdk-integ-lambda-golang/Exports/Output{\"Ref\":\"gohandlerdockerrootuser5BDBA914\"}",
@@ -324,17 +209,17 @@
                 "id": "DeployAssert",
                 "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert",
                 "children": {
-                  "LambdaInvoke74b8183f66689eed6c570b70810cd159": {
-                    "id": "LambdaInvoke74b8183f66689eed6c570b70810cd159",
-                    "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159",
+                  "LambdaInvokecf7ba8d7a73723f8964486a03e877aea": {
+                    "id": "LambdaInvokecf7ba8d7a73723f8964486a03e877aea",
+                    "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/SdkProvider",
+                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/SdkProvider/AssertionsProvider",
+                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -348,11 +233,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/Default",
+                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/Default/Default",
+                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -362,12 +247,16 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/Invoke",
+                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -375,7 +264,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvoke74b8183f66689eed6c570b70810cd159/AssertionResults",
+                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -426,69 +315,6 @@
                     "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnMapping",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "LambdaInvokecf7ba8d7a73723f8964486a03e877aea": {
-                    "id": "LambdaInvokecf7ba8d7a73723f8964486a03e877aea",
-                    "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea",
-                    "children": {
-                      "SdkProvider": {
-                        "id": "SdkProvider",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/SdkProvider",
-                        "children": {
-                          "AssertionsProvider": {
-                            "id": "AssertionsProvider",
-                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/SdkProvider/AssertionsProvider",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.4.2"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Default": {
-                        "id": "Default",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Default",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Default/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0",
-                          "metadata": []
-                        }
-                      },
-                      "Invoke": {
-                        "id": "Invoke",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/Invoke",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssertionResults": {
-                        "id": "AssertionResults",
-                        "path": "cdk-integ-lambda-golang-bundling-user-test/DefaultTest/DeployAssert/LambdaInvokecf7ba8d7a73723f8964486a03e877aea/AssertionResults",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },

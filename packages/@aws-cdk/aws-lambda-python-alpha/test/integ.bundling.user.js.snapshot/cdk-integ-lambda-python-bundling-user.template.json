@@ -1,58 +1,5 @@
 {
  "Resources": {
-  "myhandlernobodyuserServiceRole3CCC4361": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "myhandlernobodyuser439E534B": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "b88fc9f330b759f9cbfa736122e567e53b51ed5eca6d17ffc05f2fe96eb57938.zip"
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "myhandlernobodyuserServiceRole3CCC4361",
-      "Arn"
-     ]
-    },
-    "Runtime": "python3.13"
-   },
-   "DependsOn": [
-    "myhandlernobodyuserServiceRole3CCC4361"
-   ]
-  },
   "myhandlerrootuserServiceRoleED38E6C4": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -91,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c135fcbc185b80a486a516d996c0b5f0c0e49283dea4571db84501319a669aa2.zip"
+     "S3Key": "6737b724007fbce8d40ef449faf69cf9b95df819698a66b1271192f0731850ae.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -108,14 +55,6 @@
   }
  },
  "Outputs": {
-  "Function1Arn": {
-   "Value": {
-    "Fn::GetAtt": [
-     "myhandlernobodyuser439E534B",
-     "Arn"
-    ]
-   }
-  },
   "Function2Arn": {
    "Value": {
     "Fn::GetAtt": [
@@ -124,12 +63,12 @@
     ]
    }
   },
-  "ExportsOutputRefmyhandlernobodyuser439E534B7FA9A11D": {
+  "ExportsOutputRefmyhandlerrootuserB19A637D5B1D518E": {
    "Value": {
-    "Ref": "myhandlernobodyuser439E534B"
+    "Ref": "myhandlerrootuserB19A637D"
    },
    "Export": {
-    "Name": "cdk-integ-lambda-python-bundling-user:ExportsOutputRefmyhandlernobodyuser439E534B7FA9A11D"
+    "Name": "cdk-integ-lambda-python-bundling-user:ExportsOutputRefmyhandlerrootuserB19A637D5B1D518E"
    }
   }
  },

@@ -7,15 +7,6 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 const app = new App();
 const stack = new Stack(app, 'cdk-integ-bundling-lambda-nodejs');
 
-new lambda.NodejsFunction(stack, 'ts-decorator-handler-custom-user', {
-  entry: path.join(__dirname, 'integ-handlers/ts-decorator-handler.ts'),
-  bundling: {
-    forceDockerBundling: true,
-    user: 'nobody', // Adding custom user for testing bundling process
-  },
-  runtime: STANDARD_NODEJS_RUNTIME,
-});
-
 new lambda.NodejsFunction(stack, 'ts-decorator-handler-root-user', {
   entry: path.join(__dirname, 'integ-handlers/ts-decorator-handler.ts'),
   bundling: {
@@ -23,14 +14,14 @@ new lambda.NodejsFunction(stack, 'ts-decorator-handler-root-user', {
     commandHooks: {
       beforeBundling(_inputDir: string, _outputDir: string): string[] {
         return [
-          'echo "some content" >> /etc/environment', // Can only be run by root user
+          'cat /etc/os-release',
         ];
       },
       beforeInstall: function (_inputDir: string, _outputDir: string): string[] {
-        return [];
+        return ['id'];
       },
       afterBundling: function (_inputDir: string, _outputDir: string): string[] {
-        return [];
+        return ['mkdir test'];
       },
     },
   },

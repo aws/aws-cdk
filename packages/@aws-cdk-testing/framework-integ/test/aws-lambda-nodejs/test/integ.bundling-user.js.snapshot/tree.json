@@ -8,130 +8,6 @@
         "id": "cdk-integ-bundling-lambda-nodejs",
         "path": "cdk-integ-bundling-lambda-nodejs",
         "children": {
-          "ts-decorator-handler-custom-user": {
-            "id": "ts-decorator-handler-custom-user",
-            "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0",
-                      "metadata": []
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0",
-                  "metadata": []
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0",
-                      "metadata": []
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "659fc275dc398d5f03ea5459bcc3898cca70adfa711dd30a29d749215d2990cb.zip"
-                    },
-                    "handler": "index.handler",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "tsdecoratorhandlercustomuserServiceRole8F13908A",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "nodejs18.x"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0",
-              "metadata": []
-            }
-          },
           "ts-decorator-handler-root-user": {
             "id": "ts-decorator-handler-root-user",
             "path": "cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user",
@@ -146,7 +22,9 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -192,7 +70,19 @@
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0",
-                  "metadata": []
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -253,7 +143,26 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
               "version": "0.0.0",
-              "metadata": []
+              "metadata": [
+                {
+                  "entry": "*",
+                  "bundling": {
+                    "forceDockerBundling": true,
+                    "commandHooks": "*"
+                  },
+                  "runtime": "*",
+                  "code": "*",
+                  "handler": "*"
+                },
+                {
+                  "entry": "*",
+                  "bundling": {
+                    "forceDockerBundling": true,
+                    "commandHooks": "*"
+                  },
+                  "runtime": "*"
+                }
+              ]
             }
           },
           "BootstrapVersion": {

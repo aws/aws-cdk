@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "cdk-integ-bundling-lambda-nodejs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bae097b795b8670867b342db23252f4d852383a6b34c056281bc4b4fcca57043.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2d6d8bc7a8564432ce22475e6d83c7916c89034d929af5176430f34ae41bec2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,52 @@
         "cdk-integ-bundling-lambda-nodejs.assets"
       ],
       "metadata": {
-        "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/ServiceRole/Resource": [
+        "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "tsdecoratorhandlercustomuserServiceRole8F13908A"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "bundling": {
+                "forceDockerBundling": true,
+                "commandHooks": "*"
+              },
+              "runtime": "*",
+              "code": "*",
+              "handler": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "bundling": {
+                "forceDockerBundling": true,
+                "commandHooks": "*"
+              },
+              "runtime": "*"
+            }
           }
         ],
-        "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-custom-user/Resource": [
+        "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/ServiceRole": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "tsdecoratorhandlercustomuser7462DFDD"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/ServiceRole/Resource": [
