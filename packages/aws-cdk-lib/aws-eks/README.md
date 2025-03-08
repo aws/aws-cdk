@@ -138,6 +138,7 @@ A more detailed breakdown of each is provided further down this README.
 
 Creating a new cluster is done using the `Cluster` or `FargateCluster` constructs. The only required properties are the kubernetes `version` and `kubectlLayer`.
 
+This will use the traditional node group as the workload
 ```ts
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
@@ -157,6 +158,91 @@ new eks.FargateCluster(this, 'HelloEKS', {
   kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
 });
 ```
+
+# EKS Auto Mode
+
+[Amazon EKS Auto Mode](https://aws.amazon.com/eks/auto-mode/) extends AWS management of Kubernetes clusters beyond the cluster itself, allowing AWS to set up and manage the infrastructure that enables the smooth operation of your workloads.
+
+### Using Auto Mode
+
+Specify the defaultCapacityType to create Auto Mode cluster:
+
+```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
+// Create EKS cluster with Auto Mode enabled
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+});
+```
+
+### Node Pools
+
+When Auto Mode is enabled, the cluster comes with two default node pools:
+
+- `system`: For running system components and add-ons
+- `general-purpose`: For running your application workloads
+
+These node pools are managed automatically by EKS, they cannot be modified, only enabled or disabled. You can configure which node pools to enable through the `compute` property:
+
+```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
+const cluster = new eks.Cluster(this, 'EksAutoCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+  compute: {
+    nodePools: ['system', 'general-purpose'],
+  },
+});
+```
+
+You can create your own node pool with your desired configuration, see [Create a Node Pool for EKS Auto Mode](https://docs.aws.amazon.com/eks/latest/userguide/create-node-pool.html).
+
+### Cluster with Auto Mode and Node Groups
+
+You can combine Auto Mode with traditional node groups for specific workload requirements:
+
+```ts
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+
+const cluster = new eks.Cluster(this, 'CombinedWorkloadCluster', {
+  version: eks.KubernetesVersion.V1_32,
+  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+  defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
+  compute: {
+    nodePools: ['system', 'general-purpose'],
+  },
+});
+
+// Add specialized node group for specific workloads
+cluster.addNodegroupCapacity('specialized-workload', {
+  minSize: 1,
+  maxSize: 3,
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.C5, ec2.InstanceSize.XLARGE)],
+  labels: {
+    workload: 'specialized',
+  },
+});
+```
+
+### Important Notes
+
+1. Auto Mode and traditional capacity management are mutually exclusive at the default capacity level. You cannot specify both Auto Mode and `defaultCapacity` or `defaultCapacityInstance`.
+
+2. When Auto Mode is enabled:
+   - The cluster will automatically manage compute resources
+   - EKS will handle scaling and management of the node pools
+
+3. Auto Mode requires specific IAM permissions. The construct will automatically attach the required managed policies:
+   - AmazonEKSComputePolicy
+   - AmazonEKSBlockStoragePolicy
+   - AmazonEKSLoadBalancingPolicy
+   - AmazonEKSNetworkingPolicy
+   - AmazonEKSClusterPolicy
 
 > **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see <https://github.com/aws/aws-cdk/issues/10073>.
 
