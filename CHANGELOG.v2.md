@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.182.0](https://github.com/aws/aws-cdk/compare/v2.181.1...v2.182.0) (2025-03-04)
+
+
+### Features
+
+* **assertions:** added getResourceId method to Template ([#33521](https://github.com/aws/aws-cdk/issues/33521)) ([a96b0f1](https://github.com/aws/aws-cdk/commit/a96b0f1dca27b262fb2c72637ed9043830477c2c))
+* **autoscaling:** add new `HealthChecks` for multiple health check types, including EBS and VPC_LATTICE types ([#31286](https://github.com/aws/aws-cdk/issues/31286)) ([b3edd0d](https://github.com/aws/aws-cdk/commit/b3edd0da9d0f49070b94120051c48716a69102c3)), closes [#31289](https://github.com/aws/aws-cdk/issues/31289) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts#L233](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts/issues/L233) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts#L2232-L2258](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts/issues/L2232-L2258) [/github.com/aws/aws-cdk/pull/31286#discussion_r1740763781](https://github.com/aws//github.com/aws/aws-cdk/pull/31286/issues/discussion_r1740763781)
+* **ecs:** encrypting managed storage ([#33535](https://github.com/aws/aws-cdk/issues/33535)) ([07f0fe3](https://github.com/aws/aws-cdk/commit/07f0fe3a851cce328433ada9aac674ab9464b5ca)), closes [#33380](https://github.com/aws/aws-cdk/issues/33380)
+* **inspector:** add minimal L2 interface for Inspector assessment template and fromCfnAssessmentTemplate() ([#33614](https://github.com/aws/aws-cdk/issues/33614)) ([d51f70a](https://github.com/aws/aws-cdk/commit/d51f70ab40d237a3145d986e75c7ea2465afd6b4))
+* **opensearchservice:** nodeoptions for domain ([#32936](https://github.com/aws/aws-cdk/issues/32936)) ([1b6f0c3](https://github.com/aws/aws-cdk/commit/1b6f0c3d0eb4aedfc72c716ee18aa3ae4dbf16b8)), closes [#32553](https://github.com/aws/aws-cdk/issues/32553)
+* **rds:** `DatabaseCluster` support `replicationSourceIdentifier` ([#33471](https://github.com/aws/aws-cdk/issues/33471)) ([878ad54](https://github.com/aws/aws-cdk/commit/878ad546c2d4f330c777734a0c7919bd6ce46395)), closes [#33280](https://github.com/aws/aws-cdk/issues/33280)
+* update L1 CloudFormation resource definitions ([#33676](https://github.com/aws/aws-cdk/issues/33676)) ([92dba49](https://github.com/aws/aws-cdk/commit/92dba49571caec118001b9f13b82378bec2150f0))
+* upgrade @aws-cdk/cloud-assembly-schema to v40 ([#33620](https://github.com/aws/aws-cdk/issues/33620)) ([127059e](https://github.com/aws/aws-cdk/commit/127059e890c78fcfaf11a97a961395b2ceb2a339))
+
+
+### Bug Fixes
+
+* **apigateway:** move endpointConfiguration to RestApiBaseProps ([#33514](https://github.com/aws/aws-cdk/issues/33514)) ([e07a89c](https://github.com/aws/aws-cdk/commit/e07a89ccb053fe22bcb96456c75304ac7a3c7670)), closes [#33295](https://github.com/aws/aws-cdk/issues/33295)
+* **appsync:** appsync Event API integration assertion tests ([#33572](https://github.com/aws/aws-cdk/issues/33572)) ([6f966a6](https://github.com/aws/aws-cdk/commit/6f966a6dcc010fe6af7999e7b5f97a447287aed3))
+* **cloudwatch:** update regex expression that prevents CloudWatch:Mah:UnknownIdentifier warnings ([#33591](https://github.com/aws/aws-cdk/issues/33591)) ([#33592](https://github.com/aws/aws-cdk/issues/33592)) ([97744e7](https://github.com/aws/aws-cdk/commit/97744e746670bf067da40c8ff6a902a9c15b707e))
+* **iam:** adding organization id pattern verification ([#33555](https://github.com/aws/aws-cdk/issues/33555)) ([6df9bfe](https://github.com/aws/aws-cdk/commit/6df9bfe566a913c6c0538b2f380a83d06891a027)), closes [#32756](https://github.com/aws/aws-cdk/issues/32756)
+* **lambda-nodejs:** do not require a frozen lockfile for bun ([#32908](https://github.com/aws/aws-cdk/issues/32908)) ([a21190e](https://github.com/aws/aws-cdk/commit/a21190eb85bbc64820389ca5979a324932b9ab4b)), closes [#32906](https://github.com/aws/aws-cdk/issues/32906) [#32906](https://github.com/aws/aws-cdk/issues/32906)
+* **s3:** cannot deploy multiple replication source buckets (under feature flag) ([#33360](https://github.com/aws/aws-cdk/issues/33360)) ([d580853](https://github.com/aws/aws-cdk/commit/d580853c546b4ee2d49afb52be75b4eb036bd6cd)), closes [#33355](https://github.com/aws/aws-cdk/issues/33355)
+* **sns:** for SSE topics, add KMS permissions in grantPublish ([#32794](https://github.com/aws/aws-cdk/issues/32794)) ([f1c0926](https://github.com/aws/aws-cdk/commit/f1c092634a391b0b7aed0f75626dd6d0ffd56564)), closes [#18387](https://github.com/aws/aws-cdk/issues/18387) [#31012](https://github.com/aws/aws-cdk/issues/31012) [#24848](https://github.com/aws/aws-cdk/issues/24848) [#16271](https://github.com/aws/aws-cdk/issues/16271) [#29511](https://github.com/aws/aws-cdk/issues/29511) [/github.com/aws/aws-cdk/issues/16271#issuecomment-917221985](https://github.com/aws//github.com/aws/aws-cdk/issues/16271/issues/issuecomment-917221985)
+
 ## [2.181.1](https://github.com/aws/aws-cdk/compare/v2.181.0...v2.181.1) (2025-02-27)
 
 ## [2.181.0](https://github.com/aws/aws-cdk/compare/v2.180.0...v2.181.0) (2025-02-25)
