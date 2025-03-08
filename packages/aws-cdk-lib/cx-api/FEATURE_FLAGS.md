@@ -91,7 +91,7 @@ Flags come in three types:
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
-| [@aws-cdk/aws-efs:defaultAllowClientMount](#aws-cdkaws-efsdefaultallowclientmount) |When enabled, EFS will allow clients to mount and access the filesystem by default | V2NEXT | (fix) |
+| [@aws-cdk/aws-efs:defaultAllowClientMount](#aws-cdkaws-efsdefaultallowclientmount) | When enabled, EFS will allow clients to mount and access the filesystem by default | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1025,10 +1025,10 @@ removing these ingress/egress rules in order to restrict access to the default s
 | (not in v1) |  |  |
 | 2.78.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       To allow all ingress/egress traffic to the VPC default security group you
       can set the `restrictDefaultSecurityGroup: false`.
-
+    
 
 
 ### @aws-cdk/aws-kms:aliasNameRef
@@ -1086,10 +1086,10 @@ provided.
 | (not in v1) |  |  |
 | 2.88.0 | `false` | `true` |
 
-**Compatibility with old behavior:**
+**Compatibility with old behavior:** 
       If backwards compatibility needs to be maintained due to an existing autoscaling group
       using a launch config, set this flag to false.
-
+    
 
 
 ### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
@@ -1723,20 +1723,23 @@ When disabled, 'CDKReplicationRole' is always specified.
 | (not in v1) |  |  |
 | 2.182.0 | `false` | `true` |
 
+
 ### @aws-cdk/aws-efs:defaultAllowClientMount
 
 *When enabled, EFS will allow clients to mount and access the filesystem by default* (fix)
 
 When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
-accessing the filesystem via mount target by default. Without this flag, only write and root access permissions are granted.
-
-This resolves an issue where clients could have permission to write to the filesystem but were unable to properly mount it, leading to access problems.
-By automatically including the read-only permission alongside the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+accessing the filesystem via mount target by default. Without this flag, only WRITE and ROOT_ACCESS
+permissions are granted.
+This resolves an issue where clients could have permission to write to the filesystem but were unable to
+properly mount it, leading to access problems. By automatically including the read-only permission alongside
+the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
 
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
 
 <!-- END details -->
