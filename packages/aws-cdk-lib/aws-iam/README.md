@@ -54,6 +54,20 @@ The `grant*` methods accept an `IGrantable` object. This interface is implemente
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
+### A note about managed policies
+You can use `grant*` methods to grant permissions to that resource in the managed policy. It is important to note that the policy needs to be attached to a principal (group, user, role) for it to be effective. Otherwise the policy would just be container of policy statements having no effect on authorization of actions on the resouce. And this deserves a special note on Cross Account use cases. Please note that importing a cross-account resource and then granting permissions to a managed policy, will add policy statements to the managed policy. However just attaching the policy to a principal will not authorize the principal to take those actions on that cross account resource, as expected. You will need to have a resource-based policy that allows that action to the said principal, for it to work. 
+
+```ts
+const policy = new ManagedPolicy(this, 'StandardPolicy', {
+  managedPolicyName: 'StandardPolicy',
+  description:'...',
+});
+...
+table.grantReadWriteData(policy);
+...
+policy.attachToUser(user);
+```
+
 ## Roles
 
 Many AWS resources require *Roles* to operate. These Roles define the AWS API
