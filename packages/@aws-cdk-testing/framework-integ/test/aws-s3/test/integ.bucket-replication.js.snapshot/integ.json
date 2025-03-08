@@ -1,9 +1,9 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "testCases": {
     "ReplicationInteg/DefaultTest": {
       "stacks": [
-        "ReplicationStack"
+        "BucketReplicationTestStack"
       ],
       "assertionStack": "ReplicationInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ReplicationIntegDefaultTestDeployAssert2C07A074"
