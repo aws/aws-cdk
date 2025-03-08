@@ -16,7 +16,8 @@
       "enumLike": false,
       "values": [
         "WEB",
-        "WEB_COMPUTE"
+        "WEB_COMPUTE",
+        "WEB_DYNAMIC"
       ]
     },
     "CacheConfigType": {
@@ -1541,6 +1542,10 @@
         "BEDROCK_AGENT",
         "BEDROCK_AGENT_RUNTIME",
         "BEDROCK_RUNTIME",
+        "BEDROCK_DATA_AUTOMATION",
+        "BEDROCK_DATA_AUTOMATION_FIPS",
+        "BEDROCK_DATA_AUTOMATION_RUNTIME",
+        "BEDROCK_DATA_AUTOMATION_RUNTIME_FIPS",
         "BILLING",
         "BILLING_AND_COST_MANAGEMENT_FREETIER",
         "BILLING_AND_COST_MANAGEMENT_TAX",
@@ -2038,7 +2043,8 @@
       "enumLike": false,
       "values": [
         "SPOT",
-        "ON_DEMAND"
+        "ON_DEMAND",
+        "CAPACITY_BLOCK"
       ]
     },
     "TaintEffect": {
@@ -2795,7 +2801,8 @@
         "GZIP",
         "HADOOP_SNAPPY",
         "SNAPPY",
-        "ZIP"
+        "ZIP",
+        "UNCOMPRESSED"
       ]
     }
   },
@@ -3877,7 +3884,9 @@
         "comprehend",
         "kafka",
         "elasticache",
-        "neptune"
+        "neptune",
+        "cassandra",
+        "workspaces"
       ]
     },
     "AdjustmentType": {
@@ -4201,6 +4210,15 @@
         "ELB"
       ]
     },
+    "AdditionalHealthCheckType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts",
+      "enumLike": false,
+      "values": [
+        "ELB",
+        "EBS",
+        "VPC_LATTICE"
+      ]
+    },
     "DefaultResult": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts",
       "enumLike": false,
@@ -4522,7 +4540,11 @@
       "values": [
         "RSA_2048",
         "EC_PRIME256V1",
-        "EC_SECP384R1"
+        "EC_SECP384R1",
+        "EC_SECP521R1",
+        "RSA_4096",
+        "RSA_3072",
+        "RSA_1024"
       ]
     }
   },
@@ -6373,7 +6395,8 @@
       "enumLike": true,
       "values": [
         "AES_256",
-        "KMS"
+        "KMS",
+        "KMS_DSSE"
       ]
     }
   },
@@ -7388,7 +7411,8 @@
       "enumLike": false,
       "values": [
         "SSD",
-        "HDD"
+        "HDD",
+        "INTELLIGENT_TIERING"
       ]
     },
     "FileSystemTypeVersion": {
@@ -7941,6 +7965,7 @@
         "JAVA_21",
         "DOTNET_6",
         "DOTNET_8",
+        "DOTNET_9",
         "DOTNET_CORE_1",
         "DOTNET_CORE_2",
         "DOTNET_CORE_2_1",
@@ -8131,6 +8156,13 @@
       "values": [
         "ipv4",
         "dualstack"
+      ]
+    },
+    "NodeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts",
+      "enumLike": false,
+      "values": [
+        "coordinator"
       ]
     },
     "EngineVersion": {
@@ -9397,7 +9429,9 @@
         "s3:ObjectTagging:*",
         "s3:ObjectTagging:Put",
         "s3:ObjectTagging:Delete",
-        "s3:ObjectAcl:Put"
+        "s3:ObjectAcl:Put",
+        "s3:ObjectRestore:*",
+        "s3:Replication:*"
       ]
     },
     "BucketAccessControl": {

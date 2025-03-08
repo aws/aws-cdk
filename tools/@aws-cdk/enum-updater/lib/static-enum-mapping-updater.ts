@@ -6,7 +6,7 @@ import * as extract from 'extract-zip';
 
 const ENUMS_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json";
 const ENUM_LIKE_CLASSES_URL = "https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json";
-const AWS_SDK_MODELS_URL = "https://github.com/awslabs/aws-sdk-rust/archive/refs/heads/main.zip";
+const CFN_LINT_URL = "https://github.com/aws-cloudformation/cfn-lint/archive/refs/heads/main.zip"
 const MODULE_MAPPING = path.join(__dirname, "module-mapping.json");
 const STATIC_MAPPING_FILE_NAME = "static-enum-mapping.json";
 const PARSED_CDK_ENUMS_FILE_NAME = "cdk-enums.json";
@@ -29,19 +29,36 @@ export interface SdkEnums {
   };
 }
 
-interface Shape {
-  type: string;
-  members?: {
-    [key: string]: {
-      traits?: {
-        'smithy.api#enumValue'?: string | number;
-        [key: string]: any;
-      };
-      [key: string]: any;
-    };
-  };
-}
 
+function extractEnums(schema: Record<string, any>, enums: { [enumName: string]: (string | number)[] }) {
+  // Helper function to process a property and its potential enum values
+  function processProperty(propertyName: string, property: any) {
+      if (property.enum) {
+          enums[propertyName] = property.enum;
+      } else if (property.items?.enum) {
+          enums[propertyName] = property.items.enum;
+      }
+
+      // Process nested properties
+      if (property.properties) {
+          for (const [nestedName, nestedProp] of Object.entries(property.properties)) {
+              processProperty(nestedName, nestedProp);
+          }
+      }
+  }
+
+  // Process main properties
+  for (const [propertyName, property] of Object.entries(schema.properties)) {
+      processProperty(propertyName, property);
+  }
+
+  // Process definitions
+  if (schema.definitions) {
+    for (const [definitionName, definition] of Object.entries(schema.definitions)) {
+      processProperty(definitionName, definition);
+    }
+  }
+}
 
 interface EnumValue {
   path: string;
@@ -116,16 +133,16 @@ export async function downloadGithubRawFile(url: string): Promise<DownloadResult
 }
 
 /**
- * Downloads the AWS SDK models repository ZIP file, extracts the `aws-models` directory,
+ * Downloads the CFN Lint Schema ZIP file, extracts the schema directory in us-east-1,
  * and stores it in a temporary location.
  *
- * @param url - The URL to the AWS SDK models ZIP archive.
+ * @param url - The URL to the CFN Lint Schema ZIP archive.
  * @returns A `DownloadResult` containing:
- *   - `path`: The temporary directory where `aws-models` is extracted.
+ *   - `path`: The temporary directory where schema is extracted.
  *   - `cleanup`: A function to remove temporary files after use.
  */
 export async function downloadAwsSdkModels(url: string): Promise<DownloadResult> {
-  console.log(`Downloading AWS SDK models from: ${url}`);
+  console.log(`Downloading CFN Lint schemas from: ${url}`);
 
   // Temporary storage setup
   const tmpDir = tmp.dirSync({ unsafeCleanup: true });
@@ -147,7 +164,7 @@ export async function downloadAwsSdkModels(url: string): Promise<DownloadResult>
     await extract(zipFile.name, { dir: tmpDir.name });
 
     // Locate and copy `aws-models` directory
-    const sourceDir = path.join(tmpDir.name, 'aws-sdk-rust-main', 'aws-models');
+    const sourceDir = path.join(tmpDir.name, 'cfn-lint-main/src/cfnlint/data/schemas/providers/us_east_1');
     if (!fs.existsSync(sourceDir)) {
       throw new Error("aws-models directory not found in extracted contents.");
     }
@@ -198,14 +215,19 @@ export async function parseAwsSdkEnums(sdkModelsPath: string): Promise<void> {
 
     for (const file of jsonFiles) {
       try {
-        const jsonData = readJsonFile(path.join(sdkModelsPath, file));
-
-        if (!jsonData.shapes) {
-          console.warn(`Skipping ${file}: No "shapes" section found.`);
+        if (file == 'module.json') {
           continue;
         }
+        const jsonData = readJsonFile(path.join(sdkModelsPath, file));
 
-        extractEnumsFromShapes(jsonData.shapes, sdkEnums);
+        const service = file.split('-')[1];
+
+        const enumMap = sdkEnums[service] ?? {};
+
+        // Extract enums
+        extractEnums(jsonData, enumMap);
+
+        sdkEnums[service] = enumMap;
       } catch (error) {
         console.warn(`Error processing file ${file}:`, error);
       }
@@ -230,49 +252,6 @@ function getJsonFiles(directory: string): string[] {
  */
 function readJsonFile(filePath: string): Record<string, any> {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-/**
- * Extracts enums from the "shapes" section of an SDK model and populates the provided sdkEnums object.
- */
-function extractEnumsFromShapes(shapes: Record<string, unknown>, sdkEnums: SdkEnums): void {
-  for (const [shapeName, shapeData] of Object.entries(shapes)) {
-    if (typeof shapeData !== 'object' || !shapeData) continue;
-
-    const shape = shapeData as Shape;
-    if (shape.type !== 'enum' || !shape.members) continue;
-
-    const { serviceName, enumName } = parseShapeName(shapeName);
-    if (!serviceName || !enumName) {
-      console.warn(`Skipping invalid shape name format: ${shapeName}`);
-      continue;
-    }
-
-    const enumValues = extractEnumValues(shape.members);
-    if (enumValues.length > 0) {
-      sdkEnums[serviceName] ??= {};
-      sdkEnums[serviceName][enumName] = enumValues;
-    }
-  }
-}
-
-/**
- * Extracts service and enum name from a shape name.
- */
-function parseShapeName(shapeName: string): { serviceName: string | null; enumName: string | null } {
-  const parts = shapeName.split(/[.#]/);
-  if (parts.length < 3) return { serviceName: null, enumName: null };
-
-  return { serviceName: parts[2], enumName: parts[parts.length - 1] };
-}
-
-/**
- * Extracts and normalizes enum values from shape members.
- */
-function extractEnumValues(members: Record<string, { traits?: Record<string, unknown> }>): string[] {
-  return Object.values(members)
-    .filter(member => member.traits && typeof member.traits['smithy.api#enumValue'] === 'string')
-    .map(member => member.traits!['smithy.api#enumValue'] as string);
 }
 
 /**
@@ -543,11 +522,11 @@ export async function generateAndSaveStaticMapping(
  */
 export async function entryMethod(): Promise<void> {
   try {
-    const sdkDownload = await downloadAwsSdkModels(AWS_SDK_MODELS_URL);
+    const cfnLintDownload = await downloadAwsSdkModels(CFN_LINT_URL);
     const downloadedCdkEnumsPath = await downloadGithubRawFile(ENUMS_URL);
     const downloadedCdkEnumsLikePath = await downloadGithubRawFile(ENUM_LIKE_CLASSES_URL);
 
-    if (!sdkDownload.path || !downloadedCdkEnumsPath.path || !downloadedCdkEnumsLikePath.path) {
+    if (!cfnLintDownload.path || !downloadedCdkEnumsPath.path || !downloadedCdkEnumsLikePath.path) {
       console.error("Error: Missing required files.");
       return;
     }
@@ -555,8 +534,8 @@ export async function entryMethod(): Promise<void> {
     console.log("CDK enums downloaded successfully.");
     await processCdkEnums(downloadedCdkEnumsPath.path, downloadedCdkEnumsLikePath.path);
     
-    console.log("SDK models downloaded successfully.");
-    await parseAwsSdkEnums(sdkDownload.path);
+    console.log("CFN Lint Schema downloaded successfully.");
+    await parseAwsSdkEnums(cfnLintDownload.path);
 
     // Read the files
     const cdkEnums: CdkEnums = JSON.parse(fs.readFileSync(CDK_ENUMS, 'utf8'));

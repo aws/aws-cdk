@@ -9,7 +9,7 @@
     "CacheConfigType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts",
       "sdk_service": "amplify",
-      "sdk_enum_name": "CacheConfigType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     }
   },
@@ -17,7 +17,7 @@
     "TraceConfigurationVendor": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts",
       "sdk_service": "apprunner",
-      "sdk_enum_name": "TracingVendor",
+      "sdk_enum_name": "Vendor",
       "match_percentage": 1
     },
     "ImageRepositoryType": {
@@ -35,7 +35,7 @@
     "HealthCheckProtocolType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts",
       "sdk_service": "apprunner",
-      "sdk_enum_name": "HealthCheckProtocol",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
     "IpAddressType": {
@@ -51,22 +51,6 @@
       "match_percentage": 1
     }
   },
-  "cloud9": {
-    "ConnectionType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts",
-      "sdk_service": "cloud9",
-      "sdk_enum_name": "ConnectionType",
-      "match_percentage": 1
-    }
-  },
-  "cognito-identitypool": {
-    "RoleMappingMatchType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cognito-identitypool-alpha/lib/identitypool.ts",
-      "sdk_service": "cognitoidentity",
-      "sdk_enum_name": "MappingRuleMatchType",
-      "match_percentage": 1
-    }
-  },
   "ec2": {
     "AddressFamily": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/prefix-list.ts",
@@ -77,37 +61,25 @@
     "IpamPoolPublicIpSource": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "IpamPoolPublicIpSource",
+      "sdk_enum_name": "PublicIpSource",
       "match_percentage": 1
     },
     "AwsServiceName": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "IpamPoolAwsService",
+      "sdk_enum_name": "AwsService",
       "match_percentage": 1
     },
     "NatConnectivityType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "ConnectivityType",
+      "sdk_enum_name": "IpamScopeType",
       "match_percentage": 1
     },
     "TransitGatewayFeatureStatus": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/util.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "ApplianceModeSupportValue",
-      "match_percentage": 1
-    },
-    "TransportProtocol": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/client-vpn-endpoint-types.ts",
-      "sdk_service": "ec2",
-      "sdk_enum_name": "TransportProtocol",
-      "match_percentage": 1
-    },
-    "InstanceArchitecture": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts",
-      "sdk_service": "ec2",
-      "sdk_enum_name": "ArchitectureType",
+      "sdk_enum_name": "ApplianceModeSupport",
       "match_percentage": 1
     },
     "KeyPairFormat": {
@@ -125,7 +97,7 @@
     "InstanceInitiatedShutdownBehavior": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/launch-template.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "InstanceInterruptionBehavior",
+      "sdk_enum_name": "InstanceInitiatedShutdownBehavior",
       "match_percentage": 1
     },
     "SpotInstanceInterruption": {
@@ -143,13 +115,7 @@
     "LaunchTemplateHttpTokens": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/launch-template.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "HttpTokensState",
-      "match_percentage": 1
-    },
-    "AmazonLinuxCpuType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/machine-image/common.ts",
-      "sdk_service": "ec2",
-      "sdk_enum_name": "ArchitectureType",
+      "sdk_enum_name": "HttpTokens",
       "match_percentage": 1
     },
     "Action": {
@@ -167,7 +133,7 @@
     "PlacementGroupStrategy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/placement-group.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "PlacementGroupStrategy",
+      "sdk_enum_name": "Strategy",
       "match_percentage": 1
     },
     "EbsDeviceVolumeType": {
@@ -197,29 +163,17 @@
     "FlowLogFileFormat": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "DestinationFileFormat",
+      "sdk_enum_name": "FileFormat",
       "match_percentage": 1
     },
     "DefaultInstanceTenancy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts",
       "sdk_service": "ec2",
-      "sdk_enum_name": "CapacityReservationTenancy",
+      "sdk_enum_name": "Tenancy",
       "match_percentage": 1
     }
   },
   "eks-v2": {
-    "AccessScopeType": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts",
-      "sdk_service": "eks",
-      "sdk_enum_name": "AccessScopeType",
-      "match_percentage": 1
-    },
-    "ClusterLoggingTypes": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts",
-      "sdk_service": "eks",
-      "sdk_enum_name": "LogType",
-      "match_percentage": 1
-    },
     "IpFamily": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts",
       "sdk_service": "eks",
@@ -229,33 +183,27 @@
     "NodegroupAmiType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "AMITypes",
+      "sdk_enum_name": "AmiType",
       "match_percentage": 1
     },
     "CapacityType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "CapacityTypes",
+      "sdk_enum_name": "CapacityType",
       "match_percentage": 1
     },
     "TaintEffect": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "TaintEffect",
+      "sdk_enum_name": "Effect",
       "match_percentage": 1
     }
   },
   "gamelift": {
-    "OperatingSystem": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts",
-      "sdk_service": "gamelift",
-      "sdk_enum_name": "OperatingSystem",
-      "match_percentage": 1
-    },
     "DeleteOption": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-server-group.ts",
       "sdk_service": "gamelift",
-      "sdk_enum_name": "GameServerGroupDeleteOption",
+      "sdk_enum_name": "DeleteOption",
       "match_percentage": 1
     },
     "BalancingStrategy": {
@@ -267,13 +215,13 @@
     "PriorityType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/game-session-queue.ts",
       "sdk_service": "gamelift",
-      "sdk_enum_name": "PriorityType",
+      "sdk_enum_name": "PriorityOrder",
       "match_percentage": 1
     },
     "Protocol": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/ingress-rule.ts",
       "sdk_service": "gamelift",
-      "sdk_enum_name": "IpProtocol",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     }
   },
@@ -284,22 +232,10 @@
       "sdk_enum_name": "WorkerType",
       "match_percentage": 1
     },
-    "JobState": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts",
-      "sdk_service": "glue",
-      "sdk_enum_name": "JobRunState",
-      "match_percentage": 1
-    },
     "ExecutionClass": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts",
       "sdk_service": "glue",
       "sdk_enum_name": "ExecutionClass",
-      "match_percentage": 1
-    },
-    "JobLanguage": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts",
-      "sdk_service": "glue",
-      "sdk_enum_name": "Language",
       "match_percentage": 1
     },
     "PredicateLogical": {
@@ -311,31 +247,13 @@
     "ConditionLogicalOperator": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts",
       "sdk_service": "glue",
-      "sdk_enum_name": "Comparator",
+      "sdk_enum_name": "LogicalOperator",
       "match_percentage": 1
     },
     "CrawlerState": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts",
       "sdk_service": "glue",
       "sdk_enum_name": "CrawlState",
-      "match_percentage": 1
-    },
-    "S3EncryptionMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
-      "sdk_service": "glue",
-      "sdk_enum_name": "S3EncryptionMode",
-      "match_percentage": 1
-    },
-    "CloudWatchEncryptionMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
-      "sdk_service": "glue",
-      "sdk_enum_name": "CloudWatchEncryptionMode",
-      "match_percentage": 1
-    },
-    "JobBookmarksEncryptionMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts",
-      "sdk_service": "glue",
-      "sdk_enum_name": "JobBookmarksEncryptionMode",
       "match_percentage": 1
     },
     "ConnectionType": {
@@ -369,7 +287,7 @@
     "Frequency": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts",
       "sdk_service": "iot",
-      "sdk_enum_name": "AuditFrequency",
+      "sdk_enum_name": "Frequency",
       "match_percentage": 1
     }
   },
@@ -382,46 +300,64 @@
     }
   },
   "ivs": {
+    "ContainerFormat": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
+      "sdk_service": "ivs",
+      "sdk_enum_name": "ContainerFormat",
+      "match_percentage": 1
+    },
+    "LatencyMode": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
+      "sdk_service": "ivs",
+      "sdk_enum_name": "LatencyMode",
+      "match_percentage": 1
+    },
     "ChannelType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
       "sdk_service": "ivs",
-      "sdk_enum_name": "ChannelType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     },
     "Preset": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
       "sdk_service": "ivs",
-      "sdk_enum_name": "TranscodePreset",
+      "sdk_enum_name": "Preset",
       "match_percentage": 1
     },
     "MaximumResolution": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
       "sdk_service": "ivs",
-      "sdk_enum_name": "MultitrackMaximumResolution",
+      "sdk_enum_name": "MaximumResolution",
       "match_percentage": 1
     },
     "Policy": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/channel.ts",
       "sdk_service": "ivs",
-      "sdk_enum_name": "MultitrackPolicy",
+      "sdk_enum_name": "Policy",
+      "match_percentage": 1
+    },
+    "RenditionSelection": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/rendition-configuration.ts",
+      "sdk_service": "ivs",
+      "sdk_enum_name": "RenditionSelection",
       "match_percentage": 1
     },
     "RecordingMode": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts",
-      "sdk_service": "ivsrealtime",
-      "sdk_enum_name": "ThumbnailRecordingMode",
+      "sdk_service": "ivs",
+      "sdk_enum_name": "RecordingMode",
       "match_percentage": 1
     },
     "Storage": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/thumbnail-configuration.ts",
-      "sdk_service": "ivsrealtime",
-      "sdk_enum_name": "ThumbnailStorageType",
+      "sdk_service": "ivs",
+      "sdk_enum_name": "Storage",
       "match_percentage": 1
     },
     "Resolution": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-ivs-alpha/lib/util.ts",
       "sdk_service": "ivs",
-      "sdk_enum_name": "RenditionConfigurationRendition",
+      "sdk_enum_name": "Resolution",
       "match_percentage": 1
     }
   },
@@ -445,59 +381,23 @@
       "match_percentage": 1
     }
   },
-  "kinesisfirehose": {
-    "Compression": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts",
-      "sdk_service": "firehose",
-      "sdk_enum_name": "CompressionFormat",
-      "match_percentage": 1
-    }
-  },
-  "kinesisfirehose-destinations": {
-    "Compression": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-kinesisfirehose-destinations-alpha/lib/common.ts",
-      "sdk_service": "firehose",
-      "sdk_enum_name": "CompressionFormat",
-      "match_percentage": 1
-    }
-  },
-  "msk": {
-    "StorageMode": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts",
-      "sdk_service": "kafka",
-      "sdk_enum_name": "StorageMode",
-      "match_percentage": 1
-    },
-    "ClusterMonitoringLevel": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts",
-      "sdk_service": "kafka",
-      "sdk_enum_name": "EnhancedMonitoring",
-      "match_percentage": 1
-    },
-    "ClientBrokerEncryption": {
-      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts",
-      "sdk_service": "kafka",
-      "sdk_enum_name": "ClientBroker",
-      "match_percentage": 1
-    }
-  },
   "apigateway": {
-    "SecurityPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts",
-      "sdk_service": "apigateway",
-      "sdk_enum_name": "SecurityPolicy",
-      "match_percentage": 1
-    },
     "ContentHandling": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
       "sdk_service": "apigateway",
-      "sdk_enum_name": "ContentHandlingStrategy",
+      "sdk_enum_name": "ContentHandling",
       "match_percentage": 1
     },
     "IntegrationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
       "sdk_service": "apigateway",
-      "sdk_enum_name": "IntegrationType",
+      "sdk_enum_name": "Type",
+      "match_percentage": 1
+    },
+    "PassthroughBehavior": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts",
+      "sdk_service": "apigateway",
+      "sdk_enum_name": "PassthroughBehavior",
       "match_percentage": 1
     },
     "ConnectionType": {
@@ -512,78 +412,16 @@
       "sdk_enum_name": "ApiKeySourceType",
       "match_percentage": 1
     },
-    "EndpointType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.ts",
-      "sdk_service": "apigateway",
-      "sdk_enum_name": "EndpointType",
-      "match_percentage": 1
-    },
-    "Period": {
+    "UsagePlanKeyType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/usage-plan.ts",
       "sdk_service": "apigateway",
-      "sdk_enum_name": "QuotaPeriodType",
+      "sdk_enum_name": "KeyType",
       "match_percentage": 1
     },
     "ResponseType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/gateway-response.ts",
       "sdk_service": "apigateway",
-      "sdk_enum_name": "GatewayResponseType",
-      "match_percentage": 1
-    }
-  },
-  "apigatewayv2": {
-    "SecurityPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "SecurityPolicy",
-      "match_percentage": 1
-    },
-    "EndpointType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/common/domain-name.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "EndpointType",
-      "match_percentage": 1
-    },
-    "HttpIntegrationType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "IntegrationType",
-      "match_percentage": 1
-    },
-    "HttpConnectionType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "ConnectionType",
-      "match_percentage": 1
-    },
-    "HttpRouteAuthorizationType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "AuthorizationType",
-      "match_percentage": 1
-    },
-    "WebSocketIntegrationType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "IntegrationType",
-      "match_percentage": 1
-    },
-    "ContentHandling": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "ContentHandlingStrategy",
-      "match_percentage": 1
-    },
-    "PassthroughBehavior": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "PassthroughBehavior",
-      "match_percentage": 1
-    },
-    "MappingValue": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/parameter-mapping.ts",
-      "sdk_service": "apigatewayv2",
-      "sdk_enum_name": "AuthorizationType",
+      "sdk_enum_name": "ResponseType",
       "match_percentage": 1
     }
   },
@@ -591,19 +429,13 @@
     "ValidatorType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.ts",
       "sdk_service": "appconfig",
-      "sdk_enum_name": "ValidatorType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     },
     "GrowthType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.ts",
       "sdk_service": "appconfig",
       "sdk_enum_name": "GrowthType",
-      "match_percentage": 1
-    },
-    "ActionPoint": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/extension.ts",
-      "sdk_service": "appconfig",
-      "sdk_enum_name": "ActionPoint",
       "match_percentage": 1
     },
     "DeletionProtectionCheck": {
@@ -649,7 +481,7 @@
     "Visibility": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts",
       "sdk_service": "appsync",
-      "sdk_enum_name": "GraphQLApiVisibility",
+      "sdk_enum_name": "Visibility",
       "match_percentage": 1
     },
     "AuthorizationType": {
@@ -673,13 +505,13 @@
     "IntrospectionConfig": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi.ts",
       "sdk_service": "appsync",
-      "sdk_enum_name": "CacheHealthMetricsConfig",
+      "sdk_enum_name": "IntrospectionConfig",
       "match_percentage": 1
     },
     "FunctionRuntimeFamily": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/runtime.ts",
       "sdk_service": "appsync",
-      "sdk_enum_name": "RuntimeName",
+      "sdk_enum_name": "Name",
       "match_percentage": 1
     },
     "MergeType": {
@@ -696,82 +528,72 @@
       "sdk_enum_name": "CapacityDistributionStrategy",
       "match_percentage": 1
     },
+    "HealthCheckType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "HealthCheckType",
+      "match_percentage": 1
+    },
+    "AdditionalHealthCheckType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "HealthCheckType",
+      "match_percentage": 1
+    },
+    "DefaultResult": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "DefaultResult",
+      "match_percentage": 1
+    },
+    "LifecycleTransition": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "LifecycleTransition",
+      "match_percentage": 1
+    },
+    "AdjustmentType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-action.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "AdjustmentType",
+      "match_percentage": 1
+    },
     "MetricAggregationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/step-scaling-action.ts",
       "sdk_service": "autoscaling",
-      "sdk_enum_name": "MetricStatistic",
+      "sdk_enum_name": "MetricAggregationType",
       "match_percentage": 1
     },
     "PredefinedMetric": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/target-tracking-scaling-policy.ts",
       "sdk_service": "autoscaling",
-      "sdk_enum_name": "MetricType",
+      "sdk_enum_name": "PredefinedMetricType",
+      "match_percentage": 1
+    },
+    "EbsDeviceVolumeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/volume.ts",
+      "sdk_service": "autoscaling",
+      "sdk_enum_name": "VolumeType",
       "match_percentage": 1
     },
     "PoolState": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/warm-pool.ts",
       "sdk_service": "autoscaling",
-      "sdk_enum_name": "WarmPoolState",
-      "match_percentage": 1
-    }
-  },
-  "backup": {
-    "BackupVaultEvents": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-backup/lib/vault.ts",
-      "sdk_service": "backup",
-      "sdk_enum_name": "BackupVaultEvent",
+      "sdk_enum_name": "PoolState",
       "match_percentage": 1
     }
   },
   "batch": {
-    "Compatibility": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/ecs-job-definition.ts",
-      "sdk_service": "batch",
-      "sdk_enum_name": "CRType",
-      "match_percentage": 1
-    },
-    "Action": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-definition-base.ts",
-      "sdk_service": "batch",
-      "sdk_enum_name": "RetryAction",
-      "match_percentage": 1
-    },
     "JobStateTimeLimitActionsAction": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts",
       "sdk_service": "batch",
-      "sdk_enum_name": "JobStateTimeLimitActionsAction",
+      "sdk_enum_name": "Action",
       "match_percentage": 1
     },
     "JobStateTimeLimitActionsState": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts",
       "sdk_service": "batch",
-      "sdk_enum_name": "JobStateTimeLimitActionsState",
-      "match_percentage": 1
-    },
-    "DevicePermission": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/linux-parameters.ts",
-      "sdk_service": "batch",
-      "sdk_enum_name": "DeviceCgroupPermission",
-      "match_percentage": 1
-    },
-    "AllocationStrategy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/managed-compute-environment.ts",
-      "sdk_service": "batch",
-      "sdk_enum_name": "CRAllocationStrategy",
-      "match_percentage": 1
-    }
-  },
-  "certificatemanager": {
-    "ValidationMethod": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts",
-      "sdk_service": "acm",
-      "sdk_enum_name": "ValidationMethod",
-      "match_percentage": 1
-    },
-    "KeyAlgorithm": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts",
-      "sdk_service": "acm",
-      "sdk_enum_name": "KeyAlgorithm",
+      "sdk_enum_name": "State",
       "match_percentage": 1
     }
   },
@@ -803,7 +625,7 @@
     "SSLMethod": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.ts",
       "sdk_service": "cloudfront",
-      "sdk_enum_name": "SSLSupportMethod",
+      "sdk_enum_name": "SslSupportMethod",
       "match_percentage": 1
     },
     "SecurityPolicyProtocol": {
@@ -824,60 +646,44 @@
       "sdk_enum_name": "EventType",
       "match_percentage": 1
     },
-    "OriginAccessControlOriginType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts",
-      "sdk_service": "cloudfront",
-      "sdk_enum_name": "OriginAccessControlOriginTypes",
-      "match_percentage": 1
-    },
-    "SigningBehavior": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts",
-      "sdk_service": "cloudfront",
-      "sdk_enum_name": "OriginAccessControlSigningBehaviors",
-      "match_percentage": 1
-    },
-    "SigningProtocol": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts",
-      "sdk_service": "cloudfront",
-      "sdk_enum_name": "OriginAccessControlSigningProtocols",
-      "match_percentage": 1
-    },
     "OriginSelectionCriteria": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts",
       "sdk_service": "cloudfront",
       "sdk_enum_name": "OriginGroupSelectionCriteria",
       "match_percentage": 1
     },
-    "HeadersFrameOption": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts",
+    "FailoverStatusCode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts",
       "sdk_service": "cloudfront",
-      "sdk_enum_name": "FrameOptionsList",
-      "match_percentage": 1
-    },
-    "HeadersReferrerPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts",
-      "sdk_service": "cloudfront",
-      "sdk_enum_name": "ReferrerPolicyList",
+      "sdk_enum_name": "ErrorCode",
       "match_percentage": 1
     },
     "OriginSslPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/web-distribution.ts",
       "sdk_service": "cloudfront",
-      "sdk_enum_name": "SslProtocol",
+      "sdk_enum_name": "OriginSSLProtocols",
+      "match_percentage": 1
+    }
+  },
+  "cloudtrail": {
+    "DataResourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.ts",
+      "sdk_service": "cloudtrail",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     }
   },
   "cloudwatch": {
-    "AlarmState": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm-rule.ts",
-      "sdk_service": "cloudwatch",
-      "sdk_enum_name": "StateValue",
-      "match_percentage": 1
-    },
     "ComparisonOperator": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.ts",
       "sdk_service": "cloudwatch",
       "sdk_enum_name": "ComparisonOperator",
+      "match_percentage": 1
+    },
+    "TreatMissingData": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.ts",
+      "sdk_service": "cloudwatch",
+      "sdk_enum_name": "TreatMissingData",
       "match_percentage": 1
     },
     "Statistic": {
@@ -889,33 +695,27 @@
     "Unit": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric-types.ts",
       "sdk_service": "cloudwatch",
-      "sdk_enum_name": "StandardUnit",
-      "match_percentage": 1
-    },
-    "DefaultValue": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/variable.ts",
-      "sdk_service": "cloudwatchlogs",
-      "sdk_enum_name": "FlattenedElement",
+      "sdk_enum_name": "Unit",
       "match_percentage": 1
     }
   },
   "codebuild": {
-    "LocalCacheMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/cache.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "CacheMode",
-      "match_percentage": 1
-    },
     "ComputeType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
       "sdk_service": "codebuild",
       "sdk_enum_name": "ComputeType",
       "match_percentage": 1
     },
+    "EnvironmentType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts",
+      "sdk_service": "codebuild",
+      "sdk_enum_name": "EnvironmentType",
+      "match_percentage": 1
+    },
     "MachineType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts",
       "sdk_service": "codebuild",
-      "sdk_enum_name": "MachineType",
+      "sdk_enum_name": "machineType",
       "match_percentage": 1
     },
     "FleetComputeType": {
@@ -929,37 +729,13 @@
       "sdk_service": "codebuild",
       "sdk_enum_name": "ImagePullCredentialsType",
       "match_percentage": 1
-    },
-    "BuildEnvironmentVariableType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "EnvironmentVariableType",
-      "match_percentage": 1
-    },
-    "ProjectVisibility": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "ProjectVisibilityType",
-      "match_percentage": 1
-    },
-    "ReportGroupType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/report-group.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "ReportType",
-      "match_percentage": 1
-    },
-    "WebhookFilterTypes": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/source.ts",
-      "sdk_service": "codebuild",
-      "sdk_enum_name": "WebhookFilterType",
-      "match_percentage": 1
     }
   },
   "codecommit": {
     "RepositoryEventTrigger": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codecommit/lib/repository.ts",
       "sdk_service": "codecommit",
-      "sdk_enum_name": "RepositoryTriggerEventEnum",
+      "sdk_enum_name": "Events",
       "match_percentage": 1
     }
   },
@@ -973,7 +749,7 @@
     "AutoRollbackEvent": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/private/utils.ts",
       "sdk_service": "codedeploy",
-      "sdk_enum_name": "AutoRollbackEvent",
+      "sdk_enum_name": "Events",
       "match_percentage": 1
     }
   },
@@ -981,7 +757,7 @@
     "ActionCategory": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.ts",
       "sdk_service": "codepipeline",
-      "sdk_enum_name": "ActionCategory",
+      "sdk_enum_name": "Category",
       "match_percentage": 1
     },
     "PipelineType": {
@@ -996,16 +772,10 @@
       "sdk_enum_name": "ExecutionMode",
       "match_percentage": 1
     },
-    "GitPullRequestEvent": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/trigger.ts",
-      "sdk_service": "codepipeline",
-      "sdk_enum_name": "GitPullRequestEventType",
-      "match_percentage": 1
-    },
     "ProviderType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/trigger.ts",
       "sdk_service": "codepipeline",
-      "sdk_enum_name": "PipelineTriggerProviderType",
+      "sdk_enum_name": "ProviderType",
       "match_percentage": 1
     }
   },
@@ -1017,111 +787,11 @@
       "match_percentage": 1
     }
   },
-  "cognito": {
-    "VerificationEmailStyle": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "DefaultEmailOptionType",
-      "match_percentage": 1
-    },
-    "LambdaVersion": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "PreTokenGenerationLambdaVersionType",
-      "match_percentage": 1
-    },
-    "Mfa": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "UserPoolMfaType",
-      "match_percentage": 1
-    },
-    "PasskeyUserVerification": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "UserVerificationType",
-      "match_percentage": 1
-    },
-    "AdvancedSecurityMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "AdvancedSecurityModeType",
-      "match_percentage": 1
-    },
-    "FeaturePlan": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "UserPoolTierType",
-      "match_percentage": 1
-    },
-    "StandardThreatProtectionMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "AdvancedSecurityModeType",
-      "match_percentage": 1
-    },
-    "CustomThreatProtectionMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.ts",
-      "sdk_service": "cognitoidentityprovider",
-      "sdk_enum_name": "AdvancedSecurityEnabledModeType",
-      "match_percentage": 1
-    }
-  },
-  "config": {
-    "MaximumExecutionFrequency": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-config/lib/rule.ts",
-      "sdk_service": "configservice",
-      "sdk_enum_name": "MaximumExecutionFrequency",
-      "match_percentage": 1
-    },
-    "EventSource": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-config/lib/rule.ts",
-      "sdk_service": "configservice",
-      "sdk_enum_name": "EventSource",
-      "match_percentage": 1
-    },
-    "MessageType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-config/lib/rule.ts",
-      "sdk_service": "configservice",
-      "sdk_enum_name": "MessageType",
-      "match_percentage": 1
-    }
-  },
   "dynamodb": {
     "AttributeType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
       "sdk_service": "dynamodb",
-      "sdk_enum_name": "ScalarAttributeType",
-      "match_percentage": 1
-    },
-    "BillingMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
-      "sdk_service": "dynamodb",
-      "sdk_enum_name": "BillingMode",
-      "match_percentage": 1
-    },
-    "ProjectionType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
-      "sdk_service": "dynamodb",
-      "sdk_enum_name": "ProjectionType",
-      "match_percentage": 1
-    },
-    "TableClass": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
-      "sdk_service": "dynamodb",
-      "sdk_enum_name": "TableClass",
-      "match_percentage": 1
-    },
-    "StreamViewType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
-      "sdk_service": "dynamodb",
-      "sdk_enum_name": "StreamViewType",
-      "match_percentage": 1
-    },
-    "InputCompressionType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.ts",
-      "sdk_service": "dynamodb",
-      "sdk_enum_name": "InputCompressionType",
+      "sdk_enum_name": "AttributeType",
       "match_percentage": 1
     },
     "ApproximateCreationDateTimePrecision": {
@@ -1132,12 +802,6 @@
     }
   },
   "ecr": {
-    "TagStatus": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/lifecycle.ts",
-      "sdk_service": "ecr",
-      "sdk_enum_name": "TagStatus",
-      "match_percentage": 1
-    },
     "TagMutability": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.ts",
       "sdk_service": "ecr",
@@ -1161,25 +825,13 @@
     "LaunchType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "LaunchType",
-      "match_percentage": 1
-    },
-    "DeploymentControllerType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "DeploymentControllerType",
-      "match_percentage": 1
-    },
-    "PropagatedTagSource": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "PropagateTags",
+      "sdk_enum_name": "RequiresCompatibilities",
       "match_percentage": 1
     },
     "FileSystemType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/service-managed-volume.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "TaskFilesystemType",
+      "sdk_enum_name": "FilesystemType",
       "match_percentage": 1
     },
     "EbsPropagatedTagSource": {
@@ -1209,25 +861,25 @@
     "ExecuteCommandLogging": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "ExecuteCommandLogging",
+      "sdk_enum_name": "Logging",
       "match_percentage": 1
     },
     "UlimitName": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "UlimitName",
+      "sdk_enum_name": "Name",
       "match_percentage": 1
     },
     "ContainerDependencyCondition": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "ContainerCondition",
+      "sdk_enum_name": "Condition",
       "match_percentage": 1
     },
     "Protocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "TransportProtocol",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
     "VersionConsistency": {
@@ -1236,34 +888,22 @@
       "sdk_enum_name": "VersionConsistency",
       "match_percentage": 1
     },
-    "EnvironmentFileType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/environment-file.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "EnvironmentFileType",
-      "match_percentage": 1
-    },
-    "FirelensLogRouterType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts",
-      "sdk_service": "ecs",
-      "sdk_enum_name": "FirelensConfigurationType",
-      "match_percentage": 1
-    },
     "DevicePermission": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/linux-parameters.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "DeviceCgroupPermission",
+      "sdk_enum_name": "Permissions",
       "match_percentage": 1
     },
     "CpuArchitecture": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/runtime-platform.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "CPUArchitecture",
+      "sdk_enum_name": "CpuArchitecture",
       "match_percentage": 1
     },
     "OperatingSystemFamily": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/runtime-platform.ts",
       "sdk_service": "ecs",
-      "sdk_enum_name": "OSFamily",
+      "sdk_enum_name": "OperatingSystemFamily",
       "match_percentage": 1
     }
   },
@@ -1271,13 +911,13 @@
     "LifecyclePolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts",
       "sdk_service": "efs",
-      "sdk_enum_name": "TransitionToArchiveRules",
+      "sdk_enum_name": "TransitionToArchive",
       "match_percentage": 1
     },
     "OutOfInfrequentAccessPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-efs/lib/efs-file-system.ts",
       "sdk_service": "efs",
-      "sdk_enum_name": "TransitionToPrimaryStorageClassRules",
+      "sdk_enum_name": "TransitionToPrimaryStorageClass",
       "match_percentage": 1
     },
     "PerformanceMode": {
@@ -1300,18 +940,6 @@
     }
   },
   "eks": {
-    "AccessScopeType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts",
-      "sdk_service": "eks",
-      "sdk_enum_name": "AccessScopeType",
-      "match_percentage": 1
-    },
-    "ClusterLoggingTypes": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts",
-      "sdk_service": "eks",
-      "sdk_enum_name": "LogType",
-      "match_percentage": 1
-    },
     "IpFamily": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts",
       "sdk_service": "eks",
@@ -1327,19 +955,19 @@
     "NodegroupAmiType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "AMITypes",
+      "sdk_enum_name": "AmiType",
       "match_percentage": 1
     },
     "CapacityType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "CapacityTypes",
+      "sdk_enum_name": "CapacityType",
       "match_percentage": 1
     },
     "TaintEffect": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts",
       "sdk_service": "eks",
-      "sdk_enum_name": "TaintEffect",
+      "sdk_enum_name": "Effect",
       "match_percentage": 1
     }
   },
@@ -1347,7 +975,7 @@
     "UnauthenticatedAction": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener-action.ts",
       "sdk_service": "elasticloadbalancingv2",
-      "sdk_enum_name": "AuthenticateCognitoActionConditionalBehaviorEnum",
+      "sdk_enum_name": "OnUnauthenticatedRequest",
       "match_percentage": 1
     },
     "RevocationType": {
@@ -1359,85 +987,25 @@
     "TargetGroupIpAddressType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-target-group.ts",
       "sdk_service": "elasticloadbalancingv2",
-      "sdk_enum_name": "TargetGroupIpAddressTypeEnum",
-      "match_percentage": 1
-    },
-    "IpAddressType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts",
-      "sdk_service": "elasticloadbalancingv2",
       "sdk_enum_name": "IpAddressType",
       "match_percentage": 1
     },
     "Protocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts",
       "sdk_service": "elasticloadbalancingv2",
-      "sdk_enum_name": "ProtocolEnum",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
     "ApplicationProtocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts",
       "sdk_service": "elasticloadbalancingv2",
-      "sdk_enum_name": "ProtocolEnum",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
     "TargetType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/enums.ts",
       "sdk_service": "elasticloadbalancingv2",
-      "sdk_enum_name": "TargetTypeEnum",
-      "match_percentage": 1
-    }
-  },
-  "elasticsearch": {
-    "TLSSecurityPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts",
-      "sdk_service": "elasticsearchservice",
-      "sdk_enum_name": "TLSSecurityPolicy",
-      "match_percentage": 1
-    }
-  },
-  "events": {
-    "HttpMethod": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/connection.ts",
-      "sdk_service": "eventbridge",
-      "sdk_enum_name": "ApiDestinationHttpMethod",
-      "match_percentage": 1
-    },
-    "AuthorizationType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/connection.ts",
-      "sdk_service": "eventbridge",
-      "sdk_enum_name": "ConnectionAuthorizationType",
-      "match_percentage": 1
-    }
-  },
-  "fsx": {
-    "StorageType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/file-system.ts",
-      "sdk_service": "fsx",
-      "sdk_enum_name": "StorageType",
-      "match_percentage": 1
-    },
-    "LustreDeploymentType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts",
-      "sdk_service": "fsx",
-      "sdk_enum_name": "LustreDeploymentType",
-      "match_percentage": 1
-    },
-    "LustreAutoImportPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts",
-      "sdk_service": "fsx",
-      "sdk_enum_name": "AutoImportPolicyType",
-      "match_percentage": 1
-    },
-    "DriveCacheType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts",
-      "sdk_service": "fsx",
-      "sdk_enum_name": "DriveCacheType",
-      "match_percentage": 1
-    },
-    "LustreDataCompressionType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts",
-      "sdk_service": "fsx",
-      "sdk_enum_name": "DataCompressionType",
+      "sdk_enum_name": "TargetType",
       "match_percentage": 1
     }
   },
@@ -1457,7 +1025,7 @@
     "ConnectionProtocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-globalaccelerator/lib/listener.ts",
       "sdk_service": "globalaccelerator",
-      "sdk_enum_name": "CustomRoutingProtocol",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
     "ClientAffinity": {
@@ -1471,7 +1039,7 @@
     "AccessKeyStatus": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts",
       "sdk_service": "iam",
-      "sdk_enum_name": "statusType",
+      "sdk_enum_name": "Status",
       "match_percentage": 1
     }
   },
@@ -1493,7 +1061,7 @@
     "KeyUsage": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts",
       "sdk_service": "kms",
-      "sdk_enum_name": "KeyUsageType",
+      "sdk_enum_name": "KeyUsage",
       "match_percentage": 1
     }
   },
@@ -1501,7 +1069,7 @@
     "AuthenticationMethod": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/kafka.ts",
       "sdk_service": "lambda",
-      "sdk_enum_name": "SourceAccessType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     }
   },
@@ -1509,19 +1077,13 @@
     "UntrustedArtifactOnDeployment": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code-signing-config.ts",
       "sdk_service": "lambda",
-      "sdk_enum_name": "CodeSigningPolicy",
+      "sdk_enum_name": "UntrustedArtifactOnDeployment",
       "match_percentage": 1
     },
     "MetricType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts",
       "sdk_service": "lambda",
-      "sdk_enum_name": "EventSourceMappingMetric",
-      "match_percentage": 1
-    },
-    "StartingPosition": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts",
-      "sdk_service": "lambda",
-      "sdk_enum_name": "EventSourcePosition",
+      "sdk_enum_name": "Metrics",
       "match_percentage": 1
     },
     "FunctionUrlAuthType": {
@@ -1569,47 +1131,19 @@
     "Architecture": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/architecture.ts",
       "sdk_service": "lambda",
-      "sdk_enum_name": "Architecture",
+      "sdk_enum_name": "Architectures",
       "match_percentage": 1
     },
     "SourceAccessConfigurationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts",
       "sdk_service": "lambda",
-      "sdk_enum_name": "SourceAccessType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     },
     "RuntimeManagementMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts",
       "sdk_service": "lambda",
       "sdk_enum_name": "UpdateRuntimeOn",
-      "match_percentage": 1
-    }
-  },
-  "logs": {
-    "LogGroupClass": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts",
-      "sdk_service": "cloudwatchlogs",
-      "sdk_enum_name": "LogGroupClass",
-      "match_percentage": 1
-    },
-    "Distribution": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts",
-      "sdk_service": "cloudwatchlogs",
-      "sdk_enum_name": "Distribution",
-      "match_percentage": 1
-    }
-  },
-  "opensearchservice": {
-    "TLSSecurityPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts",
-      "sdk_service": "opensearch",
-      "sdk_enum_name": "TLSSecurityPolicy",
-      "match_percentage": 1
-    },
-    "IpAddressType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.ts",
-      "sdk_service": "opensearch",
-      "sdk_enum_name": "IPAddressType",
       "match_percentage": 1
     }
   },
@@ -1632,30 +1166,42 @@
       "sdk_enum_name": "DatabaseInsightsMode",
       "match_percentage": 1
     },
+    "PerformanceInsightRetention": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts",
+      "sdk_service": "rds",
+      "sdk_enum_name": "PerformanceInsightsRetentionPeriod",
+      "match_percentage": 1
+    },
     "ClientPasswordAuthType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts",
       "sdk_service": "rds",
       "sdk_enum_name": "ClientPasswordAuthType",
       "match_percentage": 1
+    },
+    "DatabaseClusterEngine": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster-engine.ts",
+      "sdk_service": "rds",
+      "sdk_enum_name": "Engine",
+      "match_percentage": 1
     }
   },
   "route53": {
-    "HealthCheckType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.ts",
-      "sdk_service": "route53",
-      "sdk_enum_name": "HealthCheckType",
-      "match_percentage": 1
-    },
     "InsufficientDataHealthStatusEnum": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.ts",
       "sdk_service": "route53",
       "sdk_enum_name": "InsufficientDataHealthStatus",
       "match_percentage": 1
     },
+    "KeySigningKeyStatus": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/key-signing-key.ts",
+      "sdk_service": "route53",
+      "sdk_enum_name": "Status",
+      "match_percentage": 1
+    },
     "RecordType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts",
       "sdk_service": "route53",
-      "sdk_enum_name": "RRType",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     }
   },
@@ -1663,39 +1209,33 @@
     "ServerSideEncryption": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts",
       "sdk_service": "s3",
-      "sdk_enum_name": "ServerSideEncryption",
-      "match_percentage": 1
-    },
-    "StorageClass": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts",
-      "sdk_service": "s3",
-      "sdk_enum_name": "StorageClass",
+      "sdk_enum_name": "SSEAlgorithm",
       "match_percentage": 1
     }
   },
   "s3": {
+    "HttpMethods": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
+      "sdk_service": "s3",
+      "sdk_enum_name": "AllowedMethods",
+      "match_percentage": 1
+    },
     "RedirectProtocol": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",
       "sdk_enum_name": "Protocol",
       "match_percentage": 1
     },
-    "InventoryFormat": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
-      "sdk_service": "s3",
-      "sdk_enum_name": "InventoryFormat",
-      "match_percentage": 1
-    },
     "InventoryFrequency": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",
-      "sdk_enum_name": "InventoryFrequency",
+      "sdk_enum_name": "ScheduleFrequency",
       "match_percentage": 1
     },
     "InventoryObjectVersion": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",
-      "sdk_enum_name": "InventoryIncludedObjectVersions",
+      "sdk_enum_name": "IncludedObjectVersions",
       "match_percentage": 1
     },
     "ObjectOwnership": {
@@ -1716,60 +1256,36 @@
       "sdk_enum_name": "TransitionDefaultMinimumObjectSize",
       "match_percentage": 1
     },
-    "EventType": {
+    "BucketAccessControl": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",
-      "sdk_enum_name": "Event",
+      "sdk_enum_name": "AccessControl",
       "match_percentage": 1
     },
     "ObjectLockMode": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts",
       "sdk_service": "s3",
-      "sdk_enum_name": "ObjectLockMode",
+      "sdk_enum_name": "Mode",
+      "match_percentage": 1
+    }
+  },
+  "servicecatalog": {
+    "MessageLanguage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-servicecatalog/lib/common.ts",
+      "sdk_service": "servicecatalog",
+      "sdk_enum_name": "AcceptLanguage",
       "match_percentage": 1
     }
   },
   "servicediscovery": {
-    "NamespaceType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/namespace.ts",
-      "sdk_service": "servicediscovery",
-      "sdk_enum_name": "NamespaceType",
-      "match_percentage": 1
-    },
-    "RoutingPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/service.ts",
-      "sdk_service": "servicediscovery",
-      "sdk_enum_name": "RoutingPolicy",
-      "match_percentage": 1
-    },
     "HealthCheckType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-servicediscovery/lib/service.ts",
       "sdk_service": "servicediscovery",
-      "sdk_enum_name": "HealthCheckType",
-      "match_percentage": 1
-    }
-  },
-  "ses-actions": {
-    "LambdaInvocationType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/lambda.ts",
-      "sdk_service": "ses",
-      "sdk_enum_name": "InvocationType",
-      "match_percentage": 1
-    },
-    "EmailEncoding": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts",
-      "sdk_service": "ses",
-      "sdk_enum_name": "SNSActionEncoding",
+      "sdk_enum_name": "Type",
       "match_percentage": 1
     }
   },
   "ses": {
-    "EmailSendingEvent": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts",
-      "sdk_service": "sesv2",
-      "sdk_enum_name": "EventType",
-      "match_percentage": 1
-    },
     "CloudWatchDimensionSource": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set-event-destination.ts",
       "sdk_service": "ses",
@@ -1782,30 +1298,6 @@
       "sdk_enum_name": "TlsPolicy",
       "match_percentage": 1
     },
-    "ScalingMode": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/dedicated-ip-pool.ts",
-      "sdk_service": "sesv2",
-      "sdk_enum_name": "ScalingMode",
-      "match_percentage": 1
-    },
-    "MailFromBehaviorOnMxFailure": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/email-identity.ts",
-      "sdk_service": "ses",
-      "sdk_enum_name": "BehaviorOnMXFailure",
-      "match_percentage": 1
-    },
-    "EasyDkimSigningKeyLength": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/email-identity.ts",
-      "sdk_service": "sesv2",
-      "sdk_enum_name": "DkimSigningKeyLength",
-      "match_percentage": 1
-    },
-    "ReceiptFilterPolicy": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-filter.ts",
-      "sdk_service": "ses",
-      "sdk_enum_name": "ReceiptFilterPolicy",
-      "match_percentage": 1
-    },
     "TlsPolicy": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.ts",
       "sdk_service": "ses",
@@ -1813,31 +1305,25 @@
       "match_percentage": 1
     }
   },
-  "ssm": {
-    "ParameterTier": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.ts",
-      "sdk_service": "ssm",
-      "sdk_enum_name": "ParameterTier",
+  "sns": {
+    "LoggingProtocol": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.ts",
+      "sdk_service": "sns",
+      "sdk_enum_name": "Protocol",
       "match_percentage": 1
     }
   },
-  "stepfunctions": {
-    "StateMachineType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.ts",
-      "sdk_service": "sfn",
-      "sdk_enum_name": "StateMachineType",
+  "ssm": {
+    "ParameterDataType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.ts",
+      "sdk_service": "ssm",
+      "sdk_enum_name": "DataType",
       "match_percentage": 1
     },
-    "LogLevel": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.ts",
-      "sdk_service": "sfn",
-      "sdk_enum_name": "LogLevel",
-      "match_percentage": 1
-    },
-    "ProcessorType": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/types.ts",
-      "sdk_service": "sfn",
-      "sdk_enum_name": "StateMachineType",
+    "ParameterTier": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.ts",
+      "sdk_service": "ssm",
+      "sdk_enum_name": "Tier",
       "match_percentage": 1
     }
   },
