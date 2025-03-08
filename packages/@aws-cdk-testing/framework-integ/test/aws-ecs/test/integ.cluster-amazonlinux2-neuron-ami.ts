@@ -8,6 +8,7 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new cdk.Stack(app, 'integ-ecs-neuron-ami');

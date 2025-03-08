@@ -9,7 +9,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
-import { Duration } from '../../../core';
+import { Duration, ValidationError } from '../../../core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -117,12 +117,36 @@ export interface ProviderProps {
   /**
    * AWS Lambda execution role.
    *
-   * The role that will be assumed by the AWS Lambda.
-   * Must be assumable by the 'lambda.amazonaws.com' service principal.
+   * The role is shared by provider framework's onEvent, isComplete lambda, and onTimeout Lambda functions.
+   * This role will be assumed by the AWS Lambda, so it must be assumable by the 'lambda.amazonaws.com'
+   * service principal.
+   *
+   * @default - A default role will be created.
+   * @deprecated - Use frameworkOnEventLambdaRole, frameworkIsCompleteLambdaRole, frameworkOnTimeoutLambdaRole
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * Lambda execution role for provider framework's onEvent Lambda function. Note that this role must be assumed
+   * by the 'lambda.amazonaws.com' service principal.
+   *
+   * This property cannot be used with 'role' property
    *
    * @default - A default role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly frameworkOnEventRole?: iam.IRole;
+
+  /**
+   * Lambda execution role for provider framework's isComplete/onTimeout Lambda function. Note that this role
+   * must be assumed by the 'lambda.amazonaws.com' service principal. To prevent circular dependency problem
+   * in the provider framework, please ensure you specify a different IAM Role for 'frameworkCompleteAndTimeoutRole'
+   * from 'frameworkOnEventRole'.
+   *
+   * This property cannot be used with 'role' property
+   *
+   * @default - A default role will be created.
+   */
+  readonly frameworkCompleteAndTimeoutRole?: iam.IRole;
 
   /**
    * Provider Lambda name.
@@ -202,6 +226,13 @@ export class Provider extends Construct implements ICustomResourceProvider {
       }
     }
 
+    if (props.role && (props.frameworkOnEventRole || props.frameworkCompleteAndTimeoutRole)) {
+      throw new ValidationError('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
+    }
+    if (!props.isCompleteHandler && props.frameworkCompleteAndTimeoutRole) {
+      throw new ValidationError('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
+    }
+
     this.onEventHandler = props.onEventHandler;
     this.isCompleteHandler = props.isCompleteHandler;
 
@@ -214,11 +245,11 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.role = props.role;
     this.providerFunctionEnvEncryption = props.providerFunctionEnvEncryption;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
+    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName, props.frameworkOnEventRole);
 
     if (this.isCompleteHandler) {
-      const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
-      const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME);
+      const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
+      const timeoutFunction = this.createFunction(consts.FRAMEWORK_ON_TIMEOUT_HANDLER_NAME, undefined, props.frameworkCompleteAndTimeoutRole);
 
       const retry = calculateRetryPolicy(props);
       const waiterStateMachine = new WaiterStateMachine(this, 'waiter-state-machine', {
@@ -263,7 +294,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
     }));
   }
 
-  private createFunction(entrypoint: string, name?: string) {
+  private createFunction(entrypoint: string, name?: string, role?: iam.IRole) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH, {
         exclude: ['*.ts'],
@@ -279,7 +310,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       securityGroups: this.securityGroups,
-      role: this.role,
+      role: this.role ?? role,
       functionName: name,
       environmentEncryption: this.providerFunctionEnvEncryption,
     });
