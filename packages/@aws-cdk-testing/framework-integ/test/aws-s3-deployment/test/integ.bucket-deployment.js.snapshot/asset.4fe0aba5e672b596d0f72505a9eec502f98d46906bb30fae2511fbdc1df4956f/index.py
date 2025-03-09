@@ -320,17 +320,69 @@ def extract_and_replace_markers(archive, contents_dir, markers):
             if os.path.isdir(file_path): continue
             replace_markers(file_path, markers)
 
+def is_json_content(content):
+    try:
+        json.loads(content)
+        return True
+    except json.JSONDecodeError:
+        return False
+
 def replace_markers(filename, markers):
-    # convert the dict of string markers to binary markers
+    outfile = filename + '.new'
     replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
 
-    outfile = filename + '.new'
-    with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
-        for line in fi:
-            for token in replace_tokens:
-                line = line.replace(token, replace_tokens[token])
-            fo.write(line)
+    # First try to read as text to check if it's JSON
+    try:
+        with open(filename, 'r', encoding='utf-8') as f:
+            content = f.read()
+            is_json = is_json_content(content)
+    except UnicodeDecodeError:
+        # If we can't read as text, it's definitely not JSON
+        is_json = False
+
+    if is_json:
+        # Handle JSON content with proper structure parsing
+        new_content = replace_markers_in_json(content, replace_tokens)
+        # Write JSON in text mode
+        with open(outfile, 'w', encoding='utf-8') as fo:
+            fo.write(new_content)
+    else:
+        # Handle non-JSON content with line-by-line binary replacement
+        with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
+            # Process line by line to handle large files
+            for line in fi:
+                for token, replacement in replace_tokens.items():
+                    line = line.replace(token, replacement)
+                fo.write(line)
 
     # # delete the original file and rename the new one to the original
     os.remove(filename)
     os.rename(outfile, filename)
+
+
+def replace_markers_in_json(content, replace_tokens):
+    try:
+        # Parse the JSON structure
+        data = json.loads(content)
+
+        def replace_in_structure(obj):
+            if isinstance(obj, str):
+                # Convert string to bytes for consistent replacement
+                result = obj.encode('utf-8')
+                for token, replacement in replace_tokens.items():
+                    result = result.replace(token, replacement)
+                # Convert back to string
+                return result.decode('utf-8')
+            elif isinstance(obj, dict):
+                return {k: replace_in_structure(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [replace_in_structure(item) for item in obj]
+            return obj
+
+        # Process the whole structure
+        processed = replace_in_structure(data)
+        return json.dumps(processed)
+    except Exception as e:
+        logger.error(f'Error processing JSON: {e}')
+        logger.exception(e)
+        return content
