@@ -1407,7 +1407,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
       When disabled, 'CDKReplicationRole' is always specified.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
 };

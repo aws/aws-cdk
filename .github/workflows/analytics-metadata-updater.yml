@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - yuanhaoz/metadata_workflow # TODO, remove this
       - v2-release
 
 jobs:

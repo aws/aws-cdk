@@ -49,5 +49,14 @@ if echo "$@" | grep "DOCKER_STUB_SINGLE_FILE"; then
   exit 0
 fi
 
-echo "Docker mock only supports one of the following commands: DOCKER_STUB_SUCCESS_NO_OUTPUT,DOCKER_STUB_FAIL,DOCKER_STUB_SUCCESS,DOCKER_STUB_MULTIPLE_FILES,DOCKER_SINGLE_ARCHIVE"
+if echo "$@" | grep "DOCKER_STUB_EXEC"; then
+  while [[ "$1" != "DOCKER_STUB_EXEC" ]]; do
+    shift
+  done
+  shift
+
+  exec "$@" # Execute what's left
+fi
+
+echo "Docker mock only supports one of the following commands: DOCKER_STUB_SUCCESS_NO_OUTPUT,DOCKER_STUB_FAIL,DOCKER_STUB_SUCCESS,DOCKER_STUB_MULTIPLE_FILES,DOCKER_SINGLE_ARCHIVE,DOCKER_STUB_EXEC, got '$@'"
 exit 1

@@ -9,7 +9,8 @@
     ],
     "Platform": [
       "WEB",
-      "WEB_COMPUTE"
+      "WEB_COMPUTE",
+      "WEB_DYNAMIC"
     ],
     "CacheConfigType": [
       "AMPLIFY_MANAGED",
@@ -186,7 +187,8 @@
     ],
     "CapacityType": [
       "SPOT",
-      "ON_DEMAND"
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
     ],
     "TaintEffect": [
       "NO_SCHEDULE",
@@ -1112,7 +1114,9 @@
       "comprehend",
       "kafka",
       "elasticache",
-      "neptune"
+      "neptune",
+      "cassandra",
+      "workspaces"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/step-scaling-action.ts": {
@@ -1331,6 +1335,11 @@
     "HealthCheckType": [
       "EC2",
       "ELB"
+    ],
+    "AdditionalHealthCheckType": [
+      "ELB",
+      "EBS",
+      "VPC_LATTICE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/lifecycle-hook.ts": {
@@ -3980,7 +3989,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/file-system.ts": {
     "StorageType": [
       "SSD",
-      "HDD"
+      "HDD",
+      "INTELLIGENT_TIERING"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/lustre-file-system.ts": {
@@ -4300,6 +4310,9 @@
     "IpAddressType": [
       "ipv4",
       "dualstack"
+    ],
+    "NodeType": [
+      "coordinator"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts": {
@@ -4550,7 +4563,9 @@
       "s3:ObjectTagging:*",
       "s3:ObjectTagging:Put",
       "s3:ObjectTagging:Delete",
-      "s3:ObjectAcl:Put"
+      "s3:ObjectAcl:Put",
+      "s3:ObjectRestore:*",
+      "s3:Replication:*"
     ],
     "BucketAccessControl": [
       "Private",
