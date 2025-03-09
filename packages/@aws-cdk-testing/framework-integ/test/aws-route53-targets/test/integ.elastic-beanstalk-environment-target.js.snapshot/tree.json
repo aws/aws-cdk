@@ -27,7 +27,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "Asset": {
@@ -47,7 +52,8 @@
                 "path": "aws-cdk-elasticbeanstalk-integ/Asset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
@@ -81,7 +87,7 @@
                   "s3Bucket": {
                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                   },
-                  "s3Key": "02e8c4fbaddae67c5789ab6e8ef26eb226f048244bda7fdeb2ecaf8bda19eb9a.zip"
+                  "s3Key": "c5adcffb96a3522eb8a42f7d9a02a401482046a2930e2b086ecf0e8666a24579.zip"
                 }
               }
             },
@@ -99,7 +105,10 @@
                 "path": "aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role/ImportMyApplication-aws-elasticbeanstalk-ec2-role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -144,7 +153,22 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                },
+                {
+                  "addManagedPolicy": [
+                    {
+                      "managedPolicyArn": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyApplication-aws-elasticbeanstalk-ec2-instance-profile": {
@@ -196,7 +220,7 @@
                     "value": "t3.micro"
                   }
                 ],
-                "solutionStackName": "64bit Amazon Linux 2023 v6.3.0 running Node.js 20",
+                "solutionStackName": "64bit Amazon Linux 2023 v6.4.3 running Node.js 20",
                 "versionLabel": {
                   "Ref": "ApplicationVersion"
                 }
@@ -216,7 +240,35 @@
                 "path": "aws-cdk-elasticbeanstalk-integ/GetEnvironmentUrl/Provider",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "lambdaPurpose": "*",
+                      "memorySize": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "logGroup": "*",
+                      "functionName": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -234,7 +286,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "CustomResourcePolicy": {
@@ -273,7 +332,27 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "statements": "*"
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
@@ -303,7 +382,10 @@
                     "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -348,7 +430,25 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -368,7 +468,8 @@
                     "path": "aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -387,7 +488,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "9e8936ba1db43e0919ba2fc8265d50686eeaca82830c471ff8b7b0672c5970ec.zip"
+                      "s3Key": "cde607091ceabfbfb56e643cd4a5647680cfaf19c63f4d59b3f4880df4a71c8d.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -416,7 +517,21 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "memorySize": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "logGroup": "*",
+                  "functionName": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                }
+              ]
             }
           },
           "HostedZone": {
@@ -440,7 +555,15 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "zoneName": "*"
+                },
+                {
+                  "zoneName": "*"
+                }
+              ]
             }
           },
           "Alias": {
@@ -477,7 +600,19 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_route53.ARecord",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "zone": "*",
+                  "recordName": "*",
+                  "target": "*"
+                },
+                {
+                  "zone": "*",
+                  "recordName": "*",
+                  "target": "*"
+                }
+              ]
             }
           },
           "AliasWithHealthCheck": {
@@ -515,7 +650,19 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_route53.ARecord",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "zone": "*",
+                  "recordName": "*",
+                  "target": "*"
+                },
+                {
+                  "zone": "*",
+                  "recordName": "*",
+                  "target": "*"
+                }
+              ]
             }
           },
           "BootstrapVersion": {
