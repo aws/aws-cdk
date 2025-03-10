@@ -395,7 +395,8 @@
      {
       "TransitionToArchive": "AFTER_90_DAYS"
      }
-    ]
+    ],
+    "ThroughputMode": "elastic"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
