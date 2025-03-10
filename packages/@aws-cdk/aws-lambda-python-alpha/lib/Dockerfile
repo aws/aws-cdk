@@ -40,6 +40,6 @@ RUN \
 
 # Setting a non-root user to run default command, 
 # This will be overridden later when the Docker container is running, using either the local OS user or props.user.
-USER NOBODY
+USER nobody
 
 CMD [ "python" ]
