@@ -5,7 +5,7 @@ import { IBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
-import { applyInjectors } from '../../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -153,6 +153,7 @@ export interface MTLSConfig {
 /**
  * Custom domain resource for the API
  */
+@propertyInjectionDecorator
 export class DomainName extends Resource implements IDomainName {
   /**
    * Uniquely identifies this class.
@@ -177,12 +178,6 @@ export class DomainName extends Resource implements IDomainName {
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
-    // Blueprint Property Injection
-    props = applyInjectors(DomainName.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

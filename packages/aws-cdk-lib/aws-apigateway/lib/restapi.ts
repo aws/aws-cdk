@@ -20,7 +20,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { applyInjectors } from '../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
@@ -724,6 +724,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
  *
  * @resource AWS::ApiGateway::RestApi
  */
+@propertyInjectionDecorator
 export class SpecRestApi extends RestApiBase {
   /**
    * Uniquely identifies this class.
@@ -745,12 +746,6 @@ export class SpecRestApi extends RestApiBase {
   public readonly root: IResource;
 
   constructor(scope: Construct, id: string, props: SpecRestApiProps) {
-    // Blueprint Property Injection
-    props = applyInjectors(SpecRestApi.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -830,6 +825,7 @@ export interface RestApiAttributes {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
+@propertyInjectionDecorator
 export class RestApi extends RestApiBase {
   /**
    * Uniquely identifies this class.
@@ -901,12 +897,6 @@ export class RestApi extends RestApiBase {
   private readonly deployments = new Array<Deployment>();
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
-    // Blueprint Property Injection
-    props = applyInjectors(RestApi.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

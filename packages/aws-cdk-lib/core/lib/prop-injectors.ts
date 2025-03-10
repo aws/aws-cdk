@@ -1,5 +1,5 @@
 import { log, warn } from 'console';
-// import { inspect } from 'util';
+import { inspect } from 'util';
 import { Construct, IConstruct, Node } from 'constructs';
 
 /**
@@ -198,39 +198,41 @@ function findInjectorsFromConstruct(scope: IConstruct, uniqueId: string): Proper
 //    https://www.typescriptlang.org/docs/handbook/decorators.html#class-decorators
 //    https://stackoverflow.com/questions/66077874/how-to-obtain-constructor-arguments-inside-a-decorator
 
-// type Constructor = { new (...args: any[]): {} };
+type Constructor = { new (...args: any[]): {} };
 
 /**
  * This decorator applies property injection before calling the Construct's constructor.
  * @param constructor constructor of the Construct
- * @returns
+ * @returns an instance of the class with Property Injection applied.
  */
-// export function propertyInjectionDecorator<T extends Constructor>(constructor: T) {
-//   log('In propertyInjectionDecorator');
-//   return class extends constructor {
-//     constructor(...args: any[]) {
-//       const scope = args[0];
-//       const id = args[1];
-//       let props = args[2];
+export function propertyInjectionDecorator<T extends Constructor>(constructor: T) {
+  log('In propertyInjectionDecorator');
+  return class extends constructor {
+    constructor(...args: any[]) {
+      const scope = args[0];
+      const id = args[1];
+      let props = args[2];
 
-//       log(`Ctor scope: ${scope}, id: ${id}, old props: ${inspect(props)}`);
+      log(`Ctor scope: ${scope}, id: ${id}, old props: ${inspect(props)}`);
 
-//       // const className = constructor.name;
-//       // log(`Ctor className: ${className}`);
-//       // log('Ctor constructor:',  constructor);
-//       // const uniqueId: string = constructor.PROPERTY_INJECTION_ID;
-//       const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
-//       log('Ctor uniqueId:', uniqueId);
+      // const className = constructor.name;
+      // log(`Ctor className: ${className}`);
+      // log('Ctor constructor:',  constructor);
+      // const uniqueId: string = constructor.PROPERTY_INJECTION_ID;
 
-//       props = applyInjectors(uniqueId, props, {
-//         scope,
-//         id,
-//       });
+      // eslint-disable-next-line dot-notation
+      const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
+      log('Ctor uniqueId:', uniqueId);
 
-//       log(`Ctor new props: ${inspect(props)}`);
+      props = applyInjectors(uniqueId, props, {
+        scope,
+        id,
+      });
 
-//       super(scope, id, props);
-//     }
-//   };
-// }
+      log(`Ctor new props: ${inspect(props)}`);
+
+      super(scope, id, props);
+    }
+  };
+}
 

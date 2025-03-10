@@ -10,7 +10,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { applyInjectors } from '../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 /**
  * Represents an APIGateway Stage.
@@ -359,6 +359,7 @@ export abstract class StageBase extends Resource implements IStage {
   }
 }
 
+@propertyInjectionDecorator
 export class Stage extends StageBase {
   /**
    * Uniquely identifies this class.
@@ -382,12 +383,6 @@ export class Stage extends StageBase {
   private enableCacheCluster?: boolean;
 
   constructor(scope: Construct, id: string, props: StageProps) {
-    // Blueprint Property Injection
-    props = applyInjectors(Stage.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

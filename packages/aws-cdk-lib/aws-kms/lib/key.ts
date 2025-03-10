@@ -20,7 +20,7 @@ import {
   Token,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { applyInjectors } from '../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -596,6 +596,7 @@ export interface KeyProps {
  *
  * @resource AWS::KMS::Key
  */
+@propertyInjectionDecorator
 export class Key extends KeyBase {
   /**
    * Uniquely identifies this class.
@@ -772,12 +773,6 @@ export class Key extends KeyBase {
   private readonly enableKeyRotation?: boolean;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
-    // Blueprint Property Injection
-    props = applyInjectors(Key.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

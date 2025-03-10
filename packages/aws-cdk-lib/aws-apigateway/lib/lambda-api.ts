@@ -7,7 +7,7 @@ import { RestApi, RestApiProps } from './restapi';
 import * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { applyInjectors } from '../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 export interface LambdaRestApiProps extends RestApiProps {
   /**
@@ -52,6 +52,7 @@ export interface LambdaRestApiProps extends RestApiProps {
  * method from the specified path. If not defined, you will need to explicity
  * add resources and methods to the API.
  */
+@propertyInjectionDecorator
 export class LambdaRestApi extends RestApi {
   /**
    * Uniquely identifies this class.
@@ -62,12 +63,6 @@ export class LambdaRestApi extends RestApi {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
       throw new ValidationError('Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
     }
-
-    // Blueprint Property Injection
-    props = applyInjectors(LambdaRestApi.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
 
     super(scope, id, {
       defaultIntegration: new LambdaIntegration(props.handler, props.integrationOptions),

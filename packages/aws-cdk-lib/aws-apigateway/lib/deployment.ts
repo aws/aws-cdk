@@ -6,7 +6,7 @@ import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { applyInjectors } from '../../core/lib/prop-injectors';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 export interface DeploymentProps {
   /**
@@ -70,6 +70,7 @@ export interface DeploymentProps {
  * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
+@propertyInjectionDecorator
 export class Deployment extends Resource {
   /**
    * Uniquely identifies this class.
@@ -87,12 +88,6 @@ export class Deployment extends Resource {
   private readonly resource: LatestDeploymentResource;
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
-    // Blueprint Property Injection
-    props = applyInjectors(Deployment.PROPERTY_INJECTION_ID, props, {
-      scope,
-      id,
-    });
-
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

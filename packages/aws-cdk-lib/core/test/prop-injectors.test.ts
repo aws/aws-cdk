@@ -1,10 +1,127 @@
-import { error } from 'console';
+import { Match, Template } from '../../assertions';
 import { Key } from '../../aws-kms';
 import { Code, Function, Runtime } from '../../aws-lambda';
-import { BlockPublicAccess, Bucket, BucketProps } from '../../aws-s3';
-import { Stack, Stage } from '../lib';
+import { BlockPublicAccess, Bucket, BucketEncryption, BucketProps } from '../../aws-s3';
+import { Annotations, RemovalPolicy, Stack, Stage } from '../lib';
 import { App } from '../lib/app';
 import { applyInjectors, InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
+
+// Define Injectors for our testing
+class DoNothingInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor(fqn: string) {
+    this.constructUniqueId = fqn;
+  }
+
+  inject(originalProps: any, _context: InjectionContext): any {
+    return originalProps;
+  }
+}
+
+const dnBucket = new DoNothingInjector(Bucket.PROPERTY_INJECTION_ID);
+const dnFunction = new DoNothingInjector(Function.PROPERTY_INJECTION_ID);
+const dnKey = new DoNothingInjector(Key.PROPERTY_INJECTION_ID);
+
+class MyBucketPropsInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, _context: InjectionContext): any {
+    const newProps = {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      ...originalProps,
+    };
+    return newProps;
+  }
+}
+
+const bucketInjector = new MyBucketPropsInjector();
+
+class WarningBucketPropsInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, context: InjectionContext): any {
+    if (originalProps.enforceSSL === false) {
+      Annotations.of(context.scope).addWarningV2('aws-cdk-lib/core:PropertyInjectors', 'enforceSSL should be set to true');
+    }
+    return originalProps;
+  }
+}
+const warningBucketInjector = new WarningBucketPropsInjector();
+
+class ErrorBucketPropsInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, context: InjectionContext): any {
+    if (originalProps.enforceSSL === false) {
+      throw new Error('enforceSSL should be set to true');
+    }
+    return originalProps;
+  }
+}
+const errorBucketInjector = new ErrorBucketPropsInjector();
+
+class AccessBucketInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  // Skip property injection if this class attribute is set to true
+  private _skip: boolean;
+
+  constructor() {
+    this._skip = false;
+    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: BucketProps, context: InjectionContext): BucketProps {
+    const commonInjectionValues = {
+      accessControl: undefined,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.KMS,
+      enforceSSL: true,
+      publicReadAccess: false,
+      lifecycleRules: [],
+    };
+
+    // Don't set up access logging bucket if this._skip=true
+    if (this._skip) {
+      return commonInjectionValues;
+    }
+
+    let accessLoggingBucket = originalProps.serverAccessLogsBucket;
+    if (!accessLoggingBucket) {
+      // Set the _skip flag to disable indefinite access log bucket creation loop
+      this._skip = true;
+
+      accessLoggingBucket = new Bucket(context.scope, 'access-logging-12345', {
+        ...commonInjectionValues,
+        removalPolicy: originalProps.removalPolicy ?? RemovalPolicy.RETAIN,
+      });
+
+      // reset the _skip flag
+      this._skip = false;
+    }
+    return {
+      ...commonInjectionValues,
+      serverAccessLogsBucket: accessLoggingBucket,
+      ...originalProps,
+    };
+  }
+}
+
+const accessLogBucketInjector = new AccessBucketInjector();
 
 describe('PropertyInjectors Attachment', () => {
   test('Attach PropertyInjectors to App', () => {
@@ -284,7 +401,46 @@ describe('Bucket Injector', () => {
     });
   });
 
-  test('Injector throws error', () => {
+  test('Injector throws Warning', () => {
+    // GIVEN
+    const app = new App({
+      propertyInjectors: [
+        warningBucketInjector,
+      ],
+    });
+    const stack = new Stack(app, 'MyStack', {});
+    const mock = jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
+
+    // WHEN
+    const props: BucketProps = {
+      enforceSSL: false,
+    };
+    let newProps = applyInjectors(Bucket.PROPERTY_INJECTION_ID, props, {
+      scope: stack,
+      id: 'TestBucket',
+    });
+
+    // THEN
+    expect(mock).toHaveBeenCalledWith(
+      'aws-cdk-lib/core:PropertyInjectors',
+      'enforceSSL should be set to true');
+    mock.mockRestore();
+    expect(newProps).toEqual(props);
+
+    // WHEN
+    const props2: BucketProps = {
+      enforceSSL: true,
+    };
+    newProps = applyInjectors(Bucket.PROPERTY_INJECTION_ID, props2, {
+      scope: stack,
+      id: 'TestBucket',
+    });
+
+    // THEN
+    expect(newProps).toEqual(props2);
+  });
+
+  test('Injector throws Error', () => {
     // GIVEN
     const app = new App({
       propertyInjectors: [
@@ -292,6 +448,7 @@ describe('Bucket Injector', () => {
       ],
     });
     const stack = new Stack(app, 'MyStack', {});
+    const mock = jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
 
     expect(() => {
       // WHEN
@@ -303,7 +460,7 @@ describe('Bucket Injector', () => {
         scope: stack,
         id: 'TestBucket',
       });
-    }).toThrow('SSL should be set to true'); // THEN
+    }).toThrow('enforceSSL should be set to true'); // THEN
 
     // WHEN
     const props2: BucketProps = {
@@ -319,54 +476,69 @@ describe('Bucket Injector', () => {
   });
 });
 
-class DoNothingInjector implements IPropertyInjector {
-  public readonly constructUniqueId: string;
+describe('Test Injector by Comparing Templates', () => {
+  test('Compare Bucket Injector Templates', () => {
+    // GIVEN - with Injector
+    const app = new App({
+      propertyInjectors: [
+        bucketInjector,
+      ],
+    });
+    const stack = new Stack(app, 'MyStack', {});
+    const b1 = new Bucket(stack, 'my-bucket-1', {});
+    const template = Template.fromStack(stack).toJSON();
 
-  constructor(fqn: string) {
-    this.constructUniqueId = fqn;
-  }
-
-  inject(originalProps: any, _context: InjectionContext): any {
-    return originalProps;
-  }
-}
-
-const dnBucket = new DoNothingInjector(Bucket.PROPERTY_INJECTION_ID);
-const dnFunction = new DoNothingInjector(Function.PROPERTY_INJECTION_ID);
-const dnKey = new DoNothingInjector(Key.PROPERTY_INJECTION_ID);
-
-class MyBucketPropsInjector implements IPropertyInjector {
-  public readonly constructUniqueId: string;
-
-  constructor() {
-    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
-  }
-
-  inject(originalProps: any, _context: InjectionContext): any {
-    const newProps = {
+    // WHEN - no Injector, but props
+    const app2 = new App({});
+    const stack2 = new Stack(app2, 'MyStack', {});
+    const b2 = new Bucket(stack2, 'my-bucket-1', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
-      ...originalProps,
-    };
-    return newProps;
-  }
-}
+    });
 
-const bucketInjector = new MyBucketPropsInjector();
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
+  });
 
-class ErrorBucketPropsInjector implements IPropertyInjector {
-  public readonly constructUniqueId: string;
+  test('Compare AccessLog Bucket Injector Templates', () => {
+    // This case is complex because we are creating a bucket within Bucket constructor.
+    // GIVEN - with Injector
+    const app = new App({
+      propertyInjectors: [
+        accessLogBucketInjector,
+      ],
+    });
+    const stack = new Stack(app, 'MyStack', {});
+    const b1 = new Bucket(stack, 'my-bucket-1', {});
+    const template = Template.fromStack(stack).toJSON();
 
-  constructor() {
-    this.constructUniqueId = Bucket.PROPERTY_INJECTION_ID;
-  }
+    // WHEN - no Injector, but props
+    const app2 = new App({});
+    const stack2 = new Stack(app2, 'MyStack', {});
+    const accessLog = new Bucket(stack2, 'access-logging-12345', {
+      accessControl: undefined,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.KMS,
+      enforceSSL: true,
+      publicReadAccess: false,
+      lifecycleRules: [],
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+    const b2 = new Bucket(stack2, 'my-bucket-1', {
+      accessControl: undefined,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.KMS,
+      enforceSSL: true,
+      publicReadAccess: false,
+      lifecycleRules: [],
+      serverAccessLogsBucket: accessLog,
+    });
 
-  inject(originalProps: any, _context: InjectionContext): any {
-    if (originalProps.enforceSSL === false) {
-      throw new Error('SSL should be set to true');
-    }
-    return originalProps;
-  }
-}
-
-const errorBucketInjector = new ErrorBucketPropsInjector();
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
+  });
+});
