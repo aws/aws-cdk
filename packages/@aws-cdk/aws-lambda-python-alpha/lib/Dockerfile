@@ -38,4 +38,8 @@ RUN \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/*
 
+# Setting a non-root user to run default command, 
+# This will be overridden later when the Docker container is running, using either the local OS user or props.user.
+USER nobody
+
 CMD [ "python" ]
