@@ -1,4 +1,5 @@
 import { IRule } from './rule-ref';
+import { LogGroupTargetInput } from '../../aws-events-targets';
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
   IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
@@ -40,8 +41,22 @@ export abstract class RuleTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * @returns RuleTargetInput
    */
   public static fromObject(obj: any): RuleTargetInput {
+    return new FieldAwareEventInput(obj, InputType.Object);
+  }
+
+  /**
+   * Pass a JSON object to the event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   *
+   * @returns LogGroupTargetInput
+   */
+  public static fromObjectV2(obj: any): LogGroupTargetInput {
     return new FieldAwareEventInput(obj, InputType.Object);
   }
 
