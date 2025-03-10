@@ -1,0 +1,229 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "DefaultTestStack": {
+        "id": "DefaultTestStack",
+        "path": "DefaultTestStack",
+        "children": {
+          "DefaultBucket": {
+            "id": "DefaultBucket",
+            "path": "DefaultTestStack/DefaultBucket",
+            "children": {
+              "DefaultBucket": {
+                "id": "DefaultBucket",
+                "path": "DefaultTestStack/DefaultBucket/DefaultBucket",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tableBucketName": "default-table-bucket"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3tables.CfnTableBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3tables-alpha.TableBucket",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "DefaultTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "DefaultTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "OptionsTestStack": {
+        "id": "OptionsTestStack",
+        "path": "OptionsTestStack",
+        "children": {
+          "BucketWithOptions": {
+            "id": "BucketWithOptions",
+            "path": "OptionsTestStack/BucketWithOptions",
+            "children": {
+              "BucketWithOptions": {
+                "id": "BucketWithOptions",
+                "path": "OptionsTestStack/BucketWithOptions/BucketWithOptions",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tableBucketName": "table-bucket-with-options",
+                    "unreferencedFileRemoval": {
+                      "noncurrentDays": 20,
+                      "status": "Disabled",
+                      "unreferencedDays": 20
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3tables.CfnTableBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "OptionsTestStack/BucketWithOptions/DefaultPolicy",
+                "children": {
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "OptionsTestStack/BucketWithOptions/DefaultPolicy/DefaultPolicy",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3Tables::TableBucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "resourcePolicy": {
+                          "Statement": [
+                            {
+                              "Action": "s3tables:*",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "s3.amazonaws.com"
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "tableBucketArn": {
+                          "Fn::GetAtt": [
+                            "BucketWithOptions87848D2E",
+                            "TableBucketARN"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3tables.CfnTableBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-s3tables-alpha.TableBucketPolicy",
+                  "version": "0.0.0",
+                  "metadata": []
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-s3tables-alpha.TableBucket",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "OptionsTestStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "OptionsTestStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TableBucketIntegTest": {
+        "id": "TableBucketIntegTest",
+        "path": "TableBucketIntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TableBucketIntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TableBucketIntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.4.2"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TableBucketIntegTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "TableBucketIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "TableBucketIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
