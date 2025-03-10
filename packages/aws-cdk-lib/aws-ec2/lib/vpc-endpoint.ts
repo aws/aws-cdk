@@ -413,6 +413,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
   public static readonly EMR_SERVERLESS_LIVY = new InterfaceVpcEndpointAwsService('emr-serverless-services.livy');
+  public static readonly EMR_SERVERLESS_DASHBOARD = new InterfaceVpcEndpointAwsService('emr-serverless.dashboard');
   public static readonly EMR_WAL = new InterfaceVpcEndpointAwsService('emrwal.prod');
   public static readonly END_USER_MESSAGING_SOCIAL = new InterfaceVpcEndpointAwsService('social-messaging');
   public static readonly ENTITY_RESOLUTION = new InterfaceVpcEndpointAwsService('entityresolution');
