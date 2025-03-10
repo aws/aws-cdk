@@ -355,7 +355,7 @@ def replace_markers(filename, markers):
                     line = line.replace(token, replacement)
                 fo.write(line)
 
-    # Delete original and rename
+    # # delete the original file and rename the new one to the original
     os.remove(filename)
     os.rename(outfile, filename)
 

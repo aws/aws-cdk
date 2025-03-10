@@ -154,18 +154,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployMe5AwsCliLayerF0F79631": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployMe5CustomResource44BEE629": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -198,6 +186,18 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "awscdklambdalayerawscliAwsCliLayer437D4B14": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
    "Type": "AWS::IAM::Role",
@@ -341,7 +341,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMe5AwsCliLayerF0F79631"
+      "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
      }
     ],
     "Role": {

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "test-s3-deploy-substitution.assets": {
       "type": "cdk:asset-manifest",
@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e622b5afc61487f4ca62265b3f8e08de3fa600d24ba90f77984e7e12396173c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50b2efc3b0cf83eed294f0d2233c3b434b4ec1346d9c330afe5269ef88bb4031.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,16 +53,70 @@
             "data": "substitutionbucket13A1BF4A"
           }
         ],
-        "/test-s3-deploy-substitution/Deployment/AwsCliLayer/Resource": [
+        "/test-s3-deploy-substitution/Deployment/CustomResourceHandler": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DeploymentAwsCliLayerB82B26A3"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/test-s3-deploy-substitution/Deployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-s3-deploy-substitution/Deployment/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeploymentCustomResource47E8B2E6"
+          }
+        ],
+        "/test-s3-deploy-substitution/@aws-cdk--lambda-layer-awscli.AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/test-s3-deploy-substitution/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdklambdalayerawscliAwsCliLayer437D4B14"
           }
         ],
         "/test-s3-deploy-substitution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -116,6 +170,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DeploymentAwsCliLayerB82B26A3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentAwsCliLayerB82B26A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-s3-deploy-substitution"
@@ -138,7 +201,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd66b2b01e7999ed278eb45e44763502524a0b1777267de005fc45c24c232bef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa9ce897691354b39c06e16310d200d285c31266c4d8f5049dbd4d08a5838629.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
