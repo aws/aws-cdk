@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ValidationError } from 'jsonschema';
 import { CfnPrefixList } from './ec2.generated';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token } from '../../core';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token, Annotations } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -111,6 +111,7 @@ export class PrefixList extends PrefixListBase {
       throw new ValidationError('All arguments to look up a managed prefix list must be concrete (no Tokens)', scope);
     }
 
+    const dummyResponse = { PrefixListId: 'pl-xxxxxxxx' };
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
@@ -120,13 +121,15 @@ export class PrefixList extends PrefixListBase {
         },
         propertiesToReturn: ['PrefixListId'],
       } as Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
-      dummyValue: [
-        { PrefixListId: 'pl-xxxxxxxx' },
-      ],
+      dummyValue: [dummyResponse],
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
-    const prefixList = response[0];
+    let prefixList = response[0];
+    if (!prefixList?.PrefixListId) {
+      Annotations.of(scope).addError(`Could not find the managed prefix list '${options.prefixListName}'`);
+      prefixList = dummyResponse;
+    }
 
     return this.fromPrefixListId(scope, id, prefixList.PrefixListId);
   }

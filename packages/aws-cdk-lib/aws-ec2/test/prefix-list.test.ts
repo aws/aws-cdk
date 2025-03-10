@@ -1,7 +1,11 @@
-import { Match, Template } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
 import * as cxschema from '../../cloud-assembly-schema';
 import { CfnParameter, ContextProvider, Stack } from '../../core';
 import { AddressFamily, PrefixList } from '../lib/prefix-list';
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe('prefix list', () => {
   test('default empty prefixlist', () => {
@@ -142,5 +146,20 @@ describe('prefix list', () => {
     expect(() => {
       PrefixList.fromLookup(stack, 'PrefixList', { prefixListName: prefixListName.valueAsString });
     }).toThrow('All arguments to look up a managed prefix list must be concrete (no Tokens)');
+  });
+
+  test('fromLookup reports an error if not found', () => {
+    // GIVEN
+    const resultObjs = [];
+    jest.spyOn(ContextProvider, 'getValue').mockReturnValue({ value: resultObjs });
+
+    // WHEN
+    const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+    PrefixList.fromLookup(stack, 'PrefixList', {
+      prefixListName: 'com.amazonaws.us-east-1.missingprefixlist',
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasError('/Default', "Could not find the managed prefix list 'com.amazonaws.us-east-1.missingprefixlist'");
   });
 });
