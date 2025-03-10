@@ -1325,7 +1325,7 @@ export class Cluster extends ClusterBase {
       this.defineCoreDnsComputeType(CoreDnsComputeType.FARGATE);
     }
 
-    const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
+    const outputConfigCommand = (props.outputConfigCommand ?? true);
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });

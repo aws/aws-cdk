@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
     "25c16d2ab30e35800b3ea63c44c93deb85584076eb09a2db9f971803252b22dc": {
       "source": {
@@ -53,7 +53,7 @@
         }
       }
     },
-    "e21db2643d9181f260c6a7c2809bf4ec3aa6bea3c31194c00499b6c4d84a0162": {
+    "260a1441b1628d4af37bb63a1e06ed58ee778306e4ac421a455de4cd8449a9f6": {
       "source": {
         "path": "EKSStandardAccessEntry.template.json",
         "packaging": "file"
@@ -61,7 +61,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e21db2643d9181f260c6a7c2809bf4ec3aa6bea3c31194c00499b6c4d84a0162.json",
+          "objectKey": "260a1441b1628d4af37bb63a1e06ed58ee778306e4ac421a455de4cd8449a9f6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

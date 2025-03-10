@@ -1009,13 +1009,6 @@
                           "managedPolicyArn": "*"
                         }
                       ]
-                    },
-                    {
-                      "addManagedPolicy": [
-                        {
-                          "managedPolicyArn": "*"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -2134,6 +2127,22 @@
                   "metadata": [
                     "*"
                   ]
+                }
+              },
+              "ConfigCommand": {
+                "id": "ConfigCommand",
+                "path": "EksClusterWithAddonStack/Cluster/ConfigCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "GetTokenCommand": {
+                "id": "GetTokenCommand",
+                "path": "EksClusterWithAddonStack/Cluster/GetTokenCommand",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
