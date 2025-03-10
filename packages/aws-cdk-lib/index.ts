@@ -115,6 +115,7 @@ export * as aws_forecast from './aws-forecast';
 export * as aws_frauddetector from './aws-frauddetector';
 export * as aws_fsx from './aws-fsx';
 export * as aws_gamelift from './aws-gamelift';
+export * as aws_gameliftstreams from './aws-gameliftstreams';
 export * as aws_globalaccelerator from './aws-globalaccelerator';
 export * as aws_globalaccelerator_endpoints from './aws-globalaccelerator-endpoints';
 export * as aws_glue from './aws-glue';
