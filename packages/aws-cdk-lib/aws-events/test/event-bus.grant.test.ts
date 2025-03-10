@@ -16,9 +16,9 @@ describe('EventBus grants', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
       Action: 'events:PutEvents',
-      Principal: { Service: 'states.amazonaws.com' },
-      StatementId: expect.any(String),
-      EventBusName: { Ref: expect.any(String) },
+      Principal: 'states.amazonaws.com',
+      StatementId: 'AllowPutEvents-EventBus',
+      EventBusName: { Ref: 'EventBus7B8748AA' },
     });
   });
 
@@ -40,7 +40,7 @@ describe('EventBus grants', () => {
           Action: 'events:PutEvents',
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [expect.any(String), 'Arn'],
+            'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
           },
         }],
         Version: '2012-10-17',

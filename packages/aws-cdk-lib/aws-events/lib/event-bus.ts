@@ -177,6 +177,21 @@ abstract class EventBusBase extends Resource implements IEventBus {
   }
 
   public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
+    // Special handling for service principals
+    if (grantee.grantPrincipal instanceof iam.ServicePrincipal) {
+      const policyStatementId = `AllowPutEvents-${this.node.id}`;
+
+      new CfnEventBusPolicy(this, policyStatementId, {
+        action: 'events:PutEvents',
+        principal: grantee.grantPrincipal.service,
+        statementId: policyStatementId,
+        eventBusName: this.eventBusName,
+      });
+
+      return iam.Grant.drop(grantee, 'Service principal permissions handled via EventBusPolicy');
+    }
+
+    // Existing implementation for IAM roles/users
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],
