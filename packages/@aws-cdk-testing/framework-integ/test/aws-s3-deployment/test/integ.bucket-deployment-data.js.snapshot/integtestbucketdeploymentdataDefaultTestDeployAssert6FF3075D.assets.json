@@ -1,7 +1,20 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "d389e273abc3a151d7ee50a64dfd8c1d10d6e72117ca68f7f241f4ba2672484c": {
+      "source": {
+        "path": "asset.d389e273abc3a151d7ee50a64dfd8c1d10d6e72117ca68f7f241f4ba2672484c.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d389e273abc3a151d7ee50a64dfd8c1d10d6e72117ca68f7f241f4ba2672484c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "90f45f747cdf2053810ae8be5db66f88e7dc2bf7d248efdb40e11066a7e6a46c": {
       "source": {
         "path": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.template.json",
         "packaging": "file"
@@ -9,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "90f45f747cdf2053810ae8be5db66f88e7dc2bf7d248efdb40e11066a7e6a46c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
