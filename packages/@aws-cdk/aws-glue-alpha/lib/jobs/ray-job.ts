@@ -1,6 +1,6 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Job, JobProperties } from './job';
+import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -8,7 +8,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 /**
  * Properties for creating a Ray Glue job
  */
-export interface RayJobProps extends JobProperties {
+export interface RayJobProps extends JobProps {
   /**
    * Sets the Ray runtime environment version
    *
@@ -56,10 +56,7 @@ export class RayJob extends Job {
     this.jobName = props.jobName ?? '';
 
     // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
+    this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
