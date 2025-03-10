@@ -4,7 +4,11 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': true,
+  },
+});
 
 // Create the stack
 const stack = new cdk.Stack(app, 'aws-cdk-cloudwatch-eventbridge-logs');
