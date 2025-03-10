@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "CloudWatchEventBridgeLogsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudwatch-eventbridge-logs"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CloudWatchEventBridgeLogsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudWatchEventBridgeLogsTestDefaultTestDeployAssertC7AA0EE9"
+    }
+  }
+}

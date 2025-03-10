@@ -41,9 +41,24 @@ export abstract class LogGroupTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * @deprecated use fromObjectV2
    */
   public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
     return RuleTargetInput.fromObject({
+      timestamp: options?.timestamp ?? EventField.time,
+      message: options?.message ?? EventField.detailType,
+    });
+  }
+
+  /**
+   * Pass a JSON object to the the log group event target
+   *
+   * May contain strings returned by `EventField.from()` to substitute in parts of the
+   * matched event.
+   */
+  public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
+    return RuleTargetInput.fromObjectV2({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
     });
