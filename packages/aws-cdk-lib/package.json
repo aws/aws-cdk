@@ -136,7 +136,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.0.0",
-    "@aws-cdk/aws-service-spec": "^0.1.60",
+    "@aws-cdk/aws-service-spec": "^0.1.61",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -330,6 +330,7 @@
     "./aws-fsx": "./aws-fsx/index.js",
     "./aws-gamelift": "./aws-gamelift/index.js",
     "./aws-gamelift/lib/gamelift-canned-metrics.generated": "./aws-gamelift/lib/gamelift-canned-metrics.generated.js",
+    "./aws-gameliftstreams": "./aws-gameliftstreams/index.js",
     "./aws-globalaccelerator": "./aws-globalaccelerator/index.js",
     "./aws-globalaccelerator-endpoints": "./aws-globalaccelerator-endpoints/index.js",
     "./aws-glue": "./aws-glue/index.js",

@@ -308,6 +308,9 @@
   "aws-gamelift": [
     "AWS::GameLift"
   ],
+  "aws-gameliftstreams": [
+    "AWS::GameLiftStreams"
+  ],
   "aws-globalaccelerator": [
     "AWS::GlobalAccelerator"
   ],
