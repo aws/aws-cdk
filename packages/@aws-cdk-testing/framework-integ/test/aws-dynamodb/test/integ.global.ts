@@ -31,7 +31,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-dynamodb-global-20191121', { env: { region: 'eu-west-1' } });
 
 new IntegTest(app, 'cdk-dynamodb-global-20191121-test', {

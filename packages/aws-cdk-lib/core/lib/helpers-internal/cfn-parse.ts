@@ -89,7 +89,7 @@ export class FromCloudFormation {
     return new FromCloudFormationResult(value);
   }
 
-  public static getBoolean(value: any): FromCloudFormationResult<boolean | IResolvable> {
+  public static getBoolean(this: void, value: any): FromCloudFormationResult<boolean | IResolvable> {
     if (typeof value === 'string') {
       // CloudFormation allows passing strings as boolean
       switch (value) {
@@ -122,7 +122,7 @@ export class FromCloudFormation {
 
   // won't always return a string; if the input can't be resolved to a string,
   // the input will be returned.
-  public static getString(value: any): FromCloudFormationResult<string> {
+  public static getString(this: void, value: any): FromCloudFormationResult<string> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(value.toString());
@@ -147,7 +147,7 @@ export class FromCloudFormation {
 
   // won't always return a number; if the input can't be parsed to a number,
   // the input will be returned.
-  public static getNumber(value: any): FromCloudFormationResult<number> {
+  public static getNumber(this: void, value: any): FromCloudFormationResult<number> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(Token.asNumber(value));
@@ -166,7 +166,7 @@ export class FromCloudFormation {
     return new FromCloudFormationResult(value);
   }
 
-  public static getStringArray(value: any): FromCloudFormationResult<string[]> {
+  public static getStringArray(this: void, value: any): FromCloudFormationResult<string[]> {
     // if the array is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
       return new FromCloudFormationResult(Token.asList(value));
@@ -176,7 +176,7 @@ export class FromCloudFormation {
     return FromCloudFormation.getArray(FromCloudFormation.getString)(value);
   }
 
-  public static getArray<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
+  public static getArray<T>(this: void, mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
     return (value: any) => {
       if (!Array.isArray(value)) {
         // break the type system, and just return the given value,
@@ -198,7 +198,7 @@ export class FromCloudFormation {
     };
   }
 
-  public static getMap<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
+  public static getMap<T>(this: void, mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
     return (value: any) => {
       if (typeof value !== 'object') {
         // if the input is not a map (= object in JS land),
@@ -219,7 +219,7 @@ export class FromCloudFormation {
     };
   }
 
-  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
+  public static getCfnTag(this: void, tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
     if (isResolvableObject(tag)) { return new FromCloudFormationResult(tag); }
     return tag == null
       ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
@@ -232,7 +232,7 @@ export class FromCloudFormation {
   /**
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
-  public static getTypeUnion(validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
+  public static getTypeUnion(this: void, validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
   (x: any) => FromCloudFormationResult<any> {
     return (value: any) => {
       for (let i = 0; i < validators.length; i++) {
