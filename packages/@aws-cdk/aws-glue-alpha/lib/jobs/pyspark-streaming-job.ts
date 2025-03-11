@@ -1,27 +1,13 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
-import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 import { Code } from '../code';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { SparkJob, SparkJobProps } from './spark-job';
 
 /**
  * Properties for creating a Python Spark ETL job
  */
-export interface PySparkStreamingJobProps extends JobProperties {
-  /**
-   * Enables the Spark UI debugging and monitoring with the specified props.
-   *
-   * @default - Spark UI debugging and monitoring is disabled.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly sparkUI?: SparkUIProps;
-
+export interface PySparkStreamingJobProps extends SparkJobProps {
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
@@ -45,6 +31,15 @@ export interface PySparkStreamingJobProps extends JobProperties {
    * @default - no extra jar files
    */
   readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -71,57 +66,20 @@ export interface PySparkStreamingJobProps extends JobProperties {
  * and 4.0 version for streaming jobs which developers can override.
  * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
  */
-export class PySparkStreamingJob extends Job {
+export class PySparkStreamingJob extends SparkJob {
   public readonly jobArn: string;
   public readonly jobName: string;
-  public readonly role: iam.IRole;
-  public readonly grantPrincipal: iam.IPrincipal;
-
-  /**
-   * The Spark UI logs location if Spark UI monitoring and debugging is enabled.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   /**
    * PySparkStreamingJob constructor
    */
   constructor(scope: Construct, id: string, props: PySparkStreamingJobProps) {
-    super(scope, id, {
-      physicalName: props.jobName,
-    });
-    // Enhanced CDK Analytics Telemetry
-    addConstructMetadata(this, props);
+    super(scope, id, props);
 
-    // Set up role and permissions for principal
-    this.role = props.role, {
-      assumedBy: new iam.ServicePrincipal('glue.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
-    };
-    this.grantPrincipal = this.role;
-
-    // Enable SparkUI by default as a best practice
-    const sparkUIArgs = props.sparkUI?.bucket ? this.setupSparkUI(this.role, props.sparkUI) : undefined;
-    this.sparkUILoggingLocation = sparkUIArgs?.location;
-
-    // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
-    const profilingMetricsArgs = { '--enable-metrics': '' };
-    const observabilityMetricsArgs = { '--enable-observability-metrics': 'true' };
-
-    // Gather executable arguments
-    const executableArgs = this.executableArguments(props);
-
-    // Conbine command line arguments into a single line item
+    // Combine command line arguments into a single line item
     const defaultArguments = {
-      ...executableArgs,
-      ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-      ...sparkUIArgs?.args,
-      ...this.checkNoReservedArgs(props.defaultArguments),
+      ...this.executableArguments(props),
+      ...this.nonExecutableCommonArguments(props),
     };
 
     const jobResource = new CfnJob(this, 'Resource', {
@@ -159,35 +117,7 @@ export class PySparkStreamingJob extends Job {
   private executableArguments(props: PySparkStreamingJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
-
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraFiles && props.extraFiles.length > 0) {
-      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraJars && props.extraJars?.length > 0) {
-      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-
+    this.setupExtraCodeArguments(args, props);
     return args;
-  }
-
-  private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
-    validateSparkUiPrefix(sparkUiProps.prefix);
-    const bucket = sparkUiProps.bucket ?? new Bucket(this, 'SparkUIBucket', { enforceSSL: true, encryption: BucketEncryption.S3_MANAGED });
-    bucket.grantReadWrite(role, cleanSparkUiPrefixForGrant(sparkUiProps.prefix));
-    const args = {
-      '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(sparkUiProps.prefix).replace(/\/?$/, '/'), // path will always end with a slash
-    };
-
-    return {
-      location: {
-        prefix: sparkUiProps.prefix,
-        bucket,
-      },
-      args,
-    };
   }
 }
