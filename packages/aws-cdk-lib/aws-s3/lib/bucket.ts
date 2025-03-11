@@ -2545,6 +2545,22 @@ export class Bucket extends BucketBase {
         throw new ValidationError('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
       }
 
+      // Validate transitions: exactly one of transitionDate or transitionAfter must be specified
+      if (rule.transitions) {
+        for (const transition of rule.transitions) {
+          const hasTransitionDate = transition.transitionDate !== undefined;
+          const hasTransitionAfter = transition.transitionAfter !== undefined;
+
+          if (!hasTransitionDate && !hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+
+          if (hasTransitionDate && hasTransitionAfter) {
+            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+          }
+        }
+      }
+
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
@@ -2665,7 +2681,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new ValidationError (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
+      throw new ValidationError(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
     }
 
     return {
