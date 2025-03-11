@@ -4,7 +4,7 @@ import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -144,7 +144,7 @@ export interface EventBusAttributes {
   readonly eventSourceName?: string;
 }
 
-abstract class EventBusBase extends Resource implements IEventBus {
+abstract class EventBusBase extends Resource implements IEventBus, iam.IResourceWithPolicy {
   /**
    * The physical ID of this event bus resource
    */
@@ -177,27 +177,23 @@ abstract class EventBusBase extends Resource implements IEventBus {
   }
 
   public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
-    // Special handling for service principals
-    if (grantee.grantPrincipal instanceof iam.ServicePrincipal) {
-      const policyStatementId = `AllowPutEvents-${this.node.id}`;
-
-      new CfnEventBusPolicy(this, policyStatementId, {
-        action: 'events:PutEvents',
-        principal: grantee.grantPrincipal.service,
-        statementId: policyStatementId,
-        eventBusName: this.eventBusName,
-      });
-
-      return iam.Grant.drop(grantee, 'Service principal permissions handled via EventBusPolicy');
-    }
-
-    // Existing implementation for IAM roles/users
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['events:PutEvents'],
       resourceArns: [this.eventBusArn],
+      resource: this,
     });
   }
+
+  /**
+   * Adds a statement to the resource policy associated with this event bus.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported event buss.
+   *
+   * @param statement The policy statement to add
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
@@ -421,8 +417,9 @@ export class EventBus extends EventBusBase {
    */
   @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // If no sid is provided, generate one based on the event bus id
     if (statement.sid == null) {
-      throw new Error('Event Bus policy statements must have a sid');
+      statement.sid = `${this.node.id}-Default-Statement`;
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340
@@ -457,6 +454,15 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
     this.eventSourceName = attrs.eventSourceName;
+  }
+
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    // Warn the user
+    Annotations.of(this).addWarningV2(
+      '@aws-cdk/aws-events:eventBusAddToResourcePolicy',
+      `Unable to add necessary permissions to imported target event bus: ${this.eventBusArn}`,
+    );
+    return { statementAdded: false };
   }
 }
 
