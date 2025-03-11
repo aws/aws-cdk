@@ -249,7 +249,6 @@ export abstract class BaseLoadBalancer extends Resource {
     let subnetMappings;
     let internetConnectivityEstablished;
 
-    // ipAddressTypeのバリデーションは共通なのでここで行う
     if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
         additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
       throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
