@@ -258,7 +258,6 @@ export abstract class BaseLoadBalancer extends Resource {
 
     if (additionalProps.subnetMappings) {
       subnetMappings = additionalProps.subnetMappings as SubnetMapping[];
-      subnetIds = undefined;
 
       if (internetFacing) {
         const mappedSubnetIds = subnetMappings.map(mapping => mapping.subnet.subnetId);
@@ -276,7 +275,6 @@ export abstract class BaseLoadBalancer extends Resource {
       const result = baseProps.vpc.selectSubnets(vpcSubnets);
       subnetIds = result.subnetIds;
       internetConnectivityEstablished = result.internetConnectivityEstablished;
-      subnetMappings = undefined;
     }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {

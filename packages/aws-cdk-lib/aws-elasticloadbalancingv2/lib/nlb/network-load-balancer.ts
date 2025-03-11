@@ -96,7 +96,9 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   readonly enablePrefixForIpv6SourceNat?: boolean;
 
   /**
-   * 
+   * Subnet information for the load balancer
+   *
+   * @default undefined - The VPC default strategy for subnets is used
    */
   readonly subnetMappings?: SubnetMapping[];
 }
