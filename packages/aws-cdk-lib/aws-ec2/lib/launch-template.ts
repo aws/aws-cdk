@@ -24,6 +24,7 @@ import {
   FeatureFlags,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -496,7 +497,13 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
+@propertyInjectionDecorator
 export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.LaunchTemplate';
+
   /**
    * Import an existing LaunchTemplate.
    */

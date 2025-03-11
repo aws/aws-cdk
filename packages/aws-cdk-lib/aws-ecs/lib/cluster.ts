@@ -28,6 +28,7 @@ import {
   FeatureFlags, Annotations,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import { Disable_ECS_IMDS_Blocking, Enable_IMDS_Blocking_Deprecated_Feature } from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -143,7 +144,13 @@ const getCanContainersAccessInstanceRoleDefault = (canContainersAccessInstanceRo
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
+@propertyInjectionDecorator
 export class Cluster extends Resource implements ICluster {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.Cluster';
+
   /**
    * Return whether the given object is a Cluster
    */
