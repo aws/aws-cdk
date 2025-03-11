@@ -4,7 +4,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource, Token } from '../../../core';
-import { ValidationError } from '../../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
@@ -32,12 +32,92 @@ export enum ClientRoutingPolicy {
   ANY_AVAILABILITY_ZONE = 'any_availability_zone',
 }
 
+/**
+ * Specifies a subnet for a load balancer
+ */
 export interface SubnetMapping {
+  /**
+   * The subnet
+   */
   subnet: ec2.ISubnet;
+
+  /**
+   * The allocation ID of the Elastic IP address for an internet-facing load balancer.
+   *
+   * @default undefined -
+   */
   allocationId?: string;
+
+  /**
+   * The IPv6 address
+   *
+   * @default undefined -
+   */
   ipv6Address?: string;
+
+  /**
+   * The private IPv4 address for an internal load balancer.
+   *
+   * @default undefined - AWS will automatically allocate an IPv4 address from the subnet's pool.
+   */
   privateIpv4Address?: string;
-  sourceNatIpv6Prefix?: string;
+
+  /**
+   * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+   *
+   * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block or `auto_assigned` to use an IPv6 prefix selected at random from the subnet CIDR block.
+   *
+   * @default undefined -
+   */
+  sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
+}
+
+export class SourceNatIpv6Prefix {
+  public static readonly AUTO_ASSIGNED = 'auto_assigned';
+
+  /**
+   * Use an automatically assigned IPv6 prefix
+   */
+  public static autoAssigned(): string {
+    return SourceNatIpv6Prefix.AUTO_ASSIGNED;
+  }
+
+  /**
+   * Use a custom IPv6 prefix with /80 netmask
+   * @param prefix The IPv6 prefix
+   */
+  public static fromIpv6Prefix(prefix: string): string {
+    if (!prefix.includes('/')) {
+      throw new UnscopedValidationError('IPv6 prefix must include netmask (e.g. 2001:db8::/80)');
+    }
+
+    const [, netmask] = prefix.split('/');
+    if (netmask !== '80') {
+      throw new UnscopedValidationError('IPv6 prefix must have a /80 netmask');
+    }
+
+    return prefix;
+  }
+
+  /**
+   * Check if the given string is a valid SourceNatIpv6Prefix value
+   */
+  public static isValid(value: string): boolean {
+    if (Token.isUnresolved(value)) {
+      return true;
+    }
+
+    if (value === this.AUTO_ASSIGNED) {
+      return true;
+    }
+
+    try {
+      this.fromIpv6Prefix(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
 
 /**
