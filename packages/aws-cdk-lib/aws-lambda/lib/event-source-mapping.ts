@@ -288,8 +288,7 @@ export interface EventSourceMappingOptions {
   readonly filterEncryption?: IKey;
 
   /**
-   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
-   *
+   * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;
