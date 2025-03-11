@@ -47,4 +47,8 @@ RUN mkdir /tmp/bun-cache && \
     chmod -R 777 /tmp/bun-cache && \
     echo -e "[install.cache]\ndir = \"/tmp/bun-cache\"\ndisable = true" >> /home/user/.bunfig.toml
 
+# Setting a non-root user to run default command, 
+# This will be overridden later when the Docker container is running, using either the local OS user or props.user.
+USER nobody
+
 CMD [ "esbuild" ]

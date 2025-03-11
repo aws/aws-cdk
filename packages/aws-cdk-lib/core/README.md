@@ -1800,4 +1800,72 @@ warning by the `id`.
 Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
 ```
 
+## RemovalPolicies
+
+The `RemovalPolicies` class provides a convenient way to manage removal policies for AWS CDK resources within a construct scope. It allows you to apply removal policies to multiple resources at once, with options to include or exclude specific resource types.
+
+### Usage
+
+```typescript
+import { RemovalPolicies, MissingRemovalPolicies } from 'aws-cdk-lib';
+
+// Apply DESTROY policy to all resources in a scope
+RemovalPolicies.of(scope).destroy();
+
+// Apply RETAIN policy to all resources in a scope
+RemovalPolicies.of(scope).retain();
+
+// Apply SNAPSHOT policy to all resources in a scope
+RemovalPolicies.of(scope).snapshot();
+
+// Apply RETAIN_ON_UPDATE_OR_DELETE policy to all resources in a scope
+RemovalPolicies.of(scope).retainOnUpdateOrDelete();
+
+// Apply RETAIN policy only to specific resource types
+RemovalPolicies.of(parent).retain({
+  applyToResourceTypes: [
+    'AWS::DynamoDB::Table',
+    bucket.cfnResourceType, // 'AWS::S3::Bucket'
+    CfnDBInstance.CFN_RESOURCE_TYPE_NAME, // 'AWS::RDS::DBInstance'
+  ],
+});
+
+// Apply SNAPSHOT policy excluding specific resource types
+RemovalPolicies.of(scope).snapshot({
+  excludeResourceTypes: ['AWS::Test::Resource'],
+});
+```
+
+### RemovalPolicies vs MissingRemovalPolicies
+
+CDK provides two different classes for managing removal policies:
+
+- RemovalPolicies: Always applies the specified removal policy, overriding any existing policies.
+- MissingRemovalPolicies: Applies the removal policy only to resources that don't already have a policy set.
+
+```typescript
+// Override any existing policies
+RemovalPolicies.of(scope).retain();
+
+// Only apply to resources without existing policies
+MissingRemovalPolicies.of(scope).retain();
+```
+
+### Aspect Priority
+
+Both RemovalPolicies and MissingRemovalPolicies are implemented as Aspects. You can control the order in which they're applied using the priority parameter:
+
+```typescript
+// Apply in a specific order based on priority
+RemovalPolicies.of(stack).retain({ priority: 100 });
+RemovalPolicies.of(stack).destroy({ priority: 200 }); // This will override the RETAIN policy
+```
+
+For RemovalPolicies, the policies are applied in order of aspect execution, with the last applied policy overriding previous ones. The priority only affects the order in which aspects are applied during synthesis.
+
+#### Note
+
+When using MissingRemovalPolicies with priority, a warning will be issued as this can lead to unexpected behavior. This is because MissingRemovalPolicies only applies to resources without existing policies, making priority less relevant.
+
+
 <!--END CORE DOCUMENTATION-->

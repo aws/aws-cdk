@@ -1,9 +1,13 @@
 import { Construct, IConstruct } from 'constructs';
+import { getWarnings } from './util';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
 import { IAspect, Aspects, AspectPriority } from '../lib/aspect';
+import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
+import { RemovalPolicy } from '../lib/removal-policy';
+
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
     return x.visitCounter !== undefined;
@@ -300,7 +304,7 @@ describe('aspect', () => {
   test('Infinitely recursing Aspect is caught with error', () => {
     const app = new App({ context: { '@aws-cdk/core:aspectStabilization': true } });
     const root = new Stack(app, 'My-Stack');
-    const child = new MyConstruct(root, 'MyConstruct');
+    new MyConstruct(root, 'MyConstruct');
 
     Aspects.of(root).add(new InfiniteAspect());
 
@@ -342,5 +346,114 @@ describe('aspect', () => {
     expect(() => {
       app.synth();
     }).not.toThrow();
+  });
+
+  test('RemovalPolicy: higher priority wins', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 200,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('RemovalPolicy: last one wins when priorities are equal', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 100,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('MissingRemovalPolicy: default removal policy is respected', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    MissingRemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('RemovalPolicy: multiple aspects in chain', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new Bucket(stack, 'my-bucket', {
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.DESTROY, {
+      priority: 100,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 200,
+    });
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.SNAPSHOT, {
+      priority: 300,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+      UpdateReplacePolicy: 'Snapshot',
+      DeletionPolicy: 'Snapshot',
+    });
+  });
+
+  test('RemovalPolicy: different resource type', () => {
+    const app = new App();
+    const stack = new Stack(app, 'My-Stack');
+    new CfnResource(stack, 'my-resource', {
+      type: 'AWS::EC2::Instance',
+      properties: {
+        ImageId: 'ami-1234567890abcdef0',
+        InstanceType: 't2.micro',
+      },
+    }).applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+    RemovalPolicies.of(stack).apply(RemovalPolicy.RETAIN, {
+      priority: 100,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+      Properties: {
+        ImageId: 'ami-1234567890abcdef0',
+        InstanceType: 't2.micro',
+      },
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    });
   });
 });

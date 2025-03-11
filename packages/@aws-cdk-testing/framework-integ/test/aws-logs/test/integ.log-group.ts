@@ -1,7 +1,7 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { LogGroup, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FieldIndexPolicy } from 'aws-cdk-lib/aws-logs';
 
 class LogGroupIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -19,8 +19,13 @@ class LogGroupIntegStack extends Stack {
       s3BucketAuditDestination: bucket,
     });
 
+    const fieldIndexPolicy = new FieldIndexPolicy({
+      fields: ['Operation', 'RequestId'],
+    });
+
     new LogGroup(this, 'LogGroupLambda', {
       dataProtectionPolicy: dataProtectionPolicy,
+      fieldIndexPolicies: [fieldIndexPolicy],
     });
   }
 }

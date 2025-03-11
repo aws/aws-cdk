@@ -368,7 +368,7 @@ export interface AwsCustomResourceProps {
   readonly logGroup?: logs.ILogGroup;
 
   /**
-   * Whether to install the latest AWS SDK v2.
+   * Whether to install the latest AWS SDK v3.
    *
    * If not specified, this uses whatever JavaScript SDK version is the default in
    * AWS Lambda at the time of execution.

@@ -2,14 +2,14 @@ import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alph
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
-import { CfnAssessmentTarget, CfnAssessmentTemplate } from 'aws-cdk-lib/aws-inspector';
+import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate, IAssessmentTemplate } from 'aws-cdk-lib/aws-inspector';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { InspectorStartAssessmentRun } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
   let stack: Stack;
-  let template: CfnAssessmentTemplate;
+  let template: IAssessmentTemplate;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
   const roleId = 'SchedulerRoleForTarget78b2d848BF7444';
 
@@ -17,11 +17,12 @@ describe('schedule target', () => {
     app = new App({ context: { '@aws-cdk/aws-iam:minimizePolicies': true } });
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     const assessmentTarget = new CfnAssessmentTarget(stack, 'MyAssessmentTarget');
-    template = new CfnAssessmentTemplate(stack, 'MyTemplate', {
+    const cfnAssessmentTemplate = new CfnAssessmentTemplate(stack, 'MyTemplate', {
       assessmentTargetArn: assessmentTarget.attrArn,
       durationInSeconds: 3600,
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
+    template = AssessmentTemplate.fromCfnAssessmentTemplate(stack, 'AssessmentTemplate', cfnAssessmentTemplate);
   });
 
   test('creates IAM role and IAM policy for inspector assessment template in the same account', () => {
@@ -278,11 +279,12 @@ describe('schedule target', () => {
       },
     });
     const assessmentTarget = new CfnAssessmentTarget(stack2, 'AnotherTarget');
-    const anotherTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
+    const cfnAssessmentTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
       assessmentTargetArn: assessmentTarget.attrArn,
       durationInSeconds: 3600,
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
+    const anotherTemplate = AssessmentTemplate.fromCfnAssessmentTemplate(stack2, 'AnotherAssessmentTemplate', cfnAssessmentTemplate);
 
     const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate);
 
@@ -363,11 +365,12 @@ describe('schedule target', () => {
       },
     });
     const assessmentTarget = new CfnAssessmentTarget(stack2, 'AnotherTarget');
-    const anotherTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
+    const cfnAssessmentTemplate = new CfnAssessmentTemplate(stack2, 'AnotherTemplate', {
       assessmentTargetArn: assessmentTarget.attrArn,
       durationInSeconds: 3600,
       rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
     });
+    const anotherTemplate = AssessmentTemplate.fromCfnAssessmentTemplate(stack2, 'AnotherAssessmentTemplate', cfnAssessmentTemplate);
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const inspectorTarget = new InspectorStartAssessmentRun(anotherTemplate, {

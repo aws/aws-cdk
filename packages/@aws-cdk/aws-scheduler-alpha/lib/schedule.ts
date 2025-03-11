@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource, Token } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, IResource, Resource, Token } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
@@ -6,6 +6,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { ScheduleExpression } from './schedule-expression';
+import { IScheduleGroup } from './schedule-group';
 import { IScheduleTarget } from './target';
 
 /**
@@ -13,19 +14,27 @@ import { IScheduleTarget } from './target';
  */
 export interface ISchedule extends IResource {
   /**
+   * The arn of the schedule.
+   * @attribute
+   */
+  readonly scheduleArn: string;
+
+  /**
    * The name of the schedule.
+   * @attribute
    */
   readonly scheduleName: string;
 
   /**
    * The schedule group associated with this schedule.
    */
-  readonly group?: IGroup;
+  readonly scheduleGroup?: IScheduleGroup;
 
   /**
-   * The arn of the schedule.
+   * The schedule group associated with this schedule.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
-  readonly scheduleArn: string;
+  readonly group?: IGroup;
 }
 
 /**
@@ -104,8 +113,16 @@ export interface ScheduleProps {
    * The schedule's group.
    *
    * @default - By default a schedule will be associated with the `default` group.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
   readonly group?: IGroup;
+
+  /**
+   * The schedule's group.
+   *
+   * @default - By default a schedule will be associated with the `default` group.
+   */
+  readonly scheduleGroup?: IScheduleGroup;
 
   /**
    * Indicates whether the schedule is enabled.
@@ -245,9 +262,26 @@ export class Schedule extends Resource implements ISchedule {
   }
 
   /**
+   * Import an existing schedule using the ARN.
+   */
+  public static fromScheduleArn(scope: Construct, id: string, scheduleArn: string): ISchedule {
+    class Import extends Resource implements ISchedule {
+      public readonly scheduleArn = scheduleArn;
+      public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+    }
+    return new Import(scope, id);
+  }
+
+  /**
    * The schedule group associated with this schedule.
+   * @deprecated Use `scheduleGroup` instead. `group` will be removed when this module is stabilized.
    */
   public readonly group?: IGroup;
+
+  /**
+   * The schedule group associated with this schedule.
+   */
+  public readonly scheduleGroup?: IScheduleGroup;
 
   /**
    * The arn of the schedule.
@@ -277,6 +311,7 @@ export class Schedule extends Resource implements ISchedule {
     addConstructMetadata(this, props);
 
     this.group = props.group;
+    this.scheduleGroup = props.scheduleGroup;
 
     const targetConfig = props.target.bind(this);
 
@@ -302,7 +337,7 @@ export class Schedule extends Resource implements ISchedule {
       },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
-      groupName: this.group?.groupName,
+      groupName: this.scheduleGroup?.scheduleGroupName ?? this.group?.groupName,
       state: (props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       kmsKeyArn: this.key?.keyArn,
       target: {
@@ -326,7 +361,7 @@ export class Schedule extends Resource implements ISchedule {
     this.scheduleArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'scheduler',
       resource: 'schedule',
-      resourceName: `${this.group?.groupName ?? 'default'}/${this.physicalName}`,
+      resourceName: `${this.scheduleGroup?.scheduleGroupName ?? this.group?.groupName ?? 'default'}/${this.physicalName}`,
     });
   }
 
