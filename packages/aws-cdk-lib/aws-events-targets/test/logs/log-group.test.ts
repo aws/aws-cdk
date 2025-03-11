@@ -123,7 +123,6 @@ testDeprecated('cannot use both logEvent and event', () => {
   }).toThrow(/Only one of "event" or "logEvent" can be specified/);
 });
 
-
 test('logEvent with defaults', () => {
   // GIVEN
   const stack = new cdk.Stack();
