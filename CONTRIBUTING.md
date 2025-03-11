@@ -154,6 +154,7 @@ Another reason we hear from authors that they don't want to publish their own pa
 
 ### Setup
 Fork the aws-cdk repository into your account: https://github.com/aws/aws-cdk/fork
+Note: Install Git LFS using `git lfs install` command, as it is necessary for handling large file changes.
 
 Clone the forked repository:
 ```console

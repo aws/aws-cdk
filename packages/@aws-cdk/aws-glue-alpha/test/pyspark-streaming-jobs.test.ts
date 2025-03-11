@@ -182,13 +182,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 2', () => {
+    test('Overridden numberOfWorkers should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 2,
       });
     });
 
-    test('Overriden WorkerType should be G.1X', () => {
+    test('Overridden WorkerType should be G.1X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'G.2X',
       });
@@ -242,13 +242,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 2', () => {
+    test('Overridden numberOfWorkers should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 4,
       });
     });
 
-    test('Overriden WorkerType should be G.4X', () => {
+    test('Overridden WorkerType should be G.4X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'G.4X',
       });
@@ -292,13 +292,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 8', () => {
+    test('Overridden numberOfWorkers should be 8', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 8,
       });
     });
 
-    test('Overriden WorkerType should be G.8X', () => {
+    test('Overridden WorkerType should be G.8X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'G.8X',
       });
@@ -377,7 +377,7 @@ describe('Job', () => {
     });
   });
 
-  describe('Create PySpark Streaming Job with extraPythonFiles, extraFiles and extraJars', () => {
+  describe('Create PySpark Streaming Job with extraPythonFiles, extraFiles, extraJars and extraJarsFirst', () => {
     beforeEach(() => {
       job = new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
         role,
@@ -398,6 +398,7 @@ describe('Job', () => {
             s3.Bucket.fromBucketName(stack, 'extraJarsBucket', 'extra-jars-bucket'),
             'prefix/file.jar'),
         ],
+        extraJarsFirst: true,
       });
     });
 
@@ -416,7 +417,7 @@ describe('Job', () => {
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    test('Verify Default Arguments', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -426,6 +427,7 @@ describe('Job', () => {
           '--extra-py-files': 's3://extra-python-files-bucket/prefix/file.py',
           '--extra-files': 's3://extra-files-bucket/prefix/file.txt',
           '--extra-jars': 's3://extra-jars-bucket/prefix/file.jar',
+          '--user-jars-first': 'true',
         }),
       });
     });
@@ -483,13 +485,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden Glue Version should be 3.0', () => {
+    test('Overridden Glue Version should be 3.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '3.0',
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    test('Verify Default Arguments', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -499,25 +501,25 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 2', () => {
+    test('Overridden numberOfWorkers should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 2,
       });
     });
 
-    test('Overriden WorkerType should be G.2X', () => {
+    test('Overridden WorkerType should be G.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: glue.WorkerType.G_2X,
       });
     });
 
-    test('Overriden max retries should be 2', () => {
+    test('Overridden max retries should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 2,
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -525,13 +527,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -539,7 +541,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
@@ -607,13 +609,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden Glue Version should be 3.0', () => {
+    test('Overridden Glue Version should be 3.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '3.0',
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    test('Verify Default Arguments', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -623,19 +625,19 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden numberOfWorkers should be 2', () => {
+    test('Overridden numberOfWorkers should be 2', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 2,
       });
     });
 
-    test('Overriden WorkerType should be G.2X', () => {
+    test('Overridden WorkerType should be G.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: glue.WorkerType.G_2X,
       });
     });
 
-    test('Overriden job run queuing should be enabled', () => {
+    test('Overridden job run queuing should be enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: true,
       });
@@ -647,7 +649,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -655,13 +657,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -669,7 +671,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
