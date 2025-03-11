@@ -140,7 +140,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
   readonly tumblingWindow?: Duration;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default - discarded records are ignored
    */
