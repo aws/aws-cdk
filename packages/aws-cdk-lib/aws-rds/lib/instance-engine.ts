@@ -868,6 +868,10 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of('5.7.44-rds.20240529', '5.7');
   /** Version "5.7.44-rds.20240808". */
   public static readonly VER_5_7_44_RDS_20240808 = MysqlEngineVersion.of('5.7.44-rds.20240808', '5.7');
+  /** Version "5.7.44-rds.20250103". */
+  public static readonly VER_5_7_44_RDS_20250103 = MysqlEngineVersion.of('5.7.44-rds.20250103', '5.7');
+  /** Version "5.7.44-rds.20250213". */
+  public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -967,8 +971,12 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_39 = MysqlEngineVersion.of('8.0.39', '8.0');
   /** Version "8.0.40". */
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
+  /** Version "8.0.41". */
+  public static readonly VER_8_0_41 = MysqlEngineVersion.of('8.0.41', '8.0');
   /** Version "8.4.3". */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
+  /** Version "8.4.4". */
+  public static readonly VER_8_4_4 = MysqlEngineVersion.of('8.4.4', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
