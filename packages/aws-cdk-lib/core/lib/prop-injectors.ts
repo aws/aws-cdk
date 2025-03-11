@@ -215,11 +215,6 @@ export function propertyInjectionDecorator<T extends Constructor>(constructor: T
 
       log(`Ctor scope: ${scope}, id: ${id}, old props: ${inspect(props)}`);
 
-      // const className = constructor.name;
-      // log(`Ctor className: ${className}`);
-      // log('Ctor constructor:',  constructor);
-      // const uniqueId: string = constructor.PROPERTY_INJECTION_ID;
-
       // eslint-disable-next-line dot-notation
       const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
       log('Ctor uniqueId:', uniqueId);
