@@ -206,18 +206,15 @@ type Constructor = { new (...args: any[]): {} };
  * @returns an instance of the class with Property Injection applied.
  */
 export function propertyInjectionDecorator<T extends Constructor>(constructor: T) {
-  log('In propertyInjectionDecorator');
   return class extends constructor {
     constructor(...args: any[]) {
       const scope = args[0];
       const id = args[1];
       let props = args[2];
 
-      log(`Ctor scope: ${scope}, id: ${id}, old props: ${inspect(props)}`);
-
       // eslint-disable-next-line dot-notation
       const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
-      log('Ctor uniqueId:', uniqueId);
+      log(`Ctor scope: ${scope}, id: ${id}, uniqueId: ${uniqueId}, old props: ${inspect(props)}`);
 
       props = applyInjectors(uniqueId, props, {
         scope,

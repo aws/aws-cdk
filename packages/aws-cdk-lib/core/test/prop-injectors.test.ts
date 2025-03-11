@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import { AttributeType, StreamViewType, Table, TableEncryption, TableV2 } from '../../aws-dynamodb';
 import { Key } from '../../aws-kms';
 import { Code, Function, Runtime } from '../../aws-lambda';
 import { BlockPublicAccess, Bucket, BucketEncryption, BucketProps } from '../../aws-s3';
@@ -122,6 +123,37 @@ class AccessBucketInjector implements IPropertyInjector {
 }
 
 const accessLogBucketInjector = new AccessBucketInjector();
+
+class TablePropsInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = Table.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, context: InjectionContext): any {
+    return {
+      encryption: TableEncryption.DEFAULT,
+      ...originalProps,
+    };
+  }
+}
+
+class TableV2PropsInjector implements IPropertyInjector {
+  public readonly constructUniqueId: string;
+
+  constructor() {
+    this.constructUniqueId = TableV2.PROPERTY_INJECTION_ID;
+  }
+
+  inject(originalProps: any, context: InjectionContext): any {
+    return {
+      deletionProtection: true,
+      pointInTimeRecovery: true,
+      ...originalProps,
+    };
+  }
+}
 
 describe('PropertyInjectors Attachment', () => {
   test('Attach PropertyInjectors to App', () => {
@@ -534,6 +566,58 @@ describe('Test Injector by Comparing Templates', () => {
       publicReadAccess: false,
       lifecycleRules: [],
       serverAccessLogsBucket: accessLog,
+    });
+
+    // THEN
+    Template.fromStack(stack2).templateMatches(
+      Match.exact(template),
+    );
+  });
+});
+
+describe('DynamoDB Table Injector', () => {
+  test('Compare Table and TableV2 Templates', () => {
+    // GIVEN - with Injector
+    const app = new App({
+      propertyInjectors: [
+        new TablePropsInjector(),
+        new TableV2PropsInjector(),
+      ],
+    });
+    const stack = new Stack(app, 'MyStack', {});
+    new Table(stack, 'my-table1', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      stream: StreamViewType.NEW_IMAGE,
+    });
+    new TableV2(stack, 'my-table2', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+    const template = Template.fromStack(stack).toJSON();
+
+    // WHEN
+    const app2 = new App({});
+    const stack2 = new Stack(app2, 'MyStack', {});
+    new Table(stack2, 'my-table1', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      stream: StreamViewType.NEW_IMAGE,
+      encryption: TableEncryption.DEFAULT,
+    });
+    new TableV2(stack2, 'my-table2', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      deletionProtection: true,
+      pointInTimeRecovery: true,
     });
 
     // THEN
