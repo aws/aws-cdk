@@ -1,5 +1,4 @@
 import { IRule } from './rule-ref';
-import { LogGroupTargetInput } from '../../aws-events-targets';
 import {
   captureStackTrace, DefaultTokenResolver, IResolvable,
   IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
@@ -45,18 +44,6 @@ export abstract class RuleTargetInput {
    * @returns RuleTargetInput
    */
   public static fromObject(obj: any): RuleTargetInput {
-    return new FieldAwareEventInput(obj, InputType.Object);
-  }
-
-  /**
-   * Pass a JSON object to the event target
-   *
-   * May contain strings returned by `EventField.from()` to substitute in parts of the
-   * matched event.
-   *
-   * @returns LogGroupTargetInput
-   */
-  public static fromObjectV2(obj: any): LogGroupTargetInput {
     return new FieldAwareEventInput(obj, InputType.Object);
   }
 
@@ -149,8 +136,10 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * To achieve the latter, we postprocess the JSON string to remove the surrounding
  * quotes by using a string replace.
+ *
+ * @internal
  */
-class FieldAwareEventInput extends RuleTargetInput {
+export class FieldAwareEventInput extends RuleTargetInput {
   constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
@@ -336,7 +325,10 @@ export class EventField implements IResolvable {
   }
 }
 
-enum InputType {
+/**
+ * @internal
+ */
+export enum InputType {
   Object,
   Text,
   Multiline,

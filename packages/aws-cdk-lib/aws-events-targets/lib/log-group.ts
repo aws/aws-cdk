@@ -1,7 +1,7 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '../../aws-events';
+import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
@@ -58,10 +58,10 @@ export abstract class LogGroupTargetInput {
    * matched event.
    */
   public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
-    return RuleTargetInput.fromObjectV2({
+    return new events.FieldAwareEventInput({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
-    });
+    }, InputType.Object);
   }
 
   /**
