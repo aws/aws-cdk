@@ -7,6 +7,7 @@ import {
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 import * as cdk from '../../core';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
@@ -40,7 +41,13 @@ const ARN_SIZE_ESTIMATE_CONTEXT_KEY = '@aws-cdk/aws-iam.arnSizeEstimate';
 /**
  * Represents a statement in an IAM policy document.
  */
+@propertyInjectionDecorator
 export class PolicyStatement {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.PolicyStatement';
+
   /**
    * Creates a new PolicyStatement based on the object provided.
    * This will accept an object created from the `.toJSON()` call
