@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags } from '../../../core';
+import { propertyInjectionDecorator } from '../../../core/lib/prop-injectors';
 import * as cxapi from '../../../cx-api';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
@@ -25,7 +26,13 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
 /**
  * A Fargate service running on an ECS cluster fronted by an application load balancer.
  */
+@propertyInjectionDecorator
 export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMultipleTargetGroupsServiceBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs-patterns.ApplicationMultipleTargetGroupsFargateService';
+
   /**
    * Determines whether the service will be assigned a public IP address.
    */
