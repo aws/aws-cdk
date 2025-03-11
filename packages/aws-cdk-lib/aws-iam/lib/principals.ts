@@ -53,7 +53,7 @@ export interface IPrincipal extends IGrantable {
    * Can be a Token - in that case,
    * it's assumed to be AWS::AccountId.
    */
-  readonly principalAccount?: string;
+  readonly principalAccount?: string | undefined;
 
   /**
    * Add to the policy of this principal.
