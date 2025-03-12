@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.183.0](https://github.com/aws/aws-cdk/compare/v2.182.0...v2.183.0) (2025-03-11)
+
+
+### Features
+
+* **bedrock:** support DeepSeek R1 ([#33727](https://github.com/aws/aws-cdk/issues/33727)) ([3de0818](https://github.com/aws/aws-cdk/commit/3de0818b92c7130ac31f647329a265a742d4bc04))
+* **rds:** add MySQL enginge versions 5.7.44(patch), 8.0.41 and 8.4.4 ([#33732](https://github.com/aws/aws-cdk/issues/33732)) ([d1a8cbe](https://github.com/aws/aws-cdk/commit/d1a8cbeaa8153296ecf2d797d95fa31fd6b79582))
+* update L1 CloudFormation resource definitions ([#33718](https://github.com/aws/aws-cdk/issues/33718)) ([c4fceb2](https://github.com/aws/aws-cdk/commit/c4fceb2f28b9582cd957040a2c9e983343b9eba9))
+* **codebuild:** throw `ValidationError` instead of untyped Errors ([#33700](https://github.com/aws/aws-cdk/issues/33700)) ([d12854a](https://github.com/aws/aws-cdk/commit/d12854a96cebb428feb78908a093743889ef52bf)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
+* **core:** `RemovalPolicies.of(scope)` ([#32283](https://github.com/aws/aws-cdk/issues/32283)) ([34c547c](https://github.com/aws/aws-cdk/commit/34c547c83e9fa5f055b0c60be975087e4f836ebb))
+* **logs:** add support for fieldIndexPolicies in log group L2 Construct ([#33416](https://github.com/aws/aws-cdk/issues/33416)) ([6c882e0](https://github.com/aws/aws-cdk/commit/6c882e0acc36b632ff80286e72bac08734d70d72)), closes [#33366](https://github.com/aws/aws-cdk/issues/33366)
+* **lambda** backfill missing enums for lambda ([#33651](https://github.com/aws/aws-cdk/issues/33651)) ([4227747](https://github.com/aws/aws-cdk/pull/33740/commits/42277471040c4c845d9a4f1b3649df9cb675ecfb))
+* **rds** add new MariaDB engine versions 10.5.28, 10.6.21, 10.11.11, and 11.4.5 ([#33665](https://github.com/aws/aws-cdk/issues/33665)) ([7f5bf4e](https://github.com/aws/aws-cdk/pull/33740/commits/7f5bf4e311555bdf7aa0d7637d7b89dd0421c2f6))
+* **ec2** add VPC interface endpoints for Location Service ([#33667](https://github.com/aws/aws-cdk/issues/33667)) ([4bc151b](https://github.com/aws/aws-cdk/pull/33740/commits/4bc151bafdd4398f632b06f7d801c2a550e2340a))
+* **ec2** add VPC interface endpoints for WAFV2 ([#33685](https://github.com/aws/aws-cdk/issues/33685)) ([5eb11d2](https://github.com/aws/aws-cdk/pull/33740/commits/5eb11d26d00a5cccc18d9e4e6483dd613d4c4dbb))
+* **ec2** add VPC interface endpoints for Emr Serverless ([#33715](https://github.com/aws/aws-cdk/issues/33715)) ([25619a0](https://github.com/aws/aws-cdk/pull/33740/commits/25619a01e78040c8b9442a9a7ed434b936e01491))
+* **ec2** add VPC interface endpoints for Security Lake ([#33728](https://github.com/aws/aws-cdk/issues/33728)) ([5fcbe2a](https://github.com/aws/aws-cdk/pull/33740/commits/5fcbe2ac2e3c377e39b38c278434997dbed19ab6))
+
+
+### Bug Fixes
+
+* **core:** pressing Ctrl-C when content is bundled leaves broken asset ([#33692](https://github.com/aws/aws-cdk/issues/33692)) ([00ef50d](https://github.com/aws/aws-cdk/commit/00ef50d36d5b7322f71e38062f03017eff878705)), closes [#33201](https://github.com/aws/aws-cdk/issues/33201) [#32869](https://github.com/aws/aws-cdk/issues/32869) [#14474](https://github.com/aws/aws-cdk/issues/14474)
+* **custom-resources:** fix circular dependency when a custom role provided to Provider ([#33600](https://github.com/aws/aws-cdk/issues/33600)) ([77b6fa9](https://github.com/aws/aws-cdk/commit/77b6fa94c0446ec81e5ae8949d6d0eb571d89dea)), closes [#20360](https://github.com/aws/aws-cdk/issues/20360)
+* **efs:** cannot run an integ test when `transitionToArchivePolicy` is specified and `throughputMode` is `undefined` ([#33713](https://github.com/aws/aws-cdk/issues/33713)) ([842201c](https://github.com/aws/aws-cdk/commit/842201c344a6f76f8cfd74b65cd73f63259b777b))
+* **eks:** cluster deployment issue when the authentication mode is not changing ([#33680](https://github.com/aws/aws-cdk/issues/33680)) ([ba2dfd1](https://github.com/aws/aws-cdk/commit/ba2dfd10504504d78e55bc242a4747024a504389))
+
 ## [2.182.0](https://github.com/aws/aws-cdk/compare/v2.181.1...v2.182.0) (2025-03-04)
 
 
