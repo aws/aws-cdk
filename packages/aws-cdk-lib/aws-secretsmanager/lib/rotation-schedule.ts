@@ -394,13 +394,13 @@ export class HostedRotationType {
   public static readonly MARIADB_MULTI_USER = new HostedRotationType('MariaDBMultiUser', true);
 
   /** SQL Server Single User */
-  public static readonly SQLSERVER_SINGLE_USER = new HostedRotationType('SQLServerSingleUser')
+  public static readonly SQLSERVER_SINGLE_USER = new HostedRotationType('SQLServerSingleUser');
 
   /** SQL Server Multi User */
   public static readonly SQLSERVER_MULTI_USER = new HostedRotationType('SQLServerMultiUser', true);
 
   /** Redshift Single User */
-  public static readonly REDSHIFT_SINGLE_USER = new HostedRotationType('RedshiftSingleUser')
+  public static readonly REDSHIFT_SINGLE_USER = new HostedRotationType('RedshiftSingleUser');
 
   /** Redshift Multi User */
   public static readonly REDSHIFT_MULTI_USER = new HostedRotationType('RedshiftMultiUser', true);

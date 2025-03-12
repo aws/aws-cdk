@@ -5,6 +5,7 @@ import {
   SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
 } from '../../aws-ec2';
 import { Duration, Lazy, Resource } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Construction properties for a LoadBalancer
@@ -289,9 +290,9 @@ export class LoadBalancer extends Resource implements IConnectable {
    */
   public addListener(listener: LoadBalancerListener): ListenerPort {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
-      throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
+      throw new ValidationError('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
     }
-    const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
+    const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(this, listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
     const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
@@ -449,10 +450,10 @@ export class ListenerPort implements IConnectable {
   }
 }
 
-function wellKnownProtocol(port: number): LoadBalancingProtocol {
+function wellKnownProtocol(scope: Construct, port: number): LoadBalancingProtocol {
   const proto = tryWellKnownProtocol(port);
   if (!proto) {
-    throw new Error(`Please supply protocol to go with port ${port}`);
+    throw new ValidationError(`Please supply protocol to go with port ${port}`, scope);
   }
   return proto;
 }

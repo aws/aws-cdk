@@ -50,7 +50,6 @@
   "AWS::GuardDuty": "Amazon GuardDuty",
   "AWS::IAM": "AWS Identity and Access Management",
   "AWS::Inspector": "Amazon Inspector",
-  "AWS::IoT1Click": "AWS IoT 1-Click",
   "AWS::IoT": "AWS IoT",
   "AWS::IoTAnalytics": "AWS IoT Analytics",
   "AWS::IoTThingsGraph": "AWS IoT Things Graph",

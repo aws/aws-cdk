@@ -209,13 +209,13 @@ describe('security group', () => {
   });
 
   describe('Inline Rule Control', () => {
-    //Not inlined
+    // Not inlined
     describe('When props.disableInlineRules is true', () => { testRulesAreNotInlined(undefined, true); });
     describe('When context.disableInlineRules is true', () => { testRulesAreNotInlined(true, undefined); });
     describe('When context.disableInlineRules is true and props.disableInlineRules is true', () => { testRulesAreNotInlined(true, true); });
     describe('When context.disableInlineRules is false and props.disableInlineRules is true', () => { testRulesAreNotInlined(false, true); });
     describe('When props.disableInlineRules is true and context.disableInlineRules is null', () => { testRulesAreNotInlined(null, true); });
-    //Inlined
+    // Inlined
     describe('When context.disableInlineRules is false and props.disableInlineRules is false', () => { testRulesAreInlined(false, false); });
     describe('When context.disableInlineRules is true and props.disableInlineRules is false', () => { testRulesAreInlined(true, false); });
     describe('When context.disableInlineRules is false', () => { testRulesAreInlined(false, undefined); });
@@ -389,7 +389,7 @@ describe('security group', () => {
 
   describe('Peer security group ID validation', () => {
     test('passes with valid security group ID', () => {
-      //GIVEN
+      // GIVEN
       const securityGroupIds = ['sg-12345678', 'sg-0123456789abcdefg'];
 
       // THEN
@@ -399,7 +399,7 @@ describe('security group', () => {
     });
 
     test('passes with valid security group ID and source owner id', () => {
-      //GIVEN
+      // GIVEN
       const securityGroupIds = ['sg-12345678', 'sg-0123456789abcdefg'];
       const ownerIds = ['000000000000', '000000000001'];
 
@@ -446,10 +446,10 @@ describe('security group', () => {
       const vpc = new Vpc(stack, 'VPC');
       const sg = new SecurityGroup(stack, 'SG', { vpc });
 
-      //WHEN
+      // WHEN
       sg.addIngressRule(Peer.securityGroupId('sg-123456789'), Port.allTcp(), 'no owner id property');
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [{
           SourceSecurityGroupId: 'sg-123456789',
@@ -467,10 +467,10 @@ describe('security group', () => {
       const vpc = new Vpc(stack, 'VPC');
       const sg = new SecurityGroup(stack, 'SG', { vpc });
 
-      //WHEN
+      // WHEN
       sg.addIngressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'contains owner id property');
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupIngress: [{
           SourceSecurityGroupId: 'sg-123456789',
@@ -489,10 +489,10 @@ describe('security group', () => {
       const vpc = new Vpc(stack, 'VPC');
       const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
 
-      //WHEN
+      // WHEN
       sg.addEgressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'no owner id property');
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         SecurityGroupEgress: [{
           DestinationSecurityGroupId: 'sg-123456789',
@@ -868,7 +868,7 @@ function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | nu
     });
   });
 
-};
+}
 
 function testRulesAreNotInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {
 

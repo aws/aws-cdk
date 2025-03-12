@@ -326,8 +326,8 @@ describe('KinesisEventSource', () => {
         startingPositionTimestamp: 1640995200,
         onFailure: s3OnFailureDestination,
       }));
-    //THEN
-    }).toThrowError('S3 onFailure Destination is not supported for this event source');
+    // THEN
+    }).toThrow('S3 onFailure Destination is not supported for this event source');
 
   });
 

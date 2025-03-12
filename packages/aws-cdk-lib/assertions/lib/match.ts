@@ -387,7 +387,7 @@ class SerializedJson extends Matcher {
     private readonly pattern: any,
   ) {
     super();
-  };
+  }
 
   public test(actual: any): MatchResult {
     if (getType(actual) !== 'string') {
@@ -498,5 +498,4 @@ class StringLikeRegexpMatch extends Matcher {
 
     return result;
   }
-
 }

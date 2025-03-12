@@ -140,7 +140,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
   /**
    * ID of the underlying Identity Pool
    */
-  public readonly identityPoolId: string
+  public readonly identityPoolId: string;
 
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
@@ -200,7 +200,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
             };
           }),
         };
-      };
+      }
       acc[mappingKey] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });

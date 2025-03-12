@@ -6,6 +6,9 @@
   "main": "lib/main.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "excludeTypescript": [
+      "**/*.template.ts"
+    ],
     "outdir": "dist",
     "targets": {
       "dotnet": {
@@ -52,7 +55,7 @@
     "build+test+package": "yarn build+test && yarn package",
     "bundle": "esbuild --bundle lib/index.ts --target=node18 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
-    "gen": "../../../packages/aws-cdk/generate.sh",
+    "gen": "build-tools/copy-cli-resources.sh ../../../packages/aws-cdk",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
@@ -63,9 +66,6 @@
   "cdk-build": {
     "post": [
       "yarn attribute",
-      "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
-      "cp ../../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
-      "cp ../../../node_modules/@aws-cdk/aws-service-spec/db.json.gz ./",
       "yarn bundle",
       "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
     ],

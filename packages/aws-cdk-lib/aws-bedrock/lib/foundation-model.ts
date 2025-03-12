@@ -143,22 +143,40 @@ export class FoundationModelIdentifier {
    **/
   public static readonly ANTHROPIC_CLAUDE_V1 = new FoundationModelIdentifier('anthropic.claude-v1');
 
-  /** Base model "anthropic.claude-v2". */
+  /**
+   * Base model "anthropic.claude-v2".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2 = new FoundationModelIdentifier('anthropic.claude-v2');
 
-  /** Base model "anthropic.claude-v2:0:18k". */
+  /**
+   * Base model "anthropic.claude-v2:0:18k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-v2:0:18k');
 
-  /** Base model "anthropic.claude-v2:0:100k". */
+  /**
+   * Base model "anthropic.claude-v2:0:100k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_0_100K = new FoundationModelIdentifier('anthropic.claude-v2:0:100k');
 
-  /** Base model "anthropic.claude-v2:1". */
+  /**
+   * Base model "anthropic.claude-v2:1".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1 = new FoundationModelIdentifier('anthropic.claude-v2:1');
 
-  /** Base model "anthropic.claude-v2:1:18k". */
+  /**
+   * Base model "anthropic.claude-v2:1:18k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1_18K = new FoundationModelIdentifier('anthropic.claude-v2:1:18k');
 
-  /** Base model "anthropic.claude-v2:1:200k". */
+  /**
+   * Base model "anthropic.claude-v2:1:200k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_V2_1_200K = new FoundationModelIdentifier('anthropic.claude-v2:1:200k');
 
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0". */
@@ -185,6 +203,15 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0" */
   public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0 = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0');
 
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:18k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:18k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:51k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_51K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:51k');
+
+  /** Base model "anthropic.claude-3-5-sonnet-20241022-v2:0:200k". */
+  public static readonly ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K = new FoundationModelIdentifier('anthropic.claude-3-5-sonnet-20241022-v2:0:200k');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -209,10 +236,16 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-opus-20240229-v1:0:200k". */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0:200k');
 
-  /** Base model "anthropic.claude-instant-v1". */
+  /**
+   * Base model "anthropic.claude-instant-v1".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
-  /** Base model "anthropic.claude-instant-v1:2:100k". */
+  /**
+   * Base model "anthropic.claude-instant-v1:2:100k".
+   * @deprecated use latest version of the model
+   */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1_2_100K = new FoundationModelIdentifier('anthropic.claude-instant-v1:2:100k');
 
   /** Base model "cohere.command-text-v14". */
@@ -247,6 +280,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
+
+  /** Base model "luma.ray-v2:0". */
+  public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 
   /**
    * Base model "meta.llama2-13b-v1".
@@ -329,6 +365,9 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama3-2-90b-instruct-v1:0". */
   public static readonly META_LLAMA_3_2_90B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-2-90b-instruct-v1:0');
 
+  /** Base model "meta.llama3-3-70b-instruct-v1:0". */
+  public static readonly META_LLAMA_3_3_70B_INSTRUCT_V1 = new FoundationModelIdentifier('meta.llama3-3-70b-instruct-v1:0');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -371,11 +410,20 @@ export class FoundationModelIdentifier {
   /** Base model "stability.sd3-large-v1:0". */
   public static readonly STABILITY_SD3_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-large-v1:0');
 
+  /** Base model "stability.sd3-5-large-v1:0". */
+  public static readonly STABILITY_SD3_5_LARGE_V1_0 = new FoundationModelIdentifier('stability.sd3-5-large-v1:0');
+
   /** Base model "stability.stable-image-ultra-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_0 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:0');
 
+  /** Base model "stability.stable-image-ultra-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_ULTRA_V1_1 = new FoundationModelIdentifier('stability.stable-image-ultra-v1:1');
+
   /** Base model "stability.stable-image-core-v1:0". */
   public static readonly STABILITY_STABLE_IMAGE_CORE_V1_0 = new FoundationModelIdentifier('stability.stable-image-core-v1:0');
+
+  /** Base model "stability.stable-image-core-v1:1". */
+  public static readonly STABILITY_STABLE_IMAGE_CORE_V1_1 = new FoundationModelIdentifier('stability.stable-image-core-v1:1');
 
   /**
    * Constructor for foundation model identifier

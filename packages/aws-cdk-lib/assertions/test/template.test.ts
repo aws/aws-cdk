@@ -260,7 +260,7 @@ describe('Template', () => {
             Properties: { baz: 'waldo' },
           },
         },
-      })).toThrowError(/Expected waldo but received qux/);
+      })).toThrow(/Expected waldo but received qux/);
     });
   });
 

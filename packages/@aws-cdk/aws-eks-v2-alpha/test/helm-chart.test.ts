@@ -43,7 +43,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chart and repository specified', () => {
@@ -63,7 +63,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should throw when chartAsset and version specified', () => {
@@ -83,7 +83,7 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError();
+      expect(t).toThrow();
     });
 
     test('should handle chart from S3 asset', () => {
@@ -213,24 +213,24 @@ describe('helm chart', () => {
     });
 
     test('should enable atomic operations when specified', () => {
-      //GIVEN
+      // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
-      //WHEN
+      // WHEN
       new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', atomic: true });
 
-      //THEN
+      // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
     });
 
     test('should disable atomic operations by default', () => {
-      //GIVEN
+      // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
-      //WHEN
+      // WHEN
       new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart' });
 
-      //THEN
+      // THEN
       const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
       expect(Object.keys(charts).length).toEqual(0);
 

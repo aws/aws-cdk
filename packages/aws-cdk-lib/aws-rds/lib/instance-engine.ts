@@ -4,6 +4,7 @@ import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * The options passed to `IInstanceEngine.bind`.
@@ -142,9 +143,9 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineFamily = props.engineFamily;
   }
 
-  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
-      throw new Error(`timezone property can not be configured for ${this.engineType}`);
+      throw new ValidationError(`timezone property can not be configured for ${this.engineType}`, scope);
     }
     return {
       features: this.features,
@@ -416,20 +417,20 @@ export class MariaDbEngineVersion {
    * Version "10.4.27"
    * @deprecated MariaDB 10.4.27 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4')
+  public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4');
   /**
    * Version "10.4.28"
    * @deprecated MariaDB 10.4.28 is no longer supported by Amazon RDS.
    */
-  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4')
+  public static readonly VER_10_4_28 = MariaDbEngineVersion.of('10.4.28', '10.4');
   /** Version "10.4.29". */
-  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4')
+  public static readonly VER_10_4_29 = MariaDbEngineVersion.of('10.4.29', '10.4');
   /** Version "10.4.30". */
-  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4')
+  public static readonly VER_10_4_30 = MariaDbEngineVersion.of('10.4.30', '10.4');
   /** Version "10.4.31". */
-  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4')
+  public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4');
   /** Version "10.4.32". */
-  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4')
+  public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4');
   /** Version "10.4.33". */
   public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
   /** Version "10.4.34". */
@@ -496,6 +497,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_25 = MariaDbEngineVersion.of('10.5.25', '10.5');
   /** Version "10.5.26". */
   public static readonly VER_10_5_26 = MariaDbEngineVersion.of('10.5.26', '10.5');
+  /** Version "10.5.27". */
+  public static readonly VER_10_5_27 = MariaDbEngineVersion.of('10.5.27', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
@@ -543,6 +546,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_18 = MariaDbEngineVersion.of('10.6.18', '10.6');
   /** Version "10.6.19". */
   public static readonly VER_10_6_19 = MariaDbEngineVersion.of('10.6.19', '10.6');
+  /** Version "10.6.20". */
+  public static readonly VER_10_6_20 = MariaDbEngineVersion.of('10.6.20', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -558,8 +563,12 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_8 = MariaDbEngineVersion.of('10.11.8', '10.11');
   /** Version "10.11.9". */
   public static readonly VER_10_11_9 = MariaDbEngineVersion.of('10.11.9', '10.11');
+  /** Version "10.11.10". */
+  public static readonly VER_10_11_10 = MariaDbEngineVersion.of('10.11.10', '10.11');
   /** Version "11.4.3". */
   public static readonly VER_11_4_3 = MariaDbEngineVersion.of('11.4.3', '11.4');
+  /** Version "11.4.4". */
+  public static readonly VER_11_4_4 = MariaDbEngineVersion.of('11.4.4', '11.4');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -613,7 +622,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
-      throw new Error(`domain property cannot be configured for ${this.engineType}`);
+      throw new ValidationError(`domain property cannot be configured for ${this.engineType}`, scope);
     }
     return super.bindToInstance(scope, options);
   }
@@ -951,7 +960,7 @@ export class MysqlEngineVersion {
   /** Version "8.0.40". */
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
   /** Version "8.4.3". */
-  public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.0');
+  public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -1467,6 +1476,10 @@ export class PostgresEngineVersion {
    * Version "11.22-rds.20240808"
    */
   public static readonly VER_11_22_RDS_20240808 = PostgresEngineVersion.of('11.22-RDS.20240808', '11', { s3Import: true, s3Export: true });
+  /**
+   * Version "11.22-RDS.20241121"
+   */
+  public static readonly VER_11_22_RDS_20241121 = PostgresEngineVersion.of('11.22-RDS.20241121', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -1717,7 +1730,7 @@ export class PostgresEngineVersion {
   public static readonly VER_16_4 = PostgresEngineVersion.of('16.4', '16', { s3Import: true, s3Export: true });
   /** Version "16.5". */
   public static readonly VER_16_5 = PostgresEngineVersion.of('16.5', '16', { s3Import: true, s3Export: true });
-  /**Version "16.6" */
+  /** Version "16.6" */
   public static readonly VER_16_6 = PostgresEngineVersion.of('16.6', '16', { s3Import: true, s3Export: true });
 
   /** Version "17" (only a major version, without a specific minor version). */
@@ -2816,7 +2829,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     const s3Role = options.s3ImportRole ?? options.s3ExportRole;
     if (s3Role) {
       if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
-        throw new Error('S3 import and export roles must be the same for SQL Server engines');
+        throw new ValidationError('S3 import and export roles must be the same for SQL Server engines', scope);
       }
 
       if (!optionGroup) {

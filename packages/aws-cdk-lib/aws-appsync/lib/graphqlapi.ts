@@ -529,7 +529,7 @@ export class GraphqlApi extends GraphqlApiBase {
       // this value is only needed to construct event rules.
       public readonly graphQLEndpointArn = attrs.graphQLEndpointArn ?? '';
       public readonly visibility = attrs.visibility ?? Visibility.GLOBAL;
-      public readonly modes = attrs.modes ?? []
+      public readonly modes = attrs.modes ?? [];
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -815,7 +815,7 @@ export class GraphqlApi extends GraphqlApiBase {
   public addSchemaDependency(construct: CfnResource): boolean {
     if (this.schemaResource) {
       construct.addDependency(this.schemaResource);
-    };
+    }
     return true;
   }
 

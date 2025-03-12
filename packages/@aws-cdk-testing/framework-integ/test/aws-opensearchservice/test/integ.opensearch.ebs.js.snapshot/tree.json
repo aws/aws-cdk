@@ -8,13 +8,13 @@
         "id": "cdk-integ-opensearch-instance-store",
         "path": "cdk-integ-opensearch-instance-store",
         "children": {
-          "Domain": {
-            "id": "Domain",
-            "path": "cdk-integ-opensearch-instance-store/Domain",
+          "Domain1": {
+            "id": "Domain1",
+            "path": "cdk-integ-opensearch-instance-store/Domain1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-integ-opensearch-instance-store/Domain/Resource",
+                "path": "cdk-integ-opensearch-instance-store/Domain1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
                   "aws:cdk:cloudformation:props": {
@@ -35,7 +35,97 @@
                     "encryptionAtRestOptions": {
                       "enabled": false
                     },
-                    "engineVersion": "OpenSearch_2.5",
+                    "engineVersion": "OpenSearch_2.17",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          },
+          "Domain2": {
+            "id": "Domain2",
+            "path": "cdk-integ-opensearch-instance-store/Domain2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-instance-store/Domain2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "i4i.xlarge.search",
+                      "multiAzWithStandbyEnabled": false,
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": false
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "OpenSearch_2.17",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          },
+          "Domain3": {
+            "id": "Domain3",
+            "path": "cdk-integ-opensearch-instance-store/Domain3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-instance-store/Domain3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r7gd.xlarge.search",
+                      "multiAzWithStandbyEnabled": false,
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": false
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "OpenSearch_2.17",
                     "logPublishingOptions": {},
                     "nodeToNodeEncryptionOptions": {
                       "enabled": false
