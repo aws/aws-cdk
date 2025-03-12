@@ -108,7 +108,7 @@ export enum CapacityType {
    */
   ON_DEMAND = 'ON_DEMAND',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * capacity block instances
    */
   CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
