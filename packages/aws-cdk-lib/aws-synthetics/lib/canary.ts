@@ -12,6 +12,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
 const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
@@ -359,6 +360,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
         produce: () => this.generateUniqueName(),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
       throw new ValidationError('Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.', this);
@@ -458,6 +461,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metricDuration(options?: MetricOptions): Metric {
     return new Metric({
       ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
@@ -473,6 +477,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @default avg over 5 minutes
    */
+  @MethodMetadata()
   public metricSuccessPercent(options?: MetricOptions): Metric {
     return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
@@ -484,6 +489,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    *
    * @param options - configuration options for the metric
    */
+  @MethodMetadata()
   public metricFailed(options?: MetricOptions): Metric {
     return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }

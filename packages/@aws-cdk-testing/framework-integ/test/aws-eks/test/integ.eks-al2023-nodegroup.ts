@@ -27,7 +27,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 0,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
@@ -52,7 +52,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-al2023-nodegroup-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-al2023-nodegroup', {

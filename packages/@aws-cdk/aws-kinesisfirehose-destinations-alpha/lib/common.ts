@@ -28,6 +28,10 @@ export class Compression {
    * ZIP
    */
   public static readonly ZIP = new Compression('ZIP');
+  /**
+   * Uncompressed
+   */
+  public static readonly UNCOMPRESSED = new Compression('UNCOMPRESSED');
 
   /**
    * Creates a new Compression instance with a custom value.
@@ -156,7 +160,7 @@ export interface DestinationS3BackupProps extends DestinationLoggingProps, Commo
    *
    * @default - If `bucket` is provided, the default will be `BackupMode.ALL`. Otherwise,
    * source records are not backed up to S3.
-  */
+   */
   readonly mode?: BackupMode;
 }
 

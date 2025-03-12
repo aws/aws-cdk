@@ -20,13 +20,33 @@ queue_rules:
       {{ title }} (#{{ number }})
       {{ body }}
 
-  - name: default-squash
+  - name: priority-squash
     update_method: merge
     merge_method: squash
     conditions:
       - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash)
+      - label~=priority-pr
+      - -merged
+      - -closed
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+    commit_message_template: |-
+      {{ title }} (#{{ number }})
+      {{ body }}
+
+  - name: default-squash
+    update_method: merge
+    merge_method: squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|priority-pr)
       - -merged
       - -closed
       - "#approved-reviews-by>=1"
@@ -45,7 +65,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|comcalvi|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|HBobertz|colifran|moelasmar|paulhcsun|GavinZZ|aaythapa|xazhao|gracelu0|jfuss|shikha372|kirtishrinkhala|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|michelle-wangg|jiayiwang7|1kaileychen|saiyush|5d|iankhou)$
+      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -56,6 +76,27 @@ pull_request_rules:
     conditions:
       - base!=release
       - -title~=(WIP|wip)
+      - -label~=(blocked|do-not-merge|no-squash|two-approvers|priority-pr)
+      - -merged
+      - -closed
+      - author!=dependabot[bot]
+      - author!=dependabot-preview[bot]
+      - "#approved-reviews-by>=1"
+      - -approved-reviews-by~=author
+      # This is important! It makes the PR Linter work.
+      - "#changes-requested-reviews-by=0"
+      - status-success~=AWS CodeBuild us-east-1
+      - status-success=validate-pr
+  - name: automatic priority merge
+    actions:
+      comment:
+        message: Thank you for contributing! Your pull request will be updated from main and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+      queue:
+        name: priority-squash
+    conditions:
+      - base!=release
+      - -title~=(WIP|wip)
+      - label~=priority-pr
       - -label~=(blocked|do-not-merge|no-squash|two-approvers)
       - -merged
       - -closed

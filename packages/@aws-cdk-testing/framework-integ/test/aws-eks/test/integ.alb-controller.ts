@@ -65,13 +65,13 @@ class EksClusterAlbControllerStack extends Stack {
     new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
-
   }
 }
 
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');

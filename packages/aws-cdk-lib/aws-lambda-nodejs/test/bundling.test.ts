@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -620,7 +621,7 @@ test('Detects bun.lockb', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/bun\.lockb.+bun install --frozen-lockfile/),
+        expect.stringMatching(/bun\.lockb.+bun install/),
       ]),
     }),
   });
@@ -859,7 +860,6 @@ test('throws with pre compilation and not found tsconfig', () => {
       architecture: Architecture.X86_64,
     });
   }).toThrow('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`');
-
 });
 
 test('with custom hash', () => {

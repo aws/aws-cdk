@@ -2,6 +2,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 
 export interface GroupProps {
@@ -289,6 +290,7 @@ abstract class GroupBase extends Resource implements IGroup {
 }
 /**
  * @resource AWS::Scheduler::ScheduleGroup
+ * @deprecated Use `ScheduleGroup` instead. `Group` will be removed when this module is stabilized.
  */
 export class Group extends GroupBase {
   /**
@@ -297,6 +299,7 @@ export class Group extends GroupBase {
    * @param scope construct scope
    * @param id construct id
    * @param groupArn the ARN of the group to import (e.g. `arn:aws:scheduler:region:account-id:schedule-group/group-name`)
+   * @deprecated Use `ScheduleGroup.fromScheduleGroupArn()` instead.
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
     const arnComponents = Stack.of(scope).splitArn(groupArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -313,6 +316,7 @@ export class Group extends GroupBase {
    *
    * @param scope construct scope
    * @param id construct id
+   * @deprecated Use `ScheduleGroup.fromDefaultScheduleGroup()` instead.
    */
   public static fromDefaultGroup(scope: Construct, id: string): IGroup {
     return Group.fromGroupName(scope, id, 'default');
@@ -324,6 +328,7 @@ export class Group extends GroupBase {
    * @param scope construct scope
    * @param id construct id
    * @param groupName the name of the existing group to import
+   * @deprecated Use `ScheduleGroup.fromScheduleGroupName()` instead.
    */
   public static fromGroupName(scope: Construct, id: string, groupName: string): IGroup {
     const groupArn = Stack.of(scope).formatArn({
@@ -337,10 +342,12 @@ export class Group extends GroupBase {
   public readonly groupName: string;
   public readonly groupArn: string;
 
-  public constructor(scope: Construct, id: string, props: GroupProps) {
+  public constructor(scope: Construct, id: string, props?: GroupProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
-    this.groupName = props.groupName ?? Names.uniqueResourceName(this, {
+    this.groupName = props?.groupName ?? Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -349,7 +356,7 @@ export class Group extends GroupBase {
       name: this.groupName,
     });
 
-    group.applyRemovalPolicy(props.removalPolicy);
+    group.applyRemovalPolicy(props?.removalPolicy);
 
     this.groupArn = this.getResourceArnAttribute(group.attrArn, {
       service: 'scheduler',

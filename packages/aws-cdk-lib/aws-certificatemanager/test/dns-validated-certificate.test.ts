@@ -3,10 +3,16 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { HostedZone, PublicHostedZone } from '../../aws-route53';
 import { App, Stack, Token, Tags, RemovalPolicy, Aws } from '../../core';
+import * as cxapi from '../../cx-api';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
-testDeprecated('creates CloudFormation Custom Resource', () => {
-  const stack = new Stack();
+testDeprecated('creates CloudFormation Custom Resource @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+    },
+  });
+  const stack = new Stack(app);
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
     zoneName: 'example.com',
@@ -71,6 +77,123 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
           Effect: 'Allow',
           Resource: '*',
         },
+        {
+          Action: 'route53:changeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':route53:::hostedzone/',
+                { Ref: 'ExampleDotCom4D1B83AA' },
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['CNAME'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                '*.test.example.com',
+                '*.test2.example.com',
+              ],
+            },
+          },
+        },
+      ],
+    },
+  });
+});
+
+testDeprecated('creates CloudFormation Custom Resource @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+    },
+  });
+  const stack = new Stack(app);
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificate(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone: exampleDotComZone,
+    subjectAlternativeNames: ['test2.example.com'],
+    cleanupRoute53Records: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
+    DomainName: 'test.example.com',
+    SubjectAlternativeNames: ['test2.example.com'],
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertificateCertificateRequestorFunction5E845413',
+        'Arn',
+      ],
+    },
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    CleanupRecords: 'true',
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Handler: 'index.certificateRequestHandler',
+    Runtime: {
+      'Fn::FindInMap': [
+        'LatestNodeRuntimeMap',
+        {
+          Ref: 'AWS::Region',
+        },
+        'value',
+      ],
+    },
+    Timeout: 900,
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyName: 'CertificateCertificateRequestorFunctioninlinePolicyAddedToExecutionRole02D5DA9E2',
+    Roles: [
+      {
+        Ref: 'CertificateCertificateRequestorFunctionServiceRoleC04C13DA',
+      },
+    ],
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: [
+            'acm:RequestCertificate',
+            'acm:DescribeCertificate',
+            'acm:DeleteCertificate',
+            'acm:AddTagsToCertificate',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'route53:GetChange',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
         {
           Action: 'route53:changeResourceRecordSets',
           Effect: 'Allow',

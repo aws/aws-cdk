@@ -11,7 +11,6 @@ describe('aws log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.FargateTaskDefinition(stack, 'TaskDefinition');
-
   });
 
   test('create an aws log driver', () => {
@@ -157,7 +156,6 @@ describe('aws log driver', () => {
       logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello',
     })).toThrow(/`logGroup`.*`logRetentionDays`/);
-
   });
 
   test('throws error when specifying maxBufferSize and blocking mode', () => {
@@ -171,7 +169,6 @@ describe('aws log driver', () => {
       mode: ecs.AwsLogDriverMode.BLOCKING,
       maxBufferSize: cdk.Size.mebibytes(25),
     })).toThrow(/.*maxBufferSize.*/);
-
   });
 
   test('throws error when specifying maxBufferSize and default settings', () => {
@@ -184,7 +181,6 @@ describe('aws log driver', () => {
       streamPrefix: 'hello',
       maxBufferSize: cdk.Size.mebibytes(25),
     })).toThrow(/.*maxBufferSize.*/);
-
   });
 
   test('allows cross-region log group', () => {

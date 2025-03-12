@@ -18,7 +18,6 @@ describe('fargate task definition', () => {
         Cpu: '256',
         Memory: '512',
       });
-
     });
 
     test('support lazy cpu and memory values', () => {
@@ -35,7 +34,6 @@ describe('fargate task definition', () => {
         Cpu: '128',
         Memory: '1024',
       });
-
     });
 
     test('with all properties set', () => {
@@ -108,7 +106,6 @@ describe('fargate task definition', () => {
           },
         ],
       });
-
     });
 
     test('throws when adding placement constraint', () => {
@@ -120,7 +117,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
-
     });
 
     test('throws when adding inference accelerators', () => {
@@ -137,7 +133,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
-
     });
 
     test('throws when ephemeral storage request is too high', () => {
@@ -268,7 +263,6 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
-
     });
 
     test('can succeed using attributes', () => {
@@ -299,7 +293,6 @@ describe('fargate task definition', () => {
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
       expect(taskDefinition.executionRole).toEqual(expectExecutionRole);
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
@@ -321,7 +314,6 @@ describe('fargate task definition', () => {
         taskDefinition.networkMode;
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined', () => {
@@ -360,7 +352,7 @@ describe('fargate task definition', () => {
       // THEN
       expect(() => {
         taskDefinition.ephemeralStorageGiB;
-      }).toBeTruthy;
+      }).toBeTruthy();
     });
 
     test('runtime testing for windows container', () => {
@@ -468,8 +460,6 @@ describe('fargate task definition', () => {
           },
         });
       }).toThrow('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
-
     });
-
   });
 });

@@ -88,6 +88,9 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | (temporary) |
 | [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | (fix) |
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | (fix) |
+| [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
+| [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
+| [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 
 <!-- END table -->
 
@@ -163,7 +166,10 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
-    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true,
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
   }
 }
 ```
@@ -1668,6 +1674,52 @@ thumbprints from unsecure connections.
 | 2.177.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to allow unsecure OIDC connection.
+
+
+### @aws-cdk/core:enableAdditionalMetadataCollection
+
+*When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues.* (config)
+
+When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
+  * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.178.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy
+
+*When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement* (fix)
+
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.180.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-s3:setUniqueReplicationRoleName
+
+*When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.* (fix)
+
+When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
+When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+When disabled, 'CDKReplicationRole' is always specified.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.182.0 | `false` | `true` |
 
 
 <!-- END details -->

@@ -2,9 +2,10 @@ import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for a new SNS topic
@@ -219,6 +220,13 @@ export interface TopicAttributes {
   readonly topicArn: string;
 
   /**
+   * KMS encryption key, if this topic is server-side encrypted by a KMS key.
+   *
+   * @default - None
+   */
+  readonly keyArn?: string;
+
+  /**
    * Whether content-based deduplication is enabled.
    * Only applicable for FIFO topics.
    *
@@ -260,6 +268,9 @@ export class Topic extends TopicBase {
     class Import extends TopicBase {
       public readonly topicArn = attrs.topicArn;
       public readonly topicName = topicName;
+      public readonly masterKey = attrs.keyArn
+        ? Key.fromKeyArn(this, 'Key', attrs.keyArn)
+        : undefined;
       public readonly fifo = fifo;
       public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
@@ -272,6 +283,7 @@ export class Topic extends TopicBase {
 
   public readonly topicArn: string;
   public readonly topicName: string;
+  public readonly masterKey?: IKey;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 
@@ -283,6 +295,8 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.enforceSSL = props.enforceSSL;
 
@@ -354,8 +368,13 @@ export class Topic extends TopicBase {
       resource: this.physicalName,
     });
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this.masterKey = props.masterKey;
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
+
+    if (this.enforceSSL) {
+      this.addSSLPolicy();
+    }
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
@@ -380,6 +399,7 @@ export class Topic extends TopicBase {
   /**
    * Adds a delivery status logging configuration to the topic.
    */
+  @MethodMetadata()
   public addLoggingConfig(config: LoggingConfig) {
     this.loggingConfigs.push(config);
   }

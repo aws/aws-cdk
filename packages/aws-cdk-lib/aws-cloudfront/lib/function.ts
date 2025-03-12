@@ -2,7 +2,8 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Represents the function's source code
@@ -190,6 +191,8 @@ export class Function extends Resource implements IFunction {
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.functionName = props.functionName ?? this.generateName();
 
@@ -197,9 +200,7 @@ export class Function extends Resource implements IFunction {
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
-      throw new Error(
-        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`,
-      );
+      throw new ValidationError(`Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

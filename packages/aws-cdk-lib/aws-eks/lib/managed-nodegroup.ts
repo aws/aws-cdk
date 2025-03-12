@@ -6,6 +6,7 @@ import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '.
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * NodeGroup interface
@@ -390,6 +391,8 @@ export class Nodegroup extends Resource implements INodegroup {
     super(scope, id, {
       physicalName: props.nodegroupName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
 
@@ -643,7 +646,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
   }
 
   if (architectures.size > 1) {

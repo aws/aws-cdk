@@ -21,7 +21,6 @@ describe('Job', () => {
   });
 
   describe('Create new Ray Job with default parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', { role, script });
     });
@@ -68,11 +67,9 @@ describe('Job', () => {
         JobRunQueuingEnabled: false,
       });
     });
-
   });
 
   describe('Create new Ray Job with log override parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'RayJob', {
         jobName: 'RayJob',
@@ -105,11 +102,9 @@ describe('Job', () => {
         }),
       });
     });
-
   });
 
   describe('Create new Ray Job with logging explicitly disabled', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'RayJob', {
         jobName: 'RayJob',
@@ -129,11 +124,9 @@ describe('Job', () => {
         },
       });
     });
-
   });
 
   describe('Create Ray Job with optional override parameters', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', {
         role,
@@ -209,13 +202,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden max retries should be 3', () => {
+    test('Overridden max retries should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 3,
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -223,13 +216,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -237,7 +230,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
@@ -255,7 +248,6 @@ describe('Job', () => {
   });
 
   describe('Create Ray Job with job run queuing enabled', () => {
-
     beforeEach(() => {
       job = new glue.RayJob(stack, 'ImportedJob', {
         role,
@@ -332,7 +324,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden job run queuing should be enabled', () => {
+    test('Overridden job run queuing should be enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: true,
       });
@@ -344,7 +336,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden max concurrent runs should be 100', () => {
+    test('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -352,13 +344,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden timeout should be 2 hours', () => {
+    test('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overriden connections should be 100', () => {
+    test('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -366,7 +358,7 @@ describe('Job', () => {
       });
     });
 
-    test('Overriden security configuration should be set', () => {
+    test('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
@@ -384,7 +376,6 @@ describe('Job', () => {
   });
 
   describe('Invalid overrides should cause errors', () => {
-
     test('Create Ray Job overriding only workerType to cause an Error', () => {
       expect(() => {
         job = new glue.RayJob(stack, 'RayJob', {

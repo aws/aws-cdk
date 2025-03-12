@@ -7,7 +7,8 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Resource, Stack } from '../../core';
+import { Resource, Stack, ValidationError } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -247,6 +248,8 @@ export class Trail extends Resource {
     super(scope, id, {
       physicalName: props.trailName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
@@ -319,7 +322,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new Error('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey');
+      throw new ValidationError('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
     }
 
     if (props.insightTypes) {
@@ -378,13 +381,14 @@ export class Trail extends Resource {
    * @param dataResourceValues the list of data resource ARNs to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
+  @MethodMetadata()
   public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
     if (dataResourceValues.length > 250) {
-      throw new Error('A maximum of 250 data elements can be in one event selector');
+      throw new ValidationError('A maximum of 250 data elements can be in one event selector', this);
     }
 
     if (this.eventSelectors.length > 5) {
-      throw new Error('A maximum of 5 event selectors are supported per trail.');
+      throw new ValidationError('A maximum of 5 event selectors are supported per trail.', this);
     }
 
     let includeAllManagementEvents;
@@ -415,6 +419,7 @@ export class Trail extends Resource {
    * @param handlers the list of lambda function handlers whose data events should be logged (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
+  @MethodMetadata()
   public addLambdaEventSelector(handlers: lambda.IFunction[], options: AddEventSelectorOptions = {}) {
     if (handlers.length === 0) { return; }
     const dataResourceValues = handlers.map((h) => h.functionArn);
@@ -426,6 +431,7 @@ export class Trail extends Resource {
    * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
    * @default false
    */
+  @MethodMetadata()
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
     return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
   }
@@ -442,6 +448,7 @@ export class Trail extends Resource {
    * @param s3Selector the list of S3 bucket with optional prefix to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
+  @MethodMetadata()
   public addS3EventSelector(s3Selector: S3EventSelector[], options: AddEventSelectorOptions = {}) {
     if (s3Selector.length === 0) { return; }
     const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
@@ -453,6 +460,7 @@ export class Trail extends Resource {
    * @see https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html
    * @default false
    */
+  @MethodMetadata()
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
     return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
   }
@@ -467,6 +475,7 @@ export class Trail extends Resource {
    *
    * @deprecated - use Trail.onEvent()
    */
+  @MethodMetadata()
   public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     return Trail.onEvent(this, id, options);
   }

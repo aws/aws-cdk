@@ -5,6 +5,7 @@ import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for a PythonFunction
@@ -61,7 +62,7 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
+    const resolvedHandler = `${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
@@ -80,5 +81,8 @@ export class PythonFunction extends Function {
       }),
       handler: resolvedHandler,
     });
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
