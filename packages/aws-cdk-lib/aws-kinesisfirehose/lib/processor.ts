@@ -115,3 +115,62 @@ export interface IDataProcessor {
    */
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
 }
+
+/**
+ * The data processor to decompress CloudWatch Logs.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs-decompression.html
+ */
+export class DecompressionProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor() {}
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'Decompression',
+      parameters: [
+        { parameterName: 'CompressionFormat', parameterValue: 'GZIP' },
+      ],
+    };
+  }
+}
+
+/**
+ * The data processor to extract message after decompression of CloudWatch Logs.
+ * This processor must used with `DecompressionProcessor`
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/Message_extraction.html
+ */
+export class CloudWatchLogProcessingProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor() {}
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'CloudWatchLogProcessing',
+      parameters: [
+        { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
+      ],
+    };
+  }
+}
+
+/**
+ * The data processor to append new line delimiter to each record.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html#dynamic-partitioning-new-line-delimiter
+ */
+export class AppendDelimiterToRecordProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor() {}
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'AppendDelimiterToRecord',
+      parameters: [],
+    };
+  }
+}
