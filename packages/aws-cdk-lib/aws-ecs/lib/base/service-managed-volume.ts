@@ -184,7 +184,7 @@ export enum EbsPropagatedTagSource {
    */
   TASK_DEFINITION = 'TASK_DEFINITION',
   /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
+   * NONE
    */
   NONE = 'NONE',
 }
