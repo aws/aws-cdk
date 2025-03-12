@@ -102,7 +102,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -120,13 +125,23 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "publicReadAccess": false,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -196,7 +211,8 @@
                         "path": "test-bucket-deployment-deployed-bucket/DeployMe5/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -215,7 +231,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -228,7 +244,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
@@ -236,7 +255,40 @@
                 "path": "test-bucket-deployment-deployed-bucket/DeployMe5/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
@@ -256,7 +308,8 @@
                     "path": "test-bucket-deployment-deployed-bucket/DeployMe5/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -280,7 +333,11 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "DestinationBucket": {
@@ -288,7 +345,8 @@
                 "path": "test-bucket-deployment-deployed-bucket/DeployMe5/DestinationBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
@@ -310,7 +368,10 @@
                     "path": "test-bucket-deployment-deployed-bucket/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -461,13 +522,69 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -487,7 +604,8 @@
                     "path": "test-bucket-deployment-deployed-bucket/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -537,7 +655,37 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "layers": [
+                    "*"
+                  ],
+                  "environment": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "memorySize": "*",
+                  "ephemeralStorageSize": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "filesystem": "*",
+                  "logGroup": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "ExportWebsiteUrl": {

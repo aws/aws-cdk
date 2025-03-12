@@ -30,10 +30,10 @@
     "npm-check-updates": "^16",
     "standard-version": "^9",
     "ts-jest": "^29",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.4"
   },
   "dependencies": {
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.1",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",

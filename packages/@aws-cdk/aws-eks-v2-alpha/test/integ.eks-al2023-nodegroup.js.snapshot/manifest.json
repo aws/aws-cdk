@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-al2023-nodegroup-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea53587d3eb0adcb3ad7e07319d2ec79d203d781932794348e92a9634a6674a7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26840f1680738b89a48bcc4c663c2508e66930b75a138ee958c53692711415f5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -321,7 +321,10 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08"
+            "data": "kubectlLayer44321E08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster": [
@@ -400,10 +403,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/KubectlReadyBarrier": [
@@ -800,10 +800,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/mastersRoleAccess": [
@@ -815,10 +812,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/ConfigCommand": [
@@ -895,10 +889,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_STANDARD/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupMNGAL2023X8664STANDARD8BD0F7AB",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupMNGAL2023X8664STANDARD8BD0F7AB"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_ARM_64_STANDARD": [
@@ -963,10 +954,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_ARM_64_STANDARD/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupMNGAL2023ARM64STANDARD8E30167E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupMNGAL2023ARM64STANDARD8E30167E"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NEURON": [
@@ -1031,10 +1019,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NEURON/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupMNGAL2023X8664NEURON44201AF9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupMNGAL2023X8664NEURON44201AF9"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NVIDIA": [
@@ -1099,10 +1084,7 @@
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/Cluster/NodegroupMNG_AL2023_X86_64_NVIDIA/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupMNGAL2023X8664NVIDIAE1B719F2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupMNGAL2023X8664NVIDIAE1B719F2"
           }
         ],
         "/aws-cdk-eks-cluster-al2023-nodegroup-test/LatestNodeRuntimeMap": [
