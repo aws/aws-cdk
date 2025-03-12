@@ -13,6 +13,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **codebuild:** throw `ValidationError` instead of untyped Errors ([#33700](https://github.com/aws/aws-cdk/issues/33700)) ([d12854a](https://github.com/aws/aws-cdk/commit/d12854a96cebb428feb78908a093743889ef52bf)), closes [#32569](https://github.com/aws/aws-cdk/issues/32569)
 * **core:** `RemovalPolicies.of(scope)` ([#32283](https://github.com/aws/aws-cdk/issues/32283)) ([34c547c](https://github.com/aws/aws-cdk/commit/34c547c83e9fa5f055b0c60be975087e4f836ebb))
 * **logs:** add support for fieldIndexPolicies in log group L2 Construct ([#33416](https://github.com/aws/aws-cdk/issues/33416)) ([6c882e0](https://github.com/aws/aws-cdk/commit/6c882e0acc36b632ff80286e72bac08734d70d72)), closes [#33366](https://github.com/aws/aws-cdk/issues/33366)
+* **lambda** backfill missing enums for lambda ([#33651](https://github.com/aws/aws-cdk/issues/33651)) ([4227747](https://github.com/aws/aws-cdk/pull/33740/commits/42277471040c4c845d9a4f1b3649df9cb675ecfb))
+* **rds** add new MariaDB engine versions 10.5.28, 10.6.21, 10.11.11, and 11.4.5 ([#33665](https://github.com/aws/aws-cdk/issues/33665)) ([7f5bf4e](https://github.com/aws/aws-cdk/pull/33740/commits/7f5bf4e311555bdf7aa0d7637d7b89dd0421c2f6))
+* **ec2** add VPC interface endpoints for Location Service ([#33667](https://github.com/aws/aws-cdk/issues/33667)) ([4bc151b](https://github.com/aws/aws-cdk/pull/33740/commits/4bc151bafdd4398f632b06f7d801c2a550e2340a))
+* **ec2** add VPC interface endpoints for WAFV2 ([#33685](https://github.com/aws/aws-cdk/issues/33685)) ([5eb11d2](https://github.com/aws/aws-cdk/pull/33740/commits/5eb11d26d00a5cccc18d9e4e6483dd613d4c4dbb))
+* **ec2** add VPC interface endpoints for Emr Serverless ([#33715](https://github.com/aws/aws-cdk/issues/33715)) ([25619a0](https://github.com/aws/aws-cdk/pull/33740/commits/25619a01e78040c8b9442a9a7ed434b936e01491))
+* **ec2** add VPC interface endpoints for Security Lake ([#33728](https://github.com/aws/aws-cdk/issues/33728)) ([5fcbe2a](https://github.com/aws/aws-cdk/pull/33740/commits/5fcbe2ac2e3c377e39b38c278434997dbed19ab6))
 
 
 ### Bug Fixes

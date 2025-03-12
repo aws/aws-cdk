@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **scheduler-targets-alpha:** The `InspectorStartAssessmentRun` target's constructor now accepts `IAssessmentTemplate` instead of `CfnAssessmentTemplate` as its parameter type. To migrate existing code, use the `AssessmentTemplate.fromCfnAssessmentTemplate()` method to convert your `CfnAssessmentTemplate` instances to `IAssessmentTemplate`.
 
+### Features
+
+* **kinesisanalytics-flink-alpha** backfill missing enums for kinesisanalytics-flink-alpha ([#33632](https://github.com/aws/aws-cdk/pull/33632)) ([b55199a](https://github.com/aws/aws-cdk/pull/33740/commits/b55199a782582348408fb75123c533977b38326d))
+* **kinesisfirehose-destinations-alpha** backfill missing enums for kinesisfirehose-destinations-alpha ([#33633](https://github.com/aws/aws-cdk/pull/33633)) ([6ed7a45](https://github.com/aws/aws-cdk/pull/33740/commits/6ed7a452e261b0033b44d0b2b61b18466d6e6b48))
+
+
 ### Bug Fixes
 
 * **scheduler-alpha:** deprecate `Group` in favour of `ScheduleGroup` ([#33678](https://github.com/aws/aws-cdk/issues/33678)) ([4d8eae9](https://github.com/aws/aws-cdk/commit/4d8eae9da577a94114602df261c98b65aa616956))
