@@ -15,16 +15,22 @@ Any code that you submit will be released under that license.
 
 - [What are contributions?](#what-are-contributions)
 - [How contributions work](#how-contributions-work)
-- [Where To Contribute](#where-to-contribute)
-  - [Demonstrating Value](#demonstrating-value)
-  - [Publishing Your Own Package](#publishing-your-own-package)
-    - [Trust and Third Party Packages](#trust-and-third-party-packages)
-    - [Third Party Package Administration](#third-party-package-administration)
+  - [Step 1: Identify a need](#step-1-identify-a-need)
+  - [Step 2: Search for solutions](#step-2-search-for-solutions)
+  - [Step 3: Create a GitHub Issue](#step-3-create-a-github-issue)
+  - [Step 4: Create a GitHub Pull Request](#step-4-create-a-github-pull-request)
 - [Quick Start](#quick-start)
-- [Getting Started](#getting-started)
-  - [Local setup](#setup)
-  - [Dev Container](#dev-container)
-- [Pull Requests](#pull-requests)
+- [Getting started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Step 1: Fork the AWS CDK repository](#step-1-fork-the-aws-cdk-repository)
+  - [Step 2: Build the project](#step-2-build-the-project)
+  - [Step 3: Find something to work on](#step-3-find-something-to-work-on)
+  - [Learn more](#learn-more)
+- [How to search GitHub Issues and PRs for in progress solutions](#how-to-search-github-issues-and-prs-for-in-progress-solutions)
+  - [To search for Issues](#to-search-for-issues)
+  - [To search Pull Requests](#to-search-pull-requests)
+- [How to create a GitHub Issue](#how-to-create-a-github-issue)
+- [How to create a Pull Request](#how-to-create-a-pull-request)
   - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
   - [Step 2: Design (optional)](#step-2-design)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
@@ -42,7 +48,6 @@ Any code that you submit will be released under that license.
   - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
   - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
 - [Running CLI integration tests](#running-cli-integration-tests)
-- [Building aws-cdk-lib](#building-aws-cdk-lib)
 - [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
 - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
 - [Feature Flags](#feature-flags)
@@ -51,111 +56,191 @@ Any code that you submit will be released under that license.
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
   - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
+- [Considerations for high quality contributions](#considerations-for-high-quality-contributions)
+  - [About signals](#about-signals)
+  - [Demonstrating value](#demonstrating-value)
+- [About the `aws-cdk` repository](#about-the-aws-cdk-repository)
+  - [Packing using jsii](#packing-using-jsii)
+  - [Issue labels in `aws-cdk`](#issue-labels-in-aws-cdk)
+- [About community third-party packages](#about-community-third-party-packages)
+  - [Publishing your own package](#publishing-your-own-package)
+- [About Gitpod](#about-gitpod)
+- [About Amazon CodeCatalyst Dev Environments](#about-amazon-codecatalyst-dev-environments)
 - [Badges (Pilot Program)](#badges-pilot-program)
 - [Related Repositories](#related-repositories)
 
 ## What are contributions?
 
-A *contribution* refers to any improvement or addition to the AWS CDK from the
-community. You make contributions to the AWS CDK through the `aws-cdk`
-repository. They can include the following:
+A *contribution* to the AWS CDK includes any effort that helps improve the
+framework or strengthen its community. While you can contribute code directly
+to the `aws-cdk` repository, there are many other valuable ways to contribute:
 
-- **New features** - New functionality for existing L2 constructs or new L2
-  constructs for new or existing AWS services.
-- **Bug fixes** - Address and fix issues in the code to improve functionality
-  or correct errors.
-- **Documentation** - Improve documentation, such as adding examples, enhancing
-  readability, or updating existing content.
-- **Tests** - Add or improve tests to increase code coverage and ensure
-  stability.
-- **Refactoring** - Improve the code structure or performance without altering
-  its behavior.
+- **Review and engage with pull requests** - Help improve code quality by
+reviewing and providing feedback on changes in the `aws-cdk` repository.
+- **Engage with issues** - Report bugs, request features, or participate in
+technical discussions to help solve problems in the `aws-cdk` repository.
+- **Participate in RFC discussions** - Shape the future of the AWS CDK by
+creating or commenting on *Request for Comments (RFCs)* in the `aws-cdk-rfcs`
+repository.
+- **Develop community solutions** - Create and maintain external packages and
+tools that extend AWS CDK capabilities.
+- **Build community connections** - Share knowledge and experiences through the
+**cdk.dev** Slack channel, community events, and other collaboration platforms.
 
-Contributions can be *major* or *minor* in scope and size:
-
-- **Major contributions** - Includes major new additions, such as new L2
-  constructs, updates that change how the AWS CDK works, or enhancements to
-  existing AWS CDK features and functionality that introduce breaking changes.
-- **Minor contributions** - Includes bug fixes, improvements to existing L2
-  constructs, and other updates that don't alter how the AWS CDK works, such
-  as the addition of tests and changes to documentation.
+Every contribution matters. Whether you fix a documentation typo or design a
+major new feature, your efforts help make the AWS CDK better for all users.
 
 ## How contributions work
 
-The following diagram illustrates how contributions work, from creation to completion:
+Before you start coding, it's important to have a basic understanding of how
+AWS CDK contributions flow from idea to implementation. While this overview
+focuses on code contributions to the `aws-cdk` repository, remember that you
+can contribute in many ways other ways. The following is an overview of the
+steps involved with contributing to `aws-cdk`:
 
-```mermaid
-flowchart TD
-  A(Identify desired functionality) --> B(Consider a contribution)
-  B --> C[External packages]
-  B --> D[Relevant Issues and PRs]
-  C --> E{Is a contribution the right solution?}
-  D --> E
-  E --> |Yes|F{Is your contribution major or minor?}
-  E --> |No|G((Pursue alternative solutions))
-  F --> |Major|H(Submit an RFC to discuss)
-  F --> |Minor|I(Code your changes)
-  H --> Q{Is a contribution the right solution?}
-  I --> J(Submit your PR)
-  J --> K[PR passes checks, linters, and follows design guidelines]
-  K --> L[PR is reviewed]
-  L --> M{Should PR be approved?}
-  M --> |Yes|N((PR is approved and merged))
-  M --> |No|O{Should PR be modified or closed?}
-  O --> |Modified|I
-  O --> |Closed|P((PR is closed))
-  Q --> |Yes|I
-  Q --> |No|S((RFC is closed))
-```
+1. **Identify a need** - Identify a potential contribution through your own
+usage of the CDK or through open GitHub Issues.
+2. **Search for solutions** - Search external packages, existing GitHub Issues,
+and existing GitHub PRs for existing or in progress solutions.
+3. **Create a GitHub Issue** - If no solution is found, create a GitHub Issue
+for awareness and visibility of the issue.
+4. **Create a GitHub Pull Request** - Code your changes, build the repository,
+run tests, and submit a PR.
 
-## Where to Contribute
+### Step 1: Identify a need
 
-Contributions are accepted through a number of channels, including direct pull requests to the aws/aws-cdk repository. However, this may not be the ideal method depending on the circumstances of your proposed additions or changes. The aws-cdk team has limited availability for reviews, which means that sometimes, if making your change available for immediate use by yourself is your goal, it may be better to publish it in your own package or otherwise bypass the CDK team's review and feedback cycle. That being said, if your contribution contains changes that are desired by a large number of cdk users, we absolutely want to make sure those changes are included in the aws-cdk core packages.
+You can discover contribution opportunities in two ways:
 
-Here are some things we look at when evaluating a contribution:
+- Through your own usage of the AWS CDK.
+- By exploring existing GitHub Issues in the `aws-cdk` repository that show
+strong signal for a potential contribution.
 
-1. Signal - Is there a GitHub issue, or possibly multiple related ones, that the contribution addresses. Do the issues have a lot of engagement, such as comments, +1 reactions, etc that indicate that many users are affected by it?
-1. Size - Is the contribution limited to a relatively self-contained surface area? Is it broken up into the smallest possible unit of functionality that makes sense?
-1. Priority - Does the contribution address an issue in, or add a new feature of, a service that has a high priority for coverage? These are generally core services most commonly used on AWS such as IAM, EC2, Lambda, and ECS.
-1. Quality - Does the contribution take into account all of the guidance provided in our documentation regarding [design patterns](./docs/DESIGN_GUIDELINES.md), test coverage, and best practices as it relates to code within the aws-cdk repository? Does it also make an effort to follow patterns commonly used within the aws-cdk repository and not deviate unnecessarily from these conventions?
-1. Breaking Changes - Does the contribution introduce any risk for breaking existing users applications? Specifically, does it require any code changes or can it trigger any resource replacement in CloudFormation that would result in downtime?
+Here are common types of contribution opportunities:
 
-### Demonstrating Value
+- **New features** - Create new L2 constructs or add features to existing L2
+constructs.
+- **Bug fixes** - Resolve issues that affect AWS CDK functionality or user
+experience.
+- **Documentation improvements** - Add code examples, clarify usage, or update
+existing content.
+- **Testing enhancements** - Create unit tests, integration tests, or improve
+test coverage.
+- **Code refinements** - Improve code structure and performance while
+maintaining existing behavior.
 
-When you create a pull-request, make sure to include justification related to all of the relevant criteria within the PR description in order to make it clear to reviewers why your contribution should be accepted. Specifically, provide justification for why this is functionality that should live within the core aws-cdk packages and be maintained by the cdk team. Are there technical reasons why this functionality could not be vended separately etc? If we are not convinced that the functionality should be part of the core framework, and therefore close your pull request, here are some ways you can go about gathering evidence to convince us otherwise.
+### Step 2: Search for solutions
 
-1. Link any relevant issues that you find and note their engagement by other users.
-1. Describe common use cases that are not currently well served that your contribution addresses.
-1. Link to any third party packages, including any published by you, and other prior art providing the same functionality.
-1. Iterate the steps you have taken to ensure that the contribution is well thought out and stable.
-1. Include any alternative solutions you explored and your reasoning as to why they weren't chosen.
+After identifying a potential contribution, search for existing or in progress
+solutions. This prevents you from putting in unecessary time and effort if a
+solution exists.
 
-All of this information will help make it clear to reviewers why your contribution should be accepted. If a reviewer is still not convinced that the contribution is necessary or effective, an alternative route should be pursued.
+1. **Search open Issues in the `aws-cdk` repository**.
+    - Check existing Issues for similar requests or problems.
+    - If you find a related Issue, check if someone has already started a PR to
+    resolve the Issue.
+    - Look through comments and labels to determine a signal for the Issue.
+2. **Search open PRs in the `aws-cdk` repository**.
+    - Check existing PRs for similar requests or problems.
+    - If you find a related PR, engage with the PR to show your support. Contribute through
+    comments if you have additional feedback or guidance.
+3. **Search external community packages**.
+    - Search external packages in places such as [Construct Hub](https://constructs.dev/).
+    - If you find a good solution, consider using and contributing to the
+    solution.
+    - Popular, well-designed external packages can be considered for eventual
+    inclusion into the CDK.
 
-### Publishing Your Own Package
+Taking time to research can save you effort and help you make informed
+decisions. You might find a solution ready to use, or discover an opportunity
+to collaborate with others who share your interests.
 
-This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, PyPI, Maven Central, NuGet, and GitHub (for Go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing its inclusion.
+If you don't find an existing or in progress solution, your next step is to
+create a GitHub Issue.
 
-#### Trust and Third Party Packages
+#### Consider community packages
 
-An argument we commonly hear why contributors don't want to publish their contributions in their own packages, is that organizations have restrictions on what packages they allow to be used and these restrictions commonly include limiting usage of packages to those owned and distributed only from trusted sources. We recognize trust is an important part of the software dependency chain, and we take that into consideration when evaluating contributions in aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a system that makes it, potentially, many multiple times bigger, has a cost on usability. Additionally, as the surface area widens, the aws-cdk team becomes stretched ever thinner and isn't able to properly maintain what we own.
+The AWS CDK, as a whole, grows through both direct contributions to `aws-cdk`
+and through community packages. For direct contributions to the `aws-cdk`, the
+CDK team has limited availability for reviewing PRs and must prioritize this
+work alongside other CDK development efforts. Therefore, direct contributions
+to the `aws-cdk` is not always the ideal solution. Creating a community package
+might be a better path when:
 
-That being said, "trust", isn't as black and white as "it's owned by aws, so it's okay". The best way to trust that the packages you depend on to help generate your aws resources is to use [policy validation](https://docs.aws.amazon.com/cdk/v2/guide/policy-validation-synthesis.html) on the output of your application in order to ensure it is following the rules that are important to you or your organization.
+- You need the solution available quickly.
+- Your feature serves a specific use case.
+- You want to experiment with new patterns.
+- You're building something that might not benefit most AWS CDK users.
 
-#### Third Party Package Administration
+For direct contributions, the AWS CDK team reviews submissions to ensure they:
 
-Another reason we hear from authors that they don't want to publish their own packages, is they don't want to go through the trouble of setting up their own repository and publishing toolchain. This is something we are continuously working on making easier and we encourage you to check out some of the tools that we have available to aid in this.
+- Benefit many AWS CDK users.
+- Align with the AWS CDK roadmap.
+- Follow established design patterns.
+- Maintain quality standards.
 
-1. [Projen](https://github.com/projen/projen) - A tool with common repository and publishing setup abstracted, has a construct specifically for CDK construct libraries.
-1. [Publib](https://github.com/cdklabs/publib) - A toolchain for publishing packages to multiple repositories. A lot of this is included in projen and we recommend using that instead of publib directly, but it may be useful for specific cases.
-1. [Construct Hub](https://constructs.dev) - An index of all construct libraries published to NPM. When you publish a construct library, it will automatically have documentation generated and published to Construct Hub.
+For more information, see [Considerations for high quality contributions](#considerations-for-high-quality-contributions).
+
+Therefore, community package contributions have the following benefits:
+
+- They allow you to develop, iterate, and deliver on a solution quickly.
+- They can prove your solution's value to CDK maintainers.
+- They allow you to build a solution for others.
+- They can create a strong case for eventual inclusion into `aws-cdk`.
+
+Many successful AWS CDK features began as community packages. Those that
+demonstrate broad value and adoption may become candidates for inclusion in
+`aws-cdk`.
+
+### Step 3: Create a GitHub Issue
+
+Before writing code, you create an Issue to:
+
+- Describe the opportunity or problem you want to solve.
+- Bring visibility to your issue and get feedback from AWS CDK maintainers
+and the community.
+- Gauge whether your idea is best implemented through the AWS CDK or community
+package.
+
+For major features or significant changes, maintainers might ask you to submit
+a Request for Comments (RFC). This helps ensure broad agreement on the design
+before implementation begins.
+
+For most changes, you'll want to gauge a signal of your issue before
+implementing any code changes.
+
+- A strong signal could indicate that your PR will be prioritized by
+maintainers and included in the CDK.
+- A weak signical could indicate that you'll need stronger community support
+before your PR would be considered for inclusion into the CDK.
+
+For small changes, such as simple bug fixes or documentation updates, you don't
+need to wait for a signal. You can start contributing through a PR.
+
+### Step 4: Create a GitHub Pull Request
+
+Creating a Pull Request involves coding your changes, running tests, building
+the repository, and submitting your PR. During this step, you'll need to
+consider and do the following:
+
+- Follow the AWS CDK coding conventions and design guidelines.
+- Include tests and documentation updates.
+- Run unit and integration tests locally.
+- Follow AWS CDK PR guidelines, such as using conventional commit messages and
+linking your GitHub Issue.
+- Respond to review feedback.
+
+If your contribution isn't accepted into `aws-cdk`, consider creating a
+community package instead. Many valuable AWS CDK solutions exist as independent
+packages that solve specific use cases for the community.
 
 ## Quick Start
 
 ### Setup
+
 Fork the aws-cdk repository into your account: https://github.com/aws/aws-cdk/fork
 
 Clone the forked repository:
+
 ```console
 $ git clone https://github.com/{your-account}/aws-cdk.git
 $ cd aws-cdk
@@ -163,36 +248,46 @@ $ yarn install
 ```
 
 Before you create a pull request:
+
 * Write code changes
 * Write unit tests
 * Write integ tests (aws-cdk/packages/@aws-cdk-testing/)
 * Commit changes and push to remote branch
 
 Build the entire aws-cdk repo (this may take some time):
+
 ```console
 $ npx lerna run build --skip-nx-cache
 ```
 
 ### Testing
+
 Run the unit tests for the modules(e.g. aws-lambda) you've changed:
+
 ```console
 $ cd aws-cdk/packages/aws-cdk-lib
 $ yarn test aws-lambda
 ```
 
 Run the integration tests for the modules(e.g. aws-lambda) you've changed:
+
 ```console
 $ cd aws-cdk/packages/@aws-cdk-testing/framework-integ
 $ yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed
 ```
 
-If you've made changes to sample code in any README, ensure those examples compile with:
+If you've made changes to sample code in any README, ensure those examples
+compile with:
+
 ```console
 $ /bin/bash ./scripts/run-rosetta.sh
 ```
 
 ### Linking
-If you would like to test your code changes against a CDK App, create the App and link your local CDK with it:
+
+If you would like to test your code changes against a CDK App, create the App
+and link your local CDK with it:
+
 ```console
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
@@ -206,55 +301,184 @@ $ npx cdk deploy # deploy successfully
 
 Congratulations! Create pull request for review.
 
-## Getting Started
+## Getting started
 
-The following steps describe how to set up the AWS CDK repository on your local machine. The alternative is to use [Gitpod](https://www.gitpod.io/), a Cloud IDE for your development. See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
+This section describes how to set up the `aws-cdk` repository on your local
+development machine. As an alternative, you can use GitPod, which is a
+cloud-based development environment. To learn more, see [About Gitpod](#about-gitpod).
 
-### Setup
+### Prerequisites
 
-The following tools need to be installed on your system prior to installing the CDK:
+Ensure you have the following installed and configured before you begin.
 
-- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
+#### Required tools
+
+- [Node.js 14.15.0 or later](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-- [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
-- [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
-- [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
-- [Docker >= 19.03](https://docs.docker.com/get-docker/)
-  - the Docker daemon must also be running
-- [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
-  - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
+- [Yarn package manager 1.19.1 or later (versions below 2.0)](https://yarnpkg.com/lang/en/docs/install)
+- [.NET SDK 6.0 or later](https://www.microsoft.com/net/download)
+- [Python 3.8 or later (versions below 4.0)](https://www.python.org/downloads/release/python-380/)
+- [Docker 19.03 or later with Docker daemon running](https://docs.docker.com/get-docker/)
+- Git with Git Large File Storage ([git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)) extension.
 
-First fork the repository https://github.com/aws/aws-cdk/fork, and then run the following commands to clone the repository locally.
+> **Important**: Windows has known performance and compatibility issues as a
+development environment. We recommend using [Gitpod](#about-gitpod) or
+[Amazon CodeCatalyst DevEnv](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/codecatalyst-service.html) instead.
+
+#### Development environment
+
+We recommend:
+
+- [Visual Studio Code](https://code.visualstudio.com/) as your IDE.
+- [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+for code consistency.
+
+##### VS Code Dev Container
+
+The AWS CDK provides a VS Code Dev Container with all dependencies
+pre-installed. Please follow the[setup instructions](https://code.visualstudio.com/docs/remote/containers-tutorial)
+to configure VS Code.
+
+With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev
+Container, or you can choose "Dev Containers: Reopen in Container" from the VS
+Code command palette.
+
+#### AWS prerequisites
+
+1. Create an AWS account (AWS free tier is sufficient).
+2. Install the AWS CLI.
+3. Configure AWS credentials.
+
+#### Source control prerequisites
+
+1. Create a GitHub account.
+2. Configure Git with your credentials.
+3. Install Git LFS to handle large files in the repository.
+
+> **Note**: Without Git LFS, repository cloning may appear successful but
+checkout will fail.
+
+### Step 1: Fork the AWS CDK repository
+
+Before you can contribute to the AWS CDK, you need to create your own copy
+(fork) of the repository. Forking allows you to make and test changes in
+your own space without affecting the main AWS CDK codebase.
+
+**Important**: When creating your fork, ensure you:
+
+- Use a personal GitHub account, not an organization account.
+- Enable the setting that allows the AWS CDK team to push changes to your branch.
+- Create feature branches from your fork, not from the main `aws-cdk` repository.
+
+These requirements help maintain a smooth contribution process and enable the
+AWS CDK team to help you get your changes merged.
+
+1. **Create your fork** - To create a fork, open the following link in your
+browser: <https://github.com/aws/aws-cdk/fork>.
+2. **Clone and configure your local repository** - Run the following commands
+on your local machine to clone and configure the repository:
+
+   ```console
+   # Clone your fork
+   $ git clone https://github.com/{your-account}/aws-cdk.git
+   $ cd aws-cdk
+   
+   # Install dependencies
+   $ yarn install
+   
+   # Add upstream remote
+   $ git remote add upstream https://github.com/aws/aws-cdk.git
+   
+   # Verify remotes
+   $ git remote -v
+   ```
+
+As you contribute, it's important to keep your fork in sync with the upstream
+repository. The following are a few best practices to follow:
+
+1. **Fetch upstream changes** - Before making new changes or creating a new
+branch, sync with upstream:
+
+   ```console
+   # Make sure you're on your main branch
+   $ git checkout main
+
+   # Fetch all changes from upstream
+   $ git fetch upstream
+   ```
+
+2. **Update your main branch** - Keep your main branch clean and in sync:
+
+   ```console
+   # Merge upstream changes into your local main branch
+   $ git merge upstream/main
+
+   # Push the updated main to your fork
+   $ git push origin main
+   ```
+
+3. **Develop in feature branches** - Always create feature branches for your
+contributions:
+
+   ```console
+   # Create and name a new feature branch
+   $ git checkout -b <feature-branch>
+
+   # Code your changes ...
+   # Commit your changes ...
+
+   # Before submitting a PR, sync with upstream again
+   $ git fetch upstream
+   $ git rebase upstream/main
+   ```
+
+### Step 2: Build the project
+
+After forking and cloning the repository, you need to build it for the first
+time. This process compiles the TypeScript code and generates the necessary
+artifacts for development.
+
+To build the entire repository, run the following from the root of the project:
 
 ```console
-$ git clone https://github.com/{your-account}/aws-cdk.git
-$ cd aws-cdk
-$ yarn install
+$ npx lerna run build
 ```
 
-We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK. We use `ESLint` to keep our code consistent in terms of style and reducing defects. We recommend installing the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
+This command:
 
-Windows, as a development environment, has known performance and compatibility issues. To help in this case, consider using [Gitpod](#gitpod) or [Amazon CodeCatalyst DevEnv](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/codecatalyst-service.html) instead.
+- Uses lerna, a tool for managing JavaScript monorepos.
+- Builds all packages in the correct dependency order.
+- Generates compiled output for all supported languages.
 
-### Repo Layout
-
-The AWS CDK is a [NPM](https://www.npmjs.com/about) project written in [typescript](https://www.typescriptlang.org/). More specifically, it is a [monorepo managed using lerna](https://github.com/lerna/lerna#about). If you're unfamiliar with any of these technologies, it is useful to learn about them and will make understanding the AWS CDK codebase easier but strictly not necessary for simple contributions.
-
-The CDK uses [jsii](https://github.com/aws/jsii/) as its primary build system. jsii enables us to write typescript-compliant source code and produce polyglot libraries, such as, in Java, .NET, Python and Go.
-
-The repo contains `packages/` directory that contains the CDK public modules. The source code for the IAM module in the CDK can be found at the location `packages/aws-cdk-lib/aws-iam`. The repo also contains the `tools/` directory that holds custom build tooling (modeled as private npm packages) specific to the CDK.
-
-### Building aws-cdk-lib
-
-The full build of all of the packages within the repository can take a few minutes, about 20 when all tests are run. Most contributions only require working on a single package, usually `aws-cdk-lib`. To build this package for the first time, you can execute the following to build it and its dependencies.
+The full build of all packages can take up to 20 minutes. Most contributions
+only require working on a single package, usually `aws-cdk-lib`. To build this
+package for the first time, you can execute the following to build it and its
+dependencies.
 
 ```console
 $ npx lerna run build --scope=aws-cdk-lib
 ```
 
-Note: `lerna` uses a local cache by default. If your build fails, you can fix the issue and run the command again and it will not rerun any previously successful steps.
+To verify the build succeeded:
 
-Note: If you encounter `ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`, please try running the command with increased memory by using `export NODE_OPTIONS="--max-old-space-size=8192"`.
+- No error messages should appear in the console.
+- The `packages/` directory should contain compiled code.
+- All tests should pass.
+
+**Note**: `lerna` uses a local cache by default. If your build fails, you can
+fix the issue and run the command again and it will not re-run any previously
+successful steps.
+
+If you want to run a build without using the local cache, provide the
+`--skip-nx-cache` flag.
+
+```console
+$ npx lerna run build --skip-nx-cache
+```
+
+**Note**: If you encounter `ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`,
+please try running the command with increased memory by using
+`export NODE_OPTIONS="--max-old-space-size=8192"`.
 
 At this point, you can run build and test the `aws-cdk-lib` module by running
 
@@ -264,102 +488,160 @@ $ yarn build
 $ yarn test
 ```
 
-To cut down on iteration time as you develop, you can run `yarn watch` within the `aws-cdk-lib` directory to keep some of the build state in memory and incrementally rebuild as you make changes.
+To cut down on iteration time as you develop, you can run `yarn watch` within
+the `aws-cdk-lib` directory to keep some of the build state in memory and
+incrementally rebuild as you make changes.
 
-However, if you wish to build the entire repository, the following command will achieve this.
+### Step 3: Find something to work on
 
-```console
-cd <root of the CDK repo>
-npx lerna run build
-```
+Now that you've successfully configured your local environment, find something
+to work on and start contributing to the AWS CDK. If you are looking for your
+first contribution, search Issues labeled with
+[`good first issue`](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 
-You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your changes and submit it as a pull request.
+We look forward to working with you!
 
-If you want to run a build without using the local cache, provide the `--skip-nx-cache` flag.
+### Learn more
 
-```console
-$ npx lerna run build --skip-nx-cache
-```
+If you are new to contributing, we recommend that you learn the following:
 
-### Pack
+- [Considerations for high quality contributions](#considerations-for-high-quality-contributions)
+- [About the `aws-cdk` repository](#about-the-aws-cdk-repository)
 
-As called out in the above sections, the AWS CDK uses jsii to produce polyglot targets. This means that each CDK module produces artifact in all of its target languages.
+## How to search GitHub Issues and PRs for in progress solutions
 
-Packing involves generating CDK code in the various target languages and packaging them up to be published to their respective package managers. Once in a while, these will need to be generated either to test the experience of a new feature, or reproduce a packaging failure.
+Before creating a new Issue, search the `aws-cdk` repository to find existing
+or related work. Effective searching helps you:
 
-To package a specific module, say the `aws-cdk-lib` module:
+- Avoid duplicating existing Issues.
+- Find opportunities to contribute.
+- Understand ongoing discussions.
+- Identify similar solutions.
 
-```console
-$ cd <root-of-cdk-repo>
-$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
-docker$ cd packages/aws-cdk-lib
-docker$ ../../scripts/foreach.sh --up yarn run package
-docker$ exit
-```
+### To search for Issues
 
-The `dist/` folder within each module contains the packaged up language artifacts.
+Go to the [Issues](https://github.com/aws/aws-cdk/issues) tab in the `aws-cdk`
+repository. For open Issues, use the `is:issue state:open` filter. Then, add
+any keywords to the search field to find related Issues. The following are examples:
 
-### Dev Container
+- `is:issue state:open label:p1` for high-priority open Issues.
+- `is:issue state: open lambda` for open Issues related to the AWS Lambda
+service.
 
-The AWS CDK provides a VS Code Dev Container with all dependencies pre-installed. Please follow the [setup instructions](https://code.visualstudio.com/docs/remote/containers-tutorial) to configure VS Code.
+#### What to do if you find a related open Issue
 
-With VS Code setup, you will be prompted to open the `aws-cdk` repo in a Dev Container, or you can choose "Dev Containers: Reopen in Container" from the VS Code command palette.
+If you find any related open Issues, take note of any labels attached to the
+Issue. Maintainers use these labels to prioritize and categorize Issues.
+Labels will give you insight into how maintainers may handle any PRs created
+to address an Issue. For more information, see
+[Issue labels in `aws-cdk`](#issue-labels-in-aws-cdk).
 
-### Gitpod
+Engage with the Issue instead of creating a duplicate Issue. For example, add
+a '👍' to indicate your support for the Issue and add a comment to share your
+support and provide additional information. See if there is an ongoing
+conversation that could provide you with valuable solutions, workarounds, or
+context into the status of the Issue.
 
-You may also set up your local development environment using [Gitpod](http://gitpod.io) - a service that allows you to spin up an in-browser Visual Studio Code-compatible editor, with everything set up and ready to go for CDK development. Just click the button below to create your private workspace:
+In the **Development** section of the Issue, check if there are any linked PRs
+for the Issue. This will indicate whether a solution is already in progress.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
+> **Important**: Your engagement on Issues is a great way to contribute through
+communication with maintainers and the community. Issues that receive a lot of
+engagement can bring visibility to maintainers and help to re-prioritize them
+if necessary.
 
-This will start a new Gitpod workspace, with the CDK repository [pre-built](https://www.gitpod.io/docs/prebuilds/). You can now work on your CDK repository, as described in the [Getting Started](#getting-started) section.
+If there aren't any linked PRs for the Issue, consider contributing your own
+PR. For instructions, see [How to create a Pull Request](#how-to-create-a-pull-request).
 
-Gitpod is free for 50 hours per month - make sure to stop your workspace when you're done (you can always resume it later, and it won't need to run the build again).
+#### What to do if you don't find a related open Issue
 
-For Gitpod users only! The best way to authenticate AWS in Gitpod is to use AWS IAM Identity Center(successor to AWS Single Sign-On). [Install AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions) and configure it as follows:
+If you don't find a related open Issue, create an Issue. For instructions,
+see [How to create a GitHub Issue](#how-to-create-a-github-issue).
 
-```shell
-# make sure AWS CLI v2 is in your $PATH
-$ aws --version
-# configure the AWS profile with SSO
-$ aws configure sso
-# login and authenticate
-$ aws sso login
-# verify your current identity
-$ aws sts get-caller-identity
-```
+### To search Pull Requests
 
-Check out [this document](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html) for the details.
+Since all PRs require a linked Issue, you should find related PRs during your
+Issue search. However, you can also search PRs from the [Pull requests](https://github.com/aws/aws-cdk/pulls)
+tab. For open PRs, use the `is:pr is:open` filter. Then, add any keywords to
+the search field to find related PRs.
 
-Alternatively, supply CDK with your AWS credentials as [persisting environment variables](https://www.gitpod.io/docs/environment-variables). Adding them works as follows via terminal:
+If you find a related PR that is not linked to an Issue, engage with the PR,
+such as through '👍' and comments. Similar to Issues, these are effective ways
+to help bring visibility to maintainers and with potentially re-prioritizing
+PRs. It's also helpful to comment on the PR to ask the author to link to the
+related Issue.
 
-```shell
-eval $(gp env -e AWS_ACCESS_KEY_ID=XXXXXXXXX)
-eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
-eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
-eval $(gp env -e)
-```
+If you don't find a related PR or Issue, create a GitHub Issue.
 
-### Amazon CodeCatalyst Dev Environments
+## How to create a GitHub Issue
 
-Dev Environments are cloud-based development environments. [Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked GitHub repositories in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
+If you don't find a related GitHub Issue for your need, create an Issue.
 
-Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
+1. From the [Issues](https://github.com/aws/aws-cdk/issues) tab, select
+**New issue**.
+2. Select the relevant Issue type, such as **Bug Report** or
+**Feature Request**.
+3. Add a title, using the suggested format. For *module name*, provide the
+CDK library module name that your Issue addresses.
+4. Provide a clear and concise description of the issue.
+5. Provide any relevant links or attachments.
+6. Select **Create** to create your Issue.
 
-```shell
-$ yarn install
-$ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ
-```
+Labels used by maintainers to prioritize and categorize Issues are
+automatically attached. Do not modify these or add additional labels. Most
+importantly, the `needs-triage` label tracks the next step in the process,
+which is triage of the Issue by a maintainer.
 
-You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
+### What to do after creating an Issue
 
-Read the links below for more details:
-- [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
-- [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
-- [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
+What you do next depends on the effort needed to resolve your Issue.
 
-## Pull Requests
+#### For small effort Issues
 
-Below is a flow chart that describes how your PR may be treated by repository maintainers:
+If your Issue addresses a small, straightforward issue, such as fixing a
+documentation typo, adding a small documentation section, or addressing a
+bug through a small code change, feel free to move forward with creating a
+Pull Request. For instructions, see [How to create a Pull Request](#how-to-create-a-pull-request).
+
+#### For all other Issues
+
+Otherwise, we recommend that you wait for engagement from maintainers and the
+community on your Issue. The `needs-triage` label alerts maintainers to triage
+your Issue. A maintainer could do any of the following:
+
+- Assign a priority label to your Issue.
+- Comment on the Issue to ask questions, provide workarounds, redirect you to
+existing solutions, or any other additional guidance.
+- Comment on the Issue to guide you and the community to next steps. For
+example, if your Issue is a large feature request, maintainers may direct you
+to create an RFC.
+- Close the Issue if it's not applicable or actionable.
+
+Engagement from the community may also help you to find workarounds, existing
+solutions, or begin a conversation around how many people the Issue is
+affecting and ideas for possible solutions.
+
+Engagement on the Issue from maintainers and the community help to provide you
+with a *signal* into whether or not you should create a PR to address the
+issue. *Signals* are indicators that predict maintainer *involvement* and CDK
+*inclusion*:
+
+- **Involvement** - Signals, such as a `p1` priority label being attached
+during triage indicate the level of involvement you may receive from
+maintainers for PR review, comments for improvement, and more.
+- **Inclusion** - Comments from maintainers can help to indicate whether your
+Issue or proposed solutions should be included in the core CDK library and
+tooling, or if the solution is best implemented externally.
+
+> **Important**: The purpose of *signals* are to give you an indicator into
+whether your efforts in creating a PR will be worthwhile. We don't want you to
+put unecessary time and effort into creating PRs that may not be accepted for
+various reasons. For more information on signals, see [About signals](#about-signals).
+
+## How to create a Pull Request
+
+Below is a flow chart that describes how your PR may be treated by repository
+maintainers:
 
 ```mermaid
 graph TD
@@ -376,17 +658,31 @@ graph TD
     E -->|No| H[If the build is failing for more than 4 weeks <br/> without any work on it, we will close the PR.]
 ```
 
-Note that, if we do not have time to review your PR, it is not the end of the road. We are asking for more community support on the attached issue before we focus our attention there. Any `P2` issue with 20 or more +1s will be automatically upgraded from `P2`to `P1`.
+Note that, if we do not have time to review your PR, it is not the end of the
+road. We are asking for more community support on the attached issue before we
+focus our attention there. Any `P2` issue with 20 or more +1s will be
+automatically upgraded from `P2`to `P1`.
 
 ### Step 1: Find something to work on
 
-If you want to contribute a specific feature or fix you have in mind, look to see if an issue already exists in our [backlog](https://github.com/aws/aws-cdk/issues). If not, please contribute a feature request or bug report prior to contributing the PR. We will triage this issue promptly, and the priority of the issue (`P1` or `P2`) will give indication of how much attention your PR may get.
+If you want to contribute a specific feature or fix you have in mind, look to
+see if an issue already exists in our [backlog](https://github.com/aws/aws-cdk/issues).
+If not, please contribute a feature request or bug report prior to contributing
+the PR. We will triage this issue promptly, and the priority of the issue
+(`P1` or `P2`) will give indication of how much attention your PR may get.
 
-It's not required to submit an issue first, but PRs that come in without attached issues will be automatically labeled as `P2`.
+It's not required to submit an issue first, but PRs that come in without
+attached issues will be automatically labeled as `P2`.
 
-On the other hand, if you are here looking for an issue to work on, explore our [backlog of issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our issues for easy searching. If you are looking for your first contribution, the ['good first issue' label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
+On the other hand, if you are here looking for an issue to work on, explore
+our [backlog of issues](https://github.com/aws/aws-cdk/issues) and find
+something that piques your interest. We have labeled all of our issues for
+easy searching. If you are looking for your first contribution, the
+['good first issue' label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+will be of help.
 
-It's a good idea to keep the priority of issues in mind when deciding what to work on. If we have labelled an issue as `P2`, it means it's something we won't get to soon, and we're waiting on more feedback from the community (in the form of +1s and comments) to give it a higher priority. A PR for a `P2` issue may be closed by a maintainer, especially if it involves a complex implementation. `P1` issues impact a significant number of customers, so we are much more likely to give a PR for those issues prompt attention.
+It's a good idea to keep the priority of issues in mind when deciding what to
+work on. If we have labelled an issue as `P2`, it means it's something we won't get to soon, and we're waiting on more feedback from the community (in the form of +1s and comments) to give it a higher priority. A PR for a `P2` issue may be closed by a maintainer, especially if it involves a complex implementation. `P1` issues impact a significant number of customers, so we are much more likely to give a PR for those issues prompt attention.
 
 ### Step 2: Design
 
@@ -415,6 +711,7 @@ Work your magic. Here are some guidelines:
 #### Integration Tests
 
 Integration tests perform a few functions in the CDK code base -
+
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against the `*.snapshot` directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change. This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package. If you are developing a new integration test or for some other reason want to work on a single integration test over and over again without running through all the integration tests you can do so using `yarn integ integ.test-name.js` Remember to set up AWS credentials before doing this.
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected. A successful CloudFormation deployment does not mean that the resources are set up correctly.
@@ -1224,9 +1521,261 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 
 3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
 
+## Considerations for high quality contributions
+
+Here are some things we look at when evaluating a contribution:
+
+1. Signal - Is there a GitHub issue, or possibly multiple related ones, that
+the contribution addresses. Do the issues have a lot of engagement, such as
+comments, +1 reactions, etc that indicate that many users are affected by it?
+1. Size - Is the contribution limited to a relatively self-contained surface
+area? Is it broken up into the smallest possible unit of functionality that
+makes sense?
+1. Priority - Does the contribution address an issue in, or add a new feature
+of, a service that has a high priority for coverage? These are generally core
+services most commonly used on AWS such as IAM, EC2, Lambda, and ECS.
+1. Quality - Does the contribution take into account all of the guidance
+provided in our documentation regarding [design patterns](./docs/DESIGN_GUIDELINES.md),
+test coverage, and best practices as it relates to code within the aws-cdk
+repository? Does it also make an effort to follow patterns commonly used
+within the aws-cdk repository and not deviate unnecessarily from these
+conventions?
+1. Breaking Changes - Does the contribution introduce any risk for breaking
+existing users applications? Specifically, does it require any code changes
+or can it trigger any resource replacement in CloudFormation that would result
+in downtime?
+
+### About signals
+
+`p0` and `p1` priority labels indicate that maintainers think your Issue is a
+high priority. PRs submitted to address these issues will be reviewed by
+maintainers and prioritized as best as possible.
+
+`p2` and lower priority labels indicate that maintainers acknowledge the Issue
+as legitimate, but may not be able to review PRs submitted to address them,
+depending on other priorities. However, maintainers are open to community
+reviews on PRs and if the PR is a straightforward implementation with approval
+and support from the community, there is higher chance that a maintainer will
+review and approve the PR as well.
+
+Issues that are labeled by maintainers and left open are indicators that they
+could be considered for inclusion into the CDK. If there are clear reasons why
+inclusion is not possible, maintainers will comment and close Issues.
+
+Engagement from the community also provide signal. For example, an Issue
+labeled as a `p2` by a maintainer that receives high enagagement from the
+community could lead to the Issue being re-prioritized to a `p1`, and PRs
+associated with the Issue will then be reviewed by a maintainer.
+
+### Demonstrating Value
+
+When you create a pull-request, make sure to include justification related to
+all of the relevant criteria within the PR description in order to make it
+clear to reviewers why your contribution should be accepted. Specifically,
+provide justification for why this is functionality that should live within
+the core aws-cdk packages and be maintained by the cdk team. Are there
+technical reasons why this functionality could not be vended separately etc?
+If we are not convinced that the functionality should be part of the core
+framework, and therefore close your pull request, here are some ways you can
+go about gathering evidence to convince us otherwise.
+
+1. Link any relevant issues that you find and note their engagement by other
+users.
+1. Describe common use cases that are not currently well served that your
+contribution addresses.
+1. Link to any third party packages, including any published by you, and other
+prior art providing the same functionality.
+1. Iterate the steps you have taken to ensure that the contribution is well
+thought out and stable.
+1. Include any alternative solutions you explored and your reasoning as to why
+they weren't chosen.
+
+All of this information will help make it clear to reviewers why your
+contribution should be accepted. If a reviewer is still not convinced that the
+contribution is necessary or effective, an alternative route should be pursued.
+
+## About the `aws-cdk` repository
+
+The AWS CDK is a [NPM](https://www.npmjs.com/about) project written in
+[typescript](https://www.typescriptlang.org/). More specifically, it is a
+[monorepo managed using lerna](https://github.com/lerna/lerna#about). If you're
+unfamiliar with any of these technologies, it is useful to learn about them and
+will make understanding the AWS CDK codebase easier but strictly not necessary
+for simple contributions.
+
+The CDK uses [jsii](https://github.com/aws/jsii/) as its primary build system.
+jsii enables us to write typescript-compliant source code and produce polyglot
+libraries, such as, in Java, .NET, Python and Go.
+
+The repo contains `packages/` directory that contains the CDK public modules.
+The source code for the IAM module in the CDK can be found at the location
+`packages/aws-cdk-lib/aws-iam`. The repo also contains the `tools/` directory
+that holds custom build tooling (modeled as private npm packages) specific to
+the CDK.
+
+### Packing using jsii
+
+The AWS CDK uses jsii to produce polyglot targets. This means that each CDK
+module produces artifact in all of its target languages.
+
+Packing involves generating CDK code in the various target languages and
+packaging them up to be published to their respective package managers. Once
+in a while, these will need to be generated either to test the experience of a
+new feature, or reproduce a packaging failure.
+
+To package a specific module, say the `aws-cdk-lib` module:
+
+```console
+$ cd <root-of-cdk-repo>
+$ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
+docker$ cd packages/aws-cdk-lib
+docker$ ../../scripts/foreach.sh --up yarn run package
+docker$ exit
+```
+
+The `dist/` folder within each module contains the packaged up language
+artifacts.
+
+### Issue labels in `aws-cdk`
+
+#### Priority labels
+
+Priority labels, such as `p0`, `p1`, and `p2`, determine how maintainers
+prioritize the Issue and any associated Pull Requests.
+
+PRs associated with `p0` or `p1` Issues will receive a review from a maintainer.
+PRs associated with `p2`or `p3` Issues require a review and approval from a
+community member before a maintainer will review it. An approval from a
+community member does not guarantee that a maintainer will review it. PRs
+associated with `p0` or `p1` Issues will receive priority from maintainers
+before lower priority PRs will be addressed.
+
+## About community third-party packages
+
+### Publishing Your Own Package
+
+This is by far the strongest signal you can give to the CDK team that a feature
+should be included within the core aws-cdk packages. A package published on
+npm, PyPI, Maven Central, NuGet, and GitHub (for Go) that has good
+documentation, a clear purpose, and an active group of users is a good
+indication that the functionality it provides is useful and should be examined
+for inclusion in the core aws-cdk packages. This may not be the goal of any
+given package, and some constructs and features do not provide functionality
+that should ever be vended as part of the core framework. However, if a package
+you own does include functionality that you and other users believe should be
+vended as part of the core CDK, we encourage making a pull request, or RFC if
+appropriate, proposing its inclusion.
+
+#### Trust and Third Party Packages
+
+An argument we commonly hear why contributors don't want to publish their
+contributions in their own packages, is that organizations have restrictions on
+what packages they allow to be used and these restrictions commonly include
+limiting usage of packages to those owned and distributed only from trusted
+sources. We recognize trust is an important part of the software dependency
+chain, and we take that into consideration when evaluating contributions in
+aws-cdk. However, not everything can be owned by the aws-cdk team. Strictly
+from a technical limitation perspective, `aws-cdk-lib` is big. Continuing a
+system that makes it, potentially, many multiple times bigger, has a cost on
+usability. Additionally, as the surface area widens, the aws-cdk team becomes
+stretched ever thinner and isn't able to properly maintain what we own.
+
+That being said, "trust", isn't as black and white as "it's owned by aws, so
+it's okay". The best way to trust that the packages you depend on to help
+generate your aws resources is to use [policy validation](https://docs.aws.amazon.com/cdk/v2/guide/policy-validation-synthesis.html)
+on the output of your application in order to ensure it is following the rules
+that are important to you or your organization.
+
+#### Third Party Package Administration
+
+Another reason we hear from authors that they don't want to publish their own
+packages, is they don't want to go through the trouble of setting up their own
+repository and publishing toolchain. This is something we are continuously
+working on making easier and we encourage you to check out some of the tools
+that we have available to aid in this.
+
+1. [Projen](https://github.com/projen/projen) - A tool with common repository
+and publishing setup abstracted, has a construct specifically for CDK construct
+libraries.
+1. [Publib](https://github.com/cdklabs/publib) - A toolchain for publishing
+packages to multiple repositories. A lot of this is included in projen and we
+recommend using that instead of publib directly, but it may be useful for
+specific cases.
+1. [Construct Hub](https://constructs.dev) - An index of all construct
+libraries published to NPM. When you publish a construct library, it will
+automatically have documentation generated and published to Construct Hub.
+
+## About Gitpod
+
+You may also set up your local development environment using
+[Gitpod](http://gitpod.io) - a service that allows you to spin up an
+in-browser Visual Studio Code-compatible editor, with everything set up and
+ready to go for CDK development. Just click the button below to create your
+private workspace:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
+
+This will start a new Gitpod workspace, with the CDK repository
+[pre-built](https://www.gitpod.io/docs/prebuilds/). You can now work on your
+CDK repository, as described in the [Getting Started](#getting-started) section.
+
+Gitpod is free for 50 hours per month - make sure to stop your workspace when
+you're done (you can always resume it later, and it won't need to run the build
+again).
+
+For Gitpod users only! The best way to authenticate AWS in Gitpod is to use
+AWS IAM Identity Center(successor to AWS Single Sign-On).
+[Install AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions
+ and configure it as follows:
+
+```shell
+# make sure AWS CLI v2 is in your $PATH
+$ aws --version
+# configure the AWS profile with SSO
+$ aws configure sso
+# login and authenticate
+$ aws sso login
+# verify your current identity
+$ aws sts get-caller-identity
+```
+
+Check out [this document](https://docs.aws.amazon.com/cli/latest/userguide/sso-configure-profile-token.html) for the details.
+
+Alternatively, supply CDK with your AWS credentials as [persisting environment variables](https://www.gitpod.io/docs/environment-variables).
+Adding them works as follows via terminal:
+
+```shell
+eval $(gp env -e AWS_ACCESS_KEY_ID=XXXXXXXXX)
+eval $(gp env -e AWS_SECRET_ACCESS_KEY=YYYYYYY)
+eval $(gp env -e AWS_DEFAULT_REGION=ZZZZZZZZ)
+eval $(gp env -e)
+```
+
+## About Amazon CodeCatalyst Dev Environments
+
+Dev Environments are cloud-based development environments. [Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/)
+allows you to checkout your linked GitHub repositories in your Dev Environments
+with your favorite local IDEs such as VSCode or JetBrains.
+
+Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
+
+```shell
+$ yarn install
+$ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ
+```
+
+You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html)
+with the `devfile.yaml` to further customize your Dev Env for CDK development.
+
+Read the links below for more details:
+- [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
+- [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
+- [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
+
 ## Badges (Pilot Program)
 
-> CDK Merit Badges is a Pilot Program. The badges you get are experimental and may change.
+> CDK Merit Badges is a Pilot Program. The badges you get are experimental and
+may change.
 
 CDK Merit Badges is a program aimed at enhancing the CDK contributor experience. When you submit new pull requests to the CDK repository, you will receive a merit badge that reflects how many prior successful contributions you have to the repository. Right now, these badges are just for fun and are meant as a small incentive to continued contributions to the CDK.
 
