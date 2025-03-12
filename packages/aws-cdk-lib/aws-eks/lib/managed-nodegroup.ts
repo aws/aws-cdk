@@ -89,10 +89,6 @@ export enum NodegroupAmiType {
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
-  /**
-   * [PLACEHOLDER FOR: TO BE FILLED OUT]
-   */
-  CUSTOM = 'CUSTOM',
 }
 
 /**
