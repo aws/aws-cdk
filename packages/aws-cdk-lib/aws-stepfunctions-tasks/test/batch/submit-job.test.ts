@@ -1,11 +1,11 @@
 import * as path from 'path';
+import { Template } from '../../../assertions';
 import * as batch from '../../../aws-batch';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
 import { BatchSubmitJob } from '../../../aws-stepfunctions-tasks';
 import * as cdk from '../../../core';
-import { Template } from '../../../assertions';
 
 let stack: cdk.Stack;
 let batchJobDefinition: batch.IJobDefinition;
@@ -545,7 +545,7 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
     Parameters: {
       'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
       'JobName.$': '$.jobName',
-      'JobQueue.$': '$.jobQueueArn'
+      'JobQueue.$': '$.jobQueueArn',
     },
   });
 
@@ -561,7 +561,7 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
           Action: [
             'events:PutTargets',
             'events:PutRule',
-            'events:DescribeRule'
+            'events:DescribeRule',
           ],
           Effect: 'Allow',
           Resource: {
