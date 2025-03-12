@@ -248,7 +248,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
    * @throws If a job is provided without a job state, or if a crawler is provided without a crawler state for any condition.
    * @returns The created CfnTrigger resource.
    */
-  public addconditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
+  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
     const trigger = new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
