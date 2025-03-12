@@ -254,22 +254,7 @@ describe('function', () => {
 
       expect(getWarnings(app.synth())).toEqual([
         {
-          message: {
-            'Fn::Join': [
-              '',
-              [
-                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ', account=',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
-              ],
-            ],
-          },
+          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
           path: '/Default/Imported',
         },
       ]);

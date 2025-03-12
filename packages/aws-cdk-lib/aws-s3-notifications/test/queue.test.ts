@@ -109,15 +109,7 @@ test('if the queue is encrypted with a imported kms key, printout warning', () =
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
-  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify({
-    Action: [
-      'kms:GenerateDataKey*',
-      'kms:Decrypt',
-    ],
-    Effect: 'Allow',
-    Principal: {
-      Service: 's3.amazonaws.com',
-    },
-    Resource: '*',
-  }, null, 2)} [ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded]`);
+  Annotations.fromStack(stack).hasWarning('/Default/ImportedKey', Match.stringLikeRegexp(
+    'Can not change key policy of imported kms key\\. Ensure that your key policy contains the following permissions: \\n\\{\\n  "Action": \\[\\n    "kms:GenerateDataKey\\*",\\n    "kms:Decrypt"\\n  \\],\\n  "Effect": "Allow",\\n  "Principal": \\{\\n    "Service": "\\${Token\\[s3\\.amazonaws\\.com\\.[0-9]+\\]}"\\n  \\},\\n  "Resource": "\\*"\\n\\} \\[ack: @aws-cdk/aws-s3-notifications:sqsKMSPermissionsNotAdded\\]',
+  ));
 });
