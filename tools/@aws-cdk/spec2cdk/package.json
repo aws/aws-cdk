@@ -36,7 +36,7 @@
     "@aws-cdk/service-spec-importers": "^0.0.71",
     "@aws-cdk/service-spec-types": "^0.0.127",
     "@cdklabs/tskb": "^0.0.3",
-    "@cdklabs/typewriter": "^0.0.3",
+    "@cdklabs/typewriter": "^0.0.5",
     "camelcase": "^6",
     "fs-extra": "^9",
     "p-limit": "^3.1.0",
