@@ -134,7 +134,7 @@ export interface EventSourceMappingOptions {
   readonly bisectBatchOnError?: boolean;
 
   /**
-   * An Amazon SQS queue or Amazon SNS topic destination for discarded records.
+   * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
@@ -288,8 +288,7 @@ export interface EventSourceMappingOptions {
   readonly filterEncryption?: IKey;
 
   /**
-   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
-   *
+   * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
   readonly supportS3OnFailureDestination?: boolean;

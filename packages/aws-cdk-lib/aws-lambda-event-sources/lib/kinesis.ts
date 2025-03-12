@@ -49,6 +49,7 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
         eventSourceArn: this.source.sourceArn,
         startingPositionTimestamp: this.startingPositionTimestamp,
         metricsConfig: this.props.metricsConfig,
+        supportS3OnFailureDestination: true,
       }),
     );
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
