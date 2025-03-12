@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
 import * as constructs from 'constructs';
-import { Code } from '..';
+import { Code } from '../code';
 import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
@@ -88,7 +88,7 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
  */
 export interface ContinuousLoggingProps {
   /**
-   * Enable continouous logging.
+   * Enable continuous logging.
    */
   readonly enabled: boolean;
 
@@ -126,8 +126,8 @@ export interface ContinuousLoggingProps {
 /**
  * A base class is needed to be able to import existing Jobs into a CDK app to
  * reference as part of a larger stack or construct. JobBase has the subset
- * of attribtues required to idenitfy and reference an existing Glue Job,
- * as well as some CloudWatch metric conveneince functions to configure an
+ * of attributes required to identify and reference an existing Glue Job,
+ * as well as some CloudWatch metric convenience functions to configure an
  * event-driven flow using the job.
  */
 export abstract class JobBase extends cdk.Resource implements IJob {
@@ -282,10 +282,10 @@ export abstract class JobBase extends cdk.Resource implements IJob {
 
 /**
  * A subset of Job attributes are required for importing an existing job
- * into a CDK project. This is ionly used when using fromJobAttributes
+ * into a CDK project. This is only used when using fromJobAttributes
  * to identify and reference the existing job.
  */
-export interface JobImportAttributes {
+export interface JobAttributes {
   /**
    * The name of the job.
    */
@@ -301,9 +301,9 @@ export interface JobImportAttributes {
 }
 
 /**
- * JobProperties will be used to create new Glue Jobs using this L2 Construct.
+ * JobProps will be used to create new Glue Jobs using this L2 Construct.
  */
-export interface JobProperties {
+export interface JobProps {
   /**
    * Script Code Location (required)
    * Script to run when the Glue job executes. Can be uploaded
@@ -463,7 +463,7 @@ export abstract class Job extends JobBase {
    * @param id The construct's id.
    * @param attrs Attributes for the Glue Job we want to import
    */
-  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobImportAttributes): IJob {
+  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
     class Import extends JobBase {
       public readonly jobName = attrs.jobName;
       public readonly jobArn = this.buildJobArn(scope, attrs.jobName);
@@ -496,12 +496,12 @@ export abstract class Job extends JobBase {
   }
 
   /**
-   * Setup Continuous Loggiung Properties
+   * Setup Continuous Logging Properties
    * @param role The IAM role to use for continuous logging
    * @param props The properties for continuous logging configuration
    * @returns String containing the args for the continuous logging command
    */
-  public setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
+  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined) : any {
     // If the developer has explicitly disabled continuous logging return no args
     if (props && !props.enabled) {
       return {};
@@ -552,7 +552,7 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
     namespace: 'AWS/Events',
     metricName: 'TriggeredRules',
     dimensionsMap: { RuleName: rule.ruleName },
-    statistic: cloudwatch.Statistic.SUM,
+    statistic: cloudwatch.Stats.SUM,
     ...props,
   }).attachTo(rule);
 }
