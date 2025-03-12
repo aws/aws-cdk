@@ -6,6 +6,7 @@ import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
 import { CloudFormationProductVersion } from './product';
 import { ProductStack } from './product-stack';
 import { Names } from '../../core';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 /**
  * Properties for a ProductStackHistory.
@@ -49,7 +50,13 @@ export interface ProductStackHistoryProps {
 /**
  * A Construct that contains a Service Catalog product stack with its previous deployments maintained.
  */
+@propertyInjectionDecorator
 export class ProductStackHistory extends Construct {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-servicecatalog.ProductStackHistory';
+
   private readonly props: ProductStackHistoryProps;
   constructor(scope: Construct, id: string, props: ProductStackHistoryProps) {
     super(scope, id);

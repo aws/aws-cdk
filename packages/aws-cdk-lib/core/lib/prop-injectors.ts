@@ -1,5 +1,4 @@
-import { log, warn } from 'console';
-import { inspect } from 'util';
+import { warn } from 'console';
 import { Construct, IConstruct, Node } from 'constructs';
 
 /**
@@ -88,7 +87,6 @@ export class PropertyInjectors {
         warn(`WARN: Overwriting injector for ${pi.constructUniqueId}`);
       }
       this._injectors.set(pi.constructUniqueId, pi);
-      log(`added: ${pi.constructUniqueId}`);
     }
   }
 
@@ -162,15 +160,11 @@ function findInjectorsFromConstruct(scope: IConstruct, uniqueId: string): Proper
 
   const propsInjector = injectors.for(uniqueId);
   if (!propsInjector) {
-    log(`no injector found for ${uniqueId} at ${scope}.  Look at parent`);
     const parent = Node.of(scope).scope;
-    log(`parent: ${parent}`);
     if (parent) {
       return findInjectorsFromConstruct(parent, uniqueId);
     }
   }
-
-  log(`found injector for ${uniqueId} at ${scope}. ${injectors.scope()}`);
   return injectors;
 
   function _getInjectorsFromConstruct(c: any): any {
@@ -214,17 +208,12 @@ export function propertyInjectionDecorator<T extends Constructor>(constructor: T
 
       // eslint-disable-next-line dot-notation
       const uniqueId = (constructor as any)['PROPERTY_INJECTION_ID'] as string;
-      log(`Ctor scope: ${scope}, id: ${id}, uniqueId: ${uniqueId}, old props: ${inspect(props)}`);
-
       props = applyInjectors(uniqueId, props, {
         scope,
         id,
       });
 
-      log(`Ctor new props: ${inspect(props)}`);
-
       super(scope, id, props);
     }
   };
 }
-
