@@ -33,7 +33,7 @@ const app = new App();
 const stack = new FirehoseEnv(app, 'firehose-logsubscription-integ');
 
 // If the proper dependency is not set, then the deployment fails with:
-// Resource handler returned message: "FIXME"
+// Resource handler returned message: "Invalid request provided: AWS::Logs::SubscriptionFilter. Could not deliver test message to specified Firehose stream."
 // (Service: CloudWatchLogs, Status Code: 400, Request ID: [...])"
 new IntegTest(app, 'FirehoseInteg', {
   testCases: [stack],
