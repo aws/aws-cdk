@@ -79,11 +79,13 @@ export interface DataProcessorConfig {
   /**
    * The key-value pair that identifies the underlying processor resource.
    * @deprecated Use `parameters`
+   * @default - No processor identifier
    */
   readonly processorIdentifier?: DataProcessorIdentifier;
 
   /**
    * The processor parameters.
+   * @default - No paraeters
    */
   readonly parameters?: DataProcessorParameter[];
 }
