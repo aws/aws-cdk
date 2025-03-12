@@ -354,7 +354,10 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": "firehose:PutRecord",
+                                  "Action": [
+                                    "firehose:PutRecord",
+                                    "firehose:PutRecordBatch"
+                                  ],
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [

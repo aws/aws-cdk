@@ -41,10 +41,7 @@ export class FirehoseDestination implements logs.ILogSubscriptionDestination {
         },
       }),
     });
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['firehose:PutRecord'],
-      resources: [this.stream.deliveryStreamArn],
-    }));
+    this.stream.grantPutRecords(role);
 
     const policy = role.node.tryFindChild('DefaultPolicy') as iam.CfnPolicy;
     if (policy) {

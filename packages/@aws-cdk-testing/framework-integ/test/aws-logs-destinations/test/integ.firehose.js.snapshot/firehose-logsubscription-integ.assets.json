@@ -1,7 +1,7 @@
 {
   "version": "40.0.0",
   "files": {
-    "85219530c3a553f212a51f3aa246cdab68d22b942d27a32766355cfe0f503f60": {
+    "9b0a6ff23c68f0c5dca400cf4521980b56e380d64bf2b1d8ee45ef4a8d77481a": {
       "source": {
         "path": "firehose-logsubscription-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "85219530c3a553f212a51f3aa246cdab68d22b942d27a32766355cfe0f503f60.json",
+          "objectKey": "9b0a6ff23c68f0c5dca400cf4521980b56e380d64bf2b1d8ee45ef4a8d77481a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

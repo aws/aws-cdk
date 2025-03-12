@@ -50,7 +50,7 @@ test('stream can be subscription destination', () => {
       Version: '2012-10-17',
       Statement: [
         {
-          Action: 'firehose:PutRecord',
+          Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
@@ -110,7 +110,7 @@ test('stream can be subscription destination twice, without duplicating permissi
       Version: '2012-10-17',
       Statement: [
         {
-          Action: 'firehose:PutRecord',
+          Action: ['firehose:PutRecord', 'firehose:PutRecordBatch'],
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
