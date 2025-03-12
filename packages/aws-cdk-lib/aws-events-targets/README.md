@@ -99,7 +99,7 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput.fromObject({
+  logEvent: targets.LogGroupTargetInput.fromObjectV2({
     timestamp: events.EventField.fromPath('$.time'),
     message: events.EventField.fromPath('$.detail-type'),
   }),
@@ -115,7 +115,7 @@ declare const logGroup: logs.LogGroup;
 declare const rule: events.Rule;
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-  logEvent: targets.LogGroupTargetInput.fromObject({
+  logEvent: targets.LogGroupTargetInput.fromObjectV2({
     message: JSON.stringify({
       CustomField: 'CustomValue',
     }),
