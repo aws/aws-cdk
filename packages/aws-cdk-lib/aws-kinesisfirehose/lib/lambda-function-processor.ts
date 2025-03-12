@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from './processor';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorParameter, DataProcessorProps, IDataProcessor } from './processor';
 import * as lambda from '../../aws-lambda';
+import { Tokenization } from '../../core';
 
 /**
  * Use an AWS Lambda function to transform records.
@@ -18,12 +19,23 @@ export class LambdaFunctionProcessor implements IDataProcessor {
   public bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     this.lambdaFunction.grantInvoke(options.role);
 
+    const parameters: DataProcessorParameter[] = [
+      { parameterName: 'RoleArn', parameterValue: options.role.roleArn },
+      { parameterName: 'LambdaArn', parameterValue: this.lambdaFunction.functionArn },
+    ];
+    if (this.props.bufferInterval) {
+      parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: Tokenization.stringifyNumber(this.props.bufferInterval.toSeconds()) });
+    }
+    if (this.props.bufferSize) {
+      parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: Tokenization.stringifyNumber(this.props.bufferSize.toMebibytes()) });
+    }
+    if (this.props.retries) {
+      parameters.push({ parameterName: 'NumberOfRetries', parameterValue: Tokenization.stringifyNumber(this.props.retries) });
+    }
+
     return {
       processorType: 'Lambda',
-      processorIdentifier: {
-        parameterName: 'LambdaArn',
-        parameterValue: this.lambdaFunction.functionArn,
-      },
+      parameters,
     };
   }
 }

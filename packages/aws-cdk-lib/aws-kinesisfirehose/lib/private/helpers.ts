@@ -100,14 +100,14 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessor?: IDataProcessor,
+  dataProcessors?: IDataProcessor[],
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  return dataProcessor
-    ? {
-      enabled: true,
-      processors: [renderDataProcessor(dataProcessor, scope, role)],
-    }
-    : undefined;
+  if (!dataProcessors?.length) return undefined;
+
+  return {
+    enabled: true,
+    processors: dataProcessors.map((dp) => renderDataProcessor(dp, scope, role)),
+  };
 }
 
 function renderDataProcessor(
@@ -116,17 +116,15 @@ function renderDataProcessor(
   role: iam.IRole,
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
-  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
-  parameters.push(processorConfig.processorIdentifier);
-  if (processor.props.bufferInterval) {
-    parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
+
+  const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [];
+  if (processorConfig.processorIdentifier) {
+    parameters.push(processorConfig.processorIdentifier);
   }
-  if (processor.props.bufferSize) {
-    parameters.push({ parameterName: 'BufferSizeInMBs', parameterValue: processor.props.bufferSize.toMebibytes().toString() });
+  if (processorConfig.parameters) {
+    parameters.push(...processorConfig.parameters);
   }
-  if (processor.props.retries) {
-    parameters.push({ parameterName: 'NumberOfRetries', parameterValue: processor.props.retries.toString() });
-  }
+
   return {
     type: processorConfig.processorType,
     parameters,

@@ -32,6 +32,7 @@ export interface DataProcessorProps {
  * The key-value pair that identifies the underlying processor resource.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ * @deprecated Use `DataProcessorParameter`
  */
 export interface DataProcessorIdentifier {
   /**
@@ -48,22 +49,43 @@ export interface DataProcessorIdentifier {
 }
 
 /**
+ * A processor parameter in a data processor for an Amazon Kinesis Data Firehose delivery stream.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ */
+export interface DataProcessorParameter {
+  /**
+   * The name of the parameter.
+   */
+  readonly parameterName: string;
+
+  /**
+   * The parameter value.
+   */
+  readonly parameterValue: string;
+}
+
+/**
  * The full configuration of a data processor.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html
  */
 export interface DataProcessorConfig {
   /**
-   * The type of the underlying processor resource.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessorProperty.Type`.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-type
-   * @example 'Lambda'
+   * The type of processor.
    */
   readonly processorType: string;
 
   /**
    * The key-value pair that identifies the underlying processor resource.
+   * @deprecated Use `parameters`
    */
-  readonly processorIdentifier: DataProcessorIdentifier;
+  readonly processorIdentifier?: DataProcessorIdentifier;
+
+  /**
+   * The processor parameters.
+   */
+  readonly parameters?: DataProcessorParameter[];
 }
 
 /**
