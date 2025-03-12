@@ -7,17 +7,20 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'rds-cluster-with-availability-zone');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { natGateways: 0, restrictDefaultSecurityGroup: false });
+const [azForWriter, azForReader] = vpc.availabilityZones;
 
-const cluster = new rds.DatabaseCluster(stack, 'Cluster', {
+new rds.DatabaseCluster(stack, 'Cluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_1 }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  writer: rds.ClusterInstance.provisioned('Instance1', {
+  writer: rds.ClusterInstance.provisioned('Writer', {
+    instanceIdentifier: 'writer-instance',
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MEDIUM),
-    availabilityZone: vpc.availabilityZones[0],
+    availabilityZone: azForWriter,
   }),
   readers: [
-    rds.ClusterInstance.serverlessV2('Instance2', {
-      availabilityZone: vpc.availabilityZones[1],
+    rds.ClusterInstance.serverlessV2('Reader', {
+      instanceIdentifier: 'reader-instance',
+      availabilityZone: azForReader,
       scaleWithWriter: true,
     }),
   ],
@@ -31,13 +34,13 @@ const integ = new IntegTest(app, 'cluster-with-availability-zone-integ', {
 });
 
 integ.assertions.awsApiCall('rds', 'describeDbInstances', {
-  DBInstanceIdentifier: cluster.instanceIdentifiers[0],
+  DBInstanceIdentifier: 'writer-instance',
 }).expect(ExpectedResult.objectLike({
-  DBInstances: [{ AvailabilityZone: vpc.availabilityZones[0] }],
+  DBInstances: [{ AvailabilityZone: azForWriter }],
 }));
 
 integ.assertions.awsApiCall('rds', 'describeDbInstances', {
-  DBInstanceIdentifier: cluster.instanceIdentifiers[1],
+  DBInstanceIdentifier: 'reader-instance',
 }).expect(ExpectedResult.objectLike({
-  DBInstances: [{ AvailabilityZone: vpc.availabilityZones[1] }],
+  DBInstances: [{ AvailabilityZone: azForReader }],
 }));

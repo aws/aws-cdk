@@ -353,7 +353,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterInstance1BD35945F": {
+  "ClusterWriterA91BB273": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "AvailabilityZone": {
@@ -368,6 +368,7 @@
      "Ref": "ClusterEB0386A7"
     },
     "DBInstanceClass": "db.t4g.medium",
+    "DBInstanceIdentifier": "writer-instance",
     "Engine": "aurora-mysql",
     "PromotionTier": 0,
     "PubliclyAccessible": false
@@ -379,7 +380,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterInstance2945B1C47": {
+  "ClusterReaderA09A3718": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "AvailabilityZone": {
@@ -394,35 +395,18 @@
      "Ref": "ClusterEB0386A7"
     },
     "DBInstanceClass": "db.serverless",
+    "DBInstanceIdentifier": "reader-instance",
     "Engine": "aurora-mysql",
     "PromotionTier": 1,
     "PubliclyAccessible": false
    },
    "DependsOn": [
-    "ClusterInstance1BD35945F",
+    "ClusterWriterA91BB273",
     "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
     "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "ExportsOutputRefClusterInstance1BD35945FFA5312C3": {
-   "Value": {
-    "Ref": "ClusterInstance1BD35945F"
-   },
-   "Export": {
-    "Name": "rds-cluster-with-availability-zone:ExportsOutputRefClusterInstance1BD35945FFA5312C3"
-   }
-  },
-  "ExportsOutputRefClusterInstance2945B1C47428405FC": {
-   "Value": {
-    "Ref": "ClusterInstance2945B1C47"
-   },
-   "Export": {
-    "Name": "rds-cluster-with-availability-zone:ExportsOutputRefClusterInstance2945B1C47428405FC"
-   }
   }
  },
  "Parameters": {

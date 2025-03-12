@@ -5117,16 +5117,27 @@ describe('cluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      writer: ClusterInstance.serverlessV2('writer', {
-        availabilityZone: 'us-east-1',
+      writer: ClusterInstance.provisioned('writer', {
+        instanceIdentifier: 'writer-instance',
+        availabilityZone: 'us-east-1a',
       }),
+      readers: [ClusterInstance.serverlessV2('reader', {
+        instanceIdentifier: 'reader-instance',
+        availabilityZone: 'us-east-1b',
+      })],
       vpc,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       Engine: 'aurora-mysql',
-      AvailabilityZone: 'us-east-1',
+      DBInstanceIdentifier: 'writer-instance',
+      AvailabilityZone: 'us-east-1a',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora-mysql',
+      DBInstanceIdentifier: 'reader-instance',
+      AvailabilityZone: 'us-east-1b',
     });
   });
 

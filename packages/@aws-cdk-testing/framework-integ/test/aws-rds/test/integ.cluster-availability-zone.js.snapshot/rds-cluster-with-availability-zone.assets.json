@@ -1,7 +1,7 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "files": {
-    "eb52d3dbc7b1e5ef77f65f92bae2f4d2ba14bcec97311bd25f12e8e852fda283": {
+    "544030152fe9812d830e523843489b2578eb51d52412918dfb62bba8cc2864d6": {
       "source": {
         "path": "rds-cluster-with-availability-zone.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eb52d3dbc7b1e5ef77f65f92bae2f4d2ba14bcec97311bd25f12e8e852fda283.json",
+          "objectKey": "544030152fe9812d830e523843489b2578eb51d52412918dfb62bba8cc2864d6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

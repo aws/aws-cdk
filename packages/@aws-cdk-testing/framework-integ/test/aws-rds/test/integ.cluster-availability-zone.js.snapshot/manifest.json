@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "rds-cluster-with-availability-zone.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb52d3dbc7b1e5ef77f65f92bae2f4d2ba14bcec97311bd25f12e8e852fda283.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/544030152fe9812d830e523843489b2578eb51d52412918dfb62bba8cc2864d6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,40 +316,28 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/rds-cluster-with-availability-zone/Cluster/Instance1": [
+        "/rds-cluster-with-availability-zone/Cluster/Writer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/rds-cluster-with-availability-zone/Cluster/Instance1/Resource": [
+        "/rds-cluster-with-availability-zone/Cluster/Writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInstance1BD35945F"
+            "data": "ClusterWriterA91BB273"
           }
         ],
-        "/rds-cluster-with-availability-zone/Cluster/Instance2": [
+        "/rds-cluster-with-availability-zone/Cluster/Reader": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/rds-cluster-with-availability-zone/Cluster/Instance2/Resource": [
+        "/rds-cluster-with-availability-zone/Cluster/Reader/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInstance2945B1C47"
-          }
-        ],
-        "/rds-cluster-with-availability-zone/Exports/Output{\"Ref\":\"ClusterInstance1BD35945F\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefClusterInstance1BD35945FFA5312C3"
-          }
-        ],
-        "/rds-cluster-with-availability-zone/Exports/Output{\"Ref\":\"ClusterInstance2945B1C47\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefClusterInstance2945B1C47428405FC"
+            "data": "ClusterReaderA09A3718"
           }
         ],
         "/rds-cluster-with-availability-zone/BootstrapVersion": [
@@ -384,7 +372,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47dac1e2c38059b0925bc7ca23121ae75893d70a55db54d44c99aebed45a4326.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6f70e600e350ad858750c1a6e83bfd384c63244e8e759e5d2d7d3851ceea58a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -397,11 +385,10 @@
         }
       },
       "dependencies": [
-        "rds-cluster-with-availability-zone",
         "clusterwithavailabilityzoneintegDefaultTestDeployAssertFDC52DFE.assets"
       ],
       "metadata": {
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917/Default": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -415,16 +402,16 @@
             "data": "*"
           }
         ],
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917/Default/Default": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917"
+            "data": "AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3"
           }
         ],
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917/AssertionResults": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917"
+            "data": "AssertionResultsAwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3"
           }
         ],
         "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -445,7 +432,7 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95/Default": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -459,16 +446,16 @@
             "data": "*"
           }
         ],
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95/Default/Default": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95"
+            "data": "AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1"
           }
         ],
-        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95/AssertionResults": [
+        "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95"
+            "data": "AssertionResultsAwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1"
           }
         ],
         "/cluster-with-availability-zone-integ/DefaultTest/DeployAssert/BootstrapVersion": [

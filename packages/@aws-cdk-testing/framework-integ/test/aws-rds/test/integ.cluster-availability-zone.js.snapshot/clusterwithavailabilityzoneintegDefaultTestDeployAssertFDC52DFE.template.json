@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917": {
+  "AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3": {
    "Type": "Custom::DeployAssert@SdkCallrdsdescribeDbInstances",
    "Properties": {
     "ServiceToken": {
@@ -29,21 +29,10 @@
      ]
     },
     "parameters": {
-     "DBInstanceIdentifier": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "rds-cluster-with-availability-zone:ExportsOutputRefClusterInstance1BD35945FFA5312C3"
-        },
-        "\""
-       ]
-      ]
-     }
+     "DBInstanceIdentifier": "\"writer-instance\""
     },
     "flattenResponse": "false",
-    "salt": "1740024192241"
+    "salt": "1741757858288"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -114,7 +103,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f692c9f68e4daba2abc99103efd3518bced1e9d7a2a89847b9b5d5473c64f1bd.zip"
+     "S3Key": "d389e273abc3a151d7ee50a64dfd8c1d10d6e72117ca68f7f241f4ba2672484c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -126,7 +115,7 @@
     }
    }
   },
-  "AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95": {
+  "AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1": {
    "Type": "Custom::DeployAssert@SdkCallrdsdescribeDbInstances",
    "Properties": {
     "ServiceToken": {
@@ -155,39 +144,28 @@
      ]
     },
     "parameters": {
-     "DBInstanceIdentifier": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "rds-cluster-with-availability-zone:ExportsOutputRefClusterInstance2945B1C47428405FC"
-        },
-        "\""
-       ]
-      ]
-     }
+     "DBInstanceIdentifier": "\"reader-instance\""
     },
     "flattenResponse": "false",
-    "salt": "1740024192242"
+    "salt": "1741757858289"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917": {
+  "AssertionResultsAwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallrdsdescribeDbInstancesae43f7c3c7b0f81e1773e7892ce29917",
+     "AwsApiCallrdsdescribeDbInstancesc72467248c8eea3d9410c4050bf41ef3",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95": {
+  "AssertionResultsAwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallrdsdescribeDbInstances69cfad707d83a9c1a539af7a8f3c7e95",
+     "AwsApiCallrdsdescribeDbInstancese636cd73e10d15565d9b3832d09706a1",
      "assertion"
     ]
    }
