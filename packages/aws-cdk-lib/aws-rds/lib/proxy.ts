@@ -10,6 +10,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -399,8 +400,14 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
  *
  * @resource AWS::RDS::DBProxy
  */
+@propertyInjectionDecorator
 export class DatabaseProxy extends DatabaseProxyBase
   implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseProxy';
+
   /**
    * Import an existing database proxy.
    */

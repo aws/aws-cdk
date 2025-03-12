@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectionDecorator } from '../../core/lib/prop-injectors';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -565,7 +566,13 @@ export enum Distribution {
 /**
  * Define a CloudWatch Log Group
  */
+@propertyInjectionDecorator
 export class LogGroup extends LogGroupBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-log.LogGroup';
+
   /**
    * Import an existing LogGroup given its ARN
    */
