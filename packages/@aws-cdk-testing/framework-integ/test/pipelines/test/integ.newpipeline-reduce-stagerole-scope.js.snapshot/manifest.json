@@ -1,35 +1,35 @@
 {
   "version": "40.0.0",
   "artifacts": {
-    "assembly-PipelineStack-Beta": {
+    "assembly-CdkPipelineInvestigationStack-Prod": {
       "type": "cdk:cloud-assembly",
       "properties": {
-        "directoryName": "assembly-PipelineStack-Beta",
-        "displayName": "PipelineStack/Beta"
+        "directoryName": "assembly-CdkPipelineInvestigationStack-Prod",
+        "displayName": "CdkPipelineInvestigationStack/Prod"
       }
     },
-    "PipelineStack.assets": {
+    "CdkPipelineInvestigationStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PipelineStack.assets.json",
+        "file": "CdkPipelineInvestigationStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PipelineStack": {
+    "CdkPipelineInvestigationStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PipelineStack.template.json",
+        "templateFile": "CdkPipelineInvestigationStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b8710e020b9a642d3a8c8e92f9dfae695b71cbb6d4805d78368b457a042b124.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fb8477d2c6700a91772c469d472cf53b7b276d32144ed8c806f2d19046416e3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PipelineStack.assets"
+          "CdkPipelineInvestigationStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -38,10 +38,10 @@
         }
       },
       "dependencies": [
-        "PipelineStack.assets"
+        "CdkPipelineInvestigationStack.assets"
       ],
       "metadata": {
-        "/PipelineStack/Pipeline/Pipeline": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -97,7 +97,7 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -110,13 +110,13 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketAEA9A052"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -124,13 +124,13 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketPolicyF53CCC52"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Role": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -205,19 +205,19 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Role/ImportRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Role/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineRoleB27FAA37"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Role/DefaultPolicy": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -287,19 +287,19 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineRoleDefaultPolicy7BDC1ABB"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Pipeline9850B417"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/owner_group_repo/CodePipelineActionRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Source/aws_aws-cdk/CodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -375,19 +375,19 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/owner_group_repo/CodePipelineActionRole/ImportCodePipelineActionRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Source/aws_aws-cdk/CodePipelineActionRole/ImportCodePipelineActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/owner_group_repo/CodePipelineActionRole/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Source/aws_aws-cdk/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineSourceownergrouprepoCodePipelineActionRole290DB4C9"
+            "data": "PipelineSourceawsawscdkCodePipelineActionRole11A3A670"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/owner_group_repo/CodePipelineActionRole/DefaultPolicy": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Source/aws_aws-cdk/CodePipelineActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -433,13 +433,13 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/owner_group_repo/CodePipelineActionRole/DefaultPolicy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Source/aws_aws-cdk/CodePipelineActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineSourceownergrouprepoCodePipelineActionRoleDefaultPolicy8A6030B0"
+            "data": "PipelineSourceawsawscdkCodePipelineActionRoleDefaultPolicy8129B839"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
@@ -453,7 +453,7 @@
             "data": {}
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -503,21 +503,29 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -561,21 +569,83 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Prod/PromoteToProd/CodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAssumeRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Prod/PromoteToProd/CodePipelineActionRole/ImportCodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Prod/PromoteToProd/CodePipelineActionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineProdPromoteToProdCodePipelineActionRole08AAED6C"
+          }
+        ],
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -595,40 +665,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
-          }
-        ],
-        "/PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -639,19 +675,19 @@
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": [
+        "/CdkPipelineInvestigationStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/CodeBuildActionRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -741,19 +777,19 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/CodeBuildActionRole/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineCodeBuildActionRole226DB0CB"
           }
         ],
-        "/PipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy": [
+        "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -791,13 +827,13 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
@@ -811,7 +847,7 @@
             "data": {}
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -887,19 +923,19 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/ImportRole": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineUpdatePipelineSelfMutationRole57E559E8"
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -969,46 +1005,46 @@
             }
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E"
           }
         ],
-        "/PipelineStack/Pipeline/UpdatePipeline/SelfMutation/Resource": [
+        "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineUpdatePipelineSelfMutationDAA41400"
           }
         ],
-        "/PipelineStack/BootstrapVersion": [
+        "/CdkPipelineInvestigationStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PipelineStack/CheckBootstrapVersion": [
+        "/CdkPipelineInvestigationStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PipelineStack"
+      "displayName": "CdkPipelineInvestigationStack"
     },
-    "PipelineStackIntegDefaultTestDeployAssertA8A39C70.assets": {
+    "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PipelineStackIntegDefaultTestDeployAssertA8A39C70.assets.json",
+        "file": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PipelineStackIntegDefaultTestDeployAssertA8A39C70": {
+    "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PipelineStackIntegDefaultTestDeployAssertA8A39C70.template.json",
+        "templateFile": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -1017,7 +1053,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PipelineStackIntegDefaultTestDeployAssertA8A39C70.assets"
+          "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1026,23 +1062,23 @@
         }
       },
       "dependencies": [
-        "PipelineStackIntegDefaultTestDeployAssertA8A39C70.assets"
+        "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.assets"
       ],
       "metadata": {
-        "/PipelineStackInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/CdkPipelineInvestigationTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PipelineStackInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/CdkPipelineInvestigationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PipelineStackInteg/DefaultTest/DeployAssert"
+      "displayName": "CdkPipelineInvestigationTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

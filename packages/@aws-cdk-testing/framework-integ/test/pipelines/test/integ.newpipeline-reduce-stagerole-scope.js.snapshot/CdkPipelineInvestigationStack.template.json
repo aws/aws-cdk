@@ -1,155 +1,5 @@
 {
  "Resources": {
-  "SourceBucketDDD2130A": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SourceBucketPolicy703DFBF9": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "SourceBucketDDD2130A"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SourceBucketDDD2130A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "SourceBucketDDD2130A",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "SourceBucketAutoDeleteObjectsCustomResourceC68FC040": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "SourceBucketDDD2130A"
-    }
-   },
-   "DependsOn": [
-    "SourceBucketPolicy703DFBF9"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "SourceBucketDDD2130A"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
   "PipelineArtifactsBucketAEA9A052": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -345,7 +195,13 @@
         },
         {
          "Fn::GetAtt": [
-          "PipelineSourceS3CodePipelineActionRole83895A58",
+          "PipelineProdPromoteToProdCodePipelineActionRole08AAED6C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineSourceawsawscdkCodePipelineActionRole11A3A670",
           "Arn"
          ]
         },
@@ -394,6 +250,7 @@
      },
      "Type": "S3"
     },
+    "Name": "pipeline-name",
     "PipelineType": "V1",
     "RestartExecutionOnUpdate": true,
     "RoleArn": {
@@ -409,26 +266,24 @@
         "ActionTypeId": {
          "Category": "Source",
          "Owner": "AWS",
-         "Provider": "S3",
+         "Provider": "CodeStarSourceConnection",
          "Version": "1"
         },
         "Configuration": {
-         "S3Bucket": {
-          "Ref": "SourceBucketDDD2130A"
-         },
-         "S3ObjectKey": "key"
+         "ConnectionArn": "arn:aws:codeconnections:us-east-1:486673125664:connection/a3bf1dc7-eefb-4278-9f04-cc8fed8b569a",
+         "FullRepositoryId": "aws/aws-cdk",
+         "BranchName": "main",
+         "OutputArtifactFormat": "CODEBUILD_CLONE_REF"
         },
-        "Name": {
-         "Ref": "SourceBucketDDD2130A"
-        },
+        "Name": "aws_aws-cdk",
         "OutputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+          "Name": "aws_aws_cdk_Source"
          }
         ],
         "RoleArn": {
          "Fn::GetAtt": [
-          "PipelineSourceS3CodePipelineActionRole83895A58",
+          "PipelineSourceawsawscdkCodePipelineActionRole11A3A670",
           "Arn"
          ]
         },
@@ -449,11 +304,12 @@
         "Configuration": {
          "ProjectName": {
           "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-         }
+         },
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"76b9f731e95c981d417f208b4452ab04e2345eb9c4ab92c982d58b621780baee\"}]"
         },
         "InputArtifacts": [
          {
-          "Name": "c8506b445957b8105ede7b68ebe35e9406d642cd0c_Source"
+          "Name": "aws_aws_cdk_Source"
          }
         ],
         "Name": "Synth",
@@ -477,13 +333,61 @@
       "Actions": [
        {
         "ActionTypeId": {
+         "Category": "Build",
+         "Owner": "AWS",
+         "Provider": "CodeBuild",
+         "Version": "1"
+        },
+        "Configuration": {
+         "ProjectName": {
+          "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+         },
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"a4e7411b5ed499cff975c59a581a131b24f2c826e6aa90166b756ce916838559\"}]"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "Synth_Output"
+         }
+        ],
+        "Name": "SelfMutate",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineCodeBuildActionRole226DB0CB",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "UpdatePipeline"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Approval",
+         "Owner": "AWS",
+         "Provider": "Manual",
+         "Version": "1"
+        },
+        "Name": "PromoteToProd",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineProdPromoteToProdCodePipelineActionRole08AAED6C",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       },
+       {
+        "ActionTypeId": {
          "Category": "Deploy",
          "Owner": "AWS",
          "Provider": "CloudFormation",
          "Version": "1"
         },
         "Configuration": {
-         "StackName": "MyStage-Stack",
+         "StackName": "Prod-ProdStack",
          "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
          "RoleArn": {
           "Fn::Join": [
@@ -509,14 +413,14 @@
           ]
          },
          "ActionMode": "CREATE_UPDATE",
-         "TemplatePath": "Synth_Output::assembly-PreparelessPipelineStack-MyStage/PreparelessPipelineStackMyStageStack3DC192E7.template.json"
+         "TemplatePath": "Synth_Output::assembly-CdkPipelineInvestigationStack-Prod/CdkPipelineInvestigationStackProdProdStackD4D4A90A.template.json"
         },
         "InputArtifacts": [
          {
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Deploy",
+        "Name": "ProdStack.Deploy",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -540,10 +444,10 @@
           ]
          ]
         },
-        "RunOrder": 1
+        "RunOrder": 2
        }
       ],
-      "Name": "MyStage"
+      "Name": "Prod"
      }
     ]
    },
@@ -552,7 +456,7 @@
     "PipelineRoleB27FAA37"
    ]
   },
-  "PipelineSourceS3CodePipelineActionRole83895A58": {
+  "PipelineSourceawsawscdkCodePipelineActionRole11A3A670": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -574,45 +478,23 @@
     }
    }
   },
-  "PipelineSourceS3CodePipelineActionRoleDefaultPolicyB176A07F": {
+  "PipelineSourceawsawscdkCodePipelineActionRoleDefaultPolicy8129B839": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
+       "Action": "codestar-connections:UseConnection",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "SourceBucketDDD2130A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "SourceBucketDDD2130A",
-             "Arn"
-            ]
-           },
-           "/key"
-          ]
-         ]
-        }
-       ]
+       "Resource": "arn:aws:codeconnections:us-east-1:486673125664:connection/a3bf1dc7-eefb-4278-9f04-cc8fed8b569a"
       },
       {
        "Action": [
         "s3:Abort*",
         "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
         "s3:PutObjectRetention",
@@ -642,14 +524,35 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "s3:PutObjectAcl",
+        "s3:PutObjectVersionAcl"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "PipelineArtifactsBucketAEA9A052",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PipelineSourceS3CodePipelineActionRoleDefaultPolicyB176A07F",
+    "PolicyName": "PipelineSourceawsawscdkCodePipelineActionRoleDefaultPolicy8129B839",
     "Roles": [
      {
-      "Ref": "PipelineSourceS3CodePipelineActionRole83895A58"
+      "Ref": "PipelineSourceawsawscdkCodePipelineActionRole11A3A670"
      }
     ]
    }
@@ -803,6 +706,11 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "codestar-connections:UseConnection",
+       "Effect": "Allow",
+       "Resource": "arn:aws:codeconnections:us-east-1:486673125664:connection/a3bf1dc7-eefb-4278-9f04-cc8fed8b569a"
       }
      ],
      "Version": "2012-10-17"
@@ -822,16 +730,19 @@
      "Type": "CODEPIPELINE"
     },
     "Cache": {
-     "Type": "NO_CACHE"
+     "Modes": [
+      "LOCAL_DOCKER_LAYER_CACHE"
+     ],
+     "Type": "LOCAL"
     },
-    "Description": "Pipeline step PreparelessPipelineStack/Pipeline/Build/Synth",
+    "Description": "Pipeline step CdkPipelineInvestigationStack/Pipeline/Build/Synth",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:7.0",
+     "Image": "aws/codebuild/amazonlinux2-aarch64-standard:3.0",
      "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": false,
-     "Type": "LINUX_CONTAINER"
+     "PrivilegedMode": true,
+     "Type": "ARM_CONTAINER"
     },
     "ServiceRole": {
      "Fn::GetAtt": [
@@ -840,8 +751,30 @@
      ]
     },
     "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"mkdir cdk.out\",\n        \"touch cdk.out/dummy\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"npm ci && npm run build\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
+    }
+   }
+  },
+  "PipelineProdPromoteToProdCodePipelineActionRole08AAED6C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PipelineRoleB27FAA37",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
     }
    }
   },
@@ -879,12 +812,20 @@
         "codebuild:StopBuild"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "PipelineBuildSynthCdkBuildProject6BEFA8E6",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineBuildSynthCdkBuildProject6BEFA8E6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "PipelineUpdatePipelineSelfMutationDAA41400",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -896,129 +837,226 @@
      }
     ]
    }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
+  },
+  "PipelineUpdatePipelineSelfMutationRole57E559E8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codebuild:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":report-group/",
+          {
+           "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "ForAnyValue:StringEquals": {
+         "iam:ResourceTag/aws-cdk:bootstrap-role": [
+          "image-publishing",
+          "file-publishing",
+          "deploy"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:*:iam::",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":role/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "cloudformation:DescribeStacks",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucketAEA9A052",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineArtifactsBucketAEA9A052",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
+    "Roles": [
+     {
+      "Ref": "PipelineUpdatePipelineSelfMutationRole57E559E8"
+     }
+    ]
+   }
+  },
+  "PipelineUpdatePipelineSelfMutationDAA41400": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "CODEPIPELINE"
+    },
+    "Cache": {
+     "Modes": [
+      "LOCAL_DOCKER_LAYER_CACHE"
+     ],
+     "Type": "LOCAL"
+    },
+    "Description": "Pipeline step CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutate",
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/amazonlinux2-aarch64-standard:3.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "ARM_CONTAINER"
+    },
+    "Name": "pipeline-name-selfupdate",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineUpdatePipelineSelfMutationRole57E559E8",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy CdkPipelineInvestigationStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
+     "Type": "CODEPIPELINE"
+    }
    }
   }
  },
