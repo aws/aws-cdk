@@ -120,16 +120,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "TestAssetBucketProductAssetsDeploymentCustomResource256MiBB5A849A6": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -217,6 +207,16 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
+  },
+  "awscdklambdalayerawscliAwsCliLayer437D4B14": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiBServiceRoleF991ED9F": {
    "Type": "AWS::IAM::Role",
@@ -351,7 +351,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
+      "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
      }
     ],
     "MemorySize": 256,

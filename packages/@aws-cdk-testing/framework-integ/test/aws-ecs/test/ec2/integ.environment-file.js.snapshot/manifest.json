@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e51df5d330feee3154d7718dc2868088dc72dabc614cc353dc3e5bcc23a43b26.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33deac2fc2ef1674bdd68d44a786f4b10c110da5e9cb1faf7fafba25350447a1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1037,21 +1037,6 @@
             "data": "TaskDefinitionB36D86D9"
           }
         ],
-        "/aws-ecs-integ/EnvFileDeployment/AwsCliLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/aws-ecs-integ/EnvFileDeployment/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EnvFileDeploymentAwsCliLayerA8FC897D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
         "/aws-ecs-integ/EnvFileDeployment/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1104,6 +1089,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EnvFileDeploymentCustomResourceDBE78DE4"
+          }
+        ],
+        "/aws-ecs-integ/@aws-cdk--lambda-layer-awscli.AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/aws-ecs-integ/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdklambdalayerawscliAwsCliLayer437D4B14"
           }
         ],
         "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -1307,6 +1304,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EnvFileDeploymentAwsCliLayerA8FC897D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnvFileDeploymentAwsCliLayerA8FC897D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

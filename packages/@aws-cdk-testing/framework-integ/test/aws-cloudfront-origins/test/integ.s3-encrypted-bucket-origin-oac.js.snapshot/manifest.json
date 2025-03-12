@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "cloudfront-s3-encrypted-bucket-origin-oac.assets": {
       "type": "cdk:asset-manifest",
@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/802c2be34311a9f459877c5972a34f5c7f4c2f9b07b8d8f06409027cd60b68ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/916edaf3549eab5974434558ef2396a7f06f8feb16d2057a4a8278cc96433758.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -101,16 +101,70 @@
             "data": "Distribution830FAC52"
           }
         ],
-        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/AwsCliLayer/Resource": [
+        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResourceHandler": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployWithInvalidationAwsCliLayerDEDD5787"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/DeployWithInvalidation/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployWithInvalidationCustomResourceE3FF7455"
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/@aws-cdk--lambda-layer-awscli.AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/cloudfront-s3-encrypted-bucket-origin-oac/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdklambdalayerawscliAwsCliLayer437D4B14"
           }
         ],
         "/cloudfront-s3-encrypted-bucket-origin-oac/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -158,6 +212,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DeployWithInvalidationAwsCliLayerDEDD5787": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithInvalidationAwsCliLayerDEDD5787",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "cloudfront-s3-encrypted-bucket-origin-oac"
@@ -180,7 +243,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4caf30ce5e20cd926efa8876eb22dec0e9fd1720706f89b2cf8ced9604799132.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bfa0a969550cbf8e0453160618c91020a8b108f0e37bb60d290cd9362e358e79.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

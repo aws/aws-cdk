@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f2b45f79f819f0460a14b53ec938c62a5e67d1e72217ba2aae424999ed080256.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a77cf007d20be8cfcf4dc37e8ddf1245cb08babb3ab7137549c205d7ea299e1d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -470,10 +470,60 @@
             "data": {}
           }
         ],
-        "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Resource": [
+        "/aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployConfigInBucketAwsCliLayerFC57D055"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-appconfig-configuration/DeployConfigInBucket/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler": [
@@ -536,6 +586,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployConfigInBucketCustomResource91997C5B"
+          }
+        ],
+        "/aws-appconfig-configuration/@aws-cdk--lambda-layer-awscli.AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/aws-appconfig-configuration/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdklambdalayerawscliAwsCliLayer437D4B14"
           }
         ],
         "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -1563,6 +1625,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DeployConfigInBucketAwsCliLayerFC57D055": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployConfigInBucketAwsCliLayerFC57D055",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
