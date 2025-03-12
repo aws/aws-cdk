@@ -90,6 +90,23 @@ describe('repository', () => {
       mock.mockRestore();
     });
 
+    test.each([
+      {
+        repositoryArn: 'arn:aws:ecr::123456789012:repository/does-not-exist-repo',
+      },
+      {
+        repositoryName: 'does-not-exist-repo',
+      },
+    ])('return dummy repository info if not found', (config) => {
+      // WHEN
+      const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
+      const repo = ecr.Repository.fromLookup(stack, 'MyRepo', config);
+
+      // THEN
+      expect(repo.repositoryName).toEqual('DUMMY_ARN');
+      expect(repo.repositoryArn).toEqual(ecr.Repository.arnForLocalRepository('DUMMY_ARN', stack));
+    });
+
     test('throw error if repository name is a token', () => {
       // GIVEN
       const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
