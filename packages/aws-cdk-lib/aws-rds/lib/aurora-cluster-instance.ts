@@ -231,7 +231,8 @@ export interface ClusterInstanceOptions {
    * For Amazon Aurora, each Aurora DB cluster hosts copies of its storage in three separate Availability Zones.
    * Specify one of these Availability Zones. Aurora automatically chooses an appropriate Availability Zone if you don't specify one.
    *
-   * @default - A random, system-chosen Availability Zone in the endpoint's AWS Region.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html
+   * @default - A random, system-chosen Availability Zone in the endpointʼs AWS Region.
    */
   readonly availabilityZone?: string;
 
