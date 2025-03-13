@@ -63,6 +63,12 @@ interface FileOptions {
    * File paths matching the patterns will be excluded. See `ignoreMode` to set the matching behavior.
    * Has no effect on Assets bundled using the `bundling` property.
    *
+   * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
+   *
+   * If matching the symlink but not its target, it is excluded (i.e. the `exclude` patterns match
+   * the symlink path itself, regardless of its target). This is the same behavior even if `follow`
+   * is not `SymlinkFollowMode.NEVER`.
+   *
    * @default - nothing is excluded
    */
   readonly exclude?: string[];
@@ -73,6 +79,20 @@ interface FileOptions {
    * @default IgnoreMode.GLOB
    */
   readonly ignoreMode?: IgnoreMode;
+
+  /**
+   * File paths matching the patterns will be included, based on simple glob patterns.
+   * Has no effect on Assets bundled using the `bundling` property.
+   *
+   * If both `exclude` and `include` are specified for the same file, `exclude` takes priority.
+   *
+   * If matching the symlink but not its target, it is included (i.e. the `include` patterns match
+   * the symlink path itself, regardless of its target). This is the same behavior even if `follow`
+   * is not `SymlinkFollowMode.NEVER`.
+   *
+   * @default - everything is included
+   */
+  readonly include?: string[];
 }
 
 /**
