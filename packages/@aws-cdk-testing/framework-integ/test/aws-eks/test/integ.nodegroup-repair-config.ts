@@ -25,9 +25,7 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
 cluster.addNodegroupCapacity('MNG_AL2023_X86_64_STANDARD', {
   amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
-  nodeRepairConfig: {
-    enabled: true,
-  },
+  enableNodeAutoRepair: true,
 });
 
 new integ.IntegTest(app, 'aws-cdk-eks-nodegroup-repair-config', {
@@ -35,5 +33,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-nodegroup-repair-config', {
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
-
-app.synth();

@@ -2020,16 +2020,14 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 
 ## NodeGroup Repair Config
 
-You can enable Managed Node Group auto-repair config using `nodeRepairConfig`
+You can enable Managed Node Group auto-repair config using `enableNodeAutoRepair`
 property. For example:
 
 ```ts
 declare const cluster: eks.Cluster;
 
 cluster.addNodegroupCapacity('NodeGroup', {
-  nodeRepairConfig: {
-    enabled: true,
-  },
+  enableNodeAutoRepair:true,
 });
 ```
 

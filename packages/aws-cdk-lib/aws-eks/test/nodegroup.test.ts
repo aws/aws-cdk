@@ -1144,7 +1144,7 @@ describe('node group', () => {
     });
   });
 
-  test('create nodegroup correctly with nodeRepairConfig provided', () => {
+  test('create nodegroup correctly with enableNodeAutoRepair provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -1153,12 +1153,11 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      nodeRepairConfig: {
-        enabled: true,
-      },
+      enableNodeAutoRepair: true,
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {

@@ -1023,21 +1023,18 @@ describe('node group', () => {
     });
   });
 
-  test('create nodegroup correctly with nodeRepairConfig provided', () => {
+  test('create nodegroup correctly with enableNodeAutoRepair provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      nodeRepairConfig: {
-        enabled: true,
-      },
+      enableNodeAutoRepair: true,
     });
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {

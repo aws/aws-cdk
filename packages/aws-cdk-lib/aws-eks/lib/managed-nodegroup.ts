@@ -184,18 +184,6 @@ export interface TaintSpec {
 }
 
 /**
- * The node auto repair configuration for the node group.
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-noderepairconfig.html
- */
-export interface NodegroupRepairConfig {
-  /**
-   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
-   */
-  readonly enabled: boolean;
-}
-
-/**
  * The Nodegroup Options for addNodeGroup() method
  */
 export interface NodegroupOptions {
@@ -349,12 +337,12 @@ export interface NodegroupOptions {
   readonly maxUnavailablePercentage?: number;
 
   /**
-   * The node auto repair configuration for the node group.
+   * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-noderepairconfig.html
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
    * @default - disabled
    */
-  readonly nodeRepairConfig?: NodegroupRepairConfig;
+  readonly enableNodeAutoRepair?: boolean;
 }
 
 /**
@@ -544,7 +532,9 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
-      nodeRepairConfig: props.nodeRepairConfig,
+      nodeRepairConfig: {
+        enabled: props.enableNodeAutoRepair,
+      },
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
