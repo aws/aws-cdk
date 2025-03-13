@@ -28,7 +28,11 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecr.Repository",
               "version": "0.0.0",
-              "metadata": []
+              "metadata": [
+                {
+                  "removalPolicy": "destroy"
+                }
+              ]
             }
           },
           "Pipeline": {
@@ -189,14 +193,27 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            {
+                              "bucket": "*"
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.Bucket",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        {
+                          "bucketName": "*",
+                          "encryptionKey": "*",
+                          "encryption": "KMS_MANAGED",
+                          "enforceSSL": true,
+                          "blockPublicAccess": "*",
+                          "removalPolicy": "retain"
+                        }
+                      ]
                     }
                   },
                   "Role": {
@@ -209,7 +226,9 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -353,14 +372,103 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          }
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Resource": {
@@ -623,7 +731,9 @@
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    "*"
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -639,19 +749,9 @@
                                           "Effect": "Allow",
                                           "Principal": {
                                             "AWS": {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  "arn:",
-                                                  {
-                                                    "Ref": "AWS::Partition"
-                                                  },
-                                                  ":iam::",
-                                                  {
-                                                    "Ref": "AWS::AccountId"
-                                                  },
-                                                  ":root"
-                                                ]
+                                              "Fn::GetAtt": [
+                                                "PipelineRoleB27FAA37",
+                                                "Arn"
                                               ]
                                             }
                                           }
@@ -742,14 +842,79 @@
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    "*",
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
                                 }
                               }
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {
+                                  "assumedBy": {
+                                    "principalAccount": "*",
+                                    "assumeRoleAction": "*"
+                                  }
+                                },
+                                {
+                                  "grantAssumeRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "grant": [
+                                    "*",
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           },
                           "StackOutputPipelineStackPipeline381BF9FBSourceEventRule": {
@@ -832,7 +997,30 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_events.Rule",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {
+                                  "targets": "*",
+                                  "eventPattern": {
+                                    "detailType": "*",
+                                    "source": "*",
+                                    "detail": "*"
+                                  }
+                                },
+                                {
+                                  "addEventPattern": [
+                                    {
+                                      "detailType": "*",
+                                      "source": "*",
+                                      "detail": "*"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "addTarget": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
@@ -857,7 +1045,9 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -944,14 +1134,54 @@
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            "*",
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachToRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addStatements": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        {
+                          "roleName": "*",
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          }
+                        },
+                        {
+                          "addToPrincipalPolicy": [
+                            {}
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachInlinePolicy": [
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Build": {
@@ -976,7 +1206,9 @@
                                     "constructInfo": {
                                       "fqn": "aws-cdk-lib.Resource",
                                       "version": "0.0.0",
-                                      "metadata": []
+                                      "metadata": [
+                                        "*"
+                                      ]
                                     }
                                   },
                                   "Resource": {
@@ -1164,14 +1396,74 @@
                                     "constructInfo": {
                                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                                       "version": "0.0.0",
-                                      "metadata": []
+                                      "metadata": [
+                                        "*",
+                                        {
+                                          "attachToRole": [
+                                            "*"
+                                          ]
+                                        },
+                                        {
+                                          "attachToRole": [
+                                            "*"
+                                          ]
+                                        },
+                                        {
+                                          "addStatements": [
+                                            {}
+                                          ]
+                                        },
+                                        {
+                                          "addStatements": [
+                                            {}
+                                          ]
+                                        },
+                                        {
+                                          "addStatements": [
+                                            {}
+                                          ]
+                                        }
+                                      ]
                                     }
                                   }
                                 },
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_iam.Role",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    {
+                                      "roleName": "*",
+                                      "assumedBy": {
+                                        "principalAccount": "*",
+                                        "assumeRoleAction": "*"
+                                      }
+                                    },
+                                    {
+                                      "addToPrincipalPolicy": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "attachInlinePolicy": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "attachInlinePolicy": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "addToPrincipalPolicy": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addToPrincipalPolicy": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -1216,7 +1508,11 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {},
+                                {},
+                                {}
+                              ]
                             }
                           }
                         },
@@ -1265,7 +1561,9 @@
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    "*"
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -1311,7 +1609,29 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {
+                                  "assumedBy": {
+                                    "principalAccount": "*",
+                                    "assumeRoleAction": "*"
+                                  },
+                                  "managedPolicies": [
+                                    {
+                                      "managedPolicyArn": "*"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           },
                           "Resource": {
@@ -1378,14 +1698,39 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_lambda.Function",
                           "version": "0.0.0",
-                          "metadata": []
+                          "metadata": [
+                            {
+                              "runtime": "*",
+                              "code": "*",
+                              "handler": "*"
+                            }
+                          ]
                         }
                       },
                       "CustomStep": {
@@ -1402,7 +1747,9 @@
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    "*"
+                                  ]
                                 }
                               },
                               "Resource": {
@@ -1418,19 +1765,9 @@
                                           "Effect": "Allow",
                                           "Principal": {
                                             "AWS": {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  "arn:",
-                                                  {
-                                                    "Ref": "AWS::Partition"
-                                                  },
-                                                  ":iam::",
-                                                  {
-                                                    "Ref": "AWS::AccountId"
-                                                  },
-                                                  ":root"
-                                                ]
+                                              "Fn::GetAtt": [
+                                                "PipelineRoleB27FAA37",
+                                                "Arn"
                                               ]
                                             }
                                           }
@@ -1508,14 +1845,79 @@
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0",
-                                  "metadata": []
+                                  "metadata": [
+                                    "*",
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "attachToRole": [
+                                        "*"
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    },
+                                    {
+                                      "addStatements": [
+                                        {}
+                                      ]
+                                    }
+                                  ]
                                 }
                               }
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0",
-                              "metadata": []
+                              "metadata": [
+                                {
+                                  "assumedBy": {
+                                    "principalAccount": "*",
+                                    "assumeRoleAction": "*"
+                                  }
+                                },
+                                {
+                                  "grantAssumeRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "grant": [
+                                    "*",
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addToPrincipalPolicy": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
@@ -1536,7 +1938,13 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1555,7 +1963,18 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*",
+                        "*"
+                      ]
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1564,7 +1983,9 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1573,14 +1994,49 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
                   "version": "0.0.0",
-                  "metadata": []
+                  "metadata": [
+                    {
+                      "pipelineName": "*",
+                      "pipelineType": "V1",
+                      "crossAccountKeys": false,
+                      "crossRegionReplicationBuckets": "*",
+                      "reuseCrossRegionSupportStacks": "*",
+                      "restartExecutionOnUpdate": true,
+                      "role": "*",
+                      "enableKeyRotation": "*",
+                      "artifactBucket": "*"
+                    },
+                    {
+                      "addStage": [
+                        {
+                          "stageName": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addStage": [
+                        {
+                          "stageName": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addStage": [
+                        {
+                          "stageName": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "CodeBuildActionRole": {
@@ -1593,7 +2049,9 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1672,14 +2130,66 @@
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0",
-                      "metadata": []
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0",
-                  "metadata": []
+                  "metadata": [
+                    {
+                      "assumedBy": "*"
+                    },
+                    {
+                      "grantAssumeRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "grant": [
+                        "*",
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               }
             },
