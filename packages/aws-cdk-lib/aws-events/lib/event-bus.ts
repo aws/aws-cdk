@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import * as cxapi from '../../cx-api';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
-import { Annotations, ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -56,8 +57,10 @@ export interface IEventBus extends IResource {
    * so that they can be matched to rules.
    *
    * @param grantee The principal (no-op if undefined)
+   * @param sid The Statement ID used if we need to add a trust policy on the event bus.
+   *
    */
-  grantPutEventsTo(grantee: iam.IGrantable): iam.Grant;
+  grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant;
 }
 
 /**
@@ -176,13 +179,37 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
     });
   }
 
-  public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
+  public grantPutEventsTo(grantee: iam.IGrantable, sid?: string): iam.Grant {
+    const actions = ['events:PutEvents'];
+    const resourceArns = [this.eventBusArn];
+    const options = {
       grantee,
-      actions: ['events:PutEvents'],
+      actions: actions,
       resourceArns: [this.eventBusArn],
-      resource: this,
-    });
+    };
+    const grantResult = iam.Grant.addToPrincipal(options);
+
+    if (grantResult.success) {
+      return grantResult;
+    }
+
+    const requireSid = FeatureFlags.of(this).isEnabled(cxapi.EVENTBUS_POLICY_SID_REQUIRED);
+    if (requireSid) {
+      const statement = new iam.PolicyStatement({
+        actions: actions,
+        resources: resourceArns,
+        principals: [grantee!.grantPrincipal],
+        sid: sid,
+      });
+
+      return iam.Grant.addStatementToResourcePolicy({ ...options, statement, resource: this });
+    } else {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-events:eventBusServicePrincipalGrant',
+        'Unable to grant PutEvents to service principal: Statement ID is required for EventBus resource policies. Either provide a \'sid\' parameter or enable the \'@aws-cdk/aws-events:requireEventBusPolicySid\' feature flag.',
+      );
+      return iam.Grant.drop(grantee, '');
+    }
   }
 
   /**
@@ -419,7 +446,7 @@ export class EventBus extends EventBusBase {
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     // If no sid is provided, generate one based on the event bus id
     if (statement.sid == null) {
-      statement.sid = `${this.node.id}-Default-Statement`;
+      throw new Error('Event Bus policy statements must have a sid');
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340
