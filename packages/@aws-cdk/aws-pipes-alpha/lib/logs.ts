@@ -1,5 +1,5 @@
-import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
