@@ -1,6 +1,6 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 

@@ -56,6 +56,7 @@ const app = new aws_cdk_lib_1.App({
         '@aws-cdk/core:newStyleStackSynthesis': '1',
         '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
         [cx_api_1.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
+        '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
     },
 });
 const stack = new TestStack(app, 'PipelinesFileSystemLocations');
