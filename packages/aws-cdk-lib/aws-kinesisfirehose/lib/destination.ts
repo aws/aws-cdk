@@ -2,7 +2,7 @@ import { Construct, IDependable } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
- * A Kinesis Data Firehose delivery stream destination configuration.
+ * An Amazon Data Firehose delivery stream destination configuration.
  */
 export interface DestinationConfig {
   /**
@@ -27,11 +27,11 @@ export interface DestinationBindOptions {
 }
 
 /**
- * A Kinesis Data Firehose delivery stream destination.
+ * An Amazon Data Firehose delivery stream destination.
  */
 export interface IDestination {
   /**
-   * Binds this destination to the Kinesis Data Firehose delivery stream.
+   * Binds this destination to the Amazon Data Firehose delivery stream.
    *
    * Implementers should use this method to bind resources to the stack and initialize values using the provided stream.
    */
