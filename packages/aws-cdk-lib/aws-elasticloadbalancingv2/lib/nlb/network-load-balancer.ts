@@ -65,21 +65,23 @@ export interface SubnetMapping {
   /**
    * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
    *
-   * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block or `auto_assigned` to use an IPv6 prefix selected at random from the subnet CIDR block.
+   * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block
+   * or `SourceNatIpv6Prefix.autoAssigned()` to use an IPv6 prefix selected at random from the subnet CIDR block.
    *
    * @default undefined -
    */
   readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
 }
 
+/**
+ * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+ */
 export class SourceNatIpv6Prefix {
-  public static readonly AUTO_ASSIGNED = 'auto_assigned';
-
   /**
    * Use an automatically assigned IPv6 prefix
    */
   public static autoAssigned(): string {
-    return SourceNatIpv6Prefix.AUTO_ASSIGNED;
+    return 'auto_assigned';
   }
 
   /**
@@ -88,12 +90,12 @@ export class SourceNatIpv6Prefix {
    */
   public static fromIpv6Prefix(prefix: string): string {
     if (!prefix.includes('/')) {
-      throw new UnscopedValidationError('IPv6 prefix must include netmask (e.g. 2001:db8::/80)');
+      throw new UnscopedValidationError(`IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
     }
 
-    const [, netmask] = prefix.split('/');
+    const [_ipv6, netmask] = prefix.split('/');
     if (netmask !== '80') {
-      throw new UnscopedValidationError('IPv6 prefix must have a /80 netmask');
+      throw new UnscopedValidationError(`IPv6 prefix must have a /80 netmask, got ${netmask}`);
     }
 
     return prefix;
