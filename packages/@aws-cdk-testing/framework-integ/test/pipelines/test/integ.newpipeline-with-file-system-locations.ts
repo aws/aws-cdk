@@ -63,6 +63,7 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
 
