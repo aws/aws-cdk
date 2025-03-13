@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-all-services-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/774827336582ff08434cb2fe7032ca986639b272720710c135e78ef9675a409d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/470704109230ec22fc22b56f0b08f553e730f4193ebf9492cdddf2d0483b4685.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,18 +34,30 @@
         "aws-stepfunctions-tasks-emr-containers-all-services-test.assets"
       ],
       "metadata": {
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/KubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "version": "*",
               "defaultCapacity": "*",
-              "defaultCapacityInstance": "*"
+              "defaultCapacityInstance": "*",
+              "kubectlLayer": "*"
             }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1818,18 +1830,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1988,6 +1988,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awsstepfunctionstasksemrcontainersallservicestestawscdkawseksKubectlProviderframeworkonEventC503FA1CArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestKubectlLayerC003171BRef": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawsstepfunctionstasksemrcontainersallservicestestKubectlLayerC003171BRef"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-all-services-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn": [

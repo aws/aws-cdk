@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-start-job-run.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/783f0da387d50c837724604559b71a468183ddee3a796c6cc1563a64acf3238f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2dd4102fa6b5331f2df94ef098985d85e5f88a6b8d16d11b167a07edd94b6f37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,18 +34,30 @@
         "aws-stepfunctions-tasks-emr-containers-start-job-run.assets"
       ],
       "metadata": {
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "version": "*",
               "defaultCapacity": "*",
-              "defaultCapacityInstance": "*"
+              "defaultCapacityInstance": "*",
+              "kubectlLayer": "*"
             }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1842,18 +1854,6 @@
             "data": "AwsCliLayerF44AAF94"
           }
         ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/KubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
-          }
-        ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -2012,6 +2012,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awsstepfunctionstasksemrcontainersstartjobrunawscdkawseksKubectlProviderframeworkonEventB25EDDAEArn"
+          }
+        ],
+        "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawsstepfunctionstasksemrcontainersstartjobrunKubectlLayer88E56740Ref"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.KubectlProvider/reference-to-awsstepfunctionstasksemrcontainersstartjobrunintegrationtesteksclusterKubectlHandlerRole965AEA8DArn": [

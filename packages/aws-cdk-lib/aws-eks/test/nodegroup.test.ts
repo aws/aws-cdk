@@ -1,4 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
@@ -29,6 +30,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -60,6 +62,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -85,6 +88,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -106,6 +110,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
@@ -146,6 +151,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -190,6 +196,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -234,6 +241,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -278,6 +286,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -322,6 +331,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -380,6 +390,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -438,6 +449,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -496,6 +508,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -558,6 +571,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -586,6 +600,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -614,6 +629,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -640,6 +656,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -662,6 +679,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -684,6 +702,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -706,6 +725,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -724,6 +744,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -745,6 +766,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -763,6 +785,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -781,6 +804,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -805,6 +829,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -834,6 +859,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -863,6 +889,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -889,6 +916,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
@@ -912,6 +940,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
       // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
@@ -935,6 +964,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -958,6 +988,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -981,6 +1012,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -1004,6 +1036,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -1029,6 +1062,7 @@ describe('node group', () => {
       mastersRole: new iam.Role(stack, 'MastersRole', {
         assumedBy: new iam.ArnPrincipal('arn:aws:iam:123456789012:user/user-name'),
       }),
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
@@ -1085,6 +1119,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1142,6 +1177,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
@@ -1160,6 +1196,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1183,6 +1220,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1208,6 +1246,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1238,6 +1277,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1268,6 +1308,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1289,6 +1330,7 @@ describe('node group', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1307,6 +1349,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1327,6 +1370,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1349,6 +1393,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1373,6 +1418,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack1, 'KubectlLayer'),
     });
 
     // WHEN
@@ -1400,6 +1446,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // WHEN
@@ -1440,6 +1487,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // WHEN
@@ -1475,6 +1523,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 })).toThrow(/Desired capacity 3 can't be greater than max size 2/);
@@ -1487,6 +1536,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 })).toThrow(/Minimum capacity 3 can't be greater than desired size 2/);
@@ -1499,6 +1549,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // WHEN
     new eks.Nodegroup(stack, 'NodeGroup', {
@@ -1524,6 +1575,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // WHEN
     new eks.Nodegroup(stack, 'NodeGroup', {
@@ -1551,6 +1603,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
@@ -1596,6 +1649,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
@@ -1629,6 +1683,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1653,6 +1708,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1679,6 +1735,7 @@ describe('node group', () => {
     const cluster = new eks.Cluster(stackWithFlag, 'Cluster', {
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stackWithFlag, 'KubectlLayer'),
     });
     const ng = new eks.Nodegroup(stackWithFlag, 'Nodegroup', {
       cluster,
@@ -1695,6 +1752,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxUnavailablePercentage: 2 })).toThrow(/maxUnavailable and maxUnavailablePercentage are not allowed to be defined together/);
@@ -1707,6 +1765,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 5, maxSize: 4 })).toThrow(/maxUnavailable must be lower than maxSize/);
@@ -1719,6 +1778,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: -3, maxSize: 10 })).toThrow(/maxUnavailable must be between 1 and 100/);
@@ -1731,6 +1791,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 101, maxSize: 200 })).toThrow(/maxUnavailable must be between 1 and 100/);
@@ -1743,6 +1804,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: -3, maxSize: 10 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
@@ -1755,6 +1817,7 @@ describe('node group', () => {
       vpc,
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);

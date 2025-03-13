@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
+import { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -507,6 +508,13 @@ export interface LogGroupProps {
   readonly dataProtectionPolicy?: DataProtectionPolicy;
 
   /**
+   * Field Index Policies for this log group.
+   *
+   * @default - no field index policies for this log group.
+   */
+  readonly fieldIndexPolicies?: FieldIndexPolicy[];
+
+  /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to RetentionDays.INFINITE.
@@ -629,12 +637,27 @@ export class LogGroup extends LogGroupBase {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
     }
 
+    const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
+    const fieldIndexPolicies: any[] = [];
+    if (props.fieldIndexPolicies) {
+      props.fieldIndexPolicies.forEach((fieldIndexPolicy) => {
+        fieldIndexPolicies.push(fieldIndexPolicy._bind(this));
+      });
+    }
+
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
-      dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
+      dataProtectionPolicy: dataProtectionPolicy ? {
+        Name: dataProtectionPolicy?.name,
+        Description: dataProtectionPolicy?.description,
+        Version: dataProtectionPolicy?.version,
+        Statement: dataProtectionPolicy?.statement,
+        Configuration: dataProtectionPolicy?.configuration,
+      } : undefined,
+      ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);

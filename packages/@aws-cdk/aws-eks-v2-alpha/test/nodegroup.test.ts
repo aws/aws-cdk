@@ -13,6 +13,12 @@ import { isGpuInstanceType } from '../lib/private/nodegroup';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
 
+const commonProps = {
+  version: CLUSTER_VERSION,
+  defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+  defaultCapacity: 0,
+};
+
 describe('node group', () => {
   test('default ami type is not applied when launch template is configured', () => {
     // GIVEN
@@ -27,8 +33,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -58,8 +63,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -83,8 +87,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -104,8 +107,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster });
 
@@ -144,8 +146,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -188,8 +189,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -232,8 +232,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -276,8 +275,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -320,8 +318,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -378,8 +375,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -436,8 +432,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -494,8 +489,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -556,8 +550,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -584,8 +577,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -612,8 +604,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -638,8 +629,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -660,8 +650,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -682,8 +671,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -704,8 +692,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -722,8 +709,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -743,8 +729,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -761,8 +746,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -779,8 +763,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -803,8 +786,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -832,8 +814,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -861,8 +842,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const ng = new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -887,8 +867,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
@@ -910,8 +889,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
       // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
@@ -933,8 +911,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -956,8 +933,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -979,8 +955,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -1002,8 +977,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     cluster.addNodegroupCapacity('windows', {
@@ -1024,8 +998,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1081,8 +1054,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', { cluster, forceUpdate: false });
 
@@ -1099,8 +1071,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1122,8 +1093,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1147,8 +1117,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1177,8 +1146,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1207,8 +1175,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1230,6 +1197,7 @@ describe('node group', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
       version: CLUSTER_VERSION,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1246,8 +1214,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1266,8 +1233,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
@@ -1288,8 +1254,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1312,8 +1277,7 @@ describe('node group', () => {
     const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
 
     // WHEN
@@ -1339,8 +1303,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
 
     // WHEN
@@ -1379,8 +1342,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
 
     // WHEN
@@ -1414,8 +1376,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 3, maxSize: 2 })).toThrow(/Desired capacity 3 can't be greater than max size 2/);
@@ -1426,8 +1387,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { desiredSize: 2, minSize: 3 })).toThrow(/Minimum capacity 3 can't be greater than desired size 2/);
@@ -1438,8 +1398,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // WHEN
     new eks.Nodegroup(stack, 'NodeGroup', {
@@ -1463,8 +1422,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // WHEN
     new eks.Nodegroup(stack, 'NodeGroup', {
@@ -1490,8 +1448,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
@@ -1535,8 +1492,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
@@ -1568,8 +1524,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1592,8 +1547,7 @@ describe('node group', () => {
     // WHEN
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
@@ -1618,8 +1572,7 @@ describe('node group', () => {
     // WHEN
     stackWithFlag.node.setContext(cxapi.EKS_NODEGROUP_NAME, true);
     const cluster = new eks.Cluster(stackWithFlag, 'Cluster', {
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     const ng = new eks.Nodegroup(stackWithFlag, 'Nodegroup', {
       cluster,
@@ -1634,8 +1587,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 3, maxUnavailablePercentage: 2 })).toThrow(/maxUnavailable and maxUnavailablePercentage are not allowed to be defined together/);
@@ -1646,8 +1598,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 5, maxSize: 4 })).toThrow(/maxUnavailable must be lower than maxSize/);
@@ -1658,8 +1609,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: -3, maxSize: 10 })).toThrow(/maxUnavailable must be between 1 and 100/);
@@ -1670,8 +1620,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailable: 101, maxSize: 200 })).toThrow(/maxUnavailable must be between 1 and 100/);
@@ -1682,8 +1631,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: -3, maxSize: 10 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
@@ -1694,8 +1642,7 @@ describe('node group', () => {
     const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', {
       vpc,
-      defaultCapacity: 0,
-      version: CLUSTER_VERSION,
+      ...commonProps,
     });
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
