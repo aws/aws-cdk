@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.184.0](https://github.com/aws/aws-cdk/compare/v2.183.0...v2.184.0) (2025-03-13)
+
+
+### Features
+
+* **ecr:** throw ValidationError instead of untyped Errors ([#33750](https://github.com/aws/aws-cdk/issues/33750)) ([242690f](https://github.com/aws/aws-cdk/commit/242690f9aa897b11e1b1a73036a9927ed3473eb2))
+* **lambda:** support s3 OFD for Kinesis/DynamoDB ([#33739](https://github.com/aws/aws-cdk/issues/33739)) ([3f1fecf](https://github.com/aws/aws-cdk/commit/3f1fecfecb871d3912a74471a555b223a6dcaa20))
+* **rds:** allow to specify availability zone for Aurora instances ([#33515](https://github.com/aws/aws-cdk/issues/33515)) ([583d5f2](https://github.com/aws/aws-cdk/commit/583d5f24f03d3b2f8b072d0a41d41b75f8814f8c)), closes [#33503](https://github.com/aws/aws-cdk/issues/33503) [#30618](https://github.com/aws/aws-cdk/issues/30618)
+
+
+### Bug Fixes
+
+* **codepipeline:** replace account root principal with current pipeline role in the trust policy under ff: @aws-cdk/pipelines:reduceStageRoleTrustScope  ([#33742](https://github.com/aws/aws-cdk/issues/33742)) ([a64b01c](https://github.com/aws/aws-cdk/commit/a64b01cc2969822bb92d7bd72152ecb2ccf1c1cf)), closes [#33709](https://github.com/aws/aws-cdk/issues/33709)
+* **core:** message including tokens from annotations cannot output correctly ([#33706](https://github.com/aws/aws-cdk/issues/33706)) ([55a3c4c](https://github.com/aws/aws-cdk/commit/55a3c4caefdb283280d6c16d3719f3e311e31ec9)), closes [40aws-cdk/toolkit-lib/lib/toolkit/toolkit.ts#L771](https://github.com/40aws-cdk/toolkit-lib/lib/toolkit/toolkit.ts/issues/L771) [/github.com/aws/aws-cdk-cli/pull/101#discussion_r1977310824](https://github.com/aws//github.com/aws/aws-cdk-cli/pull/101/issues/discussion_r1977310824) [/github.com/aws/aws-cdk/issues/33707#issuecomment-2705936933](https://github.com/aws//github.com/aws/aws-cdk/issues/33707/issues/issuecomment-2705936933) [/github.com/aws/aws-cdk-cli/pull/101#discussion_r1969298218](https://github.com/aws//github.com/aws/aws-cdk-cli/pull/101/issues/discussion_r1969298218)
+* **events-targets:** add LogGroupTargetInput.fromObjectV2() method ([#33720](https://github.com/aws/aws-cdk/issues/33720)) ([584a58c](https://github.com/aws/aws-cdk/commit/584a58c2dcd43d9ebd2533186a2f5f9a083bb478))
+
 ## [2.183.0](https://github.com/aws/aws-cdk/compare/v2.182.0...v2.183.0) (2025-03-11)
 
 
