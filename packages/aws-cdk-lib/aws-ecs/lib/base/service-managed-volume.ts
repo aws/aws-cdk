@@ -183,10 +183,6 @@ export enum EbsPropagatedTagSource {
    * TASK_DEFINITION
    */
   TASK_DEFINITION = 'TASK_DEFINITION',
-  /**
-   * NONE
-   */
-  NONE = 'NONE',
 }
 
 /**
