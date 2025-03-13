@@ -4,9 +4,9 @@ import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 
 /**
- * Use an Amazon Kinesis Data Firehose as a target for AWS EventBridge Scheduler.
+ * Use an Amazon Data Firehose as a target for AWS EventBridge Scheduler.
  */
-export class KinesisDataFirehosePutRecord extends ScheduleTargetBase implements IScheduleTarget {
+export class DataFirehosePutRecord extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly deliveryStream: IDeliveryStream,
     props: ScheduleTargetBaseProps = {},
