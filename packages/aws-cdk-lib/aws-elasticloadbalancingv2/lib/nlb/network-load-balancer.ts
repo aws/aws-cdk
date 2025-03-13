@@ -39,28 +39,28 @@ export interface SubnetMapping {
   /**
    * The subnet
    */
-  subnet: ec2.ISubnet;
+  readonly subnet: ec2.ISubnet;
 
   /**
    * The allocation ID of the Elastic IP address for an internet-facing load balancer.
    *
    * @default undefined -
    */
-  allocationId?: string;
+  readonly allocationId?: string;
 
   /**
    * The IPv6 address
    *
    * @default undefined -
    */
-  ipv6Address?: string;
+  readonly ipv6Address?: string;
 
   /**
    * The private IPv4 address for an internal load balancer.
    *
    * @default undefined - AWS will automatically allocate an IPv4 address from the subnet's pool.
    */
-  privateIpv4Address?: string;
+  readonly privateIpv4Address?: string;
 
   /**
    * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
@@ -69,7 +69,7 @@ export interface SubnetMapping {
    *
    * @default undefined -
    */
-  sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
+  readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
 }
 
 export class SourceNatIpv6Prefix {
@@ -97,26 +97,6 @@ export class SourceNatIpv6Prefix {
     }
 
     return prefix;
-  }
-
-  /**
-   * Check if the given string is a valid SourceNatIpv6Prefix value
-   */
-  public static isValid(value: string): boolean {
-    if (Token.isUnresolved(value)) {
-      return true;
-    }
-
-    if (value === this.AUTO_ASSIGNED) {
-      return true;
-    }
-
-    try {
-      this.fromIpv6Prefix(value);
-      return true;
-    } catch {
-      return false;
-    }
   }
 }
 
