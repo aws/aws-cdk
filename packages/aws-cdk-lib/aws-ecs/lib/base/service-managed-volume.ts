@@ -165,6 +165,10 @@ export enum FileSystemType {
    * xfs type
    */
   XFS = 'xfs',
+  /**
+   * ntfs type
+   */
+  NTFS = 'ntfs',
 }
 
 /**
