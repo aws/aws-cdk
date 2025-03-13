@@ -85,6 +85,7 @@ export class PipelineCrossRegionStack extends cdk.NestedStack {
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 const testCase = new MainStack(app, 'code-pipeline-nested-stack', {

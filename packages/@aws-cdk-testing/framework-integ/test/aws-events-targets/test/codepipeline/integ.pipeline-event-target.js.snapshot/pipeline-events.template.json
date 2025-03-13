@@ -237,6 +237,21 @@
   "pipelinePipeline22F2A91DEB5D089B": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "pipelinePipeline22F2A91DRole58B7B05E",
@@ -300,22 +315,7 @@
       ],
       "Name": "Build"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19",
@@ -332,19 +332,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "pipelinePipeline22F2A91DRole58B7B05E",
+          "Arn"
          ]
         }
        }
@@ -364,19 +354,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "pipelinePipeline22F2A91DRole58B7B05E",
+          "Arn"
          ]
         }
        }
