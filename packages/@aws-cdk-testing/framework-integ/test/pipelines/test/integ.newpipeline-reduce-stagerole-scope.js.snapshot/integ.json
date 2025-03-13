@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "CdkPipelineInvestigationTest/DefaultTest": {
+      "stacks": [
+        "CdkPipelineInvestigationStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CdkPipelineInvestigationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9"
+    }
+  }
+}

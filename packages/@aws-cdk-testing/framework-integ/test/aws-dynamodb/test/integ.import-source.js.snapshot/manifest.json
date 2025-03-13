@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "S3Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76bc9a778697c431dcbdd35840911de765f4b58970d35111cc017cbf135d1b7c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f3056492d7628c38cfa1f1363a47dd324e27915de34ac0d72c9412906b180b3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,39 @@
         "S3Stack.assets"
       ],
       "metadata": {
+        "/S3Stack/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/S3Stack/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
+        "/S3Stack/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/S3Stack/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/S3Stack/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/S3Stack/Bucket/AutoDeleteObjectsCustomResource/Default": [
@@ -76,6 +99,12 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/S3Stack/BucketDeployment/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
         "/S3Stack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -83,6 +112,54 @@
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
+          }
+        ],
+        "/S3Stack/BucketDeployment/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/S3Stack/BucketDeployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/S3Stack/BucketDeployment/CustomResource/Default": [
@@ -93,6 +170,43 @@
         ],
         "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -101,10 +215,134 @@
             "data": 2
           }
         ],
+        "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
@@ -174,10 +412,52 @@
         "DynamoStack.assets"
       ],
       "metadata": {
+        "/DynamoStack/DynamoDBJsonTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy",
+              "importSource": {
+                "compressionType": "NONE",
+                "inputFormat": "*",
+                "bucket": "*",
+                "keyPrefix": "*"
+              }
+            }
+          }
+        ],
         "/DynamoStack/DynamoDBJsonTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DynamoDBJsonTable73E42181"
+          }
+        ],
+        "/DynamoStack/DynamoDBJsonTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/DynamoStack/IonTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy",
+              "importSource": {
+                "compressionType": "NONE",
+                "inputFormat": "*",
+                "bucket": "*",
+                "keyPrefix": "*"
+              }
+            }
           }
         ],
         "/DynamoStack/IonTable/Resource": [
@@ -186,10 +466,40 @@
             "data": "IonTableD6B7D52B"
           }
         ],
+        "/DynamoStack/IonTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/DynamoStack/CsvTable": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy",
+              "importSource": {
+                "compressionType": "NONE",
+                "inputFormat": "*",
+                "bucket": "*",
+                "keyPrefix": "*"
+              }
+            }
+          }
+        ],
         "/DynamoStack/CsvTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CsvTableF720A0A1"
+          }
+        ],
+        "/DynamoStack/CsvTable/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/DynamoStack/Exports/Output{\"Ref\":\"DynamoDBJsonTable73E42181\"}": [
@@ -242,7 +552,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a794f40c38f748630cf65c2e6965f4069509a8c5a4d5b7101e896d46e354492.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/56c3e2f6233a42b80c5e399ebaf081b3352f32672a63a284d843e62a94781823.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -259,6 +569,20 @@
         "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4.assets"
       ],
       "metadata": {
+        "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -289,6 +613,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -299,6 +637,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
+          }
+        ],
+        "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItemc19c36454c0d6ce1ffa34847c0cf2334/Default/Default": [

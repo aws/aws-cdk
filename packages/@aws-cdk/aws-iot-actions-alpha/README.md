@@ -238,12 +238,11 @@ The code snippet below creates an AWS IoT Rule that puts records to Put records
 to Kinesis Data Firehose stream when it is triggered.
 
 ```ts
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
-  destination: new destinations.S3Bucket(bucket),
+  destination: new firehose.S3Bucket(bucket),
 });
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {

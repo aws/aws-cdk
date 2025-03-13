@@ -88,11 +88,9 @@
     "jest": "^29.7.0",
     "constructs": "^10.0.0",
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/aws-iot-alpha": "0.0.0",
-    "@aws-cdk/aws-iotevents-alpha": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
+    "@aws-cdk/aws-iotevents-alpha": "0.0.0"
   },
   "dependencies": {
     "case": "1.6.3"
@@ -101,8 +99,6 @@
   "peerDependencies": {
     "@aws-cdk/aws-iot-alpha": "0.0.0",
     "@aws-cdk/aws-iotevents-alpha": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },

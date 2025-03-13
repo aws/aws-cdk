@@ -5109,6 +5109,38 @@ describe('cluster', () => {
     });
   });
 
+  test('can set availability zone for instance', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      writer: ClusterInstance.provisioned('writer', {
+        instanceIdentifier: 'writer-instance',
+        availabilityZone: 'us-east-1a',
+      }),
+      readers: [ClusterInstance.serverlessV2('reader', {
+        instanceIdentifier: 'reader-instance',
+        availabilityZone: 'us-east-1b',
+      })],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora-mysql',
+      DBInstanceIdentifier: 'writer-instance',
+      AvailabilityZone: 'us-east-1a',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora-mysql',
+      DBInstanceIdentifier: 'reader-instance',
+      AvailabilityZone: 'us-east-1b',
+    });
+  });
+
   test('changes the case of the cluster identifier', () => {
     // GIVEN
     const stack = testStack();

@@ -471,19 +471,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleB27FAA37",
+          "Arn"
          ]
         }
        }

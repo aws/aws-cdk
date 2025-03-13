@@ -162,9 +162,13 @@ describe('notification', () => {
     });
 
     // THEN - Following is warning thrown as a part of fix in : https://github.com/aws/aws-cdk/pull/31212
-    const warningMessage = { 'Fn::Join': ['', ["Can't combine imported IManagedPolicy: arn:", { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole to imported role IRole: DevsNotAllowedToTouch. Use ManagedPolicy directly. [ack: @aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy]']] };
-    const warningFromStack = Annotations.fromStack(stack).findWarning('*', {});
-    expect(warningFromStack[0].entry.data).toEqual(warningMessage);
+    const warningMessage = /Can't combine imported IManagedPolicy: arn:\${Token\[AWS\.Partition\.\d+\]}:iam::aws:policy\/service-role\/AWSLambdaBasicExecutionRole to imported role IRole: DevsNotAllowedToTouch\. Use ManagedPolicy directly\. \[ack: @aws-cdk\/aws-iam:IRoleCantBeUsedWithIManagedPolicy\]/;
+    const warningFromStack = Annotations.fromStack(stack).findWarning('*',
+      Match.stringLikeRegexp(
+        '@aws-cdk/aws-iam:IRoleCantBeUsedWithIManagedPolicy',
+      ),
+    );
+    expect(warningFromStack[0].entry.data).toEqual(expect.stringMatching(warningMessage));
   });
 
   test('If `Role` is provided, PutBucketNotification, GetBucketNotification will be added along with `service-role/AWSLambdaBasicExecutionRole`', () => {
