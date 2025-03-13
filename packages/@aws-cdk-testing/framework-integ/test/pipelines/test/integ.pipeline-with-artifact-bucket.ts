@@ -30,6 +30,7 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
 const stack = new PipelineStack(app, 'PipelineStack');
