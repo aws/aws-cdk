@@ -30,11 +30,11 @@ export enum FirehoseRecordSeparator {
 }
 
 /**
- * Configuration properties of an action for the Kinesis Data Firehose stream.
+ * Configuration properties of an action for the Amazon Data Firehose stream.
  */
 export interface FirehosePutRecordActionProps extends CommonActionProps {
   /**
-   * Whether to deliver the Kinesis Data Firehose stream as a batch by using `PutRecordBatch`.
+   * Whether to deliver the Amazon Data Firehose stream as a batch by using `PutRecordBatch`.
    * When batchMode is true and the rule's SQL statement evaluates to an Array, each Array
    * element forms one record in the PutRecordBatch request. The resulting array can't have
    * more than 500 records.
@@ -44,7 +44,7 @@ export interface FirehosePutRecordActionProps extends CommonActionProps {
   readonly batchMode?: boolean;
 
   /**
-   * A character separator that will be used to separate records written to the Kinesis Data Firehose stream.
+   * A character separator that will be used to separate records written to the Amazon Data Firehose stream.
    *
    * @default - none -- the stream does not use a separator
    */
@@ -52,7 +52,7 @@ export interface FirehosePutRecordActionProps extends CommonActionProps {
 }
 
 /**
- * The action to put the record from an MQTT message to the Kinesis Data Firehose stream.
+ * The action to put the record from an MQTT message to the Amazon Data Firehose stream.
  */
 export class FirehosePutRecordAction implements iot.IAction {
   private readonly batchMode?: boolean;
@@ -60,7 +60,7 @@ export class FirehosePutRecordAction implements iot.IAction {
   private readonly role?: iam.IRole;
 
   /**
-   * @param stream The Kinesis Data Firehose stream to which to put records.
+   * @param stream The Amazon Data Firehose stream to which to put records.
    * @param props Optional properties to not use default
    */
   constructor(private readonly stream: firehose.IDeliveryStream, props: FirehosePutRecordActionProps = {}) {
