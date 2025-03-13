@@ -274,7 +274,7 @@ topic.addToResourcePolicy(new iam.PolicyStatement({
 Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
 
 - HTTP
-- Amazon Kinesis Data Firehose
+- Amazon Data Firehose
 - AWS Lambda
 - Platform application endpoint
 - Amazon Simple Queue Service
