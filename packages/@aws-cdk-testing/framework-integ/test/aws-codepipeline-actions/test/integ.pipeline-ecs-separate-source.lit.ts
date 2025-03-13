@@ -209,7 +209,11 @@ export class PipelineStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
+  },
+});
 
 // the CodePipeline Stack needs to be created first
 const pipelineStack = new PipelineStack(app, 'aws-cdk-pipeline-ecs-separate-sources');
