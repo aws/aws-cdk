@@ -82,6 +82,7 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
 
