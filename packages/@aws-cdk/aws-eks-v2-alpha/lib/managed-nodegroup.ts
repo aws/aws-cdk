@@ -537,9 +537,9 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
-      nodeRepairConfig: {
+      nodeRepairConfig: props.enableNodeAutoRepair ? {
         enabled: props.enableNodeAutoRepair,
-      },
+      } : undefined,
     });
 
     if (this.cluster instanceof Cluster) {

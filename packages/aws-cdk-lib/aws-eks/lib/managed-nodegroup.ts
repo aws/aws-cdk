@@ -532,9 +532,9 @@ export class Nodegroup extends Resource implements INodegroup {
         maxUnavailable: props.maxUnavailable,
         maxUnavailablePercentage: props.maxUnavailablePercentage,
       } : undefined,
-      nodeRepairConfig: {
+      nodeRepairConfig: props.enableNodeAutoRepair ? {
         enabled: props.enableNodeAutoRepair,
-      },
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
