@@ -808,18 +808,34 @@ export class FileSystem extends FileSystemBase {
           const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
-            this.addToResourcePolicy(new iam.PolicyStatement({
-              principals: [new iam.AnyPrincipal()],
-              actions: [
-                ClientAction.WRITE,
-                ClientAction.ROOT_ACCESS,
-              ],
-              conditions: {
-                Bool: {
-                  'elasticfilesystem:AccessedViaMountTarget': 'true',
+            if (FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ALLOW_CLIENT_MOUNT)) {
+              this.addToResourcePolicy(new iam.PolicyStatement({
+                principals: [new iam.AnyPrincipal()],
+                actions: [
+                  ClientAction.MOUNT,
+                  ClientAction.WRITE,
+                  ClientAction.ROOT_ACCESS,
+                ],
+                conditions: {
+                  Bool: {
+                    'elasticfilesystem:AccessedViaMountTarget': 'true',
+                  },
                 },
-              },
-            }));
+              }));
+            } else {
+              this.addToResourcePolicy(new iam.PolicyStatement({
+                principals: [new iam.AnyPrincipal()],
+                actions: [
+                  ClientAction.WRITE,
+                  ClientAction.ROOT_ACCESS,
+                ],
+                conditions: {
+                  Bool: {
+                    'elasticfilesystem:AccessedViaMountTarget': 'true',
+                  },
+                },
+              }));
+            }
           }
           return this._fileSystemPolicy;
         },
@@ -904,8 +920,8 @@ export class FileSystem extends FileSystemBase {
       const isNotUnresolvedToken = (x: string) => !Token.isUnresolved(x);
       const isNotDummy = (x: string) => !x.startsWith('dummy');
       if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
-      this.props.vpc.availabilityZones.every(isNotDummy) &&
-      !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
+        this.props.vpc.availabilityZones.every(isNotDummy) &&
+        !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
         throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
       }
     }

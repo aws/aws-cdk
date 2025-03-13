@@ -91,6 +91,7 @@ Flags come in three types:
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | (config) |
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
+| [@aws-cdk/aws-efs:defaultAllowClientMount](#aws-cdkaws-efsdefaultallowclientmount) | When enabled, EFS will allow clients to mount and access the filesystem by default | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -169,7 +170,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
-    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-efs:defaultAllowClientMount": true
   }
 }
 ```
@@ -1605,7 +1607,7 @@ If the flag is set to false then a custom resource will be created when using `U
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
 accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
 IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
@@ -1624,8 +1626,8 @@ It is recommended to follow ECS documentation to block IMDS for your specific pl
 *When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)*** (temporary)
 
 In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
 guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
 It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
 
@@ -1682,7 +1684,7 @@ thumbprints from unsecure connections.
 
 When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
   * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+  * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
   * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
 
 
@@ -1696,7 +1698,7 @@ When this feature flag is enabled, CDK expands the scope of usage data collectio
 
 *When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement* (fix)
 
-When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
 The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
 This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
 
@@ -1720,6 +1722,24 @@ When disabled, 'CDKReplicationRole' is always specified.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.182.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-efs:defaultAllowClientMount
+
+*When enabled, EFS will allow clients to mount and access the filesystem by default* (fix)
+
+When this feature flag is enabled, EFS will add read-only, write, and root access permissions to clients
+accessing the filesystem via mount target by default. Without this flag, only WRITE and ROOT_ACCESS
+permissions are granted.
+This resolves an issue where clients could have permission to write to the filesystem but were unable to
+properly mount it, leading to access problems. By automatically including the read-only permission alongside
+the existing write and root access permissions, clients can fully interact with the EFS resources as expected.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
