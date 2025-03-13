@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/6c85634b78db955cb3c5762270b2bf523bf32a83e6baaee83c38082a0c10cd91.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b1cbd7d2d9fa59f8efbb1e5213c0c8922dc6cd48ec8f6baeea9ebf137a5b1168.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -334,7 +334,10 @@
         "/aws-cdk-eks-cluster/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08"
+            "data": "kubectlLayer44321E08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster/Cluster": [
@@ -715,10 +718,7 @@
         "/aws-cdk-eks-cluster/Cluster/ControlPlaneSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443F9FFB776",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterControlPlaneSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443F9FFB776"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ControlPlaneSecurityGroup/from awscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA0:443": [
@@ -742,10 +742,7 @@
         "/aws-cdk-eks-cluster/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/KubectlReadyBarrier": [
@@ -757,118 +754,79 @@
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9443044D5D58",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9443044D5D58"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9ALLTRAFFICA10925E8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesInstanceSecurityGroup06345DB9ALLTRAFFICA10925E8"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB44359E5731B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB44359E5731B"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC24433FCB8BDC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC24433FCB8BDC"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB10256553577EF745F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB10256553577EF745F"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2102565535968F394F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2102565535968F394F"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC686814EE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC686814EE"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA0:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA044332E6754D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA044332E6754D"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA0:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA0ALLTRAFFIC78B62941",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterNodesArmInstanceSecurityGroup37959CA0ALLTRAFFIC78B62941"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA88166:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA8816644354A69768",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA8816644354A69768"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA88166:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA88166ALLTRAFFICFA41CA81",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterBottlerocketNodesInstanceSecurityGroupCDA88166ALLTRAFFICFA41CA81"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterspotInstanceSecurityGroup888199F5:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterspotInstanceSecurityGroup888199F54434B07B11A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterspotInstanceSecurityGroup888199F54434B07B11A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from awscdkeksclusterClusterspotInstanceSecurityGroup888199F5:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterspotInstanceSecurityGroup888199F5ALLTRAFFICF3C40C11",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterspotInstanceSecurityGroup888199F5ALLTRAFFICF3C40C11"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/KubectlProvider/Handler": [
@@ -1275,10 +1233,7 @@
         "/aws-cdk-eks-cluster/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/mastersRoleAccess": [
@@ -1290,10 +1245,7 @@
         "/aws-cdk-eks-cluster/Cluster/mastersRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodegroupDefaultCapacity": [
@@ -1358,10 +1310,7 @@
         "/aws-cdk-eks-cluster/Cluster/NodegroupDefaultCapacity/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/ConfigCommand": [
@@ -1407,10 +1356,7 @@
         "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterfargateprofiledefaultEFC59F14",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterfargateprofiledefaultEFC59F14"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodes": [
@@ -1472,30 +1418,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
-              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
-              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "EksClusterStack.assertCapacityX86 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:278:22)",
-              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:53:14)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -1644,10 +1567,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB4430EB7A739",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB4430EB7A739"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:443": [
@@ -1659,10 +1579,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB10256553571B4A6CF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB10256553571B4A6CF"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:1025-65535": [
@@ -1674,10 +1591,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC92388917",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC92388917"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodes/InstanceRole": [
@@ -1842,30 +1756,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
-              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
-              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "EksClusterStack.assertCapacityArm (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:286:22)",
-              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:54:14)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2014,10 +1905,7 @@
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443198ACE9A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443198ACE9A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:443": [
@@ -2029,10 +1917,7 @@
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB102565535B76A7664",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB102565535B76A7664"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:1025-65535": [
@@ -2044,10 +1929,7 @@
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC23E1D3F4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesArmInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFIC23E1D3F4"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/NodesArm/InstanceRole": [
@@ -2213,30 +2095,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
-              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
-              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "EksClusterStack.assertBottlerocket (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:269:22)",
-              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:55:14)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2385,10 +2244,7 @@
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443B4C61AB5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443B4C61AB5"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:443": [
@@ -2400,10 +2256,7 @@
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB1025655351D98A2F9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB1025655351D98A2F9"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:1025-65535": [
@@ -2415,10 +2268,7 @@
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFICF9F24F38",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterBottlerocketNodesInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFICF9F24F38"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/BottlerocketNodes/InstanceRole": [
@@ -2584,30 +2434,7 @@
           },
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
-            "trace": [
-              "Annotations.addMessage (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:135:29)",
-              "Annotations.addWarningV2 (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:66:18)",
-              "SecurityGroup.addEgressRule (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:375:47)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:160:31",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:158:38",
-              "ReactiveList.forEachAndForever (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:289:13)",
-              "Connections.allowInternally (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:157:30)",
-              "Cluster.connectAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:306:38)",
-              "Cluster.addAutoScalingGroupCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.js:664:14)",
-              "descriptor.value (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:91:35)",
-              "EksClusterStack.assertSpotCapacity (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:257:22)",
-              "new EksClusterStack (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:56:14)",
-              "Object.<anonymous> (/Volumes/workplace/Documents/workplace/aws-cdk-lib/aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/test/integ.eks-cluster.js:312:15)",
-              "Module._compile (node:internal/modules/cjs/loader:1256:14)",
-              "Module._extensions..js (node:internal/modules/cjs/loader:1310:10)",
-              "Module.load (node:internal/modules/cjs/loader:1119:32)",
-              "Module._load (node:internal/modules/cjs/loader:960:12)",
-              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:86:12)",
-              "node:internal/main/run_main_module:23:47"
-            ]
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -2756,10 +2583,7 @@
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:443": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443404B4B15",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB443404B4B15"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:443": [
@@ -2771,10 +2595,7 @@
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:1025-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB1025655351D199728",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FB1025655351D199728"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceSecurityGroup/from awscdkeksclusterClusterControlPlaneSecurityGroupA0FC1FC2:1025-65535": [
@@ -2786,10 +2607,7 @@
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceSecurityGroup/from awscdkeksclusterClusterClusterSecurityGroup9876E2FB:ALL TRAFFIC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFICCFAD665D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterspotInstanceSecurityGroupfromawscdkeksclusterClusterClusterSecurityGroup9876E2FBALLTRAFFICCFAD665D"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/spot/InstanceRole": [
@@ -2959,10 +2777,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangF9406A09",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangF9406A09"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-spot": [
@@ -3027,10 +2842,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-spot/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangspotB327AE6B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangspotB327AE6B"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm": [
@@ -3095,10 +2907,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangarm7773987A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangarm7773987A"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm3": [
@@ -3163,10 +2972,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangarm327128311",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrangarm327128311"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng2": [
@@ -3178,10 +2984,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrang2F1FB0D40",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextrang2F1FB0D40"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-gpu": [
@@ -3246,10 +3049,7 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-gpu/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextranggpu928E9016",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodegroupextranggpu928E9016"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/manifest-HelloApp/Resource": [

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "EKSStandardAccessEntry.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e21db2643d9181f260c6a7c2809bf4ec3aa6bea3c31194c00499b6c4d84a0162.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ed5915005ef3adc1013323d38229fd991757309960c09449aa0244f9798eca2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -299,7 +299,10 @@
         "/EKSStandardAccessEntry/kubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08"
+            "data": "kubectlLayer44321E08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/EKSStandardAccessEntry/Cluster": [
@@ -358,10 +361,7 @@
         "/EKSStandardAccessEntry/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterEB0386A7"
           }
         ],
         "/EKSStandardAccessEntry/Cluster/KubectlReadyBarrier": [
@@ -758,10 +758,7 @@
         "/EKSStandardAccessEntry/Cluster/ClusterAdminRoleAccess/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
         "/EKSStandardAccessEntry/LatestNodeRuntimeMap": [
@@ -802,10 +799,7 @@
         "/EKSStandardAccessEntry/AccessEntry/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AccessEntry5263FF03",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AccessEntry5263FF03"
           }
         ],
         "/EKSStandardAccessEntry/BootstrapVersion": [
@@ -818,15 +812,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterClusternodePoolRole69276141": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterClusternodePoolRole69276141",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
