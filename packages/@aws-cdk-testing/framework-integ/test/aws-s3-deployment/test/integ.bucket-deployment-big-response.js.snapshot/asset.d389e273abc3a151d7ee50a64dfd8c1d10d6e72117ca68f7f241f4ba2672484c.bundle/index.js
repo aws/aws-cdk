@@ -11020,15 +11020,10 @@ var require_DocTypeReader = __commonJS({
 var require_strnum = __commonJS({
   "../../../node_modules/strnum/strnum.js"(exports2, module2) {
     var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
-    var numRegex = /^([\-\+])?(0*)(\.[0-9]+([eE]\-?[0-9]+)?|[0-9]+(\.[0-9]+([eE]\-?[0-9]+)?)?)$/;
-    if (!Number.parseInt && window.parseInt) {
-      Number.parseInt = window.parseInt;
-    }
-    if (!Number.parseFloat && window.parseFloat) {
-      Number.parseFloat = window.parseFloat;
-    }
+    var numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
     var consider = {
       hex: true,
+      // oct: false,
       leadingZeros: true,
       decimalPoint: ".",
       eNotation: true
@@ -11039,24 +11034,37 @@ var require_strnum = __commonJS({
       if (!str || typeof str !== "string") return str;
       let trimmedStr = str.trim();
       if (options.skipLike !== void 0 && options.skipLike.test(trimmedStr)) return str;
+      else if (str === "0") return 0;
       else if (options.hex && hexRegex.test(trimmedStr)) {
-        return Number.parseInt(trimmedStr, 16);
+        return parse_int(trimmedStr, 16);
+      } else if (trimmedStr.search(/[eE]/) !== -1) {
+        const notation = trimmedStr.match(/^([-\+])?(0*)([0-9]*(\.[0-9]*)?[eE][-\+]?[0-9]+)$/);
+        if (notation) {
+          if (options.leadingZeros) {
+            trimmedStr = (notation[1] || "") + notation[3];
+          } else {
+            if (notation[2] === "0" && notation[3][0] === ".") {
+            } else {
+              return str;
+            }
+          }
+          return options.eNotation ? Number(trimmedStr) : str;
+        } else {
+          return str;
+        }
       } else {
         const match = numRegex.exec(trimmedStr);
         if (match) {
           const sign = match[1];
           const leadingZeros = match[2];
           let numTrimmedByZeros = trimZeros(match[3]);
-          const eNotation = match[4] || match[6];
           if (!options.leadingZeros && leadingZeros.length > 0 && sign && trimmedStr[2] !== ".") return str;
           else if (!options.leadingZeros && leadingZeros.length > 0 && !sign && trimmedStr[1] !== ".") return str;
+          else if (options.leadingZeros && leadingZeros === str) return 0;
           else {
             const num = Number(trimmedStr);
             const numStr = "" + num;
             if (numStr.search(/[eE]/) !== -1) {
-              if (options.eNotation) return num;
-              else return str;
-            } else if (eNotation) {
               if (options.eNotation) return num;
               else return str;
             } else if (trimmedStr.indexOf(".") !== -1) {
@@ -11066,13 +11074,10 @@ var require_strnum = __commonJS({
               else return str;
             }
             if (leadingZeros) {
-              if (numTrimmedByZeros === numStr) return num;
-              else if (sign + numTrimmedByZeros === numStr) return num;
-              else return str;
+              return numTrimmedByZeros === numStr || sign + numTrimmedByZeros === numStr ? num : str;
+            } else {
+              return trimmedStr === numStr || trimmedStr === sign + numStr ? num : str;
             }
-            if (trimmedStr === numStr) return num;
-            else if (trimmedStr === sign + numStr) return num;
-            return str;
           }
         } else {
           return str;
@@ -11088,6 +11093,12 @@ var require_strnum = __commonJS({
         return numStr;
       }
       return numStr;
+    }
+    function parse_int(numStr, base) {
+      if (parseInt) return parseInt(numStr, base);
+      else if (Number.parseInt) return Number.parseInt(numStr, base);
+      else if (window && window.parseInt) return window.parseInt(numStr, base);
+      else throw new Error("parseInt, Number.parseInt, window.parseInt are not supported");
     }
     module2.exports = toNumber;
   }
@@ -31356,9 +31367,9 @@ var require_encoding = __commonJS({
   }
 });
 
-// ../../../node_modules/node-fetch/lib/index.js
+// node_modules/node-fetch/lib/index.js
 var require_lib3 = __commonJS({
-  "../../../node_modules/node-fetch/lib/index.js"(exports2, module2) {
+  "node_modules/node-fetch/lib/index.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     function _interopDefault(ex) {
