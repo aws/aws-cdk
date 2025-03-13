@@ -135,10 +135,10 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 ### Example of Firehose Subscription
 
 ```ts
-import { DeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const topic = new sns.Topic(this, 'Topic');
-declare const stream: DeliveryStream;
+declare const stream: firehose.DeliveryStream;
 
 new sns.Subscription(this, 'Subscription', {
   topic,
