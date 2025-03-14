@@ -101,49 +101,38 @@ export class EcrBuildAndPublishAction extends Action {
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#edit-role-ECRBuildAndPublish
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'ecr:DescribeRepositories',
-        'ecr:GetAuthorizationToken',
-        'ecr-public:DescribeRepositories',
-        'ecr-public:GetAuthorizationToken',
-      ],
-    }));
+    if (this.props.registryType === RegistryType.PUBLIC) {
+      // Public registry
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'ecr-public:DescribeRepositories',
+          'ecr-public:InitiateLayerUpload',
+          'ecr-public:UploadLayerPart',
+          'ecr-public:CompleteLayerUpload',
+          'ecr-public:PutImage',
+          'ecr-public:BatchCheckLayerAvailability',
+        ],
+      }));
 
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'ecr:GetAuthorizationToken',
-        'ecr:InitiateLayerUpload',
-        'ecr:UploadLayerPart',
-        'ecr:CompleteLayerUpload',
-        'ecr:PutImage',
-        'ecr:GetDownloadUrlForLayer',
-        'ecr:BatchCheckLayerAvailability',
-      ],
-    }));
+      ecr.PublicGalleryAuthorizationToken.grantRead(options.role);
+    } else {
+      // Private registry
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'ecr:DescribeRepositories',
+          'ecr:InitiateLayerUpload',
+          'ecr:UploadLayerPart',
+          'ecr:CompleteLayerUpload',
+          'ecr:PutImage',
+          'ecr:GetDownloadUrlForLayer',
+          'ecr:BatchCheckLayerAvailability',
+        ],
+      }));
 
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions: [
-        'ecr-public:GetAuthorizationToken',
-        'ecr-public:DescribeRepositories',
-        'ecr-public:InitiateLayerUpload',
-        'ecr-public:UploadLayerPart',
-        'ecr-public:CompleteLayerUpload',
-        'ecr-public:PutImage',
-        'ecr-public:BatchCheckLayerAvailability',
-        'sts:GetServiceBearerToken',
-      ],
-    }));
-
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'sts:GetServiceBearerToken',
-      ],
-    }));
+      ecr.AuthorizationToken.grantRead(options.role);
+    }
 
     const logGroupArn = cdk.Stack.of(scope).formatArn({
       service: 'logs',
@@ -162,7 +151,7 @@ export class EcrBuildAndPublishAction extends Action {
       ],
     }));
 
-    // allow the Role access to the Bucket, if there are any inputs/outputs
+    // allow the Role access to the Bucket, if there are any inputs
     if ((this.actionProperties.inputs ?? []).length > 0) {
       options.bucket.grantRead(options.role);
     }

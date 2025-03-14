@@ -665,32 +665,13 @@
                                       "Statement": [
                                         {
                                           "Action": [
-                                            "ecr-public:DescribeRepositories",
-                                            "ecr-public:GetAuthorizationToken",
-                                            "ecr:DescribeRepositories",
-                                            "ecr:GetAuthorizationToken",
-                                            "sts:GetServiceBearerToken"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": [
-                                            "ecr-public:BatchCheckLayerAvailability",
-                                            "ecr-public:CompleteLayerUpload",
-                                            "ecr-public:DescribeRepositories",
-                                            "ecr-public:GetAuthorizationToken",
-                                            "ecr-public:InitiateLayerUpload",
-                                            "ecr-public:PutImage",
-                                            "ecr-public:UploadLayerPart",
                                             "ecr:BatchCheckLayerAvailability",
                                             "ecr:CompleteLayerUpload",
-                                            "ecr:GetAuthorizationToken",
+                                            "ecr:DescribeRepositories",
                                             "ecr:GetDownloadUrlForLayer",
                                             "ecr:InitiateLayerUpload",
                                             "ecr:PutImage",
-                                            "ecr:UploadLayerPart",
-                                            "sts:GetServiceBearerToken"
+                                            "ecr:UploadLayerPart"
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
@@ -699,6 +680,11 @@
                                               "Arn"
                                             ]
                                           }
+                                        },
+                                        {
+                                          "Action": "ecr:GetAuthorizationToken",
+                                          "Effect": "Allow",
+                                          "Resource": "*"
                                         },
                                         {
                                           "Action": [
@@ -814,8 +800,6 @@
                                 "*",
                                 "*",
                                 "*",
-                                "*",
-                                "*",
                                 "*"
                               ]
                             }
@@ -825,8 +809,6 @@
                           "fqn": "constructs.Construct",
                           "version": "10.4.2",
                           "metadata": [
-                            "*",
-                            "*",
                             "*",
                             "*",
                             "*",

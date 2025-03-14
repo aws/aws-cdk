@@ -101,12 +101,13 @@ describe('EcrBuildAndPublish Action', () => {
   });
 
   describe('grant policy', () => {
-    test('grant policy for ecr', () => {
+    test('grant policy for private ecr', () => {
       // WHEN
       const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
         repository,
+        registryType: cpactions.RegistryType.PRIVATE,
       });
 
       pipeline.addStage({
@@ -122,16 +123,6 @@ describe('EcrBuildAndPublish Action', () => {
             {
               Action: [
                 'ecr:DescribeRepositories',
-                'ecr:GetAuthorizationToken',
-                'ecr-public:DescribeRepositories',
-                'ecr-public:GetAuthorizationToken',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: [
-                'ecr:GetAuthorizationToken',
                 'ecr:InitiateLayerUpload',
                 'ecr:UploadLayerPart',
                 'ecr:CompleteLayerUpload',
@@ -148,15 +139,42 @@ describe('EcrBuildAndPublish Action', () => {
               },
             },
             {
+              Action: 'ecr:GetAuthorizationToken',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+          ]),
+        },
+      });
+    });
+
+    test('grant policy for public ecr', () => {
+      // WHEN
+      const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
+        actionName: 'EcrBuildAndPublish',
+        input: sourceOutput,
+        repository,
+        registryType: cpactions.RegistryType.PUBLIC,
+      });
+
+      pipeline.addStage({
+        stageName: 'EcrBuildAndPublish',
+        actions: [ecrBuildAndPublishAction],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'PipelineEcrBuildAndPublishCodePipelineActionRoleDefaultPolicy7B81DF4D',
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
               Action: [
-                'ecr-public:GetAuthorizationToken',
                 'ecr-public:DescribeRepositories',
                 'ecr-public:InitiateLayerUpload',
                 'ecr-public:UploadLayerPart',
                 'ecr-public:CompleteLayerUpload',
                 'ecr-public:PutImage',
                 'ecr-public:BatchCheckLayerAvailability',
-                'sts:GetServiceBearerToken',
               ],
               Effect: 'Allow',
               Resource: {
@@ -167,7 +185,10 @@ describe('EcrBuildAndPublish Action', () => {
               },
             },
             {
-              Action: 'sts:GetServiceBearerToken',
+              Action: [
+                'ecr-public:GetAuthorizationToken',
+                'sts:GetServiceBearerToken',
+              ],
               Effect: 'Allow',
               Resource: '*',
             },
