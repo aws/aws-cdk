@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
 import { Duration, Size } from '../../core';
 
@@ -32,7 +33,7 @@ export interface DataProcessorProps {
  * The key-value pair that identifies the underlying processor resource.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
- * @deprecated Use `DataProcessorParameter`
+ * @deprecated Use `CfnDeliveryStream.ProcessorParameterProperty`
  */
 export interface DataProcessorIdentifier {
   /**
@@ -44,23 +45,6 @@ export interface DataProcessorIdentifier {
 
   /**
    * The identifier of the underlying processor resource.
-   */
-  readonly parameterValue: string;
-}
-
-/**
- * A processor parameter in a data processor for an Amazon Kinesis Data Firehose delivery stream.
- *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
- */
-export interface DataProcessorParameter {
-  /**
-   * The name of the parameter.
-   */
-  readonly parameterName: string;
-
-  /**
-   * The parameter value.
    */
   readonly parameterValue: string;
 }
@@ -87,7 +71,7 @@ export interface DataProcessorConfig {
    * The processor parameters.
    * @default - No paraeters
    */
-  readonly parameters?: DataProcessorParameter[];
+  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
 }
 
 /**

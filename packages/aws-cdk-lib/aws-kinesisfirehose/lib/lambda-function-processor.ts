@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorParameter, DataProcessorProps, IDataProcessor } from './processor';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from './processor';
 import * as lambda from '../../aws-lambda';
 import { Tokenization } from '../../core';
 
@@ -19,7 +20,7 @@ export class LambdaFunctionProcessor implements IDataProcessor {
   public bind(_scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     this.lambdaFunction.grantInvoke(options.role);
 
-    const parameters: DataProcessorParameter[] = [
+    const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
       { parameterName: 'RoleArn', parameterValue: options.role.roleArn },
       { parameterName: 'LambdaArn', parameterValue: this.lambdaFunction.functionArn },
     ];
