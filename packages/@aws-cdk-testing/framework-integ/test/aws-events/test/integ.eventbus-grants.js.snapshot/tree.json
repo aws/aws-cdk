@@ -237,7 +237,7 @@
                         }
                       }
                     },
-                    "functionName": "eventbusgrantsteststackwiublisherwithflag2de7dd90e3ad717f3a13",
+                    "functionName": "eventbus-grants-withflag-publisher",
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
@@ -491,7 +491,7 @@
                         "Arn"
                       ]
                     },
-                    "stateMachineName": "eventbusgrantsteststackwiemachinewithflag5d3016970f4991fd203a"
+                    "stateMachineName": "eventbus-grants-withflag-statemachine"
                   }
                 },
                 "constructInfo": {
@@ -520,6 +520,30 @@
                   ]
                 }
               ]
+            }
+          },
+          "PublisherFunctionName": {
+            "id": "PublisherFunctionName",
+            "path": "EventBusGrantsTestStackWithFlag/PublisherFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineArn": {
+            "id": "StateMachineArn",
+            "path": "EventBusGrantsTestStackWithFlag/StateMachineArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterName": {
+            "id": "ParameterName",
+            "path": "EventBusGrantsTestStackWithFlag/ParameterName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -777,7 +801,7 @@
                         }
                       }
                     },
-                    "functionName": "eventbusgrantsteststackwiisherwithoutflag028bdb2696e681dedad1",
+                    "functionName": "eventbus-grants-withoutflag-publisher",
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
@@ -1030,7 +1054,8 @@
                         "TestStateMachineWithoutFlagRoleF13A1612",
                         "Arn"
                       ]
-                    }
+                    },
+                    "stateMachineName": "eventbus-grants-withoutflag-statemachine"
                   }
                 },
                 "constructInfo": {
@@ -1059,6 +1084,14 @@
                   ]
                 }
               ]
+            }
+          },
+          "PublisherFunctionName": {
+            "id": "PublisherFunctionName",
+            "path": "EventBusGrantsTestStackWithoutFlag/PublisherFunctionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -1103,17 +1136,17 @@
                 "id": "DeployAssert",
                 "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert",
                 "children": {
-                  "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98": {
-                    "id": "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98",
-                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98",
+                  "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f": {
+                    "id": "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/SdkProvider/AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1127,11 +1160,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Default/Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1150,7 +1183,7 @@
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Invoke",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1158,7 +1191,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1212,17 +1245,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f": {
-                    "id": "AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f",
-                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f",
+                  "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939": {
+                    "id": "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/SdkProvider/AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1236,11 +1269,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/Default/Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1259,7 +1292,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1271,17 +1304,17 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650": {
-                    "id": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650",
-                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650",
+                  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc": {
+                    "id": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/SdkProvider/AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1295,11 +1328,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/Default/Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1318,15 +1351,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/IsCompleteProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1334,7 +1367,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1348,11 +1381,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/TimeoutProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1360,7 +1393,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/TimeoutProvider/Invoke",
+                                "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1374,7 +1407,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/Role",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1382,7 +1415,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/Resource",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1396,7 +1429,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1476,17 +1509,17 @@
                       "version": "10.4.2"
                     }
                   },
-                  "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2": {
-                    "id": "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2",
-                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2",
+                  "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb": {
+                    "id": "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb",
+                    "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/SdkProvider",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/SdkProvider/AssertionsProvider",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1500,11 +1533,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Default",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Default/Default",
+                            "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1523,7 +1556,7 @@
                       },
                       "Invoke": {
                         "id": "Invoke",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Invoke",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Invoke",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1531,7 +1564,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/AssertionResults",
+                        "path": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

@@ -84,7 +84,7 @@
       }
      }
     },
-    "FunctionName": "eventbusgrantsteststackwiublisherwithflag2de7dd90e3ad717f3a13",
+    "FunctionName": "eventbus-grants-withflag-publisher",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -184,7 +184,7 @@
       "Arn"
      ]
     },
-    "StateMachineName": "eventbusgrantsteststackwiemachinewithflag5d3016970f4991fd203a"
+    "StateMachineName": "eventbus-grants-withflag-statemachine"
    },
    "DependsOn": [
     "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC",
@@ -192,6 +192,32 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "PublisherFunctionName": {
+   "Value": {
+    "Ref": "PublisherWithFlagD8B4AB49"
+   },
+   "Export": {
+    "Name": "WithFlagPublisherFunctionName"
+   }
+  },
+  "StateMachineArn": {
+   "Value": {
+    "Ref": "TestStateMachineWithFlag61D312F9"
+   },
+   "Export": {
+    "Name": "WithFlagStateMachineArn"
+   }
+  },
+  "ParameterName": {
+   "Value": {
+    "Ref": "TestParameterWithFlag030979F6"
+   },
+   "Export": {
+    "Name": "WithFlagParameterName"
+   }
   }
  },
  "Parameters": {

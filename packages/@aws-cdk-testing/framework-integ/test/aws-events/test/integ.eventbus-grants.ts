@@ -1,4 +1,4 @@
-import { App, Stack, Duration, PhysicalName } from 'aws-cdk-lib';
+import { App, Stack, Duration, CfnOutput, Fn } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
@@ -37,7 +37,7 @@ function createTestComponents(stack: Stack, eventBus: events.EventBus, suffix: s
   const publisher = new lambda.Function(stack, `Publisher${suffix}`, {
     runtime: STANDARD_NODEJS_RUNTIME,
     handler: 'index.handler',
-    functionName: PhysicalName.GENERATE_IF_NEEDED, // Use physical name to avoid cross-environment issues
+    functionName: `eventbus-grants-${suffix.toLowerCase()}-publisher`,
     code: lambda.Code.fromInline(`
       // Simple function that just returns success
       // We're only testing if the permissions are granted correctly
@@ -78,7 +78,7 @@ function createTestComponents(stack: Stack, eventBus: events.EventBus, suffix: s
 
   // Create a state machine that puts events and then updates the parameter
   const stateMachine = new sfn.StateMachine(stack, `TestStateMachine${suffix}`, {
-    stateMachineName: PhysicalName.GENERATE_IF_NEEDED, // Use physical name to avoid cross-environment issues
+    stateMachineName: `eventbus-grants-${suffix.toLowerCase()}-statemachine`,
     definitionBody: sfn.DefinitionBody.fromChainable(putEventsTask.next(updateParameterTask)),
     timeout: Duration.seconds(30), // Add a timeout to ensure the state machine doesn't run indefinitely
   });
@@ -101,14 +101,37 @@ eventBusWithoutFlag.grantPutEventsTo(componentsWithoutFlag.publisher);
 // Note: This grant should fail silently when feature flag is off
 eventBusWithoutFlag.grantPutEventsTo(componentsWithoutFlag.stateMachine.role);
 
-// Create integration tests - one for each stack to avoid cross-stack references
+// Create explicit outputs for the values we need in our assertions
+// With flag stack outputs
+new CfnOutput(stackWithFlag, 'PublisherFunctionName', {
+  value: componentsWithFlag.publisher.functionName,
+  exportName: 'WithFlagPublisherFunctionName',
+});
+
+new CfnOutput(stackWithFlag, 'StateMachineArn', {
+  value: componentsWithFlag.stateMachine.stateMachineArn,
+  exportName: 'WithFlagStateMachineArn',
+});
+
+new CfnOutput(stackWithFlag, 'ParameterName', {
+  value: componentsWithFlag.parameter.parameterName,
+  exportName: 'WithFlagParameterName',
+});
+
+// Without flag stack outputs
+new CfnOutput(stackWithoutFlag, 'PublisherFunctionName', {
+  value: componentsWithoutFlag.publisher.functionName,
+  exportName: 'WithoutFlagPublisherFunctionName',
+});
+
+// Create integration test
 const integ = new IntegTest(app, 'EventBusGrantsIntegWithAndWithoutFeatureFlag', {
   testCases: [stackWithFlag, stackWithoutFlag],
 });
 
-// Test assertions for flag-enabled stack
+// Test assertions using Fn.importValue to reference the exports
 const publisherInvokeWithFlag = integ.assertions.invokeFunction({
-  functionName: componentsWithFlag.publisher.functionName,
+  functionName: Fn.importValue('WithFlagPublisherFunctionName'),
 });
 
 publisherInvokeWithFlag.expect(ExpectedResult.objectLike({
@@ -119,7 +142,7 @@ publisherInvokeWithFlag.expect(ExpectedResult.objectLike({
 }));
 
 const stateMachineStartWithFlag = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
-  stateMachineArn: componentsWithFlag.stateMachine.stateMachineArn,
+  stateMachineArn: Fn.importValue('WithFlagStateMachineArn'),
   input: JSON.stringify({ test: 'input' }),
 });
 
@@ -129,7 +152,7 @@ stateMachineStartWithFlag.expect(ExpectedResult.objectLike({
 
 // Check parameter value to verify the state machine executed successfully
 const getParameterWithFlag = integ.assertions.awsApiCall('SSM', 'getParameter', {
-  Name: componentsWithFlag.parameter.parameterName,
+  Name: Fn.importValue('WithFlagParameterName'),
 });
 
 getParameterWithFlag.expect(ExpectedResult.objectLike({
@@ -142,7 +165,7 @@ getParameterWithFlag.expect(ExpectedResult.objectLike({
 
 // Test assertions for flag-disabled stack - only test Lambda
 const publisherInvokeWithoutFlag = integ.assertions.invokeFunction({
-  functionName: componentsWithoutFlag.publisher.functionName,
+  functionName: Fn.importValue('WithoutFlagPublisherFunctionName'),
 });
 
 publisherInvokeWithoutFlag.expect(ExpectedResult.objectLike({

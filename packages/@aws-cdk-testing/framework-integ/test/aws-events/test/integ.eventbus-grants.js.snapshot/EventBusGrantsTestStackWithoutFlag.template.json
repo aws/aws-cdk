@@ -84,7 +84,7 @@
       }
      }
     },
-    "FunctionName": "eventbusgrantsteststackwiisherwithoutflag028bdb2696e681dedad1",
+    "FunctionName": "eventbus-grants-withoutflag-publisher",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -183,7 +183,8 @@
       "TestStateMachineWithoutFlagRoleF13A1612",
       "Arn"
      ]
-    }
+    },
+    "StateMachineName": "eventbus-grants-withoutflag-statemachine"
    },
    "DependsOn": [
     "TestStateMachineWithoutFlagRoleDefaultPolicyBB0F850F",
@@ -191,6 +192,16 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "PublisherFunctionName": {
+   "Value": {
+    "Ref": "PublisherWithoutFlagE14A6B39"
+   },
+   "Export": {
+    "Name": "WithoutFlagPublisherFunctionName"
+   }
   }
  },
  "Parameters": {

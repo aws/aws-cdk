@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98": {
+  "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -13,19 +13,32 @@
     "api": "invoke",
     "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"body\\\":\\\"Success\\\"}\"}}",
     "parameters": {
-     "FunctionName": "\"eventbusgrantsteststackwiublisherwithflag2de7dd90e3ad717f3a13\""
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "WithFlagPublisherFunctionName"
+        },
+        "\""
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1741978623003"
+    "salt": "1741987853567"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98InvokeFD16BCCC": {
+  "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4fInvoke88E31898": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
-    "FunctionName": "eventbusgrantsteststackwiublisherwithflag2de7dd90e3ad717f3a13",
+    "FunctionName": {
+     "Fn::ImportValue": "WithFlagPublisherFunctionName"
+    },
     "Principal": {
      "Fn::GetAtt": [
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
@@ -91,7 +104,10 @@
              {
               "Ref": "AWS::AccountId"
              },
-             ":function:eventbusgrantsteststackwiublisherwithflag2de7dd90e3ad717f3a13"
+             ":function:",
+             {
+              "Fn::ImportValue": "WithFlagPublisherFunctionName"
+             }
             ]
            ]
           }
@@ -155,7 +171,10 @@
              {
               "Ref": "AWS::AccountId"
              },
-             ":function:eventbusgrantsteststackwiisherwithoutflag028bdb2696e681dedad1"
+             ":function:",
+             {
+              "Fn::ImportValue": "WithoutFlagPublisherFunctionName"
+             }
             ]
            ]
           }
@@ -195,7 +214,7 @@
     }
    }
   },
-  "AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f": {
+  "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
    "Properties": {
     "ServiceToken": {
@@ -208,16 +227,27 @@
     "api": "startExecution",
     "expected": "{\"$ObjectLike\":{\"executionArn\":{\"$StringLike\":\"arn:aws:states\"}}}",
     "parameters": {
-     "stateMachineArn": "\"arn:aws:states:us-east-1:554706699122:stateMachine:eventbusgrantsteststackwiemachinewithflag5d3016970f4991fd203a\"",
+     "stateMachineArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "WithFlagStateMachineArn"
+        },
+        "\""
+       ]
+      ]
+     },
      "input": "\"{\\\"test\\\":\\\"input\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1741978623005"
+    "salt": "1741987853569"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650": {
+  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc": {
    "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
    "Properties": {
     "ServiceToken": {
@@ -230,18 +260,29 @@
     "api": "getParameter",
     "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Value\":\"success\"}}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForB16B5DB6"
+     "Ref": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitFor95ECC2E5"
     },
     "parameters": {
-     "Name": "\"EventBusGrantsTestWithFlag\""
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "WithFlagParameterName"
+        },
+        "\""
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1741978623005"
+    "salt": "1741987853569"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForIsCompleteProviderInvoke94618C76": {
+  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForIsCompleteProviderInvoke0F8699DB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -253,13 +294,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159",
+      "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForTimeoutProviderInvoke7F85E70F": {
+  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForTimeoutProviderInvoke8A3D0918": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -271,13 +312,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159",
+      "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159": {
+  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -322,7 +363,7 @@
     ]
    }
   },
-  "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForB16B5DB6": {
+  "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitFor95ECC2E5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -349,13 +390,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159",
+      "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159"
+    "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -477,7 +518,7 @@
     }
    }
   },
-  "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2": {
+  "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -490,19 +531,32 @@
     "api": "invoke",
     "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"body\\\":\\\"Success\\\"}\"}}",
     "parameters": {
-     "FunctionName": "\"eventbusgrantsteststackwiisherwithoutflag028bdb2696e681dedad1\""
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "WithoutFlagPublisherFunctionName"
+        },
+        "\""
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1741978623010"
+    "salt": "1741987853573"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2InvokeC88857EF": {
+  "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fbInvoke2DD0FBA9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
-    "FunctionName": "eventbusgrantsteststackwiisherwithoutflag028bdb2696e681dedad1",
+    "FunctionName": {
+     "Fn::ImportValue": "WithoutFlagPublisherFunctionName"
+    },
     "Principal": {
      "Fn::GetAtt": [
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
@@ -513,34 +567,34 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke7b4eabecf429e41d02a5356b1d86ba98": {
+  "AssertionResultsLambdaInvokea9053b408fb0f12e868a6a3d40f94c4f": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98",
+     "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f": {
+  "AssertionResultsAwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f",
+     "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650": {
+  "AssertionResultsAwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650",
+     "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc",
      "assertion"
     ]
    }
   },
-  "AssertionResultsLambdaInvoke8c522f0f013cec7e44f74f27b05828a2": {
+  "AssertionResultsLambdaInvoke61da4a1ae49d19d56a62c0c2166134fb": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2",
+     "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb",
      "assertion"
     ]
    }

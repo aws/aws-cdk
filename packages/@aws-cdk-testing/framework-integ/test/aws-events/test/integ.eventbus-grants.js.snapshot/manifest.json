@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::554706699122:role/cdk-hnb659fds-deploy-role-554706699122-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::554706699122:role/cdk-hnb659fds-cfn-exec-role-554706699122-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-554706699122-us-east-1/7df154970d90cc9b2c6756d99dfa4d6dc3772c738f503880a6494c9dff4a21c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-554706699122-us-east-1/02549122f16df4a823b7293aa06c3c5003577d18676db1bcd8c265217735ce56.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -324,6 +324,24 @@
             "data": "TestStateMachineWithFlag61D312F9"
           }
         ],
+        "/EventBusGrantsTestStackWithFlag/PublisherFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublisherFunctionName"
+          }
+        ],
+        "/EventBusGrantsTestStackWithFlag/StateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineArn"
+          }
+        ],
+        "/EventBusGrantsTestStackWithFlag/ParameterName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParameterName"
+          }
+        ],
         "/EventBusGrantsTestStackWithFlag/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -356,7 +374,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::554706699122:role/cdk-hnb659fds-deploy-role-554706699122-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::554706699122:role/cdk-hnb659fds-cfn-exec-role-554706699122-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-554706699122-us-east-1/6baf341d63941b5e7ab98133c5baf6aac02350c2f26ddf4ebabe8863bb2a13c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-554706699122-us-east-1/fb0db07760874e29f93dbbdaece6f3466ecae3e36b4038bc034dfffc1a758054.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -662,6 +680,12 @@
             "data": "TestStateMachineWithoutFlag1FCC6706"
           }
         ],
+        "/EventBusGrantsTestStackWithoutFlag/PublisherFunctionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublisherFunctionName"
+          }
+        ],
         "/EventBusGrantsTestStackWithoutFlag/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -694,7 +718,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f37723de67e21545551660ac1b8bddf5b40532a85aab99f4dc0ba0553c0319.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eff7d99762eae8bcdcdc0df94c8dd90010df8117f47b391f64f7fe224b8e6530.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -710,7 +734,7 @@
         "EventBusGrantsIntegWithAndWithoutFeatureFlagDefaultTestDeployAssertBBD6850F.assets"
       ],
       "metadata": {
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -724,22 +748,22 @@
             "data": "*"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Default/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98"
+            "data": "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/Invoke": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98InvokeFD16BCCC"
+            "data": "LambdaInvokea9053b408fb0f12e868a6a3d40f94c4fInvoke88E31898"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke7b4eabecf429e41d02a5356b1d86ba98/AssertionResults": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvokea9053b408fb0f12e868a6a3d40f94c4f/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke7b4eabecf429e41d02a5356b1d86ba98"
+            "data": "AssertionResultsLambdaInvokea9053b408fb0f12e868a6a3d40f94c4f"
           }
         ],
         "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -760,7 +784,7 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -774,19 +798,19 @@
             "data": "*"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/Default/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f"
+            "data": "AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f/AssertionResults": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsstartExecution6159f790517ca9f6bbb7cc1348d42f2f"
+            "data": "AssertionResultsAwsApiCallStepFunctionsstartExecutiond64f34901dd97bd80fd704c083786939"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -800,40 +824,40 @@
             "data": "*"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/Default/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650"
+            "data": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/IsCompleteProvider/Invoke": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForIsCompleteProviderInvoke94618C76"
+            "data": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForIsCompleteProviderInvoke0F8699DB"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/TimeoutProvider/Invoke": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForTimeoutProviderInvoke7F85E70F"
+            "data": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForTimeoutProviderInvoke8A3D0918"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/Role": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForRoleEB29F159"
+            "data": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitForRole4E5F11DB"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/WaitFor/Resource": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650WaitForB16B5DB6"
+            "data": "AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259ccWaitFor95ECC2E5"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650/AssertionResults": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameter7bff602da09abbb19bc8ff62dce9b650"
+            "data": "AssertionResultsAwsApiCallSSMgetParameter438aba03f819ac8a7c182dac3f3259cc"
           }
         ],
         "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
@@ -860,7 +884,7 @@
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -874,22 +898,22 @@
             "data": "*"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Default/Default": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2"
+            "data": "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/Invoke": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke8c522f0f013cec7e44f74f27b05828a2InvokeC88857EF"
+            "data": "LambdaInvoke61da4a1ae49d19d56a62c0c2166134fbInvoke2DD0FBA9"
           }
         ],
-        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke8c522f0f013cec7e44f74f27b05828a2/AssertionResults": [
+        "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/LambdaInvoke61da4a1ae49d19d56a62c0c2166134fb/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke8c522f0f013cec7e44f74f27b05828a2"
+            "data": "AssertionResultsLambdaInvoke61da4a1ae49d19d56a62c0c2166134fb"
           }
         ],
         "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/BootstrapVersion": [
