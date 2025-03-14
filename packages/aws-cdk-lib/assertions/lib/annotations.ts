@@ -2,6 +2,7 @@ import { Messages } from './private/message';
 import { findMessage, hasMessage, hasNoMessage } from './private/messages';
 import { Stack, Stage } from '../../core';
 import { SynthesisMessage } from '../../cx-api';
+import { AssertionError } from './private/error';
 
 /**
  * Suite of assertions that can be run on a CDK Stack.
@@ -31,7 +32,7 @@ export class Annotations {
   public hasError(constructPath: string, message: any): void {
     const matchError = hasMessage(this._messages, constructPath, constructMessage('error', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -44,7 +45,7 @@ export class Annotations {
   public hasNoError(constructPath: string, message: any): void {
     const matchError = hasNoMessage(this._messages, constructPath, constructMessage('error', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -67,7 +68,7 @@ export class Annotations {
   public hasWarning(constructPath: string, message: any): void {
     const matchError = hasMessage(this._messages, constructPath, constructMessage('warning', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -80,7 +81,7 @@ export class Annotations {
   public hasNoWarning(constructPath: string, message: any): void {
     const matchError = hasNoMessage(this._messages, constructPath, constructMessage('warning', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -103,7 +104,7 @@ export class Annotations {
   public hasInfo(constructPath: string, message: any): void {
     const matchError = hasMessage(this._messages, constructPath, constructMessage('info', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -116,7 +117,7 @@ export class Annotations {
   public hasNoInfo(constructPath: string, message: any): void {
     const matchError = hasNoMessage(this._messages, constructPath, constructMessage('info', message));
     if (matchError) {
-      throw new Error(matchError);
+      throw new AssertionError(matchError);
     }
   }
 
@@ -156,7 +157,7 @@ function convertMessagesTypeToArray(messages: Messages): SynthesisMessage[] {
 function toMessages(stack: Stack): any {
   const root = stack.node.root;
   if (!Stage.isStage(root)) {
-    throw new Error('unexpected: all stacks must be part of a Stage or an App');
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
   }
 
   // to support incremental assertions (i.e. "expect(stack).toNotContainSomething(); doSomething(); expect(stack).toContainSomthing()")

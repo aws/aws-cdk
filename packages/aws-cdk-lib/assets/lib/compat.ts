@@ -1,5 +1,5 @@
 import { FollowMode } from './fs/follow-mode';
-import { SymlinkFollowMode } from '../../core';
+import { SymlinkFollowMode, UnscopedValidationError } from '../../core';
 
 export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
   if (!follow) {
@@ -12,6 +12,6 @@ export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefi
     case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
     case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
     default:
-      throw new Error(`unknown follow mode: ${follow}`);
+      throw new UnscopedValidationError(`unknown follow mode: ${follow}`);
   }
 }

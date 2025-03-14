@@ -295,6 +295,8 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 
 * `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
+* `FilterPattern.regexValue(field, comparison, string)`: matches if the given
+  field compares as indicated with the given regex pattern.
 * `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
 * `FilterPattern.isNull(field)`: matches if the given field exists and has the
@@ -324,6 +326,7 @@ const pattern = logs.FilterPattern.all(
     logs.FilterPattern.booleanValue('$.error', true),
     logs.FilterPattern.numberValue('$.latency', '>', 1000),
   ),
+  logs.FilterPattern.regexValue('$.message', '=', 'bind address already in use'),
 );
 ```
 
@@ -406,17 +409,16 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
 const bucket = new s3.Bucket(this, 'audit-bucket');
-const s3Destination = new destinations.S3Bucket(bucket);
+const s3Destination = new firehose.S3Bucket(bucket);
 
-const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: s3Destination,
 });
 
@@ -435,6 +437,29 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
 new logs.LogGroup(this, 'LogGroupLambda', {
   logGroupName: 'cdkIntegLogGroup',
   dataProtectionPolicy: dataProtectionPolicy,
+});
+```
+
+## Field Index Policies
+
+Creates or updates a field index policy for the specified log group. You can use field index policies to create field indexes on fields found in log events in the log group. Creating field indexes lowers the costs for CloudWatch Logs Insights queries that reference those field indexes, because these queries attempt to skip the processing of log events that are known to not match the indexed field. Good fields to index are fields that you often need to query for and fields that have high cardinality of values.
+
+For more information, see [Create field indexes to improve query performance and reduce costs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatchLogs-Field-Indexing.html).
+
+Only log groups in the Standard log class support field index policies.
+Currently, this array supports only one field index policy object.
+
+Example:
+
+```ts
+
+const fieldIndexPolicy = new logs.FieldIndexPolicy({
+  fields: ['Operation', 'RequestId'],
+});
+
+new logs.LogGroup(this, 'LogGroup', {
+  logGroupName: 'cdkIntegLogGroup',
+  fieldIndexPolicies: [fieldIndexPolicy],
 });
 ```
 

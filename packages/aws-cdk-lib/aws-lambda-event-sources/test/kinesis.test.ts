@@ -43,16 +43,6 @@ describe('KinesisEventSource', () => {
               ],
             },
           },
-          {
-            'Action': 'kinesis:DescribeStream',
-            'Effect': 'Allow',
-            'Resource': {
-              'Fn::GetAtt': [
-                'S509448A1',
-                'Arn',
-              ],
-            },
-          },
         ],
         'Version': '2012-10-17',
       },
@@ -297,7 +287,7 @@ describe('KinesisEventSource', () => {
     });
   });
 
-  test('S3 onFailure Destination raise unsupport error', () => {
+  test('S3 onFailure Destination supported', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testLambdaFunction = new TestFunction(stack, 'Fn');
@@ -307,15 +297,21 @@ describe('KinesisEventSource', () => {
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-    expect(() => {
-      // WHEN
-      testLambdaFunction.addEventSource(new sources.KinesisEventSource(stream, {
-        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
-        startingPositionTimestamp: 1640995200,
-        onFailure: s3OnFailureDestination,
-      }));
-    // THEN
-    }).toThrow('S3 onFailure Destination is not supported for this event source');
+    testLambdaFunction.addEventSource(new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      onFailure: s3OnFailureDestination,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+          },
+        },
+      },
+    });
   });
 
   test('metrics config', () => {
@@ -363,6 +359,81 @@ describe('KinesisEventSource', () => {
       MetricsConfig: {
         Metrics: ['EventCount'],
       },
+    });
+  });
+
+  test('KinesisConsumerEventSource sufficiently complex example', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const streamConsumer = new kinesis.StreamConsumer(stack, 'SC', {
+      stream,
+      streamConsumerName: 'MyStreamConsumer',
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisConsumerEventSource(streamConsumer, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'kinesis:DescribeStreamSummary',
+              'kinesis:GetRecords',
+              'kinesis:GetShardIterator',
+              'kinesis:ListShards',
+              'kinesis:SubscribeToShard',
+              'kinesis:DescribeStream',
+              'kinesis:ListStreams',
+              'kinesis:DescribeStreamConsumer',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'S509448A1',
+                'Arn',
+              ],
+            },
+          },
+          {
+            'Action': [
+              'kinesis:DescribeStreamConsumer',
+              'kinesis:SubscribeToShard',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'SC0855C491',
+                'ConsumerARN',
+              ],
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [{
+        'Ref': 'FnServiceRoleB9001A96',
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'SC0855C491',
+          'ConsumerARN',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 100,
+      'StartingPosition': 'TRIM_HORIZON',
     });
   });
 });

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "eks-pod-identities.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94c398511624abcc08e56de700e40dc6cae22f193250af2d09f2f290924e8622.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b910612a51f0855e2f236aa028666e01326d7e48e524fb4cba83ac9db4d1867.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -356,7 +356,10 @@
         "/eks-pod-identities/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/eks-pod-identities/Cluster": [

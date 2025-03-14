@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-eks-fargate-cluster-test-stack1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/452ae64a8f1ff103aa56ae880cd5780d0a7475a1af34ad24b87594f11865a585.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b35112ac766d38367b9095f6b43707b7a239afe777e57a7cf7fade2679dbd15.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -299,7 +299,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack1/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack1/FargateCluster": [
@@ -2086,7 +2089,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88c88957d9c785ce4f37dc296ee8fb2447a7a7a46258e674621c9c9a70bd3ba5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/849d5656f4ca9e5c79fbaed13d3cd6800e98244da3f27dfec4014814cbfb7e1b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2112,7 +2115,10 @@
         "/aws-cdk-eks-fargate-cluster-test-stack2/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test-stack2/FargateCluster": [

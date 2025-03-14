@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-eks-helm-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a205b8a6afc6228368010135fd23c0b18da468199fcda366765166138f77b49d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c8de4c884746a7b1dfc14834be2f06faa107c2ad46d852aa36843229aff269b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -339,10 +339,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/Role": [
@@ -354,6 +350,46 @@
                 "assumeRoleAction": "*"
               },
               "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
                 {
                   "managedPolicyArn": "*"
                 }
@@ -386,6 +422,37 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterControlPlaneSecurityGroupD274242C"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                },
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ClusternodePoolRole/ImportClusternodePoolRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ClusternodePoolRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusternodePoolRole69276141"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/Resource": [
@@ -689,8 +756,16 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPrincipalPolicy": [
-                {}
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
               ]
             }
           }
@@ -735,14 +810,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
@@ -755,6 +822,44 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "statements": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/ClusterAdminRoleAccess": [
@@ -781,69 +886,16 @@
             "data": "ClustermastersRoleAccess698EBA51"
           }
         ],
-        "/aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
+        "/aws-cdk-eks-helm-test/Cluster/ConfigCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
+            "data": "ClusterConfigCommand43AAE40F"
           }
         ],
-        "/aws-cdk-eks-helm-test/Cluster/NodegroupDefaultCapacity/Resource": [
+        "/aws-cdk-eks-helm-test/Cluster/GetTokenCommand": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
+            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/chart-test-chart/Resource": [
@@ -894,6 +946,93 @@
             "data": "ClustercharttestskipcrdinstallationB8323954"
           }
         ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterec2controllersaConditionJson93A80A33"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterec2controllersaRole1DE83C2D"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/manifest-ec2-controller-saServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/ec2-controller-sa/manifest-ec2-controller-saServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Clusterec2controllersamanifestec2controllersaServiceAccountResource90211140"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterOpenIdConnectProviderE7EB0530"
+          }
+        ],
         "/aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -922,6 +1061,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-eks-helm-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
           }
         ],
         "/aws-cdk-eks-helm-test/BootstrapVersion": [
