@@ -41,21 +41,21 @@ const udpTargetGroup = new elbv2.NetworkTargetGroup(stack, 'UdpTargetGroup', {
 udpListener.addTargetGroups('TargetGroup', udpTargetGroup);
 
 const vpc = new ec2.Vpc(stack, 'MyVPC', {
-  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/8'),
+  ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
   maxAzs: 1,
   subnetConfiguration: [
     {
-      cidrMask: 16,
+      cidrMask: 20,
       name: 'Public',
       subnetType: ec2.SubnetType.PUBLIC,
     },
     {
-      cidrMask: 16,
+      cidrMask: 20,
       name: 'Private',
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
     {
-      cidrMask: 16,
+      cidrMask: 20,
       name: 'Isolated',
       subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
@@ -66,17 +66,17 @@ const vpc = new ec2.Vpc(stack, 'MyVPC', {
 const publicSubnet = vpc.selectSubnets({
   subnetType: ec2.SubnetType.PUBLIC,
 }).subnets[0];
-(publicSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.0.0.0/16');
+(publicSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.0.0.0/24');
 
 const privateSubnet = vpc.selectSubnets({
   subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
 }).subnets[0];
-(privateSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.1.0.0/16');
+(privateSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.0.1.0/24');
 
 const isolatedSubnet = vpc.selectSubnets({
   subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 }).subnets[0];
-(isolatedSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.2.0.0/16');
+(isolatedSubnet.node.defaultChild as ec2.CfnSubnet).addPropertyOverride('CidrBlock', '10.0.2.0/24');
 
 const elasticIp = new ec2.CfnEIP(stack, 'ElasticIp');
 
@@ -90,7 +90,20 @@ new elbv2.NetworkLoadBalancer(stack, 'InternetFacingLb', {
     {
       subnet: publicSubnet,
       allocationId: elasticIp.attrAllocationId,
-      privateIpv4Address: '10.0.12.29',
+    },
+  ],
+});
+
+new elbv2.NetworkLoadBalancer(stack, 'InternalLb', {
+  vpc,
+  internetFacing: false,
+  securityGroups: [
+    new ec2.SecurityGroup(stack, 'InternalLbSg', { vpc }),
+  ],
+  subnetMappings: [
+    {
+      subnet: privateSubnet,
+      privateIpv4Address: '10.0.1.70',
     },
   ],
 });
