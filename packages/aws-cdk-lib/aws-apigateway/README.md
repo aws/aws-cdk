@@ -1400,7 +1400,7 @@ const api = new apigateway.RestApi(this, 'books', {
 
 **Note:** The delivery stream name must start with `amazon-apigateway-`.
 
-> Visit [Logging API calls to Kinesis Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
+> Visit [Logging API calls to Amazon Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
 
 ## Cross Origin Resource Sharing (CORS)
 

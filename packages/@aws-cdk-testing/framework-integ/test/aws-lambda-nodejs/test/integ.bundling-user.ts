@@ -21,7 +21,7 @@ new lambda.NodejsFunction(stack, 'ts-decorator-handler-root-user', {
         return ['id'];
       },
       afterBundling: function (_inputDir: string, _outputDir: string): string[] {
-        return ['mkdir test'];
+        return ['pwd'];
       },
     },
   },

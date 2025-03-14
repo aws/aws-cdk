@@ -58,7 +58,7 @@ jobs:
 env:
  OSDS_DEVS: >
            {
-             "assignees":["ashishdhingra","khushail","hunhsieh"]
+             "assignees":["ashishdhingra","hunhsieh"]
            }
 
  AREA_AFFIXES: >

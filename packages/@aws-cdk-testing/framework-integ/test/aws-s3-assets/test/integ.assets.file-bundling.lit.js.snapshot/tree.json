@@ -25,7 +25,8 @@
                 "path": "cdk-integ-assets-bundling/BundledAsset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
@@ -122,13 +123,44 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToUser": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToUser": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.User",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*",
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "BundledAssetWithoutExtension": {
@@ -148,7 +180,8 @@
                 "path": "cdk-integ-assets-bundling/BundledAssetWithoutExtension/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               }
             },
