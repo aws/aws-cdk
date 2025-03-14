@@ -771,6 +771,9 @@ On Success - The conditions for making checks for the stage when it succeeds. Ru
 Conditions are supported by a set of `rules` for each type of condition.
 
 ```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
 new codepipeline.Pipeline(this, 'Pipeline', {
   pipelineType: codepipeline.PipelineType.V2,
   stages: [
@@ -789,7 +792,7 @@ new codepipeline.Pipeline(this, 'Pipeline', {
             provider: 'LambdaInvoke',
             version: '1',
             configuration: {
-              AlarmName: alarm.alarmName,
+              AlarmName: 'AlarmName',
               WaitTime: '300',
               FunctionName: 'funcName2'
             },
@@ -813,8 +816,6 @@ new codepipeline.Pipeline(this, 'Pipeline', {
     },
   ],
 });
-```ts
-
 ```
 
 ## Migrating a pipeline type from V1 to V2
