@@ -35,7 +35,7 @@ describe('EcrBuildAndPublish Action', () => {
     const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
       actionName: 'EcrBuildAndPublish',
       input: sourceOutput,
-      repository,
+      repositoryName: repository.repositoryName,
       dockerfileDirectoryPath: './my-dir',
       imageTags: ['my-tag-1', 'my-tag-2'],
       registryType: cpactions.RegistryType.PRIVATE,
@@ -92,7 +92,7 @@ describe('EcrBuildAndPublish Action', () => {
     const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
       actionName: 'EcrBuildAndPublish',
       input: sourceOutput,
-      repository,
+      repositoryName: repository.repositoryName,
     });
 
     // THEN
@@ -106,7 +106,7 @@ describe('EcrBuildAndPublish Action', () => {
       const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
-        repository,
+        repositoryName: repository.repositoryName,
         registryType: cpactions.RegistryType.PRIVATE,
       });
 
@@ -132,9 +132,18 @@ describe('EcrBuildAndPublish Action', () => {
               ],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'Repository22E53BBD',
-                  'Arn',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':repository/',
+                    { Ref: 'Repository22E53BBD' },
+                  ],
                 ],
               },
             },
@@ -153,7 +162,7 @@ describe('EcrBuildAndPublish Action', () => {
       const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
-        repository,
+        repositoryName: repository.repositoryName,
         registryType: cpactions.RegistryType.PUBLIC,
       });
 
@@ -178,9 +187,16 @@ describe('EcrBuildAndPublish Action', () => {
               ],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'Repository22E53BBD',
-                  'Arn',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ecr-public::',
+                    { Ref: 'AWS::AccountId' },
+                    ':repository/',
+                    { Ref: 'Repository22E53BBD' },
+                  ],
                 ],
               },
             },
@@ -202,7 +218,7 @@ describe('EcrBuildAndPublish Action', () => {
       const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
-        repository,
+        repositoryName: repository.repositoryName,
       });
 
       pipeline.addStage({
@@ -282,7 +298,7 @@ describe('EcrBuildAndPublish Action', () => {
       const ecrBuildAndPublishAction = new cpactions.EcrBuildAndPublishAction({
         actionName: 'EcrBuildAndPublish',
         input: sourceOutput,
-        repository,
+        repositoryName: repository.repositoryName,
       });
 
       pipeline.addStage({

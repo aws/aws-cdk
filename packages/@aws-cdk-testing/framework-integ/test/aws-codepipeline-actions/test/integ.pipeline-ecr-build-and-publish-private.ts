@@ -17,7 +17,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'codepipeline-ecr-build-and-publish');
+const stack = new cdk.Stack(app, 'codepipeline-ecr-build-and-publish-private');
 
 // Make sure you specify your connection ARN, your repository owner and name.
 const connectionArn = process.env.CONNECTION_ARN || 'MOCK';
@@ -47,13 +47,13 @@ const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
 });
 
-const imageTag1 = 'my-tag-1';
-const imageTag2 = 'my-tag-2';
+const imageTag = 'my-tag';
 const buildAction = new cpactions.EcrBuildAndPublishAction({
   actionName: 'EcrBuildAndPublishAction',
-  repository: repository,
+  repositoryName: repository.repositoryName,
+  registryType: cpactions.RegistryType.PRIVATE,
   dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
-  imageTags: [imageTag1, imageTag2],
+  imageTags: [imageTag],
   input: sourceOutput,
 });
 
@@ -71,7 +71,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-const integ = new IntegTest(app, 'codepipeline-ecr-build-and-publish-test', {
+const integ = new IntegTest(app, 'codepipeline-ecr-build-and-publish-private-test', {
   testCases: [stack],
   diffAssets: true,
 });
@@ -85,7 +85,7 @@ const describeImagesCall = integ.assertions.awsApiCall('ECR', 'describeImages', 
 }).expect(ExpectedResult.objectLike({
   imageDetails: Match.arrayWith([
     Match.objectLike({
-      imageTags: Match.arrayWith([imageTag1, imageTag2]),
+      imageTags: Match.arrayWith([imageTag]),
     }),
   ]),
 }));

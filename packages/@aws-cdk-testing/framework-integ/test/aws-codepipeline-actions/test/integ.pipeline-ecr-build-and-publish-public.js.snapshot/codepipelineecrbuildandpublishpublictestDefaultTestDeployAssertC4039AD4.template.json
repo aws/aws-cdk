@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "codepipeline-ecr-build-and-publish:ExportsOutputRefPipelineC660917DEB540586"
+         "Fn::ImportValue": "codepipeline-ecr-build-and-publish-public:ExportsOutputRefPipelineC660917DEB540586"
         },
         "\""
        ]
@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741945291999"
+    "salt": "1741955380463"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -68,7 +68,7 @@
         },
         {
          "Action": [
-          "ecr:DescribeImages"
+          "ecr-public:DescribeImages"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -127,8 +127,8 @@
     }
    }
   },
-  "AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0": {
-   "Type": "Custom::DeployAssert@SdkCallECRdescribeImages",
+  "AwsApiCallECRPublicdescribeImagesd1602c2645e44999fc1ef3c818b94a04": {
+   "Type": "Custom::DeployAssert@SdkCallECR-PublicdescribeImages",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -136,25 +136,14 @@
       "Arn"
      ]
     },
-    "service": "ECR",
+    "service": "ECR-Public",
     "api": "describeImages",
-    "expected": "{\"$ObjectLike\":{\"imageDetails\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"imageTags\":{\"$ArrayWith\":[\"my-tag-1\",\"my-tag-2\"]}}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"imageDetails\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"imageTags\":{\"$ArrayWith\":[\"my-tag\"]}}}]}}}",
     "parameters": {
-     "repositoryName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "codepipeline-ecr-build-and-publish:ExportsOutputRefRepository22E53BBD9A9E013B"
-        },
-        "\""
-       ]
-      ]
-     }
+     "repositoryName": "\"my-repo/test-repository\""
     },
     "flattenResponse": "false",
-    "salt": "1741945292000"
+    "salt": "1741955380464"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -189,7 +178,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "codepipeline-ecr-build-and-publish:ExportsOutputRefPipelineC660917DEB540586"
+         "Fn::ImportValue": "codepipeline-ecr-build-and-publish-public:ExportsOutputRefPipelineC660917DEB540586"
         },
         "\""
        ]
@@ -197,7 +186,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1741945292000"
+    "salt": "1741955380464"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -376,7 +365,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -426,7 +415,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6eae57da2b343229b97cfa6b9fd2a70b0a928ebe32bb59e744e59440381146af.zip"
+     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -564,10 +553,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0": {
+  "AssertionResultsAwsApiCallECRPublicdescribeImagesd1602c2645e44999fc1ef3c818b94a04": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0",
+     "AwsApiCallECRPublicdescribeImagesd1602c2645e44999fc1ef3c818b94a04",
      "assertion"
     ]
    }

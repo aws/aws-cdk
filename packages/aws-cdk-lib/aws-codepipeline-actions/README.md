@@ -644,7 +644,8 @@ const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
 
 const buildAction = new codepipeline_actions.EcrBuildAndPublishAction({
   actionName: 'EcrBuildAndPublishAction',
-  repository: repository,
+  repositoryName: repository.repositoryName,
+  registryType: codepipeline_actions.RegistryType.PRIVATE,
   dockerfileDirectoryPath: './my-dir', // The path indicates ./my-dir/Dockerfile in the source repository
   imageTags: ['my-tag-1', 'my-tag-2'],
   input: sourceOutput,

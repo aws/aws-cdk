@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "codepipeline-ecr-build-and-publish": {
-        "id": "codepipeline-ecr-build-and-publish",
-        "path": "codepipeline-ecr-build-and-publish",
+      "codepipeline-ecr-build-and-publish-private": {
+        "id": "codepipeline-ecr-build-and-publish-private",
+        "path": "codepipeline-ecr-build-and-publish-private",
         "children": {
           "Repository": {
             "id": "Repository",
-            "path": "codepipeline-ecr-build-and-publish/Repository",
+            "path": "codepipeline-ecr-build-and-publish-private/Repository",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "codepipeline-ecr-build-and-publish/Repository/Resource",
+                "path": "codepipeline-ecr-build-and-publish-private/Repository/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
@@ -37,15 +37,15 @@
           },
           "Pipeline": {
             "id": "Pipeline",
-            "path": "codepipeline-ecr-build-and-publish/Pipeline",
+            "path": "codepipeline-ecr-build-and-publish-private/Pipeline",
             "children": {
               "ArtifactsBucket": {
                 "id": "ArtifactsBucket",
-                "path": "codepipeline-ecr-build-and-publish/Pipeline/ArtifactsBucket",
+                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/ArtifactsBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/ArtifactsBucket/Resource",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/ArtifactsBucket/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
@@ -73,11 +73,11 @@
                   },
                   "Policy": {
                     "id": "Policy",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/ArtifactsBucket/Policy",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/ArtifactsBucket/Policy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "codepipeline-ecr-build-and-publish/Pipeline/ArtifactsBucket/Policy/Resource",
+                        "path": "codepipeline-ecr-build-and-publish-private/Pipeline/ArtifactsBucket/Policy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                           "aws:cdk:cloudformation:props": {
@@ -150,11 +150,11 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "codepipeline-ecr-build-and-publish/Pipeline/Role",
+                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/Role/ImportRole",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2",
@@ -165,7 +165,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/Role/Resource",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -190,11 +190,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/Role/DefaultPolicy",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "codepipeline-ecr-build-and-publish/Pipeline/Role/DefaultPolicy/Resource",
+                        "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -301,7 +301,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "codepipeline-ecr-build-and-publish/Pipeline/Resource",
+                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
@@ -371,7 +371,8 @@
                                 "Ref": "Repository22E53BBD"
                               },
                               "DockerFilePath": "./my-dir",
-                              "ImageTags": "my-tag-1,my-tag-2"
+                              "ImageTags": "my-tag",
+                              "RegistryType": "private"
                             },
                             "runOrder": 1,
                             "roleArn": {
@@ -393,19 +394,19 @@
               },
               "Source": {
                 "id": "Source",
-                "path": "codepipeline-ecr-build-and-publish/Pipeline/Source",
+                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source",
                 "children": {
                   "CodeStarConnectionsSourceAction": {
                     "id": "CodeStarConnectionsSourceAction",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction",
                     "children": {
                       "CodePipelineActionRole": {
                         "id": "CodePipelineActionRole",
-                        "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole",
+                        "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole",
                         "children": {
                           "ImportCodePipelineActionRole": {
                             "id": "ImportCodePipelineActionRole",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2",
@@ -416,7 +417,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/Resource",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -427,19 +428,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "PipelineRoleD68726F7",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -456,11 +447,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "codepipeline-ecr-build-and-publish/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -590,19 +581,19 @@
               },
               "Build": {
                 "id": "Build",
-                "path": "codepipeline-ecr-build-and-publish/Pipeline/Build",
+                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build",
                 "children": {
                   "EcrBuildAndPublishAction": {
                     "id": "EcrBuildAndPublishAction",
-                    "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction",
+                    "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction",
                     "children": {
                       "CodePipelineActionRole": {
                         "id": "CodePipelineActionRole",
-                        "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole",
+                        "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole",
                         "children": {
                           "ImportCodePipelineActionRole": {
                             "id": "ImportCodePipelineActionRole",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2",
@@ -613,7 +604,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/Resource",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -624,19 +615,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "PipelineRoleD68726F7",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -653,11 +634,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy",
+                            "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "codepipeline-ecr-build-and-publish/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "path": "codepipeline-ecr-build-and-publish-private/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -675,9 +656,26 @@
                                           ],
                                           "Effect": "Allow",
                                           "Resource": {
-                                            "Fn::GetAtt": [
-                                              "Repository22E53BBD",
-                                              "Arn"
+                                            "Fn::Join": [
+                                              "",
+                                              [
+                                                "arn:",
+                                                {
+                                                  "Ref": "AWS::Partition"
+                                                },
+                                                ":ecr:",
+                                                {
+                                                  "Ref": "AWS::Region"
+                                                },
+                                                ":",
+                                                {
+                                                  "Ref": "AWS::AccountId"
+                                                },
+                                                ":repository/",
+                                                {
+                                                  "Ref": "Repository22E53BBD"
+                                                }
+                                              ]
                                             ]
                                           }
                                         },
@@ -846,11 +844,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "codepipeline-ecr-build-and-publish/Exports",
+            "path": "codepipeline-ecr-build-and-publish-private/Exports",
             "children": {
               "Output{\"Ref\":\"PipelineC660917D\"}": {
                 "id": "Output{\"Ref\":\"PipelineC660917D\"}",
-                "path": "codepipeline-ecr-build-and-publish/Exports/Output{\"Ref\":\"PipelineC660917D\"}",
+                "path": "codepipeline-ecr-build-and-publish-private/Exports/Output{\"Ref\":\"PipelineC660917D\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -858,7 +856,7 @@
               },
               "Output{\"Ref\":\"Repository22E53BBD\"}": {
                 "id": "Output{\"Ref\":\"Repository22E53BBD\"}",
-                "path": "codepipeline-ecr-build-and-publish/Exports/Output{\"Ref\":\"Repository22E53BBD\"}",
+                "path": "codepipeline-ecr-build-and-publish-private/Exports/Output{\"Ref\":\"Repository22E53BBD\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -872,7 +870,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "codepipeline-ecr-build-and-publish/BootstrapVersion",
+            "path": "codepipeline-ecr-build-and-publish-private/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -880,7 +878,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "codepipeline-ecr-build-and-publish/CheckBootstrapVersion",
+            "path": "codepipeline-ecr-build-and-publish-private/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.4.2"
@@ -892,17 +890,17 @@
           "version": "10.4.2"
         }
       },
-      "codepipeline-ecr-build-and-publish-test": {
-        "id": "codepipeline-ecr-build-and-publish-test",
-        "path": "codepipeline-ecr-build-and-publish-test",
+      "codepipeline-ecr-build-and-publish-private-test": {
+        "id": "codepipeline-ecr-build-and-publish-private-test",
+        "path": "codepipeline-ecr-build-and-publish-private-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest",
+            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/Default",
+                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.4.2"
@@ -910,19 +908,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert",
+                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert",
                 "children": {
                   "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e": {
                     "id": "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -936,11 +934,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/Default",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -963,11 +961,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -975,7 +973,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -983,7 +981,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -997,7 +995,7 @@
                   },
                   "LatestNodeRuntimeMap": {
                     "id": "LatestNodeRuntimeMap",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -1005,15 +1003,15 @@
                   },
                   "AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0": {
                     "id": "AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/SdkProvider",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1027,11 +1025,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/Default",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/Default/Default",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1050,7 +1048,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/AssertionResults",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallECRdescribeImagesdc92031ef85d8155fa9c6785a29736d0/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1064,15 +1062,15 @@
                   },
                   "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e": {
                     "id": "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1086,11 +1084,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1109,15 +1107,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1125,7 +1123,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1139,11 +1137,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1151,7 +1149,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/Invoke",
+                                "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.4.2"
@@ -1165,7 +1163,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Role",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1173,7 +1171,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Resource",
+                            "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.4.2"
@@ -1187,7 +1185,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/AssertionResults",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1201,11 +1199,11 @@
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
                     "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1213,7 +1211,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1221,7 +1219,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1235,11 +1233,11 @@
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
                     "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1247,7 +1245,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1255,7 +1253,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.4.2"
@@ -1269,7 +1267,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"
@@ -1277,7 +1275,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "codepipeline-ecr-build-and-publish-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.4.2"

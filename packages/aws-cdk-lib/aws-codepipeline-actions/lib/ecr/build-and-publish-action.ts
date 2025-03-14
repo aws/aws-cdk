@@ -39,9 +39,9 @@ export enum RegistryType {
  */
 export interface EcrBuildAndPublishActionProps extends codepipeline.CommonAwsActionProps {
   /**
-   * The Amazon ECR repository where the image is pushed.
+   * The name of the ECR repository where the image is pushed.
    */
-  readonly repository: ecr.IRepository;
+  readonly repositoryName: string;
 
   /**
    * The directory path of Dockerfile used to build the image.
@@ -103,8 +103,15 @@ export class EcrBuildAndPublishAction extends Action {
     // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#edit-role-ECRBuildAndPublish
     if (this.props.registryType === RegistryType.PUBLIC) {
       // Public registry
+      const repositoryArn = cdk.Stack.of(scope).formatArn({
+        service: 'ecr-public',
+        resource: 'repository',
+        resourceName: this.props.repositoryName,
+        region: '',
+      });
+
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        resources: [this.props.repository.repositoryArn],
+        resources: [repositoryArn],
         actions: [
           'ecr-public:DescribeRepositories',
           'ecr-public:InitiateLayerUpload',
@@ -118,8 +125,15 @@ export class EcrBuildAndPublishAction extends Action {
       ecr.PublicGalleryAuthorizationToken.grantRead(options.role);
     } else {
       // Private registry
+      const repositoryArn = cdk.Stack.of(scope).formatArn({
+        service: 'ecr',
+        resource: 'repository',
+        resourceName: this.props.repositoryName,
+        region: cdk.Stack.of(scope).region,
+      });
+
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        resources: [this.props.repository.repositoryArn],
+        resources: [repositoryArn],
         actions: [
           'ecr:DescribeRepositories',
           'ecr:InitiateLayerUpload',
@@ -158,7 +172,7 @@ export class EcrBuildAndPublishAction extends Action {
 
     return {
       configuration: {
-        ECRRepositoryName: this.props.repository.repositoryName,
+        ECRRepositoryName: this.props.repositoryName,
         DockerFilePath: this.props.dockerfileDirectoryPath,
         ImageTags: this.props.imageTags !== undefined ? this.props.imageTags.join(',') : undefined,
         RegistryType: this.props.registryType,

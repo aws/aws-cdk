@@ -1,12 +1,10 @@
 {
     "Resources": {
-        "Repository22E53BBD": {
-            "Type": "AWS::ECR::Repository",
+        "Repository": {
+            "Type": "AWS::ECR::PublicRepository",
             "Properties": {
-                "EmptyOnDelete": true
-            },
-            "UpdateReplacePolicy": "Delete",
-            "DeletionPolicy": "Delete"
+                "RepositoryName": "my-repo/test-repository"
+            }
         },
         "PipelineArtifactsBucket22248F97": {
             "Type": "AWS::S3::Bucket",
@@ -223,11 +221,10 @@
                                     "Version": "1"
                                 },
                                 "Configuration": {
-                                    "ECRRepositoryName": {
-                                        "Ref": "Repository22E53BBD"
-                                    },
+                                    "ECRRepositoryName": "my-repo/test-repository",
                                     "DockerFilePath": "./my-dir",
-                                    "ImageTags": "my-tag-1,my-tag-2"
+                                    "ImageTags": "my-tag",
+                                    "RegistryType": "public"
                                 },
                                 "InputArtifacts": [
                                     {
@@ -263,19 +260,9 @@
                             "Effect": "Allow",
                             "Principal": {
                                 "AWS": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "arn:",
-                                            {
-                                                "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::",
-                                            {
-                                                "Ref": "AWS::AccountId"
-                                            },
-                                            ":root"
-                                        ]
+                                    "Fn::GetAtt": [
+                                        "PipelineRoleD68726F7",
+                                        "Arn"
                                     ]
                                 }
                             }
@@ -374,19 +361,9 @@
                             "Effect": "Allow",
                             "Principal": {
                                 "AWS": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "arn:",
-                                            {
-                                                "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::",
-                                            {
-                                                "Ref": "AWS::AccountId"
-                                            },
-                                            ":root"
-                                        ]
+                                    "Fn::GetAtt": [
+                                        "PipelineRoleD68726F7",
+                                        "Arn"
                                     ]
                                 }
                             }
@@ -403,24 +380,36 @@
                     "Statement": [
                         {
                             "Action": [
-                                "ecr:BatchCheckLayerAvailability",
-                                "ecr:CompleteLayerUpload",
-                                "ecr:DescribeRepositories",
-                                "ecr:GetDownloadUrlForLayer",
-                                "ecr:InitiateLayerUpload",
-                                "ecr:PutImage",
-                                "ecr:UploadLayerPart"
+                                "ecr-public:BatchCheckLayerAvailability",
+                                "ecr-public:CompleteLayerUpload",
+                                "ecr-public:DescribeRepositories",
+                                "ecr-public:InitiateLayerUpload",
+                                "ecr-public:PutImage",
+                                "ecr-public:UploadLayerPart"
                             ],
                             "Effect": "Allow",
                             "Resource": {
-                                "Fn::GetAtt": [
-                                    "Repository22E53BBD",
-                                    "Arn"
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:",
+                                        {
+                                            "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr-public::",
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        ":repository/my-repo/test-repository"
+                                    ]
                                 ]
                             }
                         },
                         {
-                            "Action": "ecr:GetAuthorizationToken",
+                            "Action": [
+                                "ecr-public:GetAuthorizationToken",
+                                "sts:GetServiceBearerToken"
+                            ],
                             "Effect": "Allow",
                             "Resource": "*"
                         },
@@ -529,15 +518,7 @@
                 "Ref": "PipelineC660917D"
             },
             "Export": {
-                "Name": "codepipeline-ecr-build-and-publish:ExportsOutputRefPipelineC660917DEB540586"
-            }
-        },
-        "ExportsOutputRefRepository22E53BBD9A9E013B": {
-            "Value": {
-                "Ref": "Repository22E53BBD"
-            },
-            "Export": {
-                "Name": "codepipeline-ecr-build-and-publish:ExportsOutputRefRepository22E53BBD9A9E013B"
+                "Name": "codepipeline-ecr-build-and-publish-public:ExportsOutputRefPipelineC660917DEB540586"
             }
         }
     },
