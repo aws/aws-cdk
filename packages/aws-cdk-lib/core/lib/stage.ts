@@ -175,7 +175,6 @@ export class Stage extends Construct {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
-    log('In Stage ctor');
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);

@@ -130,7 +130,6 @@ export function applyInjectors(uniqueId: string, originalProps: any, context: In
     injectors = findInjectorsFromConstruct(context.scope, uniqueId);
   } catch (err) {
     // this happens when no PropertyInjector is found in the scope tree
-    warn('No PropertyInjector found in the scope tree');
     return originalProps;
   }
 

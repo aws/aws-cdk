@@ -440,7 +440,6 @@ export class Stack extends Construct implements ITaggable {
 
     super(scope, id);
 
-    log('In Stack ctor');
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);
