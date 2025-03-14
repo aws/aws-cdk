@@ -28,7 +28,7 @@ new Role(stack, 'TestRole2', {
 
 // Role with an org
 new Role(stack, 'TestRole3', {
-  assumedBy: new OrganizationPrincipal('o-12345abcde'),
+  assumedBy: new OrganizationPrincipal('o-1234'),
 });
 
 new IntegTest(app, 'integ-iam-role', {

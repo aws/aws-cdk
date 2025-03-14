@@ -125,6 +125,7 @@ export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRe
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
+export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1415,6 +1416,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from Stage addActions trust policy',
+    detailsMd: `
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
+    `,
+    introducedIn: { v2: '2.184.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
 
   //////////////////////////////////////////////////////////////////////
   [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
