@@ -1,0 +1,18 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "codepipeline-ecr-build-and-publish-public-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-ecr-build-and-publish-public"
+      ],
+      "hooks": {
+        "postDeploy": [
+          "aws ecr-public delete-repository --repository-name my-repo/test-repository --force"
+        ]
+      },
+      "diffAssets": true,
+      "assertionStack": "codepipeline-ecr-build-and-publish-public-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelineecrbuildandpublishpublictestDefaultTestDeployAssertC4039AD4"
+    }
+  }
+}
