@@ -280,7 +280,15 @@ export abstract class BaseLoadBalancer extends Resource {
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       ...(subnetIds ? { subnets: subnetIds } : {}),
-      ...(subnetMappings ? { subnetMappings } : {}),
+      ...(subnetMappings ? {
+        subnetMappings: subnetMappings?.map((mapping) => ({
+          subnetId: mapping.subnet.subnetId,
+          allocationId: mapping.allocationId,
+          privateIpv4Address: mapping.privateIpv4Address,
+          ipv6Address: mapping.ipv6Address,
+          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+        })),
+      } : {}),
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {

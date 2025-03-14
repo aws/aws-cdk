@@ -352,13 +352,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
-      subnetMappings: props.subnetMappings?.map((mapping) => ({
-        subnetId: mapping.subnet.subnetId,
-        allocationId: mapping.allocationId,
-        ipv6Address: mapping.ipv6Address,
-        privateIpv4Address: mapping.privateIpv4Address,
-        sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
-      })),
+      subnetMappings: props.subnetMappings,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
