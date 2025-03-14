@@ -32,7 +32,7 @@ export interface IGrantable {
  * Notifications Service).
  *
  * A single logical Principal may also map to a set of physical principals.
- * For example, `new OrganizationPrincipal('o-12345abcde')` represents all
+ * For example, `new OrganizationPrincipal('o-1234')` represents all
  * identities that are part of the given AWS Organization.
  */
 export interface IPrincipal extends IGrantable {
@@ -603,9 +603,6 @@ export class ServicePrincipal extends PrincipalBase {
 
 /**
  * A principal that represents an AWS Organization
- *
- * Property organizationId must match regex pattern ^o-[a-z0-9]{10,32}$
- * @see https://docs.aws.amazon.com/organizations/latest/APIReference/API_Organization.html
  */
 export class OrganizationPrincipal extends PrincipalBase {
   /**
@@ -614,9 +611,6 @@ export class OrganizationPrincipal extends PrincipalBase {
    */
   constructor(public readonly organizationId: string) {
     super();
-    if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
-      throw new Error(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
-    }
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
