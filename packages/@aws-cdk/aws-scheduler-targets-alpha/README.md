@@ -31,7 +31,7 @@ The following targets are supported:
 6. `targets.EventBridgePutEvents`: [Put Events on EventBridge](#send-events-to-an-eventbridge-event-bus)
 7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
 8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Stream](#put-a-record-to-an-amazon-kinesis-data-stream)
-9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
+9. `targets.KinesisDataFirehosePutRecord`: [Put a record to an Amazon Data Firehose](#put-a-record-to-an-amazon-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
 12. `targets.Universal`: [Invoke a wider set of AWS API](#invoke-a-wider-set-of-aws-api)
@@ -252,9 +252,9 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Put a record to a Kinesis Data Firehose
+## Put a record to an Amazon Data Firehose
 
-Use the `KinesisDataFirehosePutRecord` target to put a record to a Kinesis Data Firehose delivery stream.
+Use the `KinesisDataFirehosePutRecord` target to put a record to an Amazon Data Firehose delivery stream.
 
 The code snippet below creates an event rule with a delivery stream as a target
 called every hour by EventBridge Scheduler with a custom payload.

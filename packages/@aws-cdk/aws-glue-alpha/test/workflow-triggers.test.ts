@@ -64,7 +64,7 @@ describe('Workflow and Triggers', () => {
   });
 
   test('creates a workflow with conditional trigger', () => {
-    workflow.addconditionalTrigger('ConditionalTrigger', {
+    workflow.addConditionalTrigger('ConditionalTrigger', {
       actions: [{ job }],
       predicate: {
         conditions: [

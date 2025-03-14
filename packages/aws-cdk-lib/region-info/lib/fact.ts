@@ -186,7 +186,7 @@ export class FactName {
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
 
   /**
-   * The CIDR block used by Kinesis Data Firehose servers.
+   * The CIDR block used by Amazon Data Firehose servers.
    */
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
 

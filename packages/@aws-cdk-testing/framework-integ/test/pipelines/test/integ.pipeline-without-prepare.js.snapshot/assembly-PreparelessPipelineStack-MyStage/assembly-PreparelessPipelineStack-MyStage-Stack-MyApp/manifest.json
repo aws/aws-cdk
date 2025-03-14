@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "PreparelessPipelineStackMyStageStackMyAppStack51FBCD39.assets": {
       "type": "cdk:asset-manifest",
@@ -35,6 +35,12 @@
         "PreparelessPipelineStackMyStageStackMyAppStack51FBCD39.assets"
       ],
       "metadata": {
+        "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",

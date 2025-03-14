@@ -4,7 +4,12 @@ import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  treeMetadata: false,
+  postCliContext: {
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-with-pipeline-triggers');
 

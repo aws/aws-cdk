@@ -2,7 +2,7 @@ import { StreamEncryptionType } from './delivery-stream';
 import { IKey } from '../../aws-kms';
 
 /**
- * Represents server-side encryption for a Kinesis Firehose Delivery Stream.
+ * Represents server-side encryption for an Amazon Firehose Delivery Stream.
  */
 export abstract class StreamEncryption {
   /**
@@ -35,7 +35,7 @@ export abstract class StreamEncryption {
   /**
    * Constructor for StreamEncryption.
    *
-   * @param type The type of server-side encryption for the Kinesis Firehose delivery stream.
+   * @param type The type of server-side encryption for the Amazon Firehose delivery stream.
    * @param encryptionKey Optional KMS key used for customer managed encryption.
    */
   private constructor (

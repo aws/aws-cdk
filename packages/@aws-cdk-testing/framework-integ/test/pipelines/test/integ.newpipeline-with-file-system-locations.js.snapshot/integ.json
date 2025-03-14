@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "40.0.0",
   "testCases": {
     "cdk-integ-codepipeline-with-file-system-locations/DefaultTest": {
       "stacks": [

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-emr-containers-start-job-run.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1f931800bcb71a92c5da72953c233e70d76e5f04fc74bcf04483c9a9f57405c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2dd4102fa6b5331f2df94ef098985d85e5f88a6b8d16d11b167a07edd94b6f37.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,7 +43,10 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster": [
@@ -2829,33 +2832,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "StartaJobRunCallUpdateRoleTrustPolicyinlinePolicyAddedToExecutionRole06B56B67D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StartaJobRunCallUpdateRoleTrustPolicyinlinePolicyAddedToExecutionRole06B56B67D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "StartaJobRunCallUpdateRoleTrustPolicyinlinePolicyAddedToExecutionRole10015039B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StartaJobRunCallUpdateRoleTrustPolicyinlinePolicyAddedToExecutionRole10015039B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "StartaJobRunCustomResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F0978F29": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StartaJobRunCustomResourceProviderframeworkonEventinlinePolicyAddedToExecutionRole0F0978F29",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

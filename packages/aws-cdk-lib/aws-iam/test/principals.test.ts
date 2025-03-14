@@ -518,15 +518,3 @@ test('ServicePrinciple construct by default reset the principle name to the defa
     },
   });
 });
-
-test('throw error when Organization ID does not match regex pattern', () => {
-  // GIVEN
-  const shortOrgId = 'o-shortname';
-  const noOOrgName = 'no-o-name';
-  const longOrgName = 'o-thisnameistoooooooooooooooooolong';
-
-  // THEN
-  expect(() => new iam.OrganizationPrincipal(shortOrgId)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${shortOrgId}`);
-  expect(() => new iam.OrganizationPrincipal(noOOrgName)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${noOOrgName}`);
-  expect(() => new iam.OrganizationPrincipal(longOrgName)).toThrow(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${longOrgName}`);
-});

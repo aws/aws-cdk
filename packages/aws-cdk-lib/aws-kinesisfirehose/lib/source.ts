@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 
 /**
- * A Kinesis Data Firehose delivery stream source configuration.
+ * An Amazon Data Firehose delivery stream source configuration.
  */
 interface SourceConfig {
   /**
@@ -27,11 +27,11 @@ interface SourceConfig {
 }
 
 /**
- * An interface for defining a source that can be used in a Kinesis Data Firehose delivery stream.
+ * An interface for defining a source that can be used in an Amazon Data Firehose delivery stream.
  */
 export interface ISource {
   /**
-   * Binds this source to the Kinesis Data Firehose delivery stream.
+   * Binds this source to the Amazon Data Firehose delivery stream.
    *
    * @internal
    */
@@ -48,7 +48,7 @@ export interface ISource {
 }
 
 /**
- * A Kinesis Data Firehose delivery stream source.
+ * An Amazon Data Firehose delivery stream source.
  */
 export class KinesisStreamSource implements ISource {
   /**
@@ -61,7 +61,7 @@ export class KinesisStreamSource implements ISource {
   }
 
   /**
-   * Binds the Kinesis stream as a source for the Kinesis Data Firehose delivery stream.
+   * Binds the Kinesis stream as a source for the Amazon Data Firehose delivery stream.
    *
    * @returns The configuration needed to use this Kinesis stream as the delivery stream source.
    * @internal

@@ -1,5 +1,5 @@
-import { IDeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
@@ -111,7 +111,7 @@ export interface LogDestinationParameters {
   readonly cloudwatchLogsLogDestination?: CfnPipe.CloudwatchLogsLogDestinationProperty;
 
   /**
-   * The Amazon Kinesis Data Firehose logging configuration settings for the pipe.
+   * The Amazon Data Firehose logging configuration settings for the pipe.
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-firehoselogdestination
    *

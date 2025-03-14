@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "artifacts": {
     "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f3e0a7f514848c5292f5ef7ac5cb95255e24a115fc2f2591fe66e2fbde0a08a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8254a42c7c4e1105fe25a556d7fd5aaf6bc00194596cf32fceb1de6339c3b499.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,16 +34,112 @@
         "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution.assets"
       ],
       "metadata": {
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/MyParameter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/MyParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyParameter18BA547D"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definitionBody": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/StateMachine/Role/DefaultPolicy/Resource": [
@@ -59,16 +154,40 @@
             "data": "StateMachine2E01A3A5"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "versioned": true,
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Bucket/AutoDeleteObjectsCustomResource/Default": [
@@ -101,10 +220,64 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketDeploymentAwsCliLayerB018DCE1"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/BucketDeployment/CustomResource/Default": [
@@ -115,6 +288,43 @@
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -123,10 +333,102 @@
             "data": 2
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
@@ -143,8 +445,57 @@
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "crossAccountKeys": true,
+              "stages": [
+                {
+                  "stageName": "*",
+                  "actions": [
+                    {}
+                  ]
+                },
+                {
+                  "stageName": "*",
+                  "actions": [
+                    {}
+                  ]
+                }
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:warning",
             "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStage": [
+                {
+                  "stageName": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucketEncryptionKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "enableKeyRotation": "*"
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
@@ -153,10 +504,33 @@
             "data": "PipelineArtifactsBucketEncryptionKey01D58D69"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucketEncryptionKeyAlias": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "aliasName": "*",
+              "targetKey": "*",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "encryptionKey": "*",
+              "encryption": "KMS",
+              "enforceSSL": true,
+              "blockPublicAccess": "*",
+              "removalPolicy": "retain"
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucket/Resource": [
@@ -165,16 +539,143 @@
             "data": "PipelineArtifactsBucket22248F97"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/ArtifactsBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineArtifactsBucketPolicyD4F9712A"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineRoleD68726F7"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/Role/DefaultPolicy/Resource": [
@@ -189,10 +690,130 @@
             "data": "PipelineC660917D"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/source/s3/CodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAssumeRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/source/s3/CodePipelineActionRole/ImportCodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/source/s3/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Pipelinesources3CodePipelineActionRoleED26674F"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/source/s3/CodePipelineActionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/source/s3/CodePipelineActionRole/DefaultPolicy/Resource": [
@@ -201,10 +822,114 @@
             "data": "Pipelinesources3CodePipelineActionRoleDefaultPolicy162AA6BE"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/build/change-parameter/CodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantAssumeRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/build/change-parameter/CodePipelineActionRole/ImportCodePipelineActionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/build/change-parameter/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelinebuildchangeparameterCodePipelineActionRole6C4D1FC3"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/build/change-parameter/CodePipelineActionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Pipeline/build/change-parameter/CodePipelineActionRole/DefaultPolicy/Resource": [
@@ -213,16 +938,94 @@
             "data": "PipelinebuildchangeparameterCodePipelineActionRoleDefaultPolicyA3A9F293"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Schedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/Schedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Schedule83A77FD1"
           }
         ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/SchedulerRoleForTarget-541102": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/SchedulerRoleForTarget-541102/ImportSchedulerRoleForTarget-541102": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/SchedulerRoleForTarget-541102/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SchedulerRoleForTarget5411029AC19639"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/SchedulerRoleForTarget-541102/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution/SchedulerRoleForTarget-541102/DefaultPolicy/Resource": [
@@ -261,10 +1064,9 @@
         "templateFile": "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9bd478fb13568f14d00e84faa959365cb68f42c0b1f4dd40faa535e82065ef86.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ecd780667503d4e9276c76539191371378ca7b57f0887097943e6fb4a4fd80c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -280,6 +1082,20 @@
         "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892.assets"
       ],
       "metadata": {
+        "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/Default/Default": [
           {
             "type": "aws:cdk:logicalId",

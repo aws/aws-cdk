@@ -4161,10 +4161,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   '@aws-cdk.aws-scheduler-alpha': {
-    'Group': {
-      'groupName': '*',
-      'removalPolicy': 'RemovalPolicy'
-    },
+    'Group': {},
+    'ScheduleGroup': {},
     'Schedule': {
       'schedule': '*',
       'target': '*',
@@ -4173,6 +4171,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'group': {
         'groupName': '*',
         'groupArn': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'scheduleGroup': {
+        'scheduleGroupName': '*',
+        'scheduleGroupArn': '*',
         'stack': '*',
         'env': {
           'account': '*',
@@ -18955,6 +18963,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
+      'fieldIndexPolicies': '*',
       'retention': 'RetentionDays',
       'logGroupClass': 'LogGroupClass',
       'removalPolicy': 'RemovalPolicy'
@@ -19286,6 +19295,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'publiclyAccessible': 'boolean',
+      'availabilityZone': '*',
       'preferredMaintenanceWindow': '*',
       'parameters': '*',
       'allowMajorVersionUpgrade': 'boolean',
@@ -24096,6 +24106,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   'aws-glue-alpha.lib': {
     'PySparkEtlJob': {
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24119,13 +24134,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'extraPythonFiles': '*',
-      'extraFiles': '*',
-      'extraJars': '*',
-      'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24192,6 +24202,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'PySparkFlexEtlJob': {
+      'notifyDelayAfter': '*',
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24215,13 +24230,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'notifyDelayAfter': '*',
-      'extraPythonFiles': '*',
-      'extraFiles': '*',
-      'extraJars': '*',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24288,6 +24298,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'PySparkStreamingJob': {
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24311,13 +24326,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'extraPythonFiles': '*',
-      'extraFiles': '*',
-      'extraJars': '*',
-      'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24521,6 +24531,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'ScalaSparkEtlJob': {
+      'className': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24544,12 +24559,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'className': '*',
-      'extraJars': '*',
-      'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24616,6 +24627,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'ScalaSparkFlexEtlJob': {
+      'notifyDelayAfter': '*',
+      'className': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24639,14 +24655,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'notifyDelayAfter': '*',
-      'className': '*',
-      'extraJars': '*',
-      'extraJarsFirst': 'boolean',
-      'extraFiles': '*',
       'script': '*',
       'role': {
         'roleArn': '*',
@@ -24713,6 +24723,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'ScalaSparkStreamingJob': {
+      'className': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
       'sparkUI': {
         'bucket': {
           'bucketArn': '*',
@@ -24736,12 +24751,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'policy': '*',
           'replicationRoleArn': '*'
         },
-        'prefix': '*',
-        'jobRunQueuingEnabled': 'boolean'
+        'prefix': '*'
       },
-      'className': '*',
-      'extraJars': '*',
-      'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
         'roleArn': '*',

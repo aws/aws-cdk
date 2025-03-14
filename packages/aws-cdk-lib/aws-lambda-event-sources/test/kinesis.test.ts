@@ -287,7 +287,7 @@ describe('KinesisEventSource', () => {
     });
   });
 
-  test('S3 onFailure Destination raise unsupport error', () => {
+  test('S3 onFailure Destination supported', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const testLambdaFunction = new TestFunction(stack, 'Fn');
@@ -297,15 +297,21 @@ describe('KinesisEventSource', () => {
     const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
     const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
 
-    expect(() => {
-      // WHEN
-      testLambdaFunction.addEventSource(new sources.KinesisEventSource(stream, {
-        startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
-        startingPositionTimestamp: 1640995200,
-        onFailure: s3OnFailureDestination,
-      }));
-    // THEN
-    }).toThrow('S3 onFailure Destination is not supported for this event source');
+    testLambdaFunction.addEventSource(new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      onFailure: s3OnFailureDestination,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'DestinationConfig': {
+        'OnFailure': {
+          'Destination': {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket']],
+          },
+        },
+      },
+    });
   });
 
   test('metrics config', () => {
