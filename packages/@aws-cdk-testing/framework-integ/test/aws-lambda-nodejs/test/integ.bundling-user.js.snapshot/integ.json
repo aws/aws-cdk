@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "BundlingUserTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-bundling-lambda-nodejs"
+      ],
+      "assertionStack": "BundlingUserTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BundlingUserTestDefaultTestDeployAssert0895CAA6"
+    }
+  }
+}

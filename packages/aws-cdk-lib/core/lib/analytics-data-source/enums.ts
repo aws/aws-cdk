@@ -21,6 +21,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'AccessLevel': [
     'READ',
+    'READ_VERSIONED',
     'LIST',
     'WRITE',
     'DELETE'
@@ -68,6 +69,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ON_DEPLOYMENT_COMPLETE',
     'ON_DEPLOYMENT_ROLLED_BACK',
     'AT_DEPLOYMENT_TICK'
+  ],
+  'AdditionalHealthCheckType': [
+    'ELB',
+    'EBS',
+    'VPC_LATTICE'
   ],
   'AddressFamily': [
     'IPv4',
@@ -806,6 +812,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'FAILED',
     'ERROR'
   ],
+  'CsvDelimiter': [
+    'COMMA',
+    'PIPE',
+    'SEMICOLON',
+    'SPACE',
+    'TAB'
+  ],
   'CsvHeaderLocation': [
     'FIRST_ROW',
     'GIVEN'
@@ -824,6 +837,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'nodejs16.x',
     'nodejs18.x',
     'nodejs20.x'
+  ],
+  'CustomThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT'
   ],
   'DBClusterStorageType': [
     'aurora',
@@ -1117,7 +1134,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     's3:ObjectTagging:*',
     's3:ObjectTagging:Put',
     's3:ObjectTagging:Delete',
-    's3:ObjectAcl:Put'
+    's3:ObjectAcl:Put',
+    's3:ObjectRestore:*',
+    's3:Replication:*'
   ],
   'ExecuteCommandLogging': [
     'NONE',
@@ -2165,6 +2184,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'USE_DEFAULT_VALUE',
     'REJECT_MESSAGE'
   ],
+  'MaintenanceTrackName': [
+    'current',
+    'trailing'
+  ],
   'ManagedLoginVersion': [
     1,
     2
@@ -2295,10 +2318,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'DUAL'
   ],
   'NodeType': [
-    'Standard',
-    'GPU',
-    'INFERENTIA',
-    'TRAINIUM'
+    'coordinator'
   ],
   'NodegroupAmiType': [
     'AL2_x86_64',
@@ -2957,7 +2977,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'comprehend',
     'kafka',
     'elasticache',
-    'neptune'
+    'neptune',
+    'cassandra',
+    'workspaces'
   ],
   'Shading': [
     'none',
@@ -3061,6 +3083,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Enabled',
     'Disabled',
     'EnabledWithStackRetention'
+  ],
+  'StandardThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT',
+    'OFF'
   ],
   'StartingPosition': [
     'TRIM_HORIZON',
