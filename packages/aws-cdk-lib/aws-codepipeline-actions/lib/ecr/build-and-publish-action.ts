@@ -100,7 +100,7 @@ export class EcrBuildAndPublishAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
-    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
+    // see: https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#edit-role-ECRBuildAndPublish
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
