@@ -238,7 +238,7 @@ describe('eks auto mode', () => {
 
     test('does not include nodeRoleArn when nodePools is empty', () => {
       const { stack } = testFixtureNoVpc();
-      
+
       new eks.Cluster(stack, 'Cluster', {
         version: CLUSTER_VERSION,
         defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
@@ -260,16 +260,16 @@ describe('eks auto mode', () => {
       const cluster = template.findResources('AWS::EKS::Cluster');
       const clusterLogicalId = Object.keys(cluster)[0];
       const computeConfig = cluster[clusterLogicalId].Properties.ComputeConfig;
-      
+
       expect(computeConfig).not.toHaveProperty('NodeRoleArn');
-      
+
       // Verify that no IAM role resource is created for node pools
       // The role would typically have a logical ID like 'ClusterClusternodePoolRole...'
       const iamRoles = template.findResources('AWS::IAM::Role');
-      const nodePoolRoleKeys = Object.keys(iamRoles).filter(key => 
-        key.includes('nodePoolRole')
+      const nodePoolRoleKeys = Object.keys(iamRoles).filter(key =>
+        key.includes('nodePoolRole'),
       );
-      
+
       expect(nodePoolRoleKeys.length).toBe(0);
     });
   });
