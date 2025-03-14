@@ -758,6 +758,65 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
+## Stage level condition
+
+Conditions are used for specific types of expressions and each has specific options for results available as follows:
+
+Entry - The conditions for making checks that, if met, allow entry to a stage. Rules are engaged with the following result options: Fail or Skip
+
+On Failure - The conditions for making checks for the stage when it fails. Rules are engaged with the following result option: Rollback
+
+On Success - The conditions for making checks for the stage when it succeeds. Rules are engaged with the following result options: Rollback or Fail
+
+Conditions are supported by a set of `rules` for each type of condition.
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+      onSuccess: {
+        conditions: [{
+          result: codepipeline.Result.FAIL,
+          rules: [new codepipeline.Rule({
+            name: 'CloudWatchCheck',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              AlarmName: alarm.alarmName,
+              WaitTime: '300',
+              FunctionName: 'funcName2'
+            },
+          })],
+        }],
+      },
+      onFailure: {
+        conditions: [{
+          result: codepipeline.Result.ROLLBACK,
+            rules: [new codepipeline.Rule({
+            name: 'RollBackOnFailure',
+            provider: 'LambdaInvoke',
+            version: '1',
+            configuration: {
+              WaitTime: '300', // 5 minutes
+              FunctionName: 'funcName1'
+            },
+          })],
+        }],
+      },
+    },
+  ],
+});
+```ts
+
+```
+
 ## Migrating a pipeline type from V1 to V2
 
 To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
