@@ -7,7 +7,7 @@ import { Token } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
-import { Conditions, FailureConditions, Pipeline, Result, RetryMode, StageProps } from '../pipeline';
+import { Conditions, FailureConditions, Pipeline, StageProps } from '../pipeline';
 
 /**
  * A Stage in a Pipeline.
