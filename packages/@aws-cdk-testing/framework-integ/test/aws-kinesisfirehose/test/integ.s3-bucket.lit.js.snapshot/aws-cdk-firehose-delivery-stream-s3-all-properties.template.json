@@ -590,6 +590,7 @@
       }
      },
      "ErrorOutputPrefix": "errorPrefix",
+     "FileExtension": ".log.gz",
      "Prefix": "regularPrefix",
      "ProcessingConfiguration": {
       "Enabled": true,

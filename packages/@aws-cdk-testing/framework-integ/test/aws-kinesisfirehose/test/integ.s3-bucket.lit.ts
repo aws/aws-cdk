@@ -51,6 +51,7 @@ const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
     compression: firehose.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
+    fileExtension: '.log.gz',
     bufferingInterval: cdk.Duration.seconds(60),
     bufferingSize: cdk.Size.mebibytes(1),
     encryptionKey: key,
