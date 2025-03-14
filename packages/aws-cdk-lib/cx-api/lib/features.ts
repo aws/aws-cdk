@@ -1416,6 +1416,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
+
   //////////////////////////////////////////////////////////////////////
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
     type: FlagType.ApiDefault,
