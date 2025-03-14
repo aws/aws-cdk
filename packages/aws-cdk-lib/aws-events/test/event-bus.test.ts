@@ -641,18 +641,29 @@ describe('event bus', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2);
   });
 
-  test('Event Bus policy statements must have a sid', () => {
+  test('Event Bus policy statements get default sid if none provided', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack');
     const bus = new EventBus(stack, 'Bus');
 
-    // THEN
-    expect(() => bus.addToResourcePolicy(new iam.PolicyStatement({
+    // WHEN
+    bus.addToResourcePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
-    }))).toThrow('Event Bus policy statements must have a sid');
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+      StatementId: 'cdk-Bus-Default-Statement',
+      Statement: {
+        Effect: 'Allow',
+        Principal: { AWS: 'arn' },
+        Action: 'events:PutEvents',
+        Sid: 'cdk-Bus-Default-Statement',
+      },
+    });
   });
 
   test('set dead letter queue', () => {
