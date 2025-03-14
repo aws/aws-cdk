@@ -165,7 +165,7 @@ export interface DataProtectionPolicyProps {
   readonly s3BucketAuditDestination?: IBucket;
 
   /**
-   * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
+   * Amazon Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
    *
    * @default - no firehose delivery stream audit destination
    */

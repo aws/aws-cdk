@@ -7,13 +7,13 @@ import { createBackupConfig, createBufferingHints, createEncryptionConfig, creat
 import { ValidationError } from '../../core';
 
 /**
- * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
+ * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
  */
 export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
 }
 
 /**
- * An S3 bucket destination for data from a Kinesis Data Firehose delivery stream.
+ * An S3 bucket destination for data from an Amazon Data Firehose delivery stream.
  */
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
