@@ -2501,7 +2501,15 @@ new ec2.PrefixList(this, 'PrefixList', {
 });
 ```
 
-For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+To import AWS-managed prefix list, you can use `PrefixList.fromLookup()`.
+
+``` ts
+ec2.PrefixList.fromLookup(this, 'PrefixListFromName', {
+  prefixListName: 'com.amazonaws.global.cloudfront.origin-facing',
+});
+```
+
+For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html).
 
 ### IAM instance profile
 
