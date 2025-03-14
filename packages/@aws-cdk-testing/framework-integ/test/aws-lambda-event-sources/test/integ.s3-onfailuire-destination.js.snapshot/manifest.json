@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "lambda-event-source-s3ofd.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b09f6eb0a8f4e357a7316b827ccf37a7178de87de992bd80b083ca46d2440d4e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5e10274f9508311eb45f37ab4f20b12b49904e45af44042edac677edd63cbad0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,144 @@
         "lambda-event-source-s3ofd.assets"
       ],
       "metadata": {
+        "/lambda-event-source-s3ofd/F": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "handler": "*",
+              "code": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/lambda-event-source-s3ofd/F/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/lambda-event-source-s3ofd/F/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/lambda-event-source-s3ofd/F/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-s3ofd/F/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/lambda-event-source-s3ofd/F/ServiceRole/DefaultPolicy/Resource": [
@@ -52,10 +186,54 @@
             "data": "FC4345940"
           }
         ],
+        "/lambda-event-source-s3ofd/F/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "target": "*",
+              "filters": "*",
+              "filterEncryption": "*",
+              "kafkaBootstrapServers": "*",
+              "kafkaTopic": "*",
+              "kafkaConsumerGroupId": "*",
+              "startingPosition": "TRIM_HORIZON",
+              "sourceAccessConfigurations": [
+                {
+                  "type": "*",
+                  "uri": "*"
+                },
+                {
+                  "type": "*",
+                  "uri": "*"
+                }
+              ],
+              "onFailure": "*",
+              "supportS3OnFailureDestination": true,
+              "provisionedPollerConfig": "*",
+              "batchSize": "*",
+              "bisectBatchOnError": "*",
+              "reportBatchItemFailures": "*",
+              "maxBatchingWindow": "*",
+              "maxRecordAge": "*",
+              "retryAttempts": "*",
+              "parallelizationFactor": "*",
+              "tumblingWindow": "*",
+              "enabled": "*"
+            }
+          }
+        ],
         "/lambda-event-source-s3ofd/F/KafkaEventSource:838c4d5ff3c99c1a617120adfca83e5b:my-test-topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FKafkaEventSource838c4d5ff3c99c1a617120adfca83e5bmytesttopic1E7A7798"
+          }
+        ],
+        "/lambda-event-source-s3ofd/S": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
           }
         ],
         "/lambda-event-source-s3ofd/S/Resource": [
@@ -64,10 +242,27 @@
             "data": "S509448A1"
           }
         ],
+        "/lambda-event-source-s3ofd/SC": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secretObjectValue": "*"
+            }
+          }
+        ],
         "/lambda-event-source-s3ofd/SC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SC0855C491"
+          }
+        ],
+        "/lambda-event-source-s3ofd/B": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
           }
         ],
         "/lambda-event-source-s3ofd/B/Resource": [
@@ -76,10 +271,24 @@
             "data": "B08E7C7AF"
           }
         ],
+        "/lambda-event-source-s3ofd/B/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/lambda-event-source-s3ofd/B/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BPolicy3F02723E"
+          }
+        ],
+        "/lambda-event-source-s3ofd/B/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/lambda-event-source-s3ofd/B/AutoDeleteObjectsCustomResource/Default": [
@@ -92,6 +301,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/lambda-event-source-s3ofd/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
         "/lambda-event-source-s3ofd/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -120,6 +335,557 @@
         ]
       },
       "displayName": "lambda-event-source-s3ofd"
+    },
+    "kinesis-with-s3ofd.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "kinesis-with-s3ofd.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "kinesis-with-s3ofd": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "kinesis-with-s3ofd.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e08e620857918856c3e4948fff4254b730dadbd27f4d94062f28e1034f8d2679.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "kinesis-with-s3ofd.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "kinesis-with-s3ofd.assets"
+      ],
+      "metadata": {
+        "/kinesis-with-s3ofd/F": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/F/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/F/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/kinesis-with-s3ofd/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/kinesis-with-s3ofd/F/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/kinesis-with-s3ofd/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/kinesis-with-s3ofd/F/KinesisEventSource:kinesiswiths3ofdS42501585": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "target": "*",
+              "eventSourceArn": "*",
+              "startingPositionTimestamp": "*",
+              "metricsConfig": "*",
+              "supportS3OnFailureDestination": true,
+              "batchSize": "*",
+              "bisectBatchOnError": "*",
+              "startingPosition": "TRIM_HORIZON",
+              "reportBatchItemFailures": "*",
+              "maxBatchingWindow": "*",
+              "maxRecordAge": "*",
+              "retryAttempts": "*",
+              "parallelizationFactor": "*",
+              "onFailure": "*",
+              "tumblingWindow": "*",
+              "enabled": "*",
+              "filters": "*",
+              "filterEncryption": "*"
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/F/KinesisEventSource:kinesiswiths3ofdS42501585/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKinesisEventSourcekinesiswiths3ofdS42501585810808E3"
+          }
+        ],
+        "/kinesis-with-s3ofd/FunctionArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionArn"
+          }
+        ],
+        "/kinesis-with-s3ofd/S": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/kinesis-with-s3ofd/S/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S509448A1"
+          }
+        ],
+        "/kinesis-with-s3ofd/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/kinesis-with-s3ofd/InputKinesisStreamName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InputKinesisStreamName"
+          }
+        ],
+        "/kinesis-with-s3ofd/B": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/B/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "B08E7C7AF"
+          }
+        ],
+        "/kinesis-with-s3ofd/B/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/kinesis-with-s3ofd/B/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BPolicy3F02723E"
+          }
+        ],
+        "/kinesis-with-s3ofd/B/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/kinesis-with-s3ofd/B/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BAutoDeleteObjectsCustomResource6224D839"
+          }
+        ],
+        "/kinesis-with-s3ofd/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/kinesis-with-s3ofd/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/kinesis-with-s3ofd/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/kinesis-with-s3ofd/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/kinesis-with-s3ofd/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/kinesis-with-s3ofd/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "kinesis-with-s3ofd"
+    },
+    "dynamo-with-s3ofd.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "dynamo-with-s3ofd.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "dynamo-with-s3ofd": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "dynamo-with-s3ofd.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d2a90a66dd667f2a508a65f21f55ed3427abf2db3bd34492339990ad357cfd8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "dynamo-with-s3ofd.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "dynamo-with-s3ofd.assets"
+      ],
+      "metadata": {
+        "/dynamo-with-s3ofd/F": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "handler": "*",
+              "code": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/dynamo-with-s3ofd/F/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/dynamo-with-s3ofd/F/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/dynamo-with-s3ofd/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/dynamo-with-s3ofd/F/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/dynamo-with-s3ofd/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/dynamo-with-s3ofd/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/dynamo-with-s3ofd/F/DynamoDBEventSource:dynamowiths3ofdT1C20A471": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "target": "*",
+              "eventSourceArn": "*",
+              "metricsConfig": "*",
+              "supportS3OnFailureDestination": true,
+              "batchSize": "*",
+              "bisectBatchOnError": "*",
+              "startingPosition": "TRIM_HORIZON",
+              "reportBatchItemFailures": "*",
+              "maxBatchingWindow": "*",
+              "maxRecordAge": "*",
+              "retryAttempts": "*",
+              "parallelizationFactor": "*",
+              "onFailure": "*",
+              "tumblingWindow": "*",
+              "enabled": "*",
+              "filters": "*",
+              "filterEncryption": "*"
+            }
+          }
+        ],
+        "/dynamo-with-s3ofd/F/DynamoDBEventSource:dynamowiths3ofdT1C20A471/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FDynamoDBEventSourcedynamowiths3ofdT1C20A471A278839D"
+          }
+        ],
+        "/dynamo-with-s3ofd/T": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "stream": "NEW_IMAGE",
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/dynamo-with-s3ofd/T/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TD925BC7E"
+          }
+        ],
+        "/dynamo-with-s3ofd/T/ScalingRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/dynamo-with-s3ofd/B": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/dynamo-with-s3ofd/B/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "B08E7C7AF"
+          }
+        ],
+        "/dynamo-with-s3ofd/OutputEventSourceMappingArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputEventSourceMappingArn"
+          }
+        ],
+        "/dynamo-with-s3ofd/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/dynamo-with-s3ofd/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "dynamo-with-s3ofd"
     },
     "LambdaEventSourceS3OnFailureDestinationIntegDefaultTestDeployAssert62366951.assets": {
       "type": "cdk:asset-manifest",

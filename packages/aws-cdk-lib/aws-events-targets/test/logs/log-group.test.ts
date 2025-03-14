@@ -101,6 +101,28 @@ testDeprecated('cannot use both logEvent and event', () => {
   }).toThrow(/Only one of "event" or "logEvent" can be specified/);
 });
 
+testDeprecated('cannot use both logEvent and event', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // THEN
+  expect(() => {
+    rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+      event: events.RuleTargetInput.fromObject({
+        message: events.EventField.fromPath('$'),
+      }),
+      logEvent: LogGroupTargetInput.fromObjectV2(),
+    }));
+  }).toThrow(/Only one of "event" or "logEvent" can be specified/);
+});
+
 test('logEvent with defaults', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -114,6 +136,63 @@ test('logEvent with defaults', () => {
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
     logEvent: LogGroupTargetInput.fromObject(),
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            'time': '$.time',
+            'detail-type': '$.detail-type',
+          },
+          InputTemplate: '{"timestamp":<time>,"message":<detail-type>}',
+        },
+      },
+    ],
+  });
+});
+
+test('logEvent with defaults', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    logEvent: LogGroupTargetInput.fromObjectV2(),
   }));
 
   // THEN
@@ -211,6 +290,66 @@ test('can use logEvent', () => {
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
     logEvent: LogGroupTargetInput.fromObject({
+      timestamp: events.EventField.time,
+      message: events.EventField.fromPath('$'),
+    }),
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 minute)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+            ],
+          ],
+        },
+        Id: 'Target0',
+        InputTransformer: {
+          InputPathsMap: {
+            time: '$.time',
+            f2: '$',
+          },
+          InputTemplate: '{"timestamp":<time>,"message":<f2>}',
+        },
+      },
+    ],
+  });
+});
+
+test('can use logEvent', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+    logEvent: LogGroupTargetInput.fromObjectV2({
       timestamp: events.EventField.time,
       message: events.EventField.fromPath('$'),
     }),
