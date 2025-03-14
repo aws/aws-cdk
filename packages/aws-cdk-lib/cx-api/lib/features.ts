@@ -1430,7 +1430,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
-
   //////////////////////////////////////////////////////////////////////
   [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
     type: FlagType.BugFix,
