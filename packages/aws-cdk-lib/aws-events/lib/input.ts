@@ -40,6 +40,8 @@ export abstract class RuleTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
+   *
+   * @returns RuleTargetInput
    */
   public static fromObject(obj: any): RuleTargetInput {
     return new FieldAwareEventInput(obj, InputType.Object);
@@ -134,8 +136,10 @@ class LiteralEventInput extends RuleTargetInput {
  *
  * To achieve the latter, we postprocess the JSON string to remove the surrounding
  * quotes by using a string replace.
+ *
+ * @internal
  */
-class FieldAwareEventInput extends RuleTargetInput {
+export class FieldAwareEventInput extends RuleTargetInput {
   constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
@@ -321,7 +325,10 @@ export class EventField implements IResolvable {
   }
 }
 
-enum InputType {
+/**
+ * @internal
+ */
+export enum InputType {
   Object,
   Text,
   Multiline,
