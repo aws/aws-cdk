@@ -95,8 +95,6 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 You can specify an IAM Role:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const role: iam.IRole;
 
 new events.Rule(this, 'MyRule', {
