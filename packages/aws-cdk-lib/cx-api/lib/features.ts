@@ -126,6 +126,7 @@ export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditi
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
+export const S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE = '@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1389,6 +1390,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
     type: FlagType.BugFix,
     summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
@@ -1400,6 +1403,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
     type: FlagType.BugFix,
     summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
@@ -1411,6 +1416,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
+
   //////////////////////////////////////////////////////////////////////
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
     type: FlagType.ApiDefault,
@@ -1425,6 +1431,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [S3_BLOCK_PUBLIC_ACCESS_OPTION_AUTO_TRUE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined.',
+    detailsMd: `
+      When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
+      The previous behavior in cdk before this feature was; if only some of the BlockPublicAccessOptions were set (not all 4), then the ones undefined would default to false.
+      This is counter intuitive to the console behavior where the options would start in true state and a user would uncheck the boxes as needed.
+      The new behavior from this feature will allow a user, for example, to set 1 of the 4 BlockPublicAccessOpsions to false, and on deployment the other 3 will remain true.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
 };
 
 const CURRENT_MV = 'v2';
