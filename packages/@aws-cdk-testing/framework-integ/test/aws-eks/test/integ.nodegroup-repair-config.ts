@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
@@ -22,14 +22,25 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
   ...getClusterVersionConfig(stack, eks.KubernetesVersion.V1_31),
 });
 
-cluster.addNodegroupCapacity('MNG_AL2023_X86_64_STANDARD', {
+const nodegroup = cluster.addNodegroupCapacity('MNG_AL2023_X86_64_STANDARD', {
   amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
   enableNodeAutoRepair: true,
 });
 
-new integ.IntegTest(app, 'aws-cdk-eks-nodegroup-repair-config', {
+const integTest = new IntegTest(app, 'aws-cdk-eks-nodegroup-repair-config', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
+
+integTest.assertions.awsApiCall('eks', 'describeNodegroup', {
+  clusterName: cluster.clusterName,
+  nodegroupName: nodegroup.nodegroupName,
+}).expect(ExpectedResult.objectLike({
+  nodegroup: {
+    nodeRepairConfig: {
+      enabled: true,
+    },
+  },
+}));

@@ -434,9 +434,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+     "S3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.17.1",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -799,7 +799,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 4
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1006,7 +1006,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e17c8ee5e273af7c9ee577940628f231cabe64823d63cdf5e04fee3a24e7fbec.json"
+       "/ad55f0108849e8b750359be2458148deba0ca59d0dd188b6b7086c6e01922e24.json"
       ]
      ]
     }
@@ -1056,7 +1056,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7e8e574f3607d18e3ddf529c34017999ddd6981fdf26d310c10dafc105e5d5f0.json"
+       "/ba6c9c10ee04261f58682d9dd9c6482954f615bbebb517da3b4c741a911222f1.json"
       ]
      ]
     }
@@ -1130,6 +1130,25 @@
       }
      ]
     ]
+   }
+  },
+  "ExportsOutputRefCluster9EE0221C4853B4C3": {
+   "Value": {
+    "Ref": "Cluster9EE0221C"
+   },
+   "Export": {
+    "Name": "aws-cdk-eks-nodegroup-repair-config-test:ExportsOutputRefCluster9EE0221C4853B4C3"
+   }
+  },
+  "ExportsOutputFnGetAttClusterNodegroupMNGAL2023X8664STANDARD8BD0F7ABNodegroupName49002EBB": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterNodegroupMNGAL2023X8664STANDARD8BD0F7AB",
+     "NodegroupName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-eks-nodegroup-repair-config-test:ExportsOutputFnGetAttClusterNodegroupMNGAL2023X8664STANDARD8BD0F7ABNodegroupName49002EBB"
    }
   }
  },
