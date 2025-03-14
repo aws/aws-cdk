@@ -4,7 +4,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Lazy, Resource, Token } from '../../../core';
-import { ValidationError } from '../../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
@@ -30,6 +30,76 @@ export enum ClientRoutingPolicy {
    * No zonal affinity
    */
   ANY_AVAILABILITY_ZONE = 'any_availability_zone',
+}
+
+/**
+ * Specifies a subnet for a load balancer
+ */
+export interface SubnetMapping {
+  /**
+   * The subnet
+   */
+  readonly subnet: ec2.ISubnet;
+
+  /**
+   * The allocation ID of the Elastic IP address for an internet-facing load balancer.
+   *
+   * @default undefined -
+   */
+  readonly allocationId?: string;
+
+  /**
+   * The IPv6 address
+   *
+   * @default undefined -
+   */
+  readonly ipv6Address?: string;
+
+  /**
+   * The private IPv4 address for an internal load balancer.
+   *
+   * @default undefined - AWS will automatically allocate an IPv4 address from the subnet's pool.
+   */
+  readonly privateIpv4Address?: string;
+
+  /**
+   * The IPv6 prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+   *
+   * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block
+   * or `SourceNatIpv6Prefix.autoAssigned()` to use an IPv6 prefix selected at random from the subnet CIDR block.
+   *
+   * @default undefined -
+   */
+  readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
+}
+
+/**
+ * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
+ */
+export class SourceNatIpv6Prefix {
+  /**
+   * Use an automatically assigned IPv6 prefix
+   */
+  public static autoAssigned(): string {
+    return 'auto_assigned';
+  }
+
+  /**
+   * Use a custom IPv6 prefix with /80 netmask
+   * @param prefix The IPv6 prefix
+   */
+  public static fromIpv6Prefix(prefix: string): string {
+    if (!prefix.includes('/')) {
+      throw new UnscopedValidationError(`IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
+    }
+
+    const [_ipv6, netmask] = prefix.split('/');
+    if (netmask !== '80') {
+      throw new UnscopedValidationError(`IPv6 prefix must have a /80 netmask, got ${netmask}`);
+    }
+
+    return prefix;
+  }
 }
 
 /**
@@ -86,6 +156,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default undefined - NLB default behavior is false
    */
   readonly enablePrefixForIpv6SourceNat?: boolean;
+
+  /**
+   * Subnet information for the load balancer
+   *
+   * @default undefined - The VPC default strategy for subnets is used
+   */
+  readonly subnetMappings?: SubnetMapping[];
 }
 
 /**
@@ -275,6 +352,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
         produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
+      subnetMappings: props.subnetMappings,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
