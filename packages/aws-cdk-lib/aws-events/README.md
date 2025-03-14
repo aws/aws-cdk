@@ -91,6 +91,23 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+### Role
+You can specify an IAM Role:
+
+```ts
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+declare const role: iam.IRole;
+
+new Rule(stack, 'MyRule', {
+  schedule: Schedule.cron({ minute: '0', hour: '4' }),
+  role,
+});
+```
+
+**Note**: If you're setting an event bus in another account as the target and that account granted permission to your account through an organization instead of directly by the account ID, you must specify a RoleArn with proper permissions in the Target structure, instead of here in this parameter.
+
 ### Matchers
 
 To define a pattern, use the `Match` class, which provides a number of factory methods to declare
