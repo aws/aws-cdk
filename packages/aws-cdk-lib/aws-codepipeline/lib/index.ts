@@ -4,6 +4,6 @@ export * from './pipeline';
 export * from './trigger';
 export * from './variable';
 export * from './custom-action-registration';
-
+export * from './rule';
 // AWS::CodePipeline CloudFormation Resources:
 export * from './codepipeline.generated';
