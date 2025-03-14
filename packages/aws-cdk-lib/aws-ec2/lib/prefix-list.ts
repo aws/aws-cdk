@@ -120,7 +120,7 @@ export class PrefixList extends PrefixListBase {
           PrefixListName: options.prefixListName,
         },
         propertiesToReturn: ['PrefixListId'],
-      } as Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
+      } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
       dummyValue: [dummyResponse],
     }).value;
 
