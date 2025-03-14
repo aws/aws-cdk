@@ -7,6 +7,7 @@ import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
+import { CfnAddon } from './eks.generated';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
@@ -688,6 +689,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - The controller is not installed.
    */
   readonly albController?: AlbControllerOptions;
+
   /**
    * The cluster log types which you want to enable.
    *
@@ -2059,10 +2061,37 @@ export class Cluster extends ClusterBase {
    */
   public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
-      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
-        cluster: this,
-        addonName: 'eks-pod-identity-agent',
-      });
+      // check if stack already has a pod identity agent
+      const existing_addons = this.stack.node.findAll().filter(child =>
+        child instanceof Addon &&
+        // have to find the child, as Addon.addonName is a token
+        (child.node.tryFindChild('Resource') as CfnAddon)?.addonName === 'eks-pod-identity-agent' &&
+        (child.node.tryFindChild('Resource') as CfnAddon)?.clusterName === this.clusterName,
+      ) as Addon[];
+      if (existing_addons.length > 1) {
+        throw new Error('Multiple pod identity agent Addons found in stack');
+      }
+      const existing_cfn_addons = this.stack.node.findAll().filter(child =>
+        child instanceof CfnAddon && child.addonName === 'eks-pod-identity-agent' &&
+        child.clusterName === this.clusterName,
+      ) as CfnAddon[];
+      if (existing_cfn_addons.length > 1) {
+        throw new Error('Multiple pod identity agent CfnAddons found in stack');
+      }
+      if (existing_addons.length > 0) {
+        this._eksPodIdentityAgent = existing_addons[0];
+      } else if (existing_cfn_addons.length > 0) {
+        const cfn_addon = existing_cfn_addons[0];
+        const id = cfn_addon.node.id !== 'Resource' ? `EksPodIdentityAgentAddon-${cfn_addon.node.id}` : 'EksPodIdentityAgentAddon';
+        this._eksPodIdentityAgent = Addon.fromAddonArn(
+          this, id, cfn_addon.attrArn,
+        );
+      } else {
+        this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
+          cluster: this,
+          addonName: 'eks-pod-identity-agent',
+        });
+      }
     }
 
     return this._eksPodIdentityAgent;

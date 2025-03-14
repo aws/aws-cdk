@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "integ-eks-pod-identities-by-addon/DefaultTest": {
+      "stacks": [
+        "eks-pod-identities-by-addon"
+      ],
+      "assertionStack": "integ-eks-pod-identities-by-addon/DefaultTest/DeployAssert",
+      "assertionStackName": "integekspodidentitiesbyaddonDefaultTestDeployAssert2CB6A0D7"
+    }
+  }
+}
