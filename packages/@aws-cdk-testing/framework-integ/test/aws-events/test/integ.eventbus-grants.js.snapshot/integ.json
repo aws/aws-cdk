@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest": {
+      "stacks": [
+        "EventBusGrantsTestStackWithFlag",
+        "EventBusGrantsTestStackWithoutFlag"
+      ],
+      "assertionStack": "EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert",
+      "assertionStackName": "EventBusGrantsIntegWithAndWithoutFeatureFlagDefaultTestDeployAssertBBD6850F"
+    }
+  }
+}

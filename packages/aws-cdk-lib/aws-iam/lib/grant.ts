@@ -198,7 +198,7 @@ export class Grant implements IDependable {
    * @returns A Grant object representing the result of the operation
    *
    * @example
-   * ```ts
+   *
    * const statement = new PolicyStatement({
    *   effect: Effect.ALLOW,
    *   actions: ['s3:GetObject'],
@@ -210,7 +210,7 @@ export class Grant implements IDependable {
    *   },
    * });
    * Grant.addStatementToResourcePolicy({ resource: bucket, statement });
-   * ```
+   *
    */
   public static addStatementToResourcePolicy(options: GrantPolicyWithResourceOptions) {
     const resourceResult = options.resource.addToResourcePolicy(options.statement);

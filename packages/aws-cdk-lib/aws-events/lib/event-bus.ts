@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
-import * as cxapi from '../../cx-api';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, FeatureFlags, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import * as cxapi from '../../cx-api';
 
 /**
  * Interface which all EventBus based classes MUST implement
@@ -483,7 +483,7 @@ class ImportedEventBus extends EventBusBase {
     this.eventSourceName = attrs.eventSourceName;
   }
 
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     // Warn the user
     Annotations.of(this).addWarningV2(
       '@aws-cdk/aws-events:eventBusAddToResourcePolicy',
