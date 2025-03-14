@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.184.1](https://github.com/aws/aws-cdk/compare/v2.184.0...v2.184.1) (2025-03-14)
+
+
+### Reverts
+
+* **iam:** fix(iam): adding organization id pattern verification ([#33773](https://github.com/aws/aws-cdk/pull/33773)) ([f7ed316](https://github.com/aws/aws-cdk/commit/f7ed3165056c385249735ebb17a53d0fedd69c54)), closes [aws/aws-cdk#33768](https://github.com/aws/aws-cdk/issues/33768)
+
 ## [2.184.0](https://github.com/aws/aws-cdk/compare/v2.183.0...v2.184.0) (2025-03-13)
 
 
