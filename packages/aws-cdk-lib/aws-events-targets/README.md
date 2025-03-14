@@ -614,3 +614,26 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   sql: ['SELECT * FROM foo','SELECT * FROM baz'],
 }));
 ```
+
+## Send a message to an SNS topic in a different account
+
+Use the `SNS` target to send a message to an SNS topic in a different account.
+
+The code snippet below creates an event rule with an SNS topic as a target 
+and a basic role that can be assumed by Eventbridge to publish to the SNS topic which is required when the SNS topic is in a different account.
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+const topic = new sns.Topic(stack, 'MyTopic');
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SnsTopic(topic, {
+  role: new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  }),
+}));
+```

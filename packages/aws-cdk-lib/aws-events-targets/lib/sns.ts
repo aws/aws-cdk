@@ -1,4 +1,4 @@
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
@@ -13,6 +13,13 @@ export interface SnsTopicProps extends TargetBaseProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
+
+  /**
+   * Role to be used to publish the event
+   *
+   * @default a new role is created.
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -37,8 +44,12 @@ export class SnsTopic implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    // deduplicated automatically
-    this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
+    const role = this.props.role || singletonEventRole(this.topic);
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['sns:Publish'],
+      resources: [this.topic.topicArn],
+    }));
 
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
@@ -49,6 +60,7 @@ export class SnsTopic implements events.IRuleTarget {
       arn: this.topic.topicArn,
       input: this.props.message,
       targetResource: this.topic,
+      role,
     };
   }
 }

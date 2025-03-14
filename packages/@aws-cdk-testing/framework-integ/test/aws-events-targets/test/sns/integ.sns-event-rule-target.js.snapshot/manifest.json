@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "40.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-sns-event-target.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-sns-event-target.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71ebc8ec10221aacce953bad636cec88bf69b65132b95e63a4d69ab7381b2be2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a76e0e6a95a6a4f3749f0467068d315d9cd07dee01a1487845bec4bd1e8d563.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,16 +34,124 @@
         "aws-cdk-sns-event-target.assets"
       ],
       "metadata": {
+        "/aws-cdk-sns-event-target/MyTopic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-sns-event-target/MyTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTopic86869434"
           }
         ],
-        "/aws-cdk-sns-event-target/MyTopic/Policy/Resource": [
+        "/aws-cdk-sns-event-target/MyTopic/EventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyTopic/EventsRole/ImportEventsRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyTopic/EventsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTopicPolicy12A5EC17"
+            "data": "MyTopicEventsRole0D2D3332"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyTopic/EventsRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyTopic/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicEventsRoleDefaultPolicyB79AC002"
+          }
+        ],
+        "/aws-cdk-sns-event-target/EveryMinute": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "schedule": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-sns-event-target/EveryMinute/Resource": [
@@ -57,10 +160,26 @@
             "data": "EveryMinute2BBCEA8F"
           }
         ],
+        "/aws-cdk-sns-event-target/MyQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-sns-event-target/MyQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyQueue/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-sns-event-target/MyQueue/Policy/Resource": [
@@ -69,16 +188,47 @@
             "data": "MyQueuePolicy6BBEDDAC"
           }
         ],
+        "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "sqs",
+              "rawMessageDelivery": "*",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
+          }
+        ],
         "/aws-cdk-sns-event-target/MyQueue/awscdksnseventtargetMyTopicB7575CD8/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383"
           }
         ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-sns-event-target/MyDeadLetterQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyDeadLetterQueueD997968A"
+          }
+        ],
+        "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "queues": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-sns-event-target/MyDeadLetterQueue/Policy/Resource": [
@@ -101,6 +251,12 @@
         ]
       },
       "displayName": "aws-cdk-sns-event-target"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
