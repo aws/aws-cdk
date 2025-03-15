@@ -1000,6 +1000,9 @@
     "events-generic:aws-cdk-lib.aws_appconfig.HostedConfiguration",
     "events-generic:aws-cdk-lib.aws_appconfig.SourcedConfiguration",
     "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
-    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps"
+    "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps",
+    "construct-ctor-props-type:aws-cdk-lib.aws_ec2.LookedUpVpc",
+    "props-struct-name:aws-cdk-lib.aws_ec2.ILookedUpVpc",
+    "construct-ctor:aws-cdk-lib.aws_ec2.LookedUpVpc.<initializer>"
   ]
 }
