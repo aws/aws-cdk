@@ -34,7 +34,7 @@ new firehose.DeliveryStream(stack, 'ExtractCloudWatchLogsEntry', {
   destination: new firehose.S3Bucket(bucket, {
     processors: [
       new firehose.DecompressionProcessor(),
-      new firehose.CloudWatchLogProcessingProcessor(),
+      new firehose.CloudWatchLogProcessingProcessor({ dataMessageExtraction: true }),
       new firehose.LambdaFunctionProcessor(dataProcessorFunction),
     ],
   }),

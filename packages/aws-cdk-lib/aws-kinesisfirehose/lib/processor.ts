@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
-import { Duration, Size } from '../../core';
+import { Duration, Size, UnscopedValidationError } from '../../core';
 
 /**
  * Configure the LambdaFunctionProcessor.
@@ -100,6 +100,25 @@ export interface IDataProcessor {
 }
 
 /**
+ * Compression format for DecompressionProcessor.
+ */
+export enum DecompressionCompressionFormat {
+  /** GZIP compression */
+  GZIP = 'GZIP',
+}
+
+/**
+ * Options for DecompressionProcessor.
+ */
+export interface DecompressionProcessorOptions {
+  /**
+   * The input compression format
+   * @default DecompressionCompressionFormat.GZIP
+   */
+  readonly compressionFormat?: DecompressionCompressionFormat;
+}
+
+/**
  * The data processor to decompress CloudWatch Logs.
  *
  * @see https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs-decompression.html
@@ -107,17 +126,28 @@ export interface IDataProcessor {
 export class DecompressionProcessor implements IDataProcessor {
   public readonly props: DataProcessorProps = {};
 
-  constructor() {}
+  constructor(private readonly options: DecompressionProcessorOptions = {}) {}
 
   bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'Decompression',
       processorIdentifier: { parameterName: '', parameterValue: '' },
       parameters: [
-        { parameterName: 'CompressionFormat', parameterValue: 'GZIP' },
+        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat ?? 'GZIP' },
       ],
     };
   }
+}
+
+/**
+ * Options for CloudWatchLogProcessingProcessor.
+ */
+export interface CloudWatchLogProcessingProcessorOptions {
+  /**
+   * Extract message from CloudWatch logs.
+   * This must be true.
+   */
+  readonly dataMessageExtraction: boolean;
 }
 
 /**
@@ -129,7 +159,11 @@ export class DecompressionProcessor implements IDataProcessor {
 export class CloudWatchLogProcessingProcessor implements IDataProcessor {
   public readonly props: DataProcessorProps = {};
 
-  constructor() {}
+  constructor(options: CloudWatchLogProcessingProcessorOptions) {
+    if (!options.dataMessageExtraction) {
+      throw new UnscopedValidationError('dataMessageExtraction must be true.');
+    }
+  }
 
   bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {

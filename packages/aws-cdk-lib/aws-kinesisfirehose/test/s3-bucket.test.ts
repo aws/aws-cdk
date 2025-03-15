@@ -483,7 +483,7 @@ describe('S3 destination', () => {
         role: destinationRole,
         processors: [
           new firehose.DecompressionProcessor(),
-          new firehose.CloudWatchLogProcessingProcessor(),
+          new firehose.CloudWatchLogProcessingProcessor({ dataMessageExtraction: true }),
           lambdaProcessor,
           new firehose.AppendDelimiterToRecordProcessor(),
         ],
@@ -517,6 +517,12 @@ describe('S3 destination', () => {
           },
         },
       });
+    });
+
+    test('CloudWatchLogProcessingProcessor throws when dataMessageExtraction is false', () => {
+      expect(() => {
+        new firehose.CloudWatchLogProcessingProcessor({ dataMessageExtraction: false });
+      }).toThrow('dataMessageExtraction must be true.');
     });
   });
 

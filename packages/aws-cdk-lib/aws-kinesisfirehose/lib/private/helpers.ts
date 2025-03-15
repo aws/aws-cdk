@@ -104,9 +104,16 @@ export function createProcessingConfig(
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   if (!dataProcessors?.length) return undefined;
 
+  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  const procesorTypes = new Set(processors.map((p) => p.type));
+
+  if (procesorTypes.has('CloudWatchLogProcessing') && !procesorTypes.has('Decompression')) {
+    throw new cdk.ValidationError('CloudWatchLogProcessingProcessor can only be enabled with DecompressionProcessor', scope);
+  }
+
   return {
     enabled: true,
-    processors: dataProcessors.map((dp) => renderDataProcessor(dp, scope, role)),
+    processors,
   };
 }
 
