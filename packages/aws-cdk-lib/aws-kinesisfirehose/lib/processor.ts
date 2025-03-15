@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
 import * as iam from '../../aws-iam';
-import { Duration, Size } from '../../core';
+import { Duration, Size, UnscopedValidationError } from '../../core';
 
 /**
- * Configure the data processor.
+ * Configure the LambdaFunctionProcessor.
  */
 export interface DataProcessorProps {
   /**
@@ -32,12 +33,11 @@ export interface DataProcessorProps {
  * The key-value pair that identifies the underlying processor resource.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processorparameter.html
+ * @deprecated Use `CfnDeliveryStream.ProcessorParameterProperty`
  */
 export interface DataProcessorIdentifier {
   /**
    * The parameter name that corresponds to the processor resource's identifier.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessoryParameterProperty.ParameterName`.
    */
   readonly parameterName: string;
 
@@ -49,21 +49,26 @@ export interface DataProcessorIdentifier {
 
 /**
  * The full configuration of a data processor.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html
  */
 export interface DataProcessorConfig {
   /**
-   * The type of the underlying processor resource.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessorProperty.Type`.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-type
-   * @example 'Lambda'
+   * The type of processor.
    */
   readonly processorType: string;
 
   /**
    * The key-value pair that identifies the underlying processor resource.
+   * @deprecated Use `parameters`
    */
   readonly processorIdentifier: DataProcessorIdentifier;
+
+  /**
+   * The processor parameters.
+   * @default - No parameters
+   */
+  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
 }
 
 /**
@@ -92,4 +97,99 @@ export interface IDataProcessor {
    * necessary configuration to register as a processor.
    */
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig;
+}
+
+/**
+ * Compression format for DecompressionProcessor.
+ */
+export enum DecompressionCompressionFormat {
+  /** GZIP compression */
+  GZIP = 'GZIP',
+}
+
+/**
+ * Options for DecompressionProcessor.
+ */
+export interface DecompressionProcessorOptions {
+  /**
+   * The input compression format
+   * @default DecompressionCompressionFormat.GZIP
+   */
+  readonly compressionFormat?: DecompressionCompressionFormat;
+}
+
+/**
+ * The data processor to decompress CloudWatch Logs.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs-decompression.html
+ */
+export class DecompressionProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor(private readonly options: DecompressionProcessorOptions = {}) {}
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'Decompression',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
+      parameters: [
+        { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat ?? 'GZIP' },
+      ],
+    };
+  }
+}
+
+/**
+ * Options for CloudWatchLogProcessingProcessor.
+ */
+export interface CloudWatchLogProcessingProcessorOptions {
+  /**
+   * Extract message from CloudWatch logs.
+   * This must be true.
+   */
+  readonly dataMessageExtraction: boolean;
+}
+
+/**
+ * The data processor to extract message after decompression of CloudWatch Logs.
+ * This processor must used with `DecompressionProcessor`
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/Message_extraction.html
+ */
+export class CloudWatchLogProcessingProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor(options: CloudWatchLogProcessingProcessorOptions) {
+    if (!options.dataMessageExtraction) {
+      throw new UnscopedValidationError('dataMessageExtraction must be true.');
+    }
+  }
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'CloudWatchLogProcessing',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
+      parameters: [
+        { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
+      ],
+    };
+  }
+}
+
+/**
+ * The data processor to append new line delimiter to each record.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html#dynamic-partitioning-new-line-delimiter
+ */
+export class AppendDelimiterToRecordProcessor implements IDataProcessor {
+  public readonly props: DataProcessorProps = {};
+
+  constructor() {}
+
+  bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+    return {
+      processorType: 'AppendDelimiterToRecord',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
+    };
+  }
 }
