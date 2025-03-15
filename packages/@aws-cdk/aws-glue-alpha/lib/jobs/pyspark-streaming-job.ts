@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Properties for creating a Python Spark ETL job
@@ -75,6 +76,8 @@ export class PySparkStreamingJob extends SparkJob {
    */
   constructor(scope: Construct, id: string, props: PySparkStreamingJobProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {
