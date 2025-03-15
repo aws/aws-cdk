@@ -21,6 +21,7 @@ import { ServiceAccount, ServiceAccountOptions } from './service-account';
 import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
+import { SubnetIdSubnetFilter } from '../../aws-ec2';
 import { CidrBlock } from '../../aws-ec2/lib/network-util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -1657,10 +1658,14 @@ export class Cluster extends ClusterBase {
       && this.endpointAccess._config.publicCidrs.length !== 0;
 
     // validate endpoint access configuration
+    const isLookedUpVPC: boolean = this.vpc instanceof ec2.LookedUpVpc;
+    const isSubnetIdFilter: boolean = this.vpcSubnets instanceof SubnetIdSubnetFilter;
 
-    if (privateSubnets.length === 0 && publicAccessDisabled) {
-      // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+    if (!isLookedUpVPC && !isSubnetIdFilter) {
+      if (privateSubnets.length === 0 && publicAccessDisabled) {
+        // no private subnets and no public access at all, no good.
+        throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      }
     }
 
     if (privateSubnets.length === 0 && publicAccessRestricted) {
