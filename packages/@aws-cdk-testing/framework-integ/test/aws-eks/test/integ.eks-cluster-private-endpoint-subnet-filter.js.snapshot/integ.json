@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-private-endpoint-subnet-filter/DefaultTest": {
+      "stacks": [
+        "StackWithVpc"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-cluster-private-endpoint-subnet-filter/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterprivateendpointsubnetfilterDefaultTestDeployAssert9E98D051"
+    }
+  }
+}
