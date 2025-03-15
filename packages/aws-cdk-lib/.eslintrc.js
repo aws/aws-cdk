@@ -48,6 +48,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-elasticloadbalancingv2-targets',
   'aws-lambda',
   'aws-rds',
+  'custom-resources',  
   'aws-s3',
   'aws-sns',
   'aws-sqs',
@@ -85,6 +86,18 @@ const enableNoThrowDefaultErrorIn = [
 baseConfig.overrides.push({
   files: enableNoThrowDefaultErrorIn.map(m => `./${m}/lib/**`),
   rules: { "@cdklabs/no-throw-default-error": ['error'] },
+});
+
+// exceptions for no-throw-default-error
+baseConfig.overrides.push({
+  rules: { "@cdklabs/no-throw-default-error": "off" },
+  files: [
+    // Test files
+    "./**/test/**",
+
+    // Lambda Runtime code in various locations
+    "./custom-resources/lib/provider-framework/runtime/**",
+  ],
 });
 
 
