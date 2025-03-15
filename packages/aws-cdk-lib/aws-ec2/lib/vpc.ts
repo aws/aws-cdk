@@ -2484,11 +2484,7 @@ class ImportedVpc extends VpcBase {
   }
 }
 
-/**
- * Represents an imported VPC
- * @resource AWS::EC2::VPC
- */
-export class LookedUpVpc extends VpcBase {
+class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();

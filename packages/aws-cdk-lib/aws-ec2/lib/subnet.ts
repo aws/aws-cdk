@@ -135,7 +135,7 @@ class ContainsIpAddressesSubnetFilter extends SubnetFilter {
 /**
  * Chooses subnets based on the subnetId
  */
-export class SubnetIdSubnetFilter extends SubnetFilter {
+class SubnetIdSubnetFilter extends SubnetFilter {
   private readonly subnetIds: string[];
 
   constructor(subnetIds: string[]) {
