@@ -10,6 +10,32 @@ import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
+ * The type of product
+ */
+export enum ProductType {
+  /**
+   * CloudFormation template
+   */
+  CLOUD_FORMATION_TEMPLATE = 'CLOUD_FORMATION_TEMPLATE',
+  /**
+   * created by Amazon Web Services Marketplace
+   */
+  MARKETPLACE = 'MARKETPLACE',
+  /**
+   * Terraform Open Source configuration file
+   */
+  TERRAFORM_OPEN_SOURCE = 'TERRAFORM_OPEN_SOURCE',
+  /**
+   * Terraform Cloud configuration file
+   */
+  TERRAFORM_CLOUD = 'TERRAFORM_CLOUD',
+  /**
+   * External configuration file
+   */
+  EXTERNAL = 'EXTERNAL',
+}
+
+/**
  * A Service Catalog product, currently only supports type CloudFormationProduct
  */
 export interface IProduct extends IResource {
@@ -118,6 +144,12 @@ export interface CloudFormationProductProps {
   readonly distributor?: string;
 
   /**
+   * The type of the product.
+   * @default - No type provided
+   */
+  readonly productType?: ProductType;
+
+  /**
    * Whether to give provisioning artifacts a new unique identifier when the product attributes or provisioning artifacts is updated
    * @default false
    */
@@ -201,6 +233,7 @@ export class CloudFormationProduct extends Product {
       name: props.productName,
       owner: props.owner,
       provisioningArtifactParameters: this.renderProvisioningArtifacts(props),
+      productType: props.productType,
       replaceProvisioningArtifacts: props.replaceProductVersionIds,
       supportDescription: props.supportDescription,
       supportEmail: props.supportEmail,
