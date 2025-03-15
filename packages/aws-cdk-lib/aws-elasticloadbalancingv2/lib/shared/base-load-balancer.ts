@@ -246,7 +246,7 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     let subnetIds;
-    let subnetMappings;
+    let subnetMappings: SubnetMapping[] | undefined = additionalProps.subnetMappings;
     let internetConnectivityEstablished;
 
     if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
@@ -256,9 +256,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
     this.vpc = baseProps.vpc;
 
-    if (additionalProps.subnetMappings) {
-      subnetMappings = additionalProps.subnetMappings as SubnetMapping[];
-
+    if (subnetMappings) {
       if (internetFacing) {
         const mappedSubnetIds = subnetMappings.map(mapping => mapping.subnet.subnetId);
         internetConnectivityEstablished = baseProps.vpc.selectSubnets(
@@ -281,13 +279,16 @@ export abstract class BaseLoadBalancer extends Resource {
       name: this.physicalName,
       ...(subnetIds ? { subnets: subnetIds } : {}),
       ...(subnetMappings ? {
-        subnetMappings: subnetMappings?.map((mapping) => ({
-          subnetId: mapping.subnet.subnetId,
-          allocationId: mapping.allocationId,
-          privateIpv4Address: mapping.privateIpv4Address,
-          ipv6Address: mapping.ipv6Address,
-          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
-        })),
+        subnetMappings: subnetMappings?.map((mapping) => {
+          console.log(mapping);
+          return ({
+            subnetId: mapping.subnet.subnetId,
+            allocationId: mapping.allocationId,
+            privateIpv4Address: mapping.privateIpv4Address,
+            ipv6Address: mapping.ipv6Address,
+            sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+          });
+        }),
       } : {}),
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),

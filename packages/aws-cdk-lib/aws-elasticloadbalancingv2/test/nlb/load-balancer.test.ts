@@ -6,6 +6,138 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
+  describe('subnet mappings', () => {
+    test('set subnet', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        subnetMappings: [
+          { subnet: vpc.publicSubnets[0] },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+          },
+        ],
+      });
+    });
+
+    test('set allocation id', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+      const elasticIp = new ec2.CfnEIP(stack, 'EIP');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            allocationId: elasticIp.attrAllocationId,
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            AllocationId: { 'Fn::GetAtt': ['EIP', 'AllocationId'] },
+          },
+        ],
+      });
+    });
+
+    test('set private ipv4 address', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+      });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            privateIpv4Address: '10.0.12.29',
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            PrivateIpv4Address: '10.0.12.29',
+          },
+        ],
+      });
+    });
+
+    test('set ipv6 address', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC', {
+        maxAzs: 2,
+        ipProtocol: ec2.IpProtocol.DUAL_STACK,
+      });
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        subnetMappings: [
+          {
+            subnet: vpc.publicSubnets[0],
+            ipv6Address: 'fd00:1234:5678:abcd::1',
+            sourceNatIpv6Prefix: elbv2.SourceNatIpv6Prefix.autoAssigned(),
+          },
+        ],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        SubnetMappings: [
+          {
+            SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
+            Ipv6Address: 'fd00:1234:5678:abcd::1',
+            SourceNatIpv6Prefix: 'auto_assigned',
+          },
+        ],
+      });
+    });
+
+    test('throw error for configuring both vpcSubnets and subnetMappings', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+          subnetMappings: [
+            { subnet: vpc.publicSubnets[0] },
+          ],
+        });
+      }).toThrow('`vpcSubnets` and `subnetMappings` cannot be specified at the same time.');
+    });
+  });
+
   test('specify minimum capacity unit', () => {
     // GIVEN
     const stack = new cdk.Stack();
