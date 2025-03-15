@@ -1,6 +1,5 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
@@ -21,7 +20,7 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const stream = new firehose.DeliveryStream(this, 'MyStream', {
-      destination: new destinations.S3Bucket(bucket),
+      destination: new firehose.S3Bucket(bucket),
     });
     topicRule.addAction(
       new actions.FirehosePutRecordAction(stream, {

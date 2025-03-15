@@ -185,7 +185,7 @@ export enum LoggingProtocol {
   LAMBDA = 'lambda',
 
   /**
-   * Amazon Kinesis Data Firehose
+   * Amazon Data Firehose
    */
   FIREHOSE = 'firehose',
 
