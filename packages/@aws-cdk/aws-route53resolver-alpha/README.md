@@ -114,3 +114,19 @@ ruleGroup.associate('Association', {
   vpc: myVpc,
 })
 ```
+
+### Importing an existing Firewall Rule Group
+
+You can import an existing firewall rule group either by ID or by name.
+
+To import by ID:
+```ts
+const existingRuleGroup = route53resolver.FirewallRuleGroup.fromFirewallRuleGroupId(this, 'ImportedRuleGroup', 'fwr-123456');
+```
+
+To import by name from the CDK context:
+```ts
+const existingRuleGroupByName = route53resolver.FirewallRuleGroup.fromFirewallRuleGroupName(this, 'ImportedRuleGroup', 'MyFirewallRuleGroup');
+```
+
+The firewall rule group name should be available in the CDK context under firewallRuleGroups mapping.
