@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import { Duration, Size } from '../../core';
 
 /**
- * Configure the data processor.
+ * Configure the LambdaFunctionProcessor.
  */
 export interface DataProcessorProps {
   /**
@@ -38,8 +38,6 @@ export interface DataProcessorProps {
 export interface DataProcessorIdentifier {
   /**
    * The parameter name that corresponds to the processor resource's identifier.
-   *
-   * Must be an accepted value in `CfnDeliveryStream.ProcessoryParameterProperty.ParameterName`.
    */
   readonly parameterName: string;
 
@@ -63,13 +61,12 @@ export interface DataProcessorConfig {
   /**
    * The key-value pair that identifies the underlying processor resource.
    * @deprecated Use `parameters`
-   * @default - No processor identifier
    */
-  readonly processorIdentifier?: DataProcessorIdentifier;
+  readonly processorIdentifier: DataProcessorIdentifier;
 
   /**
    * The processor parameters.
-   * @default - No paraeters
+   * @default - No parameters
    */
   readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
 }
@@ -115,6 +112,7 @@ export class DecompressionProcessor implements IDataProcessor {
   bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'Decompression',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
       parameters: [
         { parameterName: 'CompressionFormat', parameterValue: 'GZIP' },
       ],
@@ -136,6 +134,7 @@ export class CloudWatchLogProcessingProcessor implements IDataProcessor {
   bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'CloudWatchLogProcessing',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
       parameters: [
         { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
       ],
@@ -156,7 +155,7 @@ export class AppendDelimiterToRecordProcessor implements IDataProcessor {
   bind(_scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
     return {
       processorType: 'AppendDelimiterToRecord',
-      parameters: [],
+      processorIdentifier: { parameterName: '', parameterValue: '' },
     };
   }
 }

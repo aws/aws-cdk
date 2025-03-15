@@ -36,6 +36,7 @@ export class LambdaFunctionProcessor implements IDataProcessor {
 
     return {
       processorType: 'Lambda',
+      processorIdentifier: { parameterName: '', parameterValue: '' },
       parameters,
     };
   }

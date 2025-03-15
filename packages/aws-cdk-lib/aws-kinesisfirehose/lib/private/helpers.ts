@@ -117,17 +117,13 @@ function renderDataProcessor(
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
 
-  const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [];
-  if (processorConfig.processorIdentifier) {
-    parameters.push(processorConfig.processorIdentifier);
-  }
-  if (processorConfig.parameters) {
-    parameters.push(...processorConfig.parameters);
+  if (processorConfig.processorIdentifier.parameterName) {
+    throw new cdk.ValidationError("'processorIdentifier' has been deprecated. Please update your bind() method to return 'parameters' instead.", scope);
   }
 
   return {
     type: processorConfig.processorType,
-    parameters,
+    parameters: processorConfig.parameters ?? [],
   };
 }
 
