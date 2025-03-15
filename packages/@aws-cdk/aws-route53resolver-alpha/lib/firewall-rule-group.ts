@@ -15,6 +15,13 @@ export interface IFirewallRuleGroup extends IResource {
    * @attribute
    */
   readonly firewallRuleGroupId: string;
+
+  /**
+   * The name of the rule group
+   *
+   * @attribute
+   */
+  readonly firewallRuleGroupName?: string;
 }
 
 /**
@@ -156,7 +163,7 @@ export abstract class DnsBlockResponse {
  */
 export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /**
-   * Import an existing Firewall Rule Group
+   * Import an existing Firewall Rule Group by ID
    */
   public static fromFirewallRuleGroupId(scope: Construct, id: string, firewallRuleGroupId: string): IFirewallRuleGroup {
     class Import extends Resource implements IFirewallRuleGroup {
@@ -165,7 +172,28 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
     return new Import(scope, id);
   }
 
+  /**
+   * Import an existing Firewall Rule Group by Name
+   */
+  public static fromFirewallRuleGroupName(scope: Construct, id: string, firewallRuleGroupName: string): IFirewallRuleGroup {
+    const firewallRuleGroups: { [name: string]: string } = scope.node.tryGetContext('firewallRuleGroups') || {};
+    const firewallRuleGroupId = firewallRuleGroups[firewallRuleGroupName];
+
+    if (!firewallRuleGroupId) {
+      throw new Error(`Firewall Rule Group with name "${firewallRuleGroupName}" not found in context.`);
+    }
+
+    class Import extends Resource implements IFirewallRuleGroup {
+      public readonly firewallRuleGroupId = firewallRuleGroupId;
+      public readonly firewallRuleGroupName = firewallRuleGroupName;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly firewallRuleGroupId: string;
+
+  public readonly firewallRuleGroupName?: string;
 
   /**
    * The ARN (Amazon Resource Name) of the rule group
@@ -230,6 +258,9 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
     addConstructMetadata(this, props);
 
     this.rules = props.rules ?? [];
+
+    // Store the name of the rule group
+    this.firewallRuleGroupName = props.name;
 
     const ruleGroup = new CfnFirewallRuleGroup(this, 'Resource', {
       name: props.name,
