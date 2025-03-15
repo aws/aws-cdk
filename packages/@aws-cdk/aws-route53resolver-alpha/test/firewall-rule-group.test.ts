@@ -135,3 +135,24 @@ test('throws when associating with a priority not between 100-9,000', () => {
     vpc,
   })).toThrow(/Priority must be greater than 100 and less than 9000/);
 });
+
+test('fromFirewallRuleGroupName return correct imported resource when mapping provided', () => {
+  const stackWithContext = new Stack();
+  stackWithContext.node.setContext('firewallRuleGroups', {
+    TestGroup: 'fwr-123456',
+  });
+
+  const importedGroup = FirewallRuleGroup.fromFirewallRuleGroupName(stackWithContext, 'ImportedGroup', 'TestGroup');
+
+  expect(importedGroup.firewallRuleGroupId).toEqual('fwr-123456');
+  expect(importedGroup.firewallRuleGroupName).toEqual('TestGroup');
+});
+
+test('fromFirewallRuleGroupName throws an error when the name is not in context', () => {
+  const stackWithoutMapping = new Stack();
+  stackWithoutMapping.node.setContext('firewallRuleGroups', {});
+
+  expect(() => {
+    FirewallRuleGroup.fromFirewallRuleGroupName(stackWithoutMapping, 'ImportedGroup', 'NonExistentGroup');
+  }).toThrow(/Firewall Rule Group with name "NonExistentGroup" not found in context./);
+});
