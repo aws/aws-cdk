@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "IntegProviderWithWaiterStateMachineCustomRole/DefaultTest": {
+      "stacks": [
+        "integ-provider-with-waiter-state-machine-custom-role"
+      ],
+      "diffAssets": true,
+      "assertionStack": "IntegProviderWithWaiterStateMachineCustomRole/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegProviderWithWaiterStateMachineCustomRoleDefaultTestDeployAssert1C38BF52"
+    }
+  }
+}

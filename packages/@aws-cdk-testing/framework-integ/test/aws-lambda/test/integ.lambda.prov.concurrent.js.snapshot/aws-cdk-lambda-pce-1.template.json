@@ -31,6 +31,27 @@
     ]
    }
   },
+  "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
+    "Roles": [
+     {
+      "Ref": "MyLambdaAliasPCEServiceRoleF7C9F212"
+     }
+    ]
+   }
+  },
   "MyLambdaAliasPCED0B8D751": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -48,29 +69,9 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
+    "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
     "MyLambdaAliasPCEServiceRoleF7C9F212"
    ]
-  },
-  "MyLambdaAliasPCEinlinePolicyAddedToExecutionRole0F563738B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MyLambdaAliasPCEinlinePolicyAddedToExecutionRole0F563738B",
-    "Roles": [
-     {
-      "Ref": "MyLambdaAliasPCEServiceRoleF7C9F212"
-     }
-    ]
-   }
   },
   "MyLambdaAliasPCECurrentVersion072335D3abd7022526e1eae404a6f2a50ba64569": {
    "Type": "AWS::Lambda::Version",
@@ -139,6 +140,27 @@
     ]
    }
   },
+  "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "*",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
+    "Roles": [
+     {
+      "Ref": "MyLambdaVersionPCEServiceRole2ACFB73E"
+     }
+    ]
+   }
+  },
   "MyLambdaVersionPCEA3A0D86B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -156,29 +178,9 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
+    "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
     "MyLambdaVersionPCEServiceRole2ACFB73E"
    ]
-  },
-  "MyLambdaVersionPCEinlinePolicyAddedToExecutionRole0C74308E8": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "MyLambdaVersionPCEinlinePolicyAddedToExecutionRole0C74308E8",
-    "Roles": [
-     {
-      "Ref": "MyLambdaVersionPCEServiceRole2ACFB73E"
-     }
-    ]
-   }
   },
   "MyLambdaVersionPCECurrentVersion27FC3932e3372865403c1e027068d9691afe3f3f": {
    "Type": "AWS::Lambda::Version",

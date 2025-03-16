@@ -135,6 +135,36 @@ Beyond assertions, the module provides APIs to retrieve matching resources.
 The `findResources()` API is complementary to the `hasResource()` API, except,
 instead of asserting its presence, it returns the set of matching resources.
 
+Similarly, the `getResourceId()` API is complementary to the `findResources()` API,
+except it expects only one matching resource, and returns the matched resource's resource id.
+Useful for asserting that certain cloudformation resources correlate expectedly.
+
+```ts
+// Assert that a certain bucket denies unsecure communication
+const bucket = template.getResourceId('AWS::S3::Bucket', {
+  Properties: {
+    BucketName: 'my-bucket',
+  }
+})
+
+template.hasResourceProperties('AWS::S3::BucketPolicy', {
+  Bucket: {
+    Ref: bucket,
+  },
+  PolicyDocument: {
+    Statement: [
+      {
+        Effect: 'Deny',
+        Action: 's3:*',
+        Principal: { AWS: '*' },
+        Condition: { Bool: { 'aws:SecureTransport': 'false' } },
+      },
+    ],
+  }
+})
+
+```
+
 By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).

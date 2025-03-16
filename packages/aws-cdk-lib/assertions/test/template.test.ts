@@ -561,6 +561,114 @@ describe('Template', () => {
     });
   });
 
+  describe('getResourceId', () => {
+    test('matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.getResourceId('Foo::Bar')).toEqual('Foo');
+    });
+
+    test('no matching resource type', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Baz',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.getResourceId('Foo::Bar'),
+        ['Template has 0 resources with type Foo::Bar'],
+      );
+    });
+
+    test('matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.getResourceId('Foo::Bar', { Properties: { fred: 'waldo' } })).toEqual('Foo');
+    });
+
+    test('no matching resource props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.getResourceId('Foo::Bar', { Properties: { baz: 'quz' } }),
+        [
+          'Template has 1 resources with type Foo::Bar, but none match as expected',
+          /Expected quz but received qux/,
+        ],
+      );
+    });
+
+    test('multiple matching resources', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', { type: 'Foo::Bar' });
+      new CfnResource(stack, 'Bar', { type: 'Foo::Bar' });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.getResourceId('Foo::Bar'),
+        [
+          'Template has 2 matches, expected only one.',
+          /Foo/, /Foo::Bar/,
+          /Bar/, /Foo::Bar/,
+        ],
+      );
+    });
+
+    test('multiple matching resources props', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+      new CfnResource(stack, 'Bar', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expectToThrow(
+        () => inspect.getResourceId('Foo::Bar', { Properties: { baz: 'qux' } }),
+        [
+          'Template has 2 matches, expected only one.',
+          /Foo/, /Foo::Bar/,
+          /Bar/, /Foo::Bar/,
+        ],
+      );
+    });
+
+    test('multiple resources only one match', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', fred: 'waldo' },
+      });
+      new CfnResource(stack, 'Bar', {
+        type: 'Foo::Bar',
+        properties: { bax: 'qux', fred: 'waldo' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.getResourceId('Foo::Bar', { Properties: { bax: 'qux' } })).toEqual('Bar');
+    });
+  });
+
   describe('allResources', () => {
     test('all resource of type match', () => {
       const stack = new Stack();

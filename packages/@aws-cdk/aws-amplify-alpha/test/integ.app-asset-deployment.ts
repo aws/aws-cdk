@@ -18,7 +18,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 
 // Deploying the stack is sufficient to test the custom resources
