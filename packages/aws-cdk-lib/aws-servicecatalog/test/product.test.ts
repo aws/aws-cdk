@@ -396,11 +396,11 @@ describe('Product', () => {
           cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
         },
       ],
-      productType: servicecatalog.ProductType.TERRAFORM_OPEN_SOURCE,
+      productType: servicecatalog.ProductType.CLOUD_FORMATION_TEMPLATE,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
-      ProductType: 'TERRAFORM_OPEN_SOURCE',
+      ProductType: 'CLOUD_FORMATION_TEMPLATE',
     });
   });
 
