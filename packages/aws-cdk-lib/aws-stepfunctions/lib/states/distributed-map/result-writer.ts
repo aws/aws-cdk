@@ -10,8 +10,17 @@ import { QueryLanguage } from '../../types';
 export interface ResultWriterProps {
   /**
    * S3 Bucket in which to save Map Run results
+   *
+   * @default - S3 bucket will be determined from @see bucketNamePath
    */
-  readonly bucket: IBucket;
+  readonly bucket?: IBucket;
+
+  /**
+   * S3 bucket name in which to save Map Run results, as JsonPath
+   *
+   * @default - S3 bucket will be determined from @see bucket
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * S3 prefix in which to save Map Run results
@@ -25,10 +34,22 @@ export interface ResultWriterProps {
  * Configuration for writing Distributed Map state results to S3
  */
 export class ResultWriter {
+  private readonly _bucket?: IBucket;
+
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket: IBucket;
+  public get bucket(): IBucket {
+    if (!this._bucket) {
+      throw new Error('`bucket` is undefined');
+    }
+    return this._bucket;
+  }
+
+  /**
+   * S3 bucket name in which to save Map Run results, as JsonPath
+   */
+  readonly bucketNamePath?: string;
 
   /**
    * S3 prefix in which to save Map Run results
@@ -38,7 +59,8 @@ export class ResultWriter {
   readonly prefix?: string;
 
   constructor(props: ResultWriterProps) {
-    this.bucket = props.bucket;
+    this._bucket = props.bucket;
+    this.bucketNamePath = props.bucketNamePath;
     this.prefix = props.prefix;
   }
 
@@ -57,7 +79,8 @@ export class ResultWriter {
     });
 
     const argumentOrParameter = {
-      Bucket: this.bucket.bucketName,
+      ...(this._bucket && { Bucket: this._bucket.bucketName }),
+      ...(this.bucketNamePath && { Bucket: this.bucketNamePath }),
       ...(this.prefix && { Prefix: this.prefix }),
     };
 
@@ -75,16 +98,7 @@ export class ResultWriter {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-    const resource = Arn.format({
-      region: '',
-      account: '',
-      partition: Aws.PARTITION,
-      service: 's3',
-      resource: this.bucket.bucketName,
-      resourceName: '*',
-    });
-
-    return [
+    const statements = [
       new iam.PolicyStatement({
         actions: [
           's3:PutObject',
@@ -92,8 +106,39 @@ export class ResultWriter {
           's3:ListMultipartUploadParts',
           's3:AbortMultipartUpload',
         ],
-        resources: [resource],
+        resources: [
+          this._bucket ? Arn.format({
+            region: '',
+            account: '',
+            partition: Aws.PARTITION,
+            service: 's3',
+            resource: this._bucket.bucketName,
+            resourceName: '*',
+          }) : '*',
+        ],
       }),
     ];
+
+    if (!this._bucket) {
+      statements.push(new iam.PolicyStatement({
+        actions: ['s3:ListBucket'],
+        resources: ['*'],
+      }));
+    }
+
+    return statements;
+  }
+
+  /**
+   * Validate that ResultWriter contains exactly either @see bucket or @see bucketNamePath
+   */
+  public validateResultWriter(): string[] {
+    const errors: string[] = [];
+    if (this._bucket && this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`, but not both');
+    } else if (!this._bucket && !this.bucketNamePath) {
+      errors.push('Provide either `bucket` or `bucketNamePath`');
+    }
+    return errors;
   }
 }

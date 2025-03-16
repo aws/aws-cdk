@@ -872,6 +872,72 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State, ResultWriter and bucketNamePath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+      resultWriter: new stepfunctions.ResultWriter({
+        bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          ResultWriter: {
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':states:::s3:putObject',
+                ],
+              ],
+            },
+            Parameters: {
+              'Bucket.$': '$.bucketName',
+              'Prefix': 'test',
+            },
+          },
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State Path Properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1076,6 +1142,35 @@ describe('Distributed Map State', () => {
         itemReader: new stepfunctions.S3JsonItemReader({
           key: 'test.json',
         }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`/);
+  }),
+
+  test('fails in synthesis if resultWriter contains both bucket and bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        resultWriter: new stepfunctions.ResultWriter({
+          bucket: writerBucket,
+          bucketNamePath: stepfunctions.JsonPath.stringAt('$.bucketName'),
+        }),
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `bucket` or `bucketNamePath`, but not both/);
+  }),
+
+  test('fails in synthesis if resultWriter contains neither bucket nor bucketNamePath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        resultWriter: new stepfunctions.ResultWriter({}),
       });
 
       return map;
