@@ -1,4 +1,4 @@
-import { UnscopedValidationError, ValidationError } from '../../core';
+import { UnscopedValidationError } from '../../core';
 
 // Implementation of metric patterns
 
