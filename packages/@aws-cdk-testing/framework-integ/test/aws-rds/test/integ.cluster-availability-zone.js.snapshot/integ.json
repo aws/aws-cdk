@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "cluster-with-availability-zone-integ/DefaultTest": {
+      "stacks": [
+        "rds-cluster-with-availability-zone"
+      ],
+      "assertionStack": "cluster-with-availability-zone-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterwithavailabilityzoneintegDefaultTestDeployAssertFDC52DFE"
+    }
+  }
+}

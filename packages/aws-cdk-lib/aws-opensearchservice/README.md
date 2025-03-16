@@ -290,7 +290,7 @@ const domain = new Domain(this, 'Domain', {
 ```
 
 For more complex use-cases, for example, to set the domain up to receive data from a
-[cross-account Kinesis Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
+[cross-account Amazon Data Firehose](https://aws.amazon.com/premiumsupport/knowledge-center/kinesis-firehose-cross-account-streaming/) the `addAccessPolicies` helper method
 allows for policies that include the explicit domain ARN.
 
 ```ts
