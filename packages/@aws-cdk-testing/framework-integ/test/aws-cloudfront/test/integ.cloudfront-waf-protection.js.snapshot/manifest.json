@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "cloudfront-waf-protection.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/e3f76e724c593597ac1c3398b3f0ce418dc738f1d07fb9ed3d649477ba7ec69d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4129fa4b6fd7c3c3c08dcb29d8f3d1b9f2a4f7d9b97313790fe494a34fcafd6a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,7 +64,7 @@
             "data": "DistroWebAclD7C0F39D"
           }
         ],
-        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/Default": [
+        "/cloudfront-waf-protection/AwsApiCallcloudfrontgetDistributionConfig9f87b7c8a1cb525ed95db663f365d5d3/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -78,16 +78,10 @@
             "data": "*"
           }
         ],
-        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/Default/Default": [
+        "/cloudfront-waf-protection/AwsApiCallcloudfrontgetDistributionConfig9f87b7c8a1cb525ed95db663f365d5d3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3"
-          }
-        ],
-        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallWAFV2getWebACLa638ee95e72a6c007d214e58375f55d3"
+            "data": "AwsApiCallcloudfrontgetDistributionConfig9f87b7c8a1cb525ed95db663f365d5d3"
           }
         ],
         "/cloudfront-waf-protection/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -100,6 +94,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACL06a8e1ea7330593b1bef8ecf346254a0/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACL06a8e1ea7330593b1bef8ecf346254a0/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallWAFV2getWebACL06a8e1ea7330593b1bef8ecf346254a0"
+          }
+        ],
+        "/cloudfront-waf-protection/AwsApiCallWAFV2getWebACL06a8e1ea7330593b1bef8ecf346254a0/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallWAFV2getWebACL06a8e1ea7330593b1bef8ecf346254a0"
           }
         ],
         "/cloudfront-waf-protection/BootstrapVersion": [

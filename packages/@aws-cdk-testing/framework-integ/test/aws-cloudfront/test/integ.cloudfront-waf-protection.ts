@@ -1,7 +1,6 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Fn, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as wafv2 from 'aws-cdk-lib/aws-wafv2';
 import { TestOrigin } from './test-origin';
 
 const app = new App();
@@ -23,11 +22,18 @@ const integTest = new IntegTest(app, 'integ-cloudfront-waf-protection-test', {
   assertionStack: stack,
 });
 
-const webAcl = distribution.node.findChild('WebAcl') as wafv2.CfnWebACL;
+const webAclArn = integTest.assertions.awsApiCall('cloudfront', 'getDistributionConfig', {
+  Id: distribution.distributionId,
+}).getAttString('DistributionConfig.WebACLId');
+
+// WebAclArn: arn:aws:wafv2:us-east-1:1111:global/webacl/Name/Id
+const parts = Fn.split('/', webAclArn, 4);
+const webAclId = parts[3];
+const webAclName = parts[2];
 
 integTest.assertions.awsApiCall('WAFV2', 'getWebACL', {
-  Id: webAcl.attrId,
-  Name: webAcl.name,
+  Id: webAclId,
+  Name: webAclName,
   Scope: 'CLOUDFRONT',
 }).expect(ExpectedResult.objectLike({
   WebACL: {
@@ -36,7 +42,7 @@ integTest.assertions.awsApiCall('WAFV2', 'getWebACL', {
     },
     VisibilityConfig: {
       CloudWatchMetricsEnabled: true,
-      MetricName: webAcl.name,
+      MetricName: webAclName,
       SampledRequestsEnabled: true,
     },
     Rules: Match.arrayWith([
