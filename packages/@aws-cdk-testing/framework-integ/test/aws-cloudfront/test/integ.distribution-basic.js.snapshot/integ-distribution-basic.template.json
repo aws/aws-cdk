@@ -136,25 +136,7 @@
       {
        "Action": "cloudfront:ListInvalidations",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":cloudfront::",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":distribution/",
-          {
-           "Ref": "DistB3B78991"
-          }
-         ]
-        ]
-       }
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
