@@ -1113,7 +1113,12 @@ test('grants custom actions', () => {
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.AccountRootPrincipal(),
   });
-  distribution.grant(role, 'cloudfront:ListInvalidations', 'cloudfront:GetInvalidation');
+  distribution.grant(
+    role,
+    'cloudfront:ListInvalidations',
+    'cloudfront:GetInvalidation',
+    'cloudfront:ListDistributions',
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
@@ -1121,8 +1126,12 @@ test('grants custom actions', () => {
         {
           Action: [
             'cloudfront:ListInvalidations',
-            'cloudfront:GetInvalidation',
+            'cloudfront:ListDistributions',
           ],
+          Resource: '*',
+        },
+        {
+          Action: 'cloudfront:GetInvalidation',
           Resource: {
             'Fn::Join': [
               '', [

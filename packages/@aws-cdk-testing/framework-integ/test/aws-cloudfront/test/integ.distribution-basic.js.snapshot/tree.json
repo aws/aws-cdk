@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "integ-distribution-basic": {
         "id": "integ-distribution-basic",
         "path": "integ-distribution-basic",
@@ -25,7 +17,7 @@
                 "path": "integ-distribution-basic/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.140"
+                  "version": "10.4.2"
                 }
               },
               "Resource": {
@@ -58,20 +50,55 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnDistribution",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_cloudfront.Distribution",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "defaultBehavior": {
+                    "origin": "*"
+                  }
+                },
+                {
+                  "grantCreateInvalidation": [
+                    "*"
+                  ]
+                },
+                {
+                  "grant": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "grant": [
+                    "*",
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Role1": {
             "id": "Role1",
             "path": "integ-distribution-basic/Role1",
             "children": {
+              "ImportRole1": {
+                "id": "ImportRole1",
+                "path": "integ-distribution-basic/Role1/ImportRole1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-distribution-basic/Role1/Resource",
@@ -108,7 +135,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               },
@@ -159,26 +186,78 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Role2": {
             "id": "Role2",
             "path": "integ-distribution-basic/Role2",
             "children": {
+              "ImportRole2": {
+                "id": "ImportRole2",
+                "path": "integ-distribution-basic/Role2/ImportRole2",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-distribution-basic/Role2/Resource",
@@ -215,7 +294,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               },
@@ -234,25 +313,7 @@
                             {
                               "Action": "cloudfront:ListInvalidations",
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":cloudfront::",
-                                    {
-                                      "Ref": "AWS::AccountId"
-                                    },
-                                    ":distribution/",
-                                    {
-                                      "Ref": "DistB3B78991"
-                                    }
-                                  ]
-                                ]
-                              }
+                              "Resource": "*"
                             }
                           ],
                           "Version": "2012-10-17"
@@ -266,20 +327,61 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "distribution-basic-test": {
@@ -295,38 +397,80 @@
                     "path": "integ-distribution-basic/distribution-basic-test/DefaultTest/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.4.2"
                     }
                   },
                   "DeployAssert": {
                     "id": "DeployAssert",
                     "path": "integ-distribution-basic/distribution-basic-test/DefaultTest/DeployAssert",
+                    "children": {
+                      "BootstrapVersion": {
+                        "id": "BootstrapVersion",
+                        "path": "integ-distribution-basic/distribution-basic-test/DefaultTest/DeployAssert/BootstrapVersion",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnParameter",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "CheckBootstrapVersion": {
+                        "id": "CheckBootstrapVersion",
+                        "path": "integ-distribution-basic/distribution-basic-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnRule",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Stack",
+                      "fqn": "aws-cdk-lib.Stack",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+                  "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTest",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-distribution-basic/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-distribution-basic/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
