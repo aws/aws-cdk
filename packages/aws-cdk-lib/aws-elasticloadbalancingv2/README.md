@@ -420,7 +420,22 @@ const listener = lb.addListener('Listener', {
 
 ### Configuring a subnet information for a Network Load Balancer
 
+You can specify the subnets for a Network Load Balancer easily by setting the `vpcSubnets` property.
 
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+});
+```
+
+If you want to configure detailed information about the subnets, you can use the `subnetMappings` property as follows:
+
+```ts
 
 ### Network Load Balancer attributes
 

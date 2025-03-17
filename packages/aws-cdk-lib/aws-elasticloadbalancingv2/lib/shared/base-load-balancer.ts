@@ -284,7 +284,7 @@ export abstract class BaseLoadBalancer extends Resource {
           allocationId: mapping.allocationId,
           privateIPv4Address: mapping.privateIpv4Address,
           iPv6Address: mapping.ipv6Address,
-          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix?.prefix,
         });
       }),
       scheme: internetFacing ? 'internet-facing' : 'internal',

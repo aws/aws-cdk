@@ -80,15 +80,15 @@ export class SourceNatIpv6Prefix {
   /**
    * Use an automatically assigned IPv6 prefix
    */
-  public static autoAssigned(): string {
-    return 'auto_assigned';
+  public static autoAssigned(): SourceNatIpv6Prefix {
+    return new SourceNatIpv6Prefix('auto_assigned');
   }
 
   /**
    * Use a custom IPv6 prefix with /80 netmask
    * @param prefix The IPv6 prefix
    */
-  public static fromIpv6Prefix(prefix: string): string {
+  public static fromIpv6Prefix(prefix: string): SourceNatIpv6Prefix {
     if (!prefix.includes('/')) {
       throw new UnscopedValidationError(`IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
     }
@@ -98,8 +98,10 @@ export class SourceNatIpv6Prefix {
       throw new UnscopedValidationError(`IPv6 prefix must have a /80 netmask, got ${netmask}`);
     }
 
-    return prefix;
+    return new SourceNatIpv6Prefix(prefix);
   }
+
+  constructor(public readonly prefix: string) {}
 }
 
 /**
