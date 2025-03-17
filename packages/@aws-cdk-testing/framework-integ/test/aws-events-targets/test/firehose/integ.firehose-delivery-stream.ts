@@ -1,9 +1,9 @@
 import * as events from 'aws-cdk-lib/aws-events';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // ---------------------------------
 // Define a rule that triggers a put to a Kinesis stream every 1min.
@@ -12,22 +12,22 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-event-target');
 
-const bucket = new s3.Bucket(stack, 'firehose-bucket');
-const firehoseRole = new iam.Role(stack, 'firehose-role', {
-  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+const bucket = new s3.Bucket(stack, 'firehose-bucket', {
+  autoDeleteObjects: true,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const stream = new firehose.CfnDeliveryStream(stack, 'MyStream', {
-  extendedS3DestinationConfiguration: {
-    bucketArn: bucket.bucketArn,
-    roleArn: firehoseRole.roleArn,
-  },
+const stream = new firehose.DeliveryStream(stack, 'MyStream', {
+  destination: new firehose.S3Bucket(bucket, {
+    bufferingInterval: cdk.Duration.seconds(30),
+  }),
 });
-bucket.grantReadWrite(firehoseRole);
 
 const event = new events.Rule(stack, 'EveryMinute', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
-event.addTarget(new targets.KinesisFirehoseStream(stream, {}));
+event.addTarget(new targets.FirehoseDeliveryStream(stream));
 
-app.synth();
+new IntegTest(app, 'firehose-event-target-integ', {
+  testCases: [stack],
+});
