@@ -37,7 +37,7 @@ export interface FirehoseDeliveryStreamProps {
 /**
  * Customize the Amazon Data Firehose Stream Event Target
  *
- * @deprecated Use KinesisFirehoseStreamV2
+ * @deprecated Use FirehoseDeliveryStream
  */
 export class KinesisFirehoseStream implements events.IRuleTarget {
   constructor(private readonly stream: firehose.CfnDeliveryStream, private readonly props: KinesisFirehoseStreamProps = {}) {
