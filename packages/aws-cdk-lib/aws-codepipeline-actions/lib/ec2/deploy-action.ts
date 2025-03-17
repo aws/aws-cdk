@@ -145,14 +145,6 @@ export class Ec2DeployAction extends Action {
     if (!Token.isUnresolved(props.targetDirectory) && !props.targetDirectory.startsWith('/')) {
       throw new UnscopedValidationError('The targetDirectory must be an absolute path.');
     }
-    if (
-      props.maxBatch && props.maxError &&
-      !Token.isUnresolved(props.maxBatch.value) && !Token.isUnresolved(props.maxError.value) &&
-      props.maxBatch.value.endsWith('%') === props.maxError.value.endsWith('%') &&
-      parseInt(props.maxBatch.value, 10) <= parseInt(props.maxError.value, 10)
-    ) {
-      throw new UnscopedValidationError(`The maxError must be less than the maxBatch ${props.maxBatch.value}. got ${props.maxError.value}`);
-    }
 
     this.props = props;
   }

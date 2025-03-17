@@ -479,30 +479,4 @@ describe('EC2 deploy action', () => {
       maxError: cpactions.Ec2MaxInstances.percentage(maxError),
     })).toThrow(`percentage must be a positive integer between 1 and 99. got ${maxError}`);
   });
-
-  test.each([[10, 10], [10, 15]])('throws when maxError targets (%d) >= maxBatch targets (%d)', (maxBatch, maxError) => {
-    expect(() => new cpactions.Ec2DeployAction({
-      actionName: 'EC2',
-      input: artifact,
-      instanceTagKey: 'Target',
-      instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
-      maxBatch: cpactions.Ec2MaxInstances.targets(maxBatch),
-      maxError: cpactions.Ec2MaxInstances.targets(maxError),
-    })).toThrow(`The maxError must be less than the maxBatch ${maxBatch}. got ${maxError}`);
-  });
-
-  test.each([[10, 10], [10, 15]])('throws when maxError percentage (%d) >= maxBatch percentage (%d)', (maxBatch, maxError) => {
-    expect(() => new cpactions.Ec2DeployAction({
-      actionName: 'EC2',
-      input: artifact,
-      instanceTagKey: 'Target',
-      instanceTagValue: 'MyDeployTarget',
-      targetDirectory: '/home/ec2-user/deploy',
-      postScript: 'scripts/post-deploy.sh',
-      maxBatch: cpactions.Ec2MaxInstances.percentage(maxBatch),
-      maxError: cpactions.Ec2MaxInstances.percentage(maxError),
-    })).toThrow(`The maxError must be less than the maxBatch ${maxBatch}%. got ${maxError}%`);
-  });
 });
