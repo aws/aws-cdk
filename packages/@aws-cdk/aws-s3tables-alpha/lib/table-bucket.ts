@@ -13,13 +13,13 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
  */
 export interface ITableBucket extends IResource {
   /**
-   * The ARN of the bucket.
+   * The ARN of the table bucket.
    * @attribute
    */
   readonly tableBucketArn: string;
 
   /**
-   * The name of the bucket.
+   * The name of the table bucket.
    * @attribute
    */
   readonly tableBucketName: string;
@@ -37,9 +37,10 @@ export interface ITableBucket extends IResource {
   readonly region?: string;
 
   /**
-   * The resource policy for this tableBucket.
+   * The resource policy for this table bucket.
+   * @attribute
    */
-  readonly resourcePolicy?: TableBucketPolicy;
+  readonly tableBucketPolicy?: TableBucketPolicy;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -74,7 +75,7 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
    * If `autoCreatePolicy` is true, a `TableBucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
    */
-  public abstract resourcePolicy?: TableBucketPolicy;
+  public abstract tableBucketPolicy?: TableBucketPolicy;
 
   /**
    * Indicates if a bucket resource policy should automatically created upon
@@ -105,15 +106,15 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   public addToResourcePolicy(
     statement: iam.PolicyStatement,
   ): iam.AddToResourcePolicyResult {
-    if (!this.resourcePolicy && this.autoCreatePolicy) {
-      this.resourcePolicy = new TableBucketPolicy(this, 'DefaultPolicy', {
+    if (!this.tableBucketPolicy && this.autoCreatePolicy) {
+      this.tableBucketPolicy = new TableBucketPolicy(this, 'DefaultPolicy', {
         tableBucket: this,
       });
     }
 
-    if (this.resourcePolicy) {
-      this.resourcePolicy.addToResourcePolicy(statement);
-      return { statementAdded: true, policyDependable: this.resourcePolicy };
+    if (this.tableBucketPolicy) {
+      this.tableBucketPolicy.addToResourcePolicy(statement);
+      return { statementAdded: true, policyDependable: this.tableBucketPolicy };
     }
 
     return { statementAdded: false };
@@ -234,7 +235,7 @@ export class TableBucket extends TableBucketBase {
     class Import extends TableBucketBase {
       public readonly tableBucketName = tableBucketName!;
       public readonly tableBucketArn = tableBucketArn;
-      public readonly resourcePolicy?: TableBucketPolicy;
+      public readonly tableBucketPolicy?: TableBucketPolicy;
       public readonly region = region;
       public readonly account = account;
       protected autoCreatePolicy: boolean = false;
@@ -363,7 +364,7 @@ export class TableBucket extends TableBucketBase {
   /**
    * The resource policy for this tableBucket.
    */
-  public readonly resourcePolicy?: TableBucketPolicy;
+  public readonly tableBucketPolicy?: TableBucketPolicy;
 
   /**
    * The unique Amazon Resource Name (arn) of this table bucket
