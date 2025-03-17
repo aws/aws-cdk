@@ -77,7 +77,7 @@ export class TreeMetadata extends Construct {
       // tree.json
       if (key === 'parent') return undefined;
       return value;
-    }, 2), { encoding: 'utf-8' });
+    }), { encoding: 'utf-8' });
 
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
