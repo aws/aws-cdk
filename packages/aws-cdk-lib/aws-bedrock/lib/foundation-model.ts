@@ -284,6 +284,9 @@ export class FoundationModelIdentifier {
   /** Base model "cohere.embed-multilingual-v3:0:512". */
   public static readonly COHERE_EMBED_MULTILINGUAL_V3_0_512 = new FoundationModelIdentifier('cohere.embed-multilingual-v3:0:512');
 
+  /** Base model "deepseek.r1-v1:0". */
+  public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
+
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 

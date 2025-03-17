@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "artifacts": {
     "cdk-integ-assets-bundling.assets": {
       "type": "cdk:asset-manifest",
@@ -34,10 +34,62 @@
         "cdk-integ-assets-bundling.assets"
       ],
       "metadata": {
+        "/cdk-integ-assets-bundling/MyUser": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/cdk-integ-assets-bundling/MyUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyUserDC45028B"
+          }
+        ],
+        "/cdk-integ-assets-bundling/MyUser/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/cdk-integ-assets-bundling/MyUser/DefaultPolicy/Resource": [
