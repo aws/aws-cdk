@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-analytics-metadata:
+  update-l2-enums:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     permissions:
