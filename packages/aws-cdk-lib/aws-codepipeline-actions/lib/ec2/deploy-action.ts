@@ -111,11 +111,11 @@ export abstract class Ec2MaxInstances {
   /**
    * Max percentage of instances.
    *
-   * Valid range: from 1 to 99
+   * Valid range: from 1 to 100
    */
   public static percentage(percentage: number): Ec2MaxInstances {
-    if (!Token.isUnresolved(percentage) && !(percentage >= 1 && percentage <= 99 && Number.isInteger(percentage))) {
-      throw new UnscopedValidationError(`percentage must be a positive integer between 1 and 99. got ${percentage}`);
+    if (!Token.isUnresolved(percentage) && !(percentage >= 1 && percentage <= 100 && Number.isInteger(percentage))) {
+      throw new UnscopedValidationError(`percentage must be a positive integer between 1 and 100. got ${percentage}`);
     }
     return { value: `${Tokenization.stringifyNumber(percentage)}%` };
   }

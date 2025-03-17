@@ -444,7 +444,7 @@ describe('EC2 deploy action', () => {
     })).toThrow(`targets must be a positive integer. got ${maxBatch}`);
   });
 
-  test.each([[0], [1.5], [100]])('throws when maxBatch is %s percent', (maxBatch) => {
+  test.each([[0], [1.5], [101]])('throws when maxBatch is %s percent', (maxBatch) => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
@@ -453,7 +453,7 @@ describe('EC2 deploy action', () => {
       targetDirectory: '/home/ec2-user/deploy',
       postScript: 'scripts/post-deploy.sh',
       maxBatch: cpactions.Ec2MaxInstances.percentage(maxBatch),
-    })).toThrow(`percentage must be a positive integer between 1 and 99. got ${maxBatch}`);
+    })).toThrow(`percentage must be a positive integer between 1 and 100. got ${maxBatch}`);
   });
 
   test.each([[0], [1.5]])('throws when maxError is %s targets', (maxError) => {
@@ -468,7 +468,7 @@ describe('EC2 deploy action', () => {
     })).toThrow(`targets must be a positive integer. got ${maxError}`);
   });
 
-  test.each([[0], [1.5], [100]])('throws when maxError is %s percent', (maxError) => {
+  test.each([[0], [1.5], [101]])('throws when maxError is %s percent', (maxError) => {
     expect(() => new cpactions.Ec2DeployAction({
       actionName: 'EC2',
       input: artifact,
@@ -477,6 +477,6 @@ describe('EC2 deploy action', () => {
       targetDirectory: '/home/ec2-user/deploy',
       postScript: 'scripts/post-deploy.sh',
       maxError: cpactions.Ec2MaxInstances.percentage(maxError),
-    })).toThrow(`percentage must be a positive integer between 1 and 99. got ${maxError}`);
+    })).toThrow(`percentage must be a positive integer between 1 and 100. got ${maxError}`);
   });
 });
