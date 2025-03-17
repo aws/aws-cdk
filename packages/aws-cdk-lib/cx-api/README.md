@@ -659,7 +659,6 @@ _cdk.json_
 }
 ```
 
-
 * `@aws-cdk/aws-s3:blockPublicAccessOptionAutoTrue`
 
 When BlockPublicAccess is not set at all, s3's default behavior will be to set all options to true in aws console. 
