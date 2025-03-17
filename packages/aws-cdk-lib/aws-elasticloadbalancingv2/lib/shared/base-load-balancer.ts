@@ -245,7 +245,7 @@ export abstract class BaseLoadBalancer extends Resource {
       throw new ValidationError('`vpcSubnets` and `subnetMappings` cannot be specified at the same time.', this);
     }
 
-    let subnetIds;
+    let subnetIds: string[] | undefined;
     let subnetMappings: SubnetMapping[] | undefined = additionalProps.subnetMappings;
     let internetConnectivityEstablished;
 
@@ -275,21 +275,31 @@ export abstract class BaseLoadBalancer extends Resource {
       internetConnectivityEstablished = result.internetConnectivityEstablished;
     }
 
+    const subnetMappingSetting = subnetMappings?.map((mapping) => {
+      // console.log(mapping);
+      return ({
+        subnetId: mapping.subnet.subnetId,
+        allocationId: mapping.allocationId,
+        privateIpv4Address: mapping.privateIpv4Address,
+        ipv6Address: mapping.ipv6Address,
+        sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+      });
+    });
+
+    console.log(subnetMappingSetting);
+
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
-      ...(subnetIds ? { subnets: subnetIds } : {}),
-      ...(subnetMappings ? {
-        subnetMappings: subnetMappings?.map((mapping) => {
-          console.log(mapping);
-          return ({
-            subnetId: mapping.subnet.subnetId,
-            allocationId: mapping.allocationId,
-            privateIpv4Address: mapping.privateIpv4Address,
-            ipv6Address: mapping.ipv6Address,
-            sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
-          });
-        }),
-      } : {}),
+      subnets: subnetIds,
+      subnetMappings: subnetMappings?.map((mapping) => {
+        return ({
+          subnetId: mapping.subnet.subnetId,
+          allocationId: mapping.allocationId,
+          privateIpv4Address: mapping.privateIpv4Address,
+          ipv6Address: mapping.ipv6Address,
+          sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
+        });
+      }),
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
