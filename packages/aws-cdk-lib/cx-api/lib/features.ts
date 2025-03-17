@@ -1390,6 +1390,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
     type: FlagType.BugFix,
     summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
@@ -1401,6 +1403,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
     type: FlagType.BugFix,
     summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
@@ -1412,6 +1416,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
+
   //////////////////////////////////////////////////////////////////////
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
     type: FlagType.ApiDefault,
