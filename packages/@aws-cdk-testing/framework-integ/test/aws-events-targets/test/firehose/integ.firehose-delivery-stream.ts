@@ -3,7 +3,7 @@ import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult, AwsApiCall } from '@aws-cdk/integ-tests-alpha';
 
 // ---------------------------------
 // Define a rule that triggers a put to a Kinesis stream every 1min.
@@ -28,6 +28,24 @@ const event = new events.Rule(stack, 'EveryMinute', {
 
 event.addTarget(new targets.FirehoseDeliveryStream(stream));
 
-new IntegTest(app, 'firehose-event-target-integ', {
+const testCase = new IntegTest(app, 'firehose-event-target-integ', {
   testCases: [stack],
 });
+
+const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: bucket.bucketName,
+  MaxKeys: 1,
+}).expect(ExpectedResult.objectLike({
+  KeyCount: 1,
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(30),
+  totalTimeout: cdk.Duration.minutes(10),
+});
+
+if (s3ApiCall instanceof AwsApiCall) {
+  s3ApiCall.waiterProvider?.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['s3:GetObject', 's3:ListBucket'],
+    Resource: ['*'],
+  });
+}

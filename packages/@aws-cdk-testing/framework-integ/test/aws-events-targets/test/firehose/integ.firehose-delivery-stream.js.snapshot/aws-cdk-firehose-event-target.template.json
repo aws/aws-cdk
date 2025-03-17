@@ -589,6 +589,16 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputReffirehosebucket84C8AE0B4E51AAAE": {
+   "Value": {
+    "Ref": "firehosebucket84C8AE0B"
+   },
+   "Export": {
+    "Name": "aws-cdk-firehose-event-target:ExportsOutputReffirehosebucket84C8AE0B4E51AAAE"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
