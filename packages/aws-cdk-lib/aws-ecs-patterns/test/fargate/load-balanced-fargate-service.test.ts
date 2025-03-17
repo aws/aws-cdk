@@ -553,7 +553,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
 
     // WHEN
     const taskDef = new ecs.FargateTaskDefinition(stack1, 'TaskDef', {
-      cpu: 1024,
+      cpu: 512,
       memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('Container', {
@@ -710,7 +710,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     // THEN
     expect(() => {
       service.internalDesiredCount;
-    }).toBeTruthy;
+    }).toBeTruthy();
   });
 
   test('multiple capacity provider strategies are set', () => {
@@ -2034,7 +2034,7 @@ describe('NetworkLoadBalancedFargateService', () => {
       vpc: vpc1,
     });
     const taskDef = new ecs.FargateTaskDefinition(stack2, 'TaskDef', {
-      cpu: 1024,
+      cpu: 512,
       memoryLimitMiB: 1024,
     });
     const container = taskDef.addContainer('myContainer', {
