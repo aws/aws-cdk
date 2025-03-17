@@ -628,3 +628,33 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-s3:setUniqueReplicationRoleName`
+
+When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+When disabled, 'CDKReplicationRole' is always specified.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
+  }
+}
+```
+
+* `@aws-cdk/pipelines:reduceStageRoleTrustScope`
+
+When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/pipelines:reduceStageRoleTrustScope": true
+  }
+}
+```
