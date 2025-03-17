@@ -199,17 +199,28 @@ export class Grant implements IDependable {
    *
    * @example
    *
-   * const statement = new PolicyStatement({
-   *   effect: Effect.ALLOW,
-   *   actions: ['s3:GetObject'],
-   *   principals: [new ServicePrincipal('lambda.amazonaws.com')],
+   * declare const grantee: iam.IGrantable;
+   * declare const actions: string[];
+   * declare const resourceArns: string[];
+   * declare const bucket: s3.Bucket;
+   *
+   * const statement = new iam.PolicyStatement({
+   *   effect: iam.Effect.ALLOW,
+   *   actions: actions,
+   *   principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
    *   conditions: {
    *     StringEquals: {
    *       'aws:SourceAccount': Stack.of(this).account,
    *     },
    *   },
    * });
-   * Grant.addStatementToResourcePolicy({ resource: bucket, statement });
+   * iam.Grant.addStatementToResourcePolicy({
+   *     grantee: grantee,
+   *     actions: actions,
+   *     resourceArns: resourceArns,
+   *     resource: bucket,
+   *     statement: statement,
+   *  });
    *
    */
   public static addStatementToResourcePolicy(options: GrantPolicyWithResourceOptions) {
