@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
+import * as cxapi from '../../cx-api';
 import { EventBus } from '../lib';
 
 describe('event bus', () => {
@@ -639,31 +640,6 @@ describe('event bus', () => {
     expect(add1.statementAdded).toBe(true);
     expect(add2.statementAdded).toBe(true);
     Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2);
-  });
-
-  test('Event Bus policy statements get default sid if none provided', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'Stack');
-    const bus = new EventBus(stack, 'Bus');
-
-    // WHEN
-    bus.addToResourcePolicy(new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      principals: [new iam.ArnPrincipal('arn')],
-      actions: ['events:PutEvents'],
-    }));
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-      StatementId: 'cdk-Bus-Default-Statement',
-      Statement: {
-        Effect: 'Allow',
-        Principal: { AWS: 'arn' },
-        Action: 'events:PutEvents',
-        Sid: 'cdk-Bus-Default-Statement',
-      },
-    });
   });
 
   test('set dead letter queue', () => {

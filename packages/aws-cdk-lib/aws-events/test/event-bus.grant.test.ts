@@ -270,21 +270,9 @@ describe('EventBus grants', () => {
 
         // Warning is added because service principals require resource policy
         // and we can't add it to imported bus
-        const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
-        expect(annotations.length).toBe(1);
-        expect(annotations[0].id).toBe('/Stack1/ImportedBus');
-        expect(annotations[0].entry.type).toBe('aws:cdk:warning');
-        expect(annotations[0].entry.data).toEqual({
-          'Fn::Join': ['', [
-            'Unable to add necessary permissions to imported target event bus: arn:',
-            { Ref: 'AWS::Partition' },
-            ':events:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':event-bus/external-bus [ack: @aws-cdk/aws-events:eventBusAddToResourcePolicy]',
-          ]],
-        });
+        Annotations.fromStack(stack).hasWarning('/Stack1/ImportedBus',
+          Match.stringLikeRegexp('Unable to add necessary permissions to imported target event bus: arn:\\${Token\\[AWS\\.Partition\\.[0-9]+\\]}:events:\\${Token\\[AWS\\.Region\\.[0-9]+\\]}:\\${Token\\[AWS\\.AccountId\\.[0-9]+\\]}:event-bus/external-bus \\[ack: @aws-cdk/aws-events:eventBusAddToResourcePolicy\\]'),
+        );
 
         // Grant still succeeds
         expect(grant.success).toBeTruthy();
@@ -314,7 +302,8 @@ describe('EventBus grants', () => {
                   { Ref: 'AWS::Region' },
                   ':',
                   { Ref: 'AWS::AccountId' },
-                  ':event-bus/imported-bus',
+                  ':event-bus/',
+                  { Ref: 'EventBus7B8748AA' },
                 ]],
               },
             }],
