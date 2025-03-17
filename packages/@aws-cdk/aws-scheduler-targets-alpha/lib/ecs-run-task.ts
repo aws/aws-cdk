@@ -112,7 +112,7 @@ export interface FargateTaskProps extends EcsRunTaskBaseProps {
    *
    * @default - all private subnets of the VPC are selected.
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The security groups associated with the task. These security groups must all be in the same VPC.
@@ -177,17 +177,10 @@ export abstract class EcsRunTask extends ScheduleTargetBase implements ISchedule
   }
 
   protected addTargetActionToRole(role: IRole): void {
+    // grantRun already adds the necessary PassRole permissions for both task role and execution role
     this.props.taskDefinition.grantRun(role);
 
-    // If it so happens that a Task Execution Role was created for the TaskDefinition,
-    // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).
-    if (this.props.taskDefinition.executionRole !== undefined) {
-      role.addToPrincipalPolicy(new PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.props.taskDefinition.executionRole.roleArn],
-      }));
-    }
-
+    // Add permissions for tagging if needed
     if (this.props.propagateTags === true || this.props.tags) {
       role.addToPrincipalPolicy(new PolicyStatement({
         actions: ['ecs:TagResource'],
@@ -226,22 +219,11 @@ class FargateTask extends EcsRunTask {
     props: FargateTaskProps,
   ) {
     super(cluster, props);
-    this.subnetSelection = props.subnetSelection;
+    this.subnetSelection = props.vpcSubnets;
     this.securityGroups = props.securityGroups;
     this.assignPublicIp = props.assignPublicIp;
     this.platformVersion = props.platformVersion;
     this.capacityProviderStrategies = props.capacityProviderStrategies;
-  }
-
-  protected addTargetActionToRole(role: IRole): void {
-    super.addTargetActionToRole(role);
-    // For Fargate tasks we need permission to pass the task role.
-    if (this.props.taskDefinition.isFargateCompatible) {
-      role.addToPrincipalPolicy(new PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: [this.props.taskDefinition.taskRole.roleArn],
-      }));
-    }
   }
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
@@ -260,7 +242,7 @@ class FargateTask extends EcsRunTask {
       ? (this.assignPublicIp ? 'ENABLED' : 'DISABLED')
       : (subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED');
 
-    // Only one of capacityProviderStrategy or launchType can be set
+    // Only one of capacityProviderStrategies or launchType can be set
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-launchType
     const launchType = this.capacityProviderStrategies ? undefined : ecs.LaunchType.FARGATE;
 
@@ -322,7 +304,13 @@ class Ec2Task extends EcsRunTask {
               : undefined;
           },
         }),
-        placementStrategy: Lazy.any({ produce: () => this.placementStrategies }),
+        placementStrategy: Lazy.any({
+          produce: () => {
+            return this.placementStrategies?.length
+              ? this.placementStrategies?.map((strategy) => strategy.toJson()).flat()
+              : undefined;
+          },
+        }, { omitEmptyArray: true }),
       },
     };
   }

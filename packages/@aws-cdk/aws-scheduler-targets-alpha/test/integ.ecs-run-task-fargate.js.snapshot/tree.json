@@ -783,16 +783,6 @@
                                   ]
                                 ]
                               }
-                            },
-                            {
-                              "Action": "iam:PassRole",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "FargateTaskDefinitionTaskRoleE3C2BCAA",
-                                  "Arn"
-                                ]
-                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -855,16 +845,6 @@
                       "addStatements": [
                         {}
                       ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
-                    },
-                    {
-                      "addStatements": [
-                        {}
-                      ]
                     }
                   ]
                 }
@@ -894,16 +874,6 @@
                 {
                   "attachInlinePolicy": [
                     "*"
-                  ]
-                },
-                {
-                  "addToPrincipalPolicy": [
-                    {}
-                  ]
-                },
-                {
-                  "addToPrincipalPolicy": [
-                    {}
                   ]
                 },
                 {
