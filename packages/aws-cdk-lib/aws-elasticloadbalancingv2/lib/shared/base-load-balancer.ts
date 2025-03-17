@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
@@ -247,7 +247,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
     let subnetIds: string[] | undefined;
     let subnetMappings: SubnetMapping[] | undefined = additionalProps.subnetMappings;
-    let internetConnectivityEstablished;
+    let internetConnectivityEstablished: IDependable | undefined;
 
     if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
         additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
@@ -275,19 +275,6 @@ export abstract class BaseLoadBalancer extends Resource {
       internetConnectivityEstablished = result.internetConnectivityEstablished;
     }
 
-    const subnetMappingSetting = subnetMappings?.map((mapping) => {
-      // console.log(mapping);
-      return ({
-        subnetId: mapping.subnet.subnetId,
-        allocationId: mapping.allocationId,
-        privateIpv4Address: mapping.privateIpv4Address,
-        ipv6Address: mapping.ipv6Address,
-        sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
-      });
-    });
-
-    console.log(subnetMappingSetting);
-
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
       subnets: subnetIds,
@@ -295,8 +282,8 @@ export abstract class BaseLoadBalancer extends Resource {
         return ({
           subnetId: mapping.subnet.subnetId,
           allocationId: mapping.allocationId,
-          privateIpv4Address: mapping.privateIpv4Address,
-          ipv6Address: mapping.ipv6Address,
+          privateIPv4Address: mapping.privateIpv4Address,
+          iPv6Address: mapping.ipv6Address,
           sourceNatIpv6Prefix: mapping.sourceNatIpv6Prefix,
         });
       }),

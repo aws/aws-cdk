@@ -418,6 +418,10 @@ const listener = lb.addListener('Listener', {
 });
 ```
 
+### Configuring a subnet information for a Network Load Balancer
+
+
+
 ### Network Load Balancer attributes
 
 You can modify attributes of Network Load Balancers:

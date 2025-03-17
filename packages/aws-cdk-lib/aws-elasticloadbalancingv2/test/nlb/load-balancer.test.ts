@@ -69,6 +69,7 @@ describe('tests', () => {
       // WHEN
       new elbv2.NetworkLoadBalancer(stack, 'LB', {
         vpc,
+        internetFacing: false,
         subnetMappings: [
           {
             subnet: vpc.publicSubnets[0],
@@ -82,7 +83,7 @@ describe('tests', () => {
         SubnetMappings: [
           {
             SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-            PrivateIpv4Address: '10.0.12.29',
+            PrivateIPv4Address: '10.0.12.29',
           },
         ],
       });
@@ -113,7 +114,7 @@ describe('tests', () => {
         SubnetMappings: [
           {
             SubnetId: { Ref: 'VPCPublicSubnet1SubnetB4246D30' },
-            Ipv6Address: 'fd00:1234:5678:abcd::1',
+            IPv6Address: 'fd00:1234:5678:abcd::1',
             SourceNatIpv6Prefix: 'auto_assigned',
           },
         ],

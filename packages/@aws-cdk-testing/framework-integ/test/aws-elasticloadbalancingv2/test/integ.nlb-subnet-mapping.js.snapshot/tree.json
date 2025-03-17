@@ -1600,7 +1600,7 @@
                         "subnetId": {
                           "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
                         },
-                        "privateIpv4Address": "10.0.1.70"
+                        "privateIPv4Address": "10.0.1.70"
                       }
                     ],
                     "type": "network"

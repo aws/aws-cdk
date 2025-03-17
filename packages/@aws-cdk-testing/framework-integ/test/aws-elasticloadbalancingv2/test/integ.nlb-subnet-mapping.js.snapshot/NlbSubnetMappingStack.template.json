@@ -1091,6 +1091,7 @@
     ],
     "SubnetMappings": [
      {
+      "PrivateIPv4Address": "10.0.1.70",
       "SubnetId": {
        "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
       }
