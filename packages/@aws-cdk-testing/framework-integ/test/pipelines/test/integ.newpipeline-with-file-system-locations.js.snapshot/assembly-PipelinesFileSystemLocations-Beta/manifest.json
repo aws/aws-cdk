@@ -1,5 +1,5 @@
 {
-  "version": "36.0.24",
+  "version": "40.0.0",
   "artifacts": {
     "PipelinesFileSystemLocationsBetaStack18199ECAE.assets": {
       "type": "cdk:asset-manifest",

@@ -13,6 +13,7 @@ const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 

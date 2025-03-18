@@ -50,7 +50,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "HostedEnvFromJson": {
@@ -77,7 +82,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "HostedEnvFromYaml": {
@@ -104,7 +114,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "ParameterEnv": {
@@ -131,7 +146,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "DocumentEnv": {
@@ -158,7 +178,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "BucketEnv": {
@@ -185,7 +210,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "SecretEnv": {
@@ -212,7 +242,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               },
               "SecretEnvWithKey": {
@@ -239,13 +274,23 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.Environment",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "application": "*"
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appconfig.Application",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "applicationName": "*"
+                }
+              ]
             }
           },
           "MyDeployStrategy": {
@@ -273,7 +318,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "rolloutStrategy": "*"
+                }
+              ]
             }
           },
           "MyHostedConfigFromFile": {
@@ -306,7 +356,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "ConfigurationProfile": {
@@ -608,7 +663,10 @@
                     "path": "aws-appconfig-configuration/MyValidatorFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -653,7 +711,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -704,7 +775,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "runtime": "*",
+                  "handler": "*",
+                  "code": "*"
+                }
+              ]
             }
           },
           "MyParameter": {
@@ -729,7 +807,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "stringValue": "*"
+                }
+              ]
             }
           },
           "MyConfigFromParameter": {
@@ -745,7 +828,10 @@
                     "path": "aws-appconfig-configuration/MyConfigFromParameter/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -813,7 +899,17 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -950,7 +1046,10 @@
                     "path": "aws-appconfig-configuration/MyConfigFromDocument/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1018,7 +1117,17 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1184,7 +1293,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -1202,13 +1316,23 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "versioned": true,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
@@ -1278,7 +1402,8 @@
                         "path": "aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -1297,7 +1422,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -1310,7 +1435,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
@@ -1318,7 +1446,40 @@
                 "path": "aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
@@ -1338,7 +1499,8 @@
                     "path": "aws-appconfig-configuration/DeployConfigInBucket/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1362,7 +1524,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Asset2": {
@@ -1382,7 +1549,8 @@
                     "path": "aws-appconfig-configuration/DeployConfigInBucket/Asset2/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1410,7 +1578,10 @@
                     "path": "aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1561,13 +1732,79 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -1587,7 +1824,8 @@
                     "path": "aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1637,7 +1875,37 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "layers": [
+                    "*"
+                  ],
+                  "environment": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "memorySize": "*",
+                  "ephemeralStorageSize": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "filesystem": "*",
+                  "logGroup": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "MyConfigFromBucket": {
@@ -1670,7 +1938,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "Role": {
@@ -1682,7 +1955,10 @@
                     "path": "aws-appconfig-configuration/MyConfigFromBucket/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -1776,7 +2052,17 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1848,7 +2134,10 @@
                 "path": "aws-appconfig-configuration/DummyRole/ImportDummyRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "Resource": {
@@ -1960,13 +2249,74 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachToRole": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addStatements": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "assumedBy": {
+                    "principalAccount": "*",
+                    "assumeRoleAction": "*"
+                  }
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "attachInlinePolicy": [
+                    "*"
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                },
+                {
+                  "addToPrincipalPolicy": [
+                    {}
+                  ]
+                }
+              ]
             }
           },
           "MyConfigFromBucketWithRole": {
@@ -1999,7 +2349,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2084,7 +2439,12 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "secretStringValue": "*"
+                }
+              ]
             }
           },
           "MyConfigFromSecret": {
@@ -2117,7 +2477,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "Role": {
@@ -2129,7 +2494,10 @@
                     "path": "aws-appconfig-configuration/MyConfigFromSecret/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -2177,7 +2545,17 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2306,7 +2684,10 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "MySecretWithKey": {
@@ -2336,7 +2717,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "secretStringValue": "*",
+                  "encryptionKey": "*"
+                }
+              ]
             }
           },
           "MyConfigFromSecretWithKey": {
@@ -2369,7 +2756,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "Role": {
@@ -2381,7 +2773,10 @@
                     "path": "aws-appconfig-configuration/MyConfigFromSecretWithKey/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -2439,7 +2834,17 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "roleName": "*",
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "inlinePolicies": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2526,7 +2931,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_kms.Key",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "removalPolicy": "destroy",
+                      "enableKeyRotation": "*"
+                    }
+                  ]
                 }
               },
               "ArtifactsBucketEncryptionKeyAlias": {
@@ -2556,7 +2967,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_kms.Alias",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "aliasName": "*",
+                      "targetKey": "*",
+                      "removalPolicy": "destroy"
+                    }
+                  ]
                 }
               },
               "ArtifactsBucket": {
@@ -2659,13 +3077,28 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "bucket": "*"
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucketName": "*",
+                      "encryptionKey": "*",
+                      "encryption": "KMS",
+                      "enforceSSL": true,
+                      "blockPublicAccess": "*",
+                      "removalPolicy": "retain"
+                    }
+                  ]
                 }
               },
               "Role": {
@@ -2677,7 +3110,10 @@
                     "path": "aws-appconfig-configuration/MyPipeline/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -2807,13 +3243,84 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      }
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2933,7 +3440,10 @@
                             "path": "aws-appconfig-configuration/MyPipeline/beta/Source/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -2949,19 +3459,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "MyPipelineRoleC0D47CA4",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -3086,25 +3586,97 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "grantAssumeRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "grant": [
+                                "*",
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "prod": {
@@ -3124,7 +3696,10 @@
                             "path": "aws-appconfig-configuration/MyPipeline/prod/Deploy/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*"
+                              ]
                             }
                           },
                           "Resource": {
@@ -3140,19 +3715,9 @@
                                       "Effect": "Allow",
                                       "Principal": {
                                         "AWS": {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "arn:",
-                                              {
-                                                "Ref": "AWS::Partition"
-                                              },
-                                              ":iam::",
-                                              {
-                                                "Ref": "AWS::AccountId"
-                                              },
-                                              ":root"
-                                            ]
+                                          "Fn::GetAtt": [
+                                            "MyPipelineRoleC0D47CA4",
+                                            "Arn"
                                           ]
                                         }
                                       }
@@ -3275,31 +3840,136 @@
                             },
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": [
+                                "*",
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            {
+                              "assumedBy": {
+                                "principalAccount": "*",
+                                "assumeRoleAction": "*"
+                              }
+                            },
+                            {
+                              "grantAssumeRole": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "grant": [
+                                "*",
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "attachInlinePolicy": [
+                                "*"
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            },
+                            {
+                              "addToPrincipalPolicy": [
+                                {}
+                              ]
+                            }
+                          ]
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "crossAccountKeys": true,
+                  "stages": [
+                    {
+                      "stageName": "*",
+                      "actions": [
+                        {}
+                      ]
+                    },
+                    {
+                      "stageName": "*",
+                      "actions": [
+                        {}
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "addStage": [
+                    {
+                      "stageName": "*"
+                    }
+                  ]
+                },
+                {
+                  "addStage": [
+                    {
+                      "stageName": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "MyConfigFromPipeline": {
@@ -3332,7 +4002,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_appconfig.DeploymentStrategy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "rolloutStrategy": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -3404,7 +4079,7 @@
                 "path": "appconfig-configuration/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -3450,7 +4125,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

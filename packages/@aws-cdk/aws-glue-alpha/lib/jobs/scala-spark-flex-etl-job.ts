@@ -4,6 +4,7 @@ import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '.
 import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Flex Jobs class
@@ -80,6 +81,8 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
    */
   constructor(scope: Construct, id: string, props: ScalaSparkFlexEtlJobProps) {
     super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
     const defaultArguments = {

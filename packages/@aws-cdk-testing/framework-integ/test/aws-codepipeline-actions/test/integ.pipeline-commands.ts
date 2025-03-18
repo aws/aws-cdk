@@ -8,7 +8,11 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import * as path from 'path';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-commands');
 

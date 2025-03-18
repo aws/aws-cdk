@@ -18,7 +18,7 @@ const PUT_RECORD_ACTIONS = [
 ];
 
 /**
- * Represents a Kinesis Data Firehose delivery stream.
+ * Represents an Amazon Data Firehose delivery stream.
  */
 export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable {
   /**
@@ -72,7 +72,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
   metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-   * Metric for the age (from getting into Kinesis Data Firehose to now) of the oldest record in Kinesis Data Firehose.
+   * Metric for the age (from getting into Amazon Data Firehose to now) of the oldest record in Amazon Data Firehose.
    *
    * Any record older than this age has been delivered to the Amazon S3 bucket for backup.
    *
@@ -89,7 +89,7 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
 }
 
 /**
- * Base class for new and imported Kinesis Data Firehose delivery streams.
+ * Base class for new and imported Amazon Data Firehose delivery streams.
  */
 abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
   public abstract readonly deliveryStreamName: string;
@@ -99,7 +99,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
-   * Network connections between Kinesis Data Firehose and other resources, i.e. Redshift cluster.
+   * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
   public readonly connections: ec2.Connections;
 
@@ -206,7 +206,7 @@ export interface DeliveryStreamProps {
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
+   * Assumed by Amazon Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - a role will be created with default permissions.
    */
@@ -245,7 +245,7 @@ export interface DeliveryStreamAttributes {
   /**
    * The IAM role associated with this delivery stream.
    *
-   * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
+   * Assumed by Amazon Data Firehose to read from sources and encrypt data server-side.
    *
    * @default - the imported stream cannot be granted access to other resources as an `iam.IGrantable`.
    */
@@ -253,7 +253,7 @@ export interface DeliveryStreamAttributes {
 }
 
 /**
- * Create a Kinesis Data Firehose delivery stream
+ * Create a Amazon Data Firehose delivery stream
  *
  * @resource AWS::KinesisFirehose::DeliveryStream
  */

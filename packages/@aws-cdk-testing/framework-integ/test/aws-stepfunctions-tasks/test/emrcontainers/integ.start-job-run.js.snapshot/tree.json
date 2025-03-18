@@ -49,9 +49,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+                      "s3Key": "a5110b475e7a506b8a1282cdfb3c2f7ae59bcf00ba96273a702339b8819dd17f.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.17.1",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -63,7 +63,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
-              "version": "2.0.0",
+              "version": "2.0.3",
               "metadata": [
                 "*"
               ]
@@ -2022,7 +2022,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "572dd2416e786aa13287a5bcd2330ca9b49d9bb7403340990da8b466445db001.zip"
+                          "s3Key": "3e3beb1ec50447453ff75bc32446f8d3144f8a15d316f7c68770413524d7e812.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -2206,7 +2206,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "572dd2416e786aa13287a5bcd2330ca9b49d9bb7403340990da8b466445db001.zip"
+                          "s3Key": "3e3beb1ec50447453ff75bc32446f8d3144f8a15d316f7c68770413524d7e812.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -3735,7 +3735,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/91f7c39863bd6dbfa7b6a351be80eb83ef4488cb530cc29e37230302d1fb85f2.json"
+                          "/74576b8ad26ccab3e99f51a1c98926674c46417ff4eb9926a021c5b2728f873f.json"
                         ]
                       ]
                     }
@@ -3797,7 +3797,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "fba306965da4b2680dd8b4e6916610efe237162f913f22b10146f647b3f6bce4.zip"
+                          "s3Key": "96b83d7c7535f7e731e0679249de9470f417342331b121e36664078b4ef4a11b.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "environment": {
@@ -3927,7 +3927,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -4414,7 +4414,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/a7a83a121c6a5cc4e737689610dd7e6ac3987804010e9b13d0d2090ce8d7e900.json"
+                          "/630d26ad85d865e1565aad1284f8567b35a66bc3ccfa9d39d157e18a477fa73e.json"
                         ]
                       ]
                     }
@@ -4785,7 +4785,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }

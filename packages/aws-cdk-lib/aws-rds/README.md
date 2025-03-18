@@ -67,6 +67,21 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+When you create a DB instance in your cluster, Aurora automatically chooses an appropriate AZ for that instance if you don't specify an AZ.
+You can place each instance in fixed availability zone by specifying `availabilityZone` property.
+For details, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  writer: rds.ClusterInstance.provisioned('writer', {
+    availabilityZone: 'us-east-1a',
+  }),
+  vpc,
+});
+```
+
 To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property:
 
 ```ts
@@ -510,6 +525,18 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   vpc,
   maxAllocatedStorage: 200,
+});
+```
+
+When you create a DB instance, you can choose an Availability Zone or have Amazon RDS choose one for you randomly.
+For details, see [Regions, Availability Zones, and Local Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  vpc,
+  availabilityZone: 'us-east-1a',
 });
 ```
 

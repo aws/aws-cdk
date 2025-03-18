@@ -7,21 +7,21 @@ import { Duration, Size } from '../../core';
  */
 export interface DataProcessorProps {
   /**
-   * The length of time Kinesis Data Firehose will buffer incoming data before calling the processor.
+   * The length of time Amazon Data Firehose will buffer incoming data before calling the processor.
    *s
    * @default Duration.minutes(1)
    */
   readonly bufferInterval?: Duration;
 
   /**
-   * The amount of incoming data Kinesis Data Firehose will buffer before calling the processor.
+   * The amount of incoming data Amazon Data Firehose will buffer before calling the processor.
    *
    * @default Size.mebibytes(3)
    */
   readonly bufferSize?: Size;
 
   /**
-   * The number of times Kinesis Data Firehose will retry the processor invocation after a failure due to network timeout or invocation limits.
+   * The number of times Amazon Data Firehose will retry the processor invocation after a failure due to network timeout or invocation limits.
    *
    * @default 3
    */
@@ -71,13 +71,13 @@ export interface DataProcessorConfig {
  */
 export interface DataProcessorBindOptions {
   /**
-   * The IAM role assumed by Kinesis Data Firehose to write to the destination that this DataProcessor will bind to.
+   * The IAM role assumed by Amazon Data Firehose to write to the destination that this DataProcessor will bind to.
    */
   readonly role: iam.IRole;
 }
 
 /**
- * A data processor that Kinesis Data Firehose will call to transform records before delivering data.
+ * A data processor that Amazon Data Firehose will call to transform records before delivering data.
  */
 export interface IDataProcessor {
   /**
