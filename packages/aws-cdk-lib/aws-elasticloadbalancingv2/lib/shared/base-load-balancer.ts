@@ -58,21 +58,21 @@ export interface SubnetMapping {
   /**
    * The allocation ID of the Elastic IP address for an internet-facing load balancer.
    *
-   * @default undefined - 
+   * @default undefined - AWS default is to allocate a new IP address for internet-facing load balancers
    */
   readonly allocationId?: string;
 
   /**
    * The IPv6 address.
    *
-   * @default undefined - AWS will automatically allocate an IPv6 address from the subnet's pool.
+   * @default undefined - AWS default is to allocate an IPv6 address from the subnet's pool
    */
   readonly ipv6Address?: string;
 
   /**
    * The private IPv4 address for an internal load balancer.
    *
-   * @default undefined - AWS will automatically allocate an IPv4 address from the subnet's pool.
+   * @default undefined - AWS default is to allocate a private IPv4 address from the subnet's pool
    */
   readonly privateIpv4Address?: string;
 
@@ -82,7 +82,7 @@ export interface SubnetMapping {
    * Specify an IPv6 prefix (/80 netmask) from the subnet CIDR block
    * or `SourceNatIpv6Prefix.autoAssigned()` to use an IPv6 prefix selected at random from the subnet CIDR block.
    *
-   * @default undefined - 
+   * @default undefined - AWS default is `SourceNatIpv6Prefix.autoAssigned()` for IPv6 load balancers
    */
   readonly sourceNatIpv6Prefix?: SourceNatIpv6Prefix;
 }

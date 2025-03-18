@@ -447,7 +447,6 @@ new elbv2.NetworkLoadBalancer(this, 'InternetFacingLb', {
   vpc,
   internetFacing: true,
   subnetMappings: [
-    // Configure the subnet information for the IPv4 address
     {
       subnet,
       // The allocation ID of the Elastic IP address
@@ -465,7 +464,7 @@ new elbv2.NetworkLoadBalancer(this, 'InternalLb', {
       subnet,
       // The private IPv4 address from the subnet
       // The address must be in the subnet's CIDR range and
-      // can be configured for a internal Network Load Balancer.
+      // can not be configured for a internet facing Network Load Balancer.
       privateIpv4Address: '10.0.12.29',
     },
   ],
