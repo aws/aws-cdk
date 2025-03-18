@@ -1152,7 +1152,7 @@ export enum DefaultInstanceTenancy {
   DEDICATED = 'dedicated',
 
   /**
-   * Instances must be launched on dedicated hosts. This provides additional visibility 
+   * Instances must be launched on dedicated hosts. This provides additional visibility
    * and control over instance placement at the physical host level.
    */
   HOST = 'host',
