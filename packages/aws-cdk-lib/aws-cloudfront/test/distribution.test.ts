@@ -1124,14 +1124,14 @@ test('grants custom actions', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            'cloudfront:ListInvalidations',
-            'cloudfront:ListDistributions',
-          ],
+          Action: 'cloudfront:ListDistributions',
           Resource: '*',
         },
         {
-          Action: 'cloudfront:GetInvalidation',
+          Action: [
+            'cloudfront:ListInvalidations',
+            'cloudfront:GetInvalidation',
+          ],
           Resource: {
             'Fn::Join': [
               '', [
