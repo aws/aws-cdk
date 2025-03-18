@@ -1,3 +1,5 @@
+import { UnscopedValidationError } from '../../core';
+
 // Implementation of metric patterns
 
 /**
@@ -180,7 +182,7 @@ export class FilterPattern {
    * A JSON log pattern that matches if all given JSON log patterns match
    */
   public static all(...patterns: JsonPattern[]): JsonPattern {
-    if (patterns.length === 0) { throw new Error('Must supply at least one pattern, or use allEvents() to match all events.'); }
+    if (patterns.length === 0) { throw new UnscopedValidationError('Must supply at least one pattern, or use allEvents() to match all events.'); }
     if (patterns.length === 1) { return patterns[0]; }
     return new JSONAggregatePattern('&&', patterns);
   }
@@ -189,7 +191,7 @@ export class FilterPattern {
    * A JSON log pattern that matches if any of the given JSON log patterns match
    */
   public static any(...patterns: JsonPattern[]): JsonPattern {
-    if (patterns.length === 0) { throw new Error('Must supply at least one pattern'); }
+    if (patterns.length === 0) { throw new UnscopedValidationError('Must supply at least one pattern'); }
     if (patterns.length === 1) { return patterns[0]; }
     return new JSONAggregatePattern('||', patterns);
   }
@@ -282,7 +284,7 @@ class JSONPostfixPattern extends JsonPattern {
 class JSONAggregatePattern extends JsonPattern {
   public constructor(operator: string, patterns: JsonPattern[]) {
     if (operator !== '&&' && operator !== '||') {
-      throw new Error('Operator must be one of && or ||');
+      throw new UnscopedValidationError('Operator must be one of && or ||');
     }
 
     const clauses = patterns.map(p => '(' + p.jsonPatternString + ')');
@@ -313,12 +315,12 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
     // going through the factory
     for (const column of columns) {
       if (!validColumnName(column)) {
-        throw new Error(`Invalid column name: ${column}`);
+        throw new UnscopedValidationError(`Invalid column name: ${column}`);
       }
     }
 
     if (sum(columns.map(c => c === COL_ELLIPSIS ? 1 : 0)) > 1) {
-      throw new Error("Can use at most one '...' column");
+      throw new UnscopedValidationError("Can use at most one '...' column");
     }
 
     return new SpaceDelimitedTextPattern(columns, {});
@@ -335,10 +337,10 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
    */
   public whereString(columnName: string, comparison: string, value: string): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
-      throw new Error("Can't use '...' in a restriction");
+      throw new UnscopedValidationError("Can't use '...' in a restriction");
     }
     if (this.columns.indexOf(columnName) === -1) {
-      throw new Error(`Column in restrictions that is not in columns: ${columnName}`);
+      throw new UnscopedValidationError(`Column in restrictions that is not in columns: ${columnName}`);
     }
 
     comparison = validateStringOperator(comparison);
@@ -354,10 +356,10 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
    */
   public whereNumber(columnName: string, comparison: string, value: number): SpaceDelimitedTextPattern {
     if (columnName === COL_ELLIPSIS) {
-      throw new Error("Can't use '...' in a restriction");
+      throw new UnscopedValidationError("Can't use '...' in a restriction");
     }
     if (this.columns.indexOf(columnName) === -1) {
-      throw new Error(`Column in restrictions that is not in columns: ${columnName}`);
+      throw new UnscopedValidationError(`Column in restrictions that is not in columns: ${columnName}`);
     }
 
     comparison = validateNumericalOperator(comparison);
@@ -445,7 +447,7 @@ function validateStringOperator(operator: string) {
   if (operator === '==') { operator = '='; }
 
   if (operator !== '=' && operator !== '!=') {
-    throw new Error(`Invalid comparison operator ('${operator}'), must be either '=' or '!='`);
+    throw new UnscopedValidationError(`Invalid comparison operator ('${operator}'), must be either '=' or '!='`);
   }
 
   return operator;
@@ -463,7 +465,7 @@ function validateNumericalOperator(operator: string) {
   if (operator === '==') { operator = '='; }
 
   if (VALID_OPERATORS.indexOf(operator) === -1) {
-    throw new Error(`Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
+    throw new UnscopedValidationError(`Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
   }
 
   return operator;
@@ -478,7 +480,7 @@ function renderRestriction(column: string, restriction: ColumnRestriction) {
   } else if (restriction.stringValue) {
     return `${column} ${restriction.comparison} ${quoteTerm(restriction.stringValue)}`;
   } else {
-    throw new Error('Invalid restriction');
+    throw new UnscopedValidationError('Invalid restriction');
   }
 }
 
