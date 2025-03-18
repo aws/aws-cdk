@@ -89,6 +89,17 @@ export interface PrefixListLookupOptions {
 }
 
 /**
+ * Result of CC API context query in fromLookup()
+ */
+interface PrefixListContextResponse {
+  /**
+   * The id of the prefix list
+   * @default - None
+   */
+  readonly PrefixListId?: string;
+}
+
+/**
  * A managed prefix list.
  * @resource AWS::EC2::PrefixList
  */
@@ -112,7 +123,7 @@ export class PrefixList extends PrefixListBase {
     }
 
     const dummyResponse = { PrefixListId: 'pl-xxxxxxxx' };
-    const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
+    const response: PrefixListContextResponse[] = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.CC_API_PROVIDER,
       props: {
         typeName: 'AWS::EC2::PrefixList',
@@ -121,7 +132,7 @@ export class PrefixList extends PrefixListBase {
         },
         propertiesToReturn: ['PrefixListId'],
       } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
-      dummyValue: [dummyResponse],
+      dummyValue: [dummyResponse] satisfies PrefixListContextResponse[],
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
@@ -131,7 +142,7 @@ export class PrefixList extends PrefixListBase {
       prefixList = dummyResponse;
     }
 
-    return this.fromPrefixListId(scope, id, prefixList.PrefixListId);
+    return this.fromPrefixListId(scope, id, prefixList.PrefixListId!);
   }
 
   /**
