@@ -36,7 +36,7 @@ class OptionsTestStack extends core.Stack {
       region: props?.env?.region,
       unreferencedFileRemoval: {
         noncurrentDays: 20,
-        status: 'Disabled',
+        status: s3tables.UnreferencedFileRemovalStatus.DISABLED,
         unreferencedDays: 20,
       },
       removalPolicy: core.RemovalPolicy.DESTROY,

@@ -65,6 +65,44 @@ export interface ITableBucket extends IResource {
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
+/**
+ * Unreferenced file removal settings for the this table bucket.
+ */
+export interface UnreferencedFileRemoval {
+  /**
+   * Duration after which noncurrent files should be removed. Should be at least one day.
+   * @default 10 days by default
+   */
+  readonly noncurrentDays?: number;
+
+  /**
+   * Status of unreferenced file removal. Can be Enabled or Disabled.
+   * @default enabled by default
+   */
+  readonly status?: UnreferencedFileRemovalStatus;
+
+  /**
+   * Duration after which unreferenced files should be removed. Should be at least one day.
+   * @default 3 days by default
+   */
+  readonly unreferencedDays?: number;
+}
+
+/**
+ * Controls whether unreferenced file removal is enabled or disabled.
+ */
+export enum UnreferencedFileRemovalStatus {
+  /**
+   * Enable unreferenced file removal.
+   */
+  ENABLED = 'Enabled',
+
+  /**
+   * Disable unreferenced file removal.
+   */
+  DISABLED = 'Disabled',
+}
+
 abstract class TableBucketBase extends Resource implements ITableBucket {
   public abstract readonly tableBucketArn: string;
   public abstract readonly tableBucketName: string;
@@ -137,7 +175,7 @@ export interface TableBucketProps {
    * @default Enabled with default values
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html
    */
-  readonly unreferencedFileRemoval?: UnreferencedFileRemovalProperty;
+  readonly unreferencedFileRemoval?: UnreferencedFileRemoval;
 
   /**
    * AWS region that the table bucket exists in.
@@ -197,7 +235,7 @@ export interface TableBucketAttributes {
  * @stateful
  * @example
  * const tableBucket = new TableBucket(scope, 'ExampleTableBucket', {
- *   bucketName: 'example-bucket',
+ *   tableBucketName: 'example-bucket',
  *   // Optional fields:
  *   unreferencedFileRemoval: {
  *     noncurrentDays: 123,
@@ -314,38 +352,41 @@ export class TableBucket extends TableBucketBase {
 
   /**
    * Throws an exception if the given unreferencedFileRemovalProperty is not valid.
-   *
-   * @param unreferencedFileRemovalProperty configuration for the table bucket
+   * @param unreferencedFileRemoval configuration for the table bucket
    */
   public static validateUnreferencedFileRemoval(
-    unreferencedFileRemovalProperty?: UnreferencedFileRemovalProperty,
+    unreferencedFileRemoval?: UnreferencedFileRemoval,
   ): void {
     // Skip validation if property is not defined
-    if (!unreferencedFileRemovalProperty) {
+    if (!unreferencedFileRemoval) {
       return;
     }
 
-    const { noncurrentDays, status, unreferencedDays } = unreferencedFileRemovalProperty;
+    const { noncurrentDays, status, unreferencedDays } = unreferencedFileRemoval;
 
     const errors: string[] = [];
 
-    if (noncurrentDays != undefined && noncurrentDays < 1) {
-      errors.push(
-        'noncurrentDays must be at least 1',
-      );
+    if (noncurrentDays != undefined) {
+      if (noncurrentDays < 1) {
+        errors.push('noncurrentDays must be at least 1 day');
+      }
+      if (!Number.isInteger(noncurrentDays)) {
+        errors.push('noncurrentDays must be a whole number');
+      }
     }
 
-    if (unreferencedDays != undefined && unreferencedDays < 1) {
-      errors.push(
-        'unreferencedDays must be at least 1',
-      );
+    if (unreferencedDays != undefined) {
+      if (unreferencedDays < 1) {
+        errors.push('unreferencedDays must be at least 1 day');
+      }
+      if (!Number.isInteger(noncurrentDays)) {
+        errors.push('unreferencedDays must be a whole number');
+      }
     }
 
     const allowedStatus = ['Enabled', 'Disabled'];
     if (status != undefined && !allowedStatus.includes(status)) {
-      errors.push(
-        'status must be one of \'Enabled\' or \'Disabled\'',
-      );
+      errors.push('status must be one of \'Enabled\' or \'Disabled\'');
     }
 
     if (errors.length > 0) {
@@ -391,7 +432,11 @@ export class TableBucket extends TableBucketBase {
 
     this._resource = new s3tables.CfnTableBucket(this, id, {
       tableBucketName: props.tableBucketName,
-      unreferencedFileRemoval: props.unreferencedFileRemoval,
+      unreferencedFileRemoval: {
+        ...props.unreferencedFileRemoval,
+        noncurrentDays: props.unreferencedFileRemoval?.noncurrentDays,
+        unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
+      },
     });
 
     this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);

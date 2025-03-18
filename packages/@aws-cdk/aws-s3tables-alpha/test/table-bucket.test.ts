@@ -54,7 +54,7 @@ describe('TableBucket', () => {
       unreferencedFileRemoval: {
         noncurrentDays: 10,
         unreferencedDays: 10,
-        status: 'Enabled',
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
       },
       removalPolicy: core.RemovalPolicy.RETAIN,
     };
@@ -316,7 +316,7 @@ describe('TableBucket', () => {
       const validProperty = {
         noncurrentDays: 1,
         unreferencedDays: 1,
-        status: 'Enabled',
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
       };
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(validProperty)).not.toThrow();
     });
@@ -325,7 +325,7 @@ describe('TableBucket', () => {
       const invalidProperty = {
         noncurrentDays: 0,
         unreferencedDays: 1,
-        status: 'Enabled',
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
       };
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(invalidProperty))
         .toThrow(
@@ -337,7 +337,7 @@ describe('TableBucket', () => {
       const invalidProperty = {
         noncurrentDays: 1,
         unreferencedDays: 0,
-        status: 'Enabled',
+        status: s3tables.UnreferencedFileRemovalStatus.ENABLED,
       };
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(invalidProperty))
         .toThrow(
@@ -345,28 +345,9 @@ describe('TableBucket', () => {
         );
     });
 
-    it('should throw error when status is invalid', () => {
-      const invalidProperty = {
-        noncurrentDays: 1,
-        unreferencedDays: 1,
-        status: 'Invalid',
-      };
-      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(invalidProperty))
-        .toThrow(
-          /status must be one of 'Enabled' or 'Disabled'/,
-        );
-    });
-
     it('should not throw error when optional fields are undefined', () => {
-      const partialProperty = {
-        status: 'Enabled',
-      };
+      const partialProperty = {};
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(partialProperty)).not.toThrow();
-    });
-
-    it('should accept both Enabled and Disabled status', () => {
-      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval({ status: 'Enabled' })).not.toThrow();
-      expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval({ status: 'Disabled' })).not.toThrow();
     });
   });
 });

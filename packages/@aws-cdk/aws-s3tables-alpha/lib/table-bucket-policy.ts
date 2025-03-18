@@ -9,11 +9,6 @@ import { ITableBucket } from './table-bucket';
  */
 export interface TableBucketPolicyProps {
   /**
-   * Name of the table bucket policy
-   * @default -- Physical name will be generated if not provided
-   */
-  readonly tableBucketPolicyName?: string;
-  /**
    * The associated table bucket
    */
   readonly tableBucket: ITableBucket;
@@ -42,7 +37,7 @@ export class TableBucketPolicy extends Resource {
 
   constructor(scope: Construct, id: string, props: TableBucketPolicyProps) {
     super(scope, id, {
-      physicalName: props.tableBucketPolicyName || PhysicalName.GENERATE_IF_NEEDED,
+      physicalName: PhysicalName.GENERATE_IF_NEEDED,
     });
 
     // Use default policy if not provided with props

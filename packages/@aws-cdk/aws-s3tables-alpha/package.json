@@ -103,5 +103,10 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-s3tables-alpha.TableBucketPolicyProps"
+    ]
   }
 }
