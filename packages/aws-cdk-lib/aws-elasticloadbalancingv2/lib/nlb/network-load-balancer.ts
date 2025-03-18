@@ -287,6 +287,18 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.subnetMappings && props.subnetMappings.length > 0) {
+      if (props.internetFacing && props.subnetMappings.some(sm => sm.privateIpv4Address !== undefined)) {
+        throw new ValidationError('Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
+      }
+      if (props.internetFacing !== true && props.subnetMappings.some(sm => sm.allocationId !== undefined)) {
+        throw new ValidationError('Cannot specify `allocationId` for a internal load balancer.', this);
+      }
+      if (props.enablePrefixForIpv6SourceNat !== true && props.subnetMappings.some(sm => sm.sourceNatIpv6Prefix !== undefined)) {
+        throw new ValidationError('Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
+      }
+    }
+
     const minimumCapacityUnit = props.minimumCapacityUnit;
 
     if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
