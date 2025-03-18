@@ -2485,9 +2485,14 @@ Create and manage customer-managed prefix lists. If you don't specify anything i
 You can also create an empty Prefix List with only the maximum number of entries specified, as shown in the following code. If nothing is specified, maxEntries=1.
 
 ```ts
-new ec2.PrefixList(this, 'EmptyPrefixList', {
+declare const sg: ec2.SecurityGroup;
+
+const prefixList = new ec2.PrefixList(this, 'EmptyPrefixList', {
   maxEntries: 100,
 });
+
+// Attach to Security Group
+sg.connections.allowFrom(prefixList, Port.tcp(443));
 ```
 
 `maxEntries` can also be omitted as follows. In this case `maxEntries: 2`, will be set.
