@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.184.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.184.0-alpha.0...v2.184.1-alpha.0) (2025-03-14)
+
+## [2.184.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.183.0-alpha.0...v2.184.0-alpha.0) (2025-03-13)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **glue-alpha:** Updated casing of `workflow.addconditionalTrigger` to `workflow.addConditionalTrigger`.
+
+### Bug Fixes
+
+* **glue-alpha:** inconsistent workflow addconditionalTrigger casing ([#33752](https://github.com/aws/aws-cdk/issues/33752)) ([4886a3e](https://github.com/aws/aws-cdk/commit/4886a3e503b22f3dfadca908501a2cb208c2ebee)), closes [#33751](https://github.com/aws/aws-cdk/issues/33751) [#33751](https://github.com/aws/aws-cdk/issues/33751)
+
+## [2.183.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.182.0-alpha.0...v2.183.0-alpha.0) (2025-03-11)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler-targets-alpha:** The `InspectorStartAssessmentRun` target's constructor now accepts `IAssessmentTemplate` instead of `CfnAssessmentTemplate` as its parameter type. To migrate existing code, use the `AssessmentTemplate.fromCfnAssessmentTemplate()` method to convert your `CfnAssessmentTemplate` instances to `IAssessmentTemplate`.
+
+### Features
+
+* **kinesisanalytics-flink-alpha** backfill missing enums for kinesisanalytics-flink-alpha ([#33632](https://github.com/aws/aws-cdk/pull/33632)) ([b55199a](https://github.com/aws/aws-cdk/pull/33740/commits/b55199a782582348408fb75123c533977b38326d))
+* **kinesisfirehose-destinations-alpha** backfill missing enums for kinesisfirehose-destinations-alpha ([#33633](https://github.com/aws/aws-cdk/pull/33633)) ([6ed7a45](https://github.com/aws/aws-cdk/pull/33740/commits/6ed7a452e261b0033b44d0b2b61b18466d6e6b48))
+
+
+### Bug Fixes
+
+* **scheduler-alpha:** deprecate `Group` in favour of `ScheduleGroup` ([#33678](https://github.com/aws/aws-cdk/issues/33678)) ([4d8eae9](https://github.com/aws/aws-cdk/commit/4d8eae9da577a94114602df261c98b65aa616956))
+* **scheduler-targets-alpha:** update inspector target to use IAssessmentTemplate instead of CfnAssessmentTemplate ([#33682](https://github.com/aws/aws-cdk/issues/33682)) ([50ba3ef](https://github.com/aws/aws-cdk/commit/50ba3efabca81a3c57ce34654f8ec1002deace6f))
+
+## [2.182.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.1-alpha.0...v2.182.0-alpha.0) (2025-03-04)
+
+
+### Features
+
+* **pipes-alpha:** support for customer-managed KMS keys to encrypt pipe data ([#33546](https://github.com/aws/aws-cdk/issues/33546)) ([dd0d62f](https://github.com/aws/aws-cdk/commit/dd0d62f84da06e2cafbe7a8bac80899d86b6f153)), closes [#31453](https://github.com/aws/aws-cdk/issues/31453)
+
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** prevent stacks from not deploying correctly ([#33609](https://github.com/aws/aws-cdk/issues/33609)) ([e220bc8](https://github.com/aws/aws-cdk/commit/e220bc8ca9b75bcbb4bb7447703f32737b47fc77)), closes [#33510](https://github.com/aws/aws-cdk/issues/33510)
+* **eks-v2-alpha:** can't delete fargate cluster ([#33573](https://github.com/aws/aws-cdk/issues/33573)) ([4ada313](https://github.com/aws/aws-cdk/commit/4ada3132e73e8f6b299548003d46e68f9db353a5)), closes [#33347](https://github.com/aws/aws-cdk/issues/33347)
+* **scheduler-targets:** update kinesis firehose imports ([#33615](https://github.com/aws/aws-cdk/issues/33615)) ([1df1a78](https://github.com/aws/aws-cdk/commit/1df1a784ca4d4ed8c724f0a8840137724fb46ca9))
+
 ## [2.181.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.181.0-alpha.0...v2.181.1-alpha.0) (2025-02-27)
 
 
