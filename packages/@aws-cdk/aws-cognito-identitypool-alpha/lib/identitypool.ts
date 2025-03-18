@@ -515,6 +515,13 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
+   * Add Role Mappings to the Identity Pool
+   */
+  public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
+    this.roleAttachment.addRoleMappings(...roleMappings);
+  }
+
+  /**
    * Configure default Roles for Identity Pool
    */
   private configureDefaultRole(type: string): IRole {
@@ -589,26 +596,83 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
    */
   public readonly identityPoolId: string;
 
+  /**
+   * The Role Attachment L1 resource
+   */
+  private resource: CfnIdentityPoolRoleAttachment;
+
+  /**
+   * The role mappings of the role attachment
+   */
+  private roleMappings?: { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty };
+
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.identityPoolId = props.identityPool.identityPoolId;
     const mappings = props.roleMappings || [];
-    let roles: any = undefined, roleMappings: any = undefined;
+    let roles: any = undefined;
     if (props.authenticatedRole || props.unauthenticatedRole) {
       roles = {};
       if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleArn;
       if (props.unauthenticatedRole) roles.unauthenticated = props.unauthenticatedRole.roleArn;
     }
+
     if (mappings) {
-      roleMappings = this.configureRoleMappings(...mappings);
+      this.roleMappings = this.configureRoleMappings(...mappings);
+    } else {
+      this.roleMappings = undefined;
     }
-    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+
+    this.resource = new CfnIdentityPoolRoleAttachment(this, 'Resource', {
       identityPoolId: this.identityPoolId,
       roles,
-      roleMappings,
+      roleMappings: this.roleMappings,
     });
+  }
+
+  /**
+   * Add Role Mappings to the Identity Pool
+   */
+  public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]) {
+    if (!roleMappings || !roleMappings.length) return;
+    this.roleMappings = {
+      ...this.roleMappings,
+      ...this.configureRoleMappings(...roleMappings),
+    };
+
+    // Convert keys to PascalCase for CloudFormation
+    const toPascalCase = (obj: any): any => {
+      if (Array.isArray(obj)) {
+        return obj.map(item => toPascalCase(item));
+      }
+      if (obj && typeof obj === 'object' && !Token.isUnresolved(obj)) {
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+          // Only these specific keys should be converted to PascalCase
+          const keysToModify = new Set([
+            'ambiguousRoleResolution',
+            'type',
+            'rulesConfiguration',
+            'rules',
+            'matchType',
+            'identityProvider',
+            'claim',
+            'value',
+          ]);
+          const pascalKey = key === 'roleArn' ? 'RoleARN'
+            : keysToModify.has(key) ? key.charAt(0).toUpperCase() + key.slice(1)
+              : key;
+
+          acc[pascalKey] = toPascalCase(value);
+          return acc;
+        }, {} as any);
+      }
+      return obj;
+    };
+
+    const cfnMappings = toPascalCase(this.roleMappings);
+    this.resource.addPropertyOverride('RoleMappings', cfnMappings);
   }
 
   /**
