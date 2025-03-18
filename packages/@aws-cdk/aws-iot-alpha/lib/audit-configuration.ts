@@ -220,14 +220,14 @@ export class AccountAuditConfiguration extends Resource implements IAccountAudit
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const deviceAgeCheckThreshold = props?.checkConfiguration?.deviceCertificateAgeCheckDuration?.toDays();
+    const deviceAgeCheckThreshold = props?.checkConfiguration?.deviceCertificateAgeCheckDuration;
 
     if (deviceAgeCheckThreshold) {
       if (props?.checkConfiguration?.deviceCertificateAgeCheck === false) {
         throw new Error('You cannot specify a value for `deviceCertificateAgeCheckDuration` if `deviceCertificateAgeCheck` is set to `false`.');
       }
-      if (deviceAgeCheckThreshold < 30 || deviceAgeCheckThreshold > 3652) {
-        throw new Error(`The device certificate age check threshold must be between 30 and 3652 days. got: ${deviceAgeCheckThreshold} days`);
+      if (!deviceAgeCheckThreshold.isUnresolved() && deviceAgeCheckThreshold.toDays() < 30 || deviceAgeCheckThreshold.toDays() > 3652) {
+        throw new Error(`The device certificate age check threshold must be between 30 and 3652 days. got: ${deviceAgeCheckThreshold.toDays()} days.`);
       }
     }
 
