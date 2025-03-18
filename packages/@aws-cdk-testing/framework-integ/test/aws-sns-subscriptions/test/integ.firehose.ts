@@ -1,10 +1,10 @@
+import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-import * as cdk from 'aws-cdk-lib';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
-import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const app = new cdk.App();
 
