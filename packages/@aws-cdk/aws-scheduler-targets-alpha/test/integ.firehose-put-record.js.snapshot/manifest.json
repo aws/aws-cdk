@@ -1,0 +1,528 @@
+{
+  "version": "40.0.0",
+  "artifacts": {
+    "aws-cdk-scheduler-targets-firehose-put-record.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-scheduler-targets-firehose-put-record.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-scheduler-targets-firehose-put-record": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-scheduler-targets-firehose-put-record.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c19c95da7b08f330f71fb5d594168627af3be38242d4e11ad9f15018a19956b5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-scheduler-targets-firehose-put-record.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-targets-firehose-put-record.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationBucket4BECDB47"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationBucketPolicyFCD81088"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/DestinationBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DestinationBucketAutoDeleteObjectsCustomResource8ECA4428"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/deliveryStreamRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/deliveryStreamRole/ImportdeliveryStreamRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/deliveryStreamRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deliveryStreamRoleB4288E26"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/deliveryStreamRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/deliveryStreamRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "deliveryStreamRoleDefaultPolicyC9208632"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "destination": "*"
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFirehoseStreamLogGroup5DE95CF8"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroup": "*"
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFirehoseStreamLogGroupS3DestinationB2F1AD1D"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/MyFirehoseStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFirehoseStream2282904B"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Schedule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Schedule83A77FD1"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/ImportSchedulerRoleForTarget-5bddb4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget5bddb4D77D7575"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/SchedulerRoleForTarget-5bddb4/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget5bddb4DefaultPolicy95F55636"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/Exports/Output{\"Ref\":\"DestinationBucket4BECDB47\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDestinationBucket4BECDB47A299B8F3"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-firehose-put-record/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-scheduler-targets-firehose-put-record"
+    },
+    "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fda724f8669745d129f574d1d14abb2921097e328e78fdf22d828fd37e4e4a9c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-targets-firehose-put-record",
+        "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E.assets"
+      ],
+      "metadata": {
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5WaitForIsCompleteProviderInvoke5CA5AED5"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5WaitForTimeoutProviderInvoke6558332B"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5WaitForRole1C5F3C68"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5WaitFor873EAFFA"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3listObjectsV282e20e13f84521e63643504ea8e737e5"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integrationtest-firehose-put-record/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integrationtest-firehose-put-record/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
