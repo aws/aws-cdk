@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "cdk-submit-job-queue-json-path-integ/DefaultTest": {
+      "stacks": [
+        "cdk-submit-job-queue-json-path"
+      ],
+      "assertionStack": "cdk-submit-job-queue-json-path-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdksubmitjobqueuejsonpathintegDefaultTestDeployAssert1F18F97A"
+    }
+  }
+}
