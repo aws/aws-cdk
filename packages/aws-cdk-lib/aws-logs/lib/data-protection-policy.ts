@@ -1,17 +1,16 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { IBucket } from '../../aws-s3';
-import { Stack } from '../../core';
+import { Stack, UnscopedValidationError } from '../../core';
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
  */
 export class DataProtectionPolicy {
-
   private readonly dataProtectionPolicyProps: DataProtectionPolicyProps;
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new Error('DataIdentifier cannot be empty');
+      throw new UnscopedValidationError('DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }
@@ -24,33 +23,33 @@ export class DataProtectionPolicy {
     const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
     const version = '2021-06-01';
 
-    const findingsDestination: PolicyFindingsDestination = {};
+    const findingsDestination: any = {};
     if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
-      findingsDestination.cloudWatchLogs = {
-        logGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
+      findingsDestination.CloudWatchLogs = {
+        LogGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
       };
     }
 
     if (this.dataProtectionPolicyProps.s3BucketAuditDestination) {
-      findingsDestination.s3 = {
-        bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
+      findingsDestination.S3 = {
+        Bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
       };
     }
 
     if (this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination) {
-      findingsDestination.firehose = {
-        deliveryStream: this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination,
+      findingsDestination.Firehose = {
+        DeliveryStream: this.dataProtectionPolicyProps.deliveryStreamNameAuditDestination,
       };
     }
 
     const identifiers: string[] = [];
-    const customDataIdentifiers: PolicyCustomDataIdentifier[] = [];
+    const customDataIdentifiers = [];
     for (let identifier of this.dataProtectionPolicyProps.identifiers) {
       if (identifier instanceof CustomDataIdentifier) {
         identifiers.push(identifier.name);
         customDataIdentifiers.push({
-          name: identifier.name,
-          regex: identifier.regex,
+          Name: identifier.name,
+          Regex: identifier.regex,
         });
       } else {
         identifiers.push(Stack.of(_scope).formatArn({
@@ -61,61 +60,34 @@ export class DataProtectionPolicy {
           resourceName: identifier.name,
         }));
       }
-    };
+    }
 
     const statement = [
       {
-        sid: 'audit-statement-cdk',
-        dataIdentifier: identifiers,
-        operation: {
-          audit: {
-            findingsDestination: findingsDestination,
+        Sid: 'audit-statement-cdk',
+        DataIdentifier: identifiers,
+        Operation: {
+          Audit: {
+            FindingsDestination: findingsDestination,
           },
         },
       },
       {
-        sid: 'redact-statement-cdk',
-        dataIdentifier: identifiers,
-        operation: {
-          deidentify: {
-            maskConfig: {},
+        Sid: 'redact-statement-cdk',
+        DataIdentifier: identifiers,
+        Operation: {
+          Deidentify: {
+            MaskConfig: {},
           },
         },
       },
     ];
 
-    const configuration: PolicyConfiguration = {
-      customDataIdentifier: customDataIdentifiers,
+    const configuration = {
+      CustomDataIdentifier: customDataIdentifiers,
     };
     return { name, description, version, configuration, statement };
   }
-}
-
-interface PolicyConfiguration {
-  customDataIdentifier?: PolicyCustomDataIdentifier[];
-}
-
-interface PolicyCustomDataIdentifier {
-  name: string;
-  regex: string;
-}
-
-interface PolicyFindingsDestination {
-  cloudWatchLogs?: PolicyCloudWatchLogsDestination;
-  firehose?: PolicyFirehoseDestination;
-  s3?: PolicyS3Destination;
-}
-
-interface PolicyCloudWatchLogsDestination {
-  logGroup: string;
-}
-
-interface PolicyFirehoseDestination {
-  deliveryStream: string;
-}
-
-interface PolicyS3Destination {
-  bucket: string;
 }
 
 /**
@@ -144,7 +116,7 @@ interface DataProtectionPolicyConfig {
   /**
    * Configuration of the data protection policy. Currently supports custom data identifiers
    */
-  readonly configuration: PolicyConfiguration;
+  readonly configuration: any;
 
   /**
    * Statements within the data protection policy. Must contain one Audit and one Redact statement
@@ -193,7 +165,7 @@ export interface DataProtectionPolicyProps {
   readonly s3BucketAuditDestination?: IBucket;
 
   /**
-   * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
+   * Amazon Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.
    *
    * @default - no firehose delivery stream audit destination
    */

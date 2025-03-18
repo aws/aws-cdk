@@ -10,18 +10,18 @@ const bucket = new s3.Bucket(this, 'MyFirstBucket');
 
 `Bucket` constructs expose the following deploy-time attributes:
 
-- `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::bucket_name`)
-- `bucketName` - the name of the bucket (i.e. `bucket_name`)
+- `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::amzn-s3-demo-bucket`)
+- `bucketName` - the name of the bucket (i.e. `amzn-s3-demo-bucket`)
 - `bucketWebsiteUrl` - the Website URL of the bucket (i.e.
-  `http://bucket_name.s3-website-us-west-1.amazonaws.com`)
-- `bucketDomainName` - the URL of the bucket (i.e. `bucket_name.s3.amazonaws.com`)
+  `http://amzn-s3-demo-bucket.s3-website-us-west-1.amazonaws.com`)
+- `bucketDomainName` - the URL of the bucket (i.e. `amzn-s3-demo-bucket.s3.amazonaws.com`)
 - `bucketDualStackDomainName` - the dual-stack URL of the bucket (i.e.
-  `bucket_name.s3.dualstack.eu-west-1.amazonaws.com`)
+  `amzn-s3-demo-bucket.s3.dualstack.eu-west-1.amazonaws.com`)
 - `bucketRegionalDomainName` - the regional URL of the bucket (i.e.
-  `bucket_name.s3.eu-west-1.amazonaws.com`)
+  `amzn-s3-demo-bucket.s3.eu-west-1.amazonaws.com`)
 - `arnForObjects(pattern)` - the ARN of an object or objects within the bucket (i.e.
-  `arn:aws:s3:::bucket_name/exampleobject.png` or
-  `arn:aws:s3:::bucket_name/Development/*`)
+  `arn:aws:s3:::amzn-s3-demo-bucket/exampleobject.png` or
+  `arn:aws:s3:::amzn-s3-demo-bucket/Development/*`)
 - `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
   `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
 - `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
@@ -103,7 +103,7 @@ If you try to add a policy statement to an existing bucket, this method will
 not do anything:
 
 ```ts
-const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'bucket-name');
+const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'amzn-s3-demo-bucket');
 
 // No policy statement will be added to the resource
 const result = bucket.addToResourcePolicy(
@@ -225,14 +225,14 @@ To import an existing bucket into your CDK application, use the `Bucket.fromBuck
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
 existing bucket:
 
-Note that this method allows importing buckets with legacy names containing underscores (`_`), which was
-permitted for buckets created before March 1, 2018. For buckets created after this date, underscores
+Note that this method allows importing buckets with legacy names containing uppercase letters (`A-Z`) or underscores (`_`), which were
+permitted for buckets created before March 1, 2018. For buckets created after this date, uppercase letters and underscores
 are not allowed in the bucket name.
 
 ```ts
 declare const myLambda: lambda.Function;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 
 // now you can just call methods on the bucket
@@ -246,8 +246,8 @@ Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
 name or ARN respectively:
 
 ```ts
-const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
-const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'amzn-s3-demo-bucket');
+const byArn = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::amzn-s3-demo-bucket');
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
@@ -255,10 +255,10 @@ regional properties needs to contain the correct values.
 
 ```ts
 const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
   region: 'us-east-1',
 });
-// myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
+// myCrossRegionBucket.bucketRegionalDomainName === 'amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com'
 ```
 
 ## Bucket Notifications
@@ -302,7 +302,7 @@ Adding notifications on existing buckets:
 ```ts
 declare const topic: sns.Topic;
 const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-  bucketArn: 'arn:aws:s3:::my-bucket',
+  bucketArn: 'arn:aws:s3:::amzn-s3-demo-bucket',
 });
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
@@ -500,7 +500,7 @@ policy resource using the L1 Construct. Although the mixing of L1 and L2 Constru
 recommended, there are no mechanisms in place to prevent users from doing this at the moment.
 
 ```ts
-const bucketName = "my-favorite-bucket-name";
+const bucketName = "amzn-s3-demo-bucket";
 const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
@@ -566,7 +566,7 @@ Alternatively, users can use the L2 Bucket Policy Construct
 `BucketPolicy.fromCfnBucketPolicy` to wrap around `CfnBucketPolicy` Construct. This will allow the subsequent bucket policy generated by `serverAccessLogsBucket` usage to append to the existing bucket policy instead of overwriting.
 
 ```ts
-const bucketName = "my-favorite-bucket-name";
+const bucketName = "amzn-s3-demo-bucket";
 const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
   bucketName,
@@ -645,7 +645,7 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
       "Effect": "Allow",
       "Principal": { "Service": "s3.amazonaws.com" },
       "Action": "s3:PutObject",
-      "Resource": ["arn:aws:s3:::destinationBucket/*"]
+      "Resource": ["arn:aws:s3:::amzn-s3-demo-destination-bucket/*"]
     }
   ]
 }
@@ -852,11 +852,45 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
         {
           storageClass: s3.StorageClass.GLACIER,
 
-          // the properties below are optional
+          // exactly one of transitionAfter or transitionDate must be specified
           transitionAfter: Duration.days(30),
-          transitionDate: new Date(),
+          // transitionDate: new Date(), // cannot specify both
         },
       ],
+    },
+  ],
+});
+```
+
+To indicate which default minimum object size behavior is applied to the lifecycle configuration, use the
+`transitionDefaultMinimumObjectSize` property.
+
+The default value of the property before September 2024 is `TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS`
+that allows objects smaller than 128 KB to be transitioned only to the S3 Glacier and S3 Glacier Deep Archive storage classes,
+otherwise `TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K` that prevents objects smaller than 128 KB from being
+transitioned to any storage class.
+
+To customize the minimum object size for any transition you
+can add a filter that specifies a custom `objectSizeGreaterThan` or `objectSizeLessThan` for `lifecycleRules`
+property. Custom filters always take precedence over the default transition behavior.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  transitionDefaultMinimumObjectSize: s3.TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS,
+  lifecycleRules: [
+    {
+      transitions: [{
+        storageClass: s3.StorageClass.DEEP_ARCHIVE,
+        transitionAfter: Duration.days(30),
+      }],
+    },
+    {
+      objectSizeLessThan: 300000,
+      objectSizeGreaterThan: 200000,
+      transitions: [{
+        storageClass: s3.StorageClass.ONE_ZONE_INFREQUENT_ACCESS,
+        transitionAfter: Duration.days(30),
+      }],
     },
   ],
 });
@@ -892,4 +926,111 @@ new s3.Bucket(this, 'Bucket1', {
 new s3.Bucket(this, 'Bucket2', {
   objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(365)),
 });
+```
+
+## Replicating Objects
+
+You can use [replicating objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html) to enable automatic, asynchronous copying of objects across Amazon S3 buckets.
+Buckets that are configured for object replication can be owned by the same AWS account or by different accounts.
+You can replicate objects to a single destination bucket or to multiple destination buckets.
+The destination buckets can be in different AWS Regions or within the same Region as the source bucket.
+
+To replicate objects to a destination bucket, you can specify the `replicationRules` property:
+
+```ts
+declare const destinationBucket1: s3.IBucket;
+declare const destinationBucket2: s3.IBucket;
+declare const kmsKey: kms.IKey;
+
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  // Versioning must be enabled on both the source and destination bucket
+  versioned: true,
+  replicationRules: [
+    {
+      // The destination bucket for the replication rule.
+      destination: destinationBucket1,
+      // The priority of the rule.
+      // Amazon S3 will attempt to replicate objects according to all replication rules.
+      // However, if there are two or more rules with the same destination bucket, then objects will be replicated according to the rule with the highest priority.
+      // The higher the number, the higher the priority.
+      // It is essential to specify priority explicitly when the replication configuration has multiple rules.
+      priority: 1,
+    },
+    {
+      destination: destinationBucket2,
+      priority: 2,
+      // Whether to specify S3 Replication Time Control (S3 RTC).
+      // S3 RTC replicates most objects that you upload to Amazon S3 in seconds,
+      // and 99.99 percent of those objects within specified time.
+      replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+      // Whether to enable replication metrics about S3 RTC.
+      // If set, metrics will be output to indicate whether replication by S3 RTC took longer than the configured time.
+      metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+      // The kms key to use for the destination bucket.
+      kmsKey,
+      // The storage class to use for the destination bucket.
+      storageClass: s3.StorageClass.INFREQUENT_ACCESS,
+      // Whether to replicate objects with SSE-KMS encryption.
+      sseKmsEncryptedObjects: false,
+      // Whether to replicate modifications on replicas.
+      replicaModifications: true,
+      // Whether to replicate delete markers.
+      // This property cannot be enabled if the replication rule has a tag filter.
+      deleteMarkerReplication: false,
+      // The ID of the rule.
+      id: 'full-settings-rule',
+      // The object filter for the rule.
+      filter: {
+        // The prefix filter for the rule.
+        prefix: 'prefix',
+        // The tag filter for the rule.
+        tags: [
+          {
+            key: 'tagKey',
+            value: 'tagValue',
+          },
+        ],
+      }
+    },
+  ],
+});
+```
+
+### Cross Account Replication
+
+You can also set a destination bucket from a different account as the replication destination.
+
+In this case, the bucket policy for the destination bucket is required, to configure it through CDK use  `addReplicationPolicy()` method to add bucket policy on destination bucket.
+In a cross-account scenario, where the source and destination buckets are owned by different AWS accounts, you can use a KMS key to encrypt object replicas. However, the KMS key owner must grant the source bucket owner permission to use the KMS key.
+For more information, please refer to https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html .
+> **NOTE:** AWS managed keys don't allow cross-account use, and therefore can't be used to perform cross-account replication.
+
+If you need to override the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
+`addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
+
+
+However, if the destination bucket is a referenced bucket, CDK cannot set the bucket policy,
+so you will need to [configure the necessary bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html) separately.
+
+```ts
+// The destination bucket in a different account.
+declare const destinationBucket: s3.IBucket;
+
+const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+  versioned: true,
+  replicationRules: [
+    {
+      destination: destinationBucket,
+      priority: 1,
+      // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+      // The replicas are owned by same AWS account that owns the source object by default.
+      accessControlTransition: true,
+    },
+  ],
+});
+
+//Add permissions to the destination after replication role is created
+if (sourceBucket.replicationRoleArn) {
+  destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
+  }
 ```

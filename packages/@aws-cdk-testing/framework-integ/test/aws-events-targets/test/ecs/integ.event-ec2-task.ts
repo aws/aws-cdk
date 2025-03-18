@@ -7,7 +7,13 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
+    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 
@@ -38,6 +44,8 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  cpu: '512',
+  memory: '512',
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [

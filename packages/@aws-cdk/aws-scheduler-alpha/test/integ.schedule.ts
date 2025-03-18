@@ -1,21 +1,24 @@
 /// !cdk-integ aws-cdk-scheduler-schedule
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as scheduler from '../lib';
 
-class SomeLambdaTarget implements scheduler.IScheduleTarget {
-  public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
+class SomeSqsTarget implements scheduler.IScheduleTarget {
+  public constructor(
+    private readonly queue: sqs.IQueue,
+    private readonly role: iam.IRole,
+    private readonly input?: scheduler.ScheduleTargetInput) {
   }
 
   public bind(): scheduler.ScheduleTargetConfig {
     return {
-      arn: this.fn.functionArn,
+      arn: this.queue.queueArn,
       role: this.role,
-      input: scheduler.ScheduleTargetInput.fromText('Input Text'),
+      input: this.input,
       retryPolicy: {
         maximumEventAgeInSeconds: 180,
         maximumRetryAttempts: 3,
@@ -26,55 +29,64 @@ class SomeLambdaTarget implements scheduler.IScheduleTarget {
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-schedule');
-
-const expression = scheduler.ScheduleExpression.rate(cdk.Duration.hours(12));
-const func = new lambda.Function(stack, 'Function', {
-  code: new lambda.InlineCode('foo'),
-  handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_LATEST,
-});
+const queue = new sqs.Queue(stack, 'ScheduleTargetQueue');
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
 });
+queue.grantSendMessages(role);
 
-const target = new SomeLambdaTarget(func, role);
+new scheduler.Schedule(stack, 'ScheduleToSendMessageToQueue', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
+  description: 'test description from the ScheduleToSendMessageToQueue',
+  target: new SomeSqsTarget(queue, role,
+    scheduler.ScheduleTargetInput.fromText(`valueA-${stack.region}`)),
+});
+const key = new kms.Key(stack, 'ScheduleKey');
+new scheduler.Schedule(stack, 'ScheduleWithCMK', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
+  target: new SomeSqsTarget(queue, role,
+    scheduler.ScheduleTargetInput.fromText(`valueB-${stack.region}`)),
+  key,
+});
 
 const namedGroup = new scheduler.Group(stack, 'NamedGroup', {
   groupName: 'TestGroup',
 });
+namedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
 const unnamedGroup = new scheduler.Group(stack, 'UnnamedGroup', {});
+unnamedGroup.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-new scheduler.Schedule(stack, 'DefaultSchedule', {
-  schedule: expression,
-  target: target,
-});
-
-new scheduler.Schedule(stack, 'NamedGroupSchedule', {
-  schedule: expression,
-  target: target,
+const randomTargetThatWontGetInvoked = new SomeSqsTarget(queue, role);
+new scheduler.Schedule(stack, 'ScheduleToTestWithNamedGroup', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
+  target: randomTargetThatWontGetInvoked,
   group: namedGroup,
 });
 
-new scheduler.Schedule(stack, 'UnnamedGroupSchedule', {
-  schedule: expression,
-  target: target,
+new scheduler.Schedule(stack, 'ScheduleToTestWithUnnamedGroup', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
+  target: randomTargetThatWontGetInvoked,
   group: unnamedGroup,
 });
 
-new scheduler.Schedule(stack, 'DisabledSchedule', {
-  schedule: expression,
-  target: target,
+new scheduler.Schedule(stack, 'TestDisabledSchedule', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
+  target: randomTargetThatWontGetInvoked,
   enabled: false,
 });
 
-new scheduler.Schedule(stack, 'TargetOverrideSchedule', {
-  schedule: expression,
-  target: target,
-  targetOverrides: {
-    input: scheduler.ScheduleTargetInput.fromText('Changed Text'),
-    maxEventAge: cdk.Duration.seconds(360),
-    retryAttempts: 5,
-  },
+new scheduler.Schedule(stack, 'UseFlexibleTimeWindow', {
+  schedule: scheduler.ScheduleExpression.at(new Date('2060-04-15T06:30:00.000Z')),
+  target: randomTargetThatWontGetInvoked,
+  timeWindow: scheduler.TimeWindow.flexible(cdk.Duration.minutes(10)),
+});
+
+new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
+  schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
+  target: randomTargetThatWontGetInvoked,
+  start: new Date('2060-04-15T06:30:00.000Z'),
+  end: new Date('2060-10-01T00:00:00.000Z'),
 });
 
 new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
@@ -83,35 +95,19 @@ new cloudwatch.Alarm(stack, 'AllSchedulerErrorsAlarm', {
   evaluationPeriods: 1,
 });
 
-const key = new kms.Key(stack, 'ScheduleKey');
-new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
-  schedule: expression,
-  target: target,
-  key,
-});
-
-new scheduler.Schedule(stack, 'UseFlexibleTimeWindow', {
-  schedule: expression,
-  target: target,
-  timeWindow: scheduler.TimeWindow.flexible(cdk.Duration.minutes(10)),
-});
-
-const currentYear = new Date().getFullYear();
-new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
-  schedule: expression,
-  target: target,
-  start: new Date(`${currentYear + 1}-04-15T06:30:00.000Z`),
-  end: new Date(`${currentYear + 2}-10-01T00:00:00.000Z`),
-});
-
-new scheduler.Schedule(stack, 'UseDescription', {
-  schedule: expression,
-  target: target,
-  description: 'test description',
-});
-
-new IntegTest(app, 'integtest-schedule', {
+const integ = new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });
 
-app.synth();
+integ.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: queue.queueUrl,
+  MaxNumberOfMessages: 10,
+}).expect(ExpectedResult.objectLike({
+  Messages: Match.arrayWith([
+    Match.objectLike({ Body: `valueA-${stack.region}` }),
+    Match.objectLike({ Body: `valueB-${stack.region}` }),
+  ]),
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(5),
+  interval: cdk.Duration.seconds(20),
+});

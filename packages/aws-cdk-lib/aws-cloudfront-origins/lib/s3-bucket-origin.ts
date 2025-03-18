@@ -4,12 +4,19 @@ import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IBucket } from '../../aws-s3';
-import { Annotations, Aws, Names, Stack } from '../../core';
+import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
 
-const BUCKET_ACTIONS: Record<string, string[]> = {
-  READ: ['s3:GetObject'],
-  WRITE: ['s3:PutObject'],
-  DELETE: ['s3:DeleteObject'],
+interface BucketPolicyAction {
+  readonly action: string;
+  readonly needsBucketArn?: boolean;
+}
+
+const BUCKET_ACTIONS: Record<string, BucketPolicyAction[]> = {
+  READ: [{ action: 's3:GetObject' }],
+  READ_VERSIONED: [{ action: 's3:GetObjectVersion' }],
+  LIST: [{ action: 's3:ListBucket', needsBucketArn: true }],
+  WRITE: [{ action: 's3:PutObject' }],
+  DELETE: [{ action: 's3:DeleteObject' }],
 };
 
 const KEY_ACTIONS: Record<string, string[]> = {
@@ -27,10 +34,10 @@ export interface S3BucketOriginBaseProps extends cloudfront.OriginProps { }
  */
 export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
   /**
-  * An optional Origin Access Control
-  *
-  * @default - an Origin Access Control will be created.
-  */
+   * An optional Origin Access Control
+   *
+   * @default - an Origin Access Control will be created.
+   */
   readonly originAccessControl?: cloudfront.IOriginAccessControl;
 
   /**
@@ -47,10 +54,10 @@ export interface S3BucketOriginWithOACProps extends S3BucketOriginBaseProps {
  */
 export interface S3BucketOriginWithOAIProps extends S3BucketOriginBaseProps {
   /**
-  * An optional Origin Access Identity
-  *
-  * @default - an Origin Access Identity will be created.
-  */
+   * An optional Origin Access Identity
+   *
+   * @default - an Origin Access Identity will be created.
+   */
   readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 }
 
@@ -118,6 +125,13 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
 
     const distributionId = options.distributionId;
     const accessLevels = new Set(this.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
+    if (accessLevels.has(AccessLevel.LIST)) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk',
+        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.');
+    }
+
     const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
     const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
@@ -151,32 +165,25 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     };
   }
 
-  private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
-    let actions: string[] = [];
-    for (const accessLevel of accessLevels) {
-      actions = actions.concat(BUCKET_ACTIONS[accessLevel]);
-    }
-    return actions;
+  private getBucketPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): BucketPolicyAction[] {
+    return [...accessLevels].flatMap((accessLevel) => BUCKET_ACTIONS[accessLevel] ?? []);
   }
 
   private getKeyPolicyActions(accessLevels: Set<cloudfront.AccessLevel>): string[] {
-    let actions: string[] = [];
-    for (const accessLevel of accessLevels) {
-      // Filter out DELETE since delete permissions are not applicable to KMS key actions
-      if (accessLevel !== AccessLevel.DELETE) {
-        actions = actions.concat(KEY_ACTIONS[accessLevel]);
-      }
-    }
-    return actions;
+    return [...accessLevels].flatMap((accessLevel) => KEY_ACTIONS[accessLevel] ?? []);
   }
 
-  private grantDistributionAccessToBucket(distributionId: string, actions: string[]): iam.AddToResourcePolicyResult {
+  private grantDistributionAccessToBucket(distributionId: string, policyActions: BucketPolicyAction[]): iam.AddToResourcePolicyResult {
+    const resources = [this.bucket.arnForObjects('*')];
+    if (policyActions.some((pa) => pa.needsBucketArn)) {
+      resources.push(this.bucket.bucketArn);
+    }
     const oacBucketPolicyStatement = new iam.PolicyStatement(
       {
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions,
-        resources: [this.bucket.arnForObjects('*')],
+        actions: policyActions.map((pa) => pa.action),
+        resources,
         conditions: {
           StringEquals: {
             'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
@@ -210,7 +217,7 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     const result = key.addToResourcePolicy(oacKeyPolicyStatement);
     return result;
   }
-};
+}
 
 class S3BucketOriginWithOAI extends S3BucketOrigin {
   private readonly bucket: IBucket;
@@ -236,7 +243,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
-    };
+    }
     // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
     // Only GetObject is needed to retrieve objects for the distribution.
     // This also excludes KMS permissions; OAI only supports SSE-S3 for buckets.
@@ -256,8 +263,8 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     if (!this.originAccessIdentity) {
-      throw new Error('Origin access identity cannot be undefined');
+      throw new UnscopedValidationError('Origin access identity cannot be undefined');
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
   }
-};
+}

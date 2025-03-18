@@ -32,16 +32,14 @@ const readWriteActions = [
 ];
 
 testDeprecated('connections throws if domain is placed inside a vpc', () => {
-
   expect(() => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
     }).connections;
-  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+  }).toThrow("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
 });
 
 testDeprecated('subnets and security groups can be provided when vpc is used', () => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const securityGroup = new SecurityGroup(stack, 'CustomSecurityGroup', {
     vpc,
@@ -74,7 +72,6 @@ testDeprecated('subnets and security groups can be provided when vpc is used', (
 });
 
 testDeprecated('default subnets and security group when vpc is used', () => {
-
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
     version: ElasticsearchVersion.V7_10,
@@ -118,7 +115,6 @@ testDeprecated('default removalpolicy is retain', () => {
 });
 
 testDeprecated('grants kms permissions if needed', () => {
-
   const key = new kms.Key(stack, 'Key');
 
   new Domain(stack, 'Domain', {
@@ -152,7 +148,6 @@ testDeprecated('grants kms permissions if needed', () => {
 
   const resources = Template.fromStack(stack).toJSON().Resources;
   expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
-
 });
 
 testDeprecated('minimal example renders correctly', () => {
@@ -263,7 +258,6 @@ testDeprecated('can set a self-referencing custom policy', () => {
 });
 
 describe('UltraWarm instances', () => {
-
   testDeprecated('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_1,
@@ -302,7 +296,6 @@ describe('UltraWarm instances', () => {
       },
     });
   });
-
 });
 
 testDeprecated('can use tokens in capacity configuration', () => {
@@ -345,7 +338,6 @@ testDeprecated('can use tokens in capacity configuration', () => {
 });
 
 describe('log groups', () => {
-
   testDeprecated('slowSearchLogEnabled should create a custom log group', () => {
     new Domain(stack, 'Domain', {
       version: ElasticsearchVersion.V7_4,
@@ -725,11 +717,9 @@ describe('log groups', () => {
       },
     });
   });
-
 });
 
 describe('grants', () => {
-
   testDeprecated('"grantRead" allows read actions associated with this domain resource', () => {
     testGrant(readActions, (p, d) => d.grantRead(p));
   });
@@ -854,11 +844,9 @@ describe('grants', () => {
       ],
     });
   });
-
 });
 
 describe('metrics', () => {
-
   testDeprecated('Can use metricClusterStatusRed on an Elasticsearch Domain', () => {
     testMetric(
       (domain) => domain.metricClusterStatusRed(),
@@ -980,11 +968,9 @@ describe('metrics', () => {
       'p99',
     );
   });
-
 });
 
 describe('import', () => {
-
   testDeprecated('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
@@ -1361,11 +1347,9 @@ describe('custom endpoints', () => {
       ],
     });
   });
-
 });
 
 describe('custom error responses', () => {
-
   testDeprecated('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
       maxAzs: 1,
@@ -1659,7 +1643,6 @@ describe('custom error responses', () => {
       },
     })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
   });
-
 });
 
 testDeprecated('can specify future version', () => {

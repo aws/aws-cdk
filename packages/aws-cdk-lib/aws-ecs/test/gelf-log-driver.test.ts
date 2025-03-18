@@ -10,7 +10,6 @@ describe('gelf log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
   });
 
   test('create a gelf log driver with minimum options', () => {

@@ -58,7 +58,7 @@ jobs:
 env:
  OSDS_DEVS: >
            {
-             "assignees":["ashishdhingra","khushail","hunhsieh"]
+             "assignees":["ashishdhingra","hunhsieh"]
            }
 
  AREA_AFFIXES: >
@@ -173,7 +173,6 @@ env:
             {"area":"@aws-cdk/aws-inspector","keywords":["aws-inspector","inspector"],"labels":["@aws-cdk/aws-inspector"]},
             {"area":"@aws-cdk/aws-iot","keywords":["internet-of-things","aws-iot","iot"],"labels":["@aws-cdk/aws-iot"],"affixes":{"suffixes":["-alpha"]}},
             {"area":"@aws-cdk/aws-iot-actions","keywords":["aws-iot-actions","iot-actions"],"labels":["@aws-cdk/aws-iot-actions"],"affixes":{"suffixes":["-alpha"]}},
-            {"area":"@aws-cdk/aws-iot1click","keywords":["aws-iot1click","iot1click"],"labels":["@aws-cdk/aws-iot1click"]},
             {"area":"@aws-cdk/aws-iotanalytics","keywords":["aws-iotanalytics","iotanalytics"],"labels":["@aws-cdk/aws-iotanalytics"]},
             {"area":"@aws-cdk/aws-iotevents","keywords":["aws-iotevents","iotevents"],"labels":["@aws-cdk/aws-iotevents"],"affixes":{"suffixes":["-alpha"]}},
             {"area":"@aws-cdk/aws-iotevents-actions","keywords":["aws-iotevents","iotevents-actions"],"labels":["@aws-cdk/aws-iotevents-actions"],"affixes":{"suffixes":["-alpha"]}},

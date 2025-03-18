@@ -4,7 +4,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents, ArnFormat } from './arn';
-import { Aspects } from './aspect';
+import { AspectPriority, Aspects } from './aspect';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -38,7 +38,6 @@ const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 const MAX_RESOURCES = 500;
 
-const STRING_LIST_REFERENCE_DELIMITER = '||';
 export interface StackProps {
   /**
    * A description of the stack.
@@ -128,6 +127,13 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
+   * SNS Topic ARNs that will receive stack events.
+   *
+   * @default - no notfication arns.
+   */
+  readonly notificationArns?: string[];
+
+  /**
    * Synthesis method to use while deploying this stack
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -188,7 +194,7 @@ export interface StackProps {
    * default value `false` will be used.
    *
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
-  */
+   */
   readonly suppressTemplateIndentation?: boolean;
 }
 
@@ -201,7 +207,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(x: any): x is Stack {
+  public static isStack(this: void, x: any): x is Stack {
     return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
   }
 
@@ -290,9 +296,9 @@ export class Stack extends Construct implements ITaggable {
    * check that it is a concrete value an not an unresolved token. If this
    * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
    * `true`), this implies that the user wishes that this stack will synthesize
-   * into a **account-agnostic template**. In this case, your code should either
+   * into an **account-agnostic template**. In this case, your code should either
    * fail (throw an error, emit a synth error using `Annotations.of(construct).addError()`) or
-   * implement some other region-agnostic behavior.
+   * implement some other account-agnostic behavior.
    */
   public readonly account: string;
 
@@ -363,6 +369,13 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   public readonly _crossRegionReferences: boolean;
+
+  /**
+   * SNS Notification ARNs to receive stack events.
+   *
+   * @internal
+   */
+  public readonly _notificationArns?: string[];
 
   /**
    * Logical ID generation strategy
@@ -450,6 +463,14 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
+
+    for (const notificationArn of props.notificationArns ?? []) {
+      if (Token.isUnresolved(notificationArn)) {
+        throw new Error(`Stack '${id}' includes one or more tokens in its notification ARNs: ${props.notificationArns}`);
+      }
+    }
+
+    this._notificationArns = props.notificationArns;
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
@@ -561,8 +582,7 @@ export class Stack extends Construct implements ITaggable {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
         },
-      });
-
+      }, { priority: AspectPriority.MUTATING });
     }
   }
 
@@ -581,7 +601,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Convert an object, potentially containing tokens, to a JSON string
    */
-  public toJsonString(obj: any, space?: number): string {
+  public toJsonString(this: void, obj: any, space?: number): string {
     return CloudFormationLang.toJSON(obj, space).toString();
   }
 
@@ -902,7 +922,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Adds an arbitary key-value pair, with information you want to record about the stack.
+   * Adds an arbitrary key-value pair, with information you want to record about the stack.
    * These get translated to the Metadata section of the generated template.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
@@ -1061,7 +1081,10 @@ export class Stack extends Construct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
+  public _synthesizeTemplate(session: ISynthesisSession,
+    lookupRoleArn?: string,
+    lookupRoleExternalId?: string,
+    lookupRoleAdditionalOptions?: { [key: string]: any }): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -1104,11 +1127,16 @@ export class Stack extends Construct implements ITaggable {
     fs.writeFileSync(outPath, templateData);
 
     for (const ctx of this._missingContext) {
-      if (lookupRoleArn != null) {
-        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
-      } else {
-        builder.addMissing(ctx);
-      }
+      // 'account' and 'region' are added to the schema at tree instantiation time.
+      // these options however are only known at synthesis, so are added here.
+      // see https://github.com/aws/aws-cdk/blob/v2.158.0/packages/aws-cdk-lib/core/lib/context-provider.ts#L71
+      const queryLookupOptions: Omit<cxschema.ContextLookupRoleOptions, 'account' | 'region'> = {
+        lookupRoleArn,
+        lookupRoleExternalId,
+        assumeRoleAdditionalOptions: lookupRoleAdditionalOptions,
+      };
+
+      builder.addMissing({ ...ctx, props: { ...ctx.props, ...queryLookupOptions } });
     }
   }
 
@@ -1752,7 +1780,7 @@ interface StackDependency {
 }
 
 interface ResolvedExport {
-  exportable: Reference;
+  exportable: Intrinsic;
   exportsScope: Construct;
   id: string;
   exportName: string;
@@ -1802,8 +1830,10 @@ import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable } from './private/refs';
+import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
-import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { makeUniqueResourceName } from './private/unique-resource-name';
+import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
+import { Intrinsic } from './private/intrinsic';
 /* eslint-enable import/order */

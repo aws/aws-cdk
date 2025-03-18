@@ -123,14 +123,14 @@ describe('exec', () => {
   test('non zero status', () => {
     const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
       status: 999,
-      stderr: Buffer.from('error occured'),
+      stderr: Buffer.from('error occurred'),
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
     });
 
-    expect(() => exec('cmd', ['arg1', 'arg2'])).toThrow('error occured');
+    expect(() => exec('cmd', ['arg1', 'arg2'])).toThrow('error occurred');
 
     spawnSyncMock.mockRestore();
   });

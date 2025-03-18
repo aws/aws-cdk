@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "b70afe3fccbab7f6f454145285c729eb91a7254c797c5156812a783b8f6cefd9": {
+      "source": {
+        "path": "FsxLustreStorageTypeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b70afe3fccbab7f6f454145285c729eb91a7254c797c5156812a783b8f6cefd9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

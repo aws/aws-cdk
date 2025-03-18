@@ -36,6 +36,7 @@ import {
   Stage as CdkStage,
   Token,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -472,6 +473,8 @@ export class Pipeline extends PipelineBase {
     super(scope, id, {
       physicalName: props.pipelineName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     validateName('Pipeline', this.physicalName);
 
@@ -597,6 +600,7 @@ export class Pipeline extends PipelineBase {
    * @param props the creation properties of the new Stage
    * @returns the newly created Stage
    */
+  @MethodMetadata()
   public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this._stages.find(s => s.stageName === props.stageName)) {
@@ -617,6 +621,7 @@ export class Pipeline extends PipelineBase {
   /**
    * Adds a statement to the pipeline role.
    */
+  @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
   }
@@ -627,6 +632,7 @@ export class Pipeline extends PipelineBase {
    * @param variable Variable instance to add to this Pipeline
    * @returns the newly created variable
    */
+  @MethodMetadata()
   public addVariable(variable: Variable): Variable {
     // check for duplicate variables and names
     if (this.variables.find(v => v.variableName === variable.variableName)) {
@@ -643,6 +649,7 @@ export class Pipeline extends PipelineBase {
    * @param props Trigger property to add to this Pipeline
    * @returns the newly created trigger
    */
+  @MethodMetadata()
   public addTrigger(props: TriggerProps): Trigger {
     const trigger = new Trigger(props);
     const actionName = props.gitConfiguration?.sourceAction.actionProperties.actionName;
@@ -678,6 +685,7 @@ export class Pipeline extends PipelineBase {
   /**
    * Access one of the pipeline's stages by stage name
    */
+  @MethodMetadata()
   public stage(stageName: string): IStage {
     for (const stage of this._stages) {
       if (stage.stageName === stageName) {
@@ -885,6 +893,7 @@ export class Pipeline extends PipelineBase {
    * @param action the action to return/create a role for
    * @param actionScope the scope, unique to the action, to create new resources in
    */
+
   private getRoleForAction(stage: Stage, action: RichAction, actionScope: Construct): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
@@ -892,9 +901,13 @@ export class Pipeline extends PipelineBase {
 
     if (!actionRole && this.isAwsOwned(action)) {
       // generate a Role for this specific Action
-      actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', {
+      const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+      const roleProps = isRemoveRootPrincipal? {
+        assumedBy: new iam.ArnPrincipal(this.role.roleArn), // Allow only the pipeline execution role
+      } : {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-      });
+      };
+      actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', roleProps);
     }
 
     // the pipeline role needs assumeRole permissions to the action role
@@ -1029,8 +1042,13 @@ export class Pipeline extends PipelineBase {
           ? action.actionProperties.resource.env.region
           : action.actionProperties.region;
         const pipelineStack = Stack.of(this);
+
+        // If the token is unresolved, we let Stack construct to generate the stack name for us.
+        const stackName = Token.isUnresolved(pipelineStack.stackName)
+          ? undefined
+          : `${pipelineStack.stackName}-support-${targetAccount}`;
         targetAccountStack = new Stack(app, stackId, {
-          stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
+          stackName: stackName,
           env: {
             account: targetAccount,
             region: actionRegion ?? pipelineStack.region,

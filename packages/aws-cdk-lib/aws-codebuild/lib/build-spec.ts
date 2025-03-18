@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as yaml_cfn from './private/yaml-cfn';
 import { Project } from './project';
 import * as s3_assets from '../../aws-s3-assets';
-import { IResolveContext, Lazy, Stack } from '../../core';
+import { IResolveContext, Lazy, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * BuildSpec for CodeBuild projects
@@ -31,10 +31,10 @@ export abstract class BuildSpec {
   }
 
   /**
-    * Use the contents of a local file as the build spec string
-    *
-    * Use this if you have a local .yml or .json file that you want to use as the buildspec
-    */
+   * Use the contents of a local file as the build spec string
+   *
+   * Use this if you have a local .yml or .json file that you want to use as the buildspec
+   */
   public static fromAsset(path: string): BuildSpec {
     return new AssetBuildSpec(path);
   }
@@ -66,7 +66,7 @@ class AssetBuildSpec extends BuildSpec {
 
   public toBuildSpec(scope?: Project): string {
     if (!scope) {
-      throw new Error('`AssetBuildSpec` requires a `scope` argument');
+      throw new UnscopedValidationError('`AssetBuildSpec` requires a `scope` argument');
     }
 
     // If the same AssetCode is used multiple times, retain only the first instantiation.
@@ -76,7 +76,7 @@ class AssetBuildSpec extends BuildSpec {
         ...this.options,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new Error(`Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
+      throw new UnscopedValidationError(`Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
         'Create a new BuildSpec instance for every stack.');
     }
 
@@ -152,21 +152,21 @@ class YamlBuildSpec extends BuildSpec {
  * In case of multiple outputs they must have identifiers but we won't have that information.
  *
  * In case of test reports we replace the whole object with the RHS (instead of recursively merging)
-*/
+ */
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
-    throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
+    throw new UnscopedValidationError('Can only merge buildspecs created using BuildSpec.fromObject()');
   }
 
   if (lhs.spec.version === '0.1') {
-    throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
+    throw new UnscopedValidationError('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
   }
   if (lhs.spec.artifacts && rhs.spec.artifacts) {
     // We decided to disallow merging of artifact specs, which is
     // actually impossible since we can't merge two buildspecs with a
     // single primary output into a buildspec with multiple outputs.
     // In case of multiple outputs they must have identifiers but we won't have that information.
-    throw new Error('Only one build spec is allowed to specify artifacts.');
+    throw new UnscopedValidationError('Only one build spec is allowed to specify artifacts.');
   }
 
   const lhsSpec = JSON.parse(JSON.stringify(lhs.spec));
@@ -256,4 +256,4 @@ function mergeDeep(lhs: any, rhs: any): any {
   }
 
   return rhs;
-};
+}

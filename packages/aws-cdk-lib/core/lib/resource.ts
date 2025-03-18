@@ -1,5 +1,6 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
+import { RESOURCE_SYMBOL } from './constants';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
@@ -11,8 +12,6 @@ import { Token, Tokenization } from './token';
 // v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
 // eslint-disable-next-line import/order
 import { Construct, IConstruct } from 'constructs';
-
-const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
 /**
  * Represents the environment a given resource lives in.

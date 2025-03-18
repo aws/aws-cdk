@@ -1,0 +1,23 @@
+{
+  "Parameters": {
+    "MinSuccessfulInstancesPercent": {
+      "Type": "Number"
+    }
+  },
+  "Resources": {
+    "AutoScalingCreationPolicyIntrinsic": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": "1",
+        "MaxSize": "5"
+      },
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent": {
+            "Ref": "MinSuccessfulInstancesPercent"
+          }
+        }
+      }
+    }
+  }
+}

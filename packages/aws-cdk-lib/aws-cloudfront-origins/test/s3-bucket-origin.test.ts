@@ -849,6 +849,109 @@ describe('S3BucketOrigin', () => {
     });
   });
 
+  describe('when specifying READ and LIST origin access levels', () => {
+    it('should add the correct permissions to bucket policy', () => {
+      const stack = new Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+        originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+      });
+      new cloudfront.Distribution(stack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['s3:GetObject', 's3:ListBucket'],
+              Effect: 'Allow',
+              Principal: { Service: 'cloudfront.amazonaws.com' },
+              Condition: {
+                StringEquals: {
+                  'AWS:SourceArn': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':cloudfront::',
+                        { Ref: 'AWS::AccountId' },
+                        ':distribution/',
+                        { Ref: 'MyDistribution6271DFB5' },
+                      ],
+                    ],
+                  },
+                },
+              },
+              Resource: [
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    describe('when specifying READ and READ_VERSIONED origin access levels', () => {
+      it('should add the correct permissions to bucket policy', () => {
+        const stack = new Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket');
+        const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+          originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.READ_VERSIONED],
+        });
+        new cloudfront.Distribution(stack, 'MyDistribution', {
+          defaultBehavior: { origin },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: ['s3:GetObject', 's3:GetObjectVersion'],
+                Effect: 'Allow',
+                Principal: { Service: 'cloudfront.amazonaws.com' },
+                Condition: {
+                  StringEquals: {
+                    'AWS:SourceArn': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          { Ref: 'AWS::Partition' },
+                          ':cloudfront::',
+                          { Ref: 'AWS::AccountId' },
+                          ':distribution/',
+                          { Ref: 'MyDistribution6271DFB5' },
+                        ],
+                      ],
+                    },
+                  },
+                },
+                Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
+              },
+            ],
+          },
+        });
+      });
+    });
+    it('should add the warning annotation', () => {
+      const stack = new Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+        originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.LIST],
+      });
+      new cloudfront.Distribution(stack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+      Annotations.fromStack(stack).hasWarning('/Default/MyDistribution/Origin1',
+        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.'+
+        ' [ack: @aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk]');
+    });
+  });
+
   describe('withOriginAccessIdentity', () => {
     describe('when passing custom props', () => {
       let stack: Stack;

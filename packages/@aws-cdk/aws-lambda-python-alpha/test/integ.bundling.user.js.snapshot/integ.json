@@ -1,0 +1,13 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "lambda-python-bundling-user/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-python-bundling-user"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python-bundling-user/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonbundlinguserDefaultTestDeployAssert71F508D9"
+    }
+  }
+}

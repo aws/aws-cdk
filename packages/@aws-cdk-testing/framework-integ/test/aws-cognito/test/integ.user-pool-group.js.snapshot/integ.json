@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "integ-user-pool-group/DefaultTest": {
+      "stacks": [
+        "user-pool-group-stack"
+      ],
+      "assertionStack": "integ-user-pool-group/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolgroupDefaultTestDeployAssertED51AC37"
+    }
+  }
+}

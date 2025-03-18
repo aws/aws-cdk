@@ -1,0 +1,12 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "enable-execute-command-test/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-enable-execute-command"
+      ],
+      "assertionStack": "enable-execute-command-test/DefaultTest/DeployAssert",
+      "assertionStackName": "enableexecutecommandtestDefaultTestDeployAssertDF06DF37"
+    }
+  }
+}

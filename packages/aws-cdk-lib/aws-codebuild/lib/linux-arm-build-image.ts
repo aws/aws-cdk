@@ -41,8 +41,13 @@ export class LinuxArmBuildImage implements IBuildImage {
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0" based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:3.0');
 
+  /** Image "aws/codebuild/amazonlinux-aarch64-standard:2.0" based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:2.0');
+  /** Image "aws/codebuild/amazonlinux-aarch64-standard:3.0" based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:3.0');
+
   /**
-   * @returns a x86-64 Linux build image from a Docker Hub image.
+   * @returns a aarch-64 Linux build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
     return new LinuxArmBuildImage({

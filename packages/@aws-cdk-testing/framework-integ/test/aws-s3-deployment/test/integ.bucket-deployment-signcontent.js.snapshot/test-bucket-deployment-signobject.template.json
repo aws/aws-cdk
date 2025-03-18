@@ -68,7 +68,10 @@
        "Action": "s3:PutObject",
        "Condition": {
         "StringNotLike": {
-         "s3:x-amz-content-sha256": "????????????????????????????????????????????????????????????????"
+         "s3:x-amz-content-sha256": [
+          "[A-Fa-f0-9]{64}",
+          "STREAMING-*"
+         ]
         }
        },
        "Effect": "Deny",
@@ -187,7 +190,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
     },
     "Description": "/opt/awscli/aws"
    },
@@ -217,7 +220,8 @@
     },
     "RetainOnDelete": false,
     "Prune": true,
-    "SignContent": true
+    "SignContent": true,
+    "OutputObjectKeys": true
    },
    "DependsOn": [
     "DestinationPolicy7982387E"
@@ -357,7 +361,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+     "S3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
     },
     "Environment": {
      "Variables": {
@@ -433,10 +437,10 @@
     "value": "nodejs20.x"
    },
    "cn-north-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "cn-northwest-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "eu-central-1": {
     "value": "nodejs20.x"
@@ -487,10 +491,10 @@
     "value": "nodejs20.x"
    },
    "us-gov-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-gov-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs20.x"
    },
    "us-iso-east-1": {
     "value": "nodejs18.x"

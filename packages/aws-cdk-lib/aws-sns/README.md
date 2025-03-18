@@ -135,10 +135,10 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
 ### Example of Firehose Subscription
 
 ```ts
-import { DeliveryStream } from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const topic = new sns.Topic(this, 'Topic');
-declare const stream: DeliveryStream;
+declare const stream: firehose.DeliveryStream;
 
 new sns.Subscription(this, 'Subscription', {
   topic,
@@ -274,7 +274,7 @@ topic.addToResourcePolicy(new iam.PolicyStatement({
 Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
 
 - HTTP
-- Amazon Kinesis Data Firehose
+- Amazon Data Firehose
 - AWS Lambda
 - Platform application endpoint
 - Amazon Simple Queue Service
@@ -344,3 +344,23 @@ const topic = new sns.Topic(this, 'MyTopic', {
   tracingConfig: sns.TracingConfig.ACTIVE,
 });
 ```
+
+## High-throughput mode for Amazon SNS FIFO Topics
+
+High throughput FIFO topics in Amazon SNS efficiently manage high message throughput while maintaining strict message order, ensuring reliability and scalability for applications processing numerous messages.
+This solution is ideal for scenarios demanding both high throughput and ordered message delivery.
+
+To improve message throughput using high throughput FIFO topics, increasing the number of message groups is recommended.
+
+For more information, see [High throughput FIFO topics in Amazon SNS](https://docs.aws.amazon.com/sns/latest/dg/fifo-high-throughput.html).
+
+You can configure high-throughput mode for your FIFO topics by setting the `fifoThroughputScope` property:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  fifo: true,
+  fifoThroughputScope: sns.FifoThroughputScope.TOPIC,
+});
+```
+
+**Note**: The `fifoThroughputScope` property is only available for FIFO topics.

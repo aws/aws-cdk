@@ -5,7 +5,9 @@ import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
+import { IKey } from '../../aws-kms';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an SNS topic
@@ -24,6 +26,17 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * @attribute
    */
   readonly topicName: string;
+
+  /**
+   * A KMS Key, either managed by this CDK app, or imported.
+   *
+   * This property applies only to server-side encryption.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
+   *
+   * @default None
+   */
+  readonly masterKey?: IKey;
 
   /**
    * Enables content-based deduplication for FIFO topics.
@@ -72,6 +85,8 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   public abstract readonly topicName: string;
 
+  public abstract readonly masterKey?: IKey;
+
   public abstract readonly fifo: boolean;
 
   public abstract readonly contentBasedDeduplication: boolean;
@@ -111,7 +126,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
+      throw new ValidationError(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`, scope);
     }
 
     const subscription = new Subscription(scope, id, {
@@ -132,23 +147,40 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Adds a statement to the IAM resource policy associated with this topic.
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
-   * will be automatically created upon the first call to `addToResourcePolicy`. If
-   * the topic is imported (`Topic.import`), then this is a no-op.
+   * will be automatically created upon the first call to `addToResourcePolicy`.
+   * However, if `enforceSSL` is set to `true`, the policy has already been created
+   * before the first call to this method.
+   *
+   * If the topic is imported (`Topic.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
-    }
+    this.createTopicPolicy();
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
-
-      if (this.enforceSSL) {
-        this.policy.document.addStatements(this.createSSLPolicyDocument());
-      }
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  /**
+   * Adds a SSL policy to the topic resource policy.
+   */
+  protected addSSLPolicy(): void {
+    this.createTopicPolicy();
+
+    if (this.policy) {
+      this.policy.document.addStatements(this.createSSLPolicyDocument());
+    }
+  }
+
+  /**
+   * Creates a topic policy for this topic.
+   */
+  protected createTopicPolicy(): void {
+    if (!this.policy && this.autoCreatePolicy) {
+      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
+    }
   }
 
   /**
@@ -173,12 +205,16 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Grant topic publishing permissions to the given identity
    */
   public grantPublish(grantee: iam.IGrantable) {
-    return iam.Grant.addToPrincipalOrResource({
+    const ret = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['sns:Publish'],
       resourceArns: [this.topicArn],
       resource: this,
     });
+    if (this.masterKey) {
+      this.masterKey.grant(grantee, 'kms:Decrypt', 'kms:GenerateDataKey*');
+    }
+    return ret;
   }
 
   /**
@@ -223,5 +259,4 @@ export abstract class TopicBase extends Resource implements ITopic {
     }
     return `TokenSubscription:${nextSuffix}`;
   }
-
 }

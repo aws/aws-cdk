@@ -26,7 +26,7 @@
        "Action": "s3:*",
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::my_legacy_bucket2/*",
+        "arn:aws:s3:::My_legacy_bucket2/*",
         {
          "Fn::Join": [
           "",
@@ -35,7 +35,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::my_legacy_bucket1/*"
+           ":s3:::My_legacy_bucket1/*"
           ]
          ]
         },
@@ -47,7 +47,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::my_legacy_bucket3/*"
+           ":s3:::My_legacy_bucket3/*"
           ]
          ]
         }

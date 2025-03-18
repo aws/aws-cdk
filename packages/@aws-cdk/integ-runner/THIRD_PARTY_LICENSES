@@ -750,7 +750,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** semver@7.6.3 - https://www.npmjs.com/package/semver/v/7.6.3 | ISC
+** semver@7.7.1 - https://www.npmjs.com/package/semver/v/7.7.1 | ISC
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter and Contributors
@@ -827,7 +827,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** table@6.8.2 - https://www.npmjs.com/package/table/v/6.8.2 | BSD-3-Clause
+** table@6.9.0 - https://www.npmjs.com/package/table/v/6.9.0 | BSD-3-Clause
 Copyright (c) 2018, Gajus Kuizinas (http://gajus.com/)
 All rights reserved.
 

@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
@@ -7,7 +8,6 @@ import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
 import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
 import { Group, GroupProps } from '../lib/group';
 import { Schedule } from '../lib/schedule';
-
 class SomeLambdaTarget implements IScheduleTarget {
   public constructor(private readonly fn: lambda.IFunction, private readonly role: iam.IRole) {
   }
@@ -36,7 +36,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('creates a group with default properties', () => {
+  testDeprecated('creates a group with default properties', () => {
     const props: GroupProps = {};
     const group = new Group(stack, 'TestGroup', props);
 
@@ -49,7 +49,7 @@ describe('Schedule Group', () => {
     expect(resource.name).toEqual(group.groupName);
   });
 
-  test('creates a group with removal policy', () => {
+  testDeprecated('creates a group with removal policy', () => {
     const props: GroupProps = {
       removalPolicy: RemovalPolicy.RETAIN,
     };
@@ -60,7 +60,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('creates a group with specified name', () => {
+  testDeprecated('creates a group with specified name', () => {
     const props: GroupProps = {
       groupName: 'MyGroup',
     };
@@ -76,7 +76,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('creates a group from ARN', () => {
+  testDeprecated('creates a group from ARN', () => {
     const groupArn = 'arn:aws:scheduler:region:account-id:schedule-group/group-name';
     const group = Group.fromGroupArn(stack, 'TestGroup', groupArn);
 
@@ -87,7 +87,7 @@ describe('Schedule Group', () => {
     expect(groups).toEqual({});
   });
 
-  test('creates a group from name', () => {
+  testDeprecated('creates a group from name', () => {
     const groupName = 'MyGroup';
     const group = Group.fromGroupName(stack, 'TestGroup', groupName);
 
@@ -98,7 +98,7 @@ describe('Schedule Group', () => {
     expect(groups).toEqual({});
   });
 
-  test('creates a group from default group', () => {
+  testDeprecated('creates a group from default group', () => {
     const group = Group.fromDefaultGroup(stack, 'DefaultGroup');
 
     expect(group.groupArn).toBeDefined();
@@ -108,7 +108,7 @@ describe('Schedule Group', () => {
     expect(groups).toEqual({});
   });
 
-  test('adds schedules to the group', () => {
+  testDeprecated('adds schedules to the group', () => {
     const props: GroupProps = {
       groupName: 'MyGroup',
     };
@@ -136,7 +136,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('adds schedules to the group with unspecified name', () => {
+  testDeprecated('adds schedules to the group with unspecified name', () => {
     const group = new Group(stack, 'TestGroup', {});
     const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
@@ -161,7 +161,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('grantReadSchedules', () => {
+  testDeprecated('grantReadSchedules', () => {
     // GIVEN
     const props: GroupProps = {
       groupName: 'MyGroup',
@@ -201,7 +201,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('grantWriteSchedules', () => {
+  testDeprecated('grantWriteSchedules', () => {
     // GIVEN
     const props: GroupProps = {
       groupName: 'MyGroup',
@@ -242,7 +242,7 @@ describe('Schedule Group', () => {
     });
   });
 
-  test('grantDeleteSchedules', () => {
+  testDeprecated('grantDeleteSchedules', () => {
     // GIVEN
     const props: GroupProps = {
       groupName: 'MyGroup',
@@ -279,20 +279,33 @@ describe('Schedule Group', () => {
       },
     });
   });
+});
 
-  test('Target Error Metrics', () => {
+describe('Schedule Group Metrics', () => {
+  test.each([
+    ['metricTargetErrors', 'TargetErrorCount'],
+    ['metricThrottled', 'InvocationThrottleCount'],
+    ['metricAttempts', 'InvocationAttemptCount'],
+    ['metricTargetThrottled', 'TargetErrorThrottledCount'],
+    ['metricDropped', 'InvocationDroppedCount'],
+    ['metricSentToDLQ', 'InvocationsSentToDeadLetterCount'],
+    ['metricSentToDLQTruncated', 'InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded'],
+  ])('calling %s creates alarm for %s metric', (metricMethodName, metricName) => {
     // GIVEN
+    const app = new App();
     const props: GroupProps = {
       groupName: 'MyGroup',
     };
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
     const group = new Group(stack, 'TestGroup', props);
 
     // WHEN
-    const metricTargetErrors = group.metricTargetErrors({
+    const metricMethod = (group as any)[metricMethodName].bind(group); // Get the method dynamically
+    const metricTargetErrors = metricMethod({
       period: Duration.minutes(1),
     });
 
-    new cw.Alarm(stack, 'GroupTargetErrorAlarm', {
+    new cw.Alarm(stack, `Group${metricName}Alarm`, {
       metric: metricTargetErrors,
       evaluationPeriods: 1,
       threshold: 1,
@@ -306,7 +319,41 @@ describe('Schedule Group', () => {
           Value: 'MyGroup',
         }),
       ]),
-      MetricName: 'TargetErrorCount',
+      MetricName: metricName,
+      Namespace: 'AWS/Scheduler',
+    });
+  });
+
+  testDeprecated('Invocations Failed to Deliver to DLQ Metrics', () => {
+    // GIVEN
+    const app = new App();
+    const props: GroupProps = {
+      groupName: 'MyGroup',
+    };
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const group = new Group(stack, 'TestGroup', props);
+    const errorCode = '403';
+
+    // WHEN
+    const metricFailedToBeSentToDLQ = group.metricFailedToBeSentToDLQ(errorCode, {
+      period: Duration.minutes(1),
+    });
+
+    new cw.Alarm(stack, 'GroupFailedInvocationsToDLQAlarm', {
+      metric: metricFailedToBeSentToDLQ,
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Dimensions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'ScheduleGroup',
+          Value: 'MyGroup',
+        }),
+      ]),
+      MetricName: `InvocationsFailedToBeSentToDeadLetterCount_${errorCode}`,
       Namespace: 'AWS/Scheduler',
     });
   });

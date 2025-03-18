@@ -494,19 +494,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleB27FAA37",
+          "Arn"
          ]
         }
        }
@@ -922,30 +912,6 @@
     ]
    }
   },
-  "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "codepipeline:PutJobFailureResult",
-        "codepipeline:PutJobSuccessResult"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829",
-    "Roles": [
-     {
-      "Ref": "PipelineAppStageCustomFunctionServiceRole3CD45B89"
-     }
-    ]
-   }
-  },
   "PipelineAppStageCustomFunction1C605D4D": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -962,9 +928,32 @@
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "PipelineAppStageCustomFunctionServiceRoleDefaultPolicy83E41829",
     "PipelineAppStageCustomFunctionServiceRole3CD45B89"
    ]
+  },
+  "PipelineAppStageCustomFunctioninlinePolicyAddedToExecutionRole0ACB505FB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codepipeline:PutJobFailureResult",
+        "codepipeline:PutJobSuccessResult"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineAppStageCustomFunctioninlinePolicyAddedToExecutionRole0ACB505FB",
+    "Roles": [
+     {
+      "Ref": "PipelineAppStageCustomFunctionServiceRole3CD45B89"
+     }
+    ]
+   }
   },
   "PipelineAppStageCustomStepCodePipelineActionRoleE64091E3": {
    "Type": "AWS::IAM::Role",
@@ -976,19 +965,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleB27FAA37",
+          "Arn"
          ]
         }
        }

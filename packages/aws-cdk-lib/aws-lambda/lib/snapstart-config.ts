@@ -16,7 +16,7 @@ export abstract class SnapStartConf {
   }
 
   /**
-  * @internal
-  */
+   * @internal
+   */
   public abstract _render(): any;
 }

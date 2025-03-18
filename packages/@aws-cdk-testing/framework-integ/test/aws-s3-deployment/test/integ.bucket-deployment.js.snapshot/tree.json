@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "test-bucket-deployments-2": {
-        "id": "test-bucket-deployments-2",
-        "path": "test-bucket-deployments-2",
+      "test-bucket-deployments": {
+        "id": "test-bucket-deployments",
+        "path": "test-bucket-deployments",
         "children": {
           "Destination": {
             "id": "Destination",
-            "path": "test-bucket-deployments-2/Destination",
+            "path": "test-bucket-deployments/Destination",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Destination/Resource",
+                "path": "test-bucket-deployments/Destination/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -24,19 +24,19 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:12c80047",
+                        "key": "aws-cdk:cr-owned:4a53c04c",
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:c06dfca0",
+                        "key": "aws-cdk:cr-owned:675f2a55",
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:efs/:a01ecd3e",
+                        "key": "aws-cdk:cr-owned:ba312369",
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:f8ab5a69",
+                        "key": "aws-cdk:cr-owned:efs/:180cbe84",
                         "value": "true"
                       }
                     ],
@@ -52,11 +52,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "test-bucket-deployments-2/Destination/Policy",
+                "path": "test-bucket-deployments/Destination/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Destination/Policy/Resource",
+                    "path": "test-bucket-deployments/Destination/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -117,16 +117,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "test-bucket-deployments-2/Destination/AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/Destination/AutoDeleteObjectsCustomResource/Default",
+                    "path": "test-bucket-deployments/Destination/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -135,18 +140,29 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "websiteIndexDocument": "*",
+                  "publicReadAccess": false,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "test-bucket-deployments-2/LatestNodeRuntimeMap",
+            "path": "test-bucket-deployments/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
@@ -154,11 +170,11 @@
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
-            "path": "test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "test-bucket-deployments/Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "path": "test-bucket-deployments/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -166,7 +182,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "path": "test-bucket-deployments/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -174,7 +190,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "test-bucket-deployments-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "path": "test-bucket-deployments/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -188,19 +204,19 @@
           },
           "DeployMe": {
             "id": "DeployMe",
-            "path": "test-bucket-deployments-2/DeployMe",
+            "path": "test-bucket-deployments/DeployMe",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMe/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMe/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMe/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMe/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMe/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMe/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -208,10 +224,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMe/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMe/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -222,7 +239,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMe/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMe/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -230,7 +247,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -243,24 +260,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMe/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMe/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMe/Asset1",
+                "path": "test-bucket-deployments/DeployMe/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMe/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMe/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -268,10 +321,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMe/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMe/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -282,11 +336,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployMe/CustomResource",
+                "path": "test-bucket-deployments/DeployMe/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMe/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployMe/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -295,7 +349,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -306,23 +363,26 @@
           },
           "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
             "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
-            "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -361,11 +421,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
+                        "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -453,6 +513,12 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
+                                        "Destination6420F2C8E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
                                         "Destination920A3C57",
                                         "Arn"
                                       ]
@@ -519,6 +585,20 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
+                                              "Destination6420F2C8E",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
                                               "Destination920A3C57",
                                               "Arn"
                                             ]
@@ -548,22 +628,228 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
                 "id": "Code",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -571,10 +857,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -585,7 +872,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -593,7 +880,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+                      "s3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
                     },
                     "environment": {
                       "variables": {
@@ -624,16 +911,46 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "layers": [
+                    "*"
+                  ],
+                  "environment": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "memorySize": "*",
+                  "ephemeralStorageSize": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "filesystem": "*",
+                  "logGroup": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "InlineVpc": {
             "id": "InlineVpc",
-            "path": "test-bucket-deployments-2/InlineVpc",
+            "path": "test-bucket-deployments/InlineVpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/InlineVpc/Resource",
+                "path": "test-bucket-deployments/InlineVpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -644,7 +961,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-bucket-deployments-2/InlineVpc"
+                        "value": "test-bucket-deployments/InlineVpc"
                       }
                     ]
                   }
@@ -656,11 +973,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1",
+                "path": "test-bucket-deployments/InlineVpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/Subnet",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -685,7 +1002,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -700,22 +1017,23 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/Acl",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/RouteTable",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -730,7 +1048,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -749,7 +1067,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/DefaultRoute",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -769,7 +1087,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/EIP",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -777,7 +1095,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -789,7 +1107,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet1/NATGateway",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -805,7 +1123,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -818,16 +1136,40 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2",
+                "path": "test-bucket-deployments/InlineVpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/Subnet",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -852,7 +1194,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -867,22 +1209,23 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/Acl",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/RouteTable",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -897,7 +1240,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -916,7 +1259,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/DefaultRoute",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -936,7 +1279,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/EIP",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -944,7 +1287,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -956,7 +1299,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "test-bucket-deployments-2/InlineVpc/PublicSubnet2/NATGateway",
+                    "path": "test-bucket-deployments/InlineVpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -972,7 +1315,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -985,16 +1328,40 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1",
+                "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1/Subnet",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1019,7 +1386,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1034,22 +1401,23 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1/Acl",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1/RouteTable",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
+                            "value": "test-bucket-deployments/InlineVpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1064,7 +1432,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1083,7 +1451,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1/DefaultRoute",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1104,16 +1472,35 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2",
+                "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2/Subnet",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1138,7 +1525,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1153,22 +1540,23 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2/Acl",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2/RouteTable",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
+                            "value": "test-bucket-deployments/InlineVpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1183,7 +1571,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1202,7 +1590,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2/DefaultRoute",
+                    "path": "test-bucket-deployments/InlineVpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1223,19 +1611,38 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
                 "id": "IGW",
-                "path": "test-bucket-deployments-2/InlineVpc/IGW",
+                "path": "test-bucket-deployments/InlineVpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "test-bucket-deployments-2/InlineVpc"
+                        "value": "test-bucket-deployments/InlineVpc"
                       }
                     ]
                   }
@@ -1247,7 +1654,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "test-bucket-deployments-2/InlineVpc/VPCGW",
+                "path": "test-bucket-deployments/InlineVpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -1267,24 +1674,29 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "DeployMeWithEfsStorage": {
             "id": "DeployMeWithEfsStorage",
-            "path": "test-bucket-deployments-2/DeployMeWithEfsStorage",
+            "path": "test-bucket-deployments/DeployMeWithEfsStorage",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMeWithEfsStorage/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMeWithEfsStorage/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMeWithEfsStorage/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1292,10 +1704,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMeWithEfsStorage/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -1306,7 +1719,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMeWithEfsStorage/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -1314,7 +1727,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -1327,24 +1740,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMeWithEfsStorage/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/Asset1",
+                "path": "test-bucket-deployments/DeployMeWithEfsStorage/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMeWithEfsStorage/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1352,10 +1801,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMeWithEfsStorage/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1364,13 +1814,13 @@
                   "version": "0.0.0"
                 }
               },
-              "CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa": {
-                "id": "CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
-                "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
+              "CustomResource-c84ffe8a457bee0fd39689d96b787dc2cec93d5590": {
+                "id": "CustomResource-c84ffe8a457bee0fd39689d96b787dc2cec93d5590",
+                "path": "test-bucket-deployments/DeployMeWithEfsStorage/CustomResource-c84ffe8a457bee0fd39689d96b787dc2cec93d5590",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMeWithEfsStorage/CustomResource-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Default",
+                    "path": "test-bucket-deployments/DeployMeWithEfsStorage/CustomResource-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -1379,7 +1829,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -1388,13 +1841,13 @@
               "version": "0.0.0"
             }
           },
-          "BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa": {
-            "id": "BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
-            "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
+          "BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590": {
+            "id": "BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590",
+            "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Resource",
+                "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
                   "aws:cdk:cloudformation:props": {
@@ -1422,7 +1875,7 @@
                     "fileSystemTags": [
                       {
                         "key": "Name",
-                        "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa"
+                        "value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590"
                       }
                     ]
                   }
@@ -1434,15 +1887,15 @@
               },
               "EfsSecurityGroup": {
                 "id": "EfsSecurityGroup",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup",
+                "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup/Resource",
+                    "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup",
+                        "groupDescription": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1453,7 +1906,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa"
+                            "value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590"
                           }
                         ],
                         "vpcId": {
@@ -1466,24 +1919,24 @@
                       "version": "0.0.0"
                     }
                   },
-                  "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049": {
-                    "id": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
-                    "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsSecurityGroup/from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
+                  "from testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112:2049": {
+                    "id": "from testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112:2049",
+                    "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsSecurityGroup/from testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112:2049",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
+                        "description": "from testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroupDE025112:2049",
                         "fromPort": 2049,
                         "groupId": {
                           "Fn::GetAtt": [
-                            "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+                            "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
                             "GroupId"
                           ]
                         },
                         "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
+                            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroup616D369D",
                             "GroupId"
                           ]
                         },
@@ -1498,22 +1951,35 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "vpc": "*"
+                    },
+                    {
+                      "addIngressRule": [
+                        "*",
+                        {},
+                        "*",
+                        true
+                      ]
+                    }
+                  ]
                 }
               },
               "EfsMountTarget-PrivateSubnet1": {
                 "id": "EfsMountTarget-PrivateSubnet1",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet1",
+                "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsMountTarget-PrivateSubnet1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
                     "fileSystemId": {
-                      "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+                      "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
                     },
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+                          "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
                           "GroupId"
                         ]
                       }
@@ -1530,17 +1996,17 @@
               },
               "EfsMountTarget-PrivateSubnet2": {
                 "id": "EfsMountTarget-PrivateSubnet2",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/EfsMountTarget-PrivateSubnet2",
+                "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/EfsMountTarget-PrivateSubnet2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
                     "fileSystemId": {
-                      "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+                      "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
                     },
                     "securityGroups": [
                       {
                         "Fn::GetAtt": [
-                          "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroup8A6327B1",
+                          "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590EfsSecurityGroup0940F1A5",
                           "GroupId"
                         ]
                       }
@@ -1557,16 +2023,16 @@
               },
               "AccessPoint": {
                 "id": "AccessPoint",
-                "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint",
+                "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/AccessPoint",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint/Resource",
+                    "path": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/AccessPoint/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
                       "aws:cdk:cloudformation:props": {
                         "fileSystemId": {
-                          "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+                          "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
                         },
                         "posixUser": {
                           "uid": "1001",
@@ -1583,7 +2049,7 @@
                         "accessPointTags": [
                           {
                             "key": "Name",
-                            "value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
+                            "value": "test-bucket-deployments/BucketDeploymentEFS-VPC-c84ffe8a457bee0fd39689d96b787dc2cec93d5590/AccessPoint"
                           }
                         ]
                       }
@@ -1596,34 +2062,75 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_efs.AccessPoint",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "fileSystem": "*",
+                      "path": "*",
+                      "createAcl": {
+                        "ownerUid": "*",
+                        "ownerGid": "*",
+                        "permissions": "*"
+                      },
+                      "posixUser": {
+                        "uid": "*",
+                        "gid": "*"
+                      }
+                    }
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_efs.FileSystem",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "vpc": "*",
+                  "removalPolicy": "destroy"
+                },
+                {
+                  "addAccessPoint": [
+                    "*",
+                    {
+                      "path": "*",
+                      "createAcl": {
+                        "ownerUid": "*",
+                        "ownerGid": "*",
+                        "permissions": "*"
+                      },
+                      "posixUser": {
+                        "uid": "*",
+                        "gid": "*"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           },
-          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa": {
-            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
-            "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa",
+          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590": {
+            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590",
+            "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/ImportServiceRole",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/Resource",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1674,11 +2181,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/DefaultPolicy",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/ServiceRole/DefaultPolicy/Resource",
+                        "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1706,7 +2213,7 @@
                                             },
                                             ":access-point/",
                                             {
-                                              "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+                                              "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590AccessPoint0AEEB06F"
                                             }
                                           ]
                                         ]
@@ -1737,7 +2244,7 @@
                                         },
                                         ":file-system/",
                                         {
-                                          "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+                                          "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d559094DE6F12"
                                         }
                                       ]
                                     ]
@@ -1824,10 +2331,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526",
+                            "policyName": "tomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRoleDefaultPolicyE349CB03",
                             "roles": [
                               {
-                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4"
+                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B"
                               }
                             ]
                           }
@@ -1840,22 +2347,101 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        },
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
                 "id": "Code",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Code",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Code/Stage",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1863,10 +2449,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Code/AssetBucket",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1877,15 +2464,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/SecurityGroup",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/SecurityGroup/Resource",
+                    "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatic security group for Lambda Function testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faB7A82630",
+                        "groupDescription": "Automatic security group for Lambda Function testbucketdeploymentsCustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d55907BD97AD6",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1906,12 +2493,28 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "vpc": "*",
+                      "description": "*",
+                      "allowAllOutbound": "*",
+                      "allowAllIpv6Outbound": "*"
+                    },
+                    {
+                      "addEgressRule": [
+                        "*",
+                        {},
+                        "*",
+                        false
+                      ]
+                    }
+                  ]
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/Resource",
+                "path": "test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -1919,7 +2522,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "0158f40002a8c211635388a87874fd4dcc3d68f525fe08a0fe0f014069ae539c.zip"
+                      "s3Key": "4fe0aba5e672b596d0f72505a9eec502f98d46906bb30fae2511fbdc1df4956f.zip"
                     },
                     "environment": {
                       "variables": {
@@ -1947,7 +2550,7 @@
                               },
                               ":access-point/",
                               {
-                                "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25"
+                                "Ref": "BucketDeploymentEFSVPCc84ffe8a457bee0fd39689d96b787dc2cec93d5590AccessPoint0AEEB06F"
                               }
                             ]
                           ]
@@ -1963,7 +2566,7 @@
                     ],
                     "role": {
                       "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590ServiceRole3667986B",
                         "Arn"
                       ]
                     },
@@ -1981,7 +2584,7 @@
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
-                            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
+                            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc84ffe8a457bee0fd39689d96b787dc2cec93d5590SecurityGroup616D369D",
                             "GroupId"
                           ]
                         }
@@ -1997,16 +2600,52 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "layers": [
+                    "*"
+                  ],
+                  "environment": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "memorySize": "*",
+                  "ephemeralStorageSize": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "filesystem": "*",
+                  "logGroup": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "Destination2": {
             "id": "Destination2",
-            "path": "test-bucket-deployments-2/Destination2",
+            "path": "test-bucket-deployments/Destination2",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Destination2/Resource",
+                "path": "test-bucket-deployments/Destination2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -2016,7 +2655,7 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:deploy/here/:272e95d8",
+                        "key": "aws-cdk:cr-owned:deploy/here/:6a07859b",
                         "value": "true"
                       }
                     ]
@@ -2029,11 +2668,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "test-bucket-deployments-2/Destination2/Policy",
+                "path": "test-bucket-deployments/Destination2/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Destination2/Policy/Resource",
+                    "path": "test-bucket-deployments/Destination2/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -2094,16 +2733,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "test-bucket-deployments-2/Destination2/AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination2/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/Destination2/AutoDeleteObjectsCustomResource/Default",
+                    "path": "test-bucket-deployments/Destination2/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2112,30 +2756,39 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "DeployWithPrefix": {
             "id": "DeployWithPrefix",
-            "path": "test-bucket-deployments-2/DeployWithPrefix",
+            "path": "test-bucket-deployments/DeployWithPrefix",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployWithPrefix/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployWithPrefix/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployWithPrefix/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2143,10 +2796,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployWithPrefix/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -2157,7 +2811,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployWithPrefix/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployWithPrefix/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2165,7 +2819,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2178,24 +2832,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployWithPrefix/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployWithPrefix/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployWithPrefix/Asset1",
+                "path": "test-bucket-deployments/DeployWithPrefix/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployWithPrefix/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployWithPrefix/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2203,10 +2893,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployWithPrefix/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployWithPrefix/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2217,11 +2908,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployWithPrefix/CustomResource",
+                "path": "test-bucket-deployments/DeployWithPrefix/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployWithPrefix/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployWithPrefix/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2230,7 +2921,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -2241,11 +2935,11 @@
           },
           "Destination3": {
             "id": "Destination3",
-            "path": "test-bucket-deployments-2/Destination3",
+            "path": "test-bucket-deployments/Destination3",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Destination3/Resource",
+                "path": "test-bucket-deployments/Destination3/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -2255,7 +2949,7 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:9eca9fb3",
+                        "key": "aws-cdk:cr-owned:d2606971",
                         "value": "true"
                       }
                     ]
@@ -2268,11 +2962,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "test-bucket-deployments-2/Destination3/Policy",
+                "path": "test-bucket-deployments/Destination3/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Destination3/Policy/Resource",
+                    "path": "test-bucket-deployments/Destination3/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -2333,16 +3027,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "test-bucket-deployments-2/Destination3/AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination3/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/Destination3/AutoDeleteObjectsCustomResource/Default",
+                    "path": "test-bucket-deployments/Destination3/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2351,30 +3050,39 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "DeployWithMetadata": {
             "id": "DeployWithMetadata",
-            "path": "test-bucket-deployments-2/DeployWithMetadata",
+            "path": "test-bucket-deployments/DeployWithMetadata",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployWithMetadata/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployWithMetadata/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployWithMetadata/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2382,10 +3090,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployWithMetadata/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -2396,7 +3105,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployWithMetadata/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployWithMetadata/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2404,7 +3113,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2417,24 +3126,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployWithMetadata/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployWithMetadata/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployWithMetadata/Asset1",
+                "path": "test-bucket-deployments/DeployWithMetadata/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployWithMetadata/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployWithMetadata/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2442,10 +3187,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployWithMetadata/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployWithMetadata/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2456,11 +3202,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployWithMetadata/CustomResource",
+                "path": "test-bucket-deployments/DeployWithMetadata/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployWithMetadata/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployWithMetadata/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2469,7 +3215,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -2480,19 +3229,19 @@
           },
           "DeployMeWithoutDeletingFilesOnDestination": {
             "id": "DeployMeWithoutDeletingFilesOnDestination",
-            "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination",
+            "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2500,10 +3249,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -2514,7 +3264,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2522,7 +3272,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2535,24 +3285,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/Asset1",
+                "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2560,10 +3346,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2574,11 +3361,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/CustomResource",
+                "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutDeletingFilesOnDestination/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployMeWithoutDeletingFilesOnDestination/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2587,7 +3374,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -2598,19 +3388,19 @@
           },
           "DeployMeWithExcludedFilesOnDestination": {
             "id": "DeployMeWithExcludedFilesOnDestination",
-            "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination",
+            "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2618,10 +3408,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -2632,7 +3423,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2640,7 +3431,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2653,24 +3444,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/Asset1",
+                "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2678,10 +3505,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2692,11 +3520,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/CustomResource",
+                "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMeWithExcludedFilesOnDestination/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployMeWithExcludedFilesOnDestination/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2705,7 +3533,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -2716,11 +3547,11 @@
           },
           "Destination4": {
             "id": "Destination4",
-            "path": "test-bucket-deployments-2/Destination4",
+            "path": "test-bucket-deployments/Destination4",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Destination4/Resource",
+                "path": "test-bucket-deployments/Destination4/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -2730,7 +3561,7 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:0ac1b9c4",
+                        "key": "aws-cdk:cr-owned:915be5e8",
                         "value": "true"
                       }
                     ]
@@ -2743,11 +3574,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "test-bucket-deployments-2/Destination4/Policy",
+                "path": "test-bucket-deployments/Destination4/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Destination4/Policy/Resource",
+                    "path": "test-bucket-deployments/Destination4/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -2808,16 +3639,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "test-bucket-deployments-2/Destination4/AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination4/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/Destination4/AutoDeleteObjectsCustomResource/Default",
+                    "path": "test-bucket-deployments/Destination4/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2826,30 +3662,40 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "publicReadAccess": false,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "DeployMeWithoutExtractingFilesOnDestination": {
             "id": "DeployMeWithoutExtractingFilesOnDestination",
-            "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination",
+            "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2857,10 +3703,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -2871,7 +3718,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2879,7 +3726,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2892,24 +3739,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/Asset1",
+                "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -2917,10 +3800,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -2931,11 +3815,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/CustomResource",
+                "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMeWithoutExtractingFilesOnDestination/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployMeWithoutExtractingFilesOnDestination/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -2944,7 +3828,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -2955,11 +3842,11 @@
           },
           "Destination5": {
             "id": "Destination5",
-            "path": "test-bucket-deployments-2/Destination5",
+            "path": "test-bucket-deployments/Destination5",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "test-bucket-deployments-2/Destination5/Resource",
+                "path": "test-bucket-deployments/Destination5/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -2969,7 +3856,7 @@
                         "value": "true"
                       },
                       {
-                        "key": "aws-cdk:cr-owned:761027a6",
+                        "key": "aws-cdk:cr-owned:e9b4bf0b",
                         "value": "true"
                       }
                     ]
@@ -2982,11 +3869,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "test-bucket-deployments-2/Destination5/Policy",
+                "path": "test-bucket-deployments/Destination5/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/Destination5/Policy/Resource",
+                    "path": "test-bucket-deployments/Destination5/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -3047,16 +3934,21 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "test-bucket-deployments-2/Destination5/AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination5/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/Destination5/AutoDeleteObjectsCustomResource/Default",
+                    "path": "test-bucket-deployments/Destination5/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -3065,30 +3957,40 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "publicReadAccess": false,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "DeployMe5": {
             "id": "DeployMe5",
-            "path": "test-bucket-deployments-2/DeployMe5",
+            "path": "test-bucket-deployments/DeployMe5",
             "children": {
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "test-bucket-deployments-2/DeployMe5/AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMe5/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "test-bucket-deployments-2/DeployMe5/AwsCliLayer/Code",
+                    "path": "test-bucket-deployments/DeployMe5/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "test-bucket-deployments-2/DeployMe5/AwsCliLayer/Code/Stage",
+                        "path": "test-bucket-deployments/DeployMe5/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -3096,10 +3998,11 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "test-bucket-deployments-2/DeployMe5/AwsCliLayer/Code/AssetBucket",
+                        "path": "test-bucket-deployments/DeployMe5/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -3110,7 +4013,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "test-bucket-deployments-2/DeployMe5/AwsCliLayer/Resource",
+                    "path": "test-bucket-deployments/DeployMe5/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -3118,7 +4021,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -3131,24 +4034,60 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
                 }
               },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
-                "path": "test-bucket-deployments-2/DeployMe5/CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMe5/CustomResourceHandler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "Asset1": {
                 "id": "Asset1",
-                "path": "test-bucket-deployments-2/DeployMe5/Asset1",
+                "path": "test-bucket-deployments/DeployMe5/Asset1",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMe5/Asset1/Stage",
+                    "path": "test-bucket-deployments/DeployMe5/Asset1/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -3156,10 +4095,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMe5/Asset1/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMe5/Asset1/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -3170,11 +4110,11 @@
               },
               "CustomResource": {
                 "id": "CustomResource",
-                "path": "test-bucket-deployments-2/DeployMe5/CustomResource",
+                "path": "test-bucket-deployments/DeployMe5/CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "test-bucket-deployments-2/DeployMe5/CustomResource/Default",
+                    "path": "test-bucket-deployments/DeployMe5/CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -3183,16 +4123,20 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*",
+                    "*"
+                  ]
                 }
               },
               "Asset2": {
                 "id": "Asset2",
-                "path": "test-bucket-deployments-2/DeployMe5/Asset2",
+                "path": "test-bucket-deployments/DeployMe5/Asset2",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "test-bucket-deployments-2/DeployMe5/Asset2/Stage",
+                    "path": "test-bucket-deployments/DeployMe5/Asset2/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -3200,10 +4144,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "test-bucket-deployments-2/DeployMe5/Asset2/AssetBucket",
+                    "path": "test-bucket-deployments/DeployMe5/Asset2/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -3218,13 +4163,316 @@
               "version": "0.0.0"
             }
           },
+          "customResourceData": {
+            "id": "customResourceData",
+            "path": "test-bucket-deployments/customResourceData",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "Destination6": {
+            "id": "Destination6",
+            "path": "test-bucket-deployments/Destination6",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "test-bucket-deployments/Destination6/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      },
+                      {
+                        "key": "aws-cdk:cr-owned:420a9c48",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "test-bucket-deployments/Destination6/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments/Destination6/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "Destination6420F2C8E"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "Destination6420F2C8E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "Destination6420F2C8E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "test-bucket-deployments/Destination6/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "test-bucket-deployments/Destination6/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "publicReadAccess": false,
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
+            }
+          },
+          "DeployMe6": {
+            "id": "DeployMe6",
+            "path": "test-bucket-deployments/DeployMe6",
+            "children": {
+              "AwsCliLayer": {
+                "id": "AwsCliLayer",
+                "path": "test-bucket-deployments/DeployMe6/AwsCliLayer",
+                "children": {
+                  "Code": {
+                    "id": "Code",
+                    "path": "test-bucket-deployments/DeployMe6/AwsCliLayer/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "test-bucket-deployments/DeployMe6/AwsCliLayer/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "test-bucket-deployments/DeployMe6/AwsCliLayer/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0",
+                          "metadata": []
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments/DeployMe6/AwsCliLayer/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                      "aws:cdk:cloudformation:props": {
+                        "content": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+                        },
+                        "description": "/opt/awscli/aws"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {}
+                  ]
+                }
+              },
+              "CustomResourceHandler": {
+                "id": "CustomResourceHandler",
+                "path": "test-bucket-deployments/DeployMe6/CustomResourceHandler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "uuid": "*",
+                      "layers": [
+                        "*"
+                      ],
+                      "environment": "*",
+                      "lambdaPurpose": "*",
+                      "timeout": "*",
+                      "role": "*",
+                      "memorySize": "*",
+                      "ephemeralStorageSize": "*",
+                      "vpc": "*",
+                      "vpcSubnets": "*",
+                      "filesystem": "*",
+                      "logGroup": "*",
+                      "code": "*",
+                      "handler": "*",
+                      "runtime": "*"
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        true
+                      ]
+                    },
+                    {
+                      "addMetadata": [
+                        "*",
+                        "*"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "Asset1": {
+                "id": "Asset1",
+                "path": "test-bucket-deployments/DeployMe6/Asset1",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "test-bucket-deployments/DeployMe6/Asset1/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "test-bucket-deployments/DeployMe6/Asset1/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomResource": {
+                "id": "CustomResource",
+                "path": "test-bucket-deployments/DeployMe6/CustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "test-bucket-deployments/DeployMe6/CustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_deployment.BucketDeployment",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
-            "path": "test-bucket-deployments-2/Exports",
+            "path": "test-bucket-deployments/Exports",
             "children": {
               "Output{\"Ref\":\"Destination52A57FAA3\"}": {
                 "id": "Output{\"Ref\":\"Destination52A57FAA3\"}",
-                "path": "test-bucket-deployments-2/Exports/Output{\"Ref\":\"Destination52A57FAA3\"}",
+                "path": "test-bucket-deployments/Exports/Output{\"Ref\":\"Destination52A57FAA3\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -3233,12 +4481,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "test-bucket-deployments-2/BootstrapVersion",
+            "path": "test-bucket-deployments/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -3246,7 +4494,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "test-bucket-deployments-2/CheckBootstrapVersion",
+            "path": "test-bucket-deployments/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -3271,7 +4519,7 @@
                 "path": "integ-test-bucket-deployments/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -3291,7 +4539,7 @@
                             "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -3315,7 +4563,12 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
                         }
                       },
                       "AssertionResults": {
@@ -3363,7 +4616,74 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00": {
+                    "id": "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00",
+                    "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.4.2"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*",
+                            "*",
+                            "*"
+                          ]
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -3405,7 +4725,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

@@ -3,6 +3,8 @@ import { Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
+import { IRecordingConfiguration } from './recording-configuration';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Represents an IVS Channel
@@ -36,8 +38,23 @@ abstract class ChannelBase extends core.Resource implements IChannel {
 }
 
 /**
-  Channel latency mode
-*/
+ * Container Format
+ */
+export enum ContainerFormat {
+  /**
+   * Use MPEG-TS.
+   */
+  TS = 'TS',
+
+  /**
+   * Use fMP4.
+   */
+  FRAGMENTED_MP4 = 'FRAGMENTED_MP4',
+}
+
+/**
+ * Channel latency mode
+ */
 export enum LatencyMode {
   /**
    * Use LOW to minimize broadcaster-to-viewer latency for interactive broadcasts.
@@ -51,11 +68,11 @@ export enum LatencyMode {
 }
 
 /**
-  * The channel type, which determines the allowable resolution and bitrate.
-  * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
-  *
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
-*/
+ * The channel type, which determines the allowable resolution and bitrate.
+ * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+ */
 export enum ChannelType {
   /**
    * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
@@ -85,10 +102,10 @@ export enum ChannelType {
 }
 
 /**
-  * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
-  *
-  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
-*/
+ * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+ */
 export enum Preset {
   /**
    * Use a lower bitrate than STANDARD for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads).
@@ -118,6 +135,16 @@ export interface ChannelProps {
   readonly authorized?: boolean;
 
   /**
+   * Indicates which content-packaging format is used (MPEG-TS or fMP4).
+   *
+   * If `multitrackInputConfiguration` is specified, only fMP4 can be used.
+   * Otherwise, `containerFormat` may be set to `ContainerFormat.TS` or `ContainerFormat.FRAGMENTED_MP4`.
+   *
+   * @default - `ContainerFormat.FRAGMENTED_MP4` is automatically set when the `multitrackInputConfiguration` is specified. If not specified, it remains undefined and uses the IVS default setting (TS).
+   */
+  readonly containerFormat?: ContainerFormat;
+
+  /**
    * Whether the channel allows insecure RTMP ingest.
    *
    * @default false
@@ -139,6 +166,17 @@ export interface ChannelProps {
   readonly channelName?: string;
 
   /**
+   * Object specifying multitrack input configuration.
+   * You must specify `multitrackInputConfiguration` if you want to use MultiTrack Video.
+   *
+   * `multitrackInputConfiguration` is only supported for `ChannelType.STANDARD`.
+   *
+   * @default undefined - IVS default setting is not use MultiTrack Video.
+   * @see https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/multitrack-video.html
+   */
+  readonly multitrackInputConfiguration?: MultitrackInputConfiguration;
+
+  /**
    * The channel type, which determines the allowable resolution and bitrate.
    * If you exceed the allowable resolution or bitrate, the stream will disconnect immediately
    *
@@ -153,11 +191,68 @@ export interface ChannelProps {
    * @default - Preset.HIGHER_BANDWIDTH_DELIVERY if channelType is ADVANCED_SD or ADVANCED_HD, none otherwise
    */
   readonly preset?: Preset;
+
+  /**
+   * A recording configuration for the channel.
+   *
+   * @default - recording is disabled
+   */
+  readonly recordingConfiguration?: IRecordingConfiguration;
+}
+
+/**
+ * Maximum resolution for multitrack input.
+ */
+export enum MaximumResolution {
+  /**
+   * Full HD (1080p)
+   */
+  FULL_HD = 'FULL_HD',
+
+  /**
+   * HD (720p)
+   */
+  HD = 'HD',
+
+  /**
+   * SD (480p)
+   */
+  SD = 'SD',
+}
+
+/**
+ * Whether multitrack input is allowed or required.
+ */
+export enum Policy {
+  /**
+   * Multitrack input is allowed.
+   */
+  ALLOW = 'ALLOW',
+
+  /**
+   * Multitrack input is required.
+   */
+  REQUIRE = 'REQUIRE',
+}
+
+/**
+ * A complex type that specifies multitrack input configuration.
+ */
+export interface MultitrackInputConfiguration {
+  /**
+   * Maximum resolution for multitrack input.
+   */
+  readonly maximumResolution: MaximumResolution;
+
+  /**
+   * Indicates whether multitrack input is allowed or required.
+   */
+  readonly policy: Policy;
 }
 
 /**
   A new IVS channel
-*/
+ */
 export class Channel extends ChannelBase {
   /**
    * Import an existing channel
@@ -184,17 +279,17 @@ export class Channel extends ChannelBase {
   public readonly channelArn: string;
 
   /**
-  * Channel ingest endpoint, part of the definition of an ingest server, used when you set up streaming software.
-  * For example: a1b2c3d4e5f6.global-contribute.live-video.net
-  * @attribute
-  */
+   * Channel ingest endpoint, part of the definition of an ingest server, used when you set up streaming software.
+   * For example: a1b2c3d4e5f6.global-contribute.live-video.net
+   * @attribute
+   */
   public readonly channelIngestEndpoint: string;
 
   /**
-  * Channel playback URL. For example:
-  * https://a1b2c3d4e5f6.us-west-2.playback.live-video.net/api/video/v1/us-west-2.123456789012.channel.abcdEFGH.m3u8
-  * @attribute
-  */
+   * Channel playback URL. For example:
+   * https://a1b2c3d4e5f6.us-west-2.playback.live-video.net/api/video/v1/us-west-2.123456789012.channel.abcdEFGH.m3u8
+   * @attribute
+   */
   public readonly channelPlaybackUrl: string;
 
   constructor(scope: Construct, id: string, props: ChannelProps = {}) {
@@ -203,6 +298,8 @@ export class Channel extends ChannelBase {
         produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
       }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (this.physicalName && !core.Token.isUnresolved(this.physicalName) && !/^[a-zA-Z0-9-_]*$/.test(this.physicalName)) {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
@@ -216,6 +313,16 @@ export class Channel extends ChannelBase {
       preset = props.preset;
     }
 
+    if (props.multitrackInputConfiguration !== undefined) {
+      if (props.type !== undefined && props.type !== ChannelType.STANDARD) {
+        throw new Error(`\`multitrackInputConfiguration\` is only supported for \`ChannelType.STANDARD\`, got: ${props.type}.`);
+      }
+
+      if (props.containerFormat !== undefined && props.containerFormat !== ContainerFormat.FRAGMENTED_MP4) {
+        throw new Error(`\`containerFormat\` must be set to \`ContainerFormat.FRAGMENTED_MP4\` when \`multitrackInputConfiguration\` is specified, got: ${props.containerFormat}.`);
+      }
+    }
+
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
       insecureIngest: props.insecureIngest,
@@ -223,6 +330,16 @@ export class Channel extends ChannelBase {
       name: this.physicalName,
       type: props.type,
       preset,
+      recordingConfigurationArn: props.recordingConfiguration?.recordingConfigurationArn,
+      containerFormat: props.containerFormat ??
+        (props.multitrackInputConfiguration ? ContainerFormat.FRAGMENTED_MP4 : undefined),
+      multitrackInputConfiguration: props.multitrackInputConfiguration ?
+        {
+          enabled: true,
+          maximumResolution: props.multitrackInputConfiguration.maximumResolution,
+          policy: props.multitrackInputConfiguration.policy,
+        }
+        : undefined,
     });
 
     this.channelArn = resource.attrArn;

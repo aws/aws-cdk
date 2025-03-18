@@ -12,6 +12,9 @@ const useColumnIds = { [REDSHIFT_COLUMN_ID]: true };
 
 const app = new cdk.App({
   context: useColumnIds,
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
 });
 
 const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
@@ -50,6 +53,7 @@ new redshift.Table(stack, 'Table', {
     { id: 'col2', name: 'col2', dataType: 'float' },
     { name: 'col3', dataType: 'float' },
   ],
+  timeout: cdk.Duration.minutes(5),
 });
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
