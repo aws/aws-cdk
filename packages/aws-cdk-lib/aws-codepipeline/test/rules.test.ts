@@ -20,7 +20,6 @@ describe('Rule', () => {
   });
 
   const testLambdaRule = new Rule({
-
     name: 'LambdaCheck',
     provider: 'LambdaInvoke',
     version: '1',
@@ -59,11 +58,7 @@ describe('Rule', () => {
       actionName: 'dummyAction',
       input: sourceArtifact,
     }));
-    // --
 
-    // eslint-disable-next-line no-console
-    console.log(Template.fromStack(stack).findResources('AWS::CodePipeline::Pipeline'));
-    // eslint-disable-next-line no-console
     Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         { Name: 'FirstStage' },

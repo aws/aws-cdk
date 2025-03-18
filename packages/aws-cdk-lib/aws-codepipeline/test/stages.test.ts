@@ -245,11 +245,7 @@ describe('stages', () => {
         actionName: 'dummyAction',
         input: sourceArtifact,
       }));
-      // --
 
-      // eslint-disable-next-line no-console
-      console.log(Template.fromStack(stack).findResources('AWS::CodePipeline::Pipeline'));
-      // eslint-disable-next-line no-console
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
           { Name: 'FirstStage' },

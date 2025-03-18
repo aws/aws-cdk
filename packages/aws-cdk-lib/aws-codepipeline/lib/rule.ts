@@ -23,7 +23,7 @@ export interface RuleProps {
    *
    * @default - No configuration
    */
-  readonly configuration?: any;
+  readonly configuration?: object;
 
   /**
    * The input artifacts fields for the rule, such as specifying an input file for the rule.
@@ -57,14 +57,6 @@ export interface RuleProps {
    * @default - A new role will be created
    */
   readonly role?: iam.Role;
-
-  /**
-   * A category defines what kind of rule can be run in the stage.
-   * Constrains the provider type for the rule.
-   *
-   * @default 'Rule'
-   */
-  readonly category?: string;
 
   /**
    * The rule provider that implements the rule's functionality.
