@@ -2,10 +2,10 @@ import { EOL } from 'os';
 import { Construct } from 'constructs';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import { TableBucketPolicy } from './table-bucket-policy';
-import { validateTableBucketAttributes, S3_TABLES_SERVICE } from './util';
+import * as perms from './permissions';
+import { validateTableBucketAttributes } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Resource, IResource, UnscopedValidationError, ArnFormat, RemovalPolicy } from 'aws-cdk-lib/core';
-import UnreferencedFileRemovalProperty = s3tables.CfnTableBucket.UnreferencedFileRemovalProperty;
+import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
@@ -63,6 +63,42 @@ export interface ITableBucket extends IResource {
    * silently, which may be confusing.
    */
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
+   * Grant read permissions for this table bucket and its tables
+   * to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal to allow read permissions to
+   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   */
+  grantRead(identity: iam.IGrantable, tableId?: string): iam.Grant;
+
+  /**
+   * Grant write permissions for this table bucket and its tables
+   * to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal to allow write permissions to
+   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   */
+  grantWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
+
+  /**
+   * Grant read and write permissions for this table bucket and its tables
+   * to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal to allow read and write permissions to
+   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   */
+  grantReadWrite(identity: iam.IGrantable, tableId?: string): iam.Grant;
+
+  /**
+   * Grant full permissions for this table bucket and its tables
+   * to an IAM principal (Role/Group/User).
+   *
+   * @param identity The principal to allow full permissions to
+   * @param tableId Restrict the permission to a single table by its unique ID (default '*' for all tables).
+   */
+  grantFullAccess(identity: iam.IGrantable, tableId?: string): iam.Grant;
 }
 
 /**
@@ -116,7 +152,7 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
   public abstract tableBucketPolicy?: TableBucketPolicy;
 
   /**
-   * Indicates if a bucket resource policy should automatically created upon
+   * Indicates if a table bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
   protected abstract autoCreatePolicy: boolean;
@@ -151,11 +187,53 @@ abstract class TableBucketBase extends Resource implements ITableBucket {
     }
 
     if (this.tableBucketPolicy) {
-      this.tableBucketPolicy.addToResourcePolicy(statement);
+      this.tableBucketPolicy.document.addStatements(statement);
       return { statementAdded: true, policyDependable: this.tableBucketPolicy };
     }
 
     return { statementAdded: false };
+  }
+
+  public grantRead(identity: iam.IGrantable, tableId: string = '*') {
+    return this.grant(identity, perms.TABLE_BUCKET_READ_ACCESS,
+      this.tableBucketArn,
+      `${this.tableBucketArn}/${tableId}`);
+  }
+
+  public grantWrite(identity: iam.IGrantable, tableId: string = '*') {
+    return this.grant(identity, perms.TABLE_BUCKET_WRITE_ACCESS,
+      this.tableBucketArn,
+      `${this.tableBucketArn}/${tableId}`);
+  }
+
+  public grantReadWrite(identity: iam.IGrantable, tableId: string = '*') {
+    return this.grant(identity, perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+      this.tableBucketArn,
+      `${this.tableBucketArn}/${tableId}`);
+  }
+
+  public grantFullAccess(identity: iam.IGrantable, tableId: string = '*') {
+    return this.grant(identity, [perms.TABLE_BUCKET_FULL_ACCESS],
+      this.tableBucketArn,
+      `${this.tableBucketArn}/${tableId}`);
+  }
+
+  /**
+   * Grants the given s3tables permissions to the provided principal
+   * @returns Grant object
+   */
+  private grant(
+    grantee: iam.IGrantable,
+    bucketActions: string[],
+    resourceArn: string,
+    ...otherResourceArns: string[]) {
+    const resources = [resourceArn, ...otherResourceArns];
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
   }
 }
 
@@ -301,7 +379,7 @@ export class TableBucket extends TableBucketBase {
   public static validateTableBucketName(
     bucketName: string | undefined,
   ) {
-    if (bucketName == undefined) {
+    if (bucketName == undefined || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string, so skip validation
       return;
     }
@@ -397,10 +475,10 @@ export class TableBucket extends TableBucketBase {
   }
 
   /**
-   * @internal
    * The underlying CfnTableBucket L1 resource
+   * @internal
    */
-  public readonly _resource: s3tables.CfnTableBucket;
+  private readonly _resource: s3tables.CfnTableBucket;
 
   /**
    * The resource policy for this tableBucket.
@@ -440,18 +518,7 @@ export class TableBucket extends TableBucketBase {
     });
 
     this.tableBucketName = this.getResourceNameAttribute(this._resource.ref);
-    this.tableBucketArn = this.getResourceArnAttribute(
-      this._resource.attrTableBucketArn,
-      {
-        region: props.region,
-        account: props.account,
-        service: S3_TABLES_SERVICE,
-        resource: 'bucket',
-        resourceName: this.physicalName,
-        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      },
-    );
-
+    this.tableBucketArn = this._resource.attrTableBucketArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
   }
 }

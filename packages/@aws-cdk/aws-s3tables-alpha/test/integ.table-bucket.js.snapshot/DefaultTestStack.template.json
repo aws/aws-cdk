@@ -3,7 +3,8 @@
   "DefaultBucket62385A75": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "default-table-bucket"
+    "TableBucketName": "default-table-bucket",
+    "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnTableBucketPolicy } from 'aws-cdk-lib/aws-s3tables';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { PhysicalName, Resource } from 'aws-cdk-lib/core';
+import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
 import { ITableBucket } from './table-bucket';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 
 /**
  * Parameters for constructing a TableBucketPolicy
@@ -17,6 +18,12 @@ export interface TableBucketPolicyProps {
    * @default undefined An empty iam.PolicyDocument will be initialized
    */
   readonly resourcePolicy?: iam.PolicyDocument;
+  /**
+   * Policy to apply when the policy is removed from this stack.
+   *
+   * @default - RemovalPolicy.DESTROY.
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -36,9 +43,9 @@ export class TableBucketPolicy extends Resource {
   private readonly _resource: CfnTableBucketPolicy;
 
   constructor(scope: Construct, id: string, props: TableBucketPolicyProps) {
-    super(scope, id, {
-      physicalName: PhysicalName.GENERATE_IF_NEEDED,
-    });
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Use default policy if not provided with props
     this.document = props.resourcePolicy || new iam.PolicyDocument({});
@@ -47,18 +54,17 @@ export class TableBucketPolicy extends Resource {
       tableBucketArn: props.tableBucket.tableBucketArn,
       resourcePolicy: this.document,
     });
+
+    if (props.removalPolicy) {
+      this.applyRemovalPolicy(props.removalPolicy);
+    }
   }
 
   /**
-   * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on the associated table bucket and/or its
-   * contents.
-   *
-   * @param statement the policy statement to be added to the bucket's
-   * policy.
+   * Sets the removal policy for the BucketPolicy.
+   * @param removalPolicy the RemovalPolicy to set.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement) {
-    this.document.addStatements(statement);
-    this._resource.resourcePolicy = this.document;
+  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
+    this._resource.applyRemovalPolicy(removalPolicy);
   }
 }

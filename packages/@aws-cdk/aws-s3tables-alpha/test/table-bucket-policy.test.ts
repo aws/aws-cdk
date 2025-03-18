@@ -71,27 +71,10 @@ describe('TableBucketPolicy', () => {
       });
     });
 
-    test('calling addToResourcePolicy multiple times appends statements', () => {
-      tableBucketPolicy.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['s3:*'],
-        effect: iam.Effect.DENY,
-        resources: ['*'],
-      }));
-      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
-        'ResourcePolicy': {
-          'Statement': [
-            {
-              'Action': 's3tables:*',
-              'Effect': 'Allow',
-              'Resource': '*',
-            },
-            {
-              'Action': 's3:*',
-              'Effect': 'Deny',
-              'Resource': '*',
-            },
-          ],
-        },
+    test('calling applyRemovalPolicy applies the new policy', () => {
+      tableBucketPolicy.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+      Template.fromStack(stack).hasResource(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+        'DeletionPolicy': 'Snapshot',
       });
     });
   });

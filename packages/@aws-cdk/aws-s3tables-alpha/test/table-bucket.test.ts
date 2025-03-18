@@ -2,6 +2,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
+import * as perms from '../lib/permissions';
 
 /* Allow quotes in the object keys used for CloudFormation template assertions */
 /* eslint-disable quote-props */
@@ -173,6 +174,39 @@ describe('TableBucket', () => {
     });
   });
 
+  describe('import existing table bucket with arn', () => {
+    const BUCKET_NAME = 'test-bucket';
+    const ACCOUNT_ID = '123456789012';
+    const REGION = 'us-west-2';
+    const BUCKET_ARN = `arn:aws:s3tables:${REGION}:${ACCOUNT_ID}:bucket/${BUCKET_NAME}`;
+    let tableBucket: s3tables.ITableBucket;
+
+    beforeEach(() => {
+      tableBucket = s3tables.TableBucket.fromTableBucketArn(stack, 'ExampleTableBucket', BUCKET_ARN);
+    });
+
+    test('has the same name as it was imported with', () => {
+      expect(tableBucket.tableBucketName).toEqual(BUCKET_NAME);
+    });
+
+    test('has the same region as it was imported with', () => {
+      expect(tableBucket.region).toEqual(REGION);
+    });
+
+    test('has the same account as it was imported with', () => {
+      expect(tableBucket.account).toEqual(ACCOUNT_ID);
+    });
+
+    test('returns false from addToResourcePolicy', () => {
+      const result = tableBucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3tables:*'],
+        resources: ['*'],
+      }));
+
+      expect(result.statementAdded).toEqual(false);
+    });
+  });
+
   describe('import existing table bucket with name, region and account', () => {
     const BUCKET_PROPS = {
       tableBucketName: 'example-table-bucket',
@@ -215,6 +249,201 @@ describe('TableBucket', () => {
       }));
 
       expect(result.statementAdded).toEqual(false);
+    });
+  });
+
+  describe('grant access methods', () => {
+    const PRINCIPAL = 's3.amazonaws.com';
+    const DEFAULT_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'example-table-bucket',
+    };
+    const TABLE_BUCKET_ARN_SUB = {
+      'Fn::GetAtt': ['ExampleTableBucket9B5A2796', 'TableBucketARN'],
+    };
+    let tableBucket: s3tables.TableBucket;
+
+    beforeEach(() => {
+      tableBucket = new s3tables.TableBucket(stack, 'ExampleTableBucket', DEFAULT_PROPS);
+    });
+
+    describe('grantRead', () => {
+      it('provides read and list permissions for all tables', () => {
+        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides read and list permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantRead(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+
+    describe('grantWrite', () => {
+      it('provides write permissions for all tables', () => {
+        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides write permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+
+    describe('grantReadWrite', () => {
+      it('provides read & write permissions for all tables', () => {
+        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides read & write permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantReadWrite(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_READ_WRITE_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+    });
+
+    describe('grantFullAccess', () => {
+      it('provides full permissions for all tables', () => {
+        tableBucket.grantFullAccess(new iam.ServicePrincipal(PRINCIPAL));
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_FULL_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, '/*']] },
+                ],
+              },
+            ],
+          },
+        });
+      });
+
+      it('provides full permissions for a specific table', () => {
+        const TABLE_UUID = 'example-table-uuid';
+        tableBucket.grantFullAccess(new iam.ServicePrincipal(PRINCIPAL), TABLE_UUID);
+        Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_POLICY_CFN_RESOURCE, {
+          'ResourcePolicy': {
+            'Statement': [
+              {
+                'Action': perms.TABLE_BUCKET_FULL_ACCESS,
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': PRINCIPAL,
+                },
+                'Resource': [
+                  TABLE_BUCKET_ARN_SUB,
+                  { 'Fn::Join': ['', [TABLE_BUCKET_ARN_SUB, `/${TABLE_UUID}`]] },
+                ],
+              },
+            ],
+          },
+        });
+      });
     });
   });
 

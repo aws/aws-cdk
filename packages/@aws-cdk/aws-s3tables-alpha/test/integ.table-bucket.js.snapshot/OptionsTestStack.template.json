@@ -24,7 +24,64 @@
        "Principal": {
         "Service": "s3.amazonaws.com"
        },
-       "Resource": "*"
+       "Resource": [
+        "*",
+        {
+         "Fn::GetAtt": [
+          "BucketWithOptions87848D2E",
+          "TableBucketARN"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BucketWithOptions87848D2E",
+             "TableBucketARN"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3tables:Get*",
+        "s3tables:ListNamespace",
+        "s3tables:ListTables",
+        "s3tables:PutTableData",
+        "s3tables:UpdateTableMetadataLocation"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BucketWithOptions87848D2E",
+          "TableBucketARN"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BucketWithOptions87848D2E",
+             "TableBucketARN"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
