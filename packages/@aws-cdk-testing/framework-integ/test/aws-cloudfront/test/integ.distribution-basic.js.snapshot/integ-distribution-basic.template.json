@@ -134,12 +134,32 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "cloudfront:ListDistributions",
-        "cloudfront:ListInvalidations"
-       ],
+       "Action": "cloudfront:ListDistributions",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": "cloudfront:ListInvalidations",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":cloudfront::",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":distribution/",
+          {
+           "Ref": "DistB3B78991"
+          }
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

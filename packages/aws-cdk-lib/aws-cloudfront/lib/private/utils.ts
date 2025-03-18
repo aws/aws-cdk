@@ -2,6 +2,61 @@ import { IDistribution } from '..';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
+// List of CloudFront actions supporting resource-level permissions
+// https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncloudfront.html#amazoncloudfront-actions-as-permissions
+const wildcardOnlyActions = [
+  'cloudfront:CreateFieldLevelEncryptionConfig',
+  'cloudfront:CreateFieldLevelEncryptionProfile',
+  'cloudfront:CreateKeyGroup',
+  'cloudfront:CreateMonitoringSubscription',
+  'cloudfront:CreateOriginAccessControl',
+  'cloudfront:CreatePublicKey',
+  'cloudfront:CreateSavingsPlan',
+  'cloudfront:CreateVpcOrigin',
+  'cloudfront:DeleteKeyGroup',
+  'cloudfront:DeleteMonitoringSubscription',
+  'cloudfront:DeletePublicKey',
+  'cloudfront:GetKeyGroup',
+  'cloudfront:GetKeyGroupConfig',
+  'cloudfront:GetMonitoringSubscription',
+  'cloudfront:GetPublicKey',
+  'cloudfront:GetPublicKeyConfig',
+  'cloudfront:GetSavingsPlan',
+  'cloudfront:ListAnycastIpLists',
+  'cloudfront:ListCachePolicies',
+  'cloudfront:ListCloudFrontOriginAccessIdentities',
+  'cloudfront:ListContinuousDeploymentPolicies',
+  'cloudfront:ListDistributions',
+  'cloudfront:ListDistributionsByAnycastIpListId',
+  'cloudfront:ListDistributionsByCachePolicyId',
+  'cloudfront:ListDistributionsByKeyGroup',
+  'cloudfront:ListDistributionsByLambdaFunction',
+  'cloudfront:ListDistributionsByOriginRequestPolicyId',
+  'cloudfront:ListDistributionsByRealtimeLogConfig',
+  'cloudfront:ListDistributionsByResponseHeadersPolicyId',
+  'cloudfront:ListDistributionsByVpcOriginId',
+  'cloudfront:ListDistributionsByWebACLId',
+  'cloudfront:ListFieldLevelEncryptionConfigs',
+  'cloudfront:ListFieldLevelEncryptionProfiles',
+  'cloudfront:ListFunctions',
+  'cloudfront:ListKeyGroups',
+  'cloudfront:ListKeyValueStores',
+  'cloudfront:ListOriginAccessControls',
+  'cloudfront:ListOriginRequestPolicies',
+  'cloudfront:ListPublicKeys',
+  'cloudfront:ListRateCards',
+  'cloudfront:ListRealtimeLogConfigs',
+  'cloudfront:ListResponseHeadersPolicies',
+  'cloudfront:ListSavingsPlans',
+  'cloudfront:ListStreamingDistributions',
+  'cloudfront:ListUsages',
+  'cloudfront:ListVpcOrigins',
+  'cloudfront:UpdateFieldLevelEncryptionConfig',
+  'cloudfront:UpdateKeyGroup',
+  'cloudfront:UpdatePublicKey',
+  'cloudfront:UpdateSavingsPlan',
+];
+
 /**
  * Format distribution ARN from stack and distribution ID.
  */
@@ -19,40 +74,38 @@ export function formatDistributionArn(dist: IDistribution) {
  * principal's policy.
  */
 export function grant(dist: IDistribution, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-  // cloudfront:List* can only use wildcard
-  // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies-resources
-  const listActions = [];
-  const otherActions = [];
-  let listGrant: iam.Grant;
-  let otherGrant: iam.Grant;
+  const wildcardActions = [];
+  const resourceLevelSupportedActions = [];
+  let wildcardGrant: iam.Grant;
+  let resourceLevelGrant: iam.Grant;
 
   for (const action of actions) {
-    if (action.includes('cloudfront:List')) {
-      listActions.push(action);
+    if (wildcardOnlyActions.includes(action)) {
+      wildcardActions.push(action);
     } else {
-      otherActions.push(action);
+      resourceLevelSupportedActions.push(action);
     }
   }
 
-  if (listActions.length > 0) {
-    listGrant = iam.Grant.addToPrincipal({
+  if (wildcardActions.length > 0) {
+    wildcardGrant = iam.Grant.addToPrincipal({
       grantee,
-      actions: listActions,
+      actions: wildcardActions,
       resourceArns: ['*'],
     });
   }
 
-  if (otherActions.length > 0) {
-    otherGrant = iam.Grant.addToPrincipal({
+  if (resourceLevelSupportedActions.length > 0) {
+    resourceLevelGrant = iam.Grant.addToPrincipal({
       grantee,
-      actions: otherActions,
+      actions: resourceLevelSupportedActions,
       resourceArns: [formatDistributionArn(dist)],
     });
   }
 
-  if (listActions.length > 0 && otherActions.length > 0) {
-    return otherGrant!.combine(listGrant!);
+  if (wildcardActions.length > 0 && resourceLevelSupportedActions.length > 0) {
+    return resourceLevelGrant!.combine(wildcardGrant!);
   }
 
-  return listActions.length > 0 ? listGrant! : otherGrant!;
+  return wildcardActions.length > 0 ? wildcardGrant! : resourceLevelGrant!;
 }
