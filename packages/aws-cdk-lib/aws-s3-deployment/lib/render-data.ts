@@ -58,9 +58,9 @@ export function renderData(scope: Construct, data: string): Content {
     throw new ValidationError('Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"', scope);
   }
 
-  function addMarker(part: Ref | GetAtt | FnSelect) {
+  function addMarker(part: Ref | GetAtt | FnSelect |FnFindInMap) {
     const keys = Object.keys(part);
-    const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select'];
+    const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select','Fn::FindInMap'];
     if (keys.length !== 1 || !acceptedCfnFns.includes(keys[0])) {
       const stringifiedAcceptedCfnFns = acceptedCfnFns.map((fn) => `"${fn}"`).join(' or ');
       throw new ValidationError(`Invalid CloudFormation reference. Key must start with any of ${stringifiedAcceptedCfnFns}. Got ${JSON.stringify(part)}`, scope);
@@ -75,8 +75,9 @@ export function renderData(scope: Construct, data: string): Content {
 }
 
 type FnJoin = [string, FnJoinPart[]];
-type FnJoinPart = string | Ref | GetAtt | FnSelect;
+type FnJoinPart = string | Ref | GetAtt | FnSelect | FnFindInMap;
 type Ref = { Ref: string };
 type GetAtt = { 'Fn::GetAtt': [string, string] };
 type FnSplit = { 'Fn::Split': [string, string | Ref] };
 type FnSelect = { 'Fn::Select': [number, string[] | FnSplit] };
+type FnFindInMap = { 'Fn::FindInMap': [string, string, string] };

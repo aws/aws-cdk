@@ -2,7 +2,8 @@ import { Vpc } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { Lazy, Stack } from '../../core';
+import * as iam from '../../aws-iam';
+import { Lazy, Stack ,Fn, CfnMapping} from '../../core';
 import { Source } from '../lib';
 import { renderData } from '../lib/render-data';
 
@@ -153,4 +154,19 @@ test('lazy string which resolves to something with a deploy-time value', () => {
     text: 'hello, resolved!',
     markers: { },
   });
+});
+
+test('supports Fn::FindInMap in deploy-time json data', () => {
+  const stack = new Stack();
+  const mapping = new CfnMapping(stack, 'TestMapping', {
+    mapping: { responseTemplate: { full: 'example value' } },
+  });
+
+  const source = Source.jsonData('file.json', {
+    key: Fn.findInMap('TestMapping', 'responseTemplate', 'full'),
+  });
+
+  expect(() => source.bind(stack, { handlerRole: new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  }) })).not.toThrow();
 });
