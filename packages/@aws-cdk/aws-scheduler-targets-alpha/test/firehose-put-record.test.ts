@@ -5,7 +5,7 @@ import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import { KinesisDataFirehosePutRecord } from '../lib';
+import { FirehosePutRecord } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
@@ -46,8 +46,8 @@ describe('schedule target', () => {
     });
   });
 
-  test('creates IAM role and IAM policy for kinesis data firehose target in the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
+  test('creates IAM role and IAM policy for Amazon Data Firehose target in the same account', () => {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -119,7 +119,7 @@ describe('schedule target', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       role: targetExecutionRole,
     });
 
@@ -157,7 +157,7 @@ describe('schedule target', () => {
   });
 
   test('reuses IAM role and IAM policy for two schedules with the same target from the same account', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
+    const firehoseTarget = new FirehosePutRecord(firehoseStream);
 
     new Schedule(stack, 'MyScheduleDummy1', {
       schedule: expr,
@@ -218,7 +218,7 @@ describe('schedule target', () => {
   });
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream);
+    const firehoseTarget = new FirehosePutRecord(firehoseStream);
     const group = new Group(stack, 'Group', {
       groupName: 'mygroup',
     });
@@ -311,7 +311,7 @@ describe('schedule target', () => {
       destination: mockS3Destination,
     });
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose);
+    const firehoseTarget = new FirehosePutRecord(anotherFirehose);
 
     new Schedule(stack, 'MyScheduleDummy', {
       schedule: expr,
@@ -349,7 +349,7 @@ describe('schedule target', () => {
   test('creates IAM policy for imported role for firehose in the same account', () => {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       role: importedRole,
     });
 
@@ -398,7 +398,7 @@ describe('schedule target', () => {
     });
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(anotherFirehose, {
+    const firehoseTarget = new FirehosePutRecord(anotherFirehose, {
       role: importedRole,
     });
 
@@ -438,7 +438,7 @@ describe('schedule target', () => {
   test('adds permissions to execution role for sending messages to DLQ', () => {
     const dlq = new sqs.Queue(stack, 'DummyDeadLetterQueue');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       deadLetterQueue: dlq,
     });
 
@@ -473,7 +473,7 @@ describe('schedule target', () => {
   test('adds permission to execution role when imported DLQ is in same account', () => {
     const importedQueue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
 
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       deadLetterQueue: importedQueue,
     });
 
@@ -504,7 +504,7 @@ describe('schedule target', () => {
   });
 
   test('renders expected retry policy', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       retryAttempts: 5,
       maxEventAge: Duration.hours(3),
     });
@@ -531,7 +531,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is more than 1 day', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       maxEventAge: Duration.days(3),
     });
 
@@ -543,7 +543,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max age is less than 1 minute', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       maxEventAge: Duration.seconds(59),
     });
 
@@ -555,7 +555,7 @@ describe('schedule target', () => {
   });
 
   test('throws when retry policy max retry attempts is out of the allowed limits', () => {
-    const firehoseTarget = new KinesisDataFirehosePutRecord(firehoseStream, {
+    const firehoseTarget = new FirehosePutRecord(firehoseStream, {
       retryAttempts: 200,
     });
 
