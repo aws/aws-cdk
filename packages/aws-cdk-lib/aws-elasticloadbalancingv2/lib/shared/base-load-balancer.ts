@@ -40,6 +40,9 @@ export class SourceNatIpv6Prefix {
     return new SourceNatIpv6Prefix(prefix);
   }
 
+  /**
+   * @param prefix The IPv6 prefix
+   */
   constructor(public readonly prefix: string) {}
 }
 
