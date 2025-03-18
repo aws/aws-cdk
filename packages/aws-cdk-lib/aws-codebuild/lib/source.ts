@@ -11,6 +11,7 @@ import {
 import * as codecommit from '../../aws-codecommit';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * The type returned from `ISource#bind`.
@@ -246,7 +247,7 @@ export class FilterGroup {
 
   private constructor(actions: Set<EventAction>, filters: CfnProject.WebhookFilterProperty[]) {
     if (actions.size === 0) {
-      throw new Error('A filter group must contain at least one event action');
+      throw new UnscopedValidationError('A filter group must contain at least one event action');
     }
     this.actions = actions;
     this.filters = filters;
@@ -491,7 +492,7 @@ export class FilterGroup {
 
   private addBaseRefFilter(refName: string, include: boolean) {
     if (this.actions.has(EventAction.PUSH)) {
-      throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
+      throw new UnscopedValidationError('A base reference condition cannot be added if a Group contains a PUSH event action');
     }
     return this.addFilter(WebhookFilterTypes.BASE_REF, refName, include);
   }
@@ -588,11 +589,11 @@ abstract class ThirdPartyGitSource extends GitSource {
     const webhook = this.webhook ?? (anyFilterGroupsProvided ? true : undefined);
 
     if (!webhook && anyFilterGroupsProvided) {
-      throw new Error('`webhookFilters` cannot be used when `webhook` is `false`');
+      throw new UnscopedValidationError('`webhookFilters` cannot be used when `webhook` is `false`');
     }
 
     if (!webhook && this.webhookTriggersBatchBuild) {
-      throw new Error('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
+      throw new UnscopedValidationError('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
     }
 
     const superConfig = super.bind(_scope, project);
@@ -829,11 +830,11 @@ class GitHubEnterpriseSource extends CommonGithubSource {
 
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     if (this.hasCommitMessageFilterAndPrEvent()) {
-      throw new Error('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
+      throw new UnscopedValidationError('COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
     if (this.hasFilePathFilterAndPrEvent()) {
-      throw new Error('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
+      throw new UnscopedValidationError('FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events');
     }
 
     const superConfig = super.bind(_scope, _project);
@@ -915,7 +916,7 @@ class BitBucketSource extends ThirdPartyGitSource {
   public bind(_scope: Construct, _project: IProject): SourceConfig {
     // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
     if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
-      throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
+      throw new UnscopedValidationError('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
     }
 
     const superConfig = super.bind(_scope, _project);
