@@ -3,7 +3,7 @@ import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alph
 import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { DataFirehosePutRecord } from '../lib';
+import { FirehosePutRecord } from '../lib';
 
 /*
  * Stack verification steps:
@@ -38,7 +38,7 @@ const firehoseStream = new firehose.DeliveryStream(stack, 'MyFirehoseStream', {
 
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new DataFirehosePutRecord(firehoseStream, {
+  target: new FirehosePutRecord(firehoseStream, {
     input: scheduler.ScheduleTargetInput.fromObject(payload),
   }),
 });
