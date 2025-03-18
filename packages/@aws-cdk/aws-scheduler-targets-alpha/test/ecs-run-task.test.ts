@@ -44,6 +44,7 @@ describe('EcsRunTask', () => {
           taskDefinition: fargateTaskDef,
           vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
           assignPublicIp: false,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
         }),
       });
 
@@ -63,6 +64,7 @@ describe('EcsRunTask', () => {
                 AssignPublicIp: 'DISABLED',
               },
             },
+            PlatformVersion: '1.4.0',
           },
         },
       });
@@ -234,6 +236,45 @@ describe('EcsRunTask', () => {
       });
     });
 
+    test('supports vpc configuration with awsvpc network mode', () => {
+      const ec2TaskDefUsingAwsVpc = new ecs.Ec2TaskDefinition(stack, 'AwsVpcTaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      ec2TaskDefUsingAwsVpc.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 256,
+      });
+
+      // WHEN
+      new scheduler.Schedule(stack, 'Schedule', {
+        schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(5)),
+        target: targets.EcsRunTask.onEc2(cluster, {
+          taskDefinition: ec2TaskDefUsingAwsVpc,
+          vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+          securityGroups: [new ec2.SecurityGroup(stack, 'CustomSecurityGroup', { vpc })],
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        Target: {
+          EcsParameters: {
+            NetworkConfiguration: {
+              AwsvpcConfiguration: {
+                Subnets: [
+                  { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                  { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+                ],
+                SecurityGroups: [
+                  { 'Fn::GetAtt': ['CustomSecurityGroupE5E500E5', 'GroupId'] },
+                ],
+              },
+            },
+          },
+        },
+      });
+    });
+
     test('supports placement constraints', () => {
       // WHEN
       new scheduler.Schedule(stack, 'Schedule', {
@@ -314,7 +355,7 @@ describe('EcsRunTask', () => {
 
     test('supports placement strategies', () => {
       // WHEN
-      new scheduler.Schedule(stack, 'ScheduleWithPlacementStrategy', {
+      new scheduler.Schedule(stack, 'Schedule', {
         schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(5)),
         target: targets.EcsRunTask.onEc2(cluster, {
           taskDefinition: ec2TaskDef,
@@ -493,17 +534,44 @@ describe('EcsRunTask', () => {
       }).toThrow(/TaskDefinition is not compatible with EC2 launch type/);
     });
 
-    test('throws when using assignPublicIp with non-public subnet', () => {
+    test('throws when security groups are provided with non-awsvpc network mode', () => {
+      // GIVEN
+      const ec2TaskDefUsingBridgeMode = new ecs.TaskDefinition(stack, 'Ec2TaskDefBridgeMode', {
+        compatibility: ecs.Compatibility.EC2,
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+      ec2TaskDefUsingBridgeMode.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      });
       expect(() => {
         new scheduler.Schedule(stack, 'Schedule', {
           schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(5)),
-          target: targets.EcsRunTask.onFargate(cluster, {
-            taskDefinition: fargateTaskDef,
+          target: targets.EcsRunTask.onEc2(cluster, {
+            taskDefinition: ec2TaskDef,
             vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-            assignPublicIp: true,
           }),
         });
-      }).toThrow(/assignPublicIp should be set to true only for public subnets/);
+      }).toThrow(/Security groups and subnets can only be used with awsvpc network mode/);
+    });
+
+    test('throws when vpcSubnets are provided with non-awsvpc network mode', () => {
+      // GIVEN
+      const ec2TaskDefUsingBridgeMode = new ecs.TaskDefinition(stack, 'Ec2TaskDefBridgeMode', {
+        compatibility: ecs.Compatibility.EC2,
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+      ec2TaskDefUsingBridgeMode.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      });
+      expect(() => {
+        new scheduler.Schedule(stack, 'Schedule', {
+          schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(5)),
+          target: targets.EcsRunTask.onEc2(cluster, {
+            taskDefinition: ec2TaskDef,
+            vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+          }),
+        });
+      }).toThrow(/Security groups and subnets can only be used with awsvpc network mode/);
     });
   });
 });

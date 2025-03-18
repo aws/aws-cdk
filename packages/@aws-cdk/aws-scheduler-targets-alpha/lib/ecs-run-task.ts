@@ -41,6 +41,22 @@ export interface EcsRunTaskBaseProps extends ScheduleTargetBaseProps {
   readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
 
   /**
+   * The subnets associated with the task. These subnets must all be in the same VPC.
+   * The task will be launched in these subnets.
+   *
+   * @default - all private subnets of the VPC are selected.
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The security groups associated with the task. These security groups must all be in the same VPC.
+   * Controls inbound and outbound network access for the task.
+   *
+   * @default - The security group for the VPC is used.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
    * Specifies whether to enable Amazon ECS managed tags for the task.
    * @default - false
    */
@@ -107,29 +123,13 @@ export interface FargateTaskProps extends EcsRunTaskBaseProps {
   readonly assignPublicIp?: boolean;
 
   /**
-   * The subnets associated with the task. These subnets must all be in the same VPC.
-   * The task will be launched in these subnets.
-   *
-   * @default - all private subnets of the VPC are selected.
-   */
-  readonly vpcSubnets?: ec2.SubnetSelection;
-
-  /**
-   * The security groups associated with the task. These security groups must all be in the same VPC.
-   * Controls inbound and outbound network access for the task.
-   *
-   * @default - The security group for the VPC is used.
-   */
-  readonly securityGroups?: ec2.ISecurityGroup[];
-
-  /**
    * Specifies the platform version for the task.
    * Specify only the numeric portion of the platform version, such as 1.1.0.
    * Platform versions determine the underlying runtime environment for the task.
    *
    * @default - LATEST
    */
-  readonly platformVersion?: string;
+  readonly platformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
@@ -289,6 +289,12 @@ class Ec2Task extends EcsRunTask {
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-launchType
     const launchType = this.capacityProviderStrategies ? undefined : ecs.LaunchType.EC2;
 
+    // Security groups are only configurable with the "awsvpc" network mode.
+    // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-networkConfiguration
+    if (this.props.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC && (this.props.securityGroups || this.props.vpcSubnets)) {
+      throw new ValidationError('Security groups and subnets can only be used with awsvpc network mode', _schedule);
+    }
+
     const bindBaseTargetConfigParameters = super.bindBaseTargetConfig(_schedule).ecsParameters!;
 
     return {
@@ -311,6 +317,14 @@ class Ec2Task extends EcsRunTask {
               : undefined;
           },
         }, { omitEmptyArray: true }),
+        ... (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC && {
+          networkConfiguration: {
+            awsvpcConfiguration: {
+              subnets: this.cluster.vpc.selectSubnets(this.props.vpcSubnets).subnetIds,
+              securityGroups: this.props.securityGroups?.map((sg) => sg.securityGroupId),
+            },
+          },
+        }),
       },
     };
   }
