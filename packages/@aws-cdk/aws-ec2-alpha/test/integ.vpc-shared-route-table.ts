@@ -1,0 +1,106 @@
+/**
+ * Integration test for VPC with shared route tables
+ * Tests that when multiple subnets share the same route table,
+ * only one route is created when adding an internet gateway
+ */
+
+import * as vpc_v2 from '../lib/vpc-v2';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { SubnetV2, IpCidr } from '../lib/subnet-v2';
+import { RouteTable } from '../lib';
+
+const app = new cdk.App();
+
+const stack = new cdk.Stack(app, 'aws-cdk-ec2-alpha-shared-route-table');
+
+const vpc = new vpc_v2.VpcV2(stack, 'VPC', {
+  primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [
+    vpc_v2.IpAddresses.amazonProvidedIpv6({
+      cidrBlockName: 'AmazonProvided',
+    }),
+  ],
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+  vpcName: 'SharedRouteTableVPC',
+});
+
+// Create a shared route table
+const sharedRouteTable = new RouteTable(stack, 'SharedRouteTable', {
+  vpc: vpc,
+  routeTableName: 'SharedRouteTable',
+});
+
+// Create two public subnets that share the same route table
+new SubnetV2(stack, 'PublicSubnet1', {
+  vpc,
+  availabilityZone: 'us-west-2a',
+  ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
+  subnetType: SubnetType.PUBLIC,
+  subnetName: 'PublicSubnet1',
+  routeTable: sharedRouteTable,
+});
+
+new SubnetV2(stack, 'PublicSubnet2', {
+  vpc,
+  availabilityZone: 'us-west-2b',
+  ipv4CidrBlock: new IpCidr('10.1.2.0/24'),
+  subnetType: SubnetType.PUBLIC,
+  subnetName: 'PublicSubnet2',
+  routeTable: sharedRouteTable,
+});
+
+// Add internet gateway with explicit subnets
+vpc.addInternetGateway({
+  internetGatewayName: 'SharedRouteTableIGW',
+});
+
+const integ = new IntegTest(app, 'VpcSharedRouteTableInteg', {
+  testCases: [stack],
+});
+
+// Verify that only one route is created in the shared route table
+const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
+  RouteTableIds: [sharedRouteTable.routeTableId],
+});
+
+rtbassertion.expect(ExpectedResult.objectLike({
+  RouteTables: [
+    Match.objectLike({
+      RouteTableId: sharedRouteTable.routeTableId,
+      Routes: Match.arrayWith([
+        Match.objectLike({
+          DestinationCidrBlock: '0.0.0.0/0',
+          GatewayId: vpc.internetGatewayId,
+        }),
+      ]),
+    }),
+  ],
+}));
+
+// Verify that there's exactly one default route (0.0.0.0/0) in the route table
+rtbassertion.expect(ExpectedResult.objectLike({
+  RouteTables: [
+    Match.objectLike({
+      Routes: [
+        // Local route (automatically created)
+        {
+          DestinationCidrBlock: '10.1.0.0/16',
+          GatewayId: 'local',
+        },
+        // Default route to internet gateway (should be only one)
+        {
+          DestinationCidrBlock: '0.0.0.0/0',
+          GatewayId: vpc.internetGatewayId,
+        },
+        // IPv6 default route (if IPv6 is enabled)
+        {
+          DestinationIpv6CidrBlock: '::/0',
+          GatewayId: vpc.internetGatewayId,
+        },
+      ],
+    }),
+  ],
+}));
