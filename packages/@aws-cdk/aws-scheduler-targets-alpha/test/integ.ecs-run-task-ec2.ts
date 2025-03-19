@@ -10,7 +10,7 @@ import {
   AsgCapacityProvider,
   EcsOptimizedImage,
 } from 'aws-cdk-lib/aws-ecs';
-import { EcsRunTask } from '../lib';
+import { EcsRunEc2Task } from '../lib';
 
 /*
  * Stack verification steps:
@@ -50,7 +50,7 @@ taskDefinition.addContainer('ScheduledContainer', {
 });
 
 // Create the ECS run task target
-const ecsRunTaskTarget = EcsRunTask.onEc2(cluster, {
+const ecsRunTaskTarget = new EcsRunEc2Task(cluster, {
   taskDefinition,
   tags: [
     {

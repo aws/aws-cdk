@@ -155,20 +155,6 @@ export interface Ec2TaskProps extends EcsRunTaskBaseProps {
  * Schedule an ECS Task using AWS EventBridge Scheduler.
  */
 export abstract class EcsRunTask extends ScheduleTargetBase implements IScheduleTarget {
-  /**
-   * Schedule an ECS Task on Fargate using AWS EventBridge Scheduler.
-   */
-  public static onFargate(cluster: ecs.ICluster, props: FargateTaskProps): IScheduleTarget {
-    return new FargateTask(cluster, props);
-  }
-
-  /**
-   * Schedule an ECS Task on EC2 using AWS EventBridge Scheduler.
-   */
-  public static onEc2(cluster: ecs.ICluster, props: Ec2TaskProps): IScheduleTarget {
-    return new Ec2Task(cluster, props);
-  }
-
   constructor(
     protected readonly cluster: ecs.ICluster,
     protected readonly props: EcsRunTaskBaseProps,
@@ -207,9 +193,11 @@ export abstract class EcsRunTask extends ScheduleTargetBase implements ISchedule
   }
 }
 
-class FargateTask extends EcsRunTask {
+/**
+ * Schedule an ECS Task on Fargate using AWS EventBridge Scheduler.
+ */
+export class EcsRunFargateTask extends EcsRunTask {
   private readonly subnetSelection?: ec2.SubnetSelection;
-  private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly assignPublicIp?: boolean;
   private readonly platformVersion?: string;
   private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
@@ -220,7 +208,6 @@ class FargateTask extends EcsRunTask {
   ) {
     super(cluster, props);
     this.subnetSelection = props.vpcSubnets;
-    this.securityGroups = props.securityGroups;
     this.assignPublicIp = props.assignPublicIp;
     this.platformVersion = props.platformVersion;
     this.capacityProviderStrategies = props.capacityProviderStrategies;
@@ -258,14 +245,21 @@ class FargateTask extends EcsRunTask {
           awsvpcConfiguration: {
             assignPublicIp,
             subnets: this.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-            securityGroups: this.securityGroups?.map((sg) => sg.securityGroupId),
+            securityGroups: (this.props.securityGroups && this.props.securityGroups.length > 0)
+              ?
+              this.props.securityGroups?.map((sg) => sg.securityGroupId)
+              : undefined,
           },
         },
       },
     };
   }
 }
-class Ec2Task extends EcsRunTask {
+
+/**
+ * Schedule an ECS Task on EC2 using AWS EventBridge Scheduler.
+ */
+export class EcsRunEc2Task extends EcsRunTask {
   private readonly capacityProviderStrategies?: ecs.CapacityProviderStrategy[];
   private readonly placementConstraints?: ecs.PlacementConstraint[];
   private readonly placementStrategies?: ecs.PlacementStrategy[];
@@ -289,11 +283,17 @@ class Ec2Task extends EcsRunTask {
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-launchType
     const launchType = this.capacityProviderStrategies ? undefined : ecs.LaunchType.EC2;
 
+    const taskDefinitionUsesAwsVpc = this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC;
+
     // Security groups are only configurable with the "awsvpc" network mode.
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-networkConfiguration
-    if (this.props.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC && (this.props.securityGroups || this.props.vpcSubnets)) {
+    if (!taskDefinitionUsesAwsVpc && (this.props.securityGroups || this.props.vpcSubnets)) {
       throw new ValidationError('Security groups and subnets can only be used with awsvpc network mode', _schedule);
     }
+
+    const subnetSelection =
+      taskDefinitionUsesAwsVpc ? this.props.vpcSubnets || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+        : undefined;
 
     const bindBaseTargetConfigParameters = super.bindBaseTargetConfig(_schedule).ecsParameters!;
 
@@ -317,11 +317,14 @@ class Ec2Task extends EcsRunTask {
               : undefined;
           },
         }, { omitEmptyArray: true }),
-        ... (this.props.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC && {
+        ... (taskDefinitionUsesAwsVpc && {
           networkConfiguration: {
             awsvpcConfiguration: {
-              subnets: this.cluster.vpc.selectSubnets(this.props.vpcSubnets).subnetIds,
-              securityGroups: this.props.securityGroups?.map((sg) => sg.securityGroupId),
+              subnets: this.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
+              securityGroups: (this.props.securityGroups && this.props.securityGroups.length > 0)
+                ?
+                this.props.securityGroups.map((sg) => sg.securityGroupId)
+                : undefined,
             },
           },
         }),

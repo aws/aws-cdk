@@ -3,7 +3,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { FargateTaskDefinition, ContainerImage, Cluster } from 'aws-cdk-lib/aws-ecs';
-import { EcsRunTask } from '../lib';
+import { EcsRunFargateTask } from '../lib';
 
 /*
  * Stack verification steps:
@@ -28,7 +28,7 @@ taskDefinition.addContainer('ScheduledContainer', {
   image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
 });
 
-const ecsRunTaskTarget = EcsRunTask.onFargate(cluster, {
+const ecsRunTaskTarget = new EcsRunFargateTask(cluster, {
   taskDefinition,
   propagateTags: true,
   tags: [{
@@ -37,6 +37,7 @@ const ecsRunTaskTarget = EcsRunTask.onFargate(cluster, {
   }],
   enableEcsManagedTags: false,
   enableExecuteCommand: true,
+  securityGroups: [],
 });
 
 new scheduler.Schedule(stack, 'Schedule', {

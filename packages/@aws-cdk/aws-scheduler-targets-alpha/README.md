@@ -331,7 +331,7 @@ declare const taskDefinition: ecs.FargateTaskDefinition;
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
-  target: targets.EcsRunTask.onFargate(cluster, {
+  target: new targets.EcsRunFargateTask(cluster, {
     taskDefinition,
   }),
 });
@@ -347,7 +347,7 @@ declare const taskDefinition: ecs.Ec2TaskDefinition;
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(cdk.Duration.minutes(60)),
-  target: targets.EcsRunTask.onEc2(cluster, {
+  target: new targets.EcsRunEc2Task(cluster, {
     taskDefinition,
   }),
 });
