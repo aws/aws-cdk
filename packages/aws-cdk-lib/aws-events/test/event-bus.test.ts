@@ -4,7 +4,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import * as cxapi from '../../cx-api';
 import { EventBus } from '../lib';
 
 describe('event bus', () => {
