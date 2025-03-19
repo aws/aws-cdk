@@ -3,11 +3,11 @@ import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alph
 import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { KinesisDataFirehosePutRecord } from '../lib';
+import { FirehosePutRecord } from '../lib';
 
 /*
  * Stack verification steps:
- * A record is put to the kinesis data firehose stream by the scheduler
+ * A record is put to the Amazon Data Firehose stream by the scheduler
  * The firehose deliveries the record to S3 bucket
  * The assertion checks there is an object in the S3 bucket
  */
@@ -38,7 +38,7 @@ const firehoseStream = new firehose.DeliveryStream(stack, 'MyFirehoseStream', {
 
 new scheduler.Schedule(stack, 'Schedule', {
   schedule: scheduler.ScheduleExpression.rate(cdk.Duration.minutes(1)),
-  target: new KinesisDataFirehosePutRecord(firehoseStream, {
+  target: new FirehosePutRecord(firehoseStream, {
     input: scheduler.ScheduleTargetInput.fromObject(payload),
   }),
 });
