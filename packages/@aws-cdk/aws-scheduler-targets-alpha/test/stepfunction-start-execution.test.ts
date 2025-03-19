@@ -1,4 +1,4 @@
-import { Group, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleGroup, Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
@@ -192,8 +192,8 @@ describe('stepfunction start execution', () => {
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
     const stepFunctionTarget = new StepFunctionsStartExecution(stepFunction, {});
-    const group = new Group(stack, 'Group', {
-      groupName: 'mygroup',
+    const group = new ScheduleGroup(stack, 'Group', {
+      scheduleGroupName: 'mygroup',
     });
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -204,7 +204,7 @@ describe('stepfunction start execution', () => {
     new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       target: stepFunctionTarget,
-      group,
+      scheduleGroup: group,
     });
 
     const template = Template.fromStack(stack);

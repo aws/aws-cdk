@@ -1,4 +1,4 @@
-import { Group, Schedule, ScheduleExpression, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleGroup, Schedule, ScheduleExpression, ScheduleTargetInput } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as events from 'aws-cdk-lib/aws-events';
@@ -229,8 +229,8 @@ describe('eventBridge put events', () => {
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
     const eventBusTarget = new EventBridgePutEvents(eventBusEventEntry);
-    const group = new Group(stack, 'Group', {
-      groupName: 'mygroup',
+    const group = new ScheduleGroup(stack, 'Group', {
+      scheduleGroupName: 'mygroup',
     });
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -241,7 +241,7 @@ describe('eventBridge put events', () => {
     new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       target: eventBusTarget,
-      group,
+      scheduleGroup: group,
     });
 
     const template = Template.fromStack(stack);

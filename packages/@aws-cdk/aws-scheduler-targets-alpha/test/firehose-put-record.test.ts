@@ -1,4 +1,4 @@
-import { ScheduleExpression, Schedule, Group } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleExpression, Schedule, ScheduleGroup } from '@aws-cdk/aws-scheduler-alpha';
 import { App, CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
@@ -219,8 +219,8 @@ describe('schedule target', () => {
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
     const firehoseTarget = new FirehosePutRecord(firehoseStream);
-    const group = new Group(stack, 'Group', {
-      groupName: 'mygroup',
+    const group = new ScheduleGroup(stack, 'Group', {
+      scheduleGroupName: 'mygroup',
     });
 
     new Schedule(stack, 'MyScheduleDummy1', {
@@ -231,7 +231,7 @@ describe('schedule target', () => {
     new Schedule(stack, 'MyScheduleDummy2', {
       schedule: expr,
       target: firehoseTarget,
-      group,
+      scheduleGroup: group,
     });
 
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {

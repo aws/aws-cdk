@@ -1,5 +1,5 @@
 import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
-import { Group } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleGroup } from '@aws-cdk/aws-scheduler-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -218,8 +218,8 @@ describe('sns topic schedule target', () => {
 
   test('creates IAM role and IAM policy for two schedules with the same target but different groups', () => {
     const target = new SnsPublish(topic);
-    const group = new Group(stack, 'Group', {
-      groupName: 'mygroup',
+    const group = new ScheduleGroup(stack, 'Group', {
+      scheduleGroupName: 'mygroup',
     });
 
     new scheduler.Schedule(stack, 'Schedule1', {
@@ -230,7 +230,7 @@ describe('sns topic schedule target', () => {
     new scheduler.Schedule(stack, 'Schedule2', {
       schedule: scheduleExpression,
       target,
-      group,
+      scheduleGroup: group,
     });
 
     const template = Template.fromStack(stack);
