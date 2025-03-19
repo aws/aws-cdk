@@ -125,6 +125,7 @@ export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRe
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
+export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1388,6 +1389,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
     type: FlagType.BugFix,
     summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
@@ -1399,6 +1402,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.180.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
   [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
     type: FlagType.BugFix,
     summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
@@ -1407,9 +1412,24 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
       When disabled, 'CDKReplicationRole' is always specified.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.182.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from Stage addActions trust policy',
+    detailsMd: `
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
+    `,
+    introducedIn: { v2: '2.184.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
 };
 
 const CURRENT_MV = 'v2';

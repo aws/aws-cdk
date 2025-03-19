@@ -51,7 +51,15 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_servicecatalog.Portfolio",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "displayName": "*",
+                  "providerName": "*",
+                  "description": "*",
+                  "messageLanguage": "en"
+                }
+              ]
             }
           },
           "SNSTopicProduct3": {
@@ -77,7 +85,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sns.Topic",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -189,7 +200,12 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "bucket": "*"
+                    }
+                  ]
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -207,7 +223,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               },
               "ProductAssetsDeployment": {
@@ -235,7 +254,8 @@
                             "path": "integ-servicecatalog-product/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "version": "0.0.0",
+                              "metadata": []
                             }
                           }
                         },
@@ -252,7 +272,7 @@
                           "aws:cdk:cloudformation:props": {
                             "content": {
                               "s3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-                              "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                              "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                             },
                             "description": "/opt/awscli/aws"
                           }
@@ -265,7 +285,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {}
+                      ]
                     }
                   },
                   "CustomResourceHandler": {
@@ -273,7 +296,40 @@
                     "path": "integ-servicecatalog-product/TestAssetBucket/ProductAssetsDeployment/CustomResourceHandler",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "uuid": "*",
+                          "layers": [
+                            "*"
+                          ],
+                          "environment": "*",
+                          "lambdaPurpose": "*",
+                          "timeout": "*",
+                          "role": "*",
+                          "memorySize": "*",
+                          "ephemeralStorageSize": "*",
+                          "vpc": "*",
+                          "vpcSubnets": "*",
+                          "filesystem": "*",
+                          "logGroup": "*",
+                          "code": "*",
+                          "handler": "*",
+                          "runtime": "*"
+                        },
+                        {
+                          "addMetadata": [
+                            "*",
+                            true
+                          ]
+                        },
+                        {
+                          "addMetadata": [
+                            "*",
+                            "*"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "CustomResource": {
@@ -291,7 +347,10 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   }
                 },
@@ -303,7 +362,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "bucketName": "*",
+                  "removalPolicy": "destroy",
+                  "autoDeleteObjects": true
+                }
+              ]
             }
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
@@ -363,7 +429,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sns.Topic",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -395,7 +464,10 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_sns.Topic",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    "*"
+                  ]
                 }
               }
             },
@@ -421,7 +493,10 @@
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -466,7 +541,20 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Code": {
@@ -486,7 +574,8 @@
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -523,7 +612,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "runtime": "*",
+                      "code": "*",
+                      "handler": "*"
+                    }
+                  ]
                 }
               },
               "ParentAssetBucket": {
@@ -531,7 +627,8 @@
                 "path": "integ-servicecatalog-product/S3AssetProduct/ParentAssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": []
                 }
               },
               "HelloHandler2": {
@@ -547,7 +644,10 @@
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler2/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": [
+                            "*"
+                          ]
                         }
                       },
                       "Resource": {
@@ -592,7 +692,20 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        {
+                          "assumedBy": {
+                            "principalAccount": "*",
+                            "assumeRoleAction": "*"
+                          },
+                          "managedPolicies": [
+                            {
+                              "managedPolicyArn": "*"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   },
                   "Code": {
@@ -612,7 +725,8 @@
                         "path": "integ-servicecatalog-product/S3AssetProduct/HelloHandler2/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "version": "0.0.0",
+                          "metadata": []
                         }
                       }
                     },
@@ -649,7 +763,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "runtime": "*",
+                      "code": "*",
+                      "handler": "*"
+                    }
+                  ]
                 }
               }
             },
@@ -671,7 +792,10 @@
                     "path": "integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*"
+                      ]
                     }
                   },
                   "Resource": {
@@ -815,13 +939,89 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": [
+                        "*",
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "attachToRole": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        },
+                        {
+                          "addStatements": [
+                            {}
+                          ]
+                        }
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "assumedBy": {
+                        "principalAccount": "*",
+                        "assumeRoleAction": "*"
+                      },
+                      "managedPolicies": [
+                        {
+                          "managedPolicyArn": "*"
+                        }
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "attachInlinePolicy": [
+                        "*"
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    },
+                    {
+                      "addToPrincipalPolicy": [
+                        {}
+                      ]
+                    }
+                  ]
                 }
               },
               "Code": {
@@ -841,7 +1041,8 @@
                     "path": "integ-servicecatalog-product/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -889,20 +1090,50 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "layers": [
+                    "*"
+                  ],
+                  "environment": "*",
+                  "timeout": "*",
+                  "role": "*",
+                  "memorySize": "*",
+                  "ephemeralStorageSize": "*",
+                  "vpc": "*",
+                  "vpcSubnets": "*",
+                  "filesystem": "*",
+                  "logGroup": "*",
+                  "code": "*",
+                  "handler": "*",
+                  "runtime": "*"
+                },
+                {
+                  "addEnvironment": [
+                    "*",
+                    "*"
+                  ]
+                },
+                {
+                  "addLayers": [
+                    "*"
+                  ]
+                }
+              ]
             }
           },
           "TestProduct": {
             "id": "TestProduct",
             "path": "integ-servicecatalog-product/TestProduct",
             "children": {
-              "Templatef239141b3564": {
-                "id": "Templatef239141b3564",
-                "path": "integ-servicecatalog-product/TestProduct/Templatef239141b3564",
+              "Template8f31efb59b7a": {
+                "id": "Template8f31efb59b7a",
+                "path": "integ-servicecatalog-product/TestProduct/Template8f31efb59b7a",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Templatef239141b3564/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Template8f31efb59b7a/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -910,10 +1141,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Templatef239141b3564/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Template8f31efb59b7a/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -922,13 +1154,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Templatead6cae3e3120": {
-                "id": "Templatead6cae3e3120",
-                "path": "integ-servicecatalog-product/TestProduct/Templatead6cae3e3120",
+              "Template07a33e6183be": {
+                "id": "Template07a33e6183be",
+                "path": "integ-servicecatalog-product/TestProduct/Template07a33e6183be",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Templatead6cae3e3120/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Template07a33e6183be/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -936,10 +1168,11 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Templatead6cae3e3120/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Template07a33e6183be/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   }
                 },
@@ -1024,7 +1257,41 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_servicecatalog.CloudFormationProduct",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "productName": "*",
+                  "owner": "*",
+                  "productVersions": [
+                    {
+                      "validateTemplate": false,
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "productVersionName": "*",
+                      "validateTemplate": false,
+                      "cloudFormationTemplate": "*"
+                    },
+                    {
+                      "cloudFormationTemplate": "*",
+                      "productVersionName": "*",
+                      "description": "*"
+                    }
+                  ]
+                }
+              ]
             }
           },
           "PortfolioId": {
