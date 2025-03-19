@@ -4,10 +4,12 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
+import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
 import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
 import { IDataProcessor } from '../processor';
+import { DynamicPartitioningProps } from '../s3-bucket';
 
 export interface DestinationLoggingProps {
   /**
@@ -159,5 +161,23 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       cloudWatchLoggingOptions: loggingOptions,
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
+}
+
+export function createDynamicPartitioningConfiguration(
+  scope: Construct,
+  props?: DynamicPartitioningProps,
+): CfnDeliveryStream.DynamicPartitioningConfigurationProperty | undefined {
+  if (!props) return undefined;
+
+  if (props.retry && !props.retry.isUnresolved() && props.retry.toSeconds() > 7200) {
+    throw new cdk.ValidationError(`retryDuration exceeds 7200 seconds. Got ${props.retry}`, scope);
+  }
+
+  return {
+    enabled: props.enabled,
+    retryOptions: undefinedIfAllValuesAreEmpty({
+      durationInSeconds: props.retry?.toSeconds(),
+    }),
   };
 }

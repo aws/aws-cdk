@@ -3,12 +3,42 @@ import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { Duration } from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
  */
 export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinationProps {
+  /**
+   * Specify dynamic partitioning.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   * @default - Dynamic partitioning is disabled.
+   */
+  readonly dynamicPartitioning?: DynamicPartitioningProps;
+}
+
+/**
+ * Props for defining dynamic partitioning.
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+ */
+export interface DynamicPartitioningProps {
+  /**
+   * Whether to enable the dynamic partitioning.
+   *
+   * You can enable dynamic partitioning only when you create a new Firehose stream.
+   * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html
+   * @default false
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * The total amount of time that Data Firehose spends on retries.
+   * @default - TBD
+   */
+  readonly retry?: Duration;
 }
 
 /**
@@ -48,6 +78,7 @@ export class S3Bucket implements IDestination {
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
+        dynamicPartitioningConfiguration: createDynamicPartitioningConfiguration(scope, this.props.dynamicPartitioning),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
