@@ -26,6 +26,7 @@ describe('bundling', () => {
       bundleDir: '/tmp/output',
       image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
+      platform: 'linux/amd64',
     };
     const helper = new AssetBundlingVolumeCopy(options);
     helper.run();
@@ -101,6 +102,7 @@ describe('bundling', () => {
       image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
       user: '1000',
       network: 'host',
+      platform: 'linux/amd64',
     };
     const helper = new AssetBundlingBindMount(options);
     helper.run();
