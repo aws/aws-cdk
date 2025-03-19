@@ -1,6 +1,7 @@
 import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
+// import { exec } from "child_process";
 // import SyntaxKind = ts.SyntaxKind;
 
 const DIRECTORIES_TO_SKIP = [
@@ -699,6 +700,7 @@ export class MethodsUpdater extends MetadataUpdater {
  * primitive types.
  */
 export class EnumLikeUpdater extends MetadataUpdater {
+
   constructor(dir: string) {
     super(dir);
   }
