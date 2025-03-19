@@ -332,6 +332,170 @@
           "version": "0.0.0"
         }
       },
+      "lambda-test-assets-file-for-ruby34": {
+        "id": "lambda-test-assets-file-for-ruby34",
+        "path": "lambda-test-assets-file-for-ruby34",
+        "children": {
+          "MyRuby34Lambda": {
+            "id": "MyRuby34Lambda",
+            "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-test-assets-file-for-ruby34/MyRuby34Lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b9d265a7298dcf7774794746a1aac25ee61dc998230526747e062aeaff88af86.zip"
+                    },
+                    "handler": "index.main",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyRuby34LambdaServiceRoleBF4E7133",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "ruby3.4"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "lambda-test-assets-file-for-ruby34/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyRuby34Lambda934E0C6B\"}": {
+                "id": "Output{\"Ref\":\"MyRuby34Lambda934E0C6B\"}",
+                "path": "lambda-test-assets-file-for-ruby34/Exports/Output{\"Ref\":\"MyRuby34Lambda934E0C6B\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "lambda-test-assets-file-for-ruby34/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "lambda-test-assets-file-for-ruby34/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
       "RubyRuntimeTest": {
         "id": "RubyRuntimeTest",
         "path": "RubyRuntimeTest",
@@ -448,6 +612,14 @@
                       "version": "10.3.0"
                     }
                   },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
+                    }
+                  },
                   "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa": {
                     "id": "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa",
                     "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa",
@@ -499,6 +671,68 @@
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa": {
+                    "id": "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa",
+                    "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Invoke": {
+                        "id": "Invoke",
+                        "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Invoke",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
