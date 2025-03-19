@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ValidationError } from 'jsonschema';
 import { CfnPrefixList } from './ec2.generated';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token, Annotations } from '../../core';
+import { IResource, Lazy, Resource, Names, ContextProvider, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -83,9 +83,21 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
  */
 export interface PrefixListLookupOptions {
   /**
-   * The name of the prefix list to lookup.
+   * The name of the managed prefix list.
    */
   readonly prefixListName: string;
+  /**
+   * The ID of the AWS account that owns the managed prefix list.
+   *
+   * @default - Don't filter on ownerId
+   */
+  readonly ownerId?: string;
+  /**
+   * The address family of the managed prefix list.
+   *
+   * @default - Don't filter on addressFamily
+   */
+  readonly addressFamily?: AddressFamily;
 }
 
 /**
@@ -94,9 +106,8 @@ export interface PrefixListLookupOptions {
 interface PrefixListContextResponse {
   /**
    * The id of the prefix list
-   * @default - None
    */
-  readonly PrefixListId?: string;
+  readonly PrefixListId: string;
 }
 
 /**
@@ -129,6 +140,8 @@ export class PrefixList extends PrefixListBase {
         typeName: 'AWS::EC2::PrefixList',
         propertyMatch: {
           PrefixListName: options.prefixListName,
+          ...(options.ownerId ? { OwnerId: options.ownerId } : undefined),
+          ...(options.addressFamily ? { AddressFamily: options.addressFamily } : undefined),
         },
         propertiesToReturn: ['PrefixListId'],
       } satisfies Omit<cxschema.CcApiContextQuery, 'account'|'region'>,
@@ -136,13 +149,14 @@ export class PrefixList extends PrefixListBase {
     }).value;
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
-    let prefixList = response[0];
-    if (!prefixList?.PrefixListId) {
-      Annotations.of(scope).addError(`Could not find the managed prefix list '${options.prefixListName}'`);
-      prefixList = dummyResponse;
+    if (response.length === 0) {
+      throw new ValidationError(`Could not find any managed prefix lists matching ${JSON.stringify(options)}`, scope);
+    } else if (response.length > 1) {
+      throw new ValidationError(`Found ${response.length} managed prefix lists matching ${JSON.stringify(options)}; please narrow the search criteria`, scope);
     }
 
-    return this.fromPrefixListId(scope, id, prefixList.PrefixListId!);
+    const prefixList = response[0];
+    return this.fromPrefixListId(scope, id, prefixList.PrefixListId);
   }
 
   /**
