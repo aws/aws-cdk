@@ -115,6 +115,7 @@ export const USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY = '@aws-cdk/aws
 export const CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS = '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics';
 export const LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES = '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages';
 export const STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy';
+export const STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 = '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2';
 export const BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT = '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault';
 export const ASPECT_STABILIZATION = '@aws-cdk/core:aspectStabilization';
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
@@ -1158,8 +1159,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       '**Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**',
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this 
-    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot 
+    accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
+    feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
     guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
@@ -1177,9 +1178,9 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     In an ECS Cluster with \`MachineImageType.AMAZON_LINUX_2\`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
     accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the 
+    to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
     IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-    
+
     It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
     `,
     introducedIn: { v2: '2.175.0' },
@@ -1372,7 +1373,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the default behaviour of OIDC Provider's custom resource handler will
       default to reject unauthorized connections when downloading CA Certificates.
-      
+
       When this feature flag is disabled, the behaviour will be the same as current and will allow downloading
       thumbprints from unsecure connections.`,
     introducedIn: { v2: '2.177.0' },
@@ -1387,7 +1388,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
     When this feature flag is enabled, CDK expands the scope of usage data collection to include the following:
       * L2 construct property keys - Collect which property keys you use from the L2 constructs in your app. This includes property keys nested in dictionary objects.
-      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted. 
+      * L2 construct property values of BOOL and ENUM types - Collect property key values of only BOOL and ENUM types. All other types, such as string values or construct references will be redacted.
       * L2 construct method usage - Collection method name, parameter keys and parameter values of BOOL and ENUM type.
     `,
     introducedIn: { v2: '2.178.0' },
@@ -1399,12 +1400,12 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: '[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
     detailsMd: `
-      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      [Deprecated default feature] When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy.
       The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
       This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
-      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role. 
-      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation. 
-      We recommend to unset the feature flag if already set which will restore the original behavior. 
+      However in the current implementation, we have removed a dependency of the lambda function on the policy. In addition to this, a Role will be attached to the Policy instead of an inline policy being attached to the role.
+      This will create a data race condition in the CloudFormation template because the creation of the Lambda function no longer waits for the policy to be created. Having said that, we are not deprecating the feature (we are defaulting the feature flag to false for new stacks) since this feature can still be used to get around the circular dependency issue (issue-7016) particularly in cases where the lambda resource creation doesnt need to depend on the policy resource creation.
+      We recommend to unset the feature flag if already set which will restore the original behavior.
     `,
     introducedIn: { v2: '2.180.0' },
     recommendedValue: false,
@@ -1445,13 +1446,13 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals.',
     detailsMd: `
-      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails 
-      because service principals require resource policies with Statement IDs. 
+      Currently, when granting permissions to service principals using grantPutEventsTo(), the operation silently fails
+      because service principals require resource policies with Statement IDs.
 
       When this flag is enabled:
       - Resource policies will be created with Statement IDs for service principals
       - The operation will succeed as expected
-      
+
       When this flag is disabled:
       - A warning will be emitted
       - The grant operation will be dropped
@@ -1480,10 +1481,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
-      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom 
+      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
       resource lambda function logs.
-      
-      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom 
+
+      When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
       resource lambda function logs.
     `,
     introducedIn: { v2: '2.187.0' },
@@ -1505,6 +1506,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter',
+    detailsMd: `
+      When this feature flag is enabled, the resultWriterV2 property is used instead of resultWriter in DistributedMap class.
+      resultWriterV2 uses ResultWriterV2 class in StepFunctions ASL and can have either Bucket/Prefix or WriterConfig or both.
+    `,
+    introducedIn: { v2: '2.188.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag and set resultWriter in DistributedMap',
   },
 };
 
