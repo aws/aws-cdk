@@ -3,7 +3,7 @@ import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey, Key } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import { ArnFormat, Lazy, Names, propertyInjectionDecorator, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 
@@ -238,7 +238,13 @@ export interface TopicAttributes {
 /**
  * A new SNS topic
  */
+@propertyInjectionDecorator
 export class Topic extends TopicBase {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-sns.Topic';
+
   /**
    * Import an existing SNS topic provided an ARN
    *
