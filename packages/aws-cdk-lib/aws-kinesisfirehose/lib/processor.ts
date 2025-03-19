@@ -125,7 +125,7 @@ export enum SubRecordType {
  * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-multirecord-deaggergation.html
  */
 export class RecordDeAggregationProcessor implements IDataProcessor {
-  props: DataProcessorProps = {};
+  readonly props: DataProcessorProps = {};
 
   constructor(private readonly options: RecordDeAggregationProcessorOptions) {}
 
@@ -176,7 +176,7 @@ export enum JsonParsingEngine {
  * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-partitioning-keys.html
  */
 export class MetadataExtractionProcessor implements IDataProcessor {
-  props: DataProcessorProps = {};
+  readonly props: DataProcessorProps = {};
 
   constructor(private readonly options: MetadataExtractionProcessorOptions) {}
 
