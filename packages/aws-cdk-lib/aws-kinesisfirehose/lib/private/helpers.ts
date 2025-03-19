@@ -171,7 +171,7 @@ export function createDynamicPartitioningConfiguration(
   if (!props) return undefined;
 
   if (props.retry && !props.retry.isUnresolved() && props.retry.toSeconds() > 7200) {
-    throw new cdk.ValidationError(`retryDuration exceeds 7200 seconds. Got ${props.retry}`, scope);
+    throw new cdk.ValidationError(`The maximum retry duration is 7200 seconds, got ${props.retry.toSeconds()} seconds.`, scope);
   }
 
   return {

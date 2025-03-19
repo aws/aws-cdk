@@ -30,9 +30,8 @@ export interface DynamicPartitioningProps {
    * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html
-   * @default false
    */
-  readonly enabled?: boolean;
+  readonly enabled: boolean;
 
   /**
    * The total amount of time that Data Firehose spends on retries.
