@@ -893,6 +893,7 @@ export class Pipeline extends PipelineBase {
    * @param action the action to return/create a role for
    * @param actionScope the scope, unique to the action, to create new resources in
    */
+
   private getRoleForAction(stage: Stage, action: RichAction, actionScope: Construct): iam.IRole | undefined {
     const pipelineStack = Stack.of(this);
 
@@ -900,9 +901,13 @@ export class Pipeline extends PipelineBase {
 
     if (!actionRole && this.isAwsOwned(action)) {
       // generate a Role for this specific Action
-      actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', {
+      const isRemoveRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE);
+      const roleProps = isRemoveRootPrincipal? {
+        assumedBy: new iam.ArnPrincipal(this.role.roleArn), // Allow only the pipeline execution role
+      } : {
         assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-      });
+      };
+      actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', roleProps);
     }
 
     // the pipeline role needs assumeRole permissions to the action role

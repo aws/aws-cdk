@@ -440,7 +440,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Role Provider for the default Role for authenticated users
    */
-  private readonly roleAttachment: CfnIdentityPoolRoleAttachment;
+  private readonly roleAttachment: IdentityPoolRoleAttachment;
 
   /**
    * List of Identity Providers added in constructor for use with property overrides
@@ -495,18 +495,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
     this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
 
     // Set up Role Attachment
-    const mappings = props.roleMappings || [];
-    let roleMappings: any = undefined;
-    if (mappings) {
-      roleMappings = this.configureRoleMappings(...mappings);
-    }
-    this.roleAttachment = new CfnIdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
-      identityPoolId: this.identityPoolId,
-      roles: {
-        authenticated: this.authenticatedRole.roleArn,
-        unauthenticated: this.unauthenticatedRole.roleArn,
-      },
-      roleMappings,
+    this.roleAttachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
+      identityPool: this,
+      authenticatedRole: this.authenticatedRole,
+      unauthenticatedRole: this.unauthenticatedRole,
+      roleMappings: props.roleMappings,
     });
 
     Array.isArray(this.roleAttachment);
@@ -543,6 +536,79 @@ export class IdentityPool extends Resource implements IIdentityPool {
         'cognito-identity.amazonaws.com:amr': type,
       },
     }, 'sts:AssumeRoleWithWebIdentity');
+  }
+}
+
+/**
+ * Represents an Identity Pool Role Attachment
+ */
+interface IIdentityPoolRoleAttachment extends IResource {
+  /**
+   * ID of the Attachment's underlying Identity Pool
+   */
+  readonly identityPoolId: string;
+}
+
+/**
+ * Props for an Identity Pool Role Attachment
+ */
+interface IdentityPoolRoleAttachmentProps {
+
+  /**
+   * ID of the Attachment's underlying Identity Pool
+   */
+  readonly identityPool: IIdentityPool;
+
+  /**
+   * Default authenticated (User) Role
+   * @default - No default authenticated Role will be added
+   */
+  readonly authenticatedRole?: IRole;
+
+  /**
+   * Default unauthenticated (Guest) Role
+   * @default - No default unauthenticated Role will be added
+   */
+  readonly unauthenticatedRole?: IRole;
+
+  /**
+   * Rules for mapping roles to users
+   * @default - No role mappings
+   */
+  readonly roleMappings?: IdentityPoolRoleMapping[];
+}
+
+/**
+ * Defines an Identity Pool Role Attachment
+ *
+ * @resource AWS::Cognito::IdentityPoolRoleAttachment
+ */
+class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
+  /**
+   * ID of the underlying Identity Pool
+   */
+  public readonly identityPoolId: string;
+
+  constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+    this.identityPoolId = props.identityPool.identityPoolId;
+    const mappings = props.roleMappings || [];
+    let roles: any = undefined, roleMappings: any = undefined;
+    if (props.authenticatedRole || props.unauthenticatedRole) {
+      roles = {};
+      if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleArn;
+      if (props.unauthenticatedRole) roles.unauthenticated = props.unauthenticatedRole.roleArn;
+    }
+    if (mappings) {
+      roleMappings = this.configureRoleMappings(...mappings);
+    }
+    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+      identityPoolId: this.identityPoolId,
+      roles,
+      roleMappings,
+    });
   }
 
   /**

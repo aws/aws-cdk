@@ -380,6 +380,7 @@ interface MockVpcContextResponse {
 function mockVpcContextProviderWith(
   response: MockVpcContextResponse,
   paramValidator?: (options: cxschema.VpcContextQuery) => void) {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

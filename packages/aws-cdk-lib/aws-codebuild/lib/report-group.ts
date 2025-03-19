@@ -190,7 +190,7 @@ export class ReportGroup extends ReportGroupBase {
     this.exportBucket = props.exportBucket;
 
     if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
-      throw new Error('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.');
+      throw new cdk.ValidationError('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.', this);
     }
   }
 }

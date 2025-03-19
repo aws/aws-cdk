@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { Attributions } from './_attributions';
 import { shell } from './_shell';
 import { Violation, ViolationType, ViolationsReport } from './violation';
@@ -384,9 +385,26 @@ export class Bundle {
     return this._attributions;
   }
 
+  /**
+   * Find a single version number for the given external dependency.
+   *
+   * Finds the smallest possible range that contains all version identifiers,
+   * or fails if it couldn't be found.
+   */
   private findExternalDependencyVersion(name: string): string {
+    const versionTracing = new Array<string>();
+    let version: string | undefined;
 
-    const versions = new Set<string>();
+    function mergeVersion(newV: string, source: string) {
+      versionTracing.push(`${newV} from ${source}`);
+
+      // newV <= version (or no version yet), use newV
+      if (!version || semver.subset(newV, version)) {
+        version = newV;
+      } else if (!semver.subset(version, newV)) {
+        throw new Error(`Unable to determine version for external package ${name}: no single minimal range in: ${versionTracing}`);
+      }
+    }
 
     // external dependencies will not exist in the dependencies list
     // since esbuild skips over them. but they will exist as a dependency of
@@ -396,25 +414,21 @@ export class Bundle {
       const runtime = (manifest.dependencies ?? {})[name];
       const optional = (manifest.optionalDependencies ?? {})[name];
 
-      const pin = (version: string) => (version.startsWith('^') || version.startsWith('~')) ? version.substring(1) : version;
-
       if (runtime) {
-        versions.add(pin(runtime));
+        mergeVersion(runtime, pkg.name);
       }
       if (optional) {
-        versions.add(pin(optional));
+        mergeVersion(optional, pkg.name);
       }
     }
 
-    if (versions.size === 0) {
+    if (!version) {
       throw new Error(`Unable to detect version for external dependency: ${name}`);
     }
 
-    if (versions.size > 1) {
-      throw new Error(`Multiple versions detected for external dependency: ${name} (${Array.from(versions).join(',')})`);
-    }
+    const pin = (version: string) => (version.startsWith('^') || version.startsWith('~')) ? version.substring(1) : version;
 
-    return versions.values().next().value!;
+    return pin(version);
   }
 
   private closestPackagePath(fdp: string): string {

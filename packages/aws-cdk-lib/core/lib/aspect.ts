@@ -40,7 +40,10 @@ export interface AspectOptions {
    * The priority value to apply on an Aspect.
    * Priority must be a non-negative integer.
    *
-   * @default - AspectPriority.DEFAULT
+   * Aspects that have same priority value are not guaranteed to be
+   * executed in a consistent order.
+   *
+   * @default AspectPriority.DEFAULT
    */
   readonly priority?: number;
 }
