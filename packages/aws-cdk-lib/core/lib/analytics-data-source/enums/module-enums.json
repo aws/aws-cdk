@@ -3450,7 +3450,8 @@
     "FileSystemType": [
       "ext3",
       "ext4",
-      "xfs"
+      "xfs",
+      "ntfs"
     ],
     "EbsPropagatedTagSource": [
       "SERVICE",
@@ -3792,7 +3793,8 @@
     ],
     "CapacityType": [
       "SPOT",
-      "ON_DEMAND"
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
     ],
     "TaintEffect": [
       "NO_SCHEDULE",
@@ -4480,7 +4482,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.ts": {
     "ServerSideEncryption": [
       "AES256",
-      "aws:kms"
+      "aws:kms",
+      "aws:kms:dsse"
     ],
     "StorageClass": [
       "STANDARD",
