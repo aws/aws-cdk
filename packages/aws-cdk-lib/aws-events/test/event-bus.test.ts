@@ -642,6 +642,20 @@ describe('event bus', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2);
   });
 
+  test('Event Bus policy statements must have a sid', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const bus = new EventBus(stack, 'Bus');
+
+    // THEN
+    expect(() => bus.addToResourcePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.ArnPrincipal('arn')],
+      actions: ['events:PutEvents'],
+    }))).toThrow('Event Bus policy statements must have a sid');
+  });
+
   test('set dead letter queue', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');

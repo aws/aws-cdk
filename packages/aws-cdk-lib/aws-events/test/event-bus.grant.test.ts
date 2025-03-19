@@ -4,6 +4,135 @@ import { App, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 import { EventBus } from '../lib';
 
+/**
+ * Helper functions for common assertions in EventBus grant tests
+ */
+
+/**
+ * Verifies that no resource policy (EventBusPolicy resource) was created.
+ */
+function assertNoResourcePolicy(stack: Stack) {
+  Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
+}
+
+/**
+ * Verifies that no identity-based policy was created.
+ */
+function assertNoIdentityPolicy(stack: Stack) {
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+}
+
+/**
+ * Verifies that only an identity-based policy was created (no resource policy)
+ */
+function assertOnlyIdentityPolicy(stack: Stack, grant: iam.Grant) {
+  Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
+  expect(grant.principalStatement).toBeDefined();
+  expect(grant.resourceStatement).toBeUndefined();
+}
+
+/**
+ * Verifies that only a resource policy was created (no identity policy)
+ */
+function assertOnlyResourcePolicy(stack: Stack, grant: iam.Grant) {
+  Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  expect(grant.principalStatement).toBeUndefined();
+  expect(grant.resourceStatement).toBeDefined();
+}
+
+/**
+ * Verifies that no warnings were generated in the stack
+ */
+function assertNoWarnings(stack: Stack) {
+  const warnings = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+  expect(warnings).toHaveLength(0);
+}
+
+/**
+ * Verifies that a warning was generated for the given path and message
+ */
+function assertHasWarning(stack: Stack, path: string, warningMessage: string, exactMatch: boolean = true) {
+  if (exactMatch) {
+    Annotations.fromStack(stack).hasWarning(path, warningMessage);
+  } else {
+    Annotations.fromStack(stack).hasWarning(path, Match.stringLikeRegexp(warningMessage));
+  }
+}
+
+/**
+ * Verifies the structure of an identity-based policy with the given resource ARN
+ */
+function assertIdentityBasedPolicy(stack: Stack, resourceArn: any) {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: 'events:PutEvents',
+        Effect: 'Allow',
+        Resource: resourceArn,
+      }],
+      Version: '2012-10-17',
+    },
+  });
+}
+
+/**
+ * Verifies the structure of a service principal resource policy
+ */
+function assertServicePrincipalResourcePolicy(stack: Stack, serviceName: string, conditions?: any) {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+    Statement: Match.objectLike({
+      Effect: 'Allow',
+      Action: 'events:PutEvents',
+      Principal: { Service: serviceName },
+      Resource: Match.anyValue(),
+      Condition: conditions ? Match.objectLike(conditions) : Match.absent(),
+    }),
+  });
+}
+
+/**
+ * Verifies the structure of a cross-account resource policy
+ */
+function assertCrossAccountResourcePolicy(stack: Stack, accountId: string) {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+    Statement: Match.objectLike({
+      Effect: 'Allow',
+      Action: 'events:PutEvents',
+      Principal: {
+        AWS: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::' + accountId + ':root',
+          ]],
+        },
+      },
+      Resource: Match.anyValue(),
+    }),
+  });
+}
+
+/**
+ * Verifies the structure of an organization resource policy
+ */
+function assertOrganizationResourcePolicy(stack: Stack, orgId: string) {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+    Statement: Match.objectLike({
+      Effect: 'Allow',
+      Action: 'events:PutEvents',
+      Principal: { AWS: '*' },
+      Resource: Match.anyValue(),
+      Condition: {
+        StringEquals: {
+          'aws:PrincipalOrgID': orgId,
+        },
+      },
+    }),
+  });
+}
+
 describe('EventBus grants', () => {
   describe('with feature flag EVENTBUS_POLICY_SID_REQUIRED enabled', () => {
     let app: App;
@@ -22,7 +151,7 @@ describe('EventBus grants', () => {
     });
 
     describe('same-account scenarios', () => {
-      test('grantPutEventsTo creates IAM policy for IAM principal', () => {
+      test('creates only identity-based policy for IAM role', () => {
         // GIVEN
         const role = new iam.Role(stack, 'Role', {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -32,26 +161,14 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(role);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
-              },
-            }],
-            Version: '2012-10-17',
-          },
+        assertIdentityBasedPolicy(stack, {
+          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
         });
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0); // Verify no resource policy
-        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1); // Verify exactly one IAM policy
-        expect(grant.principalStatement).toBeDefined(); // Verify principal policy was created
-        expect(grant.resourceStatement).toBeUndefined(); // Verify no resource policy was created
+        assertOnlyIdentityPolicy(stack, grant);
         expect(grant.success).toBeTruthy();
       });
 
-      test('grantPutEventsTo creates EventBusPolicy for service principal even with same account', () => {
+      test('creates only resource policy for service principal with source account condition', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com', {
           conditions: {
@@ -65,49 +182,18 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(servicePrincipal, defaultSid);
 
         // THEN
-        // Service principals always get resource policy, regardless of account
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 1);
-        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
-        expect(grant.success).toBeTruthy();
-        expect(grant.principalStatement).toBeUndefined();
-        expect(grant.resourceStatement).toBeDefined();
-      });
-
-      test('imported EventBus grants create IAM policy and no warnings', () => {
-        // GIVEN
-        const importedEventBus = EventBus.fromEventBusArn(stack, 'ImportedBus', eventBus.eventBusArn);
-        const role = new iam.Role(stack, 'Role', {
-          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-        });
-
-        // WHEN
-        const grant = importedEventBus.grantPutEventsTo(role);
-
-        // THEN
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
-              },
-            }],
-            Version: '2012-10-17',
+        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com', {
+          StringEquals: {
+            'aws:SourceAccount': { Ref: 'AWS::AccountId' },
           },
         });
-
-        // Verify no warnings were created
-        const warnings = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
-        expect(warnings).toHaveLength(0);
-
+        assertOnlyResourcePolicy(stack, grant);
         expect(grant.success).toBeTruthy();
       });
     });
 
     describe('cross-account scenarios', () => {
-      test('grantPutEventsTo creates EventBusPolicy for service principal without conditions', () => {
+      test('creates resource policy for service principal without conditions', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
 
@@ -115,35 +201,12 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(servicePrincipal, defaultSid);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: {
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: { Service: 'states.amazonaws.com' },
-            Resource: { 'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'] },
-          },
-          StatementId: `cdk-${defaultSid}`,
-          EventBusName: { Ref: 'EventBus7B8748AA' },
-        });
-
+        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com');
+        assertOnlyResourcePolicy(stack, grant);
         expect(grant.success).toBeTruthy();
-
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 1); // Verify exactly one resource policy
-        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0); // Verify no IAM policy
-
-        // Verify no unexpected properties in the policy
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: Match.objectLike({
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: { Service: 'states.amazonaws.com' },
-            Resource: Match.anyValue(),
-            Condition: Match.absent(),
-          }),
-        });
       });
 
-      test('grantPutEventsTo creates both IAM and resource policies for cross-account service principal', () => {
+      test('creates resource policy for service principal with cross-account condition', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com', {
           conditions: {
@@ -157,26 +220,16 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(servicePrincipal, defaultSid);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: {
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: { Service: 'states.amazonaws.com' },
-            Resource: { 'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'] },
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': '123456789012',
-              },
-            },
+        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com', {
+          StringEquals: {
+            'aws:SourceAccount': '123456789012',
           },
-          StatementId: `cdk-${defaultSid}`,
-          EventBusName: { Ref: 'EventBus7B8748AA' },
         });
-
+        assertOnlyResourcePolicy(stack, grant);
         expect(grant.success).toBeTruthy();
       });
 
-      test('grantPutEventsTo creates both IAM and resource policies for cross-account role principal', () => {
+      test('creates resource policy for cross-account role principal', () => {
         // GIVEN
         const otherAccountRole = new iam.AccountPrincipal('123456789012');
 
@@ -184,29 +237,12 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(otherAccountRole, defaultSid);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: {
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: {
-              AWS: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::123456789012:root',
-                ]],
-              },
-            },
-            Resource: { 'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'] },
-          },
-          StatementId: `cdk-${defaultSid}`,
-          EventBusName: { Ref: 'EventBus7B8748AA' },
-        });
-
+        assertCrossAccountResourcePolicy(stack, '123456789012');
+        assertOnlyResourcePolicy(stack, grant);
         expect(grant.success).toBeTruthy();
       });
 
-      test('grantPutEventsTo creates both IAM and resource policies for cross-account organization principal', () => {
+      test('creates resource policy for organization principal with condition', () => {
         // GIVEN
         const organizationPrincipal = new iam.OrganizationPrincipal('o-12345abcdef');
 
@@ -214,49 +250,14 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(organizationPrincipal, defaultSid);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: {
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: {
-              AWS: '*',
-            },
-            Resource: { 'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'] },
-            Condition: {
-              StringEquals: {
-                'aws:PrincipalOrgID': organizationPrincipal.organizationId,
-              },
-            },
-            Sid: `cdk-${defaultSid}`,
-          },
-          StatementId: `cdk-${defaultSid}`,
-          EventBusName: { Ref: 'EventBus7B8748AA' },
-        });
-
+        assertOrganizationResourcePolicy(stack, 'o-12345abcdef');
+        assertOnlyResourcePolicy(stack, grant);
         expect(grant.success).toBeTruthy();
-
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 1);
-        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
-
-        // Verify all required parts of the organization policy
-        Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: Match.objectLike({
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: { AWS: '*' },
-            Resource: Match.anyValue(),
-            Condition: {
-              StringEquals: {
-                'aws:PrincipalOrgID': Match.exact('o-12345abcdef'),
-              },
-            },
-          }),
-        });
       });
     });
 
     describe('imported event bus scenarios', () => {
-      test('grantPutEventsTo handles imported bus with service principal', () => {
+      test('adds warning when granting to service principal on imported bus', () => {
         // GIVEN
         const importedEventBus = EventBus.fromEventBusName(stack, 'ImportedBus', 'external-bus');
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
@@ -265,20 +266,33 @@ describe('EventBus grants', () => {
         const grant = importedEventBus.grantPutEventsTo(servicePrincipal);
 
         // THEN
-        // No policies created since we can't add resource policy to imported bus
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
+        assertNoResourcePolicy(stack);
+        expect(grant.success).toBeTruthy();
+        assertHasWarning(stack, '/Stack1/ImportedBus',
+          'Unable to add necessary permissions to imported target event bus: arn:\\${Token\\[AWS\\.Partition\\.[0-9]+\\]}:events:\\${Token\\[AWS\\.Region\\.[0-9]+\\]}:\\${Token\\[AWS\\.AccountId\\.[0-9]+\\]}:event-bus/external-bus \\[ack: @aws-cdk/aws-events:eventBusAddToResourcePolicy\\]',
+          false);
+      });
 
-        // Warning is added because service principals require resource policy
-        // and we can't add it to imported bus
-        Annotations.fromStack(stack).hasWarning('/Stack1/ImportedBus',
-          Match.stringLikeRegexp('Unable to add necessary permissions to imported target event bus: arn:\\${Token\\[AWS\\.Partition\\.[0-9]+\\]}:events:\\${Token\\[AWS\\.Region\\.[0-9]+\\]}:\\${Token\\[AWS\\.AccountId\\.[0-9]+\\]}:event-bus/external-bus \\[ack: @aws-cdk/aws-events:eventBusAddToResourcePolicy\\]'),
-        );
+      test('creates identity-based policy for imported event bus from ARN without warnings', () => {
+        // GIVEN
+        const importedEventBus = EventBus.fromEventBusArn(stack, 'ImportedBus', eventBus.eventBusArn);
+        const role = new iam.Role(stack, 'Role', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
 
-        // Grant still succeeds
+        // WHEN
+        const grant = importedEventBus.grantPutEventsTo(role);
+
+        // THEN
+        assertIdentityBasedPolicy(stack, {
+          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
+        });
+        assertOnlyIdentityPolicy(stack, grant);
+        assertNoWarnings(stack);
         expect(grant.success).toBeTruthy();
       });
 
-      test('grantPutEventsTo creates IAM policy for imported EventBus using fromEventBusName', () => {
+      test('creates identity-based policy for imported event bus from name without warnings', () => {
         // GIVEN
         const importedEventBus = EventBus.fromEventBusName(stack, 'ImportedBus', eventBus.eventBusName);
         const role = new iam.Role(stack, 'Role', {
@@ -289,34 +303,26 @@ describe('EventBus grants', () => {
         const grant = importedEventBus.grantPutEventsTo(role);
 
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':events:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':event-bus/',
-                  { Ref: 'EventBus7B8748AA' },
-                ]],
-              },
-            }],
-            Version: '2012-10-17',
-          },
+        assertIdentityBasedPolicy(stack, {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':events:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':event-bus/',
+            { Ref: 'EventBus7B8748AA' },
+          ]],
         });
-
+        assertOnlyIdentityPolicy(stack, grant);
+        assertNoWarnings(stack);
         expect(grant.success).toBeTruthy();
       });
     });
 
     describe('token handling', () => {
-      test('grantPutEventsTo handles token accounts correctly', () => {
+      test('creates identity-based policy for token account principal', () => {
         // GIVEN
         // Create a role with a token principal
         const role = new iam.Role(stack, 'Role', {
@@ -327,36 +333,17 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(role);
 
         // THEN
-        // Should only create IAM policy as accounts are assumed same when both are tokens
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
-              },
-            }],
-            Version: '2012-10-17',
-          },
+        assertIdentityBasedPolicy(stack, {
+          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
         });
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
-
-        // Verify the grant details
-        expect(grant.principalStatement).toBeDefined();
-        expect(grant.resourceStatement).toBeUndefined();
+        assertOnlyIdentityPolicy(stack, grant);
+        assertNoWarnings(stack);
         expect(grant.success).toBeTruthy();
-
-        // Verify no warnings were created
-        const warnings = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
-        expect(warnings).toHaveLength(0);
       });
     });
 
     describe('cross-stack scenarios', () => {
-      test('grantPutEventsTo works across stacks', () => {
+      test('creates identity-based policy in different stack', () => {
         // GIVEN
         const stack2 = new Stack(app, 'Stack2');
         const role = new iam.Role(stack2, 'Role', {
@@ -367,26 +354,15 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(role, defaultSid);
 
         // THEN
-        // Only IAM policy is needed, no resource policy required for same account
         Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-
-        Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::ImportValue': Match.stringLikeRegexp('Stack1:ExportsOutput.*'),
-              },
-            }],
-            Version: '2012-10-17',
-          },
+        assertIdentityBasedPolicy(stack2, {
+          'Fn::ImportValue': Match.stringLikeRegexp('Stack1:ExportsOutput.*'),
         });
-
+        assertOnlyIdentityPolicy(stack2, grant);
         expect(grant.success).toBeTruthy();
       });
 
-      test('grantPutEventsTo works across stacks with imported event bus', () => {
+      test('creates identity-based policy for imported event bus in different stack', () => {
         // GIVEN
         const stack2 = new Stack(app, 'Stack2');
         const importedBus = EventBus.fromEventBusArn(stack2, 'ImportedBus', eventBus.eventBusArn);
@@ -398,25 +374,16 @@ describe('EventBus grants', () => {
         const grant = importedBus.grantPutEventsTo(role);
 
         // THEN
-        Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::ImportValue': Match.stringLikeRegexp('Stack1:ExportsOutputFnGetAtt.*'),
-              },
-            }],
-            Version: '2012-10-17',
-          },
+        assertIdentityBasedPolicy(stack2, {
+          'Fn::ImportValue': Match.stringLikeRegexp('Stack1:ExportsOutputFnGetAtt.*'),
         });
-
+        assertOnlyIdentityPolicy(stack2, grant);
         expect(grant.success).toBeTruthy();
       });
     });
 
-    describe('multiple grants', () => {
-      test('multiple grantPutEventsTo calls to different types of principals', () => {
+    describe('multiple grants with the same event bus', () => {
+      test('creates appropriate policies for different principal types', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
         const role = new iam.Role(stack, 'Role', {
@@ -430,57 +397,26 @@ describe('EventBus grants', () => {
         const grant3 = eventBus.grantPutEventsTo(accountPrincipal, `${defaultSid}-3`);
 
         // THEN
-        // Verify policies are created
-        const template = Template.fromStack(stack);
-
-        // Verify service principal gets resource policy
-        template.hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: Match.objectLike({
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: { Service: 'states.amazonaws.com' },
-          }),
-        });
-
-        // Verify role gets IAM policy
-        template.hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [{
-              Action: 'events:PutEvents',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
-              },
-            }],
-          },
-        });
-
-        // Verify cross-account principal gets resource policy
-        template.hasResourceProperties('AWS::Events::EventBusPolicy', {
-          Statement: Match.objectLike({
-            Effect: 'Allow',
-            Action: 'events:PutEvents',
-            Principal: {
-              AWS: {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':iam::123456789012:root',
-                ]],
-              },
-            },
-          }),
-        });
-
         // Count total policies
-        template.resourceCountIs('AWS::Events::EventBusPolicy', 2); // Service principal and account principal
-        template.resourceCountIs('AWS::IAM::Policy', 1); // Role
+        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 2); // Service principal and account principal
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1); // Role
 
-        // Verify all grants succeeded
-        expect(grant1.success && grant2.success && grant3.success).toBeTruthy();
+        // Verify service principal policy
+        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com');
+        expect(grant1.success).toBeTruthy();
+
+        // Verify role policy
+        assertIdentityBasedPolicy(stack, {
+          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
+        });
+        expect(grant2.success).toBeTruthy();
+
+        // Verify cross-account policy
+        assertCrossAccountResourcePolicy(stack, '123456789012');
+        expect(grant3.success).toBeTruthy();
       });
 
-      test('multiple grantPutEventsTo calls to different IAM principals create separate policies', () => {
+      test('creates separate identity-based policies for different IAM principals', () => {
         // GIVEN
         const role1 = new iam.Role(stack, 'Role1', {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -517,7 +453,7 @@ describe('EventBus grants', () => {
     });
 
     describe('feature flag behavior', () => {
-      test('service principals get warning and dropped grant', () => {
+      test('fails to grant to service principal without sid', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
 
@@ -525,13 +461,14 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(servicePrincipal);
 
         // THEN
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-        Annotations.fromStack(stack).hasWarning('/Stack1/EventBus',
+        assertNoResourcePolicy(stack);
+        assertNoIdentityPolicy(stack);
+        assertHasWarning(stack, '/Stack1/EventBus',
           'Unable to grant PutEvents to service principal: Statement ID is required for EventBus resource policies. Either provide a \'sid\' parameter or enable the \'@aws-cdk/aws-events:requireEventBusPolicySid\' feature flag. [ack: @aws-cdk/aws-events:eventBusServicePrincipalGrant]');
         expect(grant.success).toBeFalsy();
       });
 
-      test('providing sid still results in warning and dropped grant when feature flag is disabled', () => {
+      test('fails to grant to service principal even with sid provided', () => {
         // GIVEN
         const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
         const explicitSid = 'MyCustomSid';
@@ -540,13 +477,10 @@ describe('EventBus grants', () => {
         const grant = eventBus.grantPutEventsTo(servicePrincipal, explicitSid);
 
         // THEN
-        // Verify no resource policy is created
-        Template.fromStack(stack).resourceCountIs('AWS::Events::EventBusPolicy', 0);
-
-        // Verify warning is still issued even with sid
-        Annotations.fromStack(stack).hasWarning('/Stack1/EventBus',
+        assertNoResourcePolicy(stack);
+        assertNoIdentityPolicy(stack);
+        assertHasWarning(stack, '/Stack1/EventBus',
           'Unable to grant PutEvents to service principal: Statement ID is required for EventBus resource policies. Either provide a \'sid\' parameter or enable the \'@aws-cdk/aws-events:requireEventBusPolicySid\' feature flag. [ack: @aws-cdk/aws-events:eventBusServicePrincipalGrant]');
-
         expect(grant.success).toBeFalsy();
       });
     });
