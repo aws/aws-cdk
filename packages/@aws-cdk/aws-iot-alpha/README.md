@@ -144,12 +144,14 @@ new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
 To configure [the device certificate age check](https://docs.aws.amazon.com/iot-device-defender/latest/devguide/device-certificate-age-check.html), you can specify the duration for the check:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 new iot.AccountAuditConfiguration(this, 'AuditConfiguration', {
   checkConfiguration: {
     deviceCertificateAgeCheck: true,
     // The default value is 365 days
     // Valid values are 30-3652 days
-    deviceCertificateAgeCheckDuration: cdk.Duration.days(365),
+    deviceCertificateAgeCheckDuration: Duration.days(365),
   },
 });
 ```
