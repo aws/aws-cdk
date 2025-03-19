@@ -275,7 +275,7 @@ export interface MonitoringConfiguration {
  */
 export interface BrokerLogging {
   /**
-   * The Kinesis Data Firehose delivery stream that is the destination for broker logs.
+   * The Amazon Data Firehose delivery stream that is the destination for broker logs.
    *
    * @default - disabled
    */

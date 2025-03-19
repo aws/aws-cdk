@@ -2,7 +2,7 @@ export * from './codebuild-start-build';
 export * from './codepipeline-start-pipeline-execution';
 export * from './event-bridge-put-events';
 export * from './inspector-start-assessment-run';
-export * from './kinesis-data-firehose-put-record';
+export * from './firehose-put-record';
 export * from './kinesis-stream-put-record';
 export * from './lambda-invoke';
 export * from './sage-maker-start-pipeline-execution';

@@ -529,7 +529,7 @@ To grant a principal permission to run your `TaskDefinition`, you can use the `T
 ```ts
 declare const role: iam.IGrantable;
 const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
-  cpu: '512',
+  cpu: '256',
   memoryMiB: '512',
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });

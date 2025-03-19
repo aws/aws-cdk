@@ -3,7 +3,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Size, Stack, withResolved } from '../../../core';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
  * The overrides that should be sent to a container.
@@ -311,7 +311,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       // Using the alternative permissions as mentioned here:
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
-        resources: [
+        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
           Stack.of(this).formatArn({
             service: 'batch',
             resource: 'job-definition',

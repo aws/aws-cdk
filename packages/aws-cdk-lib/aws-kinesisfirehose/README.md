@@ -61,7 +61,7 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 
 ### Direct Put
 
-Data must be provided via "direct put", ie., by using a `PutRecord` or 
+Data must be provided via "direct put", ie., by using a `PutRecord` or
 `PutRecordBatch` API call. There are a number of ways of doing so, such as:
 
 - Kinesis Agent: a standalone Java application that monitors and delivers files while
@@ -80,10 +80,9 @@ Data must be provided via "direct put", ie., by using a `PutRecord` or
 
 ## Destinations
 
-Amazon Data Firehose supports multiple AWS and third-party services as destinations, including Amazon S3, Amazon Redshift, and more. You can find the full list of supported destination [here](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html). 
+Amazon Data Firehose supports multiple AWS and third-party services as destinations, including Amazon S3, Amazon Redshift, and more. You can find the full list of supported destination [here](https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html).
 
-Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs. See [kinesisfirehose-destinations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisfirehose-destinations-readme.html)
-for the implementations of these destinations.
+Currently in the AWS CDK, only S3 is implemented as an L2 construct destination. Other destinations can still be configured using L1 constructs.
 
 ### S3
 
@@ -214,7 +213,7 @@ limit of records per second (indicating data is flowing into your delivery strea
 than it is configured to process).
 
 CDK provides methods for accessing delivery stream metrics with default configuration,
-such as `metricIncomingBytes`, and `metricIncomingRecords` (see [`IDeliveryStream`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-kinesisfirehose.IDeliveryStream.html)
+such as `metricIncomingBytes`, and `metricIncomingRecords` (see [`IDeliveryStream`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-cdk-lib.aws_kinesisfirehose.IDeliveryStream.html)
 for a full list). CDK also provides a generic `metric` method that can be used to produce
 metric configurations for any metric provided by Amazon Data Firehose; the configurations
 are pre-populated with the correct dimensions for the delivery stream.

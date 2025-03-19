@@ -409,17 +409,16 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
 const bucket = new s3.Bucket(this, 'audit-bucket');
-const s3Destination = new destinations.S3Bucket(bucket);
+const s3Destination = new firehose.S3Bucket(bucket);
 
-const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
+const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: s3Destination,
 });
 

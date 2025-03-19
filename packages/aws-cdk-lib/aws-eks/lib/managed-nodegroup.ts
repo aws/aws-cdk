@@ -103,6 +103,10 @@ export enum CapacityType {
    * on-demand instances
    */
   ON_DEMAND = 'ON_DEMAND',
+  /**
+   * capacity block instances
+   */
+  CAPACITY_BLOCK = 'CAPACITY_BLOCK',
 }
 
 /**
