@@ -1,0 +1,75 @@
+name: CDK Enums Auto Updater
+on:
+  workflow_dispatch:
+
+jobs:
+  update-l2-enums:
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "*"
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/enum-updater && yarn build
+
+      - name: Identify Missing Values and Apply Code Changes
+        run: |
+          cd tools/@aws-cdk/enum-updater
+          ./bin/update-missing-enums
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+  
+      - name: Commit & Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          
+          # Iterate through each module directory that has changes
+          for module in $(git diff --name-only | grep -E '^packages/(@aws-cdk|aws-cdk-lib)/.*' | sed -E 's|^packages/(@aws-cdk\|aws-cdk-lib)/([^/]+).*|\2|' | sort -u); do
+            moduleName=$(basename $module)
+          
+            # Check for existing PR with the same name
+            prExists=$(gh pr list --state open --search "feat(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" --json number,title -q '.[].number')
+          
+            # If a PR exists, close it and continue
+            if [[ -n "$prExists" ]]; then
+              echo "PR already exists for module ${moduleName#aws-}, closing the existing PR."
+              gh pr close "$prExists" --confirm  # Close the PR by its number
+            fi
+          
+            # Create a new branch for the module
+            branchName="enum-update/${moduleName#aws-}"
+            git checkout -b "$branchName"
+            
+            # Stage, commit, and push changes for the module
+            git add "packages/$module"  # Add only changes for this module
+            git commit -m "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}"
+            git push origin "$branchName"
+          
+          # Create a new pull request
+          gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
+           --body "This PR updates the enum values for ${moduleName#aws-}." \
+           --base main \
+           --head "$branchName"
+           --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test" \
+           --reviewer "aws-cdk-team" \
+          done
+        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

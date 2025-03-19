@@ -11,10 +11,10 @@ export function main() {
 
   new EnumsUpdater(dir).execute();
   console.log('Enums updater finished.');
-
+  
+  new EnumLikeUpdater(dir).execute();
+  console.log('Enums-like updater finished.');
+  
   new MethodsUpdater(dir).execute();
   console.log('Methods updater finished.');
-
-  new EnumLikeUpdater(dir).execute();
-  console.log('Enum-like updater finished.');
 }
