@@ -120,7 +120,7 @@ export class PipelineGraph {
     // If the wave only has one Stage in it, don't add an additional Graph around it
     const retGraph: AGraph = wave.stages.length === 1
       ? this.addStage(wave.stages[0])
-      : Graph.of(wave.id, { type: 'group' }, wave.stages.map(s => this.addStage(s)));
+      : Graph.of(wave.id, { type: 'group' }, undefined, wave.stages.map(s => this.addStage(s)));
 
     this.addPrePost(wave.pre, wave.post, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
@@ -345,7 +345,7 @@ export class PipelineGraph {
         ? (this.singlePublisher ? 'FileAsset' : `FileAsset${++this._fileAssetCtr}`)
         : (this.singlePublisher ? 'DockerAsset' : `DockerAsset${++this._dockerAssetCtr}`);
 
-      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] });
+      assetNode = aGraphNode(id, { type: 'publish-assets', assets: [] }, stackAsset.displayName);
       assetsGraph.add(assetNode);
       assetNode.dependOn(this.lastPreparationNode);
 
@@ -412,8 +412,8 @@ interface ExecuteAnnotation {
 export type AGraphNode = GraphNode<GraphAnnotation>;
 export type AGraph = Graph<GraphAnnotation>;
 
-function aGraphNode(id: string, x: GraphAnnotation): AGraphNode {
-  return GraphNode.of(id, x);
+function aGraphNode(id: string, x: GraphAnnotation, displayName?: string): AGraphNode {
+  return GraphNode.of(id, x, displayName);
 }
 
 function stripPrefix(s: string, prefix: string) {
