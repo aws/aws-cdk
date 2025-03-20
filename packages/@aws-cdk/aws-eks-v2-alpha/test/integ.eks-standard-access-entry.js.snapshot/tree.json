@@ -776,9 +776,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+                      "s3Key": "737d25a30d9f795cb0e9b1e4b28259ffb509944c4918bdd11c2d9bcee3fba68a.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+                    "description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.1",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -789,8 +789,8 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v31.KubectlV31Layer",
-              "version": "2.0.0",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v32.KubectlV32Layer",
+              "version": "2.0.3",
               "metadata": [
                 "*"
               ]
@@ -922,8 +922,14 @@
                     "accessConfig": {
                       "authenticationMode": "API"
                     },
+                    "computeConfig": {
+                      "enabled": false
+                    },
                     "kubernetesNetworkConfig": {
-                      "ipFamily": "ipv4"
+                      "ipFamily": "ipv4",
+                      "elasticLoadBalancing": {
+                        "enabled": false
+                      }
                     },
                     "resourcesVpcConfig": {
                       "securityGroupIds": [
@@ -957,7 +963,12 @@
                         "Arn"
                       ]
                     },
-                    "version": "1.31"
+                    "storageConfig": {
+                      "blockStorage": {
+                        "enabled": false
+                      }
+                    },
+                    "version": "1.32"
                   }
                 },
                 "constructInfo": {
@@ -1387,7 +1398,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                              "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
                             },
                             "description": "/opt/awscli/aws"
                           }
@@ -1535,16 +1546,6 @@
                                                   ]
                                                 }
                                               ]
-                                            },
-                                            {
-                                              "Action": "lambda:GetFunction",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "ClusterKubectlProviderHandler2E05C68A",
-                                                  "Arn"
-                                                ]
-                                              }
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1576,11 +1577,6 @@
                                     {
                                       "attachToRole": [
                                         "*"
-                                      ]
-                                    },
-                                    {
-                                      "addStatements": [
-                                        {}
                                       ]
                                     },
                                     {
@@ -1626,8 +1622,13 @@
                                   ]
                                 },
                                 {
-                                  "addToPrincipalPolicy": [
-                                    {}
+                                  "attachInlinePolicy": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachInlinePolicy": [
+                                    "*"
                                   ]
                                 }
                               ]
@@ -1723,6 +1724,70 @@
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
+                            }
+                          },
+                          "inlinePolicyAddedToExecutionRole-0": {
+                            "id": "inlinePolicyAddedToExecutionRole-0",
+                            "path": "EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:GetFunction",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Fn::GetAtt": [
+                                              "ClusterKubectlProviderHandler2E05C68A",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A",
+                                    "roles": [
+                                      {
+                                        "Ref": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0",
+                              "metadata": [
+                                {
+                                  "statements": "*"
+                                },
+                                {
+                                  "addStatements": [
+                                    {}
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                },
+                                {
+                                  "attachToRole": [
+                                    "*"
+                                  ]
+                                }
+                              ]
                             }
                           }
                         },

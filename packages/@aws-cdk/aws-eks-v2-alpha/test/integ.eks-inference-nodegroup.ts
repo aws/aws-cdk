@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterInferenceStack extends Stack {
@@ -15,13 +15,14 @@ class EksClusterInferenceStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
       albController: {
         version: eks.AlbControllerVersion.V2_8_2,
       },
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
     });
 
     cluster.addNodegroupCapacity('InferenceInstances', {
@@ -37,6 +38,7 @@ class EksClusterInferenceStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-nodegroup');

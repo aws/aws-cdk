@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -22,9 +22,9 @@ class EksClusterStack extends Stack {
       vpc,
       mastersRole,
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -42,7 +42,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {

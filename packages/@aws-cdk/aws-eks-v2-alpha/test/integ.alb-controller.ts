@@ -6,7 +6,7 @@ import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import { Pinger } from './pinger/pinger';
 import * as eks from '../lib';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
@@ -19,12 +19,12 @@ class EksClusterAlbControllerStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       albController: {
         version: LATEST_VERSION,
       },
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -74,6 +74,7 @@ class EksClusterAlbControllerStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');

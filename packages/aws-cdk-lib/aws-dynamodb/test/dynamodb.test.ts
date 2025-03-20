@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
+import * as cxapi from '../../cx-api';
 import {
   Attribute,
   AttributeType,
@@ -643,9 +644,115 @@ test('if an encryption key is included, encrypt/decrypt permissions are added to
   });
 });
 
-test('replica-handler permission check', () => {
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
   // GIVEN
-  const app = new App();
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: true,
+    },
+  });
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const provider = ReplicaProvider.getOrCreate(stack, {
+    tableName: 'test',
+    regions: ['eu-central-1', 'eu-west-1'],
+  });
+
+  // THEN
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'iam:CreateServiceLinkedRole',
+          'Effect': 'Allow',
+          'Resource': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': 'dynamodb:DescribeLimits',
+          'Effect': 'Allow',
+          'Resource': '*',
+        },
+      ],
+    },
+  });
+  Template.fromStack(provider).hasResourceProperties('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': [
+        {
+          'Action': [
+            'dynamodb:DeleteTable',
+            'dynamodb:DeleteTableReplica',
+          ],
+          'Effect': 'Allow',
+          'Resource': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-central-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:eu-west-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/test',
+                ],
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+});
+
+test('replica-handler permission check @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy disabled', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [cxapi.LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: false,
+    },
+  });
   const stack = new Stack(app, 'Stack');
 
   // WHEN

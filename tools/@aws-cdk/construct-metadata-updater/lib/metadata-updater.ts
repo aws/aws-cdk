@@ -1,6 +1,7 @@
-import { ClassDeclaration, IndentationText, Project, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
+import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
+// import { exec } from "child_process";
 // import SyntaxKind = ts.SyntaxKind;
 
 const DIRECTORIES_TO_SKIP = [
@@ -120,6 +121,23 @@ export abstract class MetadataUpdater {
     });
 
     return resourceClasses;
+  }
+
+  /**
+   * Write the file content for the enum metadats.
+   * @param outputPath The file to write to
+   * @param values The values, as a nested dictionary, to write. 
+   */
+  protected writeFileContent(outputPath: string, values: Record<string, Record<string, (string | number)[]>> = {}) {
+    // Sort the keys of the enumlikes object
+    const sortedValues = Object.keys(values).sort().reduce<Record<string, Record<string, (string | number)[]>>>((acc, key) => {
+      acc[key] = values[key];
+      return acc;
+    }, {});
+    const content = JSON.stringify(sortedValues, null, 2);
+
+    // Write the generated file
+    fs.writeFileSync(outputPath, content);
   }
 }
 
@@ -502,8 +520,11 @@ export class EnumsUpdater extends MetadataUpdater {
    */
   public execute() {
     const enumBlueprint: Record<string, (string | number)[]> = {};
+    const moduleEnumBlueprint: Record<string, Record<string, (string | number)[]>> = {};
 
     this.project.getSourceFiles().forEach((sourceFile) => {
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
+      let fileBlueprint: Record<string, (string | number)[]> = {};
       sourceFile.forEachChild((node) => {
         if (node.getKindName() === "EnumDeclaration") {
           const enumDeclaration = node.asKindOrThrow(SyntaxKind.EnumDeclaration);
@@ -515,8 +536,12 @@ export class EnumsUpdater extends MetadataUpdater {
 
           // Add to the blueprint
           enumBlueprint[enumName] = enumValues;
+          fileBlueprint[enumName] = enumValues;
         }
       });
+      if (Object.values(fileBlueprint).length > 0) {
+        moduleEnumBlueprint[sourceFileName] = fileBlueprint;
+      }
     });
 
     // Generate the file content
@@ -525,10 +550,16 @@ export class EnumsUpdater extends MetadataUpdater {
       __dirname,
       "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums.ts"
     );
-
+    const moduleOutputPath = path.resolve(
+      __dirname,
+      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enums.json"
+    );
+    
     // Write the generated file
     fs.writeFileSync(outputPath, content);
     console.log(`Metadata file written to: ${outputPath}`);
+    this.writeFileContent(moduleOutputPath, moduleEnumBlueprint);
+    console.log(`Metadata file written to: ${moduleOutputPath}`);
   }
 
   /**
@@ -548,7 +579,12 @@ export class EnumsUpdater extends MetadataUpdater {
 export const AWS_CDK_ENUMS: { [key: string]: any } = $ENUMS;
 `;
 
-    const jsonContent = JSON.stringify(enums, null, 2).replace(/"/g, "'");
+    // Sort the keys of the enums object
+    const sortedEnums = Object.keys(enums).sort().reduce<Record<string, (string | number)[]>>((acc, key) => {
+      acc[key] = enums[key];
+      return acc;
+    }, {});
+    const jsonContent = JSON.stringify(sortedEnums, null, 2).replace(/"/g, "'");
 
     // Replace the placeholder with the JSON object
     return template.replace("$ENUMS", jsonContent);
@@ -655,5 +691,66 @@ export class MethodsUpdater extends MetadataUpdater {
 
     sourceFile.saveSync();
     return updated;
+  }
+}
+
+/**
+ * Class to parse and update the metadata of enum-like classes.
+ * These are classes which are similar to enums, but map to classes rather than
+ * primitive types.
+ */
+export class EnumLikeUpdater extends MetadataUpdater {
+
+  constructor(dir: string) {
+    super(dir);
+  }
+
+   /**
+   * Parse the repository for any enum-like classes and generate a JSON blueprint.
+   */
+  public execute(): void {
+    const enumlikeBlueprint: Record<string, Record<string, string[]>> = {};
+
+    // Retrieve enum-like classes
+    this.project.getSourceFiles().forEach((sourceFile) => {
+      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
+      let fileBlueprint: Record<string, string[]> = {};
+      sourceFile.forEachChild((node) => {
+        if (node instanceof ClassDeclaration) {
+          const className = node.getName();
+          if (className) {
+            node.forEachChild((classField) => {
+              if (classField instanceof PropertyDeclaration) {
+                // enum-likes have `public static readonly` attributes that map to either new or call expressions
+                const initializerKind = classField.getInitializer()?.getKind();
+                if (initializerKind && classField.getText().startsWith("public static readonly") && 
+                  (initializerKind === SyntaxKind.NewExpression || initializerKind === SyntaxKind.CallExpression || initializerKind === SyntaxKind.PropertyAccessExpression)
+                ) {
+                  // This is an enum-like; add to blueprint
+                  const enumlikeName = classField.getName();
+                  if (!fileBlueprint[className]) {
+                    fileBlueprint[className] = [];
+                  }
+                  fileBlueprint[className].push(enumlikeName);
+                }
+              }
+            });
+            if (Object.values(fileBlueprint).length > 0) {
+              enumlikeBlueprint[sourceFileName] = fileBlueprint;
+            }
+          }
+        }
+      });
+    });
+
+    // Generate the file content
+    const outputPath = path.resolve(
+      __dirname,
+      "../../../../packages/aws-cdk-lib/core/lib/analytics-data-source/enums/module-enumlikes.json"
+    );
+    
+    // Write the generated file
+    this.writeFileContent(outputPath, enumlikeBlueprint);
+    console.log(`Metadata file written to: ${outputPath}`);
   }
 }

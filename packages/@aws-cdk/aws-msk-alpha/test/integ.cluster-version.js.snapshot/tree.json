@@ -45,7 +45,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -77,7 +84,8 @@
                     "path": "KafkaVersionTestStack/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -192,7 +200,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PublicSubnet2": {
@@ -205,7 +237,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
@@ -237,7 +276,8 @@
                     "path": "KafkaVersionTestStack/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -352,7 +392,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": true,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {},
+                    {
+                      "addNatGateway": [
+                        "*"
+                      ]
+                    }
+                  ]
                 }
               },
               "PrivateSubnet1": {
@@ -365,7 +429,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1a",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -397,7 +468,8 @@
                     "path": "KafkaVersionTestStack/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -464,7 +536,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "PrivateSubnet2": {
@@ -477,7 +568,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "test-region-1b",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
                         "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
@@ -509,7 +607,8 @@
                     "path": "KafkaVersionTestStack/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "version": "0.0.0",
+                      "metadata": []
                     }
                   },
                   "RouteTable": {
@@ -576,7 +675,26 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {
+                      "availabilityZone": "*",
+                      "vpcId": "*",
+                      "cidrBlock": "*",
+                      "mapPublicIpOnLaunch": false,
+                      "ipv6CidrBlock": "*",
+                      "assignIpv6AddressOnCreation": "*"
+                    },
+                    {}
+                  ]
                 }
               },
               "IGW": {
@@ -620,7 +738,13 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "version": "0.0.0",
+              "metadata": [
+                {
+                  "maxAzs": "*",
+                  "restrictDefaultSecurityGroup": false
+                }
+              ]
             }
           },
           "ClusterVersion2-6-0": {
@@ -658,7 +782,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -722,8 +852,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-6-1": {
@@ -761,7 +894,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -825,8 +964,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-6-2": {
@@ -864,7 +1006,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -928,8 +1076,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-6-3": {
@@ -967,7 +1118,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1031,8 +1188,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-7-0": {
@@ -1070,7 +1230,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1134,8 +1300,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-7-1": {
@@ -1173,7 +1342,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1237,8 +1412,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-7-2": {
@@ -1276,7 +1454,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1340,8 +1524,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-8-0": {
@@ -1379,7 +1566,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1443,8 +1636,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-8-1": {
@@ -1482,7 +1678,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1546,8 +1748,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion2-8-2-tiered": {
@@ -1585,7 +1790,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1649,8 +1860,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-1-1": {
@@ -1688,7 +1902,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1752,8 +1972,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-2-0": {
@@ -1791,7 +2014,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1855,8 +2084,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-3-1": {
@@ -1894,7 +2126,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -1958,8 +2196,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-3-2": {
@@ -1997,7 +2238,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2061,8 +2308,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-4-0": {
@@ -2100,7 +2350,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2164,8 +2420,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-5-1": {
@@ -2203,7 +2462,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2267,8 +2532,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-6-0": {
@@ -2306,7 +2574,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2370,8 +2644,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-7-x": {
@@ -2409,7 +2686,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2473,8 +2756,11 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "ClusterVersion3-7-x-kraft": {
@@ -2512,7 +2798,13 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
                 }
               },
               "Resource": {
@@ -2576,8 +2868,235 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "ClusterVersion3-8-x": {
+            "id": "ClusterVersion3-8-x",
+            "path": "KafkaVersionTestStack/ClusterVersion3-8-x",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-8-x/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-8-x/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-8-x/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion38xSecurityGroupF2DB8982",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-8-x",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.8.x",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
+            }
+          },
+          "ClusterVersion3-8-x-kraft": {
+            "id": "ClusterVersion3-8-x-kraft",
+            "path": "KafkaVersionTestStack/ClusterVersion3-8-x-kraft",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-8-x-kraft/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-8-x-kraft/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0",
+                  "metadata": [
+                    {
+                      "description": "*",
+                      "vpc": "*"
+                    }
+                  ]
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-8-x-kraft/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion38xkraftSecurityGroup0FA5642D",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-8-x-kraft",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.8.x.kraft",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0",
+              "metadata": [
+                "*"
+              ]
             }
           },
           "BootstrapVersion": {

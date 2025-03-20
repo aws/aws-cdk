@@ -133,16 +133,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "LambdaNode19AFA38E",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -197,6 +187,32 @@
     "ProviderNodeframeworkonEventServiceRoleDefaultPolicy87D91D05",
     "ProviderNodeframeworkonEventServiceRoleA4E95D5E"
    ]
+  },
+  "ProviderNodeframeworkonEventinlinePolicyAddedToExecutionRole01AAFA4D4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LambdaNode19AFA38E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderNodeframeworkonEventinlinePolicyAddedToExecutionRole01AAFA4D4",
+    "Roles": [
+     {
+      "Ref": "ProviderNodeframeworkonEventServiceRoleA4E95D5E"
+     }
+    ]
+   }
   },
   "CustomResourceNode": {
    "Type": "AWS::CloudFormation::CustomResource",

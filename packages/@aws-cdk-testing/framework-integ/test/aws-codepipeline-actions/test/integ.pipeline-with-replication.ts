@@ -10,6 +10,7 @@ const app = new App({
   treeMetadata: false,
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {

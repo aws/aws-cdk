@@ -9,303 +9,251 @@
  */
 
 export const AWS_CDK_ENUMS: { [key: string]: any } = {
-  'RequireApproval': [
-    'never',
-    'any-change',
-    'broadening'
+  'AccessEntryType': [
+    'STANDARD',
+    'FARGATE_LINUX',
+    'EC2_LINUX',
+    'EC2_WINDOWS'
   ],
-  'LogLevel': [
-    'OFF',
-    'ALL',
-    'ERROR',
-    'FATAL'
+  'AccessKeyStatus': [
+    'Active',
+    'Inactive'
   ],
-  'RedirectStatus': [
-    '200',
-    '301',
-    '302',
-    '404',
-    '404-200'
+  'AccessLevel': [
+    'READ',
+    'READ_VERSIONED',
+    'LIST',
+    'WRITE',
+    'DELETE'
   ],
-  'Platform': [
-    'x86-64',
-    'ARM64'
+  'AccessScopeType': [
+    'namespace',
+    'cluster'
   ],
-  'CacheConfigType': [
-    'AMPLIFY_MANAGED',
-    'AMPLIFY_MANAGED_NO_COOKIES'
-  ],
-  'TraceConfigurationVendor': [
-    'AWSXRAY'
-  ],
-  'ImageRepositoryType': [
-    'ECR_PUBLIC',
-    'ECR'
-  ],
-  'ConfigurationSourceType': [
-    'S3',
-    'SECRETS_MANAGER',
-    'SSM_PARAMETER',
-    'SSM_DOCUMENT',
-    'CODE_PIPELINE'
-  ],
-  'HealthCheckProtocolType': [
-    'HTTP',
-    'TCP'
-  ],
-  'IpAddressType': [
-    'ipv4',
-    'dualstack',
-    'dualstack-without-public-ipv4'
-  ],
-  'ConnectionType': [
-    'INTERNET',
-    'VPC_LINK'
-  ],
-  'ImageId': [
-    'amazonlinux-2-x86_64',
-    'amazonlinux-2023-x86_64',
-    'ubuntu-18.04-x86_64',
-    'ubuntu-22.04-x86_64'
-  ],
-  'RepositoryVisibility': [
+  'AccountRecovery': [
     0,
-    1
+    1,
+    2,
+    3,
+    4,
+    5
   ],
-  'RoleMappingMatchType': [
-    'Equals',
-    'Contains',
-    'StartsWith',
-    'NotEqual'
+  'Action': [
+    'allow',
+    'deny'
   ],
-  'IdentityPoolProviderType': [
-    'Facebook',
-    'Google',
-    'Amazon',
-    'Apple',
-    'Twitter',
-    'OpenId',
-    'Saml',
-    'UserPool',
-    'Custom'
+  'ActionAfterCompletion': [
+    'NONE',
+    'DELETE'
+  ],
+  'ActionCategory': [
+    'Source',
+    'Build',
+    'Test',
+    'Approval',
+    'Deploy',
+    'Invoke',
+    'Compute'
+  ],
+  'ActionOnFailure': [
+    'TERMINATE_CLUSTER',
+    'CANCEL_AND_WAIT',
+    'CONTINUE'
+  ],
+  'ActionPoint': [
+    'PRE_CREATE_HOSTED_CONFIGURATION_VERSION',
+    'PRE_START_DEPLOYMENT',
+    'ON_DEPLOYMENT_START',
+    'ON_DEPLOYMENT_STEP',
+    'ON_DEPLOYMENT_BAKING',
+    'ON_DEPLOYMENT_COMPLETE',
+    'ON_DEPLOYMENT_ROLLED_BACK',
+    'AT_DEPLOYMENT_TICK'
+  ],
+  'AdditionalHealthCheckType': [
+    'ELB',
+    'EBS',
+    'VPC_LATTICE'
   ],
   'AddressFamily': [
     'IPv4',
     'IPv6'
   ],
-  'IpamPoolPublicIpSource': [
-    'byoip',
-    'amazon'
+  'AdjustmentType': [
+    'ChangeInCapacity',
+    'PercentChangeInCapacity',
+    'ExactCapacity'
   ],
-  'AwsServiceName': [
-    'ec2'
+  'AdotLambdaExecWrapper': [
+    '/opt/otel-handler',
+    '/opt/otel-proxy-handler',
+    '/opt/otel-stream-handler',
+    '/opt/otel-instrument',
+    '/opt/otel-sqs-handler'
   ],
-  'IpamScopeType': [
+  'AdotLambdaLayerType': [
+    'JAVA_SDK',
+    'JAVA_AUTO_INSTRUMENTATION',
+    'JAVASCRIPT_SDK',
+    'PYTHON_SDK',
+    'GENERIC'
+  ],
+  'AdvancedSecurityMode': [
+    'ENFORCED',
+    'AUDIT',
+    'OFF'
+  ],
+  'AlarmBehavior': [
+    'ROLLBACK_ON_ALARM',
+    'FAIL_ON_ALARM'
+  ],
+  'AlarmState': [
+    'ALARM',
+    'OK',
+    'INSUFFICIENT_DATA'
+  ],
+  'AlarmStatusWidgetSortBy': [
     'default',
+    'stateUpdatedTimestamp',
+    'timestamp'
+  ],
+  'AlbScheme': [
+    'internal',
+    'internet-facing'
+  ],
+  'AllocationStrategy': [
+    'BEST_FIT',
+    'BEST_FIT_PROGRESSIVE',
+    'SPOT_CAPACITY_OPTIMIZED',
+    'SPOT_PRICE_CAPACITY_OPTIMIZED'
+  ],
+  'AlpnPolicy': [
+    'HTTP1Only',
+    'HTTP2Only',
+    'HTTP2Optional',
+    'HTTP2Preferred',
+    'None'
+  ],
+  'AmazonLinuxCpuType': [
+    'arm64',
+    'x86_64'
+  ],
+  'AmazonLinuxEdition': [
+    'standard',
+    'minimal'
+  ],
+  'AmazonLinuxGeneration': [
+    'amzn',
+    'amzn2',
+    'al2022',
+    'al2023'
+  ],
+  'AmazonLinuxKernel': [
+    'kernel-5.10',
+    'kernel-6.1'
+  ],
+  'AmazonLinuxStorage': [
+    'ebs',
+    's3',
+    'gp2'
+  ],
+  'AmazonLinuxVirt': [
+    'hvm',
+    'pv'
+  ],
+  'AmiHardwareType': [
+    'Standard',
+    'GPU',
+    'ARM64',
+    'Neuron'
+  ],
+  'ApiKeySourceType': [
+    'HEADER',
+    'AUTHORIZER'
+  ],
+  'AppSyncAuthorizationType': [
+    'API_KEY',
+    'AWS_IAM',
+    'AMAZON_COGNITO_USER_POOLS',
+    'OPENID_CONNECT',
+    'AWS_LAMBDA'
+  ],
+  'AppSyncFieldLogLevel': [
+    'NONE',
+    'ERROR',
+    'INFO',
+    'DEBUG',
+    'ALL'
+  ],
+  'ApplicationLoadBalancedServiceRecordType': [
+    0,
+    1,
+    2
+  ],
+  'ApplicationLogLevel': [
+    'INFO',
+    'DEBUG',
+    'WARN',
+    'TRACE',
+    'ERROR',
+    'FATAL'
+  ],
+  'ApplicationProtocol': [
+    'HTTP',
+    'HTTPS'
+  ],
+  'ApplicationProtocolVersion': [
+    'GRPC',
+    'HTTP1',
+    'HTTP2'
+  ],
+  'ApproximateCreationDateTimePrecision': [
+    'MILLISECOND',
+    'MICROSECOND'
+  ],
+  'ArnFormat': [
+    'arn:aws:service:region:account:resource',
+    'arn:aws:service:region:account:resource:resourceName',
+    'arn:aws:service:region:account:resource/resourceName',
+    'arn:aws:service:region:account:/resource/resourceName'
+  ],
+  'ArtifactsEncryptionMode': [
+    'SSE_S3',
+    'SSE_KMS'
+  ],
+  'AssembleWith': [
+    'None',
+    'Line'
+  ],
+  'AssertionType': [
+    'equals',
+    'objectLike',
+    'arrayWith'
+  ],
+  'AssetHashType': [
+    'source',
+    'bundle',
+    'output',
     'custom'
   ],
-  'NatConnectivityType': [
-    'public',
-    'private'
+  'AssetType': [
+    'file',
+    'docker-image'
   ],
-  'TransitGatewayFeatureStatus': [
-    'enable',
-    'disable'
+  'AttachmentTargetType': [
+    'AWS::RDS::DBInstance',
+    'deprecated_AWS::RDS::DBInstance',
+    'AWS::RDS::DBCluster',
+    'deprecated_AWS::RDS::DBCluster',
+    'AWS::RDS::DBProxy',
+    'AWS::Redshift::Cluster',
+    'AWS::DocDB::DBInstance',
+    'AWS::DocDB::DBCluster'
   ],
-  'OperatingSystem': [
-    'AMAZON_LINUX',
-    'AMAZON_LINUX_2',
-    'AMAZON_LINUX_2023',
-    'WINDOWS_2012',
-    'WINDOWS_2016'
-  ],
-  'DeleteOption': [
-    'SAFE_DELETE',
-    'FORCE_DELETE',
-    'RETAIN'
-  ],
-  'BalancingStrategy': [
-    'SPOT_ONLY',
-    'SPOT_PREFERRED',
-    'ON_DEMAND_ONLY'
-  ],
-  'PriorityType': [
-    'LATENCY',
-    'COST',
-    'DESTINATION',
-    'LOCATION'
-  ],
-  'Protocol': [
-    'HTTP',
-    'HTTPS',
-    'TCP',
-    'TLS',
-    'UDP',
-    'TCP_UDP'
-  ],
-  'WorkerType': [
-    'Standard',
-    'G.025X',
-    'G.1X',
-    'G.2X',
-    'G.4X',
-    'G.8X',
-    'Z.2X'
-  ],
-  'JobState': [
-    'SUCCEEDED',
-    'FAILED',
-    'TIMEOUT',
-    'STARTING',
-    'RUNNING',
-    'STOPPING',
-    'STOPPED'
-  ],
-  'MetricType': [
-    'EventCount'
-  ],
-  'ExecutionClass': [
-    'FLEX',
-    'STANDARD'
-  ],
-  'GlueVersion': [
-    '0.9',
-    '1.0',
-    '2.0',
-    '3.0',
-    '4.0',
-    '5.0'
-  ],
-  'JobLanguage': [
-    'scala',
-    'python'
-  ],
-  'PythonVersion': [
-    '2',
-    '3',
-    '3.9'
-  ],
-  'Runtime': [
-    'nodejs18.x',
-    'python3.9',
-    'python3.10',
-    'python3.11'
-  ],
-  'JobType': [
-    'glueetl',
-    'gluestreaming',
-    'pythonshell',
-    'glueray'
-  ],
-  'MaxCapacity': [
-    0.0625,
-    1
-  ],
-  'PredicateLogical': [
-    'AND',
-    'ANY'
-  ],
-  'ConditionLogicalOperator': [
-    'EQUALS'
-  ],
-  'CrawlerState': [
-    'RUNNING',
-    'CANCELLING',
-    'CANCELLED',
-    'SUCCEEDED',
-    'FAILED',
-    'ERROR'
-  ],
-  'TableEncryption': [
-    'AWS_OWNED',
-    'CUSTOMER_MANAGED',
-    'AWS_MANAGED'
-  ],
-  'S3EncryptionMode': [
-    'SSE-S3',
-    'SSE-KMS'
-  ],
-  'CloudWatchEncryptionMode': [
-    'SSE-KMS'
-  ],
-  'JobBookmarksEncryptionMode': [
-    'CSE-KMS'
-  ],
-  'CompressionType': [
-    'None',
-    'Gzip'
-  ],
-  'InvalidCharHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW',
-    'REPLACE'
-  ],
-  'NumericOverflowHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW'
-  ],
-  'SurplusBytesHandlingAction': [
-    'SET_TO_NULL',
-    'DISABLED',
-    'FAIL',
-    'DROP_ROW',
-    'TRUNCATE'
-  ],
-  'SurplusCharHandlingAction': [
-    'SET_TO_NULL',
-    'DISABLED',
-    'FAIL',
-    'DROP_ROW',
-    'TRUNCATE'
-  ],
-  'ColumnCountMismatchHandlingAction': [
-    'DISABLED',
-    'FAIL',
-    'SET_TO_NULL',
-    'DROP_ROW'
-  ],
-  'WriteParallel': [
-    'on',
-    'off'
-  ],
-  'OrcColumnMappingType': [
-    'name',
-    'position'
-  ],
-  'StorageParameters': [
-    'skip.header.line.count',
-    'data_cleansing_enabled',
-    'compression_type',
-    'invalid_char_handling',
-    'replacement_char',
-    'numeric_overflow_handling',
-    'surplus_bytes_handling',
-    'surplus_char_handling',
-    'column_count_mismatch_handling',
-    'num_rows',
-    'serialization.null.format',
-    'orc.schema.resolution',
-    'write.parallel',
-    'write.maxfilesize.mb',
-    'write.kms.key.id'
-  ],
-  'FirehoseRecordSeparator': [
-    '\n',
-    '\t',
-    '\r\n',
-    ','
-  ],
-  'MqttQualityOfService': [
-    0,
-    1
-  ],
-  'SnsActionMessageFormat': [
-    'RAW',
-    'JSON'
+  'AttributeType': [
+    'B',
+    'N',
+    'S'
   ],
   'AuditCheck': [
     'AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK',
@@ -323,689 +271,69 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'REVOKED_DEVICE_CERTIFICATE_STILL_ACTIVE_CHECK',
     'UNAUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK'
   ],
-  'DayOfWeek': [
-    'SUN',
-    'MON',
-    'TUE',
-    'WED',
-    'THU',
-    'FRI',
-    'SAT'
-  ],
-  'Frequency': [
-    'DAILY',
-    'WEEKLY',
-    'BIWEEKLY',
-    'MONTHLY'
-  ],
-  'EventEvaluation': [
-    'BATCH',
-    'SERIAL'
-  ],
-  'LatencyMode': [
-    'LOW',
-    'NORMAL'
-  ],
-  'ChannelType': [
-    'STANDARD',
-    'BASIC',
-    'ADVANCED_SD',
-    'ADVANCED_HD'
-  ],
-  'Preset': [
-    'CONSTRAINED_BANDWIDTH_DELIVERY',
-    'HIGHER_BANDWIDTH_DELIVERY'
-  ],
-  'RenditionSelection': [
-    'ALL',
-    'NONE',
-    'CUSTOM'
-  ],
-  'RecordingMode': [
-    'INTERVAL',
-    'DISABLED'
-  ],
-  'Storage': [
-    'SEQUENTIAL',
-    'LATEST'
-  ],
-  'Resolution': [
-    'FULL_HD',
-    'HD',
-    'SD',
-    'LOWEST_RESOLUTION'
-  ],
-  'MetricsLevel': [
-    'APPLICATION',
-    'TASK',
-    'OPERATOR',
-    'PARALLELISM'
-  ],
-  'StreamEncryptionType': [
-    0,
-    1,
-    2
-  ],
-  'BackupMode': [
-    0,
-    1
-  ],
-  'DependenciesFile': [
-    'requirements.txt',
-    'poetry.lock',
-    'Pipfile.lock',
-    ''
-  ],
-  'CustomLayer': [
-    'POI'
-  ],
-  'Style': [
-    'VectorEsriNavigation',
-    'RasterEsriImagery',
-    'VectorEsriLightGrayCanvas',
-    'VectorEsriTopographic',
-    'VectorEsriStreets',
-    'VectorEsriDarkGrayCanvas',
-    'VectorHereExplore',
-    'RasterHereExploreSatellite',
-    'HybridHereExploreSatellite',
-    'VectorHereContrast',
-    'VectorHereExploreTruck',
-    'VectorGrabStandardLight',
-    'VectorGrabStandardDark',
-    'VectorOpenDataStandardLight',
-    'VectorOpenDataStandardDark',
-    'VectorOpenDataVisualizationLight',
-    'VectorOpenDataVisualizationDark'
-  ],
-  'PoliticalView': [
-    'IND'
-  ],
-  'IntendedUse': [
-    'SingleUse',
-    'Storage'
-  ],
-  'PositionFiltering': [
-    'TimeBased',
-    'DistanceBased',
-    'AccuracyBased'
-  ],
-  'DataSource': [
-    'Esri',
-    'Grab',
-    'Here'
-  ],
-  'StorageMode': [
-    'LOCAL',
-    'TIERED'
-  ],
-  'ClusterMonitoringLevel': [
-    'DEFAULT',
-    'PER_BROKER',
-    'PER_TOPIC_PER_BROKER',
-    'PER_TOPIC_PER_PARTITION'
-  ],
-  'ClientBrokerEncryption': [
-    'TLS',
-    'TLS_PLAINTEXT',
-    'PLAINTEXT'
-  ],
-  'TemplateType': [
-    'Text',
-    'Object'
-  ],
-  'IncludeExecutionData': [
-    'ALL'
-  ],
-  'S3OutputFormat': [
-    'plain',
-    'json',
-    'w3c'
-  ],
-  'DesiredState': [
-    'RUNNING',
-    'STOPPED'
-  ],
-  'PipeVariable': [
-    '<aws.pipes.pipe-arn>',
-    '<aws.pipes.pipe-name>',
-    '<aws.pipes.source-arn>',
-    '<aws.pipes.enrichment-arn>',
-    '<aws.pipes.target-arn>',
-    '<aws.pipes.event.ingestion-time>',
-    '<aws.pipes.event>',
-    '<aws.pipes.event.json>'
-  ],
-  'OnPartialBatchItemFailure': [
-    'AUTOMATIC_BISECT'
-  ],
-  'KinesisStartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST',
-    'AT_TIMESTAMP'
-  ],
-  'DynamoDBStartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST'
-  ],
-  'LambdaFunctionInvocationType': [
-    'FIRE_AND_FORGET',
-    'REQUEST_RESPONSE'
-  ],
-  'StateMachineInvocationType': [
-    'FIRE_AND_FORGET',
-    'REQUEST_RESPONSE'
-  ],
-  'NodeType': [
-    'Standard',
-    'GPU',
-    'INFERENTIA',
-    'TRAINIUM'
-  ],
-  'ClusterType': [
-    'single-node',
-    'multi-node'
-  ],
-  'ResourceAction': [
-    'pause-cluster',
-    'resume-cluster',
-    'failover-primary-compute'
-  ],
-  'TableAction': [
-    0,
+  'AuroraCapacityUnit': [
     1,
     2,
-    3,
     4,
-    5,
-    6
+    8,
+    16,
+    32,
+    64,
+    128,
+    192,
+    256,
+    384
   ],
-  'TableDistStyle': [
-    'AUTO',
-    'EVEN',
-    'KEY',
-    'ALL'
+  'AuthType': [
+    'NO_AUTH',
+    'IAM_ROLE',
+    'RESOURCE_POLICY'
   ],
-  'TableSortStyle': [
-    'AUTO',
-    'COMPOUND',
-    'INTERLEAVED'
+  'AuthenticationMethod': [
+    'SASL_SCRAM_512_AUTH',
+    'SASL_SCRAM_256_AUTH',
+    'BASIC_AUTH',
+    'CLIENT_CERTIFICATE_TLS_AUTH'
   ],
-  'ColumnEncoding': [
-    'AUTO',
-    'RAW',
-    'AZ64',
-    'BYTEDICT',
-    'DELTA',
-    'DELTA32K',
-    'LZO',
-    'MOSTLY8',
-    'MOSTLY16',
-    'MOSTLY32',
-    'RUNLENGTH',
-    'TEXT255',
-    'TEXT32K',
-    'ZSTD'
-  ],
-  'InvocationHttpResponseCode': [
-    'Invocation4XXErrors',
-    'Invocation5XXErrors'
-  ],
-  'SharePermission': [
-    0,
-    1
-  ],
-  'AccessScopeType': [
-    'namespace',
-    'cluster'
-  ],
-  'AccessEntryType': [
-    'STANDARD',
-    'FARGATE_LINUX',
-    'EC2_LINUX',
-    'EC2_WINDOWS'
-  ],
-  'AlbScheme': [
-    'internal',
-    'internet-facing'
-  ],
-  'ClusterLoggingTypes': [
-    'api',
-    'audit',
-    'authenticator',
-    'controllerManager',
-    'scheduler'
-  ],
-  'IpFamily': [
-    'ipv4',
-    'ipv6'
-  ],
-  'CpuArch': [
-    'arm64',
-    'x86_64'
-  ],
-  'CoreDnsComputeType': [
-    'ec2',
-    'fargate'
-  ],
-  'DefaultCapacityType': [
-    0,
-    1
-  ],
-  'MachineImageType': [
-    0,
-    1
-  ],
-  'PatchType': [
-    'json',
-    'merge',
-    'strategic'
-  ],
-  'NodegroupAmiType': [
-    'AL2_x86_64',
-    'AL2_x86_64_GPU',
-    'AL2_ARM_64',
-    'BOTTLEROCKET_ARM_64',
-    'BOTTLEROCKET_x86_64',
-    'BOTTLEROCKET_ARM_64_NVIDIA',
-    'BOTTLEROCKET_x86_64_NVIDIA',
-    'WINDOWS_CORE_2019_x86_64',
-    'WINDOWS_CORE_2022_x86_64',
-    'WINDOWS_FULL_2019_x86_64',
-    'WINDOWS_FULL_2022_x86_64',
-    'AL2023_x86_64_STANDARD',
-    'AL2023_x86_64_NEURON',
-    'AL2023_x86_64_NVIDIA',
-    'AL2023_ARM_64_STANDARD'
-  ],
-  'CapacityType': [
-    'SPOT',
-    'ON_DEMAND'
-  ],
-  'TaintEffect': [
-    'NO_SCHEDULE',
-    'PREFER_NO_SCHEDULE',
-    'NO_EXECUTE'
-  ],
-  'IdentityType': [
-    'IRSA',
-    'POD_IDENTITY'
-  ],
-  'LifecycleLabel': [
-    'OnDemand',
-    'Ec2Spot'
-  ],
-  'AssetBuildTime': [
-    'all-before-deploy',
-    'just-in-time'
-  ],
-  'Command': [
-    'ls',
-    'list',
-    'diff',
-    'bootstrap',
-    'deploy',
-    'destroy',
-    'synthesize',
-    'synth',
-    'metadata',
-    'init',
-    'version',
-    'watch',
-    'gc',
-    'rollback',
-    'import',
-    'acknowledge',
-    'ack',
-    'notices',
-    'migrate',
-    'context',
-    'docs',
-    'doc',
-    'doctor'
-  ],
-  'TemplateSourceOptions': [
-    'path',
-    'stack',
-    'scan'
-  ],
-  'ScanStatus': [
-    'IN_PROGRESS',
-    'COMPLETE',
-    'FAILED'
-  ],
-  'FilterType': [
-    'resource-identifier',
-    'resource-type-prefix',
-    'tag-key',
-    'tag-value'
-  ],
-  'FromScan': [
-    0,
-    1,
-    2
-  ],
-  'SubnetType': [
-    'Isolated',
-    'Deprecated_Isolated',
-    'Private',
-    'Deprecated_Private_NAT',
-    'Deprecated_Private',
-    'Public'
-  ],
-  'DeploymentState': [
-    'pending',
-    'queued',
-    'deploying',
-    'completed',
-    'failed',
-    'skipped'
-  ],
-  'SecurityPolicy': [
-    'TLS_1_0',
-    'TLS_1_2'
-  ],
-  'ContentHandling': [
-    'CONVERT_TO_BINARY',
-    'CONVERT_TO_TEXT'
-  ],
-  'IntegrationType': [
-    'AWS',
-    'AWS_PROXY',
-    'HTTP',
-    'HTTP_PROXY',
-    'MOCK'
-  ],
-  'PassthroughBehavior': [
-    'WHEN_NO_MATCH',
-    'NEVER',
-    'WHEN_NO_TEMPLATES'
-  ],
-  'JsonSchemaVersion': [
-    'http://json-schema.org/draft-04/schema#',
-    'http://json-schema.org/draft-07/schema#'
-  ],
-  'JsonSchemaType': [
-    'null',
-    'boolean',
-    'object',
-    'array',
-    'number',
-    'integer',
-    'string'
+  'AuthenticationMode': [
+    'CONFIG_MAP',
+    'API_AND_CONFIG_MAP',
+    'API'
   ],
   'AuthorizationType': [
     'API_KEY',
     'BASIC',
     'OAUTH_CLIENT_CREDENTIALS'
   ],
-  'ApiKeySourceType': [
-    'HEADER',
-    'AUTHORIZER'
+  'AuthorizerPayloadVersion': [
+    '1.0',
+    '2.0'
   ],
-  'EndpointType': [
-    'EDGE',
-    'REGIONAL'
+  'AutoRollbackEvent': [
+    'DEPLOYMENT_FAILURE',
+    'DEPLOYMENT_STOP_ON_ALARM',
+    'DEPLOYMENT_STOP_ON_REQUEST'
   ],
-  'MethodLoggingLevel': [
-    'OFF',
-    'ERROR',
-    'INFO'
-  ],
-  'Period': [
-    'DAY',
-    'WEEK',
-    'MONTH'
-  ],
-  'UsagePlanKeyType': [
-    'API_KEY'
-  ],
-  'ConfigurationType': [
-    'AWS.Freeform',
-    'AWS.AppConfig.FeatureFlags'
-  ],
-  'ValidatorType': [
-    'JSON_SCHEMA',
-    'LAMBDA'
-  ],
-  'GrowthType': [
-    'LINEAR',
-    'EXPONENTIAL'
-  ],
-  'MonitorType': [
-    0,
-    1
-  ],
-  'ActionPoint': [
-    'PRE_CREATE_HOSTED_CONFIGURATION_VERSION',
-    'PRE_START_DEPLOYMENT',
-    'ON_DEPLOYMENT_START',
-    'ON_DEPLOYMENT_STEP',
-    'ON_DEPLOYMENT_BAKING',
-    'ON_DEPLOYMENT_COMPLETE',
-    'ON_DEPLOYMENT_ROLLED_BACK',
-    'AT_DEPLOYMENT_TICK'
-  ],
-  'SourceType': [
-    'lambda',
-    'sqs',
-    'sns',
-    'events'
-  ],
-  'DeletionProtectionCheck': [
-    'ACCOUNT_DEFAULT',
-    'APPLY',
-    'BYPASS'
-  ],
-  'ServiceNamespace': [
-    'ecs',
-    'elasticmapreduce',
-    'ec2',
-    'appstream',
-    'dynamodb',
-    'rds',
-    'sagemaker',
-    'custom-resource',
-    'lambda',
-    'comprehend',
-    'kafka',
-    'elasticache',
-    'neptune'
-  ],
-  'AdjustmentType': [
-    'ChangeInCapacity',
-    'PercentChangeInCapacity',
-    'ExactCapacity'
-  ],
-  'MetricAggregationType': [
-    'Average',
-    'Minimum',
-    'Maximum'
-  ],
-  'PredefinedMetric': [
-    'ASGAverageCPUUtilization',
-    'ASGAverageNetworkIn',
-    'ASGAverageNetworkOut',
-    'ALBRequestCountPerTarget'
-  ],
-  'HttpRouteMethod': [
-    'GET',
-    'HEAD',
-    'POST',
-    'PUT',
-    'DELETE',
-    'CONNECT',
-    'OPTIONS',
-    'TRACE',
-    'PATCH'
-  ],
-  'TlsMode': [
-    'STRICT',
-    'PERMISSIVE',
-    'DISABLED'
-  ],
-  'MeshFilterType': [
-    'ALLOW_ALL',
-    'DROP_ALL'
-  ],
-  'HttpRouteProtocol': [
-    'http',
-    'https'
-  ],
-  'HttpRetryEvent': [
-    'server-error',
-    'gateway-error',
-    'client-error',
-    'stream-error'
-  ],
-  'TcpRetryEvent': [
-    'connection-error'
-  ],
-  'GrpcRetryEvent': [
-    'cancelled',
-    'deadline-exceeded',
-    'internal',
-    'resource-exhausted',
-    'unavailable'
-  ],
-  'IpPreference': [
-    'IPv4_ONLY',
-    'IPv4_PREFERRED',
-    'IPv6_ONLY',
-    'IPv6_PREFERRED'
-  ],
-  'DnsResponseType': [
-    'LOADBALANCER',
-    'ENDPOINTS'
-  ],
-  'AppSyncFieldLogLevel': [
-    'NONE',
-    'ERROR',
-    'INFO',
-    'DEBUG',
-    'ALL'
-  ],
-  'AppSyncAuthorizationType': [
-    'API_KEY',
-    'AWS_IAM',
-    'AMAZON_COGNITO_USER_POOLS',
-    'OPENID_CONNECT',
-    'AWS_LAMBDA'
-  ],
-  'Visibility': [
-    'GLOBAL',
-    'PRIVATE'
-  ],
-  'UserPoolDefaultAction': [
-    'ALLOW',
-    'DENY'
-  ],
-  'FieldLogLevel': [
-    'NONE',
-    'ERROR',
-    'INFO',
-    'DEBUG',
-    'ALL'
-  ],
-  'IntrospectionConfig': [
+  'AvailabilityZoneRebalancing': [
     'ENABLED',
     'DISABLED'
   ],
-  'FunctionRuntimeFamily': [
-    'APPSYNC_JS'
+  'AwsLogDriverMode': [
+    'blocking',
+    'non-blocking'
   ],
-  'MergeType': [
-    'MANUAL_MERGE',
-    'AUTO_MERGE'
+  'AwsServiceName': [
+    'ec2'
   ],
-  'Monitoring': [
+  'BackoffFunction': [
+    'ARITHMETIC',
+    'EXPONENTIAL',
+    'GEOMETRIC',
+    'LINEAR'
+  ],
+  'BackupMode': [
     0,
     1
-  ],
-  'OnDemandAllocationStrategy': [
-    'prioritized',
-    'lowest-price'
-  ],
-  'SpotAllocationStrategy': [
-    'lowest-price',
-    'capacity-optimized',
-    'capacity-optimized-prioritized',
-    'price-capacity-optimized'
-  ],
-  'CapacityDistributionStrategy': [
-    'balanced-only',
-    'balanced-best-effort'
-  ],
-  'UpdateType': [
-    'None',
-    'Replace',
-    'RollingUpdate'
-  ],
-  'ScalingEvent': [
-    'autoscaling:EC2_INSTANCE_LAUNCH',
-    'autoscaling:EC2_INSTANCE_TERMINATE',
-    'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
-    'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
-    'autoscaling:TEST_NOTIFICATION'
-  ],
-  'ScalingProcess': [
-    'Launch',
-    'Terminate',
-    'HealthCheck',
-    'ReplaceUnhealthy',
-    'AZRebalance',
-    'AlarmNotification',
-    'ScheduledActions',
-    'AddToLoadBalancer',
-    'InstanceRefresh'
-  ],
-  'HealthCheckType': [
-    'HTTP',
-    'HTTPS',
-    'TCP'
-  ],
-  'DefaultResult': [
-    'CONTINUE',
-    'ABANDON'
-  ],
-  'LifecycleTransition': [
-    'autoscaling:EC2_INSTANCE_LAUNCHING',
-    'autoscaling:EC2_INSTANCE_TERMINATING'
-  ],
-  'TerminationPolicy': [
-    'AllocationStrategy',
-    'ClosestToNextInstanceHour',
-    'Default',
-    'NewestInstance',
-    'OldestInstance',
-    'OldestLaunchConfiguration',
-    'OldestLaunchTemplate',
-    'CustomLambdaFunction'
-  ],
-  'EbsDeviceVolumeType': [
-    'standard',
-    'io1',
-    'io2',
-    'gp2',
-    'gp3',
-    'st1',
-    'sc1',
-    'gp2',
-    'gp3',
-    'io1',
-    'io2',
-    'st1',
-    'sc1',
-    'standard'
-  ],
-  'PoolState': [
-    'Hibernated',
-    'Running',
-    'Stopped'
-  ],
-  'TagOperation': [
-    'STRINGEQUALS',
-    'dummy'
   ],
   'BackupVaultEvents': [
     'BACKUP_JOB_STARTED',
@@ -1026,127 +354,203 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'S3_BACKUP_OBJECT_FAILED',
     'S3_RESTORE_OBJECT_FAILED'
   ],
-  'UlimitName': [
-    'core',
-    'cpu',
-    'data',
-    'fsize',
-    'locks',
-    'memlock',
-    'msgqueue',
-    'nice',
-    'nofile',
-    'nproc',
-    'rss',
-    'rtprio',
-    'rttime',
-    'sigpending',
-    'stack'
+  'BalancingStrategy': [
+    'SPOT_ONLY',
+    'SPOT_PREFERRED',
+    'ON_DEMAND_ONLY'
   ],
-  'Compatibility': [
+  'BatchStrategy': [
+    'MultiRecord',
+    'SingleRecord'
+  ],
+  'BillingMode': [
+    'PAY_PER_REQUEST',
+    'PROVISIONED'
+  ],
+  'BinPackResource': [
+    'CPU',
+    'MEMORY'
+  ],
+  'BottlerocketEcsVariant': [
+    'aws-ecs-1',
+    'aws-ecs-1-nvidia',
+    'aws-ecs-2',
+    'aws-ecs-2-nvidia'
+  ],
+  'BucketAccessControl': [
+    'Private',
+    'PublicRead',
+    'PublicReadWrite',
+    'AuthenticatedRead',
+    'LogDeliveryWrite',
+    'BucketOwnerRead',
+    'BucketOwnerFullControl',
+    'AwsExecRead'
+  ],
+  'BucketEncryption': [
+    'UNENCRYPTED',
+    'KMS_MANAGED',
+    'S3_MANAGED',
+    'KMS',
+    'DSSE_MANAGED',
+    'DSSE'
+  ],
+  'BucketNotificationDestinationType': [
     0,
     1,
-    2,
-    3
+    2
   ],
-  'ImagePullPolicy': [
-    'Always',
-    'IfNotPresent',
-    'Never'
+  'BuildEnvironmentVariableType': [
+    'PLAINTEXT',
+    'PARAMETER_STORE',
+    'SECRETS_MANAGER'
   ],
-  'EmptyDirMediumType': [
+  'BundlingFileAccess': [
+    'VOLUME_COPY',
+    'BIND_MOUNT'
+  ],
+  'BundlingOutput': [
+    'archived',
+    'not-archived',
+    'auto-discover',
+    'single-file'
+  ],
+  'CaaTag': [
+    'issue',
+    'issuewild',
+    'iodef'
+  ],
+  'CacheConfigType': [
+    'AMPLIFY_MANAGED',
+    'AMPLIFY_MANAGED_NO_COOKIES'
+  ],
+  'Capability': [
+    'ALL',
+    'AUDIT_CONTROL',
+    'AUDIT_WRITE',
+    'BLOCK_SUSPEND',
+    'CHOWN',
+    'DAC_OVERRIDE',
+    'DAC_READ_SEARCH',
+    'FOWNER',
+    'FSETID',
+    'IPC_LOCK',
+    'IPC_OWNER',
+    'KILL',
+    'LEASE',
+    'LINUX_IMMUTABLE',
+    'MAC_ADMIN',
+    'MAC_OVERRIDE',
+    'MKNOD',
+    'NET_ADMIN',
+    'NET_BIND_SERVICE',
+    'NET_BROADCAST',
+    'NET_RAW',
+    'SETFCAP',
+    'SETGID',
+    'SETPCAP',
+    'SETUID',
+    'SYS_ADMIN',
+    'SYS_BOOT',
+    'SYS_CHROOT',
+    'SYS_MODULE',
+    'SYS_NICE',
+    'SYS_PACCT',
+    'SYS_PTRACE',
+    'SYS_RAWIO',
+    'SYS_RESOURCE',
+    'SYS_TIME',
+    'SYS_TTY_CONFIG',
+    'SYSLOG',
+    'WAKE_ALARM'
+  ],
+  'CapacityDistributionStrategy': [
+    'balanced-only',
+    'balanced-best-effort'
+  ],
+  'CapacityMode': [
+    'FIXED',
+    'AUTOSCALED'
+  ],
+  'CapacityType': [
+    'SPOT',
+    'ON_DEMAND',
+    'CAPACITY_BLOCK'
+  ],
+  'CfnCapabilities': [
     '',
-    'Memory'
+    'CAPABILITY_IAM',
+    'CAPABILITY_NAMED_IAM',
+    'CAPABILITY_AUTO_EXPAND'
   ],
-  'DnsPolicy': [
-    'Default',
-    'ClusterFirst',
-    'ClusterFirstWithHostNet'
+  'CfnDeletionPolicy': [
+    'Delete',
+    'Retain',
+    'RetainExceptOnCreate',
+    'Snapshot'
   ],
-  'Action': [
-    'allow',
-    'deny'
+  'CfnDynamicReferenceService': [
+    'ssm',
+    'ssm-secure',
+    'secretsmanager'
   ],
-  'JobStateTimeLimitActionsAction': [
-    'CANCEL'
+  'CfnParsingContext': [
+    0,
+    1
   ],
-  'JobStateTimeLimitActionsReason': [
-    'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
-    'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
-    'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT'
+  'CfnTrafficRoutingType': [
+    'AllAtOnce',
+    'TimeBasedCanary',
+    'TimeBasedLinear'
   ],
-  'JobStateTimeLimitActionsState': [
-    'RUNNABLE'
+  'CfnUtilsResourceType': [
+    'Custom::AWSCDKCfnJson',
+    'Custom::AWSCDKCfnJsonStringify'
   ],
-  'DevicePermission': [
-    'read',
-    'write',
-    'mknod'
+  'ChannelType': [
+    'STANDARD',
+    'BASIC',
+    'ADVANCED_SD',
+    'ADVANCED_HD'
   ],
-  'TmpfsMountOption': [
-    'defaults',
-    'ro',
-    'rw',
-    'suid',
-    'nosuid',
-    'dev',
-    'nodev',
-    'exec',
-    'noexec',
-    'sync',
-    'async',
-    'dirsync',
-    'remount',
-    'mand',
-    'nomand',
-    'atime',
-    'noatime',
-    'diratime',
-    'nodiratime',
-    'bind',
-    'rbind',
-    'unbindable',
-    'runbindable',
-    'private',
-    'rprivate',
-    'shared',
-    'rshared',
-    'slave',
-    'rslave',
-    'relatime',
-    'norelatime',
-    'strictatime',
-    'nostrictatime',
-    'mode',
-    'uid',
-    'gid',
-    'nr_inodes',
-    'nr_blocks',
-    'mpol'
+  'Charset': [
+    'ascii',
+    'utf8'
   ],
-  'EcsMachineImageType': [
-    'ECS_AL2',
-    'ECS_AL2023',
-    'ECS_AL2_NVIDIA'
+  'Cleanup': [
+    'nothing',
+    'lambda'
   ],
-  'EksMachineImageType': [
-    'EKS_AL2',
-    'EKS_AL2_NVIDIA'
+  'ClientAction': [
+    'elasticfilesystem:ClientMount',
+    'elasticfilesystem:ClientWrite',
+    'elasticfilesystem:ClientRootAccess'
   ],
-  'AllocationStrategy': [
-    'BEST_FIT',
-    'BEST_FIT_PROGRESSIVE',
-    'SPOT_CAPACITY_OPTIMIZED',
-    'SPOT_PRICE_CAPACITY_OPTIMIZED'
+  'ClientAffinity': [
+    'NONE',
+    'SOURCE_IP'
   ],
-  'ValidationMethod': [
-    'EMAIL',
-    'DNS'
+  'ClientBrokerEncryption': [
+    'TLS',
+    'TLS_PLAINTEXT',
+    'PLAINTEXT'
   ],
-  'LoggingLevel': [
-    'ERROR',
-    'INFO',
-    'NONE'
+  'ClientPasswordAuthType': [
+    'MYSQL_NATIVE_PASSWORD',
+    'POSTGRES_SCRAM_SHA_256',
+    'POSTGRES_MD5',
+    'SQL_SERVER_AUTHENTICATION'
+  ],
+  'ClientRoutingPolicy': [
+    'availability_zone_affinity',
+    'partial_availability_zone_affinity',
+    'any_availability_zone'
+  ],
+  'ClientVpnSessionTimeout': [
+    8,
+    10,
+    12,
+    24
   ],
   'CloudFormationCapabilities': [
     '',
@@ -1154,139 +558,84 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'CAPABILITY_NAMED_IAM',
     'CAPABILITY_AUTO_EXPAND'
   ],
-  'HttpVersion': [
-    'http1.1',
-    'http2',
-    'http2and3',
-    'http3'
-  ],
-  'PriceClass': [
-    'PriceClass_100',
-    'PriceClass_200',
-    'PriceClass_All'
-  ],
-  'ViewerProtocolPolicy': [
-    'https-only',
-    'redirect-to-https',
-    'allow-all'
-  ],
-  'OriginProtocolPolicy': [
-    'http-only',
-    'match-viewer',
-    'https-only'
-  ],
-  'SSLMethod': [
-    'sni-only',
-    'vip'
-  ],
-  'SecurityPolicyProtocol': [
-    'SSLv3',
-    'TLSv1',
-    'TLSv1_2016',
-    'TLSv1.1_2016',
-    'TLSv1.2_2018',
-    'TLSv1.2_2019',
-    'TLSv1.2_2021'
-  ],
-  'LambdaEdgeEventType': [
-    'origin-request',
-    'origin-response',
-    'viewer-request',
-    'viewer-response'
-  ],
-  'FunctionEventType': [
-    'viewer-request',
-    'viewer-response'
-  ],
-  'AccessLevel': [
-    'READ',
-    'LIST',
-    'WRITE',
-    'DELETE'
-  ],
-  'OriginAccessControlOriginType': [
-    's3',
-    'lambda',
-    'mediastore',
-    'mediapackagev2'
-  ],
-  'SigningBehavior': [
-    'always',
-    'never',
-    'no-override'
-  ],
-  'SigningProtocol': [
-    'sigv4'
-  ],
-  'OriginSelectionCriteria': [
-    'default',
-    'media-quality-based'
-  ],
-  'HeadersFrameOption': [
-    'DENY',
-    'SAMEORIGIN'
-  ],
-  'HeadersReferrerPolicy': [
-    'no-referrer',
-    'no-referrer-when-downgrade',
-    'origin',
-    'origin-when-cross-origin',
-    'same-origin',
-    'strict-origin',
-    'strict-origin-when-cross-origin',
-    'unsafe-url'
-  ],
-  'FailoverStatusCode': [
-    403,
-    404,
-    500,
-    502,
-    503,
-    504
-  ],
-  'OriginSslPolicy': [
-    'SSLv3',
-    'TLSv1',
-    'TLSv1.1',
-    'TLSv1.2'
+  'CloudFrontAllowedCachedMethods': [
+    'GH',
+    'GHO'
   ],
   'CloudFrontAllowedMethods': [
     'GH',
     'GHO',
     'ALL'
   ],
-  'CloudFrontAllowedCachedMethods': [
-    'GH',
-    'GHO'
+  'CloudWatchDimensionSource': [
+    'emailHeader',
+    'linkTag',
+    'messageTag'
   ],
-  'ReadWriteType': [
-    'ReadOnly',
-    'WriteOnly',
-    'All',
-    'None'
+  'CloudWatchEncryptionMode': [
+    'SSE-KMS'
   ],
-  'ManagementEventSources': [
-    'kms.amazonaws.com',
-    'rdsdata.amazonaws.com'
+  'ClusterLoggingTypes': [
+    'api',
+    'audit',
+    'authenticator',
+    'controllerManager',
+    'scheduler'
   ],
-  'DataResourceType': [
-    'AWS::Lambda::Function',
-    'AWS::S3::Object'
+  'ClusterMonitoringLevel': [
+    'DEFAULT',
+    'PER_BROKER',
+    'PER_TOPIC_PER_BROKER',
+    'PER_TOPIC_PER_PARTITION'
   ],
-  'AlarmState': [
-    'ALARM',
-    'OK',
-    'INSUFFICIENT_DATA'
+  'ClusterScailabilityType': [
+    'standard',
+    'limitless'
   ],
-  'Operator': [
-    'AND',
-    'OR',
-    'NOT'
+  'ClusterScalabilityType': [
+    'standard',
+    'limitless'
   ],
-  'AlarmStatusWidgetSortBy': [
-    'default',
-    'stateUpdatedTimestamp',
-    'timestamp'
+  'ClusterType': [
+    'single-node',
+    'multi-node'
+  ],
+  'CodeBuildActionType': [
+    0,
+    1
+  ],
+  'CodeBuildProjectType': [
+    'SYNTH',
+    'ASSETS',
+    'SELF_MUTATE',
+    'STEP'
+  ],
+  'CodeCommitTrigger': [
+    'None',
+    'Poll',
+    'Events'
+  ],
+  'ColumnCountMismatchHandlingAction': [
+    'DISABLED',
+    'FAIL',
+    'SET_TO_NULL',
+    'DROP_ROW'
+  ],
+  'ColumnEncoding': [
+    'AUTO',
+    'RAW',
+    'AZ64',
+    'BYTEDICT',
+    'DELTA',
+    'DELTA32K',
+    'LZO',
+    'MOSTLY8',
+    'MOSTLY16',
+    'MOSTLY32',
+    'RUNLENGTH',
+    'TEXT255',
+    'TEXT32K',
+    'ZSTD'
   ],
   'ComparisonOperator': [
     0,
@@ -1329,125 +678,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     37,
     38
   ],
-  'TreatMissingData': [
-    'breaching',
-    'notBreaching',
-    'ignore',
-    'missing'
+  'Compatibility': [
+    0,
+    1,
+    2,
+    3
   ],
-  'PeriodOverride': [
-    'auto',
-    'inherit'
+  'ComponentType': [
+    'Function',
+    'SingletonFunction',
+    'CustomResourceProvider',
+    'NoOp'
   ],
-  'GraphWidgetView': [
-    'timeSeries',
-    'bar',
-    'pie'
+  'CompoundOperator': [
+    0,
+    1
   ],
-  'TableLayout': [
-    'horizontal',
-    'vertical'
+  'CompressionType': [
+    'None',
+    'Gzip'
   ],
-  'TableSummaryColumn': [
-    'MIN',
-    'MAX',
-    'SUM',
-    'AVG'
-  ],
-  'Shading': [
-    'none',
-    'above',
-    'below'
-  ],
-  'VerticalShading': [
-    'none',
-    'before',
-    'after'
-  ],
-  'LegendPosition': [
-    'bottom',
-    'right',
-    'hidden'
-  ],
-  'LogQueryVisualizationType': [
-    'table',
-    'line',
-    'stackedarea',
-    'bar',
-    'pie'
-  ],
-  'Statistic': [
-    'SampleCount',
-    'Average',
-    'Sum',
-    'Minimum',
-    'Maximum'
-  ],
-  'Unit': [
-    'Seconds',
-    'Microseconds',
-    'Milliseconds',
-    'Bytes',
-    'Kilobytes',
-    'Megabytes',
-    'Gigabytes',
-    'Terabytes',
-    'Bits',
-    'Kilobits',
-    'Megabits',
-    'Gigabits',
-    'Terabits',
-    'Percent',
-    'Count',
-    'Bytes/Second',
-    'Kilobytes/Second',
-    'Megabytes/Second',
-    'Gigabytes/Second',
-    'Terabytes/Second',
-    'Bits/Second',
-    'Kilobits/Second',
-    'Megabits/Second',
-    'Gigabits/Second',
-    'Terabits/Second',
-    'Count/Second',
-    'None'
-  ],
-  'TextWidgetBackground': [
-    'solid',
-    'transparent'
-  ],
-  'VariableInputType': [
-    'input',
-    'radio',
-    'select'
-  ],
-  'VariableType': [
-    'property',
-    'pattern'
-  ],
-  'Ec2InstanceAction': [
-    'stop',
-    'terminate',
-    'recover',
-    'reboot'
-  ],
-  'OpsItemSeverity': [
-    '1',
-    '2',
-    '3',
-    '4'
-  ],
-  'OpsItemCategory': [
-    'Availability',
-    'Cost',
-    'Performance',
-    'Recovery',
-    'Security'
-  ],
-  'LocalCacheMode': [
-    'LOCAL_SOURCE_CACHE',
-    'LOCAL_DOCKER_LAYER_CACHE',
-    'LOCAL_CUSTOM_CACHE'
+  'ComputePlatform': [
+    'AWSLambda',
+    'Default'
   ],
   'ComputeType': [
     'BUILD_GENERAL1_SMALL',
@@ -1459,7 +712,374 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'BUILD_LAMBDA_2GB',
     'BUILD_LAMBDA_4GB',
     'BUILD_LAMBDA_8GB',
-    'BUILD_LAMBDA_10GB'
+    'BUILD_LAMBDA_10GB',
+    'ATTRIBUTE_BASED_COMPUTE'
+  ],
+  'ConditionLogicalOperator': [
+    'EQUALS'
+  ],
+  'ConfigurationSetTlsPolicy': [
+    'REQUIRE',
+    'OPTIONAL'
+  ],
+  'ConfigurationSourceType': [
+    'S3',
+    'SECRETS_MANAGER',
+    'SSM_PARAMETER',
+    'SSM_DOCUMENT',
+    'CODE_PIPELINE'
+  ],
+  'ConfigurationType': [
+    'AWS.Freeform',
+    'AWS.AppConfig.FeatureFlags'
+  ],
+  'ConnectionProtocol': [
+    'TCP',
+    'UDP'
+  ],
+  'ConnectionType': [
+    'INTERNET',
+    'VPC_LINK'
+  ],
+  'ContainerDependencyCondition': [
+    'START',
+    'COMPLETE',
+    'SUCCESS',
+    'HEALTHY'
+  ],
+  'ContainerFormat': [
+    'TS',
+    'FRAGMENTED_MP4'
+  ],
+  'ContainerInsights': [
+    'enabled',
+    'disabled',
+    'enhanced'
+  ],
+  'ContainerProviderTypes': [
+    'EKS'
+  ],
+  'ContentHandling': [
+    'CONVERT_TO_BINARY',
+    'CONVERT_TO_TEXT'
+  ],
+  'ContentType': [
+    'text/plain',
+    'text/css',
+    'text/html',
+    'application/javascript',
+    'application/json'
+  ],
+  'Continent': [
+    'AF',
+    'AN',
+    'AS',
+    'EU',
+    'OC',
+    'NA',
+    'SA'
+  ],
+  'CoreDnsComputeType': [
+    'ec2',
+    'fargate'
+  ],
+  'CorsHttpMethod': [
+    '*',
+    'DELETE',
+    'GET',
+    'HEAD',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT'
+  ],
+  'CountType': [
+    'imageCountMoreThan',
+    'sinceImagePushed'
+  ],
+  'CpuArch': [
+    'arm64',
+    'x86_64'
+  ],
+  'CpuCredits': [
+    'standard',
+    'unlimited'
+  ],
+  'CrawlerState': [
+    'RUNNING',
+    'CANCELLING',
+    'CANCELLED',
+    'SUCCEEDED',
+    'FAILED',
+    'ERROR'
+  ],
+  'CsvDelimiter': [
+    'COMMA',
+    'PIPE',
+    'SEMICOLON',
+    'SPACE',
+    'TAB'
+  ],
+  'CsvHeaderLocation': [
+    'FIRST_ROW',
+    'GIVEN'
+  ],
+  'CustomLambdaDeploymentConfigType': [
+    'Canary',
+    'Linear'
+  ],
+  'CustomLayer': [
+    'POI'
+  ],
+  'CustomResourceProviderRuntime': [
+    'nodejs12.x',
+    'deprecated_nodejs12.x',
+    'nodejs14.x',
+    'nodejs16.x',
+    'nodejs18.x',
+    'nodejs20.x'
+  ],
+  'CustomThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT'
+  ],
+  'DBClusterStorageType': [
+    'aurora',
+    'aurora-iopt1'
+  ],
+  'DataResourceType': [
+    'AWS::Lambda::Function',
+    'AWS::S3::Object'
+  ],
+  'DataSource': [
+    'Esri',
+    'Grab',
+    'Here'
+  ],
+  'DatabaseInsightsMode': [
+    'standard',
+    'advanced'
+  ],
+  'DayOfWeek': [
+    'SUN',
+    'MON',
+    'TUE',
+    'WED',
+    'THU',
+    'FRI',
+    'SAT'
+  ],
+  'DeduplicationScope': [
+    'messageGroup',
+    'queue'
+  ],
+  'DefaultCapacityType': [
+    0,
+    1
+  ],
+  'DefaultInstanceTenancy': [
+    'default',
+    'dedicated'
+  ],
+  'DefaultResult': [
+    'CONTINUE',
+    'ABANDON'
+  ],
+  'DeleteOption': [
+    'SAFE_DELETE',
+    'FORCE_DELETE',
+    'RETAIN'
+  ],
+  'DeletionProtectionCheck': [
+    'ACCOUNT_DEFAULT',
+    'APPLY',
+    'BYPASS'
+  ],
+  'DependenciesFile': [
+    'requirements.txt',
+    'poetry.lock',
+    'Pipfile.lock',
+    ''
+  ],
+  'DependencyOperation': [
+    0,
+    1
+  ],
+  'DeploymentControllerType': [
+    'ECS',
+    'CODE_DEPLOY',
+    'EXTERNAL'
+  ],
+  'DesiredState': [
+    'RUNNING',
+    'STOPPED'
+  ],
+  'DestinationType': [
+    'Failure',
+    'Success'
+  ],
+  'DesyncMitigationMode': [
+    'monitor',
+    'defensive',
+    'strictest'
+  ],
+  'DetailType': [
+    'BASIC',
+    'FULL'
+  ],
+  'DevicePermission': [
+    'read',
+    'write',
+    'mknod'
+  ],
+  'DiagnosticReason': [
+    'NO_SNAPSHOT',
+    'TEST_FAILED',
+    'TEST_ERROR',
+    'SNAPSHOT_FAILED',
+    'SNAPSHOT_ERROR',
+    'SNAPSHOT_SUCCESS',
+    'TEST_SUCCESS',
+    'ASSERTION_FAILED'
+  ],
+  'DiscoveryType': [
+    'API',
+    'DNS_AND_API'
+  ],
+  'Distribution': [
+    'ByLogStream',
+    'Random'
+  ],
+  'DnsPolicy': [
+    'Default',
+    'ClusterFirst',
+    'ClusterFirstWithHostNet'
+  ],
+  'DnsRecordType': [
+    'A',
+    'AAAA',
+    'A, AAAA',
+    'SRV',
+    'CNAME'
+  ],
+  'DnsResponseType': [
+    'LOADBALANCER',
+    'ENDPOINTS'
+  ],
+  'DockerCredentialUsage': [
+    'SYNTH',
+    'SELF_UPDATE',
+    'ASSET_PUBLISHING'
+  ],
+  'DockerVolumeConsistency': [
+    'consistent',
+    'delegated',
+    'cached'
+  ],
+  'DriveCacheType': [
+    'NONE',
+    'READ'
+  ],
+  'DynamoConsumedCapacity': [
+    'INDEXES',
+    'TOTAL',
+    'NONE'
+  ],
+  'DynamoDBStartingPosition': [
+    'TRIM_HORIZON',
+    'LATEST'
+  ],
+  'DynamoItemCollectionMetrics': [
+    'SIZE',
+    'NONE'
+  ],
+  'DynamoMethod': [
+    'Get',
+    'Put',
+    'Delete',
+    'Update'
+  ],
+  'DynamoReturnValues': [
+    'NONE',
+    'ALL_OLD',
+    'UPDATED_OLD',
+    'ALL_NEW',
+    'UPDATED_NEW'
+  ],
+  'EasyDkimSigningKeyLength': [
+    'RSA_1024_BIT',
+    'RSA_2048_BIT'
+  ],
+  'EbsDeviceVolumeType': [
+    'standard',
+    'io1',
+    'io2',
+    'gp2',
+    'gp3',
+    'st1',
+    'sc1',
+    'gp2',
+    'gp3',
+    'io1',
+    'io2',
+    'st1',
+    'sc1',
+    'standard'
+  ],
+  'EbsPropagatedTagSource': [
+    'SERVICE',
+    'TASK_DEFINITION'
+  ],
+  'Ec2InstanceAction': [
+    'stop',
+    'terminate',
+    'recover',
+    'reboot'
+  ],
+  'EcsMachineImageType': [
+    'ECS_AL2',
+    'ECS_AL2023',
+    'ECS_AL2_NVIDIA'
+  ],
+  'Effect': [
+    'Allow',
+    'Deny'
+  ],
+  'EksMachineImageType': [
+    'EKS_AL2',
+    'EKS_AL2_NVIDIA'
+  ],
+  'EmailEncoding': [
+    'Base64',
+    'UTF-8'
+  ],
+  'EmailSendingEvent': [
+    'send',
+    'reject',
+    'bounce',
+    'complaint',
+    'delivery',
+    'open',
+    'click',
+    'renderingFailure',
+    'deliveryDelay',
+    'subscription'
+  ],
+  'EmptyDirMediumType': [
+    '',
+    'Memory'
+  ],
+  'EncryptionOption': [
+    'SSE_S3',
+    'SSE_KMS',
+    'CSE_KMS'
+  ],
+  'EndpointType': [
+    'EDGE',
+    'REGIONAL'
+  ],
+  'EnvironmentFileType': [
+    's3'
   ],
   'EnvironmentType': [
     'ARM_CONTAINER',
@@ -1472,43 +1092,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'ARM_EC2',
     'WINDOWS_EC2'
   ],
-  'FleetComputeType': [
-    'BUILD_GENERAL1_SMALL',
-    'BUILD_GENERAL1_MEDIUM',
-    'BUILD_GENERAL1_LARGE',
-    'BUILD_GENERAL1_XLARGE',
-    'BUILD_GENERAL1_2XLARGE'
-  ],
-  'ImagePullPrincipalType': [
-    'CODEBUILD',
-    'SERVICE_ROLE'
-  ],
-  'WindowsImageType': [
-    'WINDOWS_CONTAINER',
-    'WINDOWS_SERVER_2019_CONTAINER',
-    'WINDOWS_SERVER_2022_CONTAINER'
-  ],
-  'BuildEnvironmentVariableType': [
-    'PLAINTEXT',
-    'PARAMETER_STORE',
-    'SECRETS_MANAGER'
-  ],
-  'ProjectVisibility': [
-    'PUBLIC_READ',
-    'PRIVATE'
-  ],
-  'ProjectNotificationEvents': [
-    'codebuild-project-build-state-failed',
-    'codebuild-project-build-state-succeeded',
-    'codebuild-project-build-state-in-progress',
-    'codebuild-project-build-state-stopped',
-    'codebuild-project-build-phase-failure',
-    'codebuild-project-build-phase-success'
-  ],
-  'ReportGroupType': [
-    'TEST',
-    'CODE_COVERAGE'
-  ],
   'EventAction': [
     'PUSH',
     'PULL_REQUEST_CREATED',
@@ -1520,215 +1103,423 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'PRERELEASED',
     'WORKFLOW_JOB_QUEUED'
   ],
-  'WebhookFilterTypes': [
-    'FILE_PATH',
-    'COMMIT_MESSAGE',
-    'HEAD_REF',
-    'ACTOR_ACCOUNT_ID',
-    'BASE_REF',
-    'REPOSITORY_NAME'
+  'EventEvaluation': [
+    'BATCH',
+    'SERIAL'
   ],
-  'RepositoryEventTrigger': [
-    'all',
-    'updateReference',
-    'createReference',
-    'deleteReference'
+  'EventSource': [
+    'aws.config'
   ],
-  'RepositoryNotificationEvents': [
-    'codecommit-repository-comments-on-commits',
-    'codecommit-repository-comments-on-pull-requests',
-    'codecommit-repository-approvals-status-changed',
-    'codecommit-repository-approvals-rule-override',
-    'codecommit-repository-pull-request-created',
-    'codecommit-repository-pull-request-source-updated',
-    'codecommit-repository-pull-request-status-changed',
-    'codecommit-repository-pull-request-merged',
-    'codecommit-repository-branches-and-tags-created',
-    'codecommit-repository-branches-and-tags-deleted',
-    'codecommit-repository-branches-and-tags-updated'
+  'EventType': [
+    's3:ObjectCreated:*',
+    's3:ObjectCreated:Put',
+    's3:ObjectCreated:Post',
+    's3:ObjectCreated:Copy',
+    's3:ObjectCreated:CompleteMultipartUpload',
+    's3:ObjectRemoved:*',
+    's3:ObjectRemoved:Delete',
+    's3:ObjectRemoved:DeleteMarkerCreated',
+    's3:ObjectRestore:Post',
+    's3:ObjectRestore:Completed',
+    's3:ObjectRestore:Delete',
+    's3:ReducedRedundancyLostObject',
+    's3:Replication:OperationFailedReplication',
+    's3:Replication:OperationMissedThreshold',
+    's3:Replication:OperationReplicatedAfterThreshold',
+    's3:Replication:OperationNotTracked',
+    's3:LifecycleExpiration:*',
+    's3:LifecycleExpiration:Delete',
+    's3:LifecycleExpiration:DeleteMarkerCreated',
+    's3:LifecycleTransition',
+    's3:IntelligentTiering',
+    's3:ObjectTagging:*',
+    's3:ObjectTagging:Put',
+    's3:ObjectTagging:Delete',
+    's3:ObjectAcl:Put',
+    's3:ObjectRestore:*',
+    's3:Replication:*'
   ],
-  'ComputePlatform': [
-    'AWSLambda',
-    'Default'
+  'ExecuteCommandLogging': [
+    'NONE',
+    'DEFAULT',
+    'OVERRIDE'
   ],
-  'ActionCategory': [
-    'Source',
-    'Build',
-    'Test',
-    'Approval',
-    'Deploy',
-    'Invoke'
-  ],
-  'PipelineNotificationEvents': [
-    'codepipeline-pipeline-pipeline-execution-failed',
-    'codepipeline-pipeline-pipeline-execution-canceled',
-    'codepipeline-pipeline-pipeline-execution-started',
-    'codepipeline-pipeline-pipeline-execution-resumed',
-    'codepipeline-pipeline-pipeline-execution-succeeded',
-    'codepipeline-pipeline-pipeline-execution-superseded',
-    'codepipeline-pipeline-stage-execution-started',
-    'codepipeline-pipeline-stage-execution-succeeded',
-    'codepipeline-pipeline-stage-execution-resumed',
-    'codepipeline-pipeline-stage-execution-canceled',
-    'codepipeline-pipeline-stage-execution-failed',
-    'codepipeline-pipeline-action-execution-succeeded',
-    'codepipeline-pipeline-action-execution-failed',
-    'codepipeline-pipeline-action-execution-canceled',
-    'codepipeline-pipeline-action-execution-started',
-    'codepipeline-pipeline-manual-approval-failed',
-    'codepipeline-pipeline-manual-approval-needed',
-    'codepipeline-pipeline-manual-approval-succeeded'
-  ],
-  'PipelineType': [
-    'V1',
-    'V2'
+  'ExecutionClass': [
+    'FLEX',
+    'STANDARD'
   ],
   'ExecutionMode': [
     'QUEUED',
     'SUPERSEDED',
     'PARALLEL'
   ],
-  'GitPullRequestEvent': [
-    'OPEN',
-    'UPDATED',
-    'CLOSED'
+  'FailoverStatusCode': [
+    403,
+    404,
+    500,
+    502,
+    503,
+    504
   ],
-  'ProviderType': [
-    'CodeStarSourceConnection'
-  ],
-  'DetailType': [
-    'BASIC',
-    'FULL'
-  ],
-  'ManagedLoginVersion': [
-    1,
-    2
-  ],
-  'VerificationEmailStyle': [
-    'CONFIRM_WITH_CODE',
-    'CONFIRM_WITH_LINK'
-  ],
-  'LambdaVersion': [
-    'V1_0',
-    'V2_0'
-  ],
-  'Mfa': [
-    'OFF',
-    'OPTIONAL',
-    'ON'
-  ],
-  'AccountRecovery': [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-  ],
-  'AdvancedSecurityMode': [
-    'ENFORCED',
-    'AUDIT',
-    'OFF'
+  'FargatePlatformVersion': [
+    'LATEST',
+    '1.4.0',
+    '1.3.0',
+    '1.2.0',
+    '1.1.0',
+    '1.0.0'
   ],
   'FeaturePlan': [
     'LITE',
     'ESSENTIALS',
     'PLUS'
   ],
-  'MaximumExecutionFrequency': [
-    'One_Hour',
-    'Three_Hours',
-    'Six_Hours',
-    'Twelve_Hours',
-    'TwentyFour_Hours'
-  ],
-  'EventSource': [
-    'aws.config'
-  ],
-  'MessageType': [
-    'ConfigurationItemChangeNotification',
-    'OversizedConfigurationItemChangeNotification',
-    'ScheduledNotification',
-    'ConfigurationSnapshotDeliveryCompleted'
-  ],
-  'StorageType': [
-    'standard',
-    'gp2',
-    'gp3',
-    'io1',
-    'io2'
-  ],
-  'CapacityMode': [
-    'FIXED',
-    'AUTOSCALED'
-  ],
-  'Operation': [
-    'GetItem',
-    'BatchGetItem',
-    'Scan',
-    'Query',
-    'GetRecords',
-    'PutItem',
-    'DeleteItem',
-    'UpdateItem',
-    'BatchWriteItem',
-    'TransactWriteItems',
-    'TransactGetItems',
-    'ExecuteTransaction',
-    'BatchExecuteStatement',
-    'ExecuteStatement'
-  ],
-  'AttributeType': [
-    'B',
-    'N',
-    'S'
-  ],
-  'BillingMode': [
-    'PAY_PER_REQUEST',
-    'PROVISIONED'
-  ],
-  'ProjectionType': [
-    'KEYS_ONLY',
-    'INCLUDE',
+  'FieldLogLevel': [
+    'NONE',
+    'ERROR',
+    'INFO',
+    'DEBUG',
     'ALL'
   ],
-  'TableClass': [
-    'STANDARD',
-    'STANDARD_INFREQUENT_ACCESS'
+  'FifoThroughputLimit': [
+    'perQueue',
+    'perMessageGroupId'
   ],
-  'StreamViewType': [
-    'NEW_IMAGE',
-    'OLD_IMAGE',
-    'NEW_AND_OLD_IMAGES',
-    'KEYS_ONLY'
+  'FifoThroughputScope': [
+    'Topic',
+    'MessageGroup'
+  ],
+  'FileAssetPackaging': [
+    'zip',
+    'file'
+  ],
+  'FileSystemType': [
+    'ext3',
+    'ext4',
+    'xfs',
+    'ntfs'
+  ],
+  'FileSystemTypeVersion': [
+    '2.10',
+    '2.12',
+    '2.15'
+  ],
+  'FilterOrPolicyType': [
+    0,
+    1
+  ],
+  'FirehoseRecordSeparator': [
+    '\n',
+    '\t',
+    '\r\n',
+    ','
+  ],
+  'FirelensConfigFileType': [
+    's3',
+    'file'
+  ],
+  'FirelensLogRouterType': [
+    'fluentbit',
+    'fluentd'
+  ],
+  'FlagType': [
+    0,
+    1,
+    2,
+    3
+  ],
+  'FleetComputeType': [
+    'BUILD_GENERAL1_SMALL',
+    'BUILD_GENERAL1_MEDIUM',
+    'BUILD_GENERAL1_LARGE',
+    'BUILD_GENERAL1_XLARGE',
+    'BUILD_GENERAL1_2XLARGE',
+    'ATTRIBUTE_BASED_COMPUTE'
+  ],
+  'FlowLogDestinationType': [
+    'cloud-watch-logs',
+    's3',
+    'kinesis-data-firehose'
+  ],
+  'FlowLogFileFormat': [
+    'plain-text',
+    'parquet'
+  ],
+  'FlowLogMaxAggregationInterval': [
+    60,
+    600
+  ],
+  'FlowLogTrafficType': [
+    'ACCEPT',
+    'ALL',
+    'REJECT'
+  ],
+  'FollowMode': [
+    'never',
+    'always',
+    'external',
+    'internal-only'
+  ],
+  'Frequency': [
+    'DAILY',
+    'WEEKLY',
+    'BIWEEKLY',
+    'MONTHLY'
+  ],
+  'FunctionEventType': [
+    'viewer-request',
+    'viewer-response'
+  ],
+  'FunctionRuntimeFamily': [
+    'APPSYNC_JS'
+  ],
+  'FunctionUrlAuthType': [
+    'AWS_IAM',
+    'NONE'
+  ],
+  'GelfCompressionType': [
+    'gzip',
+    'zlib',
+    'none'
+  ],
+  'GitHubTrigger': [
+    'None',
+    'Poll',
+    'WebHook'
+  ],
+  'GitPullRequestEvent': [
+    'OPEN',
+    'UPDATED',
+    'CLOSED'
+  ],
+  'GlueVersion': [
+    '0.9',
+    '1.0',
+    '2.0',
+    '3.0',
+    '4.0',
+    '5.0'
+  ],
+  'GraphWidgetView': [
+    'timeSeries',
+    'bar',
+    'pie'
+  ],
+  'GrowthType': [
+    'LINEAR',
+    'EXPONENTIAL'
+  ],
+  'GrpcRetryEvent': [
+    'cancelled',
+    'deadline-exceeded',
+    'internal',
+    'resource-exhausted',
+    'unavailable'
+  ],
+  'HandlerName': [
+    'user',
+    'table',
+    'user-table-privileges'
+  ],
+  'HeadersFrameOption': [
+    'DENY',
+    'SAMEORIGIN'
+  ],
+  'HeadersReferrerPolicy': [
+    'no-referrer',
+    'no-referrer-when-downgrade',
+    'origin',
+    'origin-when-cross-origin',
+    'same-origin',
+    'strict-origin',
+    'strict-origin-when-cross-origin',
+    'unsafe-url'
+  ],
+  'HealthCheckProtocol': [
+    'TCP',
+    'HTTP',
+    'HTTPS'
+  ],
+  'HealthCheckProtocolType': [
+    'HTTP',
+    'TCP'
+  ],
+  'HealthCheckType': [
+    'HTTP',
+    'HTTPS',
+    'TCP'
+  ],
+  'HotswapMode': [
+    'fall-back',
+    'hotswap-only',
+    'full-deployment'
+  ],
+  'HttpAuthorizerType': [
+    'AWS_IAM',
+    'JWT',
+    'REQUEST'
+  ],
+  'HttpCodeElb': [
+    'HTTPCode_ELB_3XX_Count',
+    'HTTPCode_ELB_4XX_Count',
+    'HTTPCode_ELB_5XX_Count',
+    'HTTPCode_ELB_500_Count',
+    'HTTPCode_ELB_502_Count',
+    'HTTPCode_ELB_503_Count',
+    'HTTPCode_ELB_504_Count'
+  ],
+  'HttpCodeTarget': [
+    'HTTPCode_Target_2XX_Count',
+    'HTTPCode_Target_3XX_Count',
+    'HTTPCode_Target_4XX_Count',
+    'HTTPCode_Target_5XX_Count'
+  ],
+  'HttpConnectionType': [
+    'VPC_LINK',
+    'INTERNET'
+  ],
+  'HttpIntegrationSubtype': [
+    'EventBridge-PutEvents',
+    'SQS-SendMessage',
+    'SQS-ReceiveMessage',
+    'SQS-DeleteMessage',
+    'SQS-PurgeQueue',
+    'AppConfig-GetConfiguration',
+    'Kinesis-PutRecord',
+    'StepFunctions-StartExecution',
+    'StepFunctions-StartSyncExecution',
+    'StepFunctions-StopExecution'
+  ],
+  'HttpIntegrationType': [
+    'HTTP_PROXY',
+    'AWS_PROXY'
+  ],
+  'HttpLambdaResponseType': [
+    0,
+    1
+  ],
+  'HttpMethod': [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'HEAD',
+    'OPTIONS'
+  ],
+  'HttpMethods': [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'PATCH',
+    'HEAD'
+  ],
+  'HttpRetryEvent': [
+    'server-error',
+    'gateway-error',
+    'client-error',
+    'stream-error'
+  ],
+  'HttpRouteAuthorizationType': [
+    'AWS_IAM',
+    'JWT',
+    'CUSTOM',
+    'NONE'
+  ],
+  'HttpRouteMethod': [
+    'GET',
+    'HEAD',
+    'POST',
+    'PUT',
+    'DELETE',
+    'CONNECT',
+    'OPTIONS',
+    'TRACE',
+    'PATCH'
+  ],
+  'HttpRouteProtocol': [
+    'http',
+    'https'
+  ],
+  'HttpVersion': [
+    'http1.1',
+    'http2',
+    'http2and3',
+    'http3'
+  ],
+  'IdentityPoolProviderType': [
+    'Facebook',
+    'Google',
+    'Amazon',
+    'Apple',
+    'Twitter',
+    'OpenId',
+    'Saml',
+    'UserPool',
+    'Custom'
+  ],
+  'IdentityType': [
+    'IRSA',
+    'POD_IDENTITY'
+  ],
+  'IgnoreMode': [
+    'glob',
+    'git',
+    'docker'
+  ],
+  'ImageId': [
+    'amazonlinux-2-x86_64',
+    'amazonlinux-2023-x86_64',
+    'ubuntu-18.04-x86_64',
+    'ubuntu-22.04-x86_64'
+  ],
+  'ImagePullPolicy': [
+    'Always',
+    'IfNotPresent',
+    'Never'
+  ],
+  'ImagePullPrincipalType': [
+    'CODEBUILD',
+    'SERVICE_ROLE'
+  ],
+  'ImageRepositoryType': [
+    'ECR_PUBLIC',
+    'ECR'
+  ],
+  'IncludeExecutionData': [
+    'ALL'
+  ],
+  'InitElementType': [
+    'PACKAGE',
+    'GROUP',
+    'USER',
+    'SOURCE',
+    'FILE',
+    'COMMAND',
+    'SERVICE'
+  ],
+  'InitPlatform': [
+    'WINDOWS',
+    'LINUX'
   ],
   'InputCompressionType': [
     'GZIP',
     'ZSTD',
     'NONE'
   ],
-  'ApproximateCreationDateTimePrecision': [
-    'MILLISECOND',
-    'MICROSECOND'
+  'InputMode': [
+    'Pipe',
+    'File',
+    'FastFile'
   ],
-  'ServiceManager': [
+  'InputType': [
     0,
-    1,
-    2
+    1
   ],
-  'TransportProtocol': [
-    'tcp',
-    'udp'
-  ],
-  'VpnPort': [
-    443,
-    1194
-  ],
-  'ClientVpnSessionTimeout': [
-    8,
-    10,
-    12,
-    24
+  'InstanceArchitecture': [
+    'arm64',
+    'x86_64'
   ],
   'InstanceClass': [
     'standard3',
@@ -2014,9 +1805,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'deep-learning2-qualcomm',
     'dl2q'
   ],
-  'InstanceArchitecture': [
-    'arm64',
-    'x86_64'
+  'InstanceInitiatedShutdownBehavior': [
+    'stop',
+    'terminate'
   ],
   'InstanceSize': [
     'nano',
@@ -2049,6 +1840,158 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'metal-32xl',
     'metal-48xl'
   ],
+  'InstanceType': [
+    'PROVISIONED',
+    'SERVERLESS_V2'
+  ],
+  'InstanceUpdateBehaviour': [
+    'BULK',
+    'ROLLING'
+  ],
+  'InsufficientDataHealthStatusEnum': [
+    'Healthy',
+    'Unhealthy',
+    'LastKnownStatus'
+  ],
+  'IntegrationPattern': [
+    'REQUEST_RESPONSE',
+    'RUN_JOB',
+    'WAIT_FOR_TASK_TOKEN'
+  ],
+  'IntegrationType': [
+    'AWS',
+    'AWS_PROXY',
+    'HTTP',
+    'HTTP_PROXY',
+    'MOCK'
+  ],
+  'IntendedUse': [
+    'SingleUse',
+    'Storage'
+  ],
+  'IntrospectionConfig': [
+    'ENABLED',
+    'DISABLED'
+  ],
+  'InvalidCharHandlingAction': [
+    'DISABLED',
+    'FAIL',
+    'SET_TO_NULL',
+    'DROP_ROW',
+    'REPLACE'
+  ],
+  'InventoryFormat': [
+    'CSV',
+    'Parquet',
+    'ORC'
+  ],
+  'InventoryFrequency': [
+    'Daily',
+    'Weekly'
+  ],
+  'InventoryObjectVersion': [
+    'All',
+    'Current'
+  ],
+  'InvocationHttpResponseCode': [
+    'Invocation4XXErrors',
+    'Invocation5XXErrors'
+  ],
+  'InvocationType': [
+    'RequestResponse',
+    'Event',
+    'DryRun'
+  ],
+  'InvokeMode': [
+    'BUFFERED',
+    'RESPONSE_STREAM'
+  ],
+  'IpAddressType': [
+    'ipv4',
+    'dualstack',
+    'dualstack-without-public-ipv4'
+  ],
+  'IpFamily': [
+    'ipv4',
+    'ipv6'
+  ],
+  'IpPreference': [
+    'IPv4_ONLY',
+    'IPv4_PREFERRED',
+    'IPv6_ONLY',
+    'IPv6_PREFERRED'
+  ],
+  'IpProtocol': [
+    'Ipv4_Only',
+    'Dual_Stack'
+  ],
+  'IpamPoolPublicIpSource': [
+    'byoip',
+    'amazon'
+  ],
+  'IpamScopeType': [
+    'default',
+    'custom'
+  ],
+  'IpcMode': [
+    'none',
+    'host',
+    'task'
+  ],
+  'JenkinsActionType': [
+    0,
+    1
+  ],
+  'JitterType': [
+    'FULL',
+    'NONE'
+  ],
+  'JobBookmarksEncryptionMode': [
+    'CSE-KMS'
+  ],
+  'JobLanguage': [
+    'scala',
+    'python'
+  ],
+  'JobState': [
+    'SUCCEEDED',
+    'FAILED',
+    'TIMEOUT',
+    'STARTING',
+    'RUNNING',
+    'STOPPING',
+    'STOPPED'
+  ],
+  'JobStateTimeLimitActionsAction': [
+    'CANCEL'
+  ],
+  'JobStateTimeLimitActionsReason': [
+    'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
+    'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
+    'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT'
+  ],
+  'JobStateTimeLimitActionsState': [
+    'RUNNABLE'
+  ],
+  'JobType': [
+    'glueetl',
+    'gluestreaming',
+    'pythonshell',
+    'glueray'
+  ],
+  'JsonSchemaType': [
+    'null',
+    'boolean',
+    'object',
+    'array',
+    'number',
+    'integer',
+    'string'
+  ],
+  'JsonSchemaVersion': [
+    'http://json-schema.org/draft-04/schema#',
+    'http://json-schema.org/draft-07/schema#'
+  ],
   'KeyPairFormat': [
     'ppk',
     'pem'
@@ -2057,35 +2000,591 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'rsa',
     'ed25519'
   ],
-  'CpuCredits': [
-    'standard',
-    'unlimited'
+  'KeySigningKeyStatus': [
+    'ACTIVE',
+    'INACTIVE'
   ],
-  'InstanceInitiatedShutdownBehavior': [
-    'stop',
-    'terminate'
+  'KeySpec': [
+    'SYMMETRIC_DEFAULT',
+    'RSA_2048',
+    'RSA_3072',
+    'RSA_4096',
+    'ECC_NIST_P256',
+    'ECC_NIST_P384',
+    'ECC_NIST_P521',
+    'ECC_SECG_P256K1',
+    'HMAC_224',
+    'HMAC_256',
+    'HMAC_384',
+    'HMAC_512',
+    'SM2'
   ],
-  'SpotInstanceInterruption': [
-    'stop',
-    'terminate',
-    'hibernate'
+  'KeyUsage': [
+    'ENCRYPT_DECRYPT',
+    'SIGN_VERIFY',
+    'GENERATE_VERIFY_MAC',
+    'KEY_AGREEMENT'
   ],
-  'SpotRequestType': [
-    'one-time',
-    'persistent'
+  'KinesisStartingPosition': [
+    'TRIM_HORIZON',
+    'LATEST',
+    'AT_TIMESTAMP'
+  ],
+  'LambdaEdgeEventType': [
+    'origin-request',
+    'origin-response',
+    'viewer-request',
+    'viewer-response'
+  ],
+  'LambdaFunctionInvocationType': [
+    'FIRE_AND_FORGET',
+    'REQUEST_RESPONSE'
+  ],
+  'LambdaInvocationType': [
+    'RequestResponse',
+    'Event',
+    'DryRun'
+  ],
+  'LambdaVersion': [
+    'V1_0',
+    'V2_0'
+  ],
+  'LatencyMode': [
+    'LOW',
+    'NORMAL'
   ],
   'LaunchTemplateHttpTokens': [
     'optional',
     'required'
+  ],
+  'LaunchType': [
+    'EC2',
+    'FARGATE',
+    'EXTERNAL'
+  ],
+  'LegendPosition': [
+    'bottom',
+    'right',
+    'hidden'
+  ],
+  'LicenseModel': [
+    'license-included',
+    'bring-your-own-license',
+    'general-public-license'
+  ],
+  'LifecycleLabel': [
+    'OnDemand',
+    'Ec2Spot'
+  ],
+  'LifecyclePolicy': [
+    'AFTER_1_DAY',
+    'AFTER_7_DAYS',
+    'AFTER_14_DAYS',
+    'AFTER_30_DAYS',
+    'AFTER_60_DAYS',
+    'AFTER_90_DAYS',
+    'AFTER_180_DAYS',
+    'AFTER_270_DAYS',
+    'AFTER_365_DAYS'
+  ],
+  'LifecycleTransition': [
+    'autoscaling:EC2_INSTANCE_LAUNCHING',
+    'autoscaling:EC2_INSTANCE_TERMINATING'
+  ],
+  'LoadBalancerGeneration': [
+    0,
+    1
+  ],
+  'LoadBalancerIpAddressType': [
+    'ipv4',
+    'dualstack',
+    'dualstack-without-public-ipv4'
+  ],
+  'LoadBalancingProtocol': [
+    'tcp',
+    'ssl',
+    'http',
+    'https'
+  ],
+  'LocalCacheMode': [
+    'LOCAL_SOURCE_CACHE',
+    'LOCAL_DOCKER_LAYER_CACHE',
+    'LOCAL_CUSTOM_CACHE'
+  ],
+  'LockFile': [
+    'package-lock.json',
+    'yarn.lock',
+    'bun.lockb',
+    'pnpm-lock.yaml'
+  ],
+  'LogFormat': [
+    'Text',
+    'JSON'
+  ],
+  'LogGroupClass': [
+    'STANDARD',
+    'INFREQUENT_ACCESS'
+  ],
+  'LogLevel': [
+    'OFF',
+    'ALL',
+    'ERROR',
+    'FATAL'
+  ],
+  'LogQueryVisualizationType': [
+    'table',
+    'line',
+    'stackedarea',
+    'bar',
+    'pie'
+  ],
+  'LogType': [
+    'None',
+    'Tail'
+  ],
+  'LoggingFormat': [
+    'Text',
+    'JSON'
+  ],
+  'LoggingLevel': [
+    'ERROR',
+    'INFO',
+    'NONE'
+  ],
+  'LoggingProtocol': [
+    'http/s',
+    'sqs',
+    'lambda',
+    'firehose',
+    'application'
+  ],
+  'LustreAutoImportPolicy': [
+    'NONE',
+    'NEW',
+    'NEW_CHANGED',
+    'NEW_CHANGED_DELETED'
+  ],
+  'LustreDataCompressionType': [
+    'NONE',
+    'LZ4'
+  ],
+  'LustreDeploymentType': [
+    'SCRATCH_1',
+    'SCRATCH_2',
+    'PERSISTENT_1',
+    'PERSISTENT_2'
+  ],
+  'MachineImageType': [
+    0,
+    1
+  ],
+  'MachineType': [
+    'GENERAL',
+    'NVME'
+  ],
+  'MailFromBehaviorOnMxFailure': [
+    'USE_DEFAULT_VALUE',
+    'REJECT_MESSAGE'
+  ],
+  'MaintenanceTrackName': [
+    'current',
+    'trailing'
+  ],
+  'ManagedLoginVersion': [
+    1,
+    2
+  ],
+  'ManagementEventSources': [
+    'kms.amazonaws.com',
+    'rdsdata.amazonaws.com'
+  ],
+  'MaxCapacity': [
+    0.0625,
+    1
+  ],
+  'MaximumExecutionFrequency': [
+    'One_Hour',
+    'Three_Hours',
+    'Six_Hours',
+    'Twelve_Hours',
+    'TwentyFour_Hours'
+  ],
+  'MaximumResolution': [
+    'FULL_HD',
+    'HD',
+    'SD'
+  ],
+  'MergeType': [
+    'MANUAL_MERGE',
+    'AUTO_MERGE'
+  ],
+  'MeshFilterType': [
+    'ALLOW_ALL',
+    'DROP_ALL'
+  ],
+  'MessageAttributeDataType': [
+    'String',
+    'String.Array',
+    'Number',
+    'Binary'
+  ],
+  'MessageLanguage': [
+    'en',
+    'jp',
+    'zh'
+  ],
+  'MessageType': [
+    'ConfigurationItemChangeNotification',
+    'OversizedConfigurationItemChangeNotification',
+    'ScheduledNotification',
+    'ConfigurationSnapshotDeliveryCompleted'
+  ],
+  'MetadataType': [
+    'aws:cdk:analytics:construct',
+    'aws:cdk:analytics:method',
+    'aws:cdk:analytics:featureflag'
+  ],
+  'MethodLoggingLevel': [
+    'OFF',
+    'ERROR',
+    'INFO'
+  ],
+  'MetricAggregationType': [
+    'Average',
+    'Minimum',
+    'Maximum'
+  ],
+  'MetricType': [
+    'EventCount'
+  ],
+  'MetricsLevel': [
+    'APPLICATION',
+    'TASK',
+    'OPERATOR',
+    'PARALLELISM'
+  ],
+  'Mfa': [
+    'OFF',
+    'OPTIONAL',
+    'ON'
+  ],
+  'Mode': [
+    'SingleModel',
+    'MultiModel'
+  ],
+  'MonitorType': [
+    0,
+    1
+  ],
+  'Monitoring': [
+    0,
+    1
+  ],
+  'MqttQualityOfService': [
+    0,
+    1
+  ],
+  'MutualAuthenticationMode': [
+    'off',
+    'passthrough',
+    'verify'
+  ],
+  'NamespaceType': [
+    'HTTP',
+    'DNS_PRIVATE',
+    'DNS_PUBLIC'
+  ],
+  'NatConnectivityType': [
+    'public',
+    'private'
   ],
   'NatTrafficDirection': [
     'OUTBOUND_ONLY',
     'INBOUND_AND_OUTBOUND',
     'NONE'
   ],
-  'TrafficDirection': [
+  'NetworkLoadBalancedServiceRecordType': [
     0,
-    1
+    1,
+    2
+  ],
+  'NetworkMode': [
+    'none',
+    'bridge',
+    'awsvpc',
+    'host',
+    'nat'
+  ],
+  'NetworkType': [
+    'IPV4',
+    'DUAL'
+  ],
+  'NodeType': [
+    'coordinator'
+  ],
+  'NodegroupAmiType': [
+    'AL2_x86_64',
+    'AL2_x86_64_GPU',
+    'AL2_ARM_64',
+    'BOTTLEROCKET_ARM_64',
+    'BOTTLEROCKET_x86_64',
+    'BOTTLEROCKET_ARM_64_NVIDIA',
+    'BOTTLEROCKET_x86_64_NVIDIA',
+    'WINDOWS_CORE_2019_x86_64',
+    'WINDOWS_CORE_2022_x86_64',
+    'WINDOWS_FULL_2019_x86_64',
+    'WINDOWS_FULL_2022_x86_64',
+    'AL2023_x86_64_STANDARD',
+    'AL2023_x86_64_NEURON',
+    'AL2023_x86_64_NVIDIA',
+    'AL2023_ARM_64_STANDARD'
+  ],
+  'NumericOverflowHandlingAction': [
+    'DISABLED',
+    'FAIL',
+    'SET_TO_NULL',
+    'DROP_ROW'
+  ],
+  'ObjectLockMode': [
+    'GOVERNANCE',
+    'COMPLIANCE'
+  ],
+  'ObjectOwnership': [
+    'BucketOwnerEnforced',
+    'BucketOwnerPreferred',
+    'ObjectWriter'
+  ],
+  'OidcAttributeRequestMethod': [
+    'GET',
+    'POST'
+  ],
+  'OnDemandAllocationStrategy': [
+    'prioritized',
+    'lowest-price'
+  ],
+  'OnPartialBatchItemFailure': [
+    'AUTOMATIC_BISECT'
+  ],
+  'OperatingSystem': [
+    'AMAZON_LINUX',
+    'AMAZON_LINUX_2',
+    'AMAZON_LINUX_2023',
+    'WINDOWS_2012',
+    'WINDOWS_2016'
+  ],
+  'OperatingSystemType': [
+    0,
+    1,
+    2
+  ],
+  'Operation': [
+    'GetItem',
+    'BatchGetItem',
+    'Scan',
+    'Query',
+    'GetRecords',
+    'PutItem',
+    'DeleteItem',
+    'UpdateItem',
+    'BatchWriteItem',
+    'TransactWriteItems',
+    'TransactGetItems',
+    'ExecuteTransaction',
+    'BatchExecuteStatement',
+    'ExecuteStatement'
+  ],
+  'Operator': [
+    'AND',
+    'OR',
+    'NOT'
+  ],
+  'OpsItemCategory': [
+    'Availability',
+    'Cost',
+    'Performance',
+    'Recovery',
+    'Security'
+  ],
+  'OpsItemSeverity': [
+    '1',
+    '2',
+    '3',
+    '4'
+  ],
+  'OrcColumnMappingType': [
+    'name',
+    'position'
+  ],
+  'OriginAccessControlOriginType': [
+    's3',
+    'lambda',
+    'mediastore',
+    'mediapackagev2'
+  ],
+  'OriginProtocolPolicy': [
+    'http-only',
+    'match-viewer',
+    'https-only'
+  ],
+  'OriginSelectionCriteria': [
+    'default',
+    'media-quality-based'
+  ],
+  'OriginSslPolicy': [
+    'SSLv3',
+    'TLSv1',
+    'TLSv1.1',
+    'TLSv1.2'
+  ],
+  'OutOfInfrequentAccessPolicy': [
+    'AFTER_1_ACCESS'
+  ],
+  'OutputFormat': [
+    'cjs',
+    'esm'
+  ],
+  'ParameterDataType': [
+    'text',
+    'aws:ec2:image'
+  ],
+  'ParameterTier': [
+    'Advanced',
+    'Intelligent-Tiering',
+    'Standard'
+  ],
+  'ParameterType': [
+    'String',
+    'SecureString',
+    'StringList',
+    'AWS::EC2::Image::Id'
+  ],
+  'ParameterValueType': [
+    'String',
+    'AWS::EC2::AvailabilityZone::Name',
+    'AWS::EC2::Image::Id',
+    'AWS::EC2::Instance::Id',
+    'AWS::EC2::KeyPair::KeyName',
+    'AWS::EC2::SecurityGroup::GroupName',
+    'AWS::EC2::SecurityGroup::Id',
+    'AWS::EC2::Subnet::Id',
+    'AWS::EC2::Volume::Id',
+    'AWS::EC2::VPC::Id',
+    'AWS::Route53::HostedZone::Id'
+  ],
+  'ParamsAndSecretsLogLevel': [
+    'debug',
+    'info',
+    'warn',
+    'error',
+    'none'
+  ],
+  'ParamsAndSecretsVersions': [
+    '1.0.103'
+  ],
+  'Partition': [
+    'aws',
+    'aws-cn',
+    'aws-us-gov',
+    'aws-iso',
+    'aws-iso-b',
+    'aws-iso-f',
+    'aws-iso-e'
+  ],
+  'PartitionDateSource': [
+    'EventTime',
+    'DeliveryTime'
+  ],
+  'PasskeyUserVerification': [
+    'preferred',
+    'required'
+  ],
+  'PassthroughBehavior': [
+    'WHEN_NO_MATCH',
+    'NEVER',
+    'WHEN_NO_TEMPLATES'
+  ],
+  'PatchType': [
+    'json',
+    'merge',
+    'strategic'
+  ],
+  'PerformanceInsightRetention': [
+    7,
+    31,
+    62,
+    93,
+    124,
+    155,
+    186,
+    217,
+    248,
+    279,
+    310,
+    341,
+    372,
+    403,
+    434,
+    465,
+    496,
+    527,
+    558,
+    589,
+    620,
+    651,
+    682,
+    713,
+    731
+  ],
+  'PerformanceMode': [
+    'generalPurpose',
+    'maxIO'
+  ],
+  'Period': [
+    'DAY',
+    'WEEK',
+    'MONTH'
+  ],
+  'PeriodOverride': [
+    'auto',
+    'inherit'
+  ],
+  'PidMode': [
+    'host',
+    'task'
+  ],
+  'PipeVariable': [
+    '<aws.pipes.pipe-arn>',
+    '<aws.pipes.pipe-name>',
+    '<aws.pipes.source-arn>',
+    '<aws.pipes.enrichment-arn>',
+    '<aws.pipes.target-arn>',
+    '<aws.pipes.event.ingestion-time>',
+    '<aws.pipes.event>',
+    '<aws.pipes.event.json>'
+  ],
+  'PipelineNotificationEvents': [
+    'codepipeline-pipeline-pipeline-execution-failed',
+    'codepipeline-pipeline-pipeline-execution-canceled',
+    'codepipeline-pipeline-pipeline-execution-started',
+    'codepipeline-pipeline-pipeline-execution-resumed',
+    'codepipeline-pipeline-pipeline-execution-succeeded',
+    'codepipeline-pipeline-pipeline-execution-superseded',
+    'codepipeline-pipeline-stage-execution-started',
+    'codepipeline-pipeline-stage-execution-succeeded',
+    'codepipeline-pipeline-stage-execution-resumed',
+    'codepipeline-pipeline-stage-execution-canceled',
+    'codepipeline-pipeline-stage-execution-failed',
+    'codepipeline-pipeline-action-execution-succeeded',
+    'codepipeline-pipeline-action-execution-failed',
+    'codepipeline-pipeline-action-execution-canceled',
+    'codepipeline-pipeline-action-execution-started',
+    'codepipeline-pipeline-manual-approval-failed',
+    'codepipeline-pipeline-manual-approval-needed',
+    'codepipeline-pipeline-manual-approval-succeeded'
+  ],
+  'PipelineType': [
+    'V1',
+    'V2'
   ],
   'PlacementGroupSpreadLevel': [
     'host',
@@ -2096,35 +2595,269 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'partition',
     'spread'
   ],
-  'VpcEndpointType': [
-    'Interface',
-    'Gateway'
+  'Platform': [
+    'x86-64',
+    'ARM64'
   ],
-  'FlowLogTrafficType': [
-    'ACCEPT',
+  'Policy': [
+    'ALLOW',
+    'REQUIRE'
+  ],
+  'PolicyValidationReportStatusBeta1': [
+    'success',
+    'failure'
+  ],
+  'PoliticalView': [
+    'IND'
+  ],
+  'PoolState': [
+    'Hibernated',
+    'Running',
+    'Stopped'
+  ],
+  'PositionFiltering': [
+    'TimeBased',
+    'DistanceBased',
+    'AccuracyBased'
+  ],
+  'PredefinedMetric': [
+    'ASGAverageCPUUtilization',
+    'ASGAverageNetworkIn',
+    'ASGAverageNetworkOut',
+    'ALBRequestCountPerTarget'
+  ],
+  'PredicateLogical': [
+    'AND',
+    'ANY'
+  ],
+  'Preset': [
+    'CONSTRAINED_BANDWIDTH_DELIVERY',
+    'HIGHER_BANDWIDTH_DELIVERY'
+  ],
+  'PriceClass': [
+    'PriceClass_100',
+    'PriceClass_200',
+    'PriceClass_All'
+  ],
+  'PriorityType': [
+    'LATENCY',
+    'COST',
+    'DESTINATION',
+    'LOCATION'
+  ],
+  'ProcessorMode': [
+    'INLINE',
+    'DISTRIBUTED'
+  ],
+  'ProcessorType': [
+    'STANDARD',
+    'EXPRESS'
+  ],
+  'ProjectNotificationEvents': [
+    'codebuild-project-build-state-failed',
+    'codebuild-project-build-state-succeeded',
+    'codebuild-project-build-state-in-progress',
+    'codebuild-project-build-state-stopped',
+    'codebuild-project-build-phase-failure',
+    'codebuild-project-build-phase-success'
+  ],
+  'ProjectVisibility': [
+    'PUBLIC_READ',
+    'PRIVATE'
+  ],
+  'ProjectionType': [
+    'KEYS_ONLY',
+    'INCLUDE',
+    'ALL'
+  ],
+  'PropagatedTagSource': [
+    'SERVICE',
+    'TASK_DEFINITION',
+    'NONE'
+  ],
+  'Protocol': [
+    'HTTP',
+    'HTTPS',
+    'TCP',
+    'TLS',
+    'UDP',
+    'TCP_UDP'
+  ],
+  'ProviderType': [
+    'CodeStarSourceConnection'
+  ],
+  'PythonVersion': [
+    '2',
+    '3',
+    '3.9'
+  ],
+  'QueryLanguage': [
+    'JSONPath',
+    'JSONata'
+  ],
+  'QueueEncryption': [
+    'NONE',
+    'KMS_MANAGED',
+    'KMS',
+    'SQS_MANAGED'
+  ],
+  'ReadWriteType': [
+    'ReadOnly',
+    'WriteOnly',
+    'All',
+    'None'
+  ],
+  'ReceiptFilterPolicy': [
+    'Allow',
+    'Block'
+  ],
+  'RecordType': [
+    'A',
+    'AAAA',
+    'CAA',
+    'CNAME',
+    'DS',
+    'HTTPS',
+    'MX',
+    'NAPTR',
+    'NS',
+    'PTR',
+    'SOA',
+    'SPF',
+    'SRV',
+    'SSHFP',
+    'SVCB',
+    'TLSA',
+    'TXT'
+  ],
+  'RecordWrapperType': [
+    'None',
+    'RecordIO'
+  ],
+  'RecordingMode': [
+    'INTERVAL',
+    'DISABLED'
+  ],
+  'RecursiveLoop': [
+    'Allow',
+    'Terminate'
+  ],
+  'RedirectProtocol': [
+    'http',
+    'https'
+  ],
+  'RedirectStatus': [
+    '200',
+    '301',
+    '302',
+    '404',
+    '404-200'
+  ],
+  'RedrivePermission': [
+    'allowAll',
+    'denyAll',
+    'byQueue'
+  ],
+  'ReferenceRendering': [
+    0,
+    1
+  ],
+  'RemovalPolicy': [
+    'destroy',
+    'retain',
+    'snapshot',
+    'retain-on-update-or-delete'
+  ],
+  'RenditionSelection': [
     'ALL',
-    'REJECT'
+    'NONE',
+    'CUSTOM'
   ],
-  'FlowLogDestinationType': [
-    'cloud-watch-logs',
-    's3',
-    'kinesis-data-firehose'
+  'ReplicationOverwriteProtection': [
+    'ENABLED',
+    'DISABLED'
   ],
-  'FlowLogFileFormat': [
-    'plain-text',
-    'parquet'
+  'ReportGroupType': [
+    'TEST',
+    'CODE_COVERAGE'
   ],
-  'FlowLogMaxAggregationInterval': [
+  'RepositoryEventTrigger': [
+    'all',
+    'updateReference',
+    'createReference',
+    'deleteReference'
+  ],
+  'RepositoryNotificationEvents': [
+    'codecommit-repository-comments-on-commits',
+    'codecommit-repository-comments-on-pull-requests',
+    'codecommit-repository-approvals-status-changed',
+    'codecommit-repository-approvals-rule-override',
+    'codecommit-repository-pull-request-created',
+    'codecommit-repository-pull-request-source-updated',
+    'codecommit-repository-pull-request-status-changed',
+    'codecommit-repository-pull-request-merged',
+    'codecommit-repository-branches-and-tags-created',
+    'codecommit-repository-branches-and-tags-deleted',
+    'codecommit-repository-branches-and-tags-updated'
+  ],
+  'RepositoryVisibility': [
+    0,
+    1
+  ],
+  'RequireApproval': [
+    'never',
+    'any-change',
+    'broadening'
+  ],
+  'Resolution': [
+    'FULL_HD',
+    'HD',
+    'SD',
+    'LOWEST_RESOLUTION'
+  ],
+  'ResolutionTypeHint': [
+    'string',
+    'number',
+    'string-list'
+  ],
+  'ResourceAction': [
+    'pause-cluster',
+    'resume-cluster',
+    'failover-primary-compute'
+  ],
+  'RetentionDays': [
+    1,
+    3,
+    5,
+    7,
+    14,
+    30,
     60,
-    600
+    90,
+    120,
+    150,
+    180,
+    365,
+    400,
+    545,
+    731,
+    1096,
+    1827,
+    2192,
+    2557,
+    2922,
+    3288,
+    3653,
+    9999
   ],
-  'IpProtocol': [
-    'Ipv4_Only',
-    'Dual_Stack'
+  'RevocationType': [
+    'CRL'
   ],
-  'DefaultInstanceTenancy': [
-    'default',
-    'dedicated'
+  'RoleMappingMatchType': [
+    'Equals',
+    'Contains',
+    'StartsWith',
+    'NotEqual'
   ],
   'RouterType': [
     'CarrierGateway',
@@ -2138,9 +2871,766 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'VpcPeeringConnection',
     'VpcEndpoint'
   ],
+  'RoutingPolicy': [
+    'WEIGHTED',
+    'MULTIVALUE'
+  ],
+  'Runtime': [
+    'nodejs18.x',
+    'python3.9',
+    'python3.10',
+    'python3.11'
+  ],
+  'RuntimeFamily': [
+    0,
+    1,
+    2
+  ],
+  'S3DataDistributionType': [
+    'FullyReplicated',
+    'ShardedByS3Key'
+  ],
+  'S3DataType': [
+    'ManifestFile',
+    'S3Prefix',
+    'AugmentedManifestFile'
+  ],
+  'S3EncryptionMode': [
+    'SSE-S3',
+    'SSE-KMS'
+  ],
+  'S3OutputFormat': [
+    'plain',
+    'json',
+    'w3c'
+  ],
+  'S3Trigger': [
+    'None',
+    'Poll',
+    'Events'
+  ],
+  'SSLMethod': [
+    'sni-only',
+    'vip'
+  ],
+  'ScalingEvent': [
+    'autoscaling:EC2_INSTANCE_LAUNCH',
+    'autoscaling:EC2_INSTANCE_TERMINATE',
+    'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+    'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
+    'autoscaling:TEST_NOTIFICATION'
+  ],
+  'ScalingMode': [
+    'STANDARD',
+    'MANAGED'
+  ],
+  'ScalingProcess': [
+    'Launch',
+    'Terminate',
+    'HealthCheck',
+    'ReplaceUnhealthy',
+    'AZRebalance',
+    'AlarmNotification',
+    'ScheduledActions',
+    'AddToLoadBalancer',
+    'InstanceRefresh'
+  ],
+  'Scope': [
+    'task',
+    'shared'
+  ],
+  'SecurityPolicy': [
+    'TLS_1_0',
+    'TLS_1_2'
+  ],
+  'SecurityPolicyProtocol': [
+    'SSLv3',
+    'TLSv1',
+    'TLSv1_2016',
+    'TLSv1.1_2016',
+    'TLSv1.2_2018',
+    'TLSv1.2_2019',
+    'TLSv1.2_2021'
+  ],
+  'ServerSideEncryption': [
+    'AES256',
+    'aws:kms',
+    'aws:kms:dsse'
+  ],
+  'ServiceIntegrationPattern': [
+    'FIRE_AND_FORGET',
+    'SYNC',
+    'WAIT_FOR_TASK_TOKEN'
+  ],
+  'ServiceManager': [
+    0,
+    1,
+    2
+  ],
+  'ServiceNamespace': [
+    'ecs',
+    'elasticmapreduce',
+    'ec2',
+    'appstream',
+    'dynamodb',
+    'rds',
+    'sagemaker',
+    'custom-resource',
+    'lambda',
+    'comprehend',
+    'kafka',
+    'elasticache',
+    'neptune',
+    'cassandra',
+    'workspaces'
+  ],
+  'Shading': [
+    'none',
+    'above',
+    'below'
+  ],
+  'SharePermission': [
+    0,
+    1
+  ],
+  'SigningAlgorithm': [
+    'rsa-sha256'
+  ],
+  'SigningBehavior': [
+    'always',
+    'never',
+    'no-override'
+  ],
+  'SigningProtocol': [
+    'sigv4'
+  ],
+  'SizeRoundingBehavior': [
+    0,
+    1,
+    2
+  ],
+  'SnsActionMessageFormat': [
+    'RAW',
+    'JSON'
+  ],
+  'SourceMapMode': [
+    'default',
+    'external',
+    'inline',
+    'both'
+  ],
+  'SourceType': [
+    'lambda',
+    'sqs',
+    'sns',
+    'events'
+  ],
+  'SplitType': [
+    'None',
+    'Line',
+    'RecordIO',
+    'TFRecord'
+  ],
+  'SplunkLogFormat': [
+    'inline',
+    'json',
+    'raw'
+  ],
+  'SpotAllocationStrategy': [
+    'lowest-price',
+    'capacity-optimized',
+    'capacity-optimized-prioritized',
+    'price-capacity-optimized'
+  ],
+  'SpotInstanceInterruption': [
+    'stop',
+    'terminate',
+    'hibernate'
+  ],
+  'SpotRequestType': [
+    'one-time',
+    'persistent'
+  ],
+  'SslPolicy': [
+    'ELBSecurityPolicy-TLS13-1-2-2021-06',
+    'ELBSecurityPolicy-2016-08',
+    'ELBSecurityPolicy-TLS13-1-2-Res-2021-06',
+    'ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06',
+    'ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06',
+    'ELBSecurityPolicy-TLS13-1-0-2021-06',
+    'ELBSecurityPolicy-TLS13-1-1-2021-06',
+    'ELBSecurityPolicy-TLS13-1-3-2021-06',
+    'ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04',
+    'ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04',
+    'ELBSecurityPolicy-FS-1-2-Res-2020-10',
+    'ELBSecurityPolicy-FS-1-2-Res-2019-08',
+    'ELBSecurityPolicy-FS-1-2-2019-08',
+    'ELBSecurityPolicy-FS-1-1-2019-08',
+    'ELBSecurityPolicy-FS-2018-06',
+    'ELBSecurityPolicy-TLS-1-2-2017-01',
+    'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
+    'ELBSecurityPolicy-TLS-1-1-2017-01',
+    'ELBSecurityPolicy-TLS-1-0-2015-04'
+  ],
+  'StackActivityProgress': [
+    'bar',
+    'events'
+  ],
+  'StackSetOrganizationsAutoDeployment': [
+    'Enabled',
+    'Disabled',
+    'EnabledWithStackRetention'
+  ],
+  'StandardThreatProtectionMode': [
+    'ENFORCED',
+    'AUDIT',
+    'OFF'
+  ],
+  'StartingPosition': [
+    'TRIM_HORIZON',
+    'LATEST',
+    'AT_TIMESTAMP'
+  ],
+  'StateMachineInvocationType': [
+    'FIRE_AND_FORGET',
+    'REQUEST_RESPONSE'
+  ],
+  'StateMachineType': [
+    'EXPRESS',
+    'STANDARD'
+  ],
+  'StateType': [
+    'Pass',
+    'Task',
+    'Choice',
+    'Wait',
+    'Succeed',
+    'Fail',
+    'Parallel',
+    'Map'
+  ],
+  'Statistic': [
+    'SampleCount',
+    'Average',
+    'Sum',
+    'Minimum',
+    'Maximum'
+  ],
+  'Status': [
+    'pass',
+    'fail'
+  ],
+  'Storage': [
+    'SEQUENTIAL',
+    'LATEST'
+  ],
+  'StorageClass': [
+    'STANDARD',
+    'REDUCED_REDUNDANCY',
+    'STANDARD_IA',
+    'ONEZONE_IA',
+    'INTELLIGENT_TIERING',
+    'GLACIER',
+    'DEEP_ARCHIVE'
+  ],
+  'StorageMode': [
+    'LOCAL',
+    'TIERED'
+  ],
+  'StorageParameters': [
+    'skip.header.line.count',
+    'data_cleansing_enabled',
+    'compression_type',
+    'invalid_char_handling',
+    'replacement_char',
+    'numeric_overflow_handling',
+    'surplus_bytes_handling',
+    'surplus_char_handling',
+    'column_count_mismatch_handling',
+    'num_rows',
+    'serialization.null.format',
+    'orc.schema.resolution',
+    'write.parallel',
+    'write.maxfilesize.mb',
+    'write.kms.key.id'
+  ],
+  'StorageType': [
+    'standard',
+    'gp2',
+    'gp3',
+    'io1',
+    'io2'
+  ],
+  'StreamEncryption': [
+    'NONE',
+    'KMS',
+    'MANAGED'
+  ],
+  'StreamEncryptionType': [
+    0,
+    1,
+    2
+  ],
+  'StreamMode': [
+    'PROVISIONED',
+    'ON_DEMAND'
+  ],
+  'StreamViewType': [
+    'NEW_IMAGE',
+    'OLD_IMAGE',
+    'NEW_AND_OLD_IMAGES',
+    'KEYS_ONLY'
+  ],
+  'Style': [
+    'VectorEsriNavigation',
+    'RasterEsriImagery',
+    'VectorEsriLightGrayCanvas',
+    'VectorEsriTopographic',
+    'VectorEsriStreets',
+    'VectorEsriDarkGrayCanvas',
+    'VectorHereExplore',
+    'RasterHereExploreSatellite',
+    'HybridHereExploreSatellite',
+    'VectorHereContrast',
+    'VectorHereExploreTruck',
+    'VectorGrabStandardLight',
+    'VectorGrabStandardDark',
+    'VectorOpenDataStandardLight',
+    'VectorOpenDataStandardDark',
+    'VectorOpenDataVisualizationLight',
+    'VectorOpenDataVisualizationDark'
+  ],
+  'SubnetType': [
+    'Isolated',
+    'Deprecated_Isolated',
+    'Private',
+    'Deprecated_Private_NAT',
+    'Deprecated_Private',
+    'Public'
+  ],
+  'SubscriptionProtocol': [
+    'http',
+    'https',
+    'email',
+    'email-json',
+    'sms',
+    'sqs',
+    'application',
+    'lambda',
+    'firehose'
+  ],
+  'SuppressionReasons': [
+    'BOUNCES_AND_COMPLAINTS',
+    'BOUNCES_ONLY',
+    'COMPLAINTS_ONLY'
+  ],
+  'SurplusBytesHandlingAction': [
+    'SET_TO_NULL',
+    'DISABLED',
+    'FAIL',
+    'DROP_ROW',
+    'TRUNCATE'
+  ],
+  'SurplusCharHandlingAction': [
+    'SET_TO_NULL',
+    'DISABLED',
+    'FAIL',
+    'DROP_ROW',
+    'TRUNCATE'
+  ],
+  'SymlinkFollowMode': [
+    'never',
+    'always',
+    'external',
+    'internal-only'
+  ],
+  'SynthesisMessageLevel': [
+    'info',
+    'warning',
+    'error'
+  ],
+  'SystemLogLevel': [
+    'INFO',
+    'DEBUG',
+    'WARN'
+  ],
+  'TLSSecurityPolicy': [
+    'Policy-Min-TLS-1-0-2019-07',
+    'Policy-Min-TLS-1-2-2019-07',
+    'Policy-Min-TLS-1-2-PFS-2023-10'
+  ],
+  'TableAction': [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  'TableClass': [
+    'STANDARD',
+    'STANDARD_INFREQUENT_ACCESS'
+  ],
+  'TableDistStyle': [
+    'AUTO',
+    'EVEN',
+    'KEY',
+    'ALL'
+  ],
+  'TableEncryption': [
+    'AWS_OWNED',
+    'CUSTOMER_MANAGED',
+    'AWS_MANAGED'
+  ],
+  'TableLayout': [
+    'horizontal',
+    'vertical'
+  ],
+  'TableSortStyle': [
+    'AUTO',
+    'COMPOUND',
+    'INTERLEAVED'
+  ],
+  'TableSummaryColumn': [
+    'MIN',
+    'MAX',
+    'SUM',
+    'AVG'
+  ],
+  'TagMutability': [
+    'MUTABLE',
+    'IMMUTABLE'
+  ],
+  'TagOperation': [
+    'STRINGEQUALS',
+    'dummy'
+  ],
+  'TagStatus': [
+    'any',
+    'tagged',
+    'untagged'
+  ],
+  'TagType': [
+    'StandardTag',
+    'AutoScalingGroupTag',
+    'StringToStringMap',
+    'KeyValue',
+    'NotTaggable'
+  ],
+  'TaintEffect': [
+    'NO_SCHEDULE',
+    'PREFER_NO_SCHEDULE',
+    'NO_EXECUTE'
+  ],
+  'TargetGroupIpAddressType': [
+    'ipv4',
+    'ipv6'
+  ],
+  'TargetGroupLoadBalancingAlgorithmType': [
+    'round_robin',
+    'least_outstanding_requests',
+    'weighted_random'
+  ],
+  'TargetType': [
+    'instance',
+    'ip',
+    'lambda',
+    'alb'
+  ],
+  'TcpRetryEvent': [
+    'connection-error'
+  ],
+  'TemplateType': [
+    'Text',
+    'Object'
+  ],
+  'TerminationPolicy': [
+    'AllocationStrategy',
+    'ClosestToNextInstanceHour',
+    'Default',
+    'NewestInstance',
+    'OldestInstance',
+    'OldestLaunchConfiguration',
+    'OldestLaunchTemplate',
+    'CustomLambdaFunction'
+  ],
+  'TextWidgetBackground': [
+    'solid',
+    'transparent'
+  ],
+  'ThroughputMode': [
+    'bursting',
+    'provisioned',
+    'elastic'
+  ],
+  'TimeoutAction': [
+    'ForceApplyCapacityChange',
+    'RollbackCapacityChange'
+  ],
+  'TlsMode': [
+    'STRICT',
+    'PERMISSIVE',
+    'DISABLED'
+  ],
+  'TlsPolicy': [
+    'Optional',
+    'Require'
+  ],
+  'TmpfsMountOption': [
+    'defaults',
+    'ro',
+    'rw',
+    'suid',
+    'nosuid',
+    'dev',
+    'nodev',
+    'exec',
+    'noexec',
+    'sync',
+    'async',
+    'dirsync',
+    'remount',
+    'mand',
+    'nomand',
+    'atime',
+    'noatime',
+    'diratime',
+    'nodiratime',
+    'bind',
+    'rbind',
+    'unbindable',
+    'runbindable',
+    'private',
+    'rprivate',
+    'shared',
+    'rshared',
+    'slave',
+    'rslave',
+    'relatime',
+    'norelatime',
+    'strictatime',
+    'nostrictatime',
+    'mode',
+    'uid',
+    'gid',
+    'nr_inodes',
+    'nr_blocks',
+    'mpol'
+  ],
+  'TraceConfigurationVendor': [
+    'AWSXRAY'
+  ],
+  'Tracing': [
+    'Active',
+    'PassThrough',
+    'Disabled'
+  ],
+  'TracingConfig': [
+    'PassThrough',
+    'Active'
+  ],
+  'TrafficDirection': [
+    0,
+    1
+  ],
+  'TransitGatewayFeatureStatus': [
+    'enable',
+    'disable'
+  ],
+  'TransitionDefaultMinimumObjectSize': [
+    'all_storage_classes_128K',
+    'varies_by_storage_class'
+  ],
+  'TransportProtocol': [
+    'tcp',
+    'udp'
+  ],
+  'TreatMissingData': [
+    'breaching',
+    'notBreaching',
+    'ignore',
+    'missing'
+  ],
+  'TriggerInvalidation': [
+    'WHEN_FUNCTION_CHANGES'
+  ],
+  'URLEncodingFormat': [
+    'BRACKETS',
+    'COMMAS',
+    'DEFAULT',
+    'INDICES',
+    'NONE',
+    'REPEAT'
+  ],
+  'UlimitName': [
+    'core',
+    'cpu',
+    'data',
+    'fsize',
+    'locks',
+    'memlock',
+    'msgqueue',
+    'nice',
+    'nofile',
+    'nproc',
+    'rss',
+    'rtprio',
+    'rttime',
+    'sigpending',
+    'stack'
+  ],
+  'UnauthenticatedAction': [
+    'deny',
+    'allow',
+    'authenticate'
+  ],
+  'Unit': [
+    'Seconds',
+    'Microseconds',
+    'Milliseconds',
+    'Bytes',
+    'Kilobytes',
+    'Megabytes',
+    'Gigabytes',
+    'Terabytes',
+    'Bits',
+    'Kilobits',
+    'Megabits',
+    'Gigabits',
+    'Terabits',
+    'Percent',
+    'Count',
+    'Bytes/Second',
+    'Kilobytes/Second',
+    'Megabytes/Second',
+    'Gigabytes/Second',
+    'Terabytes/Second',
+    'Bits/Second',
+    'Kilobits/Second',
+    'Megabits/Second',
+    'Gigabits/Second',
+    'Terabits/Second',
+    'Count/Second',
+    'None'
+  ],
+  'UntrustedArtifactOnDeployment': [
+    'Enforce',
+    'Warn'
+  ],
+  'UpdateType': [
+    'None',
+    'Replace',
+    'RollingUpdate'
+  ],
+  'UsagePlanKeyType': [
+    'API_KEY'
+  ],
+  'UserPoolDefaultAction': [
+    'ALLOW',
+    'DENY'
+  ],
+  'UserPoolIdentityProviderSamlMetadataType': [
+    'url',
+    'file'
+  ],
+  'ValidationMethod': [
+    'EMAIL',
+    'DNS'
+  ],
+  'ValidatorType': [
+    'JSON_SCHEMA',
+    'LAMBDA'
+  ],
+  'VariableInputType': [
+    'input',
+    'radio',
+    'select'
+  ],
+  'VariableType': [
+    'property',
+    'pattern'
+  ],
+  'VerificationEmailStyle': [
+    'CONFIRM_WITH_CODE',
+    'CONFIRM_WITH_LINK'
+  ],
+  'VersionConsistency': [
+    'enabled',
+    'disabled'
+  ],
+  'VerticalShading': [
+    'none',
+    'before',
+    'after'
+  ],
+  'ViewerProtocolPolicy': [
+    'https-only',
+    'redirect-to-https',
+    'allow-all'
+  ],
+  'Visibility': [
+    'GLOBAL',
+    'PRIVATE'
+  ],
+  'VpcEndpointType': [
+    'Interface',
+    'Gateway'
+  ],
+  'VpcSubnetGroupType': [
+    'Public',
+    'Private',
+    'Isolated'
+  ],
   'VpnConnectionType': [
     'ipsec.1',
     'dummy'
+  ],
+  'VpnPort': [
+    443,
+    1194
+  ],
+  'WebSocketAuthorizerType': [
+    'REQUEST',
+    'AWS_IAM'
+  ],
+  'WebSocketIntegrationType': [
+    'AWS_PROXY',
+    'MOCK',
+    'AWS'
+  ],
+  'WebhookFilterTypes': [
+    'FILE_PATH',
+    'COMMIT_MESSAGE',
+    'HEAD_REF',
+    'ACTOR_ACCOUNT_ID',
+    'BASE_REF',
+    'REPOSITORY_NAME'
+  ],
+  'Weekday': [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7'
+  ],
+  'WindowsImageType': [
+    'WINDOWS_CONTAINER',
+    'WINDOWS_SERVER_2019_CONTAINER',
+    'WINDOWS_SERVER_2022_CONTAINER'
+  ],
+  'WindowsOptimizedVersion': [
+    '2022',
+    '2019',
+    '2016'
   ],
   'WindowsVersion': [
     'Windows_Server-2019-English-Core-EKS_Optimized-1.22',
@@ -2521,1550 +4011,34 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     'Windows_Server-2022-English-Full-SQL_2022_Express',
     'Windows_Server-2022-English-Full-SQL_2022_Standard',
     'Windows_Server-2022-Japanese-Full-SQL_2022_Standard',
-    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise'
+    'Windows_Server-2022-Japanese-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-Chinese_Simplified-Full-Base',
+    'Windows_Server-2025-Chinese_Traditional-Full-Base',
+    'Windows_Server-2025-English-Core-Base',
+    'Windows_Server-2025-English-Full-Base',
+    'Windows_Server-2025-English-Full-SQL_2022_Enterprise',
+    'Windows_Server-2025-English-Full-SQL_2022_Express',
+    'Windows_Server-2025-English-Full-SQL_2022_Standard',
+    'Windows_Server-2025-English-Full-SQL_2022_Web',
+    'Windows_Server-2025-Japanese-Full-Base',
+    'Windows_Server-2025-Korean-Full-Base'
   ],
-  'TagStatus': [
-    'any',
-    'tagged',
-    'untagged'
-  ],
-  'CountType': [
-    'imageCountMoreThan',
-    'sinceImagePushed'
-  ],
-  'TagMutability': [
-    'MUTABLE',
-    'IMMUTABLE'
-  ],
-  'AmiHardwareType': [
+  'WorkerType': [
     'Standard',
-    'GPU',
-    'ARM64',
-    'Neuron'
-  ],
-  'WindowsOptimizedVersion': [
-    '2022',
-    '2019',
-    '2016'
-  ],
-  'BottlerocketEcsVariant': [
-    'aws-ecs-1',
-    'aws-ecs-1-nvidia',
-    'aws-ecs-2',
-    'aws-ecs-2-nvidia'
-  ],
-  'AvailabilityZoneRebalancing': [
-    'ENABLED',
-    'DISABLED'
-  ],
-  'ContainerInsights': [
-    'enabled',
-    'disabled',
-    'enhanced'
-  ],
-  'ExecuteCommandLogging': [
-    'NONE',
-    'DEFAULT',
-    'OVERRIDE'
-  ],
-  'ContainerDependencyCondition': [
-    'START',
-    'COMPLETE',
-    'SUCCESS',
-    'HEALTHY'
-  ],
-  'VersionConsistency': [
-    'enabled',
-    'disabled'
-  ],
-  'EnvironmentFileType': [
-    's3'
-  ],
-  'FirelensLogRouterType': [
-    'fluentbit',
-    'fluentd'
-  ],
-  'FirelensConfigFileType': [
-    's3',
-    'file'
-  ],
-  'Capability': [
-    'ALL',
-    'AUDIT_CONTROL',
-    'AUDIT_WRITE',
-    'BLOCK_SUSPEND',
-    'CHOWN',
-    'DAC_OVERRIDE',
-    'DAC_READ_SEARCH',
-    'FOWNER',
-    'FSETID',
-    'IPC_LOCK',
-    'IPC_OWNER',
-    'KILL',
-    'LEASE',
-    'LINUX_IMMUTABLE',
-    'MAC_ADMIN',
-    'MAC_OVERRIDE',
-    'MKNOD',
-    'NET_ADMIN',
-    'NET_BIND_SERVICE',
-    'NET_BROADCAST',
-    'NET_RAW',
-    'SETFCAP',
-    'SETGID',
-    'SETPCAP',
-    'SETUID',
-    'SYS_ADMIN',
-    'SYS_BOOT',
-    'SYS_CHROOT',
-    'SYS_MODULE',
-    'SYS_NICE',
-    'SYS_PACCT',
-    'SYS_PTRACE',
-    'SYS_RAWIO',
-    'SYS_RESOURCE',
-    'SYS_TIME',
-    'SYS_TTY_CONFIG',
-    'SYSLOG',
-    'WAKE_ALARM'
-  ],
-  'BinPackResource': [
-    'CPU',
-    'MEMORY'
-  ],
-  'LifecyclePolicy': [
-    'AFTER_1_DAY',
-    'AFTER_7_DAYS',
-    'AFTER_14_DAYS',
-    'AFTER_30_DAYS',
-    'AFTER_60_DAYS',
-    'AFTER_90_DAYS',
-    'AFTER_180_DAYS',
-    'AFTER_270_DAYS',
-    'AFTER_365_DAYS'
-  ],
-  'OutOfInfrequentAccessPolicy': [
-    'AFTER_1_ACCESS'
-  ],
-  'PerformanceMode': [
-    'generalPurpose',
-    'maxIO'
-  ],
-  'ThroughputMode': [
-    'bursting',
-    'provisioned',
-    'elastic'
-  ],
-  'ReplicationOverwriteProtection': [
-    'ENABLED',
-    'DISABLED'
-  ],
-  'ClientAction': [
-    'elasticfilesystem:ClientMount',
-    'elasticfilesystem:ClientWrite',
-    'elasticfilesystem:ClientRootAccess'
-  ],
-  'AuthenticationMode': [
-    'CONFIG_MAP',
-    'API_AND_CONFIG_MAP',
-    'API'
-  ],
-  'LoadBalancingProtocol': [
-    'tcp',
-    'ssl',
-    'http',
-    'https'
-  ],
-  'TLSSecurityPolicy': [
-    'Policy-Min-TLS-1-0-2019-07',
-    'Policy-Min-TLS-1-2-2019-07',
-    'Policy-Min-TLS-1-2-PFS-2023-10'
-  ],
-  'HttpMethod': [
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'PATCH',
-    'HEAD',
-    'OPTIONS'
-  ],
-  'InputType': [
-    0,
-    1
-  ],
-  'FileSystemTypeVersion': [
-    '2.10',
-    '2.12',
-    '2.15'
-  ],
-  'LustreDeploymentType': [
-    'SCRATCH_1',
-    'SCRATCH_2',
-    'PERSISTENT_1',
-    'PERSISTENT_2'
-  ],
-  'LustreAutoImportPolicy': [
-    'NONE',
-    'NEW',
-    'NEW_CHANGED',
-    'NEW_CHANGED_DELETED'
-  ],
-  'DriveCacheType': [
-    'NONE',
-    'READ'
-  ],
-  'LustreDataCompressionType': [
-    'NONE',
-    'LZ4'
-  ],
-  'Weekday': [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7'
-  ],
-  'HealthCheckProtocol': [
-    'TCP',
-    'HTTP',
-    'HTTPS'
-  ],
-  'ConnectionProtocol': [
-    'TCP',
-    'UDP'
-  ],
-  'ClientAffinity': [
-    'NONE',
-    'SOURCE_IP'
-  ],
-  'AccessKeyStatus': [
-    'Active',
-    'Inactive'
-  ],
-  'Effect': [
-    'Unknown',
-    'Allow',
-    'Deny'
-  ],
-  'StreamEncryption': [
-    'NONE',
-    'KMS',
-    'MANAGED'
-  ],
-  'StreamMode': [
-    'PROVISIONED',
-    'ON_DEMAND'
-  ],
-  'KeySpec': [
-    'SYMMETRIC_DEFAULT',
-    'RSA_2048',
-    'RSA_3072',
-    'RSA_4096',
-    'ECC_NIST_P256',
-    'ECC_NIST_P384',
-    'ECC_NIST_P521',
-    'ECC_SECG_P256K1',
-    'HMAC_224',
-    'HMAC_256',
-    'HMAC_384',
-    'HMAC_512',
-    'SM2'
-  ],
-  'KeyUsage': [
-    'ENCRYPT_DECRYPT',
-    'SIGN_VERIFY',
-    'GENERATE_VERIFY_MAC',
-    'KEY_AGREEMENT'
-  ],
-  'AdotLambdaLayerType': [
-    'JAVA_SDK',
-    'JAVA_AUTO_INSTRUMENTATION',
-    'JAVASCRIPT_SDK',
-    'PYTHON_SDK',
-    'GENERIC'
-  ],
-  'AdotLambdaExecWrapper': [
-    '/opt/otel-handler',
-    '/opt/otel-proxy-handler',
-    '/opt/otel-stream-handler',
-    '/opt/otel-instrument',
-    '/opt/otel-sqs-handler'
-  ],
-  'UntrustedArtifactOnDeployment': [
-    'Enforce',
-    'Warn'
-  ],
-  'DestinationType': [
-    'Failure',
-    'Success'
-  ],
-  'StartingPosition': [
-    'TRIM_HORIZON',
-    'LATEST',
-    'AT_TIMESTAMP'
-  ],
-  'FunctionUrlAuthType': [
-    'AWS_IAM',
-    'NONE'
-  ],
-  'InvokeMode': [
-    'BUFFERED',
-    'RESPONSE_STREAM'
-  ],
-  'Tracing': [
-    'Active',
-    'PassThrough',
-    'Disabled'
-  ],
-  'SystemLogLevel': [
-    'INFO',
-    'DEBUG',
-    'WARN'
-  ],
-  'ApplicationLogLevel': [
-    'INFO',
-    'DEBUG',
-    'WARN',
-    'TRACE',
-    'ERROR',
-    'FATAL'
-  ],
-  'LogFormat': [
-    'Text',
-    'JSON'
-  ],
-  'LoggingFormat': [
-    'Text',
-    'JSON'
-  ],
-  'RecursiveLoop': [
-    'Allow',
-    'Terminate'
-  ],
-  'ParamsAndSecretsVersions': [
-    '1.0.103'
-  ],
-  'ParamsAndSecretsLogLevel': [
-    'debug',
-    'info',
-    'warn',
-    'error',
-    'none'
-  ],
-  'RuntimeFamily': [
-    0,
-    1,
-    2
-  ],
-  'AuthenticationMethod': [
-    'SASL_SCRAM_512_AUTH',
-    'SASL_SCRAM_256_AUTH',
-    'BASIC_AUTH',
-    'CLIENT_CERTIFICATE_TLS_AUTH'
-  ],
-  'LockFile': [
-    'package-lock.json',
-    'yarn.lock',
-    'bun.lockb',
-    'pnpm-lock.yaml'
-  ],
-  'OutputFormat': [
-    'cjs',
-    'esm'
-  ],
-  'SourceMapMode': [
-    'default',
-    'external',
-    'inline',
-    'both'
-  ],
-  'Charset': [
-    'ascii',
-    'utf8'
-  ],
-  'RetentionDays': [
-    1,
-    3,
-    5,
-    7,
-    14,
-    30,
-    60,
-    90,
-    120,
-    150,
-    180,
-    365,
-    400,
-    545,
-    731,
-    1096,
-    1827,
-    2192,
-    2557,
-    2922,
-    3288,
-    3653,
-    9999
-  ],
-  'LogGroupClass': [
-    'STANDARD',
-    'INFREQUENT_ACCESS'
-  ],
-  'Distribution': [
-    'ByLogStream',
-    'Random'
-  ],
-  'InstanceType': [
-    'PROVISIONED',
-    'SERVERLESS_V2'
-  ],
-  'DBClusterStorageType': [
-    'aurora',
-    'aurora-iopt1'
-  ],
-  'InstanceUpdateBehaviour': [
-    'BULK',
-    'ROLLING'
-  ],
-  'ClusterScalabilityType': [
-    'standard',
-    'limitless'
-  ],
-  'ClusterScailabilityType': [
-    'standard',
-    'limitless'
-  ],
-  'LicenseModel': [
-    'license-included',
-    'bring-your-own-license',
-    'general-public-license'
-  ],
-  'NetworkType': [
-    'IPV4',
-    'DUAL'
-  ],
-  'PerformanceInsightRetention': [
-    7,
-    31,
-    62,
-    93,
-    124,
-    155,
-    186,
-    217,
-    248,
-    279,
-    310,
-    341,
-    372,
-    403,
-    434,
-    465,
-    496,
-    527,
-    558,
-    589,
-    620,
-    651,
-    682,
-    713,
-    731
-  ],
-  'ClientPasswordAuthType': [
-    'MYSQL_NATIVE_PASSWORD',
-    'POSTGRES_SCRAM_SHA_256',
-    'POSTGRES_MD5',
-    'SQL_SERVER_AUTHENTICATION'
-  ],
-  'AuroraCapacityUnit': [
-    1,
-    2,
-    4,
-    8,
-    16,
-    32,
-    64,
-    128,
-    192,
-    256,
-    384
-  ],
-  'TimeoutAction': [
-    'ForceApplyCapacityChange',
-    'RollbackCapacityChange'
-  ],
-  'Continent': [
-    'AF',
-    'AN',
-    'AS',
-    'EU',
-    'OC',
-    'NA',
-    'SA'
-  ],
-  'InsufficientDataHealthStatusEnum': [
-    'Healthy',
-    'Unhealthy',
-    'LastKnownStatus'
-  ],
-  'KeySigningKeyStatus': [
-    'ACTIVE',
-    'INACTIVE'
-  ],
-  'RecordType': [
-    'A',
-    'AAAA',
-    'CAA',
-    'CNAME',
-    'DS',
-    'HTTPS',
-    'MX',
-    'NAPTR',
-    'NS',
-    'PTR',
-    'SOA',
-    'SPF',
-    'SRV',
-    'SSHFP',
-    'SVCB',
-    'TLSA',
-    'TXT'
-  ],
-  'CaaTag': [
-    'issue',
-    'issuewild',
-    'iodef'
-  ],
-  'HttpMethods': [
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'PATCH',
-    'HEAD'
-  ],
-  'RedirectProtocol': [
-    'http',
-    'https'
-  ],
-  'InventoryFormat': [
-    'CSV',
-    'Parquet',
-    'ORC'
-  ],
-  'InventoryFrequency': [
-    'Daily',
-    'Weekly'
-  ],
-  'InventoryObjectVersion': [
-    'All',
-    'Current'
-  ],
-  'ObjectOwnership': [
-    'BucketOwnerEnforced',
-    'BucketOwnerPreferred',
-    'ObjectWriter'
-  ],
-  'PartitionDateSource': [
-    'EventTime',
-    'DeliveryTime'
-  ],
-  'TransitionDefaultMinimumObjectSize': [
-    'all_storage_classes_128K',
-    'varies_by_storage_class'
-  ],
-  'BucketEncryption': [
-    'UNENCRYPTED',
-    'KMS_MANAGED',
-    'S3_MANAGED',
-    'KMS',
-    'DSSE_MANAGED',
-    'DSSE'
-  ],
-  'EventType': [
-    's3:ObjectCreated:*',
-    's3:ObjectCreated:Put',
-    's3:ObjectCreated:Post',
-    's3:ObjectCreated:Copy',
-    's3:ObjectCreated:CompleteMultipartUpload',
-    's3:ObjectRemoved:*',
-    's3:ObjectRemoved:Delete',
-    's3:ObjectRemoved:DeleteMarkerCreated',
-    's3:ObjectRestore:Post',
-    's3:ObjectRestore:Completed',
-    's3:ObjectRestore:Delete',
-    's3:ReducedRedundancyLostObject',
-    's3:Replication:OperationFailedReplication',
-    's3:Replication:OperationMissedThreshold',
-    's3:Replication:OperationReplicatedAfterThreshold',
-    's3:Replication:OperationNotTracked',
-    's3:LifecycleExpiration:*',
-    's3:LifecycleExpiration:Delete',
-    's3:LifecycleExpiration:DeleteMarkerCreated',
-    's3:LifecycleTransition',
-    's3:IntelligentTiering',
-    's3:ObjectTagging:*',
-    's3:ObjectTagging:Put',
-    's3:ObjectTagging:Delete',
-    's3:ObjectAcl:Put'
-  ],
-  'BucketAccessControl': [
-    'Private',
-    'PublicRead',
-    'PublicReadWrite',
-    'AuthenticatedRead',
-    'LogDeliveryWrite',
-    'BucketOwnerRead',
-    'BucketOwnerFullControl',
-    'AwsExecRead'
-  ],
-  'ObjectLockMode': [
-    'GOVERNANCE',
-    'COMPLIANCE'
-  ],
-  'BucketNotificationDestinationType': [
-    0,
-    1,
-    2
-  ],
-  'ServerSideEncryption': [
-    'AES256',
-    'aws:kms'
-  ],
-  'StorageClass': [
-    'STANDARD',
-    'REDUCED_REDUNDANCY',
-    'STANDARD_IA',
-    'ONEZONE_IA',
-    'INTELLIGENT_TIERING',
-    'GLACIER',
-    'DEEP_ARCHIVE'
-  ],
-  'AttachmentTargetType': [
-    'AWS::RDS::DBInstance',
-    'deprecated_AWS::RDS::DBInstance',
-    'AWS::RDS::DBCluster',
-    'deprecated_AWS::RDS::DBCluster',
-    'AWS::RDS::DBProxy',
-    'AWS::Redshift::Cluster',
-    'AWS::DocDB::DBInstance',
-    'AWS::DocDB::DBCluster'
-  ],
-  'MessageLanguage': [
-    'en',
-    'jp',
-    'zh'
-  ],
-  'NamespaceType': [
-    'HTTP',
-    'DNS_PRIVATE',
-    'DNS_PUBLIC'
-  ],
-  'DiscoveryType': [
-    'API',
-    'DNS_AND_API'
-  ],
-  'DnsRecordType': [
-    'A',
-    'AAAA',
-    'A, AAAA',
-    'SRV',
-    'CNAME'
-  ],
-  'RoutingPolicy': [
-    'WEIGHTED',
-    'MULTIVALUE'
-  ],
-  'EmailSendingEvent': [
-    'send',
-    'reject',
-    'bounce',
-    'complaint',
-    'delivery',
-    'open',
-    'click',
-    'renderingFailure',
-    'deliveryDelay',
-    'subscription'
-  ],
-  'CloudWatchDimensionSource': [
-    'emailHeader',
-    'linkTag',
-    'messageTag'
-  ],
-  'ConfigurationSetTlsPolicy': [
-    'REQUIRE',
-    'OPTIONAL'
-  ],
-  'SuppressionReasons': [
-    'BOUNCES_AND_COMPLAINTS',
-    'BOUNCES_ONLY',
-    'COMPLAINTS_ONLY'
-  ],
-  'ScalingMode': [
-    'STANDARD',
-    'MANAGED'
-  ],
-  'MailFromBehaviorOnMxFailure': [
-    'USE_DEFAULT_VALUE',
-    'REJECT_MESSAGE'
-  ],
-  'EasyDkimSigningKeyLength': [
-    'RSA_1024_BIT',
-    'RSA_2048_BIT'
-  ],
-  'ReceiptFilterPolicy': [
-    'Allow',
-    'Block'
-  ],
-  'TlsPolicy': [
-    'Optional',
-    'Require'
-  ],
-  'LambdaInvocationType': [
-    'RequestResponse',
-    'Event',
-    'DryRun'
-  ],
-  'EmailEncoding': [
-    'Base64',
-    'UTF-8'
-  ],
-  'BackoffFunction': [
-    'ARITHMETIC',
-    'EXPONENTIAL',
-    'GEOMETRIC',
-    'LINEAR'
-  ],
-  'SubscriptionProtocol': [
-    'http',
-    'https',
-    'email',
-    'email-json',
-    'sms',
-    'sqs',
-    'application',
-    'lambda',
-    'firehose'
-  ],
-  'FilterOrPolicyType': [
-    0,
-    1
-  ],
-  'FifoThroughputScope': [
-    'Topic',
-    'MessageGroup'
-  ],
-  'LoggingProtocol': [
-    'http/s',
-    'sqs',
-    'lambda',
-    'firehose',
-    'application'
-  ],
-  'TracingConfig': [
-    'PassThrough',
-    'Active'
-  ],
-  'QueueEncryption': [
-    'NONE',
-    'KMS_MANAGED',
-    'KMS',
-    'SQS_MANAGED'
-  ],
-  'DeduplicationScope': [
-    'messageGroup',
-    'queue'
-  ],
-  'FifoThroughputLimit': [
-    'perQueue',
-    'perMessageGroupId'
-  ],
-  'RedrivePermission': [
-    'allowAll',
-    'denyAll',
-    'byQueue'
-  ],
-  'ParameterValueType': [
-    'String',
-    'AWS::EC2::AvailabilityZone::Name',
-    'AWS::EC2::Image::Id',
-    'AWS::EC2::Instance::Id',
-    'AWS::EC2::KeyPair::KeyName',
-    'AWS::EC2::SecurityGroup::GroupName',
-    'AWS::EC2::SecurityGroup::Id',
-    'AWS::EC2::Subnet::Id',
-    'AWS::EC2::Volume::Id',
-    'AWS::EC2::VPC::Id',
-    'AWS::Route53::HostedZone::Id'
-  ],
-  'ParameterType': [
-    'String',
-    'SecureString',
-    'StringList',
-    'AWS::EC2::Image::Id'
-  ],
-  'ParameterDataType': [
-    'text',
-    'aws:ec2:image'
-  ],
-  'ParameterTier': [
-    'Advanced',
-    'Intelligent-Tiering',
-    'Standard'
-  ],
-  'CompoundOperator': [
-    0,
-    1
-  ],
-  'StateMachineType': [
-    'EXPRESS',
-    'STANDARD'
-  ],
-  'ServiceIntegrationPattern': [
-    'FIRE_AND_FORGET',
-    'SYNC',
-    'WAIT_FOR_TASK_TOKEN'
-  ],
-  'JitterType': [
-    'FULL',
-    'NONE'
-  ],
-  'ProcessorMode': [
-    'INLINE',
-    'DISTRIBUTED'
-  ],
-  'ProcessorType': [
-    'STANDARD',
-    'EXPRESS'
-  ],
-  'QueryLanguage': [
-    'JSONPath',
-    'JSONata'
-  ],
-  'Cleanup': [
-    'nothing',
-    'lambda'
-  ],
-  'ArtifactsEncryptionMode': [
-    'SSE_S3',
-    'SSE_KMS'
-  ],
-  'ArnFormat': [
-    'arn:aws:service:region:account:resource',
-    'arn:aws:service:region:account:resource:resourceName',
-    'arn:aws:service:region:account:resource/resourceName',
-    'arn:aws:service:region:account:/resource/resourceName'
-  ],
-  'AssetHashType': [
-    'source',
-    'bundle',
-    'output',
-    'custom'
-  ],
-  'FileAssetPackaging': [
-    'zip',
-    'file'
-  ],
-  'BundlingOutput': [
-    'archived',
-    'not-archived',
-    'auto-discover',
-    'single-file'
-  ],
-  'BundlingFileAccess': [
-    'VOLUME_COPY',
-    'BIND_MOUNT'
-  ],
-  'DockerVolumeConsistency': [
-    'consistent',
-    'delegated',
-    'cached'
-  ],
-  'CfnCapabilities': [
-    '',
-    'CAPABILITY_IAM',
-    'CAPABILITY_NAMED_IAM',
-    'CAPABILITY_AUTO_EXPAND'
-  ],
-  'CfnTrafficRoutingType': [
-    'AllAtOnce',
-    'TimeBasedCanary',
-    'TimeBasedLinear'
-  ],
-  'CfnDynamicReferenceService': [
-    'ssm',
-    'ssm-secure',
-    'secretsmanager'
-  ],
-  'CfnDeletionPolicy': [
-    'Delete',
-    'Retain',
-    'RetainExceptOnCreate',
-    'Snapshot'
-  ],
-  'TagType': [
-    'StandardTag',
-    'AutoScalingGroupTag',
-    'StringToStringMap',
-    'KeyValue',
-    'NotTaggable'
-  ],
-  'DependencyOperation': [
-    0,
-    1
-  ],
-  'MetadataType': [
-    'aws:cdk:analytics:construct',
-    'aws:cdk:analytics:method',
-    'aws:cdk:analytics:featureflag'
-  ],
-  'RemovalPolicy': [
-    'destroy',
-    'retain',
-    'snapshot',
-    'retain-on-update-or-delete'
-  ],
-  'SizeRoundingBehavior': [
-    0,
-    1,
-    2
-  ],
-  'ResolutionTypeHint': [
-    'string',
-    'number',
-    'string-list'
-  ],
-  'SynthesisMessageLevel': [
-    'info',
-    'warning',
-    'error'
-  ],
-  'DockerCredentialUsage': [
-    'SYNTH',
-    'SELF_UPDATE',
-    'ASSET_PUBLISHING'
-  ],
-  'Partition': [
-    'aws',
-    'aws-cn',
-    'aws-us-gov',
-    'aws-iso',
-    'aws-iso-b',
-    'aws-iso-f',
-    'aws-iso-e'
-  ],
-  'InvocationType': [
-    'RequestResponse',
-    'Event',
-    'DryRun'
-  ],
-  'TriggerInvalidation': [
-    'WHEN_FUNCTION_CHANGES'
-  ],
-  'HotswapMode': [
-    'fall-back',
-    'hotswap-only',
-    'full-deployment'
-  ],
-  'StackActivityProgress': [
-    'bar',
-    'events'
-  ],
-  'ResourceImpact': [
-    'WILL_UPDATE',
-    'WILL_CREATE',
-    'WILL_REPLACE',
-    'MAY_REPLACE',
-    'WILL_DESTROY',
-    'WILL_ORPHAN',
-    'WILL_IMPORT',
-    'NO_CHANGE'
-  ],
-  'ComponentType': [
-    'Function',
-    'SingletonFunction',
-    'CustomResourceProvider',
-    'NoOp'
-  ],
-  'DiagnosticReason': [
-    'NO_SNAPSHOT',
-    'TEST_FAILED',
-    'TEST_ERROR',
-    'SNAPSHOT_FAILED',
-    'SNAPSHOT_ERROR',
-    'SNAPSHOT_SUCCESS',
-    'TEST_SUCCESS',
-    'ASSERTION_FAILED'
-  ],
-  'LogType': [
-    'None',
-    'Tail'
-  ],
-  'DefaultSelection': [
-    'none',
-    'single',
-    'main',
-    'all'
-  ],
-  'ExtendedStackSelection': [
-    'none',
-    'upstream',
-    'downstream'
-  ],
-  'Mode': [
-    'SingleModel',
-    'MultiModel'
-  ],
-  'FollowMode': [
-    'never',
-    'always',
-    'external',
-    'internal-only'
-  ],
-  'CorsHttpMethod': [
-    '*',
-    'DELETE',
-    'GET',
-    'HEAD',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT'
-  ],
-  'HttpAuthorizerType': [
-    'AWS_IAM',
-    'JWT',
-    'REQUEST'
-  ],
-  'AuthorizerPayloadVersion': [
-    '1.0',
-    '2.0'
-  ],
-  'HttpIntegrationType': [
-    'HTTP_PROXY',
-    'AWS_PROXY'
-  ],
-  'HttpIntegrationSubtype': [
-    'EventBridge-PutEvents',
-    'SQS-SendMessage',
-    'SQS-ReceiveMessage',
-    'SQS-DeleteMessage',
-    'SQS-PurgeQueue',
-    'AppConfig-GetConfiguration',
-    'Kinesis-PutRecord',
-    'StepFunctions-StartExecution',
-    'StepFunctions-StartSyncExecution',
-    'StepFunctions-StopExecution'
-  ],
-  'HttpConnectionType': [
-    'VPC_LINK',
-    'INTERNET'
-  ],
-  'HttpRouteAuthorizationType': [
-    'AWS_IAM',
-    'JWT',
-    'CUSTOM',
-    'NONE'
-  ],
-  'WebSocketAuthorizerType': [
-    'REQUEST',
-    'AWS_IAM'
-  ],
-  'WebSocketIntegrationType': [
-    'AWS_PROXY',
-    'MOCK',
-    'AWS'
-  ],
-  'HttpLambdaResponseType': [
-    0,
-    1
-  ],
-  'CustomLambdaDeploymentConfigType': [
-    'Canary',
-    'Linear'
-  ],
-  'AutoRollbackEvent': [
-    'DEPLOYMENT_FAILURE',
-    'DEPLOYMENT_STOP_ON_ALARM',
-    'DEPLOYMENT_STOP_ON_REQUEST'
-  ],
-  'LoadBalancerGeneration': [
-    0,
-    1
-  ],
-  'StackSetOrganizationsAutoDeployment': [
-    'Enabled',
-    'Disabled',
-    'EnabledWithStackRetention'
-  ],
-  'CodeBuildActionType': [
-    0,
-    1
-  ],
-  'CodeCommitTrigger': [
-    'None',
-    'Poll',
-    'Events'
-  ],
-  'GitHubTrigger': [
-    'None',
-    'Poll',
-    'WebHook'
-  ],
-  'JenkinsActionType': [
-    0,
-    1
-  ],
-  'S3Trigger': [
-    'None',
-    'Poll',
-    'Events'
-  ],
-  'OidcAttributeRequestMethod': [
-    'GET',
-    'POST'
-  ],
-  'SigningAlgorithm': [
-    'rsa-sha256'
-  ],
-  'UserPoolIdentityProviderSamlMetadataType': [
-    'url',
-    'file'
-  ],
-  'AmazonLinuxGeneration': [
-    'amzn',
-    'amzn2',
-    'al2022',
-    'al2023'
-  ],
-  'OperatingSystemType': [
-    0,
-    1,
-    2
-  ],
-  'AmazonLinuxCpuType': [
-    'arm64',
-    'x86_64'
-  ],
-  'AmazonLinuxEdition': [
-    'standard',
-    'minimal'
-  ],
-  'AmazonLinuxVirt': [
-    'hvm',
-    'pv'
-  ],
-  'AmazonLinuxStorage': [
-    'ebs',
-    's3',
-    'gp2'
-  ],
-  'AmazonLinuxKernel': [
-    'kernel-5.10',
-    'kernel-6.1'
-  ],
-  'InitElementType': [
-    'PACKAGE',
-    'GROUP',
-    'USER',
-    'SOURCE',
-    'FILE',
-    'COMMAND',
-    'SERVICE'
-  ],
-  'InitPlatform': [
-    'WINDOWS',
-    'LINUX'
-  ],
-  'AlarmBehavior': [
-    'ROLLBACK_ON_ALARM',
-    'FAIL_ON_ALARM'
-  ],
-  'LaunchType': [
-    'EC2',
-    'FARGATE',
-    'EXTERNAL'
-  ],
-  'DeploymentControllerType': [
-    'ECS',
-    'CODE_DEPLOY',
-    'EXTERNAL'
-  ],
-  'PropagatedTagSource': [
-    'SERVICE',
-    'TASK_DEFINITION',
-    'NONE'
-  ],
-  'FileSystemType': [
-    'ext3',
-    'ext4',
-    'xfs'
-  ],
-  'EbsPropagatedTagSource': [
-    'SERVICE',
-    'TASK_DEFINITION'
-  ],
-  'NetworkMode': [
-    'none',
-    'bridge',
-    'awsvpc',
-    'host',
-    'nat'
-  ],
-  'IpcMode': [
-    'none',
-    'host',
-    'task'
-  ],
-  'PidMode': [
-    'host',
-    'task'
-  ],
-  'Scope': [
-    'task',
-    'shared'
-  ],
-  'FargatePlatformVersion': [
-    'LATEST',
-    '1.4.0',
-    '1.3.0',
-    '1.2.0',
-    '1.1.0',
-    '1.0.0'
-  ],
-  'AwsLogDriverMode': [
-    'blocking',
-    'non-blocking'
-  ],
-  'GelfCompressionType': [
-    'gzip',
-    'zlib',
-    'none'
-  ],
-  'SplunkLogFormat': [
-    'inline',
-    'json',
-    'raw'
-  ],
-  'ApplicationLoadBalancedServiceRecordType': [
-    0,
-    1,
-    2
-  ],
-  'NetworkLoadBalancedServiceRecordType': [
-    0,
-    1,
-    2
-  ],
-  'UnauthenticatedAction': [
-    'deny',
-    'allow',
-    'authenticate'
-  ],
-  'ContentType': [
-    'text/plain',
-    'text/css',
-    'text/html',
-    'application/javascript',
-    'application/json'
-  ],
-  'MutualAuthenticationMode': [
-    'off',
-    'passthrough',
-    'verify'
+    'G.025X',
+    'G.1X',
+    'G.2X',
+    'G.4X',
+    'G.8X',
+    'Z.2X'
+  ],
+  'WriteParallel': [
+    'on',
+    'off'
   ],
   'XffHeaderProcessingMode': [
     'append',
     'preserve',
     'remove'
-  ],
-  'HttpCodeElb': [
-    'HTTPCode_ELB_3XX_Count',
-    'HTTPCode_ELB_4XX_Count',
-    'HTTPCode_ELB_5XX_Count',
-    'HTTPCode_ELB_500_Count',
-    'HTTPCode_ELB_502_Count',
-    'HTTPCode_ELB_503_Count',
-    'HTTPCode_ELB_504_Count'
-  ],
-  'HttpCodeTarget': [
-    'HTTPCode_Target_2XX_Count',
-    'HTTPCode_Target_3XX_Count',
-    'HTTPCode_Target_4XX_Count',
-    'HTTPCode_Target_5XX_Count'
-  ],
-  'RevocationType': [
-    'CRL'
-  ],
-  'ClientRoutingPolicy': [
-    'availability_zone_affinity',
-    'partial_availability_zone_affinity',
-    'any_availability_zone'
-  ],
-  'TargetGroupIpAddressType': [
-    'ipv4',
-    'ipv6'
-  ],
-  'ApplicationProtocol': [
-    'HTTP',
-    'HTTPS'
-  ],
-  'ApplicationProtocolVersion': [
-    'GRPC',
-    'HTTP1',
-    'HTTP2'
-  ],
-  'SslPolicy': [
-    'ELBSecurityPolicy-TLS13-1-2-2021-06',
-    'ELBSecurityPolicy-2016-08',
-    'ELBSecurityPolicy-TLS13-1-2-Res-2021-06',
-    'ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06',
-    'ELBSecurityPolicy-TLS13-1-2-Ext2-2021-06',
-    'ELBSecurityPolicy-TLS13-1-0-2021-06',
-    'ELBSecurityPolicy-TLS13-1-1-2021-06',
-    'ELBSecurityPolicy-TLS13-1-3-2021-06',
-    'ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04',
-    'ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04',
-    'ELBSecurityPolicy-FS-1-2-Res-2020-10',
-    'ELBSecurityPolicy-FS-1-2-Res-2019-08',
-    'ELBSecurityPolicy-FS-1-2-2019-08',
-    'ELBSecurityPolicy-FS-1-1-2019-08',
-    'ELBSecurityPolicy-FS-2018-06',
-    'ELBSecurityPolicy-TLS-1-2-2017-01',
-    'ELBSecurityPolicy-TLS-1-2-Ext-2018-06',
-    'ELBSecurityPolicy-TLS-1-1-2017-01',
-    'ELBSecurityPolicy-TLS-1-0-2015-04'
-  ],
-  'TargetType': [
-    'instance',
-    'ip',
-    'lambda',
-    'alb'
-  ],
-  'AlpnPolicy': [
-    'HTTP1Only',
-    'HTTP2Only',
-    'HTTP2Optional',
-    'HTTP2Preferred',
-    'None'
-  ],
-  'TargetGroupLoadBalancingAlgorithmType': [
-    'round_robin',
-    'least_outstanding_requests',
-    'weighted_random'
-  ],
-  'DesyncMitigationMode': [
-    'monitor',
-    'defensive',
-    'strictest'
-  ],
-  'IntegrationPattern': [
-    'REQUEST_RESPONSE',
-    'RUN_JOB',
-    'WAIT_FOR_TASK_TOKEN'
-  ],
-  'AuthType': [
-    'NO_AUTH',
-    'IAM_ROLE',
-    'RESOURCE_POLICY'
-  ],
-  'EncryptionOption': [
-    'SSE_S3',
-    'SSE_KMS',
-    'CSE_KMS'
-  ],
-  'DynamoConsumedCapacity': [
-    'INDEXES',
-    'TOTAL',
-    'NONE'
-  ],
-  'DynamoItemCollectionMetrics': [
-    'SIZE',
-    'NONE'
-  ],
-  'DynamoReturnValues': [
-    'NONE',
-    'ALL_OLD',
-    'UPDATED_OLD',
-    'ALL_NEW',
-    'UPDATED_NEW'
-  ],
-  'ActionOnFailure': [
-    'TERMINATE_CLUSTER',
-    'CANCEL_AND_WAIT',
-    'CONTINUE'
-  ],
-  'ContainerProviderTypes': [
-    'EKS'
-  ],
-  'ActionAfterCompletion': [
-    'NONE',
-    'DELETE'
-  ],
-  'URLEncodingFormat': [
-    'BRACKETS',
-    'COMMAS',
-    'DEFAULT',
-    'INDICES',
-    'NONE',
-    'REPEAT'
-  ],
-  'S3DataType': [
-    'ManifestFile',
-    'S3Prefix',
-    'AugmentedManifestFile'
-  ],
-  'S3DataDistributionType': [
-    'FullyReplicated',
-    'ShardedByS3Key'
-  ],
-  'RecordWrapperType': [
-    'None',
-    'RecordIO'
-  ],
-  'InputMode': [
-    'Pipe',
-    'File',
-    'FastFile'
-  ],
-  'BatchStrategy': [
-    'MultiRecord',
-    'SingleRecord'
-  ],
-  'SplitType': [
-    'None',
-    'Line',
-    'RecordIO',
-    'TFRecord'
-  ],
-  'AssembleWith': [
-    'None',
-    'Line'
-  ],
-  'MessageAttributeDataType': [
-    'String',
-    'String.Array',
-    'Number',
-    'Binary'
-  ],
-  'CustomResourceProviderRuntime': [
-    'nodejs12.x',
-    'deprecated_nodejs12.x',
-    'nodejs14.x',
-    'nodejs16.x',
-    'nodejs18.x',
-    'nodejs20.x'
-  ],
-  'SymlinkFollowMode': [
-    'never',
-    'always',
-    'external',
-    'internal-only'
-  ],
-  'IgnoreMode': [
-    'glob',
-    'git',
-    'docker'
-  ],
-  'CfnParsingContext': [
-    0,
-    1
-  ],
-  'ReferenceRendering': [
-    0,
-    1
-  ],
-  'PolicyValidationReportStatusBeta1': [
-    'success',
-    'failure'
-  ],
-  'LoadBalancerIpAddressType': [
-    'ipv4',
-    'dualstack',
-    'dualstack-without-public-ipv4'
-  ],
-  'VpcSubnetGroupType': [
-    'Public',
-    'Private',
-    'Isolated'
-  ],
-  'FlagType': [
-    0,
-    1,
-    2,
-    3
-  ],
-  'AssetType': [
-    'file',
-    'docker-image'
-  ],
-  'CodeBuildProjectType': [
-    'SYNTH',
-    'ASSETS',
-    'SELF_MUTATE',
-    'STEP'
-  ],
-  'HandlerName': [
-    'user',
-    'table',
-    'user-table-privileges'
-  ],
-  'CfnUtilsResourceType': [
-    'Custom::AWSCDKCfnJson',
-    'Custom::AWSCDKCfnJsonStringify'
-  ],
-  'StackSelectionStrategy': [
-    'ALL_STACKS',
-    'MAIN_ASSEMBLY',
-    'ONLY_SINGLE',
-    'PATTERN_MATCH',
-    'PATTERN_MUST_MATCH',
-    'PATTERN_MUST_MATCH_SINGLE'
-  ],
-  'RollbackChoice': [
-    0,
-    1,
-    2,
-    3
-  ],
-  'CsvHeaderLocation': [
-    'FIRST_ROW',
-    'GIVEN'
-  ],
-  'StateType': [
-    'Pass',
-    'Task',
-    'Choice',
-    'Wait',
-    'Succeed',
-    'Fail',
-    'Parallel',
-    'Map'
-  ],
-  'DynamoMethod': [
-    'Get',
-    'Put',
-    'Delete',
-    'Update'
-  ],
-  'AssertionType': [
-    'equals',
-    'objectLike',
-    'arrayWith'
-  ],
-  'Status': [
-    'pass',
-    'fail'
   ]
 };

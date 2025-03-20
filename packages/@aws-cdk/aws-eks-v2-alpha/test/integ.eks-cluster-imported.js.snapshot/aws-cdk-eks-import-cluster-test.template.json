@@ -435,9 +435,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f3c812b299b0759c937b41e39d3451f5cc61279c2ec9ee791fac08ba1e56508b.zip"
+     "S3Key": "737d25a30d9f795cb0e9b1e4b28259ffb509944c4918bdd11c2d9bcee3fba68a.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.31.0; /opt/helm/helm 3.16.1",
+    "Description": "/opt/kubectl/kubectl 1.32.0; /opt/helm/helm 3.17.1",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -494,7 +494,13 @@
     "AccessConfig": {
      "AuthenticationMode": "API"
     },
+    "ComputeConfig": {
+     "Enabled": false
+    },
     "KubernetesNetworkConfig": {
+     "ElasticLoadBalancing": {
+      "Enabled": false
+     },
      "IpFamily": "ipv4"
     },
     "ResourcesVpcConfig": {
@@ -529,7 +535,12 @@
       "Arn"
      ]
     },
-    "Version": "1.31"
+    "StorageConfig": {
+     "BlockStorage": {
+      "Enabled": false
+     }
+    },
+    "Version": "1.32"
    },
    "DependsOn": [
     "VpcIGWD7BA715C",
@@ -787,7 +798,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -871,16 +882,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ClusterKubectlProviderHandler2E05C68A",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -958,6 +959,38 @@
    "DependsOn": [
     "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629",
     "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ClusterKubectlProviderHandler2E05C68A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A",
+    "Roles": [
+     {
+      "Ref": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
+     }
+    ]
+   },
+   "DependsOn": [
     "VpcPrivateSubnet1DefaultRouteBE02A9ED",
     "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
     "VpcPrivateSubnet2DefaultRoute060D2087",
@@ -1652,6 +1685,72 @@
    ]
   }
  },
+ "Outputs": {
+  "ClusterConfigCommand43AAE40F": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks update-kubeconfig --name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      },
+      " --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "EksAdminRole1C96C514",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterGetTokenCommand06AE992E": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "aws eks get-token --cluster-name ",
+      {
+       "Ref": "ClusterEB0386A7"
+      },
+      " --region ",
+      {
+       "Ref": "AWS::Region"
+      },
+      " --role-arn ",
+      {
+       "Fn::GetAtt": [
+        "EksAdminRole1C96C514",
+        "Arn"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "ClusterRole": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterRoleFA261979",
+     "Arn"
+    ]
+   }
+  },
+  "EksMastersRoleOutput": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EksAdminRole1C96C514",
+     "Arn"
+    ]
+   }
+  }
+ },
  "Mappings": {
   "LatestNodeRuntimeMap": {
    "af-south-1": {
@@ -1773,24 +1872,6 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
-   }
-  }
- },
- "Outputs": {
-  "ClusterRole": {
-   "Value": {
-    "Fn::GetAtt": [
-     "ClusterRoleFA261979",
-     "Arn"
-    ]
-   }
-  },
-  "EksMastersRoleOutput": {
-   "Value": {
-    "Fn::GetAtt": [
-     "EksAdminRole1C96C514",
-     "Arn"
-    ]
    }
   }
  },

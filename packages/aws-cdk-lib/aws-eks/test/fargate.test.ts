@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -12,7 +13,10 @@ describe('fargate', () => {
   test('can be added to a cluster', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -32,7 +36,10 @@ describe('fargate', () => {
   test('supports specifying a profile name', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -54,7 +61,10 @@ describe('fargate', () => {
   test('supports custom execution role', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     const myRole = new iam.Role(stack, 'MyRole', { assumedBy: new iam.AnyPrincipal() });
 
     // WHEN
@@ -76,7 +86,10 @@ describe('fargate', () => {
   test('supports tags through aspects', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile', {
@@ -103,7 +116,10 @@ describe('fargate', () => {
   test('supports specifying vpc', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
     const vpc = ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
       vpcId: 'vpc123',
       availabilityZones: ['az1'],
@@ -130,7 +146,10 @@ describe('fargate', () => {
   test('fails if there are no selectors or if there are more than 5', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // THEN
     expect(() => cluster.addFargateProfile('MyProfile', { selectors: [] }));
@@ -151,7 +170,10 @@ describe('fargate', () => {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
@@ -193,6 +215,7 @@ describe('fargate', () => {
         fargateProfileName: 'my-app', selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // THEN
@@ -226,6 +249,7 @@ describe('fargate', () => {
         selectors: [{ namespace: 'foo' }, { namespace: 'bar' }],
       },
       version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // THEN
@@ -251,7 +275,10 @@ describe('fargate', () => {
   test('multiple Fargate profiles added to a cluster are processed sequentially', () => {
     // GIVEN
     const stack = new Stack();
-    const cluster = new eks.Cluster(stack, 'MyCluster', { version: CLUSTER_VERSION });
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // WHEN
     cluster.addFargateProfile('MyProfile1', {
@@ -296,7 +323,10 @@ describe('fargate', () => {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesResource', {
@@ -323,7 +353,10 @@ describe('fargate', () => {
     const stack = new Stack();
 
     // WHEN
-    new eks.FargateCluster(stack, 'FargateCluster', { version: CLUSTER_VERSION });
+    new eks.FargateCluster(stack, 'FargateCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -411,6 +444,7 @@ describe('fargate', () => {
     new eks.FargateCluster(stack, 'FargateCluster', {
       version: CLUSTER_VERSION,
       secretsEncryptionKey: new kms.Key(stack, 'Key'),
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // THEN
@@ -444,6 +478,7 @@ describe('fargate', () => {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     // THEN
@@ -471,6 +506,7 @@ describe('FargateCluster authentication mode', () => {
     new eks.FargateCluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       authenticationMode,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
     const template = Template.fromStack(stack);

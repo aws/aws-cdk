@@ -9,7 +9,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as hello from './hello-k8s';
 import * as eks from '../lib';
 import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
@@ -42,8 +42,9 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       vpcSubnets,
       mastersRole,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       secretsEncryptionKey,
       tags: {
         foo: 'bar',
@@ -54,7 +55,7 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
     });
 
@@ -350,6 +351,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 

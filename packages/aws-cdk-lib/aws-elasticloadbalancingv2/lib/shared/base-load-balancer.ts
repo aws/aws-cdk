@@ -65,6 +65,17 @@ export interface BaseLoadBalancerProps {
    * @default - false for internet-facing load balancers and true for internal load balancers
    */
   readonly denyAllIgwTraffic?: boolean;
+
+  /**
+   * The minimum capacity (LCU) for a load balancer.
+   *
+   * @default undefined - ELB default is 0 LCU
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/capacity-unit-reservation.html
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/capacity-unit-reservation.html
+   * @see https://exampleloadbalancer.com/ondemand_capacity_reservation_calculator.html
+   */
+  readonly minimumCapacityUnit?: number;
 }
 
 export interface ILoadBalancerV2 extends IResource {
@@ -245,6 +256,9 @@ export abstract class BaseLoadBalancer extends Resource {
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
+        capacityUnits: baseProps.minimumCapacityUnit,
+      } : undefined,
       ...additionalProps,
     });
     if (internetFacing) {

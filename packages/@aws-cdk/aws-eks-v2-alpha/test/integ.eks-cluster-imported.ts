@@ -9,7 +9,7 @@ import {
 } from 'aws-cdk-lib';
 import * as hello from './hello-k8s';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as eks from '../lib';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
@@ -40,10 +40,11 @@ class EksClusterStack extends Stack {
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV31Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
       },
       mastersRole,
     });
@@ -204,6 +205,7 @@ class EksClusterStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');

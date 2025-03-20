@@ -6,6 +6,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
+  - [SQS Integration](#sqs-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
@@ -121,6 +122,97 @@ httpApi.addRoutes({
 
 - The `executionArn` parameter is required for the `STOP_EXECUTION` subtype. It is necessary to specify the `executionArn` in the `parameterMapping` property of the `HttpStepFunctionsIntegration` object.
 - `START_SYNC_EXECUTION` subtype is only supported for EXPRESS type state machine.
+
+### SQS Integration
+
+SQS integrations enable integrating an HTTP API route with AWS SQS.
+This allows the HTTP API to send, receive and delete messages from an SQS queue.
+
+The following code configures a SQS integrations:
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { HttpSqsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const queue: sqs.IQueue;
+declare const httpApi: apigwv2.HttpApi;
+
+// default integration (send message)
+httpApi.addRoutes({
+  path: '/default',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('defaultIntegration', {
+    queue,
+  }),
+});
+// send message integration
+httpApi.addRoutes({
+  path: '/send-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('sendMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE,
+  }),
+});
+// receive message integration
+httpApi.addRoutes({
+  path: '/receive-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('receiveMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE,
+  }),
+});
+// delete message integration
+httpApi.addRoutes({
+  path: '/delete-message',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('deleteMessageIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE,
+  }),
+});
+// purge queue integration
+httpApi.addRoutes({
+  path: '/purge-queue',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('purgeQueueIntegration', {
+    queue,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE,
+  }),
+});
+```
+
+#### SQS integration parameter mappings
+
+You can configure the custom parameter mappings of the SQS integration using the `parameterMapping` property of the `HttpSqsIntegration` object.
+
+The default parameter mapping settings for each subtype are as follows:
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+declare const queue: sqs.IQueue;
+
+// SQS_SEND_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl)
+  // The `MessageBody` is expected to be in the request body.
+  .custom('MessageBody', '$request.body.MessageBody');
+
+// SQS_RECEIVE_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl);
+
+// SQS_DELETE_MESSAGE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl)
+  // The `ReceiptHandle` is expected to be in the request body.
+  .custom('ReceiptHandle', '$request.body.ReceiptHandle');
+
+// SQS_PURGE_QUEUE
+new apigwv2.ParameterMapping()
+  .custom('QueueUrl', queue.queueUrl);
+```
 
 ### Private Integration
 

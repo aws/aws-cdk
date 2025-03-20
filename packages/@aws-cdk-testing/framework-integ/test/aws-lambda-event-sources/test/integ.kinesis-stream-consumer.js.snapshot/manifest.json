@@ -1,0 +1,155 @@
+{
+  "version": "38.0.1",
+  "artifacts": {
+    "lambda-event-source-kinesis-stream-consumer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-event-source-kinesis-stream-consumer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-event-source-kinesis-stream-consumer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-event-source-kinesis-stream-consumer.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/477d8cb2d9783e1afe11d8f65f7ca7ddacb3b15e6e7a083f3b27980f82eecc99.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-event-source-kinesis-stream-consumer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-event-source-kinesis-stream-consumer.assets"
+      ],
+      "metadata": {
+        "/lambda-event-source-kinesis-stream-consumer/F/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRole3AC82EE1"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/F/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FServiceRoleDefaultPolicy17A19BFA"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/F/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FC4345940"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/F/KinesisConsumerEventSource:lambdaeventsourcekinesisstreamconsumerC83EC9C74/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FKinesisConsumerEventSourcelambdaeventsourcekinesisstreamconsumerC83EC9C74AB9D9346"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/Q/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Q63C6E3AB"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "C375D67C5"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/OutputEventSourceMappingArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OutputEventSourceMappingArn"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-event-source-kinesis-stream-consumer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-event-source-kinesis-stream-consumer"
+    },
+    "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C.assets"
+      ],
+      "metadata": {
+        "/integ-lambda-event-source-kinesis-stream-consumer/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-lambda-event-source-kinesis-stream-consumer/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-lambda-event-source-kinesis-stream-consumer/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

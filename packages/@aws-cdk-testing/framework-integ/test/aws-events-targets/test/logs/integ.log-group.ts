@@ -6,7 +6,11 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { LogGroupTargetInput } from 'aws-cdk-lib/aws-events-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'log-group-events');
 

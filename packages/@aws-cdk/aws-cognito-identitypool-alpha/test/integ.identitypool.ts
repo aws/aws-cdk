@@ -3,9 +3,10 @@ import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import { IdentityPool, IdentityPoolProviderUrl } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
-const stack = new Stack(app, 'integ-identitypool');
+const stack = new Stack(app, 'integ-idp');
 
 const userPool = new UserPool(stack, 'Pool');
 new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
@@ -74,4 +75,36 @@ idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
   resources: ['*'],
 }));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
-app.synth();
+
+const integ = new IntegTest(app, 'integ-identitypool', {
+  testCases: [stack],
+});
+
+// Assert identity pool is created with specified attributes
+const identityPoolAssertion = integ.assertions.awsApiCall('@aws-sdk/client-cognito-identity', 'DescribeIdentityPoolCommand', {
+  IdentityPoolId: idPool.identityPoolId,
+});
+
+identityPoolAssertion.expect(ExpectedResult.objectLike({
+  IdentityPoolId: idPool.identityPoolId,
+  IdentityPoolName: idPool.identityPoolName,
+  AllowUnauthenticatedIdentities: false,
+  AllowClassicFlow: true,
+  SupportedLoginProviders: {
+    'www.amazon.com': 'amzn1.application.12312k3j234j13rjiwuenf',
+    'accounts.google.com': '12345678012.apps.googleusercontent.com',
+  },
+}));
+
+const identityPoolRolesAssertion = integ.assertions.awsApiCall('@aws-sdk/client-cognito-identity', 'GetIdentityPoolRolesCommand', {
+  IdentityPoolId: idPool.identityPoolId,
+});
+
+// Assert identity pool roles are linked correctly
+identityPoolRolesAssertion.expect(ExpectedResult.objectLike({
+  IdentityPoolId: idPool.identityPoolId,
+  Roles: {
+    authenticated: idPool.authenticatedRole.roleArn,
+    unauthenticated: idPool.unauthenticatedRole.roleArn,
+  },
+}));

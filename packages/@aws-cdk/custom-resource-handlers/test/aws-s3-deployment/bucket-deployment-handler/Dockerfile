@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/python:latest
 ADD . /opt/awscli
 
 # install boto3, which is available on Lambda
-RUN pip3 install boto3
+RUN pip3 install boto3 PyYAML
 
 # run tests
 WORKDIR /opt/awscli

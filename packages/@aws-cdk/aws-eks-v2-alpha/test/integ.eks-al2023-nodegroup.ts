@@ -5,6 +5,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -25,8 +26,12 @@ class EksClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_31,
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
     });
 
     // create nodegroup with AL2023_X86_64_STANDARD
@@ -51,7 +56,11 @@ class EksClusterStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+  },
+});
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-al2023-nodegroup-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-al2023-nodegroup', {

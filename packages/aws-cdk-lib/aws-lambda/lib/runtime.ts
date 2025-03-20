@@ -253,6 +253,13 @@ export class Runtime {
   });
 
   /**
+   * The .NET 9 runtime (dotnet9)
+   */
+  public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */

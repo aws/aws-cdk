@@ -72,71 +72,99 @@ export class KafkaVersion {
 
   /**
    * Kafka version 2.6.0
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_6_0 = KafkaVersion.of('2.6.0');
 
   /**
    * Kafka version 2.6.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_6_1 = KafkaVersion.of('2.6.1');
 
   /**
    * Kafka version 2.6.2
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_6_2 = KafkaVersion.of('2.6.2');
 
   /**
    * Kafka version 2.6.3
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_6_3 = KafkaVersion.of('2.6.3');
 
   /**
    * Kafka version 2.7.0
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_7_0 = KafkaVersion.of('2.7.0');
 
   /**
    * Kafka version 2.7.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_7_1 = KafkaVersion.of('2.7.1');
 
   /**
    * Kafka version 2.7.2
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_7_2 = KafkaVersion.of('2.7.2');
 
   /**
    * Kafka version 2.8.0
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_8_0 = KafkaVersion.of('2.8.0');
 
   /**
    * Kafka version 2.8.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_8_1 = KafkaVersion.of('2.8.1');
 
   /**
    * AWS MSK Kafka version 2.8.2.tiered
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V2_8_2_TIERED = KafkaVersion.of('2.8.2.tiered', { tieredStorage: true });
 
   /**
    * Kafka version 3.1.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V3_1_1 = KafkaVersion.of('3.1.1');
 
   /**
    * Kafka version 3.2.0
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V3_2_0 = KafkaVersion.of('3.2.0');
 
   /**
    * Kafka version 3.3.1
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V3_3_1 = KafkaVersion.of('3.3.1');
 
   /**
    * Kafka version 3.3.2
+   *
+   * @deprecated use the latest runtime instead
    */
   public static readonly V3_3_2 = KafkaVersion.of('3.3.2');
 
@@ -169,6 +197,19 @@ export class KafkaVersion {
    */
   public static readonly V3_7_X_KRAFT = KafkaVersion.of('3.7.x.kraft', { tieredStorage: true });
 
+  /**
+   * Kafka version 3.8.x with ZooKeeper metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#msk-get-connection-string
+   */
+  public static readonly V3_8_X = KafkaVersion.of('3.8.x', { tieredStorage: true });
+
+  /**
+   * Kafka version 3.8.x with KRaft (Apache Kafka Raft) metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
+   */
+  public static readonly V3_8_X_KRAFT = KafkaVersion.of('3.8.x.kraft', { tieredStorage: true });
   /**
    * Custom cluster version
    * @param version custom version number

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScheduledAction } from './autoscaling.generated';
 import { Schedule } from './schedule';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -104,7 +104,7 @@ export class ScheduledAction extends Resource {
     addConstructMetadata(this, props);
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
-      throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
+      throw new ValidationError('At least one of minCapacity, maxCapacity, or desiredCapacity is required', this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

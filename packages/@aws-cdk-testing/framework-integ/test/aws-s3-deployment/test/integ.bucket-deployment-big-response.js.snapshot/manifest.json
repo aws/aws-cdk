@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "40.0.0",
   "artifacts": {
     "test-bucket-deployments-too-many-sources.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7906b557433ab60006f3cc2f40f45a8c07f75fb5b611745fd6509e9c5acfdcb6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c7580f4f9565fa42bb2cc43ae62ce4f0125fb89847f4160625cb553a6e6a7c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,39 @@
         "test-bucket-deployments-too-many-sources.assets"
       ],
       "metadata": {
+        "/test-bucket-deployments-too-many-sources/Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
         "/test-bucket-deployments-too-many-sources/Destination/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Destination920A3C57"
           }
         ],
+        "/test-bucket-deployments-too-many-sources/Destination/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
         "/test-bucket-deployments-too-many-sources/Destination/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DestinationPolicy7982387E"
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/Destination/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/test-bucket-deployments-too-many-sources/Destination/AutoDeleteObjectsCustomResource/Default": [
@@ -76,6 +99,12 @@
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
+        "/test-bucket-deployments-too-many-sources/DeployMe/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
         "/test-bucket-deployments-too-many-sources/DeployMe/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -83,6 +112,58 @@
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
             ]
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/DeployMe/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/DeployMe/CustomResource-2048MiB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/test-bucket-deployments-too-many-sources/DeployMe/CustomResource-2048MiB/Default": [
@@ -93,6 +174,43 @@
         ],
         "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:is-custom-resource-handler-singleton",
             "data": true
           },
@@ -101,10 +219,886 @@
             "data": 2
           }
         ],
+        "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiBServiceRoleB37F9ACF"
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/DefaultPolicy/Resource": [
@@ -113,10 +1107,50 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiBServiceRoleDefaultPolicy5D765796"
           }
         ],
+        "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/OverflowPolicy1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "document": "*",
+              "roles": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
         "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/OverflowPolicy1/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiBServiceRoleOverflowPolicy1D3D4FDB0"
+          }
+        ],
+        "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/OverflowPolicy2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "document": "*",
+              "roles": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
           }
         ],
         "/test-bucket-deployments-too-many-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C2048MiB/ServiceRole/OverflowPolicy2/Resource": [
@@ -175,7 +1209,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/575364ab134a1f85cd5be0e85a6a4d64955beaaa15343e1a7aea7ecf97a53bb7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c54b1b8d5a7b6f6278381bd842dab2415a6832d32fccf783c1a7204cbec57d35.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,6 +1226,20 @@
         "integtestbucketdeploymentsDefaultTestDeployAssertCF25A2DF.assets"
       ],
       "metadata": {
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6a3d5f37b0006bfef2ceb557be92af83/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -222,6 +1270,20 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -232,6 +1294,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject425e9b97eb49a3538fe79384e9958548"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e/Default/Default": [
@@ -246,6 +1322,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject00cb0ca4623057f8b812a34465870f7e"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -256,6 +1346,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject5ce447e051ecb69f3d807f4394b5b46c"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad/Default/Default": [
@@ -270,6 +1374,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject8fbdfb3ab3a4709bba9b8ee0a0860bad"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -280,6 +1398,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject165bb563bd44d396beed1fe93a53bf91"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630/Default/Default": [
@@ -294,6 +1426,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjecte85f88d6c0d27672799bde5799928630"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -304,6 +1450,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectc2c988a4b26c10ed6b496d0b59c9c3e3"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640/Default/Default": [
@@ -318,6 +1478,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectfab0cd33f825dd802cc9566094a07640"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -328,6 +1502,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectf623bea8843ae0c2c3dab6846999d83f"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42adc036c88af67f2be90f074b51502f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42adc036c88af67f2be90f074b51502f/Default/Default": [
@@ -342,6 +1530,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject42adc036c88af67f2be90f074b51502f"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -352,6 +1554,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject4f107fe8b41fa77377ffb3777ba9366e"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3/Default/Default": [
@@ -366,6 +1582,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectc16bf111fbffed1fe8b98fa9b90e7ba3"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfde82f764b77352599218ace408376af/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfde82f764b77352599218ace408376af/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -376,6 +1606,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectfde82f764b77352599218ace408376af"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d/Default/Default": [
@@ -390,6 +1634,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectd589ac20f4fbabd547db198ef005093d"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -400,6 +1658,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject1cb8066ea50423e08d71948c9288136b"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1/Default/Default": [
@@ -414,6 +1686,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectf75115ac22e308b12653034f82a365a1"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42e54704a8195966f57edaa19075d065/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject42e54704a8195966f57edaa19075d065/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -424,6 +1710,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject42e54704a8195966f57edaa19075d065"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548/Default/Default": [
@@ -438,6 +1738,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectf6c8aeb1b544fa2b3a3b4eae7a204548"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -448,6 +1762,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject14f64c9a786da7cd3a92af4962993375"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70/Default/Default": [
@@ -462,6 +1790,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectbe155bb34b914a0e0946bacb4d39cb70"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -472,6 +1814,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject1b8c3a29d08f6e7e00cb32bcfe66e51b"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject44538a10982fb955fe82894ea0aad525/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject44538a10982fb955fe82894ea0aad525/Default/Default": [
@@ -486,6 +1842,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject44538a10982fb955fe82894ea0aad525"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -496,6 +1866,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjecte23e5faf7dcfdc4c32d328969bbfd138"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8/Default/Default": [
@@ -510,6 +1894,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject90fdb07b28f6731fdf7143a2279047e8"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -520,6 +1918,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectafb7f8046ceb8a393f0c98321424fed6"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject20f6d03497f071656729121ad70585e6/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject20f6d03497f071656729121ad70585e6/Default/Default": [
@@ -534,6 +1946,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject20f6d03497f071656729121ad70585e6"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -544,6 +1970,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectdb7679e1e1f42b7223212bf1e9751c35"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96/Default/Default": [
@@ -558,6 +1998,20 @@
             "data": "AssertionResultsAwsApiCallS3getObjectdcaa3aca9c5034b8dc305f59fbfb9c96"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -568,6 +2022,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectfa41d5a4a3a6391d0fdea7b8c0ea125d"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7/Default/Default": [
@@ -582,6 +2050,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject2acf8df2873f0193990ca37709d1ccb7"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject171e0774b61223367b3845f943820220/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject171e0774b61223367b3845f943820220/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -592,6 +2074,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject171e0774b61223367b3845f943820220"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e/Default/Default": [
@@ -606,6 +2102,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject1dd45f0c7c3c3aab390ca9ec50e6257e"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -616,6 +2126,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject56ed3fe5313d8ed4f4987671afbe2671"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80/Default/Default": [
@@ -630,6 +2154,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject564950231086338c3be77dc3b0c7ea80"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -640,6 +2178,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject81348f47a054eb2ae709dfba7fd225f6"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868/Default/Default": [
@@ -654,6 +2206,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject48cbe15d6ce7edc21f95f2af2b8af868"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject19681224410d52b7f08b179de9aa9407/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject19681224410d52b7f08b179de9aa9407/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -664,6 +2230,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject19681224410d52b7f08b179de9aa9407"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject453bcd989937931086613deda948d2fb/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject453bcd989937931086613deda948d2fb/Default/Default": [
@@ -678,6 +2258,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject453bcd989937931086613deda948d2fb"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -688,6 +2282,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectbc4220034fde35aa40955a730d95cf06"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605/Default/Default": [
@@ -702,6 +2310,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject3cad1680cdc1237ea85b1ac72b342605"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -712,6 +2334,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObject4b19aae9dfab36f3533354f5d174894b"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6962a2038a29ee048ef81298fd430024/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject6962a2038a29ee048ef81298fd430024/Default/Default": [
@@ -726,6 +2362,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject6962a2038a29ee048ef81298fd430024"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -736,6 +2386,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectf135ba74ce87f205af3a4bc840fee481"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86/Default/Default": [
@@ -750,6 +2414,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject14323974399cf7a40be3e5edcc2e4c86"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -760,6 +2438,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjecte46fe02df915633605532a55738c6ac9"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8/Default/Default": [
@@ -774,6 +2466,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject22f6a1c5aa9beb50d7ba0d606a880fc8"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -784,6 +2490,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjecte252c57deee82f88e98a1bfed707a7f3"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134/Default/Default": [
@@ -798,6 +2518,20 @@
             "data": "AssertionResultsAwsApiCallS3getObject2ec61809a1ff58bef0e500f83d0b1134"
           }
         ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -808,6 +2542,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallS3getObjectb5e5bc7ae7c350f8c13ba17e3213054b"
+          }
+        ],
+        "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/integ-test-bucket-deployments/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackseee0561cd3ca3cfdab32c1c7b9ebf09c/Default/Default": [

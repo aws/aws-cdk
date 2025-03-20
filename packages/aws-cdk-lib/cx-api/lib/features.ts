@@ -123,6 +123,9 @@ export const Disable_ECS_IMDS_Blocking = '@aws-cdk/aws-ecs:disableEcsImdsBlockin
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
+export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
+export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
+export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1386,6 +1389,47 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.178.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement',
+    detailsMd: `
+      When this feature flag is enabled, Lambda will create new inline policies with AddToRolePolicy. 
+      The purpose of this is to prevent lambda from creating a dependency on the Default Policy Statement.
+      This solves an issue where a circular dependency could occur if adding lambda to something like a Cognito Trigger, then adding the User Pool to the lambda execution role permissions.
+    `,
+    introducedIn: { v2: '2.180.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
+    detailsMd: `
+      When performing cross-account S3 replication, we need to explicitly specify a role name for the replication execution role.
+      When this feature flag is enabled, a unique role name is specified only when performing cross-account replication.
+      When disabled, 'CDKReplicationRole' is always specified.
+    `,
+    introducedIn: { v2: '2.182.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from Stage addActions trust policy',
+    detailsMd: `
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of stage role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
+    `,
+    introducedIn: { v2: '2.184.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
 };
 
 const CURRENT_MV = 'v2';
@@ -1419,7 +1463,7 @@ export const CURRENTLY_RECOMMENDED_FLAGS = Object.fromEntries(
 /**
  * The default values of each of these flags in the current major version.
  *
- * This is the effective value of the flag, unless it's overriden via
+ * This is the effective value of the flag, unless it's overridden via
  * context.
  *
  * Adding new flags here is only allowed during the pre-release period of a new
@@ -1432,6 +1476,8 @@ export const CURRENT_VERSION_FLAG_DEFAULTS = Object.fromEntries(Object.entries(F
 export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
+    // This should never happen, if this error is thrown it's a bug
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;
