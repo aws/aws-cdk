@@ -98,6 +98,7 @@ describe(AppStagingSynthesizer, () => {
 
     expect(firstFile).toEqual({
       source: { path: 'Stack2.template.json', packaging: 'file' },
+      displayName: 'Stack2 Template',
       destinations: {
         '111111111111-us-east-2': {
           bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2`,
@@ -212,6 +213,7 @@ describe(AppStagingSynthesizer, () => {
       const firstFile = manifest.files![Object.keys(manifest.files!)[0]];
       const assetHash = '68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650';
       expect(firstFile).toEqual({
+        displayName: 'Lambda/Code',
         source: {
           packaging: 'zip',
           path: `asset.${assetHash}`,
