@@ -199,7 +199,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
 
   private buildTaskParameters() {
     const unJsonata = (v: string) => v.replace(/^{%/, '').replace(/%}$/, '').trim();
-    const useJsonata = isJsonataExpression(this.props.apiRoot) || isJsonataExpression(this.props.apiEndpoint.value);
+    const useJsonata = this.queryLanguage === sfn.QueryLanguage.JSONATA;
     const getStringValue = (v: string) => useJsonata && !isJsonataExpression(v) ? `'${v}'` : unJsonata(v);
     const apiEndpoint = useJsonata ?
       `{% ${getStringValue(this.props.apiRoot)} & '/' & ${getStringValue(this.props.apiEndpoint.value)} %}`

@@ -85,7 +85,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
       },
       End: true,
       Arguments: {
-        ApiEndpoint: "States.Format('{}/{}', 'https://api.example.com', 'path/to/resource')",
+        ApiEndpoint: "{% 'https://api.example.com' & '/' & 'path/to/resource' %}",
         Authentication: {
           ConnectionArn: stack.resolve(connection.connectionArn),
         },
