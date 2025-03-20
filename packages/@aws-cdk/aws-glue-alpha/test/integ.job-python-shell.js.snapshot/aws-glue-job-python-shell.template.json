@@ -197,6 +197,9 @@
     "MaxCapacity": 1,
     "MaxRetries": 0,
     "Name": "My Python 3.9 Shell Job",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 5
+    },
     "Role": {
      "Fn::GetAtt": [
       "IAMServiceRole61C662C4",

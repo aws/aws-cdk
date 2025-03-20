@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "40.0.0",
   "files": {
     "e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "98deadb899c73aece21dfd4bd6d75bb5b1df86ac6ba8e388e75564817f530423": {
+    "d9e912fee96913cd13f055f96dda70ae332b40be266ced809b9d4542b7fa639d": {
       "source": {
         "path": "aws-glue-job-scalaspark-streaming.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "98deadb899c73aece21dfd4bd6d75bb5b1df86ac6ba8e388e75564817f530423.json",
+          "objectKey": "d9e912fee96913cd13f055f96dda70ae332b40be266ced809b9d4542b7fa639d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -55,6 +55,7 @@ new glue.ScalaSparkStreamingJob(stack, 'OverrideScalaSparkStreamingJob', {
     key: 'value',
   },
   jobRunQueuingEnabled: true,
+  notifyDelayAfter: cdk.Duration.minutes(5),
 });
 
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-streaming-integ-test', {

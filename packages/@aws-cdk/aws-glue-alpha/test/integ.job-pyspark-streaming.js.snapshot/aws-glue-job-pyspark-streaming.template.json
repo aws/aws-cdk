@@ -157,6 +157,9 @@
     "JobRunQueuingEnabled": true,
     "MaxRetries": 0,
     "Name": "Optional Override PySpark Streaming Job",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 5
+    },
     "NumberOfWorkers": 20,
     "Role": {
      "Fn::GetAtt": [

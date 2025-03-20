@@ -158,6 +158,9 @@
     "GlueVersion": "3.0",
     "JobRunQueuingEnabled": false,
     "Name": "Optional Override PySpark Flex Etl Job",
+    "NotificationProperty": {
+     "NotifyDelayAfter": 5
+    },
     "NumberOfWorkers": 20,
     "Role": {
      "Fn::GetAtt": [
