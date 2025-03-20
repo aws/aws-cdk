@@ -1,12 +1,16 @@
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as route53resolver from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    this.node.setContext('firewallRuleGroups', {
+      TestRuleGroup: 'fwr-12345678',
+    });
 
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });
 
@@ -37,6 +41,16 @@ class TestStack extends Stack {
     ruleGroup.associate('Association', {
       priority: 101,
       vpc,
+    });
+
+    const importedRuleGroup = route53resolver.FirewallRuleGroup.fromFirewallRuleGroupName(
+      this,
+      'ImportedRuleGroup',
+      'TestRuleGroup',
+    );
+
+    new CfnOutput(this, 'ImportedRuleGroupIdOutput', {
+      value: importedRuleGroup.firewallRuleGroupId,
     });
   }
 }
