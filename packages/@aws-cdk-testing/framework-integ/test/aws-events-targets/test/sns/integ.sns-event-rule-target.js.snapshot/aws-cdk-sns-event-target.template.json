@@ -3,28 +3,42 @@
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic"
   },
-  "MyTopicPolicy12A5EC17": {
-   "Type": "AWS::SNS::TopicPolicy",
+  "MyTopicEventsRole0D2D3332": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyTopicEventsRoleDefaultPolicyB79AC002": {
+   "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
        "Action": "sns:Publish",
        "Effect": "Allow",
-       "Principal": {
-        "Service": "events.amazonaws.com"
-       },
        "Resource": {
         "Ref": "MyTopic86869434"
-       },
-       "Sid": "0"
+       }
       }
      ],
      "Version": "2012-10-17"
     },
-    "Topics": [
+    "PolicyName": "MyTopicEventsRoleDefaultPolicyB79AC002",
+    "Roles": [
      {
-      "Ref": "MyTopic86869434"
+      "Ref": "MyTopicEventsRole0D2D3332"
      }
     ]
    }
@@ -47,7 +61,13 @@
         ]
        }
       },
-      "Id": "Target0"
+      "Id": "Target0",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "MyTopicEventsRole0D2D3332",
+        "Arn"
+       ]
+      }
      }
     ]
    }
@@ -94,19 +114,21 @@
   },
   "MyQueueawscdksnseventtargetMyTopicB7575CD87304D383": {
    "Type": "AWS::SNS::Subscription",
-   "DependsOn": "MyQueuePolicy6BBEDDAC",
    "Properties": {
-    "Protocol": "sqs",
-    "TopicArn": {
-     "Ref": "MyTopic86869434"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "MyQueueE6CA6235",
       "Arn"
      ]
+    },
+    "Protocol": "sqs",
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
     }
-   }
+   },
+   "DependsOn": [
+    "MyQueuePolicy6BBEDDAC"
+   ]
   },
   "MyDeadLetterQueueD997968A": {
    "Type": "AWS::SQS::Queue",
