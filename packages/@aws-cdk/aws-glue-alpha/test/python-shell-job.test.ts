@@ -199,6 +199,7 @@ describe('Job', () => {
         },
         numberOfWorkers: 2,
         maxRetries: 2,
+        notifyDelayAfter: cdk.Duration.minutes(5),
       });
     });
 
@@ -291,6 +292,14 @@ describe('Job', () => {
     test('Overridden Max Capacity should be 1', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxCapacity: 1,
+      });
+    });
+
+    test('Should set notify delay', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 5,
+        },
       });
     });
   });
