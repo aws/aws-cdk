@@ -1,10 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { stackRelativeConstructPath } from './_construct-path';
 import { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { AssetStaging, Stack, Stage } from '../../core';
+import { AssetStaging, Names, Stack, Stage } from '../../core';
 
 /**
  * Options for TarballImageAsset
@@ -102,7 +101,7 @@ export class TarballImageAsset extends Construct implements IAsset {
         '-c',
         `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
       ],
-      displayName: props.displayName ?? stackRelativeConstructPath(this),
+      displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

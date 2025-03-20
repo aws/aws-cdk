@@ -195,7 +195,7 @@ export class Asset extends Construct implements cdk.IAsset {
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
       deployTime: props.deployTime,
-      displayName: props.displayName ?? this.defaultDisplayName(),
+      displayName: props.displayName ?? cdk.Names.stackRelativeConstructPath(this),
     });
 
     this.s3BucketName = location.bucketName;
@@ -253,14 +253,5 @@ export class Asset extends Construct implements cdk.IAsset {
     // accidentally revoke permission on old versions when deploying a new
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
-  }
-
-  /**
-   * Return the stack-relative cosntruct path of this construct
-   */
-  private defaultDisplayName(): string {
-    const scopes = this.node.scopes;
-    const stackIndex = scopes.indexOf(cdk.Stack.of(this));
-    return scopes.slice(stackIndex + 1).map(x => x.node.id).join('/');
   }
 }

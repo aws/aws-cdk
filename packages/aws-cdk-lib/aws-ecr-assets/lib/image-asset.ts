@@ -1,10 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { stackRelativeConstructPath } from './_construct-path';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '../../core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -558,7 +557,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheFrom: this.dockerCacheFrom,
       dockerCacheTo: this.dockerCacheTo,
       dockerCacheDisabled: this.dockerCacheDisabled,
-      displayName: props.displayName ?? props.assetName ?? stackRelativeConstructPath(this),
+      displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

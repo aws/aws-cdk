@@ -83,11 +83,24 @@ export class Names {
   public static uniqueResourceName(construct: IConstruct, options: UniqueResourceNameOptions) {
     const node = Node.of(construct);
 
-    const componentsPath = node.scopes.slice(node.scopes.indexOf(node.scopes.reverse()
-      .find(component => (Stack.isStack(component) && !unresolved(component.stackName)))!,
-    )).map(component => Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id);
+    const closestStack = node.scopes.reverse().find(component =>
+      Stack.isStack(component) && !unresolved(component.stackName));
+    const stackIndex = closestStack ? node.scopes.indexOf(closestStack) : 0;
+
+    const componentsPath = node.scopes
+      .slice(stackIndex)
+      .map(component => Stack.isStack(component) && !unresolved(component.stackName) ? component.stackName : Node.of(component).id);
 
     return makeUniqueResourceName(componentsPath, options);
+  }
+
+  /**
+   * Return the construct path of the given construct, starting at the nearest enclosing Stack
+   */
+  public static stackRelativeConstructPath(construct: IConstruct): string {
+    const scopes = construct.node.scopes;
+    const stackIndex = scopes.indexOf(Stack.of(construct));
+    return scopes.slice(stackIndex + 1).map(x => x.node.id).join('/');
   }
 
   private constructor() {}
