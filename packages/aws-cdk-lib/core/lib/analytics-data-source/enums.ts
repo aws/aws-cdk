@@ -474,7 +474,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'CapacityType': [
     'SPOT',
-    'ON_DEMAND'
+    'ON_DEMAND',
+    'CAPACITY_BLOCK'
   ],
   'CfnCapabilities': [
     '',
@@ -1195,7 +1196,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   'FileSystemType': [
     'ext3',
     'ext4',
-    'xfs'
+    'xfs',
+    'ntfs'
   ],
   'FileSystemTypeVersion': [
     '2.10',
@@ -2952,7 +2954,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   'ServerSideEncryption': [
     'AES256',
-    'aws:kms'
+    'aws:kms',
+    'aws:kms:dsse'
   ],
   'ServiceIntegrationPattern': [
     'FIRE_AND_FORGET',
