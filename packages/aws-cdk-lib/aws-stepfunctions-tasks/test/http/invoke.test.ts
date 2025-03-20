@@ -2,6 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as lib from '../../lib';
 
 let stack: cdk.Stack;
@@ -293,6 +294,31 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
           },
         ],
       },
+    });
+  });
+
+  describe('@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint feature flag is disabled', () => {
+    beforeEach(() => {
+      const myFeatureFlag = { [cxapi.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: false };
+      const app = new cdk.App({ context: myFeatureFlag });
+      stack = new cdk.Stack(app);
+    });
+
+    test('uses a static value for apiEndpoint', () => {
+      const task = new lib.HttpInvoke(stack, 'Task', {
+        apiRoot: 'https://api.example.com',
+        apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+        connection,
+        method: sfn.TaskInput.fromText('POST'),
+      });
+
+      expectTaskWithParameters(task, {
+        ApiEndpoint: 'https://api.example.com/path/to/resource',
+        Authentication: {
+          ConnectionArn: stack.resolve(connection.connectionArn),
+        },
+        Method: 'POST',
+      });
     });
   });
 });
