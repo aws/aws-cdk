@@ -212,8 +212,14 @@ export interface GraphProps<A> extends GraphNodeProps<A> {
 }
 
 export class Graph<A> extends GraphNode<A> {
-  public static override of<A, B>(id: string, data: A, displayName?: string, nodes?: GraphNode<B>[]) {
-    return new Graph<A | B>(id, { data, nodes, displayName });
+  /**
+   * The 3rd parameter looks weird because it has to be structurally compatible with `GraphNode.of()`,
+   * but we wnat to add `displayName` at the end, really.
+   */
+  public static override of<A, B>(id: string, data: A, displayNameOrNodes?: string | GraphNode<B>[], displayName?: string) {
+    const nodes = Array.isArray(displayNameOrNodes) ? displayNameOrNodes : undefined;
+    const displayName_ = Array.isArray(displayNameOrNodes) ? displayName : displayNameOrNodes;
+    return new Graph<A | B>(id, { data, nodes, displayName: displayName_ });
   }
 
   private readonly children = new Map<string, GraphNode<A>>();

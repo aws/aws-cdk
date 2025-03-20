@@ -120,7 +120,7 @@ export class PipelineGraph {
     // If the wave only has one Stage in it, don't add an additional Graph around it
     const retGraph: AGraph = wave.stages.length === 1
       ? this.addStage(wave.stages[0])
-      : Graph.of(wave.id, { type: 'group' }, undefined, wave.stages.map(s => this.addStage(s)));
+      : Graph.of(wave.id, { type: 'group' }, wave.stages.map(s => this.addStage(s)));
 
     this.addPrePost(wave.pre, wave.post, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
