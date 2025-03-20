@@ -50,6 +50,7 @@ describe(AppStagingSynthesizer, () => {
 
     expect(firstFile).toEqual({
       source: { path: 'Stack.template.json', packaging: 'file' },
+      displayName: 'Stack Template',
       destinations: {
         '000000000000-us-east-1': {
           bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,

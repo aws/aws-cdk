@@ -50,6 +50,7 @@ describe('new style synthesis', () => {
     const firstFile = (manifest.files ? manifest.files[Object.keys(manifest.files)[0]] : undefined) ?? {};
 
     expect(firstFile).toEqual({
+      displayName: 'Stack Template',
       source: { path: 'Stack.template.json', packaging: 'file' },
       destinations: {
         'current_account-current_region': {
