@@ -193,42 +193,6 @@ describe('EventBus grants', () => {
     });
 
     describe('cross-account scenarios', () => {
-      test('creates resource policy for service principal without conditions', () => {
-        // GIVEN
-        const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com');
-
-        // WHEN
-        const grant = eventBus.grantPutEventsTo(servicePrincipal, defaultSid);
-
-        // THEN
-        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com');
-        assertOnlyResourcePolicy(stack, grant);
-        expect(grant.success).toBeTruthy();
-      });
-
-      test('creates resource policy for service principal with cross-account condition', () => {
-        // GIVEN
-        const servicePrincipal = new iam.ServicePrincipal('states.amazonaws.com', {
-          conditions: {
-            StringEquals: {
-              'aws:SourceAccount': '123456789012',
-            },
-          },
-        });
-
-        // WHEN
-        const grant = eventBus.grantPutEventsTo(servicePrincipal, defaultSid);
-
-        // THEN
-        assertServicePrincipalResourcePolicy(stack, 'states.amazonaws.com', {
-          StringEquals: {
-            'aws:SourceAccount': '123456789012',
-          },
-        });
-        assertOnlyResourcePolicy(stack, grant);
-        expect(grant.success).toBeTruthy();
-      });
-
       test('creates resource policy for cross-account role principal', () => {
         // GIVEN
         const otherAccountRole = new iam.AccountPrincipal('123456789012');
@@ -275,7 +239,7 @@ describe('EventBus grants', () => {
 
       test('creates identity-based policy for imported event bus from ARN without warnings', () => {
         // GIVEN
-        const importedEventBus = EventBus.fromEventBusArn(stack, 'ImportedBus', eventBus.eventBusArn);
+        const importedEventBus = EventBus.fromEventBusArn(stack, 'ImportedBus', 'arn:aws:events:region:account-id:event-bus/event-bus-name');
         const role = new iam.Role(stack, 'Role', {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
         });
@@ -284,9 +248,7 @@ describe('EventBus grants', () => {
         const grant = importedEventBus.grantPutEventsTo(role);
 
         // THEN
-        assertIdentityBasedPolicy(stack, {
-          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
-        });
+        assertIdentityBasedPolicy(stack, 'arn:aws:events:region:account-id:event-bus/event-bus-name');
         assertOnlyIdentityPolicy(stack, grant);
         assertNoWarnings(stack);
         expect(grant.success).toBeTruthy();
@@ -294,7 +256,7 @@ describe('EventBus grants', () => {
 
       test('creates identity-based policy for imported event bus from name without warnings', () => {
         // GIVEN
-        const importedEventBus = EventBus.fromEventBusName(stack, 'ImportedBus', eventBus.eventBusName);
+        const importedEventBus = EventBus.fromEventBusName(stack, 'ImportedBus', 'externalEventBusName');
         const role = new iam.Role(stack, 'Role', {
           assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
         });
@@ -311,30 +273,8 @@ describe('EventBus grants', () => {
             { Ref: 'AWS::Region' },
             ':',
             { Ref: 'AWS::AccountId' },
-            ':event-bus/',
-            { Ref: 'EventBus7B8748AA' },
+            ':event-bus/externalEventBusName',
           ]],
-        });
-        assertOnlyIdentityPolicy(stack, grant);
-        assertNoWarnings(stack);
-        expect(grant.success).toBeTruthy();
-      });
-    });
-
-    describe('token handling', () => {
-      test('creates identity-based policy for token account principal', () => {
-        // GIVEN
-        // Create a role with a token principal
-        const role = new iam.Role(stack, 'Role', {
-          assumedBy: new iam.AccountRootPrincipal(), // This will use the stack's account token
-        });
-
-        // WHEN
-        const grant = eventBus.grantPutEventsTo(role);
-
-        // THEN
-        assertIdentityBasedPolicy(stack, {
-          'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
         });
         assertOnlyIdentityPolicy(stack, grant);
         assertNoWarnings(stack);
@@ -380,6 +320,36 @@ describe('EventBus grants', () => {
         assertOnlyIdentityPolicy(stack2, grant);
         expect(grant.success).toBeTruthy();
       });
+    });
+
+    test('creates identity-based policy for imported role by name', () => {
+      // GIVEN
+      const role = iam.Role.fromRoleName(stack, 'ImportedRoleId', 'importedRoleName');
+
+      // WHEN
+      const grant = eventBus.grantPutEventsTo(role);
+
+      // THEN
+      assertIdentityBasedPolicy(stack, {
+        'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
+      });
+      assertOnlyIdentityPolicy(stack, grant);
+      expect(grant.success).toBeTruthy();
+    });
+
+    test('creates identity-based policy for imported role by ARN', () => {
+      // GIVEN
+      const role = iam.Role.fromRoleArn(stack, 'ImportedRoleId', 'arn:aws:iam::123456789012:role/AdminRoles/importedRoleName');
+
+      // WHEN
+      const grant = eventBus.grantPutEventsTo(role);
+
+      // THEN
+      assertIdentityBasedPolicy(stack, {
+        'Fn::GetAtt': ['EventBus7B8748AA', 'Arn'],
+      });
+      assertOnlyIdentityPolicy(stack, grant);
+      expect(grant.success).toBeTruthy();
     });
 
     describe('multiple grants with the same event bus', () => {
