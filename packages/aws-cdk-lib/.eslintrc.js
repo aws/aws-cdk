@@ -41,6 +41,7 @@ const enableNoThrowDefaultErrorIn = [
   'aws-cloudtrail',
   'aws-cloudwatch',
   'aws-cloudwatch-actions',
+  'aws-codecommit',
   'aws-ecr',
   'aws-elasticloadbalancing',
   'aws-elasticloadbalancingv2',
