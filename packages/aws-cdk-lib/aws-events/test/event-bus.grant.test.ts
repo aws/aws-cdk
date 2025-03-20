@@ -352,6 +352,32 @@ describe('EventBus grants', () => {
       expect(grant.success).toBeTruthy();
     });
 
+    test('creates resource-based policy for imported role by ARN when flagged not mutable', () => {
+      // GIVEN
+      const role = iam.Role.fromRoleArn(stack, 'ImportedRoleId', 'arn:aws:iam::123456789012:role/AdminRoles/importedRoleName', {
+        mutable: false,
+        addGrantsToResources: true,
+      });
+
+      // WHEN
+      const grant = eventBus.grantPutEventsTo(role, 'ImportedRoleGrant');
+
+      // THEN
+      assertOnlyResourcePolicy(stack, grant);
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
+        StatementId: 'cdk-ImportedRoleGrant',
+        Statement: Match.objectLike({
+          Effect: 'Allow',
+          Action: 'events:PutEvents',
+          Principal: {
+            AWS: 'arn:aws:iam::123456789012:role/AdminRoles/importedRoleName',
+          },
+          Resource: Match.anyValue(),
+        }),
+      });
+      expect(grant.success).toBeTruthy();
+    });
+
     describe('multiple grants with the same event bus', () => {
       test('creates appropriate policies for different principal types', () => {
         // GIVEN
