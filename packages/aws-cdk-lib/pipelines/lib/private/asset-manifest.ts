@@ -116,7 +116,7 @@ export class AssetManifestReader {
 
     function makeEntries<A, B, C>(
       assets: Record<string, AssetLike<A, B>>,
-      ctor: new (id: DestinationIdentifier, source: A, destination: B, displayName: string | undefined) => C): C[] {
+      ctor: new (id: DestinationIdentifier, source: A, destination: B, displayName?: string) => C): C[] {
       const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
@@ -168,7 +168,7 @@ export interface IManifestEntry {
   /**
    * A display name for this asset manifest entry, if given
    */
-  readonly displayName: string | undefined;
+  readonly displayName?: string;
 }
 
 /**
@@ -186,7 +186,7 @@ export class FileManifestEntry implements IManifestEntry {
     /** Destination for the file asset */
     public readonly destination: FileDestination,
     /** Display name for the file asset */
-    public readonly displayName: string | undefined,
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }
@@ -207,7 +207,7 @@ export class DockerImageManifestEntry implements IManifestEntry {
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
     /** Display name for the file asset */
-    public readonly displayName: string | undefined,
+    public readonly displayName?: string,
   ) {
     this.genericSource = source;
   }

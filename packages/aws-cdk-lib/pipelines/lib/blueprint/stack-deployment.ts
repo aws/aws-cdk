@@ -282,7 +282,7 @@ export interface StackAsset {
    *
    * @default - Use some generated string as display name
    */
-  readonly displayName: string | undefined;
+  readonly displayName?: string;
 
   /**
    * Role ARN to assume to publish
