@@ -189,66 +189,6 @@
             "id": "BucketDeployment",
             "path": "S3Stack/BucketDeployment",
             "children": {
-              "AwsCliLayer": {
-                "id": "AwsCliLayer",
-                "path": "S3Stack/BucketDeployment/AwsCliLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "S3Stack/BucketDeployment/AwsCliLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "S3Stack/BucketDeployment/AwsCliLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "S3Stack/BucketDeployment/AwsCliLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0",
-                          "metadata": []
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "S3Stack/BucketDeployment/AwsCliLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-                        },
-                        "description": "/opt/awscli/aws"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0",
-                  "metadata": [
-                    {}
-                  ]
-                }
-              },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
                 "path": "S3Stack/BucketDeployment/CustomResourceHandler",
@@ -396,6 +336,66 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3_deployment.BucketDeployment",
               "version": "0.0.0"
+            }
+          },
+          "@aws-cdk--lambda-layer-awscli.AwsCliLayer": {
+            "id": "@aws-cdk--lambda-layer-awscli.AwsCliLayer",
+            "path": "S3Stack/@aws-cdk--lambda-layer-awscli.AwsCliLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "S3Stack/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "S3Stack/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "S3Stack/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "S3Stack/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+                    },
+                    "description": "/opt/awscli/aws"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
+              "version": "0.0.0",
+              "metadata": [
+                {}
+              ]
             }
           },
           "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
@@ -697,7 +697,7 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Ref": "BucketDeploymentAwsCliLayerB018DCE1"
+                        "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
                       }
                     ],
                     "role": {

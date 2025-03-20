@@ -126,6 +126,7 @@ export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditi
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
 export const PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceStageRoleTrustScope';
+export const LAMBDA_AWS_CLI_LAYER_SHARE = '@aws-cdk/lambda-layer-awscli:shareLayer';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1404,6 +1405,19 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [LAMBDA_AWS_CLI_LAYER_SHARE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack',
+    detailsMd: `
+      Some L2 constructs create an AwsCliLayer resource internally.
+      When this feature flag is enabled, a single AwsCliLayer will be created at the
+      root of the containing stack, and shared by all constructs that require it.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [SET_UNIQUE_REPLICATION_ROLE_NAME]: {
     type: FlagType.BugFix,
     summary: 'When enabled, CDK will automatically generate a unique role name that is used for s3 object replication.',
@@ -1429,7 +1443,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
-
 };
 
 const CURRENT_MV = 'v2';

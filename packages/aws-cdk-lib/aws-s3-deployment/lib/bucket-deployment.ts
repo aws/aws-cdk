@@ -352,7 +352,7 @@ export class BucketDeployment extends Construct {
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
-      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      layers: [AwsCliLayer.getOrCreate(this)],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one

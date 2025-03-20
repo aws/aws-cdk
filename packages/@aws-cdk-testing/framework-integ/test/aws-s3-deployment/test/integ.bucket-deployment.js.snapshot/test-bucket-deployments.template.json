@@ -169,18 +169,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployMeAwsCliLayer5F9219E9": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployMeCustomResource4455EE35": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -207,6 +195,18 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "awscdklambdalayerawscliAwsCliLayer437D4B14": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
    "Type": "AWS::IAM::Role",
@@ -450,7 +450,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMeAwsCliLayer5F9219E9"
+      "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
      }
     ],
     "Role": {
@@ -857,43 +857,6 @@
      "Ref": "InlineVpc2605A3C4"
     }
    }
-  },
-  "DeployMeWithEfsStorageAwsCliLayer1619A3EE": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   },
-   "DependsOn": [
-    "InlineVpcIGW515300DC",
-    "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
-    "InlineVpcPrivateSubnet1RouteTable19DB57E6",
-    "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
-    "InlineVpcPrivateSubnet1Subnet0EC98BAD",
-    "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
-    "InlineVpcPrivateSubnet2RouteTableE3C67EFF",
-    "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB",
-    "InlineVpcPrivateSubnet2Subnet60DB7D03",
-    "InlineVpcPublicSubnet1DefaultRoute84A6786F",
-    "InlineVpcPublicSubnet1EIPCB8385DA",
-    "InlineVpcPublicSubnet1NATGateway88242629",
-    "InlineVpcPublicSubnet1RouteTable67856EA2",
-    "InlineVpcPublicSubnet1RouteTableAssociationDA9AACF2",
-    "InlineVpcPublicSubnet1Subnet2EDC574A",
-    "InlineVpcPublicSubnet2DefaultRoute9E9BF17A",
-    "InlineVpcPublicSubnet2EIPFCFD7982",
-    "InlineVpcPublicSubnet2NATGatewayB5A60DA8",
-    "InlineVpcPublicSubnet2RouteTable053CA1F8",
-    "InlineVpcPublicSubnet2RouteTableAssociation3DB8A2E6",
-    "InlineVpcPublicSubnet2SubnetAB52037C",
-    "InlineVpc2605A3C4",
-    "InlineVpcVPCGWE98B1862"
-   ]
   },
   "DeployMeWithEfsStorageCustomResourcec84ffe8a457bee0fd39689d96b787dc2cec93d55902CC55394": {
    "Type": "Custom::CDKBucketDeployment",
@@ -1375,7 +1338,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
+      "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
      }
     ],
     "Role": {
@@ -1505,18 +1468,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeployWithPrefixAwsCliLayerC9DDB597": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployWithPrefixCustomResource9CF7C694": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -1633,18 +1584,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeployWithMetadataAwsCliLayer2C774B41": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployWithMetadataCustomResourceA73C95DC": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -1681,18 +1620,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeployMeWithoutDeletingFilesOnDestinationAwsCliLayer4D54C41C": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployMeWithoutDeletingFilesOnDestinationCustomResourceA390B02B": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -1719,18 +1646,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "DeployMeWithExcludedFilesOnDestinationAwsCliLayer68F5E11D": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
   },
   "DeployMeWithExcludedFilesOnDestinationCustomResource48D69581": {
    "Type": "Custom::CDKBucketDeployment",
@@ -1850,18 +1765,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeployMeWithoutExtractingFilesOnDestinationAwsCliLayerC65F79D8": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
-  },
   "DeployMeWithoutExtractingFilesOnDestinationCustomResourceF1CAAF89": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
@@ -1977,18 +1880,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "DeployMe5AwsCliLayerF0F79631": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
   },
   "DeployMe5CustomResource44BEE629": {
    "Type": "Custom::CDKBucketDeployment",
@@ -2112,18 +2003,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "DeployMe6AwsCliLayerD729F63F": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "1c5a2ab1d1e53b0672a644454aab3dbb258ccd0079c92ad0e23b95b2c2079f70.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
   },
   "DeployMe6CustomResource947F78DE": {
    "Type": "Custom::CDKBucketDeployment",

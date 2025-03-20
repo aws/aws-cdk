@@ -132,62 +132,6 @@
             "id": "Deployment",
             "path": "test-s3-deploy-substitution-with-destination-key/Deployment",
             "children": {
-              "AwsCliLayer": {
-                "id": "AwsCliLayer",
-                "path": "test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer",
-                "children": {
-                  "Code": {
-                    "id": "Code",
-                    "path": "test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                      "aws:cdk:cloudformation:props": {
-                        "content": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
-                        },
-                        "description": "/opt/awscli/aws"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-                  "version": "0.0.0"
-                }
-              },
               "CustomResourceHandler": {
                 "id": "CustomResourceHandler",
                 "path": "test-s3-deploy-substitution-with-destination-key/Deployment/CustomResourceHandler",
@@ -244,6 +188,66 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3_deployment.DeployTimeSubstitutedFile",
               "version": "0.0.0"
+            }
+          },
+          "@aws-cdk--lambda-layer-awscli.AwsCliLayer": {
+            "id": "@aws-cdk--lambda-layer-awscli.AwsCliLayer",
+            "path": "test-s3-deploy-substitution-with-destination-key/@aws-cdk--lambda-layer-awscli.AwsCliLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "test-s3-deploy-substitution-with-destination-key/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "test-s3-deploy-substitution-with-destination-key/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "test-s3-deploy-substitution-with-destination-key/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0",
+                      "metadata": []
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "test-s3-deploy-substitution-with-destination-key/@aws-cdk--lambda-layer-awscli.AwsCliLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e42a736be21cd3134b9bff4e71e3afa99a4cc900ae489e9a7f7025c8d258f9b8.zip"
+                    },
+                    "description": "/opt/awscli/aws"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
+              "version": "0.0.0",
+              "metadata": [
+                {}
+              ]
             }
           },
           "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
@@ -465,7 +469,7 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Ref": "DeploymentAwsCliLayerB82B26A3"
+                        "Ref": "awscdklambdalayerawscliAwsCliLayer437D4B14"
                       }
                     ],
                     "role": {
@@ -512,7 +516,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.4.2"
             }
           },
           "BootstrapVersion": {
@@ -550,7 +554,7 @@
                 "path": "deploy-time-substitution-with-destination-key-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -570,7 +574,7 @@
                             "path": "deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/AwsApiCallS3getObjectaf52051900cc4c873cddd7ff562c5173/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.3.0"
+                              "version": "10.4.2"
                             }
                           }
                         },
@@ -642,7 +646,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.4.2"
                     }
                   },
                   "LatestNodeRuntimeMap": {
@@ -692,7 +696,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },

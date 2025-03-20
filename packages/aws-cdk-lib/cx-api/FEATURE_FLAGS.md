@@ -92,6 +92,7 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy](#aws-cdkaws-lambdacreatenewpolicieswithaddtorolepolicy) | When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement | 2.180.0 | (fix) |
 | [@aws-cdk/aws-s3:setUniqueReplicationRoleName](#aws-cdkaws-s3setuniquereplicationrolename) | When enabled, CDK will automatically generate a unique role name that is used for s3 object replication. | 2.182.0 | (fix) |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | 2.184.0 | (default) |
+| [@aws-cdk/lambda-layer-awscli:shareLayer](#aws-cdklambda-layer-awsclisharelayer) | When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -170,6 +171,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": true,
+    "@aws-cdk/lambda-layer-awscli:shareLayer": true,
     "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true
   }
 }
@@ -1738,6 +1740,21 @@ When this feature flag is disabled, it will keep the root account principal in t
 | 2.184.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
+
+
+### @aws-cdk/lambda-layer-awscli:shareLayer
+
+*When enabled, constructs requiring an `AwsCliLayer` will share a single layer per stack* (fix)
+
+Some L2 constructs create an AwsCliLayer resource internally.
+When this feature flag is enabled, a single AwsCliLayer will be created at the
+root of the containing stack, and shared by all constructs that require it.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
