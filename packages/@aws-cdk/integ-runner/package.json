@@ -72,7 +72,7 @@
   },
   "dependencies": {
     "chokidar": "^3.6.0",
-    "@aws-cdk/cloud-assembly-schema": "^40.7.0",
+    "@aws-cdk/cloud-assembly-schema": "^41.0.0",
     "@aws-sdk/client-cloudformation": "^3",
     "@aws-cdk/cloudformation-diff": "^2",
     "@aws-cdk/cx-api": "0.0.0",

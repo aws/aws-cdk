@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
+import { stackRelativeConstructPath } from './_construct-path';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '../../core';
@@ -314,6 +315,29 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - cache is used
    */
   readonly cacheDisabled?: boolean;
+
+  /**
+   * A display name for this asset
+   *
+   * If supplied, the display name will be used in locations where the asset
+   * identifier is printed, like in the CLI progress information. If the same
+   * asset is added multiple times, the display name of the first occurrence is
+   * used.
+   *
+   * If `assetName` is given, it will also be used as the default `displayName`.
+   * Otherwise, the default is the construct path of the ImageAsset construct,
+   * with respect to the enclosing stack. If the asset is produced by a
+   * construct helper function (such as `lambda.Code.fromAssetImage()`), this
+   * will look like `MyFunction/AssetImage`.
+   *
+   * We use the stack-relative construct path so that in the common case where
+   * you have multiple stacks with the same asset, we won't show something like
+   * `/MyBetaStack/MyFunction/Code` when you are actually deploying to
+   * production.
+   *
+   * @default - Stack-relative construct path
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -534,6 +558,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheFrom: this.dockerCacheFrom,
       dockerCacheTo: this.dockerCacheTo,
       dockerCacheDisabled: this.dockerCacheDisabled,
+      displayName: props.displayName ?? props.assetName ?? stackRelativeConstructPath(this),
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
