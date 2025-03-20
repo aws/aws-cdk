@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
+import { Annotations } from '../../core';
 
 /**
  * Use an SNS topic as a bucket notification destination
@@ -19,6 +20,18 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
         ArnLike: { 'aws:SourceArn': bucket.bucketArn },
       },
     }));
+
+    if (this.topic.masterKey) {
+      const statement = new iam.PolicyStatement({
+        principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+        actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
+        resources: ['*'],
+      });
+      const addResult = this.topic.masterKey.addToResourcePolicy(statement, true);
+      if (!addResult.statementAdded) {
+        Annotations.of(this.topic.masterKey).addWarningV2('@aws-cdk/aws-s3-notifications:snsKMSPermissionsNotAdded', `Can not change key policy of imported kms key. Ensure that your key policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+      }
+    }
 
     return {
       arn: this.topic.topicArn,

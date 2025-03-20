@@ -1,0 +1,12 @@
+{
+  "version": "40.0.0",
+  "testCases": {
+    "SnsBucketNotificationsSseInteg/DefaultTest": {
+      "stacks": [
+        "SnsBucketNotificationsSseStack"
+      ],
+      "assertionStack": "SnsBucketNotificationsSseInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SnsBucketNotificationsSseIntegDefaultTestDeployAssertDBC1BF57"
+    }
+  }
+}
