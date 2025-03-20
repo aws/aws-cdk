@@ -1,4 +1,3 @@
-import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
@@ -22,18 +21,6 @@ export interface PythonShellJobProps extends JobProps {
    * @default 0.0625
    */
   readonly maxCapacity?: MaxCapacity;
-
-  /**
-   * Specifies whether job run queuing is enabled for the job runs for this job.
-   * A value of true means job run queuing is enabled for the job runs.
-   * If false or not populated, the job runs will not be considered for queueing.
-   * If this field does not match the value set in the job run, then the value from
-   * the job run field will be used. This property must be set to false for flex jobs.
-   * If this property is enabled, maxRetries must be set to zero.
-   *
-   * @default false
-   */
-  readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
@@ -78,9 +65,7 @@ export class PythonShellJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
-      name: props.jobName,
-      description: props.description,
+    const jobResource = PythonShellJob.setupJobResource(this, props, {
       role: this.role.roleArn,
       command: {
         name: JobType.PYTHON_SHELL,
@@ -90,12 +75,6 @@ export class PythonShellJob extends Job {
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V3_0,
       maxCapacity: props.maxCapacity ? props.maxCapacity : MaxCapacity.DPU_1_16TH,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries ? props.maxRetries : 0,
-      jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
-      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      timeout: props.timeout?.toMinutes(),
-      connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
-      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
-      tags: props.tags,
       defaultArguments,
     });
 

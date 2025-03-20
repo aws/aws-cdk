@@ -1,7 +1,5 @@
-import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, ExecutionClass } from '../constants';
-import * as cdk from 'aws-cdk-lib/core';
 import { Code } from '../code';
 import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -11,44 +9,12 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
  */
 export interface PySparkFlexEtlJobProps extends SparkJobProps {
   /**
-   * Specifies configuration properties of a notification (optional).
-   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
-   * @default - undefined
-   */
-  readonly notifyDelayAfter?: cdk.Duration;
-
-  /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
    *
    * @default - no extra files
    */
   readonly extraPythonFiles?: Code[];
-
-  /**
-   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   *
-   * @default - no extra files specified.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: Code[];
-
-  /**
-   * Extra Jars S3 URL (optional)
-   * S3 URL where additional jar dependencies are located
-   * @default - no extra jar files
-   */
-  readonly extraJars?: Code[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default false - priority is not given to user-provided jars
-   *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
 }
 
 /**
@@ -81,9 +47,7 @@ export class PySparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
-      name: props.jobName,
-      description: props.description,
+    const jobResource = PySparkFlexEtlJob.setupJobResource(this, props, {
       role: this.role.roleArn,
       command: {
         name: JobType.ETL,
@@ -94,16 +58,9 @@ export class PySparkFlexEtlJob extends SparkJob {
       workerType: props.workerType ? props.workerType : WorkerType.G_1X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.maxRetries,
-      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
-      timeout: props.timeout?.toMinutes(),
-      connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
-      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
-      tags: props.tags,
       executionClass: ExecutionClass.FLEX,
       jobRunQueuingEnabled: false,
       defaultArguments,
-
     });
 
     const resourceName = this.getResourceNameAttribute(jobResource.ref);

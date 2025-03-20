@@ -1,4 +1,3 @@
-import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Job, JobProps } from './job';
 import { Construct } from 'constructs';
@@ -15,18 +14,6 @@ export interface RayJobProps extends JobProps {
    * @default - Runtime version will default to Ray2.4
    */
   readonly runtime?: Runtime;
-
-  /**
-   * Specifies whether job run queuing is enabled for the job runs for this job.
-   * A value of true means job run queuing is enabled for the job runs.
-   * If false or not populated, the job runs will not be considered for queueing.
-   * If this field does not match the value set in the job run, then the value from
-   * the job run field will be used. This property must be set to false for flex jobs.
-   * If this property is enabled, maxRetries must be set to zero.
-   *
-   * @default - no job run queuing
-   */
-  readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
@@ -76,9 +63,7 @@ export class RayJob extends Job {
       throw new Error('Ray jobs only support Z.2X worker type');
     }
 
-    const jobResource = new CfnJob(this, 'Resource', {
-      name: props.jobName,
-      description: props.description,
+    const jobResource = RayJob.setupJobResource(this, props, {
       role: this.role.roleArn,
       command: {
         name: JobType.RAY,
@@ -88,13 +73,6 @@ export class RayJob extends Job {
       glueVersion: GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers: 3,
-      maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
-      jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
-      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      timeout: props.timeout?.toMinutes(),
-      connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
-      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
-      tags: props.tags,
       defaultArguments,
     });
 

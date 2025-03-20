@@ -101,6 +101,31 @@ export interface SparkJobProps extends JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly sparkUI?: SparkUIProps;
+
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
+
+  /**
+   * Extra Jars S3 URL (optional)
+   * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
+   */
+  readonly extraJars?: Code[];
+
+  /**
+   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   *
+   * @default false - priority is not given to user-provided jars
+   *
+   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJarsFirst?: boolean;
 }
 
 /**

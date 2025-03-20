@@ -1,4 +1,3 @@
-import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
 import { Code } from '../code';
@@ -16,43 +15,6 @@ export interface PySparkStreamingJobProps extends SparkJobProps {
    * @default - no extra files
    */
   readonly extraPythonFiles?: Code[];
-
-  /**
-   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
-   *
-   * @default - no extra files specified.
-   *
-   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraFiles?: Code[];
-
-  /**
-   * Extra Jars S3 URL (optional)
-   * S3 URL where additional jar dependencies are located
-   * @default - no extra jar files
-   */
-  readonly extraJars?: Code[];
-
-  /**
-   * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
-   *
-   * @default false - priority is not given to user-provided jars
-   *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
-   */
-  readonly extraJarsFirst?: boolean;
-
-  /**
-   * Specifies whether job run queuing is enabled for the job runs for this job.
-   * A value of true means job run queuing is enabled for the job runs.
-   * If false or not populated, the job runs will not be considered for queueing.
-   * If this field does not match the value set in the job run, then the value from
-   * the job run field will be used. This property must be set to false for flex jobs.
-   * If this property is enabled, maxRetries must be set to zero.
-   *
-   * @default - no job run queuing
-   */
-  readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
@@ -85,9 +47,7 @@ export class PySparkStreamingJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
-      name: props.jobName,
-      description: props.description,
+    const jobResource = PySparkStreamingJob.setupJobResource(this, props, {
       role: this.role.roleArn,
       command: {
         name: JobType.STREAMING,
@@ -97,13 +57,6 @@ export class PySparkStreamingJob extends SparkJob {
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.G_1X,
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
-      maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
-      jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
-      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      timeout: props.timeout?.toMinutes(),
-      connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
-      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
-      tags: props.tags,
       defaultArguments,
     });
 

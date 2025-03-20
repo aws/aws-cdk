@@ -8,6 +8,7 @@ import { Code } from '../code';
 import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
 import { IConnection } from '../connection';
 import { ISecurityConfiguration } from '../security-configuration';
+import { CfnJob, CfnJobProps } from 'aws-cdk-lib/aws-glue';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -448,6 +449,26 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    **/
   readonly continuousLogging?: ContinuousLoggingProps;
+
+  /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   *
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
+
+  /**
+   * Specifies whether job run queuing is enabled for the job runs for this job.
+   * A value of true means job run queuing is enabled for the job runs.
+   * If false or not populated, the job runs will not be considered for queueing.
+   * If this field does not match the value set in the job run, then the value from
+   * the job run field will be used. This property must be set to false for flex jobs.
+   * If this property is enabled, maxRetries must be set to zero.
+   *
+   * @default - no job run queuing
+   */
+  readonly jobRunQueuingEnabled?: boolean;
 }
 
 /**
@@ -471,6 +492,31 @@ export abstract class Job extends JobBase {
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Utility method to help with creating the CfnJob resource.
+   * It handles common/shared JobProps, while allowing CfnJobProps overrides.
+   *
+   * @param scope the scope to create the resource in.
+   * @param props the JobProps to use for the resource.
+   * @param cfnProps the CfnJobProps overrides to use for the resource.
+   * @protected
+   */
+  protected static setupJobResource(scope: constructs.Construct, props: JobProps, cfnProps: CfnJobProps) {
+    return new CfnJob(scope, 'Resource', {
+      name: props.jobName,
+      description: props.description,
+      executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
+      timeout: props.timeout?.toMinutes(),
+      connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
+      securityConfiguration: props.securityConfiguration?.securityConfigurationName,
+      maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
+      jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
+      tags: props.tags,
+      ...cfnProps,
+    });
   }
 
   /**
