@@ -1,6 +1,7 @@
+import { Construct } from 'constructs';
 import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
 import * as cloudwatch from '../../../aws-cloudwatch';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource } from '../../../core';
+import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource, ValidationError } from '../../../core';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
@@ -95,7 +96,7 @@ enum AutoRollbackEvent {
   DEPLOYMENT_STOP_ON_REQUEST = 'DEPLOYMENT_STOP_ON_REQUEST',
 }
 
-export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
+export function renderAutoRollbackConfiguration(scope: Construct, alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
 CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 
@@ -115,9 +116,9 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
     if (alarms.length > 0) {
       events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_ALARM);
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
-      throw new Error(
+      throw new ValidationError(
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
-        'at least one CloudWatch alarm with the Deployment Group');
+        'at least one CloudWatch alarm with the Deployment Group', scope);
     }
   }
 
