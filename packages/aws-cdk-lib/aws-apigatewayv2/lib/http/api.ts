@@ -34,6 +34,14 @@ export interface IHttpApi extends IApi {
   readonly defaultAuthorizationScopes?: string[];
 
   /**
+   * The default stage of this API
+   *
+   * @attribute
+   * @default - no default stage
+   */
+  readonly defaultStage?: IHttpStage;
+
+  /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
